@@ -1,0 +1,54 @@
+html {
+    height: 100%;
+}
+
+body {
+    height: 100vh;
+}
+
+.img-logo {
+    width: 20vw;
+}
+
+header {
+    height: 10vh;
+}
+
+.konten {
+    height: 70vh;
+    padding: 2vh;
+}
+
+.konten .row {
+    height: 70vh;
+}
+
+
+footer {
+    height: 7vh;
+}
+
+footer p {
+    color: white;
+}
+
+.labelform {
+    display: block;
+    font-size: small;
+    margin-top: 5px;
+}
+
+.error {
+    font-size: small;
+    color: red;
+}
+
+.foto {
+    width: 100%;
+}
+
+.foto img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
