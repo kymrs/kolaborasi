@@ -1,25 +1,25 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Prepayment extends CI_Controller
+class Reimbust extends CI_Controller
 {
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('backend/M_prepayment');
+        $this->load->model('backend/M_reimbust');
         $this->M_login->getsecurity();
     }
 
     public function index()
     {
-        $data['title'] = "backend/prepayment/prepayment_list";
-        $data['titleview'] = "Data Prepayment";
+        $data['title'] = "backend/reimbust/reimbust_list";
+        $data['titleview'] = "Data Reimbust";
         $this->load->view('backend/home', $data);
     }
 
     function get_list()
     {
-        $list = $this->M_databooking->get_datatables();
+        $list = $this->M_reimbust->get_datatables();
         $data = array();
         $no = $_POST['start'];
         foreach ($list as $field) {
@@ -46,8 +46,8 @@ class Prepayment extends CI_Controller
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_databooking->count_all(),
-            "recordsFiltered" => $this->M_databooking->count_filtered(),
+            "recordsTotal" => $this->M_reimbust->count_all(),
+            "recordsFiltered" => $this->M_reimbust->count_filtered(),
             "data" => $data,
         );
         //output dalam format JSON
