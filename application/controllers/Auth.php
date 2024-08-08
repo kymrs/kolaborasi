@@ -39,7 +39,7 @@ class Auth extends CI_Controller
 			$this->session->set_userdata($userdata);
 			redirect('dashboard');
 		} else {
-			$this->session->set_flashdata('message', ' <p style="color :red"> Username or password incorrect !!!</p> ');
+			$this->session->set_flashdata('message', ' <p style="color :red; font-weight: 500"> Username or password incorrect !!!</p> ');
 			redirect('auth');
 		}
 	}
