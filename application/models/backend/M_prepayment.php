@@ -6,7 +6,11 @@ if (!defined('BASEPATH'))
 class M_prepayment extends CI_Model
 {
     // INISIASI VARIABLE
+    var $id = 'id';
     var $table = 'tbl_prepayment';
+    var $column_order = array(null, 'kode_prepayment', 'nama', 'jabatan', 'prepayment', 'tgl_prepayment', 'status');
+    var $column_search = array('kode_prepayment', 'nama', 'jabatan', 'prepayment', 'tgl_prepayment', 'status'); //field yang diizin untuk pencarian
+    var $order = array('id' => 'desc');
 
     // UNTUK QUERY DATA TABLE
     private function _get_datatables_query()

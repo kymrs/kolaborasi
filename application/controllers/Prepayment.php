@@ -12,33 +12,25 @@ class Prepayment extends CI_Controller
 
     public function index()
     {
-        $data['title'] = "backend/prepayment/prepayment_list"
+        $data['title'] = "backend/prepayment/prepayment_list";
         $data['titleview'] = "Data Prepayment";
         $this->load->view('backend/home', $data);
     }
 
     function get_list()
     {
-        $list = $this->M_databooking->get_datatables();
+        $list = $this->M_prepayment->get_datatables();
         $data = array();
         $no = $_POST['start'];
         foreach ($list as $field) {
             $no++;
             $row = array();
             $row[] = $no;
-            $row[] = '<a href="databooking/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-            <a href="databooking/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
-			<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>';
-            $row[] = $field->kode_booking;
+            $row[] = $field->kode_prepayment;
             $row[] = $field->nama;
-            $row[] = $field->no_hp;
-            $row[] = $field->email;
-            $row[] = $field->tgl_berangkat;
-            $row[] = $field->tgl_pulang;
-            $row[] = $field->jam_jemput;
-            $row[] = $field->titik_jemput;
-            $row[] = $field->type_kendaraan;
-            $row[] = $field->jumlah;
+            $row[] = $field->jabatan;
+            $row[] = $field->prepayment;
+            $row[] = $field->tgl_prepayment;
             $row[] = $field->status;
 
             $data[] = $row;
@@ -46,12 +38,21 @@ class Prepayment extends CI_Controller
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_databooking->count_all(),
-            "recordsFiltered" => $this->M_databooking->count_filtered(),
+            "recordsTotal" => $this->M_prepayment->count_all(),
+            "recordsFiltered" => $this->M_prepayment->count_filtered(),
             "data" => $data,
         );
         //output dalam format JSON
         echo json_encode($output);
+    }
+
+    function read_form($id)
+    {
+        $data['aksi'] = 'read';
+        $data['id'] = $id;
+        $data['title_view'] = "Data Prepayment";
+        $data['title'] = 'backend/prepayment/prepayment_form';
+        $this->load->view('backend/home', $data);
     }
 
     public function add_form()

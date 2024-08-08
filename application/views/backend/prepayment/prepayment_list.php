@@ -33,6 +33,7 @@
                                 <th>Action</th>
                                 <th>Kode Prepayment</th>
                                 <th>Nama</th>
+                                <th>Jabatan</th>
                                 <th>Tanggal Pengajuan</th>
                                 <th>Prepayment</th>
                                 <th>Tujuan</th>
@@ -63,19 +64,7 @@ var table;
             "ajax": {
                 "url": "<?php echo site_url('prepayment/get_list') ?>",
                 "type": "POST"
-            },
-            "columnDefs": [{
-                    "targets": [2, 4, 6, 7, 8, 9, 10],
-                    "className": 'dt-head-nowrap'
-                },
-                {
-                    "targets": [1, 12],
-                    "className": 'dt-body-nowrap'
-                }, {
-                    "targets": [0, 1],
-                    "orderable": false,
-                },
-            ],
+            }
         });
     });
 
