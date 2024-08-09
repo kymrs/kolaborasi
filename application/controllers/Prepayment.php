@@ -3,7 +3,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Prepayment extends CI_Controller
 {
-    public function __construct() 
+    public function __construct()
     {
         parent::__construct();
         $this->load->model('backend/M_prepayment');
@@ -26,11 +26,15 @@ class Prepayment extends CI_Controller
             $no++;
             $row = array();
             $row[] = $no;
-            $row[] = $field->kode_prepayment;
+            $row[] = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+            <a href="prepayment/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
+            <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>';
+            $row[] = strtoupper($field->kode_prepayment);
             $row[] = $field->nama;
-            $row[] = $field->jabatan;
-            $row[] = $field->prepayment;
+            $row[] = strtoupper($field->jabatan);
             $row[] = $field->tgl_prepayment;
+            $row[] = $field->prepayment;
+            $row[] = $field->tujuan;
             $row[] = $field->status;
 
             $data[] = $row;
@@ -55,14 +59,45 @@ class Prepayment extends CI_Controller
         $this->load->view('backend/home', $data);
     }
 
+    // MENGENERATE DAN MERESET NO URUT KODE PREPAYMENT SETIAP BULAN
     public function add_form()
     {
+        $kode = $this->M_prepayment->max_kode()->row();
+        if (empty($kode->kode_prepayment)) {
+            $no_urut = 1;
+        } else {
+            $bln = substr($kode->kode_prepayment, 3, 2);
+            if ($bln != date('m')) {
+                $no_urut = 1;
+            } else {
+                $no_urut = substr($kode->kode_prepayment, 5) + 1;
+            }
+        }
+        $urutan = str_pad($no_urut, 4, "0", STR_PAD_LEFT);
+        $data['kode'] = 'p' . date('ym') . $urutan;
+        $data['id'] = 0;
         $data['title'] = 'backend/prepayment/prepayment_form';
         $data['title_view'] = 'Prepayment Form';
         $this->load->view('backend/home', $data);
     }
 
-    public function add() {
+    function edit_form($id)
+    {
+        $data['id'] = $id;
+        $data['title_view'] = "Edit Data Prepayment";
+        $data['title'] = 'backend/prepayment/prepayment_form';
+        $this->load->view('backend/home', $data);
+    }
+
+    function edit_data($id)
+    {
+        $data = $this->M_prepayment->get_by_id($id);
+        echo json_encode($data);
+    }
+
+    // MENAMBAHKAN DATA
+    public function add()
+    {
         $data = array(
             'kode_prepayment' => $this->input->post('kode_prepayment'),
             'nama' => $this->input->post('nama'),
@@ -72,6 +107,29 @@ class Prepayment extends CI_Controller
             'tgl_prepayment' => date('Y-m-d', strtotime($this->input->post('tgl_prepayment')))
         );
         $this->M_prepayment->save($data);
+        echo json_encode(array("status" => TRUE));
+    }
+
+    // UPDATE DATA
+    public function update()
+    {
+        $data = array(
+            'kode_prepayment' => $this->input->post('kode_prepayment'),
+            'nama' => $this->input->post('nama'),
+            'jabatan' => $this->input->post('jabatan'),
+            'prepayment' => $this->input->post('prepayment'),
+            'tujuan' => $this->input->post('tujuan'),
+            'tgl_prepayment' => date('Y-m-d', strtotime($this->input->post('tgl_prepayment')))
+        );
+        $this->db->where('id', $this->input->post('id'));
+        $this->db->update('tbl_prepayment', $data);
+        echo json_encode(array("status" => TRUE));
+    }
+
+    // MENGHAPUS DATA
+    function delete($id)
+    {
+        $this->M_prepayment->delete($id);
         echo json_encode(array("status" => TRUE));
     }
 }

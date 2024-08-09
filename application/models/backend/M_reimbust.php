@@ -3,16 +3,19 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-class M_prepayment extends CI_Model
+class M_reimbust extends CI_Model
 {
-    // INISIASI VARIABLE
     var $id = 'id';
-    var $table = 'tbl_prepayment';
-    var $column_order = array(null, null, 'kode_prepayment', 'nama', 'jabatan', 'tgl_prepayment', 'prepayment', 'tujuan', 'status');
-    var $column_search = array('kode_prepayment', 'nama', 'jabatan', 'tgl_prepayment', 'prepayment', 'tujuan', 'status'); //field yang diizin untuk pencarian
-    var $order = array('id' => 'desc');
+    var $table = 'tbl_booking'; //nama tabel dari database
+    var $column_order = array(null, null, 'kode_booking', 'nama', 'no_hp', 'email', 'tgl_berangkat', 'tgl_pulang', 'jam_jemput', 'titik_jemput', 'type_kendaraan', 'jumlah', 'status');
+    var $column_search = array('kode_booking', 'nama', 'no_hp', 'email', 'tgl_berangkat', 'tgl_pulang', 'jam_jemput', 'titik_jemput', 'type_kendaraan', 'jumlah', 'status'); //field yang diizin untuk pencarian 
+    var $order = array('id' => 'desc'); // default order 
 
-    // UNTUK QUERY DATA TABLE
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
     private function _get_datatables_query()
     {
 
@@ -47,7 +50,6 @@ class M_prepayment extends CI_Model
         }
     }
 
-    // UNTUK MENAMPILKAN HASIL QUERY KE DATA TABLES
     function get_datatables()
     {
         $this->_get_datatables_query();
@@ -76,27 +78,24 @@ class M_prepayment extends CI_Model
         return $this->db->get($this->table)->row();
     }
 
-    // UNTUK QUERY MENGAMBIL KODE UNTUK DIGENERATE DI CONTROLLER
     public function max_kode()
     {
-        $this->db->select('kode_prepayment');
-        $where = 'id=(SELECT max(id) FROM tbl_prepayment where SUBSTRING(kode_prepayment, 2, 4) = ' . date('ym') . ')';
+        $this->db->select('kode_booking');
+        $where = 'id=(SELECT max(id) FROM tbl_booking where SUBSTRING(kode_booking, 2, 4) = ' . date('ym') . ')';
         $this->db->where($where);
-        $query = $this->db->get('tbl_prepayment');
+        $query = $this->db->get('tbl_booking');
         return $query;
     }
 
-    // UNTUK QUERY INSERT DATA PREPAYMENT
-    public function save($data) {
+    public function save($data)
+    {
         $this->db->insert($this->table, $data);
         return $this->db->insert_id();
     }
 
-    // UNTUK QUERY DELETE DATA PREPAYMENT
     public function delete($id)
     {
         $this->db->where($this->id, $id);
         $this->db->delete($this->table);
     }
-
 }

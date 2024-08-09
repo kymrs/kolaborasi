@@ -21,7 +21,9 @@
                                 <th>Tanggal Pengajuan</th>
                                 <th>Prepayment</th>
                                 <th>Tujuan</th>
+                                <th>Jumlah</th>
                                 <th>Status</th>
+                                <th>assadku</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -32,11 +34,12 @@
                                 <th>Action</th>
                                 <th>Kode Prepayment</th>
                                 <th>Nama</th>
-                                <th>Jabatan</th>
                                 <th>Tanggal Pengajuan</th>
                                 <th>Prepayment</th>
                                 <th>Tujuan</th>
+                                <th>Jumlah</th>
                                 <th>Status</th>
+                                <th>assadku</th>
                             </tr>
                         </tfoot>
                     </table>
@@ -50,10 +53,7 @@
 <?php $this->load->view('template/script'); ?>
 
 <script type="text/javascript">
-
-var table;
-
-    // METHOD POST MENAMPILKAN DATA KE DATA TABLE
+    var table;
     $(document).ready(function() {
         table = $('#table').DataTable({
             "responsive": false,
@@ -66,11 +66,11 @@ var table;
                 "type": "POST"
             },
             "columnDefs": [{
-                    "targets": [2, 5],
+                    "targets": [2, 4, 6, 7, 8, 9, 10],
                     "className": 'dt-head-nowrap'
                 },
                 {
-                    "targets": [1],
+                    "targets": [1, 12],
                     "className": 'dt-body-nowrap'
                 }, {
                     "targets": [0, 1],
@@ -79,40 +79,4 @@ var table;
             ],
         });
     });
-
-    // MENGHAPUS DATA MENGGUNAKAN METHODE POST JQUERY
-    function delete_data(id) {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: "<?php echo site_url('prepayment/delete/') ?>" + id,
-                    type: "POST",
-                    dataType: "JSON",
-                    success: function(data) {
-                        Swal.fire({
-                            position: 'top-end',
-                            icon: 'success',
-                            title: 'Your data has been deleted',
-                            showConfirmButton: false,
-                            timer: 1500
-                        }).then((result) => {
-                            location.href = "<?= base_url('prepayment') ?>";
-                        })
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        alert('Error deleting data');
-                    }
-                });
-            }
-        })
-    };
-
 </script>
