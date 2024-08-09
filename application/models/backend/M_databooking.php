@@ -18,7 +18,6 @@ class M_databooking extends CI_Model
 
     private function _get_datatables_query()
     {
-
         $this->db->from($this->table);
 
         $i = 0;
@@ -27,7 +26,6 @@ class M_databooking extends CI_Model
         {
             if ($_POST['search']['value']) // jika datatable mengirimkan pencarian dengan metode POST
             {
-
                 if ($i === 0) // looping awal
                 {
                     $this->db->group_start();

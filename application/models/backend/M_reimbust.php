@@ -6,9 +6,9 @@ if (!defined('BASEPATH'))
 class M_reimbust extends CI_Model
 {
     var $id = 'id';
-    var $table = 'tbl_booking'; //nama tabel dari database
-    var $column_order = array(null, null, 'kode_booking', 'nama', 'no_hp', 'email', 'tgl_berangkat', 'tgl_pulang', 'jam_jemput', 'titik_jemput', 'type_kendaraan', 'jumlah', 'status');
-    var $column_search = array('kode_booking', 'nama', 'no_hp', 'email', 'tgl_berangkat', 'tgl_pulang', 'jam_jemput', 'titik_jemput', 'type_kendaraan', 'jumlah', 'status'); //field yang diizin untuk pencarian 
+    var $table = 'tbl_reimbust'; //nama tabel dari database
+    var $column_order = array(null, null, 'kode_prepayment', 'nama', 'jabatan', 'departemen', 'sifat_pelaporan', 'tgl_pengajuan', 'tujuan', 'status');
+    var $column_search = array('kode_prepayment', 'nama', 'jabatan', 'departemen', 'sifat_pelaporan', 'tgl_pengajuan', 'tujuan', 'status'); //field yang diizin untuk pencarian 
     var $order = array('id' => 'desc'); // default order 
 
     public function __construct()
@@ -80,10 +80,10 @@ class M_reimbust extends CI_Model
 
     public function max_kode()
     {
-        $this->db->select('kode_booking');
-        $where = 'id=(SELECT max(id) FROM tbl_booking where SUBSTRING(kode_booking, 2, 4) = ' . date('ym') . ')';
+        $this->db->select('kode_prepayment');
+        $where = 'id=(SELECT max(id) FROM tbl_reimbust where SUBSTRING(kode_prepayment, 2, 4) = ' . date('ym') . ')';
         $this->db->where($where);
-        $query = $this->db->get('tbl_booking');
+        $query = $this->db->get('tbl_reimbust');
         return $query;
     }
 
