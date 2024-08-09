@@ -7,7 +7,7 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
-                    <a class="btn btn-primary btn-sm" href="<?= base_url('prepayment/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a>
+                    <a class="btn btn-primary btn-sm" href="<?= base_url('reimbust/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a>
                 </div>
                 <div class="card-body">
                     <table id="table" class="table table-bordered table-striped">
@@ -18,12 +18,11 @@
                                 <th>Kode Prepayment</th>
                                 <th>Nama</th>
                                 <th>Jabatan</th>
+                                <th>Departemen</th>
+                                <th>Sifat Pelaporan</th>
                                 <th>Tanggal Pengajuan</th>
-                                <th>Prepayment</th>
                                 <th>Tujuan</th>
-                                <th>Jumlah</th>
                                 <th>Status</th>
-                                <th>assadku</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -34,12 +33,12 @@
                                 <th>Action</th>
                                 <th>Kode Prepayment</th>
                                 <th>Nama</th>
+                                <th>Jabatan</th>
+                                <th>Departemen</th>
+                                <th>Sifat Pelaporan</th>
                                 <th>Tanggal Pengajuan</th>
-                                <th>Prepayment</th>
                                 <th>Tujuan</th>
-                                <th>Jumlah</th>
                                 <th>Status</th>
-                                <th>assadku</th>
                             </tr>
                         </tfoot>
                     </table>
@@ -62,15 +61,15 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('prepayment/get_list') ?>",
+                "url": "<?php echo site_url('reimbust/get_list') ?>",
                 "type": "POST"
             },
             "columnDefs": [{
-                    "targets": [2, 4, 6, 7, 8, 9, 10],
+                    "targets": [2, 4, 6, 7, 8],
                     "className": 'dt-head-nowrap'
                 },
                 {
-                    "targets": [1, 12],
+                    "targets": [1, 8],
                     "className": 'dt-body-nowrap'
                 }, {
                     "targets": [0, 1],
@@ -79,4 +78,38 @@
             ],
         });
     });
+
+    function delete_data(id) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: "<?php echo site_url('reimbust/delete/') ?>" + id,
+                    type: "POST",
+                    dataType: "JSON",
+                    success: function(data) {
+                        Swal.fire({
+                            position: 'center',
+                            icon: 'success',
+                            title: 'Your data has been deleted',
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then((result) => {
+                            location.href = "<?= base_url('reimbust') ?>";
+                        })
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert('Error deleting data');
+                    }
+                });
+            }
+        })
+    };
 </script>
