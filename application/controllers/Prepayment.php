@@ -62,6 +62,27 @@ class Prepayment extends CI_Controller
     // MENGENERATE DAN MERESET NO URUT KODE PREPAYMENT SETIAP BULAN
     public function add_form()
     {
+        // $kode = $this->M_prepayment->max_kode()->row();
+        // if (empty($kode->kode_prepayment)) {
+        //     $no_urut = 1;
+        // } else {
+        //     $bln = substr($kode->kode_prepayment, 3, 2);
+        //     if ($bln != date('m')) {
+        //         $no_urut = 1;
+        //     } else {
+        //         $no_urut = substr($kode->kode_prepayment, 5) + 1;
+        //     }
+        // }
+        // $urutan = str_pad($no_urut, 4, "0", STR_PAD_LEFT);
+        // $data['kode'] = 'p' . date('ym') . $urutan;
+        $data['id'] = 0;
+        $data['title'] = 'backend/prepayment/prepayment_form';
+        $data['title_view'] = 'Prepayment Form';
+        $this->load->view('backend/home', $data);
+    }
+
+    public function generate_kode() {
+        $date = $this->input->post('date');
         $kode = $this->M_prepayment->max_kode()->row();
         if (empty($kode->kode_prepayment)) {
             $no_urut = 1;
@@ -74,11 +95,10 @@ class Prepayment extends CI_Controller
             }
         }
         $urutan = str_pad($no_urut, 4, "0", STR_PAD_LEFT);
-        $data['kode'] = 'p' . date('ym') . $urutan;
-        $data['id'] = 0;
-        $data['title'] = 'backend/prepayment/prepayment_form';
-        $data['title_view'] = 'Prepayment Form';
-        $this->load->view('backend/home', $data);
+        $month = substr($date, 3, 2);
+        $year = substr($date, 8, 2);
+        $data = 'p' . $year . $month . $urutan;
+        echo json_encode($data);
     }
 
     function edit_form($id)
@@ -106,6 +126,13 @@ class Prepayment extends CI_Controller
             'tujuan' => $this->input->post('tujuan'),
             'tgl_prepayment' => date('Y-m-d', strtotime($this->input->post('tgl_prepayment')))
         );
+        $data2 = array(
+            'prepayment_id' => $this->input->post('kode_prepayment'),
+            'rincian' => $this->input->post('rincian[]'),
+            'nominal' => $this->input->post('nominal[]'),
+            'keterangan' => $this->input->post('keterangan[]')
+        );
+        var_dump($data2);
         $this->M_prepayment->save($data);
         echo json_encode(array("status" => TRUE));
     }
