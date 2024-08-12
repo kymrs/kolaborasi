@@ -115,7 +115,7 @@ class Prepayment extends CI_Controller
         echo json_encode($data);
     }
 
-    // MENAMBAHKAN DATA
+    // MENAMBAHKAN DATAA
     public function add()
     {
         $data = array(
