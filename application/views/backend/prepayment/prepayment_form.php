@@ -65,6 +65,40 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- TABLE INPUT -->
+                        <div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">First</th>
+                                <th scope="col">Last</th>
+                                <th scope="col">Handle</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                <th scope="row">1</th>
+                                <td>Mark</td>
+                                <td>Otto</td>
+                                <td>@mdo</td>
+                                </tr>
+                                <tr>
+                                <th scope="row">2</th>
+                                <td>Jacob</td>
+                                <td>Thornton</td>
+                                <td>@fat</td>
+                                </tr>
+                                <tr>
+                                <th scope="row">3</th>
+                                <td>Larry</td>
+                                <td>the Bird</td>
+                                <td>@twitter</td>
+                                </tr>
+                            </tbody>
+                            </table>
+                        </div>
+
                         <!-- PENENTUAN UPDATE ATAU ADD -->
                         <input type="hidden" name="id" id="id" value="<?= $id ?>">
                         <?php if (!empty($aksi)) { ?>
@@ -159,7 +193,7 @@
                     if (data.status) //if success close modal and reload ajax table
                     {
                         Swal.fire({
-                            position: 'top-end',
+                            position: 'center',
                             icon: 'success',
                             title: 'Your data has been saved',
                             showConfirmButton: false,
@@ -173,58 +207,7 @@
                     alert('Error adding / update data');
                 }
             });
-        });
-
-        // VALIDASI
-        // $("#form").validate({
-        //     rules: {
-        //         kode_prepayment: {
-        //             required: true,
-        //         },
-        //         tgl_prepayment: {
-        //             required: true,
-        //         },
-        //         nama: {
-        //             required: true,
-        //         },
-        //         jabatan: {
-        //             required: true,
-        //         },
-        //         prepayment: {
-        //             required: true,
-        //         },
-        //         tujuan: {
-        //             required: true,
-        //         }
-        //     },
-        //     messages: {
-        //         kode_prepayment: {
-        //             required: "Kode is required",
-        //         },
-        //         tgl_prepayment: {
-        //             required: "Tanggal is required",
-        //         },
-        //         nama: {
-        //             required: "Nama is required",
-        //         },
-        //         jabatan: {
-        //             required: "Jabatan is required",
-        //         },
-        //         prepayment: {
-        //             required: "Prepayment is required",
-        //         },
-        //         tujuan: {
-        //             required: "Tujuan is required",
-        //         }
-        //     },
-        //     errorPlacement: function(error, element) {
-        //         if (element.parent().hasClass('input-group')) {
-        //             error.insertAfter(element.parent());
-        //         } else {
-        //             error.insertAfter(element);
-        //         }
-        //     }
-        // })
+        }); 
 
         $("#form").validate({
     rules: {

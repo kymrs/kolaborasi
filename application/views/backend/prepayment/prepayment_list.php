@@ -98,7 +98,7 @@ var table;
                     dataType: "JSON",
                     success: function(data) {
                         Swal.fire({
-                            position: 'top-end',
+                            position: 'center',
                             icon: 'success',
                             title: 'Your data has been deleted',
                             showConfirmButton: false,
