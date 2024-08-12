@@ -116,7 +116,7 @@ class Prepayment extends CI_Controller
         echo json_encode($data);
     }
 
-    // MENAMBAHKAN DATA
+    // MENAMBAHKAN DATAA
     public function add()
     {
         $data = array(
@@ -127,13 +127,13 @@ class Prepayment extends CI_Controller
             'tujuan' => $this->input->post('tujuan'),
             'tgl_prepayment' => date('Y-m-d', strtotime($this->input->post('tgl_prepayment')))
         );
-
         $data2 = array(
             'prepayment_id' => $this->input->post('kode_prepayment'),
             'rincian' => $this->input->post('rincian[]'),
             'nominal' => $this->input->post('nominal[]'),
             'keterangan' => $this->input->post('keterangan[]')
         );
+        var_dump($data2);
         $this->M_prepayment->save($data);
         echo json_encode(array("status" => TRUE));
     }
