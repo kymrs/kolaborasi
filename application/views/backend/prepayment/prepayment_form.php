@@ -10,7 +10,7 @@
                     <a class="btn btn-secondary btn-sm" href="<?= base_url('prepayment') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
-                    <form id="form" method="post" action="<?=base_url('prepayment/add') ?>">
+                    <form id="form">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group row">
@@ -224,41 +224,41 @@
         }
 
         // INSERT ATAU UPDATE
-        // $("#form").submit(function(e) {
-        //     e.preventDefault();
-        //     var $form = $(this);
-        //     if (!$form.valid()) return false;
-        //     var url;
-        //     if (id == 0) {
-        //         url = "<?php echo site_url('prepayment/add') ?>";
-        //     } else {
-        //         url = "<?php echo site_url('prepayment/update') ?>";
-        //     }
+        $("#form").submit(function(e) {
+            e.preventDefault();
+            var $form = $(this);
+            if (!$form.valid()) return false;
+            var url;
+            if (id == 0) {
+                url = "<?php echo site_url('prepayment/add') ?>";
+            } else {
+                url = "<?php echo site_url('prepayment/update') ?>";
+            }
 
-        //     $.ajax({
-        //         url: url,
-        //         type: "POST",
-        //         data: $('#form').serialize(),
-        //         dataType: "JSON",
-        //         success: function(data) {
-        //             if (data.status) //if success close modal and reload ajax table
-        //             {
-        //                 Swal.fire({
-        //                     position: 'center',
-        //                     icon: 'success',
-        //                     title: 'Your data has been saved',
-        //                     showConfirmButton: false,
-        //                     timer: 1500
-        //                 }).then((result) => {
-        //                     location.href = "<?= base_url('prepayment') ?>";
-        //                 })
-        //             }
-        //         },
-        //         error: function(jqXHR, textStatus, errorThrown) {
-        //             alert('Error adding / update data');
-        //         }
-        //     });
-        // }); 
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: $('#form').serialize(),
+                dataType: "JSON",
+                success: function(data) {
+                    if (data.status) //if success close modal and reload ajax table
+                    {
+                        Swal.fire({
+                            position: 'center',
+                            icon: 'success',
+                            title: 'Your data has been saved',
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then((result) => {
+                            location.href = "<?= base_url('prepayment') ?>";
+                        })
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    alert('Error adding / update data');
+                }
+            });
+        }); 
 
         $("#form").validate({
     rules: {

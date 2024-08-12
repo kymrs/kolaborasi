@@ -126,14 +126,23 @@ class Prepayment extends CI_Controller
             'tujuan' => $this->input->post('tujuan'),
             'tgl_prepayment' => date('Y-m-d', strtotime($this->input->post('tgl_prepayment')))
         );
-        $data2 = array(
-            'prepayment_id' => $this->input->post('kode_prepayment'),
-            'rincian' => $this->input->post('rincian[]'),
-            'nominal' => $this->input->post('nominal[]'),
-            'keterangan' => $this->input->post('keterangan[]')
-        );
-        var_dump($data2);
-        $this->M_prepayment->save($data);
+        $inserted = $this->M_prepayment->save($data);
+        if ($inserted) {
+            // INISIASI VARIABEL INPUT
+            $rincian = $this->input->post('rincian[]');
+            $nominal = $this->input->post('nominal[]');
+            $keterangan = $this->input->post('keterangan[]');
+            //PERULANGAN UNTUK INSER QUERY DETAIL PREPAYMENT
+            for ($i=1; $i <= count($_POST['rincian']); $i++) { 
+                $data2[] = array(
+                    'prepayment_id' => $inserted,
+                    'rincian' => $rincian[$i],
+                    'nominal' => $nominal[$i],
+                    'keterangan' => $keterangan[$i]
+                );
+            }
+            $this->M_prepayment->save_detail($data2);
+        }
         echo json_encode(array("status" => TRUE));
     }
 

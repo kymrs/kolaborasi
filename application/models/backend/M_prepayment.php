@@ -8,6 +8,7 @@ class M_prepayment extends CI_Model
     // INISIASI VARIABLE
     var $id = 'id';
     var $table = 'tbl_prepayment';
+    var $table2 = 'tbl_prepayment_detail';
     var $column_order = array(null, null, 'kode_prepayment', 'nama', 'jabatan', 'tgl_prepayment', 'prepayment', 'tujuan', 'status');
     var $column_search = array('kode_prepayment', 'nama', 'jabatan', 'tgl_prepayment', 'prepayment', 'tujuan', 'status'); //field yang diizin untuk pencarian
     var $order = array('id' => 'desc');
@@ -89,6 +90,12 @@ class M_prepayment extends CI_Model
     // UNTUK QUERY INSERT DATA PREPAYMENT
     public function save($data) {
         $this->db->insert($this->table, $data);
+        return $this->db->insert_id();
+    }
+
+    // UNTUK QUERY INSERT DATA PREPAYMENT_DETAIL
+    public function save_detail($data) {
+        $this->db->insert_batch($this->table2, $data);
         return $this->db->insert_id();
     }
 
