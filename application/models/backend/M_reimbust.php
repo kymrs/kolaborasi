@@ -93,6 +93,12 @@ class M_reimbust extends CI_Model
         return $this->db->insert_id();
     }
 
+    public function save_detail($data)
+    {
+        $this->db->insert_batch('tbl_reimbust_detail', $data);
+        return $this->db->insert_id();
+    }
+
     public function delete($id)
     {
         $this->db->where($this->id, $id);

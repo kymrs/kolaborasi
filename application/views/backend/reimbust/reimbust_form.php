@@ -84,6 +84,29 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- BUTTON TAMBAH FORM -->
+                        <div class="mt-3">
+                            <button type="button" class="btn btn-success btn-sm" id="add-row"><i class="fa fa-plus" aria-hidden="true"></i> Add</button>
+                        </div>
+                        <!-- TABLE INPUT -->
+                        <div class="mt-2">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">No</th>
+                                        <th scope="col">Pemakaian</th>
+                                        <th scope="col">Tanggal Nota</th>
+                                        <th scope="col">Jumlah</th>
+                                        <th scope="col">Kwitansi</th>
+                                        <th scope="col">Deklarasi</th>
+                                        <th scope="col">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="input-container">
+                                    <!-- CONTAINER INPUTAN -->
+                                </tbody>
+                            </table>
+                        </div>
                         <input type="hidden" name="id" id="id" value="<?= $id ?>">
                         <?php if (!empty($aksi)) { ?>
                             <input type="hidden" name="aksi" id="aksi" value="<?= $aksi ?>">
@@ -107,6 +130,54 @@
         var id = $('#id').val();
         var aksi = $('#aksi').val();
         var kode = $('#kode').val();
+        let inputCount = 0;
+
+        //MENAMBAH FORM INPUTAN DI ADD FORM
+        let rowCount = 0;
+
+        function addRow() {
+            rowCount++;
+            const row = `
+                <tr id="row-${rowCount}">
+                    <td class="row-number">${rowCount}</td>
+                    <td><input type="text" class="form-control" name="pemakaian[${rowCount}]" placeholder="Pemakaian ${rowCount}" /></td>
+                    <td><input type="text" class="form-control" name="tgl_nota[${rowCount}]" placeholder="Tanggal Nota ${rowCount}" /></td>
+                    <td><input type="number" class="form-control" name="jumlah[${rowCount}]" placeholder="Jumlah ${rowCount}" /></td>
+                    <td><input type="file" class="form-control" name="kwitansi[${rowCount}]" placeholder="Jumlah ${rowCount}" /></td>
+                    <td><input type="file" class="form-control" name="deklarasi[${rowCount}]" placeholder="Jumlah ${rowCount}" /></td>
+                    <td><span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span></td>
+                </tr>
+                `;
+            $('#input-container').append(row);
+        }
+
+        function deleteRow(id) {
+            $(`#row-${id}`).remove();
+            // Reorder rows and update row numbers
+            reorderRows();
+        }
+
+        function reorderRows() {
+            $('#input-container tr').each(function(index) {
+                const newRowNumber = index + 1;
+                $(this).attr('id', `row-${newRowNumber}`);
+                $(this).find('.row-number').text(newRowNumber);
+                $(this).find('input').attr('name', `rincian[${newRowNumber}]`).attr('placeholder', `Input ${newRowNumber}`);
+                $(this).find('input').attr('name', `nominal[${newRowNumber}]`).attr('placeholder', `Input ${newRowNumber}`);
+                $(this).find('input').attr('name', `keterangan[${newRowNumber}]`).attr('placeholder', `Input ${newRowNumber}`);
+                $(this).find('.delete-btn').attr('data-id', newRowNumber).text('Delete');
+            });
+            rowCount = $('#input-container tr').length; // Update rowCount to the current number of rows
+        }
+
+        $('#add-row').click(function() {
+            addRow();
+        });
+
+        $(document).on('click', '.delete-btn', function() {
+            const id = $(this).data('id');
+            deleteRow(id);
+        });
 
         if (id == 0) {
             $('.aksi').text('Save');
@@ -115,7 +186,7 @@
             $('.aksi').text('Update');
             $("select option[value='']").hide();
             $.ajax({
-                url: "<?php echo site_url('reimbust/edit_data') ?>/" + id,
+                url: "<?= site_url('reimbust/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {

@@ -34,7 +34,7 @@ class Reimbust extends CI_Controller
             $row[] = $field->jabatan;
             $row[] = $field->departemen;
             $row[] = $field->sifat_pelaporan;
-            $row[] = $field->tgl_pengajuan;
+            $row[] = date("d M Y", strtotime($field->tgl_pengajuan));
             $row[] = $field->tujuan;
             $row[] = $field->status;
 
@@ -97,7 +97,7 @@ class Reimbust extends CI_Controller
 
     public function add()
     {
-        $data = array(
+        $data1 = array(
             'kode_prepayment' => $this->input->post('kode_prepayment'),
             'nama' => $this->input->post('nama'),
             'jabatan' => $this->input->post('jabatan'),
@@ -107,8 +107,27 @@ class Reimbust extends CI_Controller
             'tujuan' => $this->input->post('tujuan'),
             'status' => $this->input->post('status')
         );
-        $this->M_reimbust->save($data);
-        echo json_encode(array("status" => TRUE));
+
+        $inserted = $this->M_reimbust->save($data1);
+
+        if ($inserted) {
+            $pemakaian = $this->input->post('pemakaian[]');
+            $tgl_nota = $this->input->post('tgl_nota[]');
+            $jumlah = $this->input->post('jumlah[]');
+
+            for ($i = 1; $i <= count($_POST['pemakaian']); $i++) {
+                $data2[] = array(
+                    'id_reimbust' => $inserted,
+                    'pemakaian' => $pemakaian[$i],
+                    'tgl_nota' => $tgl_nota[$i],
+                    'jumlah' => $jumlah[$i]
+                    // 'kwitansi' => $this->input->post('kwitansi'),
+                    // 'deklarasi' => $this->input->post('deklarasi')
+                );
+                $this->M_reimbust->save_detail($data2);
+                echo json_encode(array("status" => TRUE));
+            }
+        }
     }
 
     public function update()
