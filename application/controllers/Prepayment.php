@@ -62,19 +62,6 @@ class Prepayment extends CI_Controller
     // MENGENERATE DAN MERESET NO URUT KODE PREPAYMENT SETIAP BULAN
     public function add_form()
     {
-        // $kode = $this->M_prepayment->max_kode()->row();
-        // if (empty($kode->kode_prepayment)) {
-        //     $no_urut = 1;
-        // } else {
-        //     $bln = substr($kode->kode_prepayment, 3, 2);
-        //     if ($bln != date('m')) {
-        //         $no_urut = 1;
-        //     } else {
-        //         $no_urut = substr($kode->kode_prepayment, 5) + 1;
-        //     }
-        // }
-        // $urutan = str_pad($no_urut, 4, "0", STR_PAD_LEFT);
-        // $data['kode'] = 'p' . date('ym') . $urutan;
         $data['id'] = 0;
         $data['title'] = 'backend/prepayment/prepayment_form';
         $data['title_view'] = 'Prepayment Form';
@@ -136,6 +123,7 @@ class Prepayment extends CI_Controller
             'tgl_prepayment' => date('Y-m-d', strtotime($this->input->post('tgl_prepayment')))
         );
         $inserted = $this->M_prepayment->save($data);
+
         if ($inserted) {
             // INISIASI VARIABEL INPUT DETAIL PREPAYMENT
             $rincian = $this->input->post('rincian[]');

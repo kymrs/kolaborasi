@@ -39,7 +39,7 @@
                         </tr>
                         <tr>
                             <td>
-                                <input type="text" id="username" name="username" placeholder="Username" required>
+                                <input type="text" id="username" name="username" placeholder="Username" autocomplete="off" required>
                             </td>
                         </tr>
                         <tr>

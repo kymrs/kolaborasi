@@ -66,24 +66,24 @@
                             </div>
                         </div>
                         <!-- BUTTON TAMBAH FORM -->
-                         <div class="mt-3">
+                        <div class="mt-3">
                             <button type="button" class="btn btn-success btn-sm" id="add-row"><i class="fa fa-plus" aria-hidden="true"></i> Add</button>
-                         </div>
+                        </div>
                         <!-- TABLE INPUT -->
                         <div class="mt-2">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                <th scope="col">No</th>
-                                <th scope="col">Rincian</th>
-                                <th scope="col">Nominal</th>
-                                <th scope="col">Keterangan</th>
-                                <th scope="col">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="input-container">
-                                <!-- CONTAINER INPUTAN -->
-                            </tbody>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">No</th>
+                                        <th scope="col">Rincian</th>
+                                        <th scope="col">Nominal</th>
+                                        <th scope="col">Keterangan</th>
+                                        <th scope="col">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="input-container">
+                                    <!-- CONTAINER INPUTAN -->
+                                </tbody>
                             </table>
                         </div>
                         <!-- PENENTUAN UPDATE ATAU ADD -->
@@ -107,8 +107,6 @@
 <?php $this->load->view('template/script'); ?>
 
 <script>
-    
-    // MENGUBAH FIELD TGL_PREPAYMENT MENJADI DATEPICKER
     $('#tgl_prepayment').datepicker({
         dateFormat: 'dd-mm-yy',
         minDate: new Date(),
@@ -120,7 +118,7 @@
                 url: "<?php echo site_url('prepayment/generate_kode') ?>",
                 type: "POST",
                 data: {
-                    "date" : dateText
+                    "date": dateText
                 },
                 dataType: "JSON",
                 success: function(data) {
@@ -128,8 +126,8 @@
                     $('#kode').val(data);
                 },
                 error: function(error) {
-                alert("error" + error);
-            }
+                    alert("error" + error);
+                }
             });
         }
     });
@@ -142,6 +140,28 @@
         var kode = $('#kode').val();
         let inputCount = 0;
 
+        // Tambahkan fungsi untuk memformat input nominal memiliki titik
+        function formatJumlahInput(selector) {
+            $(document).on('input', selector, function() {
+                let value = $(this).val().replace(/[^,\d]/g, '');
+                let parts = value.split(',');
+                let integerPart = parts[0];
+
+                // Format tampilan dengan pemisah ribuan
+                integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+                // Set nilai yang diformat ke tampilan
+                $(this).val(parts[1] !== undefined ? integerPart + ',' + parts[1] : integerPart);
+
+                // Hapus semua pemisah ribuan untuk pengiriman ke server
+                let cleanValue = value.replace(/\./g, '');
+
+                // Anda mungkin ingin menyimpan nilai bersih ini di input hidden atau langsung mengirimkannya ke server
+                const hiddenId = `#hidden_${$(this).attr('id')}`;
+                $(hiddenId).val(cleanValue);
+            });
+        }
+
         //MENAMBAH FORM INPUTAN DI ADD FORM
         let rowCount = 0;
 
@@ -151,21 +171,31 @@
                 <tr id="row[${rowCount}]">
                     <td class="row-number">${rowCount}</td>
                     <td><input type="text" class="form-control" name="rincian[${rowCount}]" placeholder="Input here..." /></td>
-                    <td><input type="number" class="form-control" name="nominal[${rowCount}]" placeholder="Input here..." /></td>
+                    <td><input type="text" class="form-control" id="nominal-${rowCount}" name="nominal[${rowCount}]" placeholder="Input here..." /></td>
                     <td><input type="text" class="form-control" name="keterangan[${rowCount}]" placeholder="Input here..." /></td>
                     <td><span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span></td>
                 </tr>
                 `;
-                $('#input-container').append(row);
-            }
+            $('#input-container').append(row);
+            // Tambahkan format ke input nominal yang baru
+            formatJumlahInput(`#nominal-${rowCount}`);
+        }
 
-            function deleteRow(id) {
-                $(`#row-${id}`).remove();
-                // Reorder rows and update row numbers
-                reorderRows();
-            }
+        // Panggil formatJumlahInput untuk semua input nominal yang ada di halaman
+        // $(document).ready(function() {
+        //     formatJumlahInput('#jumlah_prepayment'); // Untuk prepayment
+        //     $('#input-container').find('input[id^="jumlah-"]').each(function() {
+        //         formatJumlahInput(`#${$(this).attr('id')}`);
+        //     });
+        // });
 
-            function reorderRows() {
+        function deleteRow(id) {
+            $(`#row-${id}`).remove();
+            // Reorder rows and update row numbers
+            reorderRows();
+        }
+
+        function reorderRows() {
             $('#input-container tr').each(function(index) {
                 const newRowNumber = index + 1;
                 $(this).attr('id', `row-${newRowNumber}`);
@@ -176,16 +206,16 @@
                 $(this).find('.delete-btn').attr('data-id', newRowNumber).text('Delete');
             });
             rowCount = $('#input-container tr').length; // Update rowCount to the current number of rows
-            }
+        }
 
-            $('#add-row').click(function() {
-                addRow();
-            });
+        $('#add-row').click(function() {
+            addRow();
+        });
 
-            $(document).on('click', '.delete-btn', function() {
-                const id = $(this).data('id');
-                deleteRow(id);
-            });
+        $(document).on('click', '.delete-btn', function() {
+            const id = $(this).data('id');
+            deleteRow(id);
+        });
 
         // MENGISI FORM UPDATE
         if (id == 0) {
@@ -211,17 +241,20 @@
                     //APPEND DATA TRANSAKSI DETAIL PREPAYMENT
                     if (aksi == 'update') {
                         $(data['transaksi']).each(function (index){
-                        // console.log( index + ": " + data['transaksi'][index]['rincian'] );
+                        //Nilai nominal diformat menggunakan pemisah ribuan sebelum dimasukkan ke dalam elemen input.
+                        const nominalFormatted = data['transaksi'][index]['nominal'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
                         const row = `
                         <tr id="row-${index}">
                             <td class="row-number">${index + 1}</td>
                             <td><input type="text" class="form-control" name="rincian[${index}]" value="${data['transaksi'][index]['rincian']}" /></td>
-                            <td><input type="number" class="form-control" name="nominal[${index}]" value="${data['transaksi'][index]['nominal']}" /></td>
+                            <td><input type="text" class="form-control" id="nominal-${index}" name="nominal[${index}]" value="${nominalFormatted}" /></td>
                             <td><input type="text" class="form-control" name="keterangan[${index}]" value="${data['transaksi'][index]['keterangan']}" /></td>
                             <td><span class="btn delete-btn btn-danger" data-id="${index}">Delete</span></td>
                         </tr>
                         `;
                         $('#input-container').append(row);
+                        // Tambahkan format ke input nominal yang baru
+                        formatJumlahInput(`#nominal-${index}`);
                         rowCount = index+1;
                     });   
                     }
@@ -250,11 +283,13 @@
                 dataType: "JSON",
                 success: function(data) {
                     $(data).each(function (index){
+                        //Nilai nominal diformat menggunakan pemisah ribuan sebelum dimasukkan ke dalam elemen input.
+                        const nominalReadFormatted = data[index]['nominal'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
                         const row = `
                         <tr id="row-${index}">
                             <td class="row-number">${index + 1}</td>
                             <td><input readonly type="text" class="form-control" name="rincian[${index}]" value="${data[index]['rincian']}" /></td>
-                            <td><input readonly type="number" class="form-control" name="nominal[${index}]" value="${data[index]['nominal']}" /></td>
+                            <td><input readonly type="number" class="form-control" name="nominal[${index}]" value="${nominalReadFormatted}" /></td>
                             <td><input readonly type="text" class="form-control" name="keterangan[${index}]" value="${data[index]['keterangan']}" /></td>
                         </tr>
                         `;
@@ -299,50 +334,50 @@
                     alert('Error adding / update data');
                 }
             });
-        }); 
+        });
 
         $("#form").validate({
-    rules: {
-        kode_prepayment: {
-            required: true,
-        },
-        tgl_prepayment: {
-            required: true,
-        },
-        nama: {
-            required: true,
-        },
-        jabatan: {
-            required: true,
-        },
-        prepayment: {
-            required: true,
-        },
-        tujuan: {
-            required: true,
-        }
-    },
-    messages: {
-        kode_prepayment: {
-            required: "Kode is required",
-        },
-        tgl_prepayment: {
-            required: "Tanggal is required",
-        },
-        nama: {
-            required: "Nama is required",
-        },
-        jabatan: {
-            required: "Jabatan is required",
-        },
-        prepayment: {
-            required: "Prepayment is required",
-        },
-        tujuan: {
-            required: "Tujuan is required",
-        }
-    },
-    errorPlacement: function(error, element) {
+            rules: {
+                kode_prepayment: {
+                    required: true,
+                },
+                tgl_prepayment: {
+                    required: true,
+                },
+                nama: {
+                    required: true,
+                },
+                jabatan: {
+                    required: true,
+                },
+                prepayment: {
+                    required: true,
+                },
+                tujuan: {
+                    required: true,
+                }
+            },
+            messages: {
+                kode_prepayment: {
+                    required: "Kode is required",
+                },
+                tgl_prepayment: {
+                    required: "Tanggal is required",
+                },
+                nama: {
+                    required: "Nama is required",
+                },
+                jabatan: {
+                    required: "Jabatan is required",
+                },
+                prepayment: {
+                    required: "Prepayment is required",
+                },
+                tujuan: {
+                    required: "Tujuan is required",
+                }
+            },
+            errorPlacement: function(error, element) {
                 if (element.parent().hasClass('input-group')) {
                     error.insertAfter(element.parent());
                 } else {
@@ -356,7 +391,7 @@
                 $(element).removeClass('is-invalid'); // Hapus kelas jika input valid
             },
             focusInvalid: false, // Disable auto-focus on the first invalid field
-});
+        });
 
 
     })
