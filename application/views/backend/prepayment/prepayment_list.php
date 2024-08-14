@@ -7,7 +7,7 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
-                    <a class="btn btn-primary btn-sm" href="<?= base_url('databooking/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a>
+                    <a class="btn btn-primary btn-sm" href="<?= base_url('prepayment/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a>
                 </div>
                 <div class="card-body">
                     <table id="table" class="table table-bordered table-striped">
@@ -15,16 +15,12 @@
                             <tr>
                                 <th>No</th>
                                 <th>Action</th>
-                                <th>Kode Booking</th>
+                                <th>Kode Prepayment</th>
                                 <th>Nama</th>
-                                <th>No. Handphone</th>
-                                <th>Email</th>
-                                <th>Tanggal Berangkat</th>
-                                <th>Tanggal Pulang</th>
-                                <th>Jam Penjemputan</th>
-                                <th>Titik Penjemputan</th>
-                                <th>Type Kendaraan</th>
-                                <th>Jumlah</th>
+                                <th>Jabatan</th>
+                                <th>Tanggal Pengajuan</th>
+                                <th>Prepayment</th>
+                                <th>Tujuan</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -34,16 +30,12 @@
                             <tr>
                                 <th>No</th>
                                 <th>Action</th>
-                                <th>Kode Booking</th>
+                                <th>Kode Prepayment</th>
                                 <th>Nama</th>
-                                <th>No. Handphone</th>
-                                <th>Email</th>
-                                <th>Tanggal Berangkat</th>
-                                <th>Tanggal Pulang</th>
-                                <th>Jam Penjemputan</th>
-                                <th>Titik Penjemputan</th>
-                                <th>Type Kendaraan</th>
-                                <th>Jumlah</th>
+                                <th>Jabatan</th>
+                                <th>Tanggal Pengajuan</th>
+                                <th>Prepayment</th>
+                                <th>Tujuan</th>
                                 <th>Status</th>
                             </tr>
                         </tfoot>
@@ -58,7 +50,10 @@
 <?php $this->load->view('template/script'); ?>
 
 <script type="text/javascript">
-    var table;
+
+var table;
+
+    // METHOD POST MENAMPILKAN DATA KE DATA TABLE
     $(document).ready(function() {
         table = $('#table').DataTable({
             "responsive": false,
@@ -67,15 +62,15 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('databooking/get_list') ?>",
+                "url": "<?php echo site_url('prepayment/get_list') ?>",
                 "type": "POST"
             },
             "columnDefs": [{
-                    "targets": [2, 4, 6, 7, 8, 9, 10],
+                    "targets": [2, 5],
                     "className": 'dt-head-nowrap'
                 },
                 {
-                    "targets": [1, 12],
+                    "targets": [1],
                     "className": 'dt-body-nowrap'
                 }, {
                     "targets": [0, 1],
@@ -85,6 +80,7 @@
         });
     });
 
+    // MENGHAPUS DATA MENGGUNAKAN METHODE POST JQUERY
     function delete_data(id) {
         Swal.fire({
             title: 'Are you sure?',
@@ -97,7 +93,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: "<?php echo site_url('databooking/delete/') ?>" + id,
+                    url: "<?php echo site_url('prepayment/delete/') ?>" + id,
                     type: "POST",
                     dataType: "JSON",
                     success: function(data) {
@@ -108,7 +104,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then((result) => {
-                            location.href = "<?= base_url('databooking') ?>";
+                            location.href = "<?= base_url('prepayment') ?>";
                         })
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
@@ -118,4 +114,5 @@
             }
         })
     };
+
 </script>

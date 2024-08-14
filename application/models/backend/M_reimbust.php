@@ -3,12 +3,13 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-class M_databooking extends CI_Model
+class M_reimbust extends CI_Model
 {
     var $id = 'id';
-    var $table = 'tbl_booking'; //nama tabel dari database
-    var $column_order = array(null, null, 'kode_booking', 'nama', 'no_hp', 'email', 'tgl_berangkat', 'tgl_pulang', 'jam_jemput', 'titik_jemput', 'type_kendaraan', 'jumlah', 'status');
-    var $column_search = array('kode_booking', 'nama', 'no_hp', 'email', 'tgl_berangkat', 'tgl_pulang', 'jam_jemput', 'titik_jemput', 'type_kendaraan', 'jumlah', 'status'); //field yang diizin untuk pencarian 
+    var $table = 'tbl_reimbust'; //nama tabel dari database
+    var $table2 = 'tbl_reimbust'; //nama tabel dari database
+    var $column_order = array(null, null, 'kode_reimbust', 'nama', 'jabatan', 'departemen', 'sifat_pelaporan', 'tgl_pengajuan', 'tujuan', 'status');
+    var $column_search = array('kode_reimbust', 'nama', 'jabatan', 'departemen', 'sifat_pelaporan', 'tgl_pengajuan', 'tujuan', 'status'); //field yang diizin untuk pencarian 
     var $order = array('id' => 'desc'); // default order 
 
     public function __construct()
@@ -18,6 +19,7 @@ class M_databooking extends CI_Model
 
     private function _get_datatables_query()
     {
+
         $this->db->from($this->table);
 
         $i = 0;
@@ -26,6 +28,7 @@ class M_databooking extends CI_Model
         {
             if ($_POST['search']['value']) // jika datatable mengirimkan pencarian dengan metode POST
             {
+
                 if ($i === 0) // looping awal
                 {
                     $this->db->group_start();
@@ -78,16 +81,22 @@ class M_databooking extends CI_Model
 
     public function max_kode()
     {
-        $this->db->select('kode_booking');
-        $where = 'id=(SELECT max(id) FROM tbl_booking where SUBSTRING(kode_booking, 2, 4) = ' . date('ym') . ')';
+        $this->db->select('kode_reimbust');
+        $where = 'id=(SELECT max(id) FROM tbl_reimbust where SUBSTRING(kode_reimbust, 2, 4) = ' . date('ym') . ')';
         $this->db->where($where);
-        $query = $this->db->get('tbl_booking');
+        $query = $this->db->get('tbl_reimbust');
         return $query;
     }
 
     public function save($data)
     {
         $this->db->insert($this->table, $data);
+        return $this->db->insert_id();
+    }
+
+    public function save_detail($data)
+    {
+        $this->db->insert_batch('tbl_reimbust_detail', $data);
         return $this->db->insert_id();
     }
 

@@ -41,8 +41,6 @@
                 <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <a class="collapse-item" href="<?= base_url('databooking') ?>">Order</a>
-                        <a class="collapse-item" href="<?= base_url('datadeklarasi') ?>">Deklarasi</a>
-                        <a class="collapse-item" href="<?= base_url('datanotifikasi') ?>">Notifikasi</a>
                     </div>
                 </div>
             </li>

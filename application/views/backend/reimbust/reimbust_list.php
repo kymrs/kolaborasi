@@ -7,7 +7,7 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
-                    <a class="btn btn-primary btn-sm" href="<?= base_url('databooking/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a>
+                    <a class="btn btn-primary btn-sm" href="<?= base_url('reimbust/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a>
                 </div>
                 <div class="card-body">
                     <table id="table" class="table table-bordered table-striped">
@@ -15,16 +15,13 @@
                             <tr>
                                 <th>No</th>
                                 <th>Action</th>
-                                <th>Kode Booking</th>
+                                <th>Kode Reimbust</th>
                                 <th>Nama</th>
-                                <th>No. Handphone</th>
-                                <th>Email</th>
-                                <th>Tanggal Berangkat</th>
-                                <th>Tanggal Pulang</th>
-                                <th>Jam Penjemputan</th>
-                                <th>Titik Penjemputan</th>
-                                <th>Type Kendaraan</th>
-                                <th>Jumlah</th>
+                                <th>Jabatan</th>
+                                <th>Departemen</th>
+                                <th>Sifat Pelaporan</th>
+                                <th>Tanggal Pengajuan</th>
+                                <th>Tujuan</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -34,16 +31,13 @@
                             <tr>
                                 <th>No</th>
                                 <th>Action</th>
-                                <th>Kode Booking</th>
+                                <th>Kode Reimbust</th>
                                 <th>Nama</th>
-                                <th>No. Handphone</th>
-                                <th>Email</th>
-                                <th>Tanggal Berangkat</th>
-                                <th>Tanggal Pulang</th>
-                                <th>Jam Penjemputan</th>
-                                <th>Titik Penjemputan</th>
-                                <th>Type Kendaraan</th>
-                                <th>Jumlah</th>
+                                <th>Jabatan</th>
+                                <th>Departemen</th>
+                                <th>Sifat Pelaporan</th>
+                                <th>Tanggal Pengajuan</th>
+                                <th>Tujuan</th>
                                 <th>Status</th>
                             </tr>
                         </tfoot>
@@ -67,15 +61,15 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('databooking/get_list') ?>",
+                "url": "<?php echo site_url('reimbust/get_list') ?>",
                 "type": "POST"
             },
             "columnDefs": [{
-                    "targets": [2, 4, 6, 7, 8, 9, 10],
+                    "targets": [2, 4, 6, 7, 8],
                     "className": 'dt-head-nowrap'
                 },
                 {
-                    "targets": [1, 12],
+                    "targets": [1, 8],
                     "className": 'dt-body-nowrap'
                 }, {
                     "targets": [0, 1],
@@ -97,7 +91,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: "<?php echo site_url('databooking/delete/') ?>" + id,
+                    url: "<?php echo site_url('reimbust/delete/') ?>" + id,
                     type: "POST",
                     dataType: "JSON",
                     success: function(data) {
@@ -108,7 +102,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then((result) => {
-                            location.href = "<?= base_url('databooking') ?>";
+                            location.href = "<?= base_url('reimbust') ?>";
                         })
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
