@@ -7,9 +7,8 @@ class M_reimbust extends CI_Model
 {
     var $id = 'id';
     var $table = 'tbl_reimbust'; //nama tabel dari database
-    var $table2 = 'tbl_reimbust'; //nama tabel dari database
-    var $column_order = array(null, null, 'kode_reimbust', 'nama', 'jabatan', 'departemen', 'sifat_pelaporan', 'tgl_pengajuan', 'tujuan', 'status');
-    var $column_search = array('kode_reimbust', 'nama', 'jabatan', 'departemen', 'sifat_pelaporan', 'tgl_pengajuan', 'tujuan', 'status'); //field yang diizin untuk pencarian 
+    var $column_order = array(null, null, 'kode_reimbust', 'nama', 'jabatan', 'departemen', 'sifat_pelaporan', 'tgl_pengajuan', 'tujuan', 'jumlah_prepayment', 'status');
+    var $column_search = array('kode_reimbust', 'nama', 'jabatan', 'departemen', 'sifat_pelaporan', 'tgl_pengajuan', 'tujuan', 'jumlah_prepayment', 'status'); //field yang diizin untuk pencarian 
     var $order = array('id' => 'desc'); // default order 
 
     public function __construct()
