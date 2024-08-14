@@ -3,12 +3,12 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-class M_reimbust extends CI_Model
+class M_datadeklarasi extends CI_Model
 {
     var $id = 'id';
-    var $table = 'tbl_reimbust'; //nama tabel dari database
-    var $column_order = array(null, null, 'kode_reimbust', 'nama', 'jabatan', 'departemen', 'sifat_pelaporan', 'tgl_pengajuan', 'tujuan', 'jumlah_prepayment', 'status');
-    var $column_search = array('kode_reimbust', 'nama', 'jabatan', 'departemen', 'sifat_pelaporan', 'tgl_pengajuan', 'tujuan', 'jumlah_prepayment', 'status'); //field yang diizin untuk pencarian 
+    var $table = 'tbl_deklarasi'; //nama tabel dari database
+    var $column_order = array(null, null, 'kode_deklarasi', 'tanggal', 'nama_pengajuan', 'jabatan', 'nama_dibayar', 'tujuan', 'sebesar', 'status');
+    var $column_search = array('kode_deklarasi', 'tanggal', 'nama_pengajuan', 'jabatan', 'nama_dibayar', 'tujuan', 'sebesar', 'status'); //field yang diizin untuk pencarian 
     var $order = array('id' => 'desc'); // default order 
 
     public function __construct()
@@ -80,22 +80,16 @@ class M_reimbust extends CI_Model
 
     public function max_kode()
     {
-        $this->db->select('kode_reimbust');
-        $where = 'id=(SELECT max(id) FROM tbl_reimbust where SUBSTRING(kode_reimbust, 2, 4) = ' . date('ym') . ')';
+        $this->db->select('kode_deklarasi');
+        $where = 'id=(SELECT max(id) FROM tbl_deklarasi where SUBSTRING(kode_deklarasi, 2, 4) = ' . date('ym') . ')';
         $this->db->where($where);
-        $query = $this->db->get('tbl_reimbust');
+        $query = $this->db->get('tbl_deklarasi');
         return $query;
     }
 
     public function save($data)
     {
         $this->db->insert($this->table, $data);
-        return $this->db->insert_id();
-    }
-
-    public function save_detail($data)
-    {
-        $this->db->insert_batch('tbl_reimbust_detail', $data);
         return $this->db->insert_id();
     }
 

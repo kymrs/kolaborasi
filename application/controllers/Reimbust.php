@@ -36,6 +36,7 @@ class Reimbust extends CI_Controller
             $row[] = $field->sifat_pelaporan;
             $row[] = date("d M Y", strtotime($field->tgl_pengajuan));
             $row[] = $field->tujuan;
+            $row[] = number_format($field->jumlah_prepayment, 2, ',', '.');;
             $row[] = $field->status;
 
             $data[] = $row;
