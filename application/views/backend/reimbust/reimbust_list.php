@@ -15,7 +15,7 @@
                             <tr>
                                 <th>No</th>
                                 <th>Action</th>
-                                <th>Kode Prepayment</th>
+                                <th>Kode Reimbust</th>
                                 <th>Nama</th>
                                 <th>Jabatan</th>
                                 <th>Departemen</th>
@@ -31,7 +31,7 @@
                             <tr>
                                 <th>No</th>
                                 <th>Action</th>
-                                <th>Kode Prepayment</th>
+                                <th>Kode Reimbust</th>
                                 <th>Nama</th>
                                 <th>Jabatan</th>
                                 <th>Departemen</th>

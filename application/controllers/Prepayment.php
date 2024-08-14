@@ -128,8 +128,9 @@ class Prepayment extends CI_Controller
             'tgl_prepayment' => date('Y-m-d', strtotime($this->input->post('tgl_prepayment')))
         );
         $inserted = $this->M_prepayment->save($data);
+
         if ($inserted) {
-            // INISIASI VARIABEL INPUT
+            // INISIASI VARIABEL INPUT DETAIL PREPAYMENT
             $rincian = $this->input->post('rincian[]');
             $nominal = $this->input->post('nominal[]');
             $keterangan = $this->input->post('keterangan[]');

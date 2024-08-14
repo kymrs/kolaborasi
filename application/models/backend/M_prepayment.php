@@ -88,13 +88,15 @@ class M_prepayment extends CI_Model
     }
 
     // UNTUK QUERY INSERT DATA PREPAYMENT
-    public function save($data) {
+    public function save($data)
+    {
         $this->db->insert($this->table, $data);
         return $this->db->insert_id();
     }
 
     // UNTUK QUERY INSERT DATA PREPAYMENT_DETAIL
-    public function save_detail($data) {
+    public function save_detail($data)
+    {
         $this->db->insert_batch($this->table2, $data);
         return $this->db->insert_id();
     }
@@ -105,5 +107,4 @@ class M_prepayment extends CI_Model
         $this->db->where($this->id, $id);
         $this->db->delete($this->table);
     }
-
 }

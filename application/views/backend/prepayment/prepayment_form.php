@@ -66,24 +66,24 @@
                             </div>
                         </div>
                         <!-- BUTTON TAMBAH FORM -->
-                         <div class="mt-3">
+                        <div class="mt-3">
                             <button type="button" class="btn btn-success btn-sm" id="add-row"><i class="fa fa-plus" aria-hidden="true"></i> Add</button>
-                         </div>
+                        </div>
                         <!-- TABLE INPUT -->
                         <div class="mt-2">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                <th scope="col">No</th>
-                                <th scope="col">Rincian</th>
-                                <th scope="col">Nominal</th>
-                                <th scope="col">Keterangan</th>
-                                <th scope="col">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="input-container">
-                                <!-- CONTAINER INPUTAN -->
-                            </tbody>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">No</th>
+                                        <th scope="col">Rincian</th>
+                                        <th scope="col">Nominal</th>
+                                        <th scope="col">Keterangan</th>
+                                        <th scope="col">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="input-container">
+                                    <!-- CONTAINER INPUTAN -->
+                                </tbody>
                             </table>
                         </div>
                         <!-- PENENTUAN UPDATE ATAU ADD -->
@@ -107,7 +107,6 @@
 <?php $this->load->view('template/script'); ?>
 
 <script>
-    
     $('#tgl_prepayment').datepicker({
         dateFormat: 'dd-mm-yy',
         minDate: new Date(),
@@ -119,15 +118,15 @@
                 url: "<?php echo site_url('prepayment/generate_kode') ?>",
                 type: "POST",
                 data: {
-                    "date" : dateText
+                    "date": dateText
                 },
                 dataType: "JSON",
                 success: function(data) {
                     $('#kode_prepayment').val(data.toUpperCase());
                 },
                 error: function(error) {
-                alert("error" + error);
-            }
+                    alert("error" + error);
+                }
             });
         }
     });
@@ -154,16 +153,16 @@
                     <td><span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span></td>
                 </tr>
                 `;
-                $('#input-container').append(row);
-            }
+            $('#input-container').append(row);
+        }
 
-            function deleteRow(id) {
-                $(`#row-${id}`).remove();
-                // Reorder rows and update row numbers
-                reorderRows();
-            }
+        function deleteRow(id) {
+            $(`#row-${id}`).remove();
+            // Reorder rows and update row numbers
+            reorderRows();
+        }
 
-            function reorderRows() {
+        function reorderRows() {
             $('#input-container tr').each(function(index) {
                 const newRowNumber = index + 1;
                 $(this).attr('id', `row-${newRowNumber}`);
@@ -174,16 +173,16 @@
                 $(this).find('.delete-btn').attr('data-id', newRowNumber).text('Delete');
             });
             rowCount = $('#input-container tr').length; // Update rowCount to the current number of rows
-            }
+        }
 
-            $('#add-row').click(function() {
-                addRow();
-            });
+        $('#add-row').click(function() {
+            addRow();
+        });
 
-            $(document).on('click', '.delete-btn', function() {
-                const id = $(this).data('id');
-                deleteRow(id);
-            });
+        $(document).on('click', '.delete-btn', function() {
+            const id = $(this).data('id');
+            deleteRow(id);
+        });
 
         // MENGISI FORM UPDATE
         if (id == 0) {
@@ -258,50 +257,50 @@
                     alert('Error adding / update data');
                 }
             });
-        }); 
+        });
 
         $("#form").validate({
-    rules: {
-        kode_prepayment: {
-            required: true,
-        },
-        tgl_prepayment: {
-            required: true,
-        },
-        nama: {
-            required: true,
-        },
-        jabatan: {
-            required: true,
-        },
-        prepayment: {
-            required: true,
-        },
-        tujuan: {
-            required: true,
-        }
-    },
-    messages: {
-        kode_prepayment: {
-            required: "Kode is required",
-        },
-        tgl_prepayment: {
-            required: "Tanggal is required",
-        },
-        nama: {
-            required: "Nama is required",
-        },
-        jabatan: {
-            required: "Jabatan is required",
-        },
-        prepayment: {
-            required: "Prepayment is required",
-        },
-        tujuan: {
-            required: "Tujuan is required",
-        }
-    },
-    errorPlacement: function(error, element) {
+            rules: {
+                kode_prepayment: {
+                    required: true,
+                },
+                tgl_prepayment: {
+                    required: true,
+                },
+                nama: {
+                    required: true,
+                },
+                jabatan: {
+                    required: true,
+                },
+                prepayment: {
+                    required: true,
+                },
+                tujuan: {
+                    required: true,
+                }
+            },
+            messages: {
+                kode_prepayment: {
+                    required: "Kode is required",
+                },
+                tgl_prepayment: {
+                    required: "Tanggal is required",
+                },
+                nama: {
+                    required: "Nama is required",
+                },
+                jabatan: {
+                    required: "Jabatan is required",
+                },
+                prepayment: {
+                    required: "Prepayment is required",
+                },
+                tujuan: {
+                    required: "Tujuan is required",
+                }
+            },
+            errorPlacement: function(error, element) {
                 if (element.parent().hasClass('input-group')) {
                     error.insertAfter(element.parent());
                 } else {
@@ -315,7 +314,7 @@
                 $(element).removeClass('is-invalid'); // Hapus kelas jika input valid
             },
             focusInvalid: false, // Disable auto-focus on the first invalid field
-});
+        });
 
 
     })
