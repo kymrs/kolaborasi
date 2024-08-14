@@ -108,6 +108,7 @@
 
 <script>
     
+    // MENGUBAH FIELD TGL_PREPAYMENT MENJADI DATEPICKER
     $('#tgl_prepayment').datepicker({
         dateFormat: 'dd-mm-yy',
         minDate: new Date(),
@@ -221,6 +222,7 @@
             $('#jabatan').prop('disabled', true);
             $('#prepayment').prop('readonly', true);
             $('#tujuan').prop('readonly', true);
+            $('').prop('disabled', true);
         }
 
         // INSERT ATAU UPDATE
