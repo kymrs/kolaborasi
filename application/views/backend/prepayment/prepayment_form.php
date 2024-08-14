@@ -92,7 +92,7 @@
                             <input type="hidden" name="aksi" id="aksi" value="<?= $aksi ?>">
                         <?php } ?>
                         <?php if ($id == 0) { ?>
-                            <!-- <input type="hidden" name="kode" id="kode" value="<?= $kode ?>"> -->
+                            <input type="hidden" name="kode" id="kode" value="">
                         <?php } ?>
                         <!-- END PENENTUAN UPDATE ATAU ADD -->
                         <button type="submit" class="btn btn-primary btn-sm aksi"></button>
@@ -125,6 +125,7 @@
                 dataType: "JSON",
                 success: function(data) {
                     $('#kode_prepayment').val(data.toUpperCase());
+                    $('#kode').val(data);
                 },
                 error: function(error) {
                 alert("error" + error);
@@ -147,11 +148,11 @@
         function addRow() {
             rowCount++;
             const row = `
-                <tr id="row-${rowCount}">
+                <tr id="row[${rowCount}]">
                     <td class="row-number">${rowCount}</td>
-                    <td><input type="text" name="rincian[${rowCount}]" placeholder="Input ${rowCount}" /></td>
-                    <td><input type="number" name="nominal[${rowCount}]" placeholder="Input ${rowCount}" /></td>
-                    <td><input type="text" name="keterangan[${rowCount}]" placeholder="Input ${rowCount}" /></td>
+                    <td><input type="text" class="form-control" name="rincian[${rowCount}]" placeholder="Input here..." /></td>
+                    <td><input type="number" class="form-control" name="nominal[${rowCount}]" placeholder="Input here..." /></td>
+                    <td><input type="text" class="form-control" name="keterangan[${rowCount}]" placeholder="Input here..." /></td>
                     <td><span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span></td>
                 </tr>
                 `;
@@ -169,9 +170,9 @@
                 const newRowNumber = index + 1;
                 $(this).attr('id', `row-${newRowNumber}`);
                 $(this).find('.row-number').text(newRowNumber);
-                $(this).find('input').attr('name', `rincian[${newRowNumber}]`).attr('placeholder', `Input ${newRowNumber}`);
-                $(this).find('input').attr('name', `nominal[${newRowNumber}]`).attr('placeholder', `Input ${newRowNumber}`);
-                $(this).find('input').attr('name', `keterangan[${newRowNumber}]`).attr('placeholder', `Input ${newRowNumber}`);
+                $(this).find('input').attr('name', `rincian[${newRowNumber}]`).attr('placeholder', `Input here...`);
+                $(this).find('input').attr('name', `nominal[${newRowNumber}]`).attr('placeholder', `Input here...`);
+                $(this).find('input').attr('name', `keterangan[${newRowNumber}]`).attr('placeholder', `Input here...`);
                 $(this).find('.delete-btn').attr('data-id', newRowNumber).text('Delete');
             });
             rowCount = $('#input-container tr').length; // Update rowCount to the current number of rows
@@ -197,15 +198,33 @@
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
-                    // console.log(data);
-                    moment.locale('id')
-                    $('#id').val(data.id);
-                    $('#kode_prepayment').val(data.kode_prepayment.toUpperCase()).attr('readonly', true);
-                    $('#tgl_prepayment').val(moment(data.tgl_prepayment).format('DD-MM-YYYY'));
-                    $('#nama').val(data.nama);
-                    $('#jabatan').val(data.jabatan);
-                    $('#prepayment').val(data.prepayment);
-                    $('#tujuan').val(data.tujuan);
+                    // moment.locale('id')
+                    //SET VALUE DATA MASTER PREPAYMENT
+                    $('#id').val(data['master']['id']);
+                    $('#kode_prepayment').val(data['master']['kode_prepayment']).attr('readonly', true);
+                    $('#tgl_prepayment').val(moment(data['master']['tgl_prepayment']).format('DD-MM-YYYY'));
+                    $('#nama').val(data['master']['nama']);
+                    $('#jabatan').val(data['master']['jabatan']);
+                    $('#prepayment').val(data['master']['prepayment']);
+                    $('#tujuan').val(data['master']['tujuan']);
+
+                    //APPEND DATA TRANSAKSI DETAIL PREPAYMENT
+                    if (aksi == 'update') {
+                        $(data['transaksi']).each(function (index){
+                        // console.log( index + ": " + data['transaksi'][index]['rincian'] );
+                        const row = `
+                        <tr id="row-${index}">
+                            <td class="row-number">${index + 1}</td>
+                            <td><input type="text" class="form-control" name="rincian[${index}]" value="${data['transaksi'][index]['rincian']}" /></td>
+                            <td><input type="number" class="form-control" name="nominal[${index}]" value="${data['transaksi'][index]['nominal']}" /></td>
+                            <td><input type="text" class="form-control" name="keterangan[${index}]" value="${data['transaksi'][index]['keterangan']}" /></td>
+                            <td><span class="btn delete-btn btn-danger" data-id="${index}">Delete</span></td>
+                        </tr>
+                        `;
+                        $('#input-container').append(row);
+                        rowCount = index+1;
+                    });   
+                    }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     alert('Error get data from ajax');
@@ -222,7 +241,27 @@
             $('#jabatan').prop('disabled', true);
             $('#prepayment').prop('readonly', true);
             $('#tujuan').prop('readonly', true);
-            $('').prop('disabled', true);
+            $('#add-row').prop('disabled', true);
+            $('th:last-child').remove();
+
+            $.ajax({
+                url: "<?php echo site_url('prepayment/read_detail/') ?>" + id,
+                type: "GET",
+                dataType: "JSON",
+                success: function(data) {
+                    $(data).each(function (index){
+                        const row = `
+                        <tr id="row-${index}">
+                            <td class="row-number">${index + 1}</td>
+                            <td><input readonly type="text" class="form-control" name="rincian[${index}]" value="${data[index]['rincian']}" /></td>
+                            <td><input readonly type="number" class="form-control" name="nominal[${index}]" value="${data[index]['nominal']}" /></td>
+                            <td><input readonly type="text" class="form-control" name="keterangan[${index}]" value="${data[index]['keterangan']}" /></td>
+                        </tr>
+                        `;
+                        $('#input-container').append(row);
+                    });
+                }
+            });
         }
 
         // INSERT ATAU UPDATE

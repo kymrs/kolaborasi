@@ -71,10 +71,18 @@ class M_prepayment extends CI_Model
         return $this->db->count_all_results();
     }
 
+    // GET BY ID TABLE PREPAYMENT MASTER
     public function get_by_id($id)
     {
         $this->db->where($this->id, $id);
         return $this->db->get($this->table)->row();
+    }
+
+    // GET BY ID TABLE DETAIL PREPAYMENT TRANSAKSI
+    public function get_by_id_detail($id)
+    {
+        $this->db->where('prepayment_id', $id);
+        return $this->db->get($this->table2)->result_array();
     }
 
     // UNTUK QUERY MENGAMBIL KODE UNTUK DIGENERATE DI CONTROLLER

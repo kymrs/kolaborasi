@@ -105,6 +105,7 @@ class Prepayment extends CI_Controller
     function edit_form($id)
     {
         $data['id'] = $id;
+        $data['aksi'] = 'update';
         $data['title_view'] = "Edit Data Prepayment";
         $data['title'] = 'backend/prepayment/prepayment_form';
         $this->load->view('backend/home', $data);
@@ -112,7 +113,14 @@ class Prepayment extends CI_Controller
 
     function edit_data($id)
     {
-        $data = $this->M_prepayment->get_by_id($id);
+        $data['master'] = $this->M_prepayment->get_by_id($id);
+        $data['transaksi'] = $this->M_prepayment->get_by_id_detail($id);
+        echo json_encode($data);
+    }
+
+    function read_detail($id)
+    {
+        $data = $this->M_prepayment->get_by_id_detail($id);
         echo json_encode($data);
     }
 
