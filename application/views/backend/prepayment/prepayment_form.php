@@ -220,6 +220,7 @@
             $('#jabatan').prop('disabled', true);
             $('#prepayment').prop('readonly', true);
             $('#tujuan').prop('readonly', true);
+            $('').prop('disabled', true);
         }
 
         // INSERT ATAU UPDATE
