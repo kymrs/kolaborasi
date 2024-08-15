@@ -115,4 +115,11 @@ class M_prepayment extends CI_Model
         $this->db->where($this->id, $id);
         $this->db->delete($this->table);
     }
+
+    // UNTUK QUERY DELETE DATA PREPAYMENT DETAIL BERBARENGAN DENGAN PREPAYMENT MASTER
+    public function delete_detail($id)
+    {
+        $this->db->where('prepayment_id', $id);
+        $this->db->delete($this->table2);
+    }
 }

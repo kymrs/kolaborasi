@@ -10,7 +10,7 @@
                     <a class="btn btn-secondary btn-sm" href="<?= base_url('prepayment') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
-                    <form id="form" method="POST" action="<?= base_url('prepayment/update') ?>">
+                    <form id="form">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group row">
@@ -139,6 +139,7 @@
         var aksi = $('#aksi').val();
         var kode = $('#kode').val();
         let inputCount = 0;
+        let deletedRows = [];
 
         // Tambahkan fungsi untuk memformat input nominal memiliki titik
         function formatJumlahInput(selector) {
@@ -170,11 +171,11 @@
             const row = `
                 <tr id="row[${rowCount}]">
                     <td class="row-number">${rowCount}</td>
-                    <td><input type="text" class="form-control" name="rincian[${rowCount}]" placeholder="Input here..." /></td>
+                    <td><input type="text" class="form-control" name="rincian[${rowCount}]" value="" placeholder="Input here..." /></td>
                     <td><input type="text" class="form-control" id="nominal-${rowCount}" name="nominal[${rowCount}]" placeholder="Input here..." />
                         <input type="hidden" id="hidden_nominal${rowCount}" name="hidden_nominal[${rowCount}]" value="">
                     </td>
-                    <td><input type="text" class="form-control" name="keterangan[${rowCount}]" placeholder="Input here..." /></td>
+                    <td><input type="text" class="form-control" name="keterangan[${rowCount}]" value="" placeholder="Input here..." /></td>
                     <td><span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span></td>
                 </tr>
                 `;
@@ -183,15 +184,13 @@
             formatJumlahInput(`#nominal-${rowCount}`);
         }
 
-        // Panggil formatJumlahInput untuk semua input nominal yang ada di halaman
-        // $(document).ready(function() {
-        //     formatJumlahInput('#jumlah_prepayment'); // Untuk prepayment
-        //     $('#input-container').find('input[id^="jumlah-"]').each(function() {
-        //         formatJumlahInput(`#${$(this).attr('id')}`);
-        //     });
-        // });
-
         function deleteRow(id) {
+            // Simpan ID dari row yang dihapus
+            const rowId = $(`#row-${id}`).find('input:hidden[id^="hidden_id_detail"]').val();
+            if (rowId) {
+                deletedRows.push(rowId);
+            }
+
             $(`#row-${id}`).remove();
             // Reorder rows and update row numbers
             reorderRows();
@@ -199,12 +198,19 @@
 
         function reorderRows() {
             $('#input-container tr').each(function(index) {
+                //INISIASI VARIABLE UNTUK reorderRows
                 const newRowNumber = index + 1;
+                const rincianValue = $(this).find('input[name^="rincian"]').val();
+                const nominalValue = $(this).find('input[name^="nominal"]').val();
+                const hiddenNominalValue = $(this).find('input[name^="hidden_nominal"]').val();
+                const keteranganValue = $(this).find('input[name^="keterangan"]').val();
+
                 $(this).attr('id', `row-${newRowNumber}`);
                 $(this).find('.row-number').text(newRowNumber);
-                $(this).find('input').attr('name', `rincian[${newRowNumber}]`).attr('placeholder', `Input here...`);
-                $(this).find('input').attr('name', `nominal[${newRowNumber}]`).attr('placeholder', `Input here...`);
-                $(this).find('input').attr('name', `keterangan[${newRowNumber}]`).attr('placeholder', `Input here...`);
+                $(this).find('input[name^="rincian"]').attr('name', `rincian[${newRowNumber}]`).attr('placeholder', `Input here...`).val(rincianValue);
+                $(this).find('input[name^="nominal"]').attr('name', `nominal[${newRowNumber}]`).attr('placeholder', `Input here...`).val(nominalValue);
+                $(this).find('input[name^="hidden_nominal"]').attr('name', `hidden_nominal[${newRowNumber}]`).val(hiddenNominalValue);
+                $(this).find('input[name^="keterangan"]').attr('name', `keterangan[${newRowNumber}]`).attr('placeholder', `Input here...`).val(keteranganValue);
                 $(this).find('.delete-btn').attr('data-id', newRowNumber).text('Delete');
             });
             rowCount = $('#input-container tr').length; // Update rowCount to the current number of rows
@@ -217,6 +223,17 @@
         $(document).on('click', '.delete-btn', function() {
             const id = $(this).data('id');
             deleteRow(id);
+        });
+
+        $('#form').submit(function(event) {
+        // Tambahkan array deletedRows ke dalam form data sebelum submit
+        $('<input>').attr({
+            type: 'hidden',
+            name: 'deleted_rows',
+            value: JSON.stringify(deletedRows)
+        }).appendTo('#form');
+
+        // Lanjutkan dengan submit form
         });
 
         // MENGISI FORM UPDATE
@@ -307,41 +324,41 @@
         }
 
         // INSERT ATAU UPDATE
-        // $("#form").submit(function(e) {
-        //     e.preventDefault();
-        //     var $form = $(this);
-        //     if (!$form.valid()) return false;
-        //     var url;
-        //     if (id == 0) {
-        //         url = "<?php echo site_url('prepayment/add') ?>";
-        //     } else {
-        //         url = "<?php echo site_url('prepayment/update') ?>";
-        //     }
+        $("#form").submit(function(e) {
+            e.preventDefault();
+            var $form = $(this);
+            if (!$form.valid()) return false;
+            var url;
+            if (id == 0) {
+                url = "<?php echo site_url('prepayment/add') ?>";
+            } else {
+                url = "<?php echo site_url('prepayment/update') ?>";
+            }
 
-        //     $.ajax({
-        //         url: url,
-        //         type: "POST",
-        //         data: $('#form').serialize(),
-        //         dataType: "JSON",
-        //         success: function(data) {
-        //             if (data.status) //if success close modal and reload ajax table
-        //             {
-        //                 Swal.fire({
-        //                     position: 'center',
-        //                     icon: 'success',
-        //                     title: 'Your data has been saved',
-        //                     showConfirmButton: false,
-        //                     timer: 1500
-        //                 }).then((result) => {
-        //                     location.href = "<?= base_url('prepayment') ?>";
-        //                 })
-        //             }
-        //         },
-        //         error: function(jqXHR, textStatus, errorThrown) {
-        //             alert('Error adding / update data');
-        //         }
-        //     });
-        // });
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: $('#form').serialize(),
+                dataType: "JSON",
+                success: function(data) {
+                    if (data.status) //if success close modal and reload ajax table
+                    {
+                        Swal.fire({
+                            position: 'center',
+                            icon: 'success',
+                            title: 'Your data has been saved',
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then((result) => {
+                            location.href = "<?= base_url('prepayment') ?>";
+                        })
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    alert('Error adding / update data');
+                }
+            });
+        });
 
         $("#form").validate({
             rules: {
