@@ -127,7 +127,7 @@ class Prepayment extends CI_Controller
         if ($inserted) {
             // INISIASI VARIABEL INPUT DETAIL PREPAYMENT
             $rincian = $this->input->post('rincian[]');
-            $nominal = $this->input->post('nominal[]');
+            $nominal = $this->input->post('hidden_nominal[]');
             $keterangan = $this->input->post('keterangan[]');
             //PERULANGAN UNTUK INSER QUERY DETAIL PREPAYMENT
             for ($i = 1; $i <= count($_POST['rincian']); $i++) {
@@ -155,7 +155,27 @@ class Prepayment extends CI_Controller
             'tgl_prepayment' => date('Y-m-d', strtotime($this->input->post('tgl_prepayment')))
         );
         $this->db->where('id', $this->input->post('id'));
-        $this->db->update('tbl_prepayment', $data);
+        //UPDATE DETAIL PREPAYMENT
+        $id_detail = $this->input->post('hidden_id_detail[]');
+        $prepayment_id = $this->input->post('hidden_id');
+        $rincian = $this->input->post('rincian[]');
+        $nominal = $this->input->post('hidden_nominal[]');
+        $keterangan = $this->input->post('keterangan[]');
+        if ($this->db->update('tbl_prepayment', $data)) {
+            for ($i=1; $i <= count($_POST['rincian']) ; $i++) {
+                // Set id menjadi NULL jika id_detail tidak ada atau kosong
+                $id = !empty($id_detail[$i]) ? $id_detail[$i] : NULL;
+                $data2[] = array(
+                    'id' => $id,
+                    'prepayment_id' => $prepayment_id,
+                    'rincian' => $rincian[$i],
+                    'nominal' => $nominal[$i],
+                    'keterangan' => $keterangan[$i]
+                );
+                // Menggunakan db->replace untuk memasukkan atau menggantikan data
+                $this->db->replace('tbl_prepayment_detail', $data2[$i - 1]);
+            }
+        }
         echo json_encode(array("status" => TRUE));
     }
 

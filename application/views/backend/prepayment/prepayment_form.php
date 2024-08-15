@@ -10,7 +10,7 @@
                     <a class="btn btn-secondary btn-sm" href="<?= base_url('prepayment') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
-                    <form id="form">
+                    <form id="form" method="POST" action="<?= base_url('prepayment/update') ?>">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group row">
@@ -156,8 +156,8 @@
                 // Hapus semua pemisah ribuan untuk pengiriman ke server
                 let cleanValue = value.replace(/\./g, '');
 
-                // Anda mungkin ingin menyimpan nilai bersih ini di input hidden atau langsung mengirimkannya ke server
-                const hiddenId = `#hidden_${$(this).attr('id')}`;
+                // Pastikan elemen hidden dengan ID yang benar diperbarui
+                const hiddenId = `#hidden_${$(this).attr('id').replace('nominal-', 'nominal')}`;
                 $(hiddenId).val(cleanValue);
             });
         }
@@ -171,7 +171,9 @@
                 <tr id="row[${rowCount}]">
                     <td class="row-number">${rowCount}</td>
                     <td><input type="text" class="form-control" name="rincian[${rowCount}]" placeholder="Input here..." /></td>
-                    <td><input type="text" class="form-control" id="nominal-${rowCount}" name="nominal[${rowCount}]" placeholder="Input here..." /></td>
+                    <td><input type="text" class="form-control" id="nominal-${rowCount}" name="nominal[${rowCount}]" placeholder="Input here..." />
+                        <input type="hidden" id="hidden_nominal${rowCount}" name="hidden_nominal[${rowCount}]" value="">
+                    </td>
                     <td><input type="text" class="form-control" name="keterangan[${rowCount}]" placeholder="Input here..." /></td>
                     <td><span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span></td>
                 </tr>
@@ -246,10 +248,15 @@
                             const row = `
                         <tr id="row-${index}">
                             <td class="row-number">${index + 1}</td>
-                            <td><input type="text" class="form-control" name="rincian[${index}]" value="${data['transaksi'][index]['rincian']}" /></td>
-                            <td><input type="text" class="form-control" id="nominal-${index}" name="nominal[${index}]" value="${nominalFormatted}" /></td>
-                            <td><input type="text" class="form-control" name="keterangan[${index}]" value="${data['transaksi'][index]['keterangan']}" /></td>
-                            <td><span class="btn delete-btn btn-danger" data-id="${index}">Delete</span></td>
+                            <td><input type="text" class="form-control" name="rincian[${index + 1}]" value="${data['transaksi'][index]['rincian']}" />
+                                <input type="hidden" id="hidden_id${index}" name="hidden_id" value="${data['master']['id']}">
+                                <input type="hidden" id="hidden_id_detail${index}" name="hidden_id_detail[${index + 1}]" value="${data['transaksi'][index]['id']}">
+                            </td>
+                            <td><input type="text" class="form-control" id="nominal-${index}" name="nominal[${index + 1}]" value="${nominalFormatted}" />
+                                <input type="hidden" id="hidden_nominal${index}" name="hidden_nominal[${index + 1}]" value="${data['transaksi'][index]['nominal']}">
+                            </td>
+                            <td><input type="text" class="form-control" name="keterangan[${index + 1}]" value="${data['transaksi'][index]['keterangan']}" /></td>
+                            <td><span class="btn delete-btn btn-danger" data-id="${index + 1}">Delete</span></td>
                         </tr>
                         `;
                             $('#input-container').append(row);
@@ -300,41 +307,41 @@
         }
 
         // INSERT ATAU UPDATE
-        $("#form").submit(function(e) {
-            e.preventDefault();
-            var $form = $(this);
-            if (!$form.valid()) return false;
-            var url;
-            if (id == 0) {
-                url = "<?php echo site_url('prepayment/add') ?>";
-            } else {
-                url = "<?php echo site_url('prepayment/update') ?>";
-            }
+        // $("#form").submit(function(e) {
+        //     e.preventDefault();
+        //     var $form = $(this);
+        //     if (!$form.valid()) return false;
+        //     var url;
+        //     if (id == 0) {
+        //         url = "<?php echo site_url('prepayment/add') ?>";
+        //     } else {
+        //         url = "<?php echo site_url('prepayment/update') ?>";
+        //     }
 
-            $.ajax({
-                url: url,
-                type: "POST",
-                data: $('#form').serialize(),
-                dataType: "JSON",
-                success: function(data) {
-                    if (data.status) //if success close modal and reload ajax table
-                    {
-                        Swal.fire({
-                            position: 'center',
-                            icon: 'success',
-                            title: 'Your data has been saved',
-                            showConfirmButton: false,
-                            timer: 1500
-                        }).then((result) => {
-                            location.href = "<?= base_url('prepayment') ?>";
-                        })
-                    }
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    alert('Error adding / update data');
-                }
-            });
-        });
+        //     $.ajax({
+        //         url: url,
+        //         type: "POST",
+        //         data: $('#form').serialize(),
+        //         dataType: "JSON",
+        //         success: function(data) {
+        //             if (data.status) //if success close modal and reload ajax table
+        //             {
+        //                 Swal.fire({
+        //                     position: 'center',
+        //                     icon: 'success',
+        //                     title: 'Your data has been saved',
+        //                     showConfirmButton: false,
+        //                     timer: 1500
+        //                 }).then((result) => {
+        //                     location.href = "<?= base_url('prepayment') ?>";
+        //                 })
+        //             }
+        //         },
+        //         error: function(jqXHR, textStatus, errorThrown) {
+        //             alert('Error adding / update data');
+        //         }
+        //     });
+        // });
 
         $("#form").validate({
             rules: {
