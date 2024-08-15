@@ -36,7 +36,7 @@ class Reimbust extends CI_Controller
             $row[] = $field->sifat_pelaporan;
             $row[] = date("d M Y", strtotime($field->tgl_pengajuan));
             $row[] = $field->tujuan;
-            $row[] = number_format($field->jumlah_prepayment, 2, ',', '.');;
+            $row[] = number_format($field->jumlah_prepayment, 0, ',', '.');;
             $row[] = $field->status;
 
             $data[] = $row;
@@ -77,6 +77,7 @@ class Reimbust extends CI_Controller
         $urutan = str_pad($no_urut, 3, "0", STR_PAD_LEFT);
         $data['kode'] = 'B' . date('ym') . $urutan;
         $data['id'] = 0;
+        $data['aksi'] = 'add';
         $data['title_view'] = "Data Reimbust Form";
         $data['title'] = 'backend/reimbust/reimbust_form';
         $this->load->view('backend/home', $data);
