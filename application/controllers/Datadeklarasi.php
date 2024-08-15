@@ -31,7 +31,7 @@ class Datadeklarasi extends CI_Controller
             <a href="datadeklarasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
 			<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>';
             $row[] = $field->kode_deklarasi;
-            $row[] = $field->tanggal;
+            $row[] = date("d M Y", strtotime($field->tanggal));
             $row[] = $field->nama_pengajuan;
             $row[] = $field->jabatan;
             $row[] = $field->nama_dibayar;

@@ -26,7 +26,6 @@
                                     <th>Alasan</th>
                                     <th>Status</th>
                                     <th>Catatan</th>
-                                    <th>Notifikasi</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -46,7 +45,6 @@
                                     <th>Alasan</th>
                                     <th>Status</th>
                                     <th>Catatan</th>
-                                    <th>Notifikasi</th>
                                 </tr>
                             </tfoot>
                         </table>
@@ -105,7 +103,7 @@
                         dataType: "JSON",
                         success: function(data) {
                             Swal.fire({
-                                position: 'top-end',
+                                position: 'center',
                                 icon: 'success',
                                 title: 'Your data has been deleted',
                                 showConfirmButton: false,

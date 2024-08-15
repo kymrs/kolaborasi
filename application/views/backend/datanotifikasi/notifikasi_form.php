@@ -25,10 +25,17 @@
                                         <input type="text" class="form-control" id="nama" name="nama" required>
                                     </div>
                                 </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-5" for="jabatan">Jabatan</label>
+                                 <div class="form-group row">
+                                    <label class="col-sm-5">Jabatan</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="jabatan" name="jabatan" required>
+                                        <select class="form-control" name="jabatan" id="jabatan">
+                                            <option value="">-- Pilih --</option>
+                                            <option value="Magang">Magang</option>
+                                            <option value="Karyawan">Karyawan</option>
+                                            <option value="Supervisor">Supervisor</option>
+                                            <option value="Manager">Manager</option>
+                                            <option value="General Manager">General Manager</option>
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -51,7 +58,7 @@
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="tanggal">Tanggal</label>
                                     <div class="col-sm-7">
-                                        <input type="date" class="form-control" id="tanggal" name="tanggal" required>
+                                        <input type="text" class="form-control" id="tanggal" name="tanggal" required>
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -84,13 +91,6 @@
                                     <label class="col-sm-5" for="catatan">Catatan</label>
                                     <div class="col-sm-7">
                                         <textarea class="form-control" id="catatan" name="catatan"></textarea>
-                                    </div>
-                                </div>
-                                <!-- Notifikasi ke (Tahun Berjalan) -->
-                                <div class="form-group row">
-                                    <label class="col-sm-5" for="notifikasi">Notifikasi ke (Tahun Berjalan)</label>
-                                    <div class="col-sm-7">
-                                        <input type="int" class="form-control" id="notifikasi" name="notifikasi" required>
                                     </div>
                                 </div>
                             </div>
@@ -142,7 +142,6 @@
                     $('#alasan').val(data.alasan);
                     $('#status').val(data.status);
                     $('#catatan').val(data.catatan);
-                    $('#notifikasi').val(data.notifikasi);
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     alert('Error getting data from ajax');
@@ -154,14 +153,14 @@
             $('.aksi').hide();
             $('#id').prop('readonly', true);
             $('#nama').prop('readonly', true);
-            $('#jabatan').prop('readonly', true);
+            $('#jabatan').prop('disabled', true);
             $('#departemen').prop('readonly', true);
+            $('#pengajuan').prop('disabled', true);
             $('#tanggal').prop('disabled', true);
             $('#waktu').prop('disabled', true); // Added this
             $('#alasan').prop('readonly', true); // Added this
             $('#status').prop('disabled', true);
             $('#catatan').prop('readonly', true); // Added this
-            $('#notifikasi').prop('readonly', true); // Added this
         }
 
         $("#form").submit(function(e) {
@@ -183,7 +182,7 @@
                 success: function(data) {
                     if (data.status) {
                         Swal.fire({
-                            position: 'top-end',
+                            position: 'center',
                             icon: 'success',
                             title: 'Your data has been saved',
                             showConfirmButton: false,
@@ -228,9 +227,6 @@
                 catatan: {
                     required: true,
                 },
-                notifikasi: {
-                    required: true,
-                },
             },
             messages: {
                 nama: {
@@ -260,9 +256,6 @@
                 catatan: {
                     required: "Catatan Harus Diisi",
                 },
-                notifikasi: {
-                    required: "Notifikasi Harus Diisi",
-                },
             },
             errorPlacement: function(error, element) {
                 if (element.parent().hasClass('input-group')) {
@@ -273,4 +266,10 @@
             },
         });
     });
+
+    $('#tanggal').datepicker({
+        dateFormat: 'dd-mm-yy',
+        minDate: new Date(),
+    });
+
 </script>

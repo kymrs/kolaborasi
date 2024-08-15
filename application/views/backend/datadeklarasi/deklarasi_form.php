@@ -37,11 +37,11 @@
                                     <div class="col-sm-7">
                                         <select class="form-control" name="jabatan" id="jabatan">
                                             <option value="">-- Pilih --</option>
-                                            <option value="Waiting">Magang</option>
-                                            <option value="On Proccess">Karyawan</option>
-                                            <option value="Done">Supervisor</option>
-                                            <option value="Done">Manager</option>
-                                            <option value="Done">General Manager</option>
+                                            <option value="Magang">Magang</option>
+                                            <option value="Karyawan">Karyawan</option>
+                                            <option value="Supervisor">Supervisor</option>
+                                            <option value="Manager">Manager</option>
+                                            <option value="General Manager">General Manager</option>
                                         </select>
                                     </div>
                                 </div>
@@ -63,7 +63,8 @@
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="paymentAmount">Sebesar</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="sebesar" name="sebesar" required>
+                                        <input type="text" class="form-control" id="sebesar" required>
+                                        <input type="hidden" class="form-control" id="hidden_sebesar" name="sebesar" required>
                                     </div>
                                 </div>
                                   <div class="form-group row">
@@ -137,7 +138,7 @@
             $('#id').prop('readonly', true);
             $('#tanggal').prop('disabled', true);
             $('#nama_pengajuan').prop('readonly', true);
-            $('#jabatan').prop('readonly', true);
+            $('#jabatan').prop('disabled', true);
             $('#nama_dibayar').prop('readonly', true);
             $('#tujuan').prop('readonly', true);
             $('#sebesar').prop('readonly', true);
@@ -164,7 +165,7 @@
                     if (data.status) //if success close modal and reload ajax table
                     {
                         Swal.fire({
-                            position: 'top-end',
+                            position: 'center',
                             icon: 'success',
                             title: 'Your data has been saved',
                             showConfirmButton: false,
@@ -242,27 +243,22 @@
         minDate: new Date(),
     });
 
-function formatNumber(value) {
-    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-}
+ $('#sebesar').on('input', function() {
+            let value = $(this).val().replace(/[^,\d]/g, '');
+            let parts = value.split(',');
+            let integerPart = parts[0];
 
-$(document).ready(function() {
-    // Format input field on keyup
-    $('#sebesar').on('keyup', function() {
-        var input = $(this).val().replace(/\./g, ''); // Remove existing dots
-        if ($.isNumeric(input)) {
-            $(this).val(formatNumber(input));
-        }
-    });
+            // Format tampilan dengan pemisah ribuan
+            integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 
-    // Optionally, format input on blur
-    $('#sebesar').on('blur', function() {
-        var input = $(this).val().replace(/\./g, ''); // Remove existing dots
-        if ($.isNumeric(input)) {
-            $(this).val(formatNumber(input));
-        }
-    });
-});
+            // Set nilai yang diformat ke tampilan
+            $(this).val(parts[1] !== undefined ? integerPart + ',' + parts[1] : integerPart);
 
+            // Hapus semua pemisah ribuan untuk pengiriman ke server
+            let cleanValue = value.replace(/\./g, '');
+
+            // Anda mungkin ingin menyimpan nilai bersih ini di input hidden atau langsung mengirimkannya ke server
+            $('#hidden_sebesar').val(cleanValue);
+        });
 
 </script>

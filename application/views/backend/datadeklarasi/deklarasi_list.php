@@ -67,17 +67,25 @@
                 "url": "<?php echo site_url('datadeklarasi/get_list') ?>",
                 "type": "POST"
             },
-            "columnDefs": [{
+            "columnDefs": [
+                {
                     "targets": [2, 4, 6], // Adjusted indices to match the number of columns
                     "className": 'dt-head-nowrap'
                 },
                 {
                     "targets": [1],
                     "className": 'dt-body-nowrap'
-                }, {
+                },
+                {
                     "targets": [0, 1], // Indices for non-orderable columns
                     "orderable": false,
                 },
+                {
+                    "targets": [8], // Adjust this index to the column containing the numeric values you want to format
+                    "render": function(data, type, row) {
+                        return formatNumber(data);
+                    }
+                }
             ],
         });
     });
@@ -99,7 +107,7 @@
                     dataType: "JSON",
                     success: function(data) {
                         Swal.fire({
-                            position: 'top-end',
+                            position: 'center',
                             icon: 'success',
                             title: 'Your data has been deleted',
                             showConfirmButton: false,
@@ -115,4 +123,11 @@
             }
         })
     };
+
+    function formatNumber(value) {
+        if (typeof value === 'number') {
+            value = value.toString();
+        }
+        return value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
 </script>
