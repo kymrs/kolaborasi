@@ -36,6 +36,7 @@ class Reimbust extends CI_Controller
             $row[] = $field->sifat_pelaporan;
             $row[] = date("d M Y", strtotime($field->tgl_pengajuan));
             $row[] = $field->tujuan;
+            $row[] = number_format($field->jumlah_prepayment, 2, ',', '.');;
             $row[] = $field->status;
 
             $data[] = $row;
@@ -84,6 +85,7 @@ class Reimbust extends CI_Controller
     function edit_form($id)
     {
         $data['id'] = $id;
+        $data['aksi'] = 'update';
         $data['title_view'] = "Edit Data Reimbust";
         $data['title'] = 'backend/reimbust/reimbust_form';
         $this->load->view('backend/home', $data);
@@ -91,7 +93,8 @@ class Reimbust extends CI_Controller
 
     function edit_data($id)
     {
-        $data = $this->M_reimbust->get_by_id($id);
+        $data['master'] = $this->M_reimbust->get_by_id($id);
+        $data['transaksi'] = $this->M_reimbust->get_by_id_detail($id);
         echo json_encode($data);
     }
 
@@ -174,7 +177,7 @@ class Reimbust extends CI_Controller
                 }
 
                 $data2[] = [
-                    'id_reimbust' => $reimbust_id,
+                    'reimbust_id' => $reimbust_id,
                     'pemakaian' => $pemakaian[$i],
                     'tgl_nota' => $tgl_nota[$i],
                     'jumlah' => $jumlah[$i],

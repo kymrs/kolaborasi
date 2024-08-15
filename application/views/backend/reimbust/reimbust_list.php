@@ -22,6 +22,7 @@
                                 <th>Sifat Pelaporan</th>
                                 <th>Tanggal Pengajuan</th>
                                 <th>Tujuan</th>
+                                <th>Jumlah Prepayment</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -38,6 +39,7 @@
                                 <th>Sifat Pelaporan</th>
                                 <th>Tanggal Pengajuan</th>
                                 <th>Tujuan</th>
+                                <th>Jumlah Prepayment</th>
                                 <th>Status</th>
                             </tr>
                         </tfoot>
@@ -65,11 +67,11 @@
                 "type": "POST"
             },
             "columnDefs": [{
-                    "targets": [2, 4, 6, 7, 8],
+                    "targets": [2, 6, 7],
                     "className": 'dt-head-nowrap'
                 },
                 {
-                    "targets": [1, 8],
+                    "targets": [1, 3],
                     "className": 'dt-body-nowrap'
                 }, {
                     "targets": [0, 1],

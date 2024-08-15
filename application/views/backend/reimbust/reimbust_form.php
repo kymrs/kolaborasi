@@ -209,7 +209,6 @@
                 $('#status').prop('disabled', false).css('cursor', 'pointer');
                 $('#jumlah_prepayment').prop('disabled', false).css('cursor', 'auto');
             } else if (sifatPelaporan === 'pelaporan') {
-                // Jika bukan, enable kembali input "nama"
                 $('#nama').prop('disabled', false).css('cursor', 'auto');
                 $('#departemen').prop('disabled', false).css('cursor', 'pointer');
                 $('#jabatan').prop('disabled', false).css('cursor', 'auto');
@@ -233,6 +232,7 @@
         // Panggil change event secara manual untuk mengatur state awal saat halaman dimuat
         $('#sifat_pelaporan').trigger('change');
 
+        //MEMBUAT TAMPILAN HARGA MENJADI ADA TITIK
         $('#jumlah_prepayment').on('input', function() {
             let value = $(this).val().replace(/[^,\d]/g, '');
             let parts = value.split(',');
@@ -297,12 +297,12 @@
         }
 
         // Panggil formatJumlahInput untuk semua input jumlah yang ada di halaman
-        $(document).ready(function() {
-            formatJumlahInput('#jumlah_prepayment'); // Untuk prepayment
-            $('#input-container').find('input[id^="jumlah-"]').each(function() {
-                formatJumlahInput(`#${$(this).attr('id')}`);
-            });
-        });
+        // $(document).ready(function() {
+        //     formatJumlahInput('#jumlah_prepayment'); // Untuk prepayment
+        //     $('#input-container').find('input[id^="jumlah-"]').each(function() {
+        //         formatJumlahInput(`#${$(this).attr('id')}`);
+        //     });
+        // });
 
         if (id == 0) {
             $('.aksi').text('Save');
@@ -316,21 +316,95 @@
                 dataType: "JSON",
                 success: function(data) {
                     moment.locale('id')
-                    $('#id').val(data.id);
-                    $('#kode_reimbust').val(data.kode_reimbust).attr('readonly', true);
-                    $('#nama').val(data.nama);
-                    $('#jabatan').val(data.jabatan);
-                    $('#departemen').val(data.departemen);
-                    $('#sifat_pelaporan').val(data.sifat_pelaporan);
-                    $('#tgl_pengajuan').val(moment(data.tgl_pengajuan).format('DD-MM-YYYY'));
-                    $('#tujuan').val(data.tujuan);
-                    $('#status').val(data.status);
+                    if (aksi == 'update') {
+                        $(document).ready(function() {
+                            // Set nilai untuk setiap field dari data master
+                            $('#sifat_pelaporan').val(data['master']['sifat_pelaporan']);
+                            $('#id').val(data['master']['id']);
+                            $('#kode_reimbust').val(data['master']['kode_reimbust']).attr('readonly', true);
+                            $('#nama').val(data['master']['nama']);
+                            $('#jabatan').val(data['master']['jabatan']);
+                            $('#departemen').val(data['master']['departemen']);
+                            $('#tgl_pengajuan').val(moment(data['master']['tgl_pengajuan']).format('DD-MM-YYYY'));
+                            $('#tujuan').val(data['master']['tujuan']);
+                            $('#status').val(data['master']['status']);
+                            $('#jumlah_prepayment').val(data['master']['jumlah_prepayment']);
+                        });
+
+                        //APPEND DATA TRANSAKSI DETAIL REIMBUST
+                        $(data['transaksi']).each(function(index) {
+                            const jumlahFormatted = data['transaksi'][index]['jumlah'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                            const row = `
+                        <tr id="row-${index}">
+                            <td class="row-number">${index + 1}</td>
+                            <td><input type="text" class="form-control" name="pemakaian[${rowCount}]" value="${data['transaksi'][index]['pemakaian']}"></td>
+                            <td><input type="text" class="form-control" name="tgl_nota[${rowCount}]" id="tgl_nota" value="${data['transaksi'][index]['tgl_nota']}" style="cursor: pointer"></td>
+                            <td><input type="text" class="form-control" id="jumlah-${index}" name="jumlah[${index}]" value="${jumlahFormatted}" ></td>
+                            <td><input type="file" class="form-control" name="kwitansi[${rowCount}]"></td>
+                            <td><input type="file" class="form-control" name="deklarasi[${rowCount}]"></td>
+                            <td><span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span></td>
+                        </tr>
+                        `;
+                            $('#input-container').append(row);
+                            // Tambahkan format ke input nominal yang baru
+                            formatJumlahInput(`#nominal-${index}`);
+                            rowCount = index + 1;
+                        });
+                    }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     alert('Error get data from ajax');
                 }
             });
         }
+
+        // if (id == 0) {
+        //     $('.aksi').text('Save');
+        //     $('#kode_reimbust').val(kode).attr('readonly', true);
+        // } else {
+        //     $('.aksi').text('Update');
+        //     $("select option[value='']").hide();
+        //     $.ajax({
+        //         url: "<?php echo site_url('prepayment/edit_data') ?>/" + id,
+        //         type: "GET",
+        //         dataType: "JSON",
+        //         success: function(data) {
+        //             // moment.locale('id')
+        //             //SET VALUE DATA MASTER PREPAYMENT
+        //             $('#id').val(data['master']['id']);
+        //             $('#kode_prepayment').val(data['master']['kode_prepayment']).attr('readonly', true);
+        //             $('#tgl_prepayment').val(moment(data['master']['tgl_prepayment']).format('DD-MM-YYYY'));
+        //             $('#nama').val(data['master']['nama']);
+        //             $('#jabatan').val(data['master']['jabatan']);
+        //             $('#prepayment').val(data['master']['prepayment']);
+        //             $('#tujuan').val(data['master']['tujuan']);
+
+        //             //APPEND DATA TRANSAKSI DETAIL PREPAYMENT
+        //             if (aksi == 'update') {
+        //                 $(data['transaksi']).each(function(index) {
+        //                     //Nilai nominal diformat menggunakan pemisah ribuan sebelum dimasukkan ke dalam elemen input.
+        //                     const nominalFormatted = data['transaksi'][index]['nominal'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        //                     const row = `
+        //                 <tr id="row-${index}">
+        //                     <td class="row-number">${index + 1}</td>
+        //                     <td><input type="text" class="form-control" name="rincian[${index}]" value="${data['transaksi'][index]['rincian']}" /></td>
+        //                     <td><input type="text" class="form-control" id="nominal-${index}" name="nominal[${index}]" value="${nominalFormatted}" /></td>
+        //                     <td><input type="text" class="form-control" name="keterangan[${index}]" value="${data['transaksi'][index]['keterangan']}" /></td>
+        //                     <td><span class="btn delete-btn btn-danger" data-id="${index}">Delete</span></td>
+        //                 </tr>
+        //                 `;
+        //                     $('#input-container').append(row);
+        //                     // Tambahkan format ke input nominal yang baru
+        //                     formatJumlahInput(`#nominal-${index}`);
+        //                     rowCount = index + 1;
+        //                 });
+        //             }
+        //         },
+        //         error: function(jqXHR, textStatus, errorThrown) {
+        //             alert('Error get data from ajax');
+        //         }
+        //     });
+        // }
 
         if (aksi == "read") {
             $('.aksi').hide();
@@ -447,5 +521,14 @@
     $('#tgl_pengajuan').datepicker({
         dateFormat: 'dd-mm-yy',
         minDate: new Date(),
+    });
+
+    // Inisialisasi Datepicker pada elemen dengan id 'tgl_nota'
+    $(document).on('focus', '#tgl_nota', function() {
+        $(this).datepicker({
+            dateFormat: 'dd-mm-yy', // Format tanggal
+            changeMonth: true, // Untuk menampilkan dropdown bulan
+            changeYear: true // Untuk menampilkan dropdown tahun
+        });
     });
 </script>

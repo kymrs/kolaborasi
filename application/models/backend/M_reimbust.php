@@ -7,9 +7,9 @@ class M_reimbust extends CI_Model
 {
     var $id = 'id';
     var $table = 'tbl_reimbust'; //nama tabel dari database
-    var $table2 = 'tbl_reimbust'; //nama tabel dari database
-    var $column_order = array(null, null, 'kode_reimbust', 'nama', 'jabatan', 'departemen', 'sifat_pelaporan', 'tgl_pengajuan', 'tujuan', 'status');
-    var $column_search = array('kode_reimbust', 'nama', 'jabatan', 'departemen', 'sifat_pelaporan', 'tgl_pengajuan', 'tujuan', 'status'); //field yang diizin untuk pencarian 
+    var $table2 = 'tbl_reimbust_detail';
+    var $column_order = array(null, null, 'kode_reimbust', 'nama', 'jabatan', 'departemen', 'sifat_pelaporan', 'tgl_pengajuan', 'tujuan', 'jumlah_prepayment', 'status');
+    var $column_search = array('kode_reimbust', 'nama', 'jabatan', 'departemen', 'sifat_pelaporan', 'tgl_pengajuan', 'tujuan', 'jumlah_prepayment', 'status'); //field yang diizin untuk pencarian 
     var $order = array('id' => 'desc'); // default order 
 
     public function __construct()
@@ -73,10 +73,18 @@ class M_reimbust extends CI_Model
         return $this->db->count_all_results();
     }
 
+    // GET BY ID TABLE REIMBUST MASTER
     public function get_by_id($id)
     {
         $this->db->where($this->id, $id);
         return $this->db->get($this->table)->row();
+    }
+
+    // GET BY ID TABLE DETAIL REIMBUST TRANSAKSI
+    public function get_by_id_detail($id)
+    {
+        $this->db->where('reimbust_id', $id);
+        return $this->db->get($this->table2)->result_array();
     }
 
     public function max_kode()
@@ -96,7 +104,7 @@ class M_reimbust extends CI_Model
 
     public function save_detail($data)
     {
-        $this->db->insert_batch('tbl_reimbust_detail', $data);
+        $this->db->insert_batch($this->table2, $data);
         return $this->db->insert_id();
     }
 
