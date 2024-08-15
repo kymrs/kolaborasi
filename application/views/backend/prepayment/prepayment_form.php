@@ -240,10 +240,10 @@
 
                     //APPEND DATA TRANSAKSI DETAIL PREPAYMENT
                     if (aksi == 'update') {
-                        $(data['transaksi']).each(function (index){
-                        //Nilai nominal diformat menggunakan pemisah ribuan sebelum dimasukkan ke dalam elemen input.
-                        const nominalFormatted = data['transaksi'][index]['nominal'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-                        const row = `
+                        $(data['transaksi']).each(function(index) {
+                            //Nilai nominal diformat menggunakan pemisah ribuan sebelum dimasukkan ke dalam elemen input.
+                            const nominalFormatted = data['transaksi'][index]['nominal'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                            const row = `
                         <tr id="row-${index}">
                             <td class="row-number">${index + 1}</td>
                             <td><input type="text" class="form-control" name="rincian[${index}]" value="${data['transaksi'][index]['rincian']}" /></td>
@@ -252,11 +252,11 @@
                             <td><span class="btn delete-btn btn-danger" data-id="${index}">Delete</span></td>
                         </tr>
                         `;
-                        $('#input-container').append(row);
-                        // Tambahkan format ke input nominal yang baru
-                        formatJumlahInput(`#nominal-${index}`);
-                        rowCount = index+1;
-                    });   
+                            $('#input-container').append(row);
+                            // Tambahkan format ke input nominal yang baru
+                            formatJumlahInput(`#nominal-${index}`);
+                            rowCount = index + 1;
+                        });
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
@@ -282,7 +282,7 @@
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
-                    $(data).each(function (index){
+                    $(data).each(function(index) {
                         //Nilai nominal diformat menggunakan pemisah ribuan sebelum dimasukkan ke dalam elemen input.
                         const nominalReadFormatted = data[index]['nominal'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
                         const row = `
