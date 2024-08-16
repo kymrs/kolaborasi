@@ -29,7 +29,7 @@ class Prepayment extends CI_Controller
             $row[] = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
             <a href="prepayment/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
             <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
-            <a href="' . $field->id . '" class="btn btn-success btn-circle btn-sm" title="Edit"><i class="fa fa-check" aria-hidden="true"></i></a>';
+            <a href="prepayment/app_form/' . $field->id . '" class="btn btn-success btn-circle btn-sm" title="Approval"><i class="fa fa-check" aria-hidden="true"></i></a>';
             $row[] = strtoupper($field->kode_prepayment);
             $row[] = $field->nama;
             $row[] = strtoupper($field->jabatan);
@@ -51,6 +51,7 @@ class Prepayment extends CI_Controller
         echo json_encode($output);
     }
 
+    // UNTUK MENAMPILKAN FORM READ
     function read_form($id)
     {
         $data['aksi'] = 'read';
@@ -60,12 +61,20 @@ class Prepayment extends CI_Controller
         $this->load->view('backend/home', $data);
     }
 
-    // MENGENERATE DAN MERESET NO URUT KODE PREPAYMENT SETIAP BULAN
+    // UNTUK MENAMPILKAN FORM ADD
     public function add_form()
     {
         $data['id'] = 0;
         $data['title'] = 'backend/prepayment/prepayment_form';
         $data['title_view'] = 'Prepayment Form';
+        $this->load->view('backend/home', $data);
+    }
+
+    // UNTUK MENAMPILKAN FORM APPROVAL
+    public function app_form($id) {
+        $data['id'] = $id;
+        $data['title'] = 'backend/prepayment/prepayment_app';
+        $data['title_view'] = 'Prepayment Approval';
         $this->load->view('backend/home', $data);
     }
 
@@ -90,6 +99,7 @@ class Prepayment extends CI_Controller
         echo json_encode($data);
     }
 
+    // UNTUK MENAMPILKAN FORM EDIT
     function edit_form($id)
     {
         $data['id'] = $id;
@@ -157,8 +167,8 @@ class Prepayment extends CI_Controller
         );
         $this->db->where('id', $this->input->post('id'));
         //UPDATE DETAIL PREPAYMENT
+        $prepayment_id = $this->input->post('id');
         $id_detail = $this->input->post('hidden_id_detail[]');
-        $prepayment_id = $this->input->post('hidden_id');
         $rincian = $this->input->post('rincian[]');
         $nominal = $this->input->post('hidden_nominal[]');
         $keterangan = $this->input->post('keterangan[]');

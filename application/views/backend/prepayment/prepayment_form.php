@@ -93,9 +93,11 @@
                         <?php } ?>
                         <?php if ($id == 0) { ?>
                             <input type="hidden" name="kode" id="kode" value="">
+                            <button type="submit" class="btn btn-primary btn-sm aksi" disabled></button>
+                        <?php } else { ?>
+                            <button type="submit" class="btn btn-primary btn-sm aksi"></button>
                         <?php } ?>
                         <!-- END PENENTUAN UPDATE ATAU ADD -->
-                        <button type="submit" class="btn btn-primary btn-sm aksi"></button>
                     </form>
                 </div>
             </div>
@@ -169,7 +171,7 @@
         function addRow() {
             rowCount++;
             const row = `
-                <tr id="row[${rowCount}]">
+                <tr id="row-${rowCount}">
                     <td class="row-number">${rowCount}</td>
                     <td><input type="text" class="form-control" name="rincian[${rowCount}]" value="" placeholder="Input here..." /></td>
                     <td><input type="text" class="form-control" id="nominal-${rowCount}" name="nominal[${rowCount}]" placeholder="Input here..." />
@@ -182,6 +184,19 @@
             $('#input-container').append(row);
             // Tambahkan format ke input nominal yang baru
             formatJumlahInput(`#nominal-${rowCount}`);
+            updateSubmitButtonState(); // Perbarui status tombol submit
+            checkDeleteButtonState(); // Cek tombol delete setelah baris ditambahkan
+
+            //VALIDASI ROW YANG TELAH DI APPEND
+            $("#form").validate().settings.rules[`rincian[${rowCount}]`] = {
+                required: true
+            };
+            $("#form").validate().settings.rules[`nominal[${rowCount}]`] = {
+                required: true
+            };
+            $("#form").validate().settings.rules[`keterangan[${rowCount}]`] = {
+                required: true
+            };
         }
 
         function deleteRow(id) {
@@ -194,6 +209,8 @@
             $(`#row-${id}`).remove();
             // Reorder rows and update row numbers
             reorderRows();
+            updateSubmitButtonState(); // Perbarui status tombol 
+            checkDeleteButtonState(); // Cek tombol delete setelah baris dihapus
         }
 
         function reorderRows() {
@@ -220,10 +237,30 @@
             addRow();
         });
 
+        function updateSubmitButtonState() {
+            const rowCount = $('#input-container tr').length;
+            if (rowCount > 0) {
+                $('.aksi').prop('disabled', false); // Enable submit button
+            } else {
+                $('.aksi').prop('disabled', true); // Disable submit button
+            }
+        }
+
+        function checkDeleteButtonState() {
+            const rowCount = $('#input-container tr').length;
+            if (rowCount === 1) {
+                $('#input-container .delete-btn').prop('disabled', true); // Disable delete button if only one row
+            } else {
+                $('#input-container .delete-btn').prop('disabled', false); // Enable delete button if more than one row
+            }
+        }
+
         $(document).on('click', '.delete-btn', function() {
             const id = $(this).data('id');
             deleteRow(id);
         });
+
+
 
         $('#form').submit(function(event) {
             // Tambahkan array deletedRows ke dalam form data sebelum submit
@@ -279,6 +316,17 @@
                             $('#input-container').append(row);
                             // Tambahkan format ke input nominal yang baru
                             formatJumlahInput(`#nominal-${index}`);
+
+                            //VALIDASI ROW YANG TELAH DI APPEND
+                            $("#form").validate().settings.rules[`rincian[${index + 1}]`] = {
+                                required: true
+                            };
+                            $("#form").validate().settings.rules[`nominal[${index + 1}]`] = {
+                                required: true
+                            };
+                            $("#form").validate().settings.rules[`keterangan[${index + 1}]`] = {
+                                required: true
+                            };
                             rowCount = index + 1;
                         });
                     }
