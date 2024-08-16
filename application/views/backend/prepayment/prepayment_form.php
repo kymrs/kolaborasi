@@ -226,14 +226,14 @@
         });
 
         $('#form').submit(function(event) {
-        // Tambahkan array deletedRows ke dalam form data sebelum submit
-        $('<input>').attr({
-            type: 'hidden',
-            name: 'deleted_rows',
-            value: JSON.stringify(deletedRows)
-        }).appendTo('#form');
+            // Tambahkan array deletedRows ke dalam form data sebelum submit
+            $('<input>').attr({
+                type: 'hidden',
+                name: 'deleted_rows',
+                value: JSON.stringify(deletedRows)
+            }).appendTo('#form');
 
-        // Lanjutkan dengan submit form
+            // Lanjutkan dengan submit form
         });
 
         // MENGISI FORM UPDATE

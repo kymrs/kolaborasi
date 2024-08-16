@@ -165,24 +165,25 @@ class Prepayment extends CI_Controller
         if ($this->db->update('tbl_prepayment', $data)) {
             // UNTUK MENGHAPUS ROW YANG TELAH DIDELETE
             $deletedRows = json_decode($this->input->post('deleted_rows'), true);
-                if (!empty($deletedRows)) {
-                    foreach ($deletedRows as $id2) {
-                        // Hapus row dari database berdasarkan ID
-                        $this->db->where('id', $id2);
-                        $this->db->delete('tbl_prepayment_detail');
-                    }
-                } 
+            if (!empty($deletedRows)) {
+                foreach ($deletedRows as $id2) {
+                    // Hapus row dari database berdasarkan ID
+                    $this->db->where('id', $id2);
+                    $this->db->delete('tbl_prepayment_detail');
+                }
+            }
+
             //MELAKUKAN REPLACE DATA LAMA DENGAN YANG BARU
-            for ($i=1; $i <= count($_POST['rincian']) ; $i++) {
+            for ($i = 1; $i <= count($_POST['rincian']); $i++) {
                 // Set id menjadi NULL jika id_detail tidak ada atau kosong
                 $id = !empty($id_detail[$i]) ? $id_detail[$i] : NULL;
-                    $data2[] = array(
-                        'id' => $id,
-                        'prepayment_id' => $prepayment_id,
-                        'rincian' => $rincian[$i],
-                        'nominal' => $nominal[$i],
-                        'keterangan' => $keterangan[$i]
-                    );
+                $data2[] = array(
+                    'id' => $id,
+                    'prepayment_id' => $prepayment_id,
+                    'rincian' => $rincian[$i],
+                    'nominal' => $nominal[$i],
+                    'keterangan' => $keterangan[$i]
+                );
                 // Menggunakan db->replace untuk memasukkan atau menggantikan data
                 $this->db->replace('tbl_prepayment_detail', $data2[$i - 1]);
             }
