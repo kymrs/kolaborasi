@@ -36,7 +36,7 @@ class Reimbust extends CI_Controller
             $row[] = $field->sifat_pelaporan;
             $row[] = date("d M Y", strtotime($field->tgl_pengajuan));
             $row[] = $field->tujuan;
-            $row[] = number_format($field->jumlah_prepayment, 2, ',', '.');;
+            $row[] = number_format($field->jumlah_prepayment, 0, ',', '.');;
             $row[] = $field->status;
 
             $data[] = $row;
@@ -77,6 +77,7 @@ class Reimbust extends CI_Controller
         $urutan = str_pad($no_urut, 3, "0", STR_PAD_LEFT);
         $data['kode'] = 'B' . date('ym') . $urutan;
         $data['id'] = 0;
+        $data['aksi'] = 'add';
         $data['title_view'] = "Data Reimbust Form";
         $data['title'] = 'backend/reimbust/reimbust_form';
         $this->load->view('backend/home', $data);
@@ -190,8 +191,6 @@ class Reimbust extends CI_Controller
         echo json_encode(array("status" => TRUE));
     }
 
-
-
     public function update()
     {
         $data = array(
@@ -204,7 +203,38 @@ class Reimbust extends CI_Controller
             'status' => $this->input->post('status')
         );
         $this->db->where('id', $this->input->post('id'));
-        $this->db->update('tbl_reimbust', $data);
+
+        //UPDATE DETAIL PREPAYMENT
+        $detail_id = $this->input->post('detail_id[]');
+        $reimbust_id = $this->input->post('id');
+        $pemakaian = $this->input->post('pemakaian[]');
+        $tgl_nota = $this->input->post('tgl_nota[]');
+        $jumlah = $this->input->post('jumlah[]');
+        if ($this->db->update('tbl_reimbust', $data)) {
+            // UNTUK MENGHAPUS ROW YANG TELAH DIDELETE
+            $deletedRows = json_decode($this->input->post('deleted_rows'), true);
+            if (!empty($deletedRows)) {
+                foreach ($deletedRows as $id2) {
+                    // Hapus row dari database berdasarkan id
+                    $this->db->where('id', $id2);
+                    $this->db->delete('tbl_reimbust_detail');
+                }
+            }
+
+            //MELAKUKAN REPLACE DATA LAMA DENGAN YANG BARU
+            for ($i = 1; $i <= count($_POST['pemakaian']); $i++) {
+                // Set id menjadi NULL jika reimbust_id tidak ada atau kosong
+                $id = !empty($detail_id[$i]) ? $detail_id[$i] : NULL;
+                $data2[] = array(
+                    'id' => $id,
+                    'reimbust_id' => $reimbust_id,
+                    'pemakaian' => $pemakaian[$i],
+                    'jumlah' => $jumlah[$i]
+                );
+                // Menggunakan db->replace untuk memasukkan atau menggantikan data
+                $this->db->replace('tbl_reimbust_detail', $data2[$i - 1]);
+            }
+        }
         echo json_encode(array("status" => TRUE));
     }
 

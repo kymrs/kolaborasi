@@ -186,11 +186,17 @@
             formatJumlahInput(`#nominal-${rowCount}`);
             updateSubmitButtonState(); // Perbarui status tombol submit
             checkDeleteButtonState(); // Cek tombol delete setelah baris ditambahkan
-            
+
             //VALIDASI ROW YANG TELAH DI APPEND
-            $("#form").validate().settings.rules[`rincian[${rowCount}]`] = { required: true };
-            $("#form").validate().settings.rules[`nominal[${rowCount}]`] = { required: true };
-            $("#form").validate().settings.rules[`keterangan[${rowCount}]`] = { required: true };
+            $("#form").validate().settings.rules[`rincian[${rowCount}]`] = {
+                required: true
+            };
+            $("#form").validate().settings.rules[`nominal[${rowCount}]`] = {
+                required: true
+            };
+            $("#form").validate().settings.rules[`keterangan[${rowCount}]`] = {
+                required: true
+            };
         }
 
         // MENGHAPUS ROW
@@ -234,7 +240,7 @@
         });
 
         function updateSubmitButtonState() {
-        const rowCount = $('#input-container tr').length;
+            const rowCount = $('#input-container tr').length;
             if (rowCount > 0) {
                 $('.aksi').prop('disabled', false); // Enable submit button
             } else {
@@ -243,7 +249,7 @@
         }
 
         function checkDeleteButtonState() {
-        const rowCount = $('#input-container tr').length;
+            const rowCount = $('#input-container tr').length;
             if (rowCount === 1) {
                 $('#input-container .delete-btn').prop('disabled', true); // Disable delete button if only one row
             } else {
@@ -256,18 +262,17 @@
             deleteRow(id);
         });
 
-        
+
 
         $('#form').submit(function(event) {
-        // Tambahkan array deletedRows ke dalam form data sebelum submit
-        $('<input>').attr({
-            type: 'hidden',
-            name: 'deleted_rows',
-            id: 'deleted_rows_input',
-            value: JSON.stringify(deletedRows)
-        }).appendTo('#form');
+            // Tambahkan array deletedRows ke dalam form data sebelum submit
+            $('<input>').attr({
+                type: 'hidden',
+                name: 'deleted_rows',
+                value: JSON.stringify(deletedRows)
+            }).appendTo('#form');
 
-        // Lanjutkan dengan submit form
+            // Lanjutkan dengan submit form
         });
 
         // MENGISI FORM UPDATE
@@ -315,9 +320,15 @@
                             formatJumlahInput(`#nominal-${index}`);
 
                             //VALIDASI ROW YANG TELAH DI APPEND
-                            $("#form").validate().settings.rules[`rincian[${index + 1}]`] = { required: true };
-                            $("#form").validate().settings.rules[`nominal[${index + 1}]`] = { required: true };
-                            $("#form").validate().settings.rules[`keterangan[${index + 1}]`] = { required: true };
+                            $("#form").validate().settings.rules[`rincian[${index + 1}]`] = {
+                                required: true
+                            };
+                            $("#form").validate().settings.rules[`nominal[${index + 1}]`] = {
+                                required: true
+                            };
+                            $("#form").validate().settings.rules[`keterangan[${index + 1}]`] = {
+                                required: true
+                            };
                             rowCount = index + 1;
                         });
                     }
