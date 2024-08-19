@@ -41,7 +41,7 @@
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="departemen">Departemen</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="departemen" name="departemen" required>
+                                        <input type="text" class="form-control" id="departemen" name="departemen"  autocomplete="off" required>
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -55,10 +55,15 @@
                                     </div>
                                 </div>
                                 <!-- Added Date, Time, and Reason Fields -->
-                                <div class="form-group row">
-                                    <label class="col-sm-5" for="tanggal">Tanggal</label>
+                                 <div class="form-group row">
+                                    <label class="col-sm-5" for="notificationDate">Tanggal</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="tanggal" name="tanggal" required>
+                                        <div class="input-group date">
+                                            <input type="text" class="form-control" name="tanggal" id="tanggal" placeholder="DD-MM-YYYY" autocomplete="off"/>
+                                            <div class="input-group-append">
+                                                <div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -70,7 +75,7 @@
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="alasan">Alasan</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="alasan" name="alasan" required>
+                                        <input type="text" class="form-control" id="alasan" name="alasan"  autocomplete="off" required>
                                     </div>
                                 </div>
                             </div>

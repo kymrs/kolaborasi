@@ -23,7 +23,12 @@
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="declarationDate">Tanggal</label>
                                     <div class="col-sm-7">
-                                        <input type="teks" class="form-control" id="tanggal" name="tanggal" required>
+                                        <div class="input-group date">
+                                            <input type="text" class="form-control" name="tanggal" id="tanggal" placeholder="DD-MM-YYYY" autocomplete="off"/>
+                                            <div class="input-group-append">
+                                                <div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="form-group row">
