@@ -122,4 +122,33 @@ class M_prepayment extends CI_Model
         $this->db->where('prepayment_id', $id);
         $this->db->delete($this->table2);
     }
+
+    // UNTUK QUERY APPROVE DATA PREPAYMENT
+    public function approve($data)
+    {
+        // var_dump($data);
+        $app = array(
+            'app_name' => $data['app_name'],
+            'app_status' => $data['app_status'],
+            'app_keterangan' => $data['app_keterangan'],
+            'app_date' => date('Y-m-d H:i:s')
+        );
+
+        $this->db->where('id', $data['hidden_id']);
+        $this->db->update($this->table, $app);
+    }
+
+    public function approve2($data)
+    {
+        // var_dump($data);
+        $app = array(
+            'app2_name' => $data['app2_name'],
+            'app2_status' => $data['app2_status'],
+            'app2_keterangan' => $data['app2_keterangan'],
+            'app2_date' => date('Y-m-d H:i:s')
+        );
+
+        $this->db->where('id', $data['hidden_id']);
+        $this->db->update($this->table, $app);
+    }
 }

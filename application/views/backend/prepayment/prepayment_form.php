@@ -199,6 +199,7 @@
             };
         }
 
+        // MENGHAPUS ROW
         function deleteRow(id) {
             // Simpan ID dari row yang dihapus
             const rowId = $(`#row-${id}`).find('input:hidden[id^="hidden_id_detail"]').val();
@@ -213,6 +214,7 @@
             checkDeleteButtonState(); // Cek tombol delete setelah baris dihapus
         }
 
+        // MENHATUR ULANG URUTAN ROW SAAT DIHAPUS
         function reorderRows() {
             $('#input-container tr').each(function(index) {
                 //INISIASI VARIABLE UNTUK reorderRows

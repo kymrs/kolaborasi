@@ -209,4 +209,15 @@ class Prepayment extends CI_Controller
         $this->M_prepayment->delete_detail($id);
         echo json_encode(array("status" => TRUE));
     }
+
+    //APPROVE DATA
+    function approve() {
+        $this->M_prepayment->approve($this->input->post());
+        echo json_encode(array("status" => TRUE));
+    }
+
+    function approve2() {
+        $this->M_prepayment->approve2($this->input->post());
+        echo json_encode(array("status" => TRUE));
+    }
 }
