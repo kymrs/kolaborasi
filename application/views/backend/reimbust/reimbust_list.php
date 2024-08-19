@@ -67,11 +67,11 @@
                 "type": "POST"
             },
             "columnDefs": [{
-                    "targets": [2, 6, 7],
+                    "targets": [2, 6, 7, 9],
                     "className": 'dt-head-nowrap'
                 },
                 {
-                    "targets": [1, 3],
+                    "targets": [1, 3, 8, 10],
                     "className": 'dt-body-nowrap'
                 }, {
                     "targets": [0, 1],
