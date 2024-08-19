@@ -240,7 +240,7 @@
                     <td>
                         <div class="custom-file">
                             <input type="file" class="custom-file-input" name="kwitansi[${rowCount}]" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01">
-                            <label class="custom-file-label" for="inputGroupFile01">Upload Foto</label>
+                            <label class="custom-file-label" for="inputGroupFile01">Upload..</label>
                         </div>
                     </td>
                     <td width="150" style="padding: 15px 10px"><div class="btn btn-primary btn-lg btn-block btn-sm" data-toggle="modal" data-target="#exampleModal">Deklarasi ${rowCount}</div></td>
