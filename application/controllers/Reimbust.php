@@ -119,19 +119,100 @@ class Reimbust extends CI_Controller
 
         $reimbust_id = $this->M_reimbust->save($data1);
 
-        if ($reimbust_id) {
-            // INISIASI VARIABEL INPUT DETAIL REIMBUST
-            $pemakaian = $this->input->post('pemakaian');
-            $tgl_nota = $this->input->post('tgl_nota');
-            $jumlah = $this->input->post('jumlah');
 
-            // PERULANGAN UNTUK INSER QUERY DETAIL REIMBUST
-            $data2 = [];
-            for ($i = 1; $i <= count($pemakaian); $i++) {
-                $kwitansi = null;
-                $deklarasi = null;
+        // INISIASI VARIABEL INPUT DETAIL REIMBUST
+        $pemakaian = $this->input->post('pemakaian');
+        $tgl_nota = $this->input->post('tgl_nota');
+        $jumlah = $this->input->post('jumlah');
 
-                // Handle upload file untuk 'kwitansi'
+        // PERULANGAN UNTUK INSER QUERY DETAIL REIMBUST
+        $data2 = [];
+        for ($i = 1; $i <= count($pemakaian); $i++) {
+            $kwitansi = null;
+
+            // Handle upload file untuk 'kwitansi'
+            if (!empty($_FILES['kwitansi']['name'][$i])) {
+                $_FILES['file']['name'] = $_FILES['kwitansi']['name'][$i];
+                $_FILES['file']['type'] = $_FILES['kwitansi']['type'][$i];
+                $_FILES['file']['tmp_name'] = $_FILES['kwitansi']['tmp_name'][$i];
+                $_FILES['file']['error'] = $_FILES['kwitansi']['error'][$i];
+                $_FILES['file']['size'] = $_FILES['kwitansi']['size'][$i];
+
+                $config['upload_path'] = './assets/backend/img/reimbust/kwitansi/';
+                $config['allowed_types'] = 'jpg|png';
+                $config['max_size'] = 2048;
+                $config['encrypt_name'] = TRUE;
+
+                $this->upload->initialize($config);
+
+                if ($this->upload->do_upload('file')) {
+                    $kwitansi = $this->upload->data('file_name');
+                } else {
+                    echo json_encode(array("status" => FALSE, "error" => $this->upload->display_errors()));
+                    return;
+                }
+            }
+
+            $data2[] = [
+                'reimbust_id' => $reimbust_id,
+                'pemakaian' => $pemakaian[$i],
+                'tgl_nota' => date('Y-m-d', strtotime($tgl_nota[$i])),
+                'jumlah' => $jumlah[$i],
+                'kwitansi' => $kwitansi
+            ];
+        }
+        $this->M_reimbust->save_detail($data2);
+        echo json_encode(array("status" => TRUE));
+    }
+
+    public function update()
+    {
+        $this->load->library('upload');
+
+        $data = array(
+            'nama' => $this->input->post('nama'),
+            'jabatan' => $this->input->post('jabatan'),
+            'departemen' => $this->input->post('departemen'),
+            'sifat_pelaporan' => $this->input->post('sifat_pelaporan'),
+            'tgl_pengajuan' => date('Y-m-d', strtotime($this->input->post('tgl_pengajuan'))),
+            'tujuan' => $this->input->post('tujuan'),
+            'status' => $this->input->post('status')
+        );
+
+        $this->db->where('id', $this->input->post('id'));
+
+        //UPDATE DETAIL PREPAYMENT
+        $detail_id = $this->input->post('detail_id');
+        $reimbust_id = $this->input->post('id');
+        $pemakaian = $this->input->post('pemakaian');
+        $jumlah = $this->input->post('jumlah');
+        $tgl_nota = $this->input->post('tgl_nota');
+
+        if ($this->input->post('kwitansi_image')) {
+            $kwitansi = $this->input->post('kwitansi_image');
+        }
+
+        if ($this->db->update('tbl_reimbust', $data)) {
+            // UNTUK MENGHAPUS ROW YANG TELAH DIDELETE
+            $deletedRows = json_decode($this->input->post('deleted_rows'), true);
+            if (!empty($deletedRows)) {
+                foreach ($deletedRows as $id2) {
+                    // Hapus row dari database berdasarkan id
+                    $reimbust_detail = $this->db->get_where('tbl_reimbust_detail', ['id' => $id2])->row_array();
+
+                    $old_image = $reimbust_detail['kwitansi'];
+                    if ($old_image != 'default.jpg') {
+                        unlink(FCPATH . './assets/backend/img/reimbust/kwitansi/' . $old_image);
+                    }
+
+                    $this->db->where('id', $id2);
+                    $this->db->delete('tbl_reimbust_detail');
+                }
+            }
+
+            //MELAKUKAN REPLACE DATA LAMA DENGAN YANG BARU
+            for ($i = 1; $i <= count($_POST['pemakaian']); $i++) {
+
                 if (!empty($_FILES['kwitansi']['name'][$i])) {
                     $_FILES['file']['name'] = $_FILES['kwitansi']['name'][$i];
                     $_FILES['file']['type'] = $_FILES['kwitansi']['type'][$i];
@@ -154,82 +235,15 @@ class Reimbust extends CI_Controller
                     }
                 }
 
-                // Handle upload file untuk 'deklarasi'
-                if (!empty($_FILES['deklarasi']['name'][$i])) {
-                    $_FILES['file']['name'] = $_FILES['deklarasi']['name'][$i];
-                    $_FILES['file']['type'] = $_FILES['deklarasi']['type'][$i];
-                    $_FILES['file']['tmp_name'] = $_FILES['deklarasi']['tmp_name'][$i];
-                    $_FILES['file']['error'] = $_FILES['deklarasi']['error'][$i];
-                    $_FILES['file']['size'] = $_FILES['deklarasi']['size'][$i];
-
-                    $config['upload_path'] = './assets/backend/img/reimbust/deklarasi/';
-                    $config['allowed_types'] = 'jpg|png';
-                    $config['max_size'] = 2048;
-                    $config['encrypt_name'] = TRUE;
-
-                    $this->upload->initialize($config);
-
-                    if ($this->upload->do_upload('file')) {
-                        $deklarasi = $this->upload->data('file_name');
-                    } else {
-                        echo json_encode(array("status" => FALSE, "error" => $this->upload->display_errors()));
-                        return;
-                    }
-                }
-
-                $data2[] = [
-                    'reimbust_id' => $reimbust_id,
-                    'pemakaian' => $pemakaian[$i],
-                    'tgl_nota' => $tgl_nota[$i],
-                    'jumlah' => $jumlah[$i],
-                    'kwitansi' => $kwitansi,
-                    'deklarasi' => $deklarasi
-                ];
-            }
-            $this->M_reimbust->save_detail($data2);
-        }
-        echo json_encode(array("status" => TRUE));
-    }
-
-    public function update()
-    {
-        $data = array(
-            'nama' => $this->input->post('nama'),
-            'jabatan' => $this->input->post('jabatan'),
-            'departemen' => $this->input->post('departemen'),
-            'sifat_pelaporan' => $this->input->post('sifat_pelaporan'),
-            'tgl_pengajuan' => date('Y-m-d', strtotime($this->input->post('tgl_pengajuan'))),
-            'tujuan' => $this->input->post('tujuan'),
-            'status' => $this->input->post('status')
-        );
-        $this->db->where('id', $this->input->post('id'));
-
-        //UPDATE DETAIL PREPAYMENT
-        $detail_id = $this->input->post('detail_id[]');
-        $reimbust_id = $this->input->post('id');
-        $pemakaian = $this->input->post('pemakaian[]');
-        $tgl_nota = $this->input->post('tgl_nota[]');
-        $jumlah = $this->input->post('jumlah[]');
-        if ($this->db->update('tbl_reimbust', $data)) {
-            // UNTUK MENGHAPUS ROW YANG TELAH DIDELETE
-            $deletedRows = json_decode($this->input->post('deleted_rows'), true);
-            if (!empty($deletedRows)) {
-                foreach ($deletedRows as $id2) {
-                    // Hapus row dari database berdasarkan id
-                    $this->db->where('id', $id2);
-                    $this->db->delete('tbl_reimbust_detail');
-                }
-            }
-
-            //MELAKUKAN REPLACE DATA LAMA DENGAN YANG BARU
-            for ($i = 1; $i <= count($_POST['pemakaian']); $i++) {
                 // Set id menjadi NULL jika reimbust_id tidak ada atau kosong
                 $id = !empty($detail_id[$i]) ? $detail_id[$i] : NULL;
                 $data2[] = array(
                     'id' => $id,
                     'reimbust_id' => $reimbust_id,
+                    'tgl_nota' => date('Y-m-d', strtotime($tgl_nota[$i])),
                     'pemakaian' => $pemakaian[$i],
-                    'jumlah' => $jumlah[$i]
+                    'jumlah' => $jumlah[$i],
+                    'kwitansi' => $kwitansi[$i]
                 );
                 // Menggunakan db->replace untuk memasukkan atau menggantikan data
                 $this->db->replace('tbl_reimbust_detail', $data2[$i - 1]);
