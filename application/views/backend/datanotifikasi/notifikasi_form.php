@@ -277,4 +277,18 @@
         minDate: new Date(),
     });
 
+    [// Disable or enable the 'waktu' field based on the selected 'pengajuan' option
+    $('#pengajuan').change(function() {
+        var selectedPengajuan = $(this).val();
+        if (selectedPengajuan === 'izin') {
+            $('#waktu').prop('disabled', true).val(''); // Disable and clear the value of the 'waktu' field
+        } else {
+            $('#waktu').prop('disabled', false); // Enable the 'waktu' field
+        }
+    });
+
+    // Trigger the change event on page load in case 'izin tidak masuk' is already selected
+    $('#pengajuan').trigger('change');]
+
+
 </script>
