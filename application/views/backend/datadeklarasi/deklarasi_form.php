@@ -7,7 +7,9 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header text-right">
-                    <a class="btn btn-secondary btn-sm" href="<?= base_url('datadeklarasi') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+                    <a class="btn btn-secondary btn-sm" href="<?= base_url('datadeklarasi') ?>">
+                        <i class="fas fa-chevron-left"></i>&nbsp;Back
+                    </a>
                 </div>
                 <div class="card-body">
                     <form id="form">
@@ -21,7 +23,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-sm-5" for="declarationDate">Tanggal</label>
+                                    <label class="col-sm-5" for="tanggal">Tanggal</label>
                                     <div class="col-sm-7">
                                         <div class="input-group date">
                                             <input type="text" class="form-control" name="tanggal" id="tanggal" placeholder="DD-MM-YYYY" autocomplete="off"/>
@@ -32,13 +34,13 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-sm-5" for="declarationName">Nama yang mengajukan</label>
+                                    <label class="col-sm-5" for="nama_pengajuan">Nama yang mengajukan</label>
                                     <div class="col-sm-7">
                                         <input type="text" class="form-control" id="nama_pengajuan" name="nama_pengajuan" required>
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-sm-5">Jabatan</label>
+                                    <label class="col-sm-5" for="jabatan">Jabatan</label>
                                     <div class="col-sm-7">
                                         <select class="form-control" name="jabatan" id="jabatan">
                                             <option value="">-- Pilih --</option>
@@ -54,50 +56,145 @@
                             <div class="col-md-6">
                                 <!-- Second Set of Fields -->
                                 <div class="form-group row">
-                                    <label class="col-sm-5" for="paymentName">Nama yang menerima pembayaran</label>
+                                    <label class="col-sm-5" for="nama_dibayar">Nama Penerima </label>
                                     <div class="col-sm-7">
                                         <input type="text" class="form-control" id="nama_dibayar" name="nama_dibayar" required>
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-sm-5" for="paymentPurpose">Tujuan</label>
+                                    <label class="col-sm-5" for="tujuan">Tujuan</label>
                                     <div class="col-sm-7">
                                         <input type="text" class="form-control" id="tujuan" name="tujuan" required>
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-sm-5" for="paymentAmount">Sebesar</label>
+                                    <label class="col-sm-5" for="sebesar">Sebesar</label>
                                     <div class="col-sm-7">
                                         <input type="text" class="form-control" id="sebesar" required>
                                         <input type="hidden" class="form-control" id="hidden_sebesar" name="sebesar" required>
                                     </div>
                                 </div>
-                                  <div class="form-group row">
-                                    <label class="col-sm-5">Status</label>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="status">Status</label>
                                     <div class="col-sm-7">
                                         <select class="form-control" name="status" id="status">
                                             <option value="">-- Pilih --</option>
                                             <option value="Waiting">Waiting</option>
-                                            <option value="On Proccess">On Proccess</option>
+                                            <option value="On Process">On Process</option>
                                             <option value="Done">Done</option>
                                         </select>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                         <input type="hidden" name="id" id="id" value="<?= $id ?>">
+
+                        <div class="container mt-5">
+                            <div class="row text-center">
+                                <!-- Header -->
+                                <div class="col-md-4">
+                                    <p>Yang Melakukan,</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <p>Mengetahui,</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <p>Menyetujui,</p>
+                                </div>
+                            </div>
+
+                            <div class="row text-center mb-3">
+                                <!-- Empty space for signature -->
+                                <div class="col-md-4">
+                                    <br><br><br>
+                                </div>
+                                <div class="col-md-4" id="knowName">
+                                    <!-- Status will be inserted here -->
+                                </div>
+                                <div class="col-md-4" id="agreeName">
+                                    <!-- Status will be inserted here -->
+                                </div>
+                            </div>
+
+                            <div class="row text-center mb-3">
+                                <!-- Signature line -->
+                                <div class="col-md-4">
+                                    <p>_____________________</p>
+                                </div>
+                                <div class="col-md-4" id="knowStts">
+                                    <!-- Name will be inserted here -->
+                                </div>
+                                <div class="col-md-4" id="agreeStts">
+                                    <!-- Name will be inserted here -->
+                                </div>
+                            </div>
+
+                            <div class="row text-center mb-5">
+                                <!-- Buttons to trigger modal -->
+                                <div class="col-md-4">
+                                    <!-- This column is left empty -->
+                                </div>
+                                <div class="col-md-4">
+                                    <button type="button" id="appBtn" class="btn btn-secondary" data-toggle="modal" data-target="#appModal" data-id="<?= $id ?>">Click Me</button>
+                                </div>
+                                <div class="col-md-4">
+                                    <button type="button" id="appBtn2" class="btn btn-secondary" data-toggle="modal" data-target="#appModal" data-id="<?= $id ?>">Click Me</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hidden inputs -->
+                        <input type="hidden" name="id" id="id" value="<?= $id ?>">
                         <?php if (!empty($aksi)) { ?>
                             <input type="hidden" name="aksi" id="aksi" value="<?= $aksi ?>">
                         <?php } ?>
                         <?php if ($id == 0) { ?>
                             <input type="hidden" name="kode" id="kode" value="<?= $kode ?>">
                         <?php } ?>
+
+                        <!-- Submit button -->
                         <button type="submit" class="btn btn-primary btn-sm aksi"></button>
+
                     </form>
                 </div>
             </div>
         </div>
     </div>
+</div>
+
+<div class="modal fade" id="appModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Approval</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" action="<?= base_url('deklarasi/approve') ?>">
+            <div class="form-group">
+                <label for="app_name">Nama</label>
+                <input type="text" class="form-control" name="app_name" id="app_name" aria-describedby="emailHelp">
+                <!-- HIDDEN INPUT -->
+                 <input type="hidden" id="hidden_id" name="hidden_id" value="">
+            </div>
+            <div class="form-group">
+                <label for="app_status">Approve</label>
+                <select id="app_status" name="app_status" class="form-control">
+                    <option selected disabled>Choose...</option>
+                    <option value="approved">Approved</option>
+                    <option value="rejected">Rejected</option>
+                    <option value="revised">Revised</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save changes</button>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>
 
 <?php $this->load->view('template/footer'); ?>
