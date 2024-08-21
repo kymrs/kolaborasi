@@ -345,7 +345,8 @@
         minDate: new Date(),
     });
 
- $('#sebesar').on('input', function() {
+   //MEMBUAT TAMPILAN HARGA MENJADI ADA TITIK
+        $('#sebesar').on('input', function() {
             let value = $(this).val().replace(/[^,\d]/g, '');
             let parts = value.split(',');
             let integerPart = parts[0];
