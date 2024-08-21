@@ -82,7 +82,7 @@ class Prepayment extends CI_Controller
     public function generate_kode()
     {
         $date = $this->input->post('date');
-        $kode = $this->M_prepayment->max_kode()->row();
+        $kode = $this->M_prepayment->max_kode($date)->row();
         if (empty($kode->kode_prepayment)) {
             $no_urut = 1;
         } else {
@@ -129,6 +129,7 @@ class Prepayment extends CI_Controller
         $data = array(
             'kode_prepayment' => $this->input->post('kode_prepayment'),
             'nama' => $this->input->post('nama'),
+            'divisi' => $this->input->post('divisi'),
             'jabatan' => $this->input->post('jabatan'),
             'prepayment' => $this->input->post('prepayment'),
             'tujuan' => $this->input->post('tujuan'),
@@ -161,6 +162,7 @@ class Prepayment extends CI_Controller
         $data = array(
             'kode_prepayment' => $this->input->post('kode_prepayment'),
             'nama' => $this->input->post('nama'),
+            'divisi' => $this->input->post('divisi'),
             'jabatan' => $this->input->post('jabatan'),
             'prepayment' => $this->input->post('prepayment'),
             'tujuan' => $this->input->post('tujuan'),
@@ -211,13 +213,55 @@ class Prepayment extends CI_Controller
     }
 
     //APPROVE DATA
-    function approve() {
-        $this->M_prepayment->approve($this->input->post());
+    public function approve()
+    {
+        $data = array(
+            'app_name' => $this->input->post('app_name'),
+            'app_keterangan' => $this->input->post('app_keterangan'),
+            'app_status' => $this->input->post('app_status'),
+            'app_date' => date('Y-m-d H:i:s'),
+        );
+        $this->db->where('id', $this->input->post('hidden_id'));
+        $this->db->update('tbl_prepayment', $data);
         echo json_encode(array("status" => TRUE));
     }
 
-    function approve2() {
-        $this->M_prepayment->approve2($this->input->post());
+    function approve2()
+    {
+        $data = array(
+            'app2_name' => $this->input->post('app2_name'),
+            'app2_keterangan' => $this->input->post('app2_keterangan'),
+            'app2_status' => $this->input->post('app2_status'),
+            'app2_date' => date('Y-m-d H:i:s'),
+        );
+        $this->db->where('id', $this->input->post('hidden_id'));
+        $this->db->update('tbl_prepayment', $data);
         echo json_encode(array("status" => TRUE));
+    }
+
+    // QUERY UNTUK INPUT TANDA TANGAN
+    function signature()
+    {
+        // Ambil data dari request
+        $img = $this->input->post('imgBase64');
+
+        // Decode base64
+        $img = str_replace('data:image/png;base64,', '', $img);
+        $img = str_replace(' ', '+', $img);
+        $data = base64_decode($img);
+
+        // Tentukan lokasi dan nama file
+        $fileName = uniqid() . '.png';
+        $filePath = './assets/backend/img/signatures/' . $fileName;
+
+        // Simpan file ke server
+        if (file_put_contents($filePath, $data)) {
+            echo json_encode(['status' => 'success', 'fileName' => $fileName]);
+        } else {
+            echo json_encode(['status' => 'error']);
+        }
+        //Pastikan folder ./assets/backend/img/signatures/ dapat ditulisi oleh server.
+        // mkdir -p ./assets/backend/img/signatures/
+        // chmod 755 ./assets/backend/img/signatures/
     }
 }

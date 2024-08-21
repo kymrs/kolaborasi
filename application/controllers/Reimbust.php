@@ -34,7 +34,7 @@ class Reimbust extends CI_Controller
             $row[] = $field->jabatan;
             $row[] = $field->departemen;
             $row[] = $field->sifat_pelaporan;
-            $row[] = date("d M Y", strtotime($field->tgl_pengajuan));
+            $row[] = date("d m Y", strtotime($field->tgl_pengajuan));
             $row[] = $field->tujuan;
             $row[] = number_format($field->jumlah_prepayment, 0, ',', '.');;
             $row[] = $field->status;
@@ -83,6 +83,27 @@ class Reimbust extends CI_Controller
         $this->load->view('backend/home', $data);
     }
 
+    public function generate_kode()
+    {
+        $date = $this->input->post('date');
+        $kode = $this->M_reimbust->max_kode($date)->row();
+        if (empty($kode->kode_reimbust)) {
+            $no_urut = 1;
+        } else {
+            $bln = substr($kode->kode_reimbust, 3, 2);
+            if ($bln != date('m')) {
+                $no_urut = 1;
+            } else {
+                $no_urut = substr($kode->kode_reimbust, 5) + 1;
+            }
+        }
+        $urutan = str_pad($no_urut, 4, "0", STR_PAD_LEFT);
+        $month = substr($date, 3, 2);
+        $year = substr($date, 8, 2);
+        $data = 'p' . $year . $month . $urutan;
+        echo json_encode($data);
+    }
+
     function edit_form($id)
     {
         $data['id'] = $id;
@@ -96,6 +117,12 @@ class Reimbust extends CI_Controller
     {
         $data['master'] = $this->M_reimbust->get_by_id($id);
         $data['transaksi'] = $this->M_reimbust->get_by_id_detail($id);
+        echo json_encode($data);
+    }
+
+    function read_detail($id)
+    {
+        $data = $this->M_reimbust->get_by_id_detail($id);
         echo json_encode($data);
     }
 
@@ -187,10 +214,7 @@ class Reimbust extends CI_Controller
         $pemakaian = $this->input->post('pemakaian');
         $jumlah = $this->input->post('jumlah');
         $tgl_nota = $this->input->post('tgl_nota');
-
-        if ($this->input->post('kwitansi_image')) {
-            $kwitansi = $this->input->post('kwitansi_image');
-        }
+        $kwitansi_image = $this->input->post('kwitansi_image');
 
         if ($this->db->update('tbl_reimbust', $data)) {
             // UNTUK MENGHAPUS ROW YANG TELAH DIDELETE
@@ -228,6 +252,19 @@ class Reimbust extends CI_Controller
                     $this->upload->initialize($config);
 
                     if ($this->upload->do_upload('file')) {
+                        $id = !empty($detail_id[$i]) ? $detail_id[$i] : NULL;
+
+                        $reimbust_detail = $this->db->get_where('tbl_reimbust_detail', ['id' => $id])->row_array();
+
+                        if ($reimbust_detail) {
+                            $old_image = $reimbust_detail['kwitansi'];
+
+                            if ($old_image) {
+                                if ($old_image != 'default.jpg') {
+                                    unlink(FCPATH . './assets/backend/img/reimbust/kwitansi/' . $old_image);
+                                }
+                            }
+                        }
                         $kwitansi = $this->upload->data('file_name');
                     } else {
                         echo json_encode(array("status" => FALSE, "error" => $this->upload->display_errors()));
@@ -237,14 +274,27 @@ class Reimbust extends CI_Controller
 
                 // Set id menjadi NULL jika reimbust_id tidak ada atau kosong
                 $id = !empty($detail_id[$i]) ? $detail_id[$i] : NULL;
-                $data2[] = array(
-                    'id' => $id,
-                    'reimbust_id' => $reimbust_id,
-                    'tgl_nota' => date('Y-m-d', strtotime($tgl_nota[$i])),
-                    'pemakaian' => $pemakaian[$i],
-                    'jumlah' => $jumlah[$i],
-                    'kwitansi' => $kwitansi[$i]
-                );
+
+                if (!empty($kwitansi)) {
+                    $data2[] = array(
+                        'id' => $id,
+                        'reimbust_id' => $reimbust_id,
+                        'tgl_nota' => date('Y-m-d', strtotime($tgl_nota[$i])),
+                        'pemakaian' => $pemakaian[$i],
+                        'jumlah' => $jumlah[$i],
+                        'kwitansi' => $kwitansi
+                    );
+                } else {
+                    $data2[] = array(
+                        'id' => $id,
+                        'reimbust_id' => $reimbust_id,
+                        'tgl_nota' => date('Y-m-d', strtotime($tgl_nota[$i])),
+                        'pemakaian' => $pemakaian[$i],
+                        'jumlah' => $jumlah[$i],
+                        'kwitansi' => $kwitansi_image[$i]
+                    );
+                }
+
                 // Menggunakan db->replace untuk memasukkan atau menggantikan data
                 $this->db->replace('tbl_reimbust_detail', $data2[$i - 1]);
             }

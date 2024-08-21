@@ -24,6 +24,17 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
+                                    <label class="col-sm-5">Tanggal Pengajuan</label>
+                                    <div class="col-sm-7">
+                                        <div class="input-group date">
+                                            <input type="text" class="form-control" name="tgl_pengajuan" id="tgl_pengajuan" placeholder="DD-MM-YYYY" autocomplete="off">
+                                            <div class="input-group-append">
+                                                <div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
                                     <label class="col-sm-5">Kode Reimbust</label>
                                     <div class="col-sm-7">
                                         <input type="text" class="form-control" id="kode_reimbust" name="kode_reimbust">
@@ -32,7 +43,7 @@
                                 <div class="form-group row">
                                     <label class="col-sm-5">Nama</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="nama" name="nama">
+                                        <input type="text" class="form-control" id="nama" name="nama" autocomplete="off">
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -46,25 +57,14 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-5">Jabatan</label>
-                                    <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="jabatan" name="jabatan">
-                                    </div>
-                                </div>
                             </div>
 
                             <!-- SEBELAH KANAN -->
                             <div class="col-md-6">
                                 <div class="form-group row">
-                                    <label class="col-sm-5">Tanggal Pengajuan</label>
+                                    <label class="col-sm-5">Jabatan</label>
                                     <div class="col-sm-7">
-                                        <div class="input-group date">
-                                            <input type="text" class="form-control" name="tgl_pengajuan" id="tgl_pengajuan" placeholder="DD-MM-YYYY" autocomplete="off">
-                                            <div class="input-group-append">
-                                                <div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
-                                            </div>
-                                        </div>
+                                        <input type="text" class="form-control" id="jabatan" name="jabatan" autocomplete="off">
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -89,7 +89,7 @@
                                 <div class="form-group row">
                                     <label class="col-sm-5">Jumlah Prepayment</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="jumlah_prepayment">
+                                        <input type="text" class="form-control" id="jumlah_prepayment" name="jumlah" autocomplete="off">
                                         <input type="hidden" id="hidden_jumlah_prepayment" name="jumlah_prepayment">
                                     </div>
                                 </div>
@@ -118,14 +118,18 @@
                                 </tbody>
                             </table>
                         </div>
+                        <!-- PENENTUAN UPDATE ATAU ADD -->
                         <input type="hidden" name="id" id="id" value="<?= $id ?>">
                         <?php if (!empty($aksi)) { ?>
                             <input type="hidden" name="aksi" id="aksi" value="<?= $aksi ?>">
                         <?php } ?>
                         <?php if ($id == 0) { ?>
-                            <input type="hidden" name="kode" id="kode" value="<?= $kode ?>">
+                            <input type="hidden" name="kode" id="kode" value="">
+                            <button type="submit" class="btn btn-primary btn-sm aksi"></button>
+                        <?php } else { ?>
+                            <button type="submit" class="btn btn-primary btn-sm aksi"></button>
                         <?php } ?>
-                        <button type="submit" class="btn btn-primary btn-sm aksi"></button>
+                        <!-- END PENENTUAN UPDATE ATAU ADD -->
 
                         <!-- Modal -->
                         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -170,6 +174,32 @@
 <?php $this->load->view('template/script'); ?>
 
 <script>
+    $('#tgl_pengajuan').datepicker({
+        dateFormat: 'dd-mm-yy',
+        minDate: new Date(),
+
+        // MENGENERATE KODE PREPAYMENT SETELAH PILIH TANGGAL
+        onSelect: function(dateText) {
+            var date = $('#tgl_pengajuan').val();
+            var id = dateText;
+            $.ajax({
+                url: "<?php echo site_url('reimbust/generate_kode') ?>",
+                type: "POST",
+                data: {
+                    "date": dateText
+                },
+                dataType: "JSON",
+                success: function(data) {
+                    $('#kode_reimbust').val(data.toUpperCase());
+                    $('#kode').val(data);
+                },
+                error: function(error) {
+                    alert("error" + error);
+                }
+            });
+        }
+    });
+
     $(document).ready(function() {
         var id = $('#id').val();
         var aksi = $('#aksi').val();
@@ -222,19 +252,18 @@
         //MENAMBAH FORM INPUTAN DI ADD FORM
         let rowCount = 0;
 
-
         // Append dari form ADD
         function addRow() {
             rowCount++;
             const row = `
                 <tr id="row-${rowCount}">
                     <td class="row-number">${rowCount}</td>
-                    <td><input type="text" class="form-control" name="pemakaian[${rowCount}]" value="" placeholder="Pemakaian ${rowCount}"></td>
+                    <td><input type="text" class="form-control" name="pemakaian[${rowCount}]" value="" placeholder="Pemakaian ${rowCount}"  autocomplete="off"></td>
                     <td>
                         <input type="text" class="form-control tgl_nota" name="tgl_nota[${rowCount}]" id="tgl_nota_${rowCount}" style="cursor: pointer" autocomplete="off" placeholder="Tanggal Nota ${rowCount}">
                     </td>
                     <td>
-                        <input type="text" class="form-control" id="jumlah-${rowCount}" placeholder="Jumlah ${rowCount}" />
+                        <input type="text" class="form-control" id="jumlah-${rowCount}" placeholder="Jumlah ${rowCount}" name="jml[${rowCount}]"  autocomplete="off">
                         <input type="hidden" id="hidden_jumlah${rowCount}" name="jumlah[${rowCount}]" value="">
                     </td>
                     <td>
@@ -243,13 +272,26 @@
                             <label class="custom-file-label" for="inputGroupFile01">Upload..</label>
                         </div>
                     </td>
-                    <td width="150" style="padding: 15px 10px"><div class="btn btn-primary btn-lg btn-block btn-sm" data-toggle="modal" data-target="#exampleModal">Deklarasi ${rowCount}</div></td>
+                    <td width="150" style="padding: 15px 10px"><div class="btn btn-primary btn-lg btn-block btn-sm" data-toggle="modal" data-target="#exampleModal${rowCount}">Deklarasi ${rowCount}</div></td>
                     <td><span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span></td>
                 </tr>
                 `;
             $('#input-container').append(row);
             // Tambahkan format ke input jumlah yang baru
             formatJumlahInput(`#jumlah-${rowCount}`);
+            updateSubmitButtonState(); // Perbarui status tombol submit
+            // checkDeleteButtonState(); // Cek tombol delete setelah baris ditambahkan//
+
+            //VALIDASI ROW YANG TELAH DI APPEND
+            $("#form").validate().settings.rules[`pemakaian[${rowCount}]`] = {
+                required: true
+            };
+            $("#form").validate().settings.rules[`tgl_nota[${rowCount}]`] = {
+                required: true
+            };
+            $("#form").validate().settings.rules[`jml[${rowCount}]`] = {
+                required: true
+            };
         }
 
         function deleteRow(id) {
@@ -258,15 +300,19 @@
             if (rowId) {
                 deletedRows.push(rowId);
             }
+            console.log(rowId);
 
             $(`#row-${id}`).remove();
             // Reorder rows and update row numbers
             reorderRows();
+            checkDeleteButtonState(); // Cek tombol delete setelah baris dihapus
+            updateSubmitButtonState(); // Perbarui status tombol
         }
 
         function reorderRows() {
             $('#input-container tr').each(function(index) {
                 const newRowNumber = index + 1;
+                const detailIdValue = $(this).find('input[name^="detail_id"]').val();
                 const pemakaianValue = $(this).find('input[name^="pemakaian"]').val();
                 const tgl_notaValue = $(this).find('input[name^="tgl_nota"]').val();
                 const jumlahValue = $(this).find('input[name^="jumlah"]').val();
@@ -275,6 +321,7 @@
 
                 $(this).attr('id', `row-${newRowNumber}`);
                 $(this).find('.row-number').text(newRowNumber);
+                $(this).find('input[name^="detail_id"]').attr('name', `detail_id[${newRowNumber}]`).attr('placeholder', `detail_id ${newRowNumber}`).val(detailIdValue);
                 $(this).find('input[name^="pemakaian"]').attr('name', `pemakaian[${newRowNumber}]`).attr('placeholder', `Pemakaian ${newRowNumber}`).val(pemakaianValue);
                 $(this).find('input[name^="tgl_nota"]').attr('name', `tgl_nota[${newRowNumber}]`).attr('placeholder', `Tanggal Nota ${newRowNumber}`).val(tgl_notaValue);
                 $(this).find('input[name^="jumlah"]').attr('name', `jumlah[${newRowNumber}]`).attr('placeholder', `Input ${newRowNumber}`).val(jumlahValue);
@@ -288,6 +335,24 @@
         $('#add-row').click(function() {
             addRow();
         });
+
+        function updateSubmitButtonState() {
+            const rowCount = $('#input-container tr').length;
+            if (rowCount > 0) {
+                $('.aksi').prop('disabled', false).css('cursor', 'pointer'); // Enable submit button
+            } else {
+                $('.aksi').prop('disabled', true).css('cursor', 'not-allowed'); // Disable submit button
+            }
+        }
+
+        function checkDeleteButtonState() {
+            const rowCount = $('#input-container tr').length;
+            if (rowCount === 1) {
+                $('#input-container .delete-btn').prop('disabled', true); // Disable delete button if only one row
+            } else {
+                $('#input-container .delete-btn').prop('disabled', false); // Enable delete button if more than one row
+            }
+        }
 
         $(document).on('click', '.delete-btn', function() {
             const id = $(this).data('id');
@@ -304,6 +369,13 @@
 
             // Lanjutkan dengan submit form
         });
+
+        // Script file input
+        $(document).on('change', '.custom-file-input', function() {
+            let fileName = $(this).val().split('\\').pop();
+            $(this).next('.custom-file-label').addClass("selected").html(fileName);
+        });
+
 
         $('#sifat_pelaporan').on('input', function() {
             var sifatPelaporan = $(this).val();
@@ -364,6 +436,32 @@
                     $('#status').prop('readonly', true).css('cursor', 'not-allowed');
                     $('#jumlah_prepayment').prop('readonly', true).css('cursor', 'not-allowed');
                 }
+            } else if (aksi == 'read') {
+                if (sifatPelaporan === 'Reimbust') {
+                    $('#nama').prop('disabled', false).css('cursor', 'auto');
+                    $('#departemen').prop('disabled', false).css('cursor', 'pointer');
+                    $('#jabatan').prop('disabled', false).css('cursor', 'auto');
+                    $('#tgl_pengajuan').prop('disabled', false).css('cursor', 'pointer');
+                    $('#tujuan').prop('disabled', false).css('cursor', 'auto');
+                    $('#status').prop('disabled', false).css('cursor', 'pointer');
+                    $('#jumlah_prepayment').prop('disabled', false).css('cursor', 'auto');
+                } else if (sifatPelaporan === 'Pelaporan') {
+                    $('#nama').prop('disabled', true).css('cursor', 'auto');
+                    $('#departemen').prop('disabled', true).css('cursor', 'pointer');
+                    $('#jabatan').prop('disabled', false).css('cursor', 'auto');
+                    $('#tgl_pengajuan').prop('disabled', false).css('cursor', 'pointer');
+                    $('#tujuan').prop('disabled', false).css('cursor', 'auto');
+                    $('#status').prop('disabled', false).css('cursor', 'pointer');
+                    $('#jumlah_prepayment').prop('disabled', false).css('cursor', 'auto');
+                } else {
+                    $('#nama').prop('disabled', true).css('cursor', 'not-allowed');
+                    $('#departemen').prop('disabled', true).css('cursor', 'not-allowed');
+                    $('#jabatan').prop('disabled', true).css('cursor', 'not-allowed');
+                    $('#tgl_pengajuan').prop('disabled', true).css('cursor', 'not-allowed');
+                    $('#tujuan').prop('disabled', true).css('cursor', 'not-allowed');
+                    $('#status').prop('disabled', true).css('cursor', 'not-allowed');
+                    $('#jumlah_prepayment').prop('disabled', true).css('cursor', 'not-allowed');
+                }
             }
         }
 
@@ -411,10 +509,10 @@
                             const tglNotaFormatted = moment(data['transaksi'][index]['tgl_nota']).format('DD-MM-YYYY');
                             // Append Dari Form UPDATE
                             const row = `
-                                <tr id="row-${index}">
+                                <tr id="row-${index + 1}">
                                     <td class="row-number">${index + 1}</td>
                                     <td>
-                                        <input type="text" class="form-control" name="pemakaian[${index + 1}]" value="${data['transaksi'][index]['pemakaian']}" />
+                                        <input type="text" class="form-control" name="pemakaian[${index + 1}]" value="${data['transaksi'][index]['pemakaian']}" autocomplete="off">
                                         
                                         <input type="hidden" id="hidden_reimbust_id${index}" name="reimbust_id" value="${data['master']['id']}">
                                         <input type="hidden" id="hidden_detail_id${index}" name="detail_id[${index + 1}]" value="${data['transaksi'][index]['id']}">
@@ -423,15 +521,15 @@
                                         <input type="text" class="form-control tgl_nota" name="tgl_nota[${index + 1}]" style="cursor: pointer" autocomplete="off" value="${tglNotaFormatted}">
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control" id="jumlah-${index}" value="${jumlahFormatted}">
+                                        <input type="text" class="form-control" id="jumlah-${index}" value="${jumlahFormatted}"  autocomplete="off">
                                         <input type="hidden" id="hidden_jumlah${index}" name="jumlah[${index + 1}]" value="${data['transaksi'][index]['jumlah']}">
                                     </td>
                                     <td>
                                         <div class="custom-file">
-                                            <input type="file" class="custom-file-input" name="kwitansi[${rowCount}]" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01">
-                                            <label class="custom-file-label" for="inputGroupFile01">Upload Foto</label>
+                                            <input type="file" class="custom-file-input" name="kwitansi[${index + 1}]" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01">
+                                            <label class="custom-file-label" for="inputGroupFile01">${data['transaksi'][index]['kwitansi']}</label>
                                         </div>
-                                        <input type="text" class="form-control" name="kwitansi_image" value="${data['transaksi'][index]['kwitansi']}">
+                                        <input type="text" class="form-control" name="kwitansi_image[${index + 1}]" value="${data['transaksi'][index]['kwitansi']}">
                                     </td>
                                     <td width="150" style="padding: 15px 10px">
                                         <div class="btn btn-primary btn-lg btn-block btn-sm">Deklarasi ${index + 1}</div>
@@ -442,6 +540,17 @@
                             $('#input-container').append(row);
                             // Tambahkan format ke input jumlah yang baru
                             formatJumlahInput(`#jumlah-${index}`);
+
+                            //VALIDASI ROW YANG TELAH DI APPEND
+                            $("#form").validate().settings.rules[`rincian[${index + 1}]`] = {
+                                required: true
+                            };
+                            $("#form").validate().settings.rules[`nominal[${index + 1}]`] = {
+                                required: true
+                            };
+                            $("#form").validate().settings.rules[`keterangan[${index + 1}]`] = {
+                                required: true
+                            };
                             rowCount = index + 1;
                         });
                     }
@@ -452,17 +561,81 @@
             });
         }
 
+        // UNTUK TAMPILAN READ ONLY
         if (aksi == "read") {
             $('.aksi').hide();
             $('#id').prop('readonly', true);
-            $('#nama').prop('readonly', true);
-            $('#departemen').prop('disabled', true);
-            $('#jabatan').prop('readonly', true);
             $('#sifat_pelaporan').prop('disabled', true);
             $('#tgl_pengajuan').prop('disabled', true);
-            $('#tujuan').prop('readonly', true);
+            $('#nama').prop('disabled', true);
+            $('#departemen').prop('disabled', true);
+            $('#jabatan').prop('disabled', true);
+            $('#tujuan').prop('disabled', true);
             $('#status').prop('disabled', true);
+            $('#jumlah_prepayment').prop('disabled', true);
+            $('th:last-child').remove();
+
+            $.ajax({
+                url: "<?php echo site_url('reimbust/read_detail/') ?>" + id,
+                type: "GET",
+                dataType: "JSON",
+                success: function(data) {
+                    $(data).each(function(index) {
+                        //Nilai nominal diformat menggunakan pemisah ribuan sebelum dimasukkan ke dalam elemen input.
+                        const nominalReadFormatted = data[index]['nominal'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                        const row = `
+                        <tr id="row-${index}">
+                            <td class="row-number">${index + 1}</td>
+                            <td><input readonly type="text" class="form-control" name="sifat_pelaporan[${index}]" value="${data[index]['sifat_pelaporan']}"></td>
+                        </tr>
+                        `;
+                        $('#input-container').append(row);
+                    });
+                }
+            });
         }
+
+        $("#form").submit(function(e) {
+            e.preventDefault();
+            var $form = $(this);
+            if (!$form.valid()) return false;
+
+            var url;
+            if (id == 0) {
+                url = "<?php echo site_url('reimbust/add') ?>";
+            } else {
+                url = "<?php echo site_url('reimbust/update') ?>";
+            }
+
+            // Membuat FormData untuk menangani pengiriman file
+            var formData = new FormData(this);
+
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: formData,
+                contentType: false, // Penting untuk tidak menetapkan contentType
+                processData: false, // Penting untuk tidak memproses data
+                dataType: "JSON",
+                success: function(data) {
+                    if (data.status) { // Jika berhasil, tutup modal dan reload tabel ajax
+                        Swal.fire({
+                            position: 'center',
+                            icon: 'success',
+                            title: 'Your data has been saved',
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then((result) => {
+                            location.href = "<?= base_url('reimbust') ?>";
+                        });
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    alert('Error adding / update data');
+                }
+            });
+        });
+
 
         // $("#form").submit(function(e) {
         //     e.preventDefault();
@@ -500,68 +673,74 @@
         //     });
         // });
 
-        // $("#form").validate({
-        //     rules: {
-        //         nama: {
-        //             required: true,
-        //         },
-        //         departemen: {
-        //             required: true,
-        //         },
-        //         jabatan: {
-        //             required: true,
-        //         },
-        //         sifat_pelaporan: {
-        //             required: true,
-        //         },
-        //         tgl_pengajuan: {
-        //             required: true,
-        //         },
-        //         tujuan: {
-        //             required: true,
-        //         },
-        //         status: {
-        //             required: true,
-        //         },
-        //     },
-        //     messages: {
-        //         nama: {
-        //             required: "Nama is required",
-        //         },
-        //         departemen: {
-        //             required: "Departemen is required",
-        //         },
-        //         jabatan: {
-        //             required: "Jabatan is required",
-        //         },
-        //         sifat_pelaporan: {
-        //             required: "Sifat Pelaporan is required",
-        //         },
-        //         tgl_pengajuan: {
-        //             required: "Tanggal Pengajuan is required",
-        //         },
-        //         tujuan: {
-        //             required: "Tujuan is required",
-        //         },
-        //         status: {
-        //             required: "Status is required",
-        //         },
-        //     },
-        //     errorPlacement: function(error, element) {
-        //         if (element.parent().hasClass('input-group')) {
-        //             error.insertAfter(element.parent());
-        //         } else {
-        //             error.insertAfter(element);
-        //         }
-        //     },
-        //     highlight: function(element) {
-        //         $(element).addClass('is-invalid'); // Tambahkan kelas untuk menandai input tidak valid
-        //     },
-        //     unhighlight: function(element) {
-        //         $(element).removeClass('is-invalid'); // Hapus kelas jika input valid
-        //     },
-        //     focusInvalid: false, // Disable auto-focus on the first invalid field
-        // });
+        $("#form").validate({
+            rules: {
+                nama: {
+                    required: true,
+                },
+                departemen: {
+                    required: true,
+                },
+                jabatan: {
+                    required: true,
+                },
+                sifat_pelaporan: {
+                    required: true,
+                },
+                tgl_pengajuan: {
+                    required: true,
+                },
+                tujuan: {
+                    required: true,
+                },
+                status: {
+                    required: true,
+                },
+                jumlah: {
+                    required: true,
+                },
+            },
+            messages: {
+                nama: {
+                    required: "Nama is required",
+                },
+                departemen: {
+                    required: "Departemen is required",
+                },
+                jabatan: {
+                    required: "Jabatan is required",
+                },
+                sifat_pelaporan: {
+                    required: "Sifat Pelaporan is required",
+                },
+                tgl_pengajuan: {
+                    required: "Tanggal Pengajuan is required",
+                },
+                tujuan: {
+                    required: "Tujuan is required",
+                },
+                status: {
+                    required: "Status is required",
+                },
+                jumlah: {
+                    required: "Jumlah Prepayment is required",
+                },
+            },
+            errorPlacement: function(error, element) {
+                if (element.parent().hasClass('input-group')) {
+                    error.insertAfter(element.parent());
+                } else {
+                    error.insertAfter(element);
+                }
+            },
+            highlight: function(element) {
+                $(element).addClass('is-invalid'); // Tambahkan kelas untuk menandai input tidak valid
+            },
+            unhighlight: function(element) {
+                $(element).removeClass('is-invalid'); // Hapus kelas jika input valid
+            },
+            focusInvalid: false, // Disable auto-focus on the first invalid field
+        });
     })
 
     $(document).on('focus', '#tgl_pengajuan', function() {

@@ -53,6 +53,6 @@ footer p {
 }
 
 
-.custom-file-input {
-    background-color: red;
-  }
+.custom-file-label {
+    padding-top: 7px;
+}
