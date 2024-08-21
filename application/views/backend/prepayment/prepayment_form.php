@@ -37,9 +37,9 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-sm-5">Jabatan</label>
+                                    <label class="col-sm-5">Divisi</label>
                                     <div class="col-sm-7">
-                                        <select class="form-control" name="jabatan" id="jabatan">
+                                        <select class="form-control" name="divisi" id="divisi">
                                             <option value="">-- Pilih --</option>
                                             <option value="marketing">Marketing</option>
                                             <option value="it">IT</option>
@@ -55,6 +55,12 @@
                                     <label class="col-sm-5">Prepayment</label>
                                     <div class="col-sm-7">
                                         <input type="text" class="form-control" id="prepayment" name="prepayment" placeholder="Prepayment for....">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5">Jabatan</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="jabatan" name="jabatan" placeholder="Jabatan....">
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -112,6 +118,7 @@
     $('#tgl_prepayment').datepicker({
         dateFormat: 'dd-mm-yy',
         minDate: new Date(),
+        maxDate: new Date(),
 
         // MENGENERATE KODE PREPAYMENT SETELAH PILIH TANGGAL
         onSelect: function(dateText) {
@@ -174,7 +181,7 @@
                 <tr id="row-${rowCount}">
                     <td class="row-number">${rowCount}</td>
                     <td><input type="text" class="form-control" name="rincian[${rowCount}]" value="" placeholder="Input here..." /></td>
-                    <td><input type="text" class="form-control" id="nominal-${rowCount}" name="nominal[${rowCount}]" placeholder="Input here..." />
+                    <td><input type="text" class="form-control" id="nominal-${rowCount}" name="nominal[${rowCount}]" value="" placeholder="Input here..." />
                         <input type="hidden" id="hidden_nominal${rowCount}" name="hidden_nominal[${rowCount}]" value="">
                     </td>
                     <td><input type="text" class="form-control" name="keterangan[${rowCount}]" value="" placeholder="Input here..." /></td>
@@ -185,7 +192,7 @@
             // Tambahkan format ke input nominal yang baru
             formatJumlahInput(`#nominal-${rowCount}`);
             updateSubmitButtonState(); // Perbarui status tombol submit
-            checkDeleteButtonState(); // Cek tombol delete setelah baris ditambahkan
+            //checkDeleteButtonState(); // Cek tombol delete setelah baris ditambahkan
 
             //VALIDASI ROW YANG TELAH DI APPEND
             $("#form").validate().settings.rules[`rincian[${rowCount}]`] = {
@@ -207,11 +214,13 @@
                 deletedRows.push(rowId);
             }
 
+            console.log(rowId);
+
             $(`#row-${id}`).remove();
             // Reorder rows and update row numbers
             reorderRows();
             updateSubmitButtonState(); // Perbarui status tombol 
-            checkDeleteButtonState(); // Cek tombol delete setelah baris dihapus
+            //checkDeleteButtonState(); // Cek tombol delete setelah baris dihapus
         }
 
         // MENHATUR ULANG URUTAN ROW SAAT DIHAPUS
@@ -221,6 +230,7 @@
                 const newRowNumber = index + 1;
                 const rincianValue = $(this).find('input[name^="rincian"]').val();
                 const nominalValue = $(this).find('input[name^="nominal"]').val();
+                const hiddenIdValue = $(this).find('input[name^="hidden_id_detail"]').val();
                 const hiddenNominalValue = $(this).find('input[name^="hidden_nominal"]').val();
                 const keteranganValue = $(this).find('input[name^="keterangan"]').val();
 
@@ -228,6 +238,7 @@
                 $(this).find('.row-number').text(newRowNumber);
                 $(this).find('input[name^="rincian"]').attr('name', `rincian[${newRowNumber}]`).attr('placeholder', `Input here...`).val(rincianValue);
                 $(this).find('input[name^="nominal"]').attr('name', `nominal[${newRowNumber}]`).attr('placeholder', `Input here...`).val(nominalValue);
+                $(this).find('input[name^="hidden_id_detail"]').attr('name', `hidden_id_detail[${newRowNumber}]`).val(hiddenIdValue);
                 $(this).find('input[name^="hidden_nominal"]').attr('name', `hidden_nominal[${newRowNumber}]`).val(hiddenNominalValue);
                 $(this).find('input[name^="keterangan"]').attr('name', `keterangan[${newRowNumber}]`).attr('placeholder', `Input here...`).val(keteranganValue);
                 $(this).find('.delete-btn').attr('data-id', newRowNumber).text('Delete');
@@ -248,14 +259,14 @@
             }
         }
 
-        function checkDeleteButtonState() {
-            const rowCount = $('#input-container tr').length;
-            if (rowCount === 1) {
-                $('#input-container .delete-btn').prop('disabled', true); // Disable delete button if only one row
-            } else {
-                $('#input-container .delete-btn').prop('disabled', false); // Enable delete button if more than one row
-            }
-        }
+        // function checkDeleteButtonState() {
+        //     const rowCount = $('#input-container tr').length;
+        //     if (rowCount === 1) {
+        //         $('#input-container .delete-btn').prop('disabled', true); // Disable delete button if only one row
+        //     } else {
+        //         $('#input-container .delete-btn').prop('disabled', false); // Enable delete button if more than one row
+        //     }
+        // }
 
         $(document).on('click', '.delete-btn', function() {
             const id = $(this).data('id');
@@ -292,6 +303,7 @@
                     $('#kode_prepayment').val(data['master']['kode_prepayment']).attr('readonly', true);
                     $('#tgl_prepayment').val(moment(data['master']['tgl_prepayment']).format('DD-MM-YYYY'));
                     $('#nama').val(data['master']['nama']);
+                    $('#divisi').val(data['master']['divisi']);
                     $('#jabatan').val(data['master']['jabatan']);
                     $('#prepayment').val(data['master']['prepayment']);
                     $('#tujuan').val(data['master']['tujuan']);
@@ -302,7 +314,7 @@
                             //Nilai nominal diformat menggunakan pemisah ribuan sebelum dimasukkan ke dalam elemen input.
                             const nominalFormatted = data['transaksi'][index]['nominal'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
                             const row = `
-                        <tr id="row-${index}">
+                        <tr id="row-${index + 1}">
                             <td class="row-number">${index + 1}</td>
                             <td><input type="text" class="form-control" name="rincian[${index + 1}]" value="${data['transaksi'][index]['rincian']}" />
                                 <input type="hidden" id="hidden_id${index}" name="hidden_id" value="${data['master']['id']}">
@@ -421,6 +433,9 @@
                 nama: {
                     required: true,
                 },
+                divisi: {
+                    required: true,
+                },
                 jabatan: {
                     required: true,
                 },
@@ -440,6 +455,9 @@
                 },
                 nama: {
                     required: "Nama is required",
+                },
+                divisi: {
+                    required: "Divisi is required",
                 },
                 jabatan: {
                     required: "Jabatan is required",
