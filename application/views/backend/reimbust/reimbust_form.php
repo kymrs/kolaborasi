@@ -10,7 +10,7 @@
                     <a class="btn btn-secondary btn-sm" href="<?= base_url('reimbust') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
-                    <form id="form" enctype="multipart/form-data">
+                    <form id="form" enctype="multipart/form-data" action="<?= base_url('reimbust/update') ?>" method="post">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group row">

@@ -86,10 +86,11 @@ class M_prepayment extends CI_Model
     }
 
     // UNTUK QUERY MENGAMBIL KODE UNTUK DIGENERATE DI CONTROLLER
-    public function max_kode()
+    public function max_kode($date)
     {
+        $formatted_date = date('ym', strtotime($date));
         $this->db->select('kode_prepayment');
-        $where = 'id=(SELECT max(id) FROM tbl_prepayment where SUBSTRING(kode_prepayment, 2, 4) = ' . date('ym') . ')';
+        $where = 'id=(SELECT max(id) FROM tbl_prepayment where SUBSTRING(kode_prepayment, 2, 4) = ' . $formatted_date . ')';
         $this->db->where($where);
         $query = $this->db->get('tbl_prepayment');
         return $query;
@@ -124,19 +125,6 @@ class M_prepayment extends CI_Model
     }
 
     // UNTUK QUERY APPROVE DATA PREPAYMENT
-    public function approve($data)
-    {
-        // var_dump($data);
-        $app = array(
-            'app_name' => $data['app_name'],
-            'app_status' => $data['app_status'],
-            'app_keterangan' => $data['app_keterangan'],
-            'app_date' => date('Y-m-d H:i:s')
-        );
-
-        $this->db->where('id', $data['hidden_id']);
-        $this->db->update($this->table, $app);
-    }
 
     public function approve2($data)
     {
