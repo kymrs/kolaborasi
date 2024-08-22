@@ -10,7 +10,7 @@
                     <a class="btn btn-secondary btn-sm" href="<?= base_url('reimbust') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
-                    <form id="form" enctype="multipart/form-data" action="<?= base_url('reimbust/update') ?>" method="post">
+                    <form id="form" enctype="multipart/form-data">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group row">
@@ -37,13 +37,13 @@
                                 <div class="form-group row">
                                     <label class="col-sm-5">Kode Reimbust</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="kode_reimbust" name="kode_reimbust">
+                                        <input type="text" class="form-control" id="kode_reimbust" name="kode_reimbust" placeholder="Kode Reimbust">
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-5">Nama</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="nama" name="nama" autocomplete="off">
+                                        <input type="text" class="form-control" id="nama" name="nama" autocomplete="off" placeholder="Nama">
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -64,7 +64,7 @@
                                 <div class="form-group row">
                                     <label class="col-sm-5">Jabatan</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="jabatan" name="jabatan" autocomplete="off">
+                                        <input type="text" class="form-control" id="jabatan" name="jabatan" autocomplete="off" placeholder="Jabatan">
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -89,7 +89,7 @@
                                 <div class="form-group row">
                                     <label class="col-sm-5">Jumlah Prepayment</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="jumlah_prepayment" name="jumlah" autocomplete="off">
+                                        <input type="text" class="form-control" id="jumlah_prepayment" name="jumlah" autocomplete="off" placeholder="Jumlah Prepayment">
                                         <input type="hidden" id="hidden_jumlah_prepayment" name="jumlah_prepayment">
                                     </div>
                                 </div>
@@ -110,7 +110,7 @@
                                         <th scope="col">Jumlah</th>
                                         <th scope="col">Kwitansi</th>
                                         <th scope="col">Deklarasi</th>
-                                        <th scope="col">Action</th>
+                                        <th scope="col" id="action">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody id="input-container">
@@ -163,6 +163,13 @@
                             </div>
                         </div>
 
+                        <!-- Modal -->
+                        <div id="myModal" class="kwitansi-modal">
+                            <span class="close">&times;</span>
+                            <img class="modal-content" id="img01">
+                            <!-- <div id="caption"></div> -->
+                        </div>
+
                     </form>
                 </div>
             </div>
@@ -182,13 +189,6 @@
         onSelect: function(dateText) {
             var date = $('#tgl_pengajuan').val();
             var id = dateText;
-            $('#tgl_pengajuan').removeClass("is-invalid");
-
-            // Menghapus label error secara manual jika ada
-            if ($("#tgl_pengajuan-error").length) {
-                $("#tgl_pengajuan-error").remove(); // Menghapus label error
-            }
-
             $.ajax({
                 url: "<?php echo site_url('reimbust/generate_kode') ?>",
                 type: "POST",
@@ -271,16 +271,17 @@
                         <input type="text" class="form-control tgl_nota" name="tgl_nota[${rowCount}]" id="tgl_nota_${rowCount}" style="cursor: pointer" autocomplete="off" placeholder="Tanggal Nota ${rowCount}">
                     </td>
                     <td>
-                        <input type="text" class="form-control" id="jumlah-${rowCount}" placeholder="Jumlah ${rowCount}" name="jml[${rowCount}]"  autocomplete="off">
+                        <input type="text" class="form-control" id="jumlah-${rowCount}" placeholder="Jumlah ${rowCount}" name="jml[${rowCount}]" autocomplete="off">
                         <input type="hidden" id="hidden_jumlah${rowCount}" name="jumlah[${rowCount}]" value="">
                     </td>
-                    <td>
+                    <td style="padding: 12px 12px 5px !important">
                         <div class="custom-file">
                             <input type="file" class="custom-file-input" name="kwitansi[${rowCount}]" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01">
                             <label class="custom-file-label" for="inputGroupFile01">Upload..</label>
+                            <span class="kwitansi-label">Max Size : 3MB</span>
                         </div>
                     </td>
-                    <td width="150" style="padding: 15px 10px"><div class="btn btn-primary btn-lg btn-block btn-sm" data-toggle="modal" data-target="#exampleModal${rowCount}">Deklarasi ${rowCount}</div></td>
+                    <td width="150" style="padding: 15px 10px"><div class="btn btn-primary btn-lg btn-block btn-sm" data-toggle="modal" data-target="#exampleModal" id="deklarasi">Deklarasi</div></td>
                     <td><span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span></td>
                 </tr>
                 `;
@@ -288,7 +289,7 @@
             // Tambahkan format ke input jumlah yang baru
             formatJumlahInput(`#jumlah-${rowCount}`);
             updateSubmitButtonState(); // Perbarui status tombol submit
-            // checkDeleteButtonState(); // Cek tombol delete setelah baris ditambahkan//
+            // checkDeleteButtonState(); // Cek tombol delete setelah baris ditambahkan
 
             //VALIDASI ROW YANG TELAH DI APPEND
             $("#form").validate().settings.rules[`pemakaian[${rowCount}]`] = {
@@ -300,6 +301,26 @@
             $("#form").validate().settings.rules[`jml[${rowCount}]`] = {
                 required: true
             };
+
+            // Inisialisasi Datepicker pada elemen dengan id 'tgl_nota'
+            $(document).on('focus', '.tgl_nota', function() {
+                $(this).datepicker({
+                    dateFormat: 'dd-mm-yy', // Format default sementara
+                    changeMonth: true,
+                    changeYear: true,
+                    onSelect: function(dateText, inst) {
+                        // Hapus kelas error dan elemen pesan error saat tanggal dipilih
+                        $(this).removeClass('is-invalid');
+
+                        for (i = 1; i <= rowCount; i++) {
+                            if ($(`#tgl_nota_${i}-error`).length) {
+                                $(`#tgl_nota_${i}-error`).remove();
+                            }
+                        }
+                    }
+                }).datepicker('show');
+            });
+
         }
 
         function deleteRow(id) {
@@ -323,18 +344,16 @@
                 const detailIdValue = $(this).find('input[name^="detail_id"]').val();
                 const pemakaianValue = $(this).find('input[name^="pemakaian"]').val();
                 const tgl_notaValue = $(this).find('input[name^="tgl_nota"]').val();
-                const jumlahValue = $(this).find('input[name^="jumlah"]').val();
+                const jumlahValue = $(this).find('input[name^="jml"]').val();
                 const kwitansiValue = $(this).find('input[name^="kwitansi_image"]').val();
-                const deklarasiValue = $(this).find('input[name^="deklarasi"]').val();
 
                 $(this).attr('id', `row-${newRowNumber}`);
                 $(this).find('.row-number').text(newRowNumber);
                 $(this).find('input[name^="detail_id"]').attr('name', `detail_id[${newRowNumber}]`).attr('placeholder', `detail_id ${newRowNumber}`).val(detailIdValue);
                 $(this).find('input[name^="pemakaian"]').attr('name', `pemakaian[${newRowNumber}]`).attr('placeholder', `Pemakaian ${newRowNumber}`).val(pemakaianValue);
                 $(this).find('input[name^="tgl_nota"]').attr('name', `tgl_nota[${newRowNumber}]`).attr('placeholder', `Tanggal Nota ${newRowNumber}`).val(tgl_notaValue);
-                $(this).find('input[name^="jumlah"]').attr('name', `jumlah[${newRowNumber}]`).attr('placeholder', `Input ${newRowNumber}`).val(jumlahValue);
+                $(this).find('input[name^="jml"]').attr('name', `jml[${newRowNumber}]`).attr('placeholder', `Jumlah ${newRowNumber}`).val(jumlahValue);
                 $(this).find('input[name^="kwitansi_image"]').attr('name', `kwitansi_image[${newRowNumber}]`).attr('placeholder', `Input ${newRowNumber}`).val(kwitansiValue);
-                $(this).find('input[name^="deklarasi"]').attr('name', `deklarasi[${newRowNumber}]`).attr('placeholder', `Input ${newRowNumber}`).val(deklarasiValue);
                 $(this).find('.delete-btn').attr('data-id', newRowNumber).text('Delete');
             });
             rowCount = $('#input-container tr').length; // Update rowCount to the current number of rows
@@ -384,7 +403,6 @@
             $(this).next('.custom-file-label').addClass("selected").html(fileName);
         });
 
-
         $('#sifat_pelaporan').on('input', function() {
             var sifatPelaporan = $(this).val();
             handleSifatPelaporanChange(sifatPelaporan);
@@ -393,7 +411,7 @@
         // Event listener untuk perubahan pada select "sifat_pelaporan"
         function handleSifatPelaporanChange(sifatPelaporan) {
             if (aksi == 'add') {
-                if (sifatPelaporan === 'Reimbust') {
+                if (sifatPelaporan == 'Reimbust') {
                     $('#nama').prop('disabled', false).css('cursor', 'auto');
                     $('#departemen').prop('disabled', false).css('cursor', 'pointer');
                     $('#jabatan').prop('disabled', false).css('cursor', 'auto');
@@ -401,7 +419,7 @@
                     $('#tujuan').prop('disabled', false).css('cursor', 'auto');
                     $('#status').prop('disabled', false).css('cursor', 'pointer');
                     $('#jumlah_prepayment').prop('disabled', false).css('cursor', 'auto');
-                } else if (sifatPelaporan === 'Pelaporan') {
+                } else if (sifatPelaporan == 'Pelaporan') {
                     $('#nama').prop('disabled', true).css('cursor', 'auto');
                     $('#departemen').prop('disabled', true).css('cursor', 'pointer');
                     $('#jabatan').prop('disabled', false).css('cursor', 'auto');
@@ -419,7 +437,7 @@
                     $('#jumlah_prepayment').prop('disabled', true).css('cursor', 'not-allowed');
                 }
             } else if (aksi == 'update') {
-                if (sifatPelaporan === 'Reimbust') {
+                if (sifatPelaporan == 'Reimbust') {
                     $('#nama').prop('readonly', false).css('cursor', 'auto');
                     $('#departemen').prop('readonly', false).css('cursor', 'pointer');
                     $('#jabatan').prop('readonly', false).css('cursor', 'auto');
@@ -427,7 +445,7 @@
                     $('#tujuan').prop('readonly', false).css('cursor', 'auto');
                     $('#status').prop('readonly', false).css('cursor', 'pointer');
                     $('#jumlah_prepayment').prop('readonly', false).css('cursor', 'auto');
-                } else if (sifatPelaporan === 'Pelaporan') {
+                } else if (sifatPelaporan == 'Pelaporan') {
                     $('#nama').prop('readonly', true).css('cursor', 'auto');
                     $('#departemen').prop('readonly', true).css('cursor', 'pointer');
                     $('#jabatan').prop('readonly', false).css('cursor', 'auto');
@@ -445,30 +463,14 @@
                     $('#jumlah_prepayment').prop('readonly', true).css('cursor', 'not-allowed');
                 }
             } else if (aksi == 'read') {
-                if (sifatPelaporan === 'Reimbust') {
-                    $('#nama').prop('disabled', false).css('cursor', 'auto');
-                    $('#departemen').prop('disabled', false).css('cursor', 'pointer');
-                    $('#jabatan').prop('disabled', false).css('cursor', 'auto');
-                    $('#tgl_pengajuan').prop('disabled', false).css('cursor', 'pointer');
-                    $('#tujuan').prop('disabled', false).css('cursor', 'auto');
-                    $('#status').prop('disabled', false).css('cursor', 'pointer');
-                    $('#jumlah_prepayment').prop('disabled', false).css('cursor', 'auto');
-                } else if (sifatPelaporan === 'Pelaporan') {
-                    $('#nama').prop('disabled', true).css('cursor', 'auto');
-                    $('#departemen').prop('disabled', true).css('cursor', 'pointer');
-                    $('#jabatan').prop('disabled', false).css('cursor', 'auto');
-                    $('#tgl_pengajuan').prop('disabled', false).css('cursor', 'pointer');
-                    $('#tujuan').prop('disabled', false).css('cursor', 'auto');
-                    $('#status').prop('disabled', false).css('cursor', 'pointer');
-                    $('#jumlah_prepayment').prop('disabled', false).css('cursor', 'auto');
+                if (sifatPelaporan == 'Reimbust' || sifatPelaporan == 'Pelaporan') {
+                    $('input').prop('disabled', true).css('cursor', 'not-allowed');
+                    $('select').prop('disabled', true).css('cursor', 'not-allowed');
+                    $('textarea').prop('disabled', true).css('cursor', 'not-allowed');
                 } else {
-                    $('#nama').prop('disabled', true).css('cursor', 'not-allowed');
-                    $('#departemen').prop('disabled', true).css('cursor', 'not-allowed');
-                    $('#jabatan').prop('disabled', true).css('cursor', 'not-allowed');
-                    $('#tgl_pengajuan').prop('disabled', true).css('cursor', 'not-allowed');
-                    $('#tujuan').prop('disabled', true).css('cursor', 'not-allowed');
-                    $('#status').prop('disabled', true).css('cursor', 'not-allowed');
-                    $('#jumlah_prepayment').prop('disabled', true).css('cursor', 'not-allowed');
+                    $('input').prop('disabled', true).css('cursor', 'not-allowed');
+                    $('select').prop('disabled', true).css('cursor', 'not-allowed');
+                    $('textarea').prop('disabled', true).css('cursor', 'not-allowed');
                 }
             }
         }
@@ -496,28 +498,27 @@
                 dataType: "JSON",
                 success: function(data) {
                     moment.locale('id')
-                    console.log(data)
 
+                    if (aksi == 'update') {
+                        // Set nilai untuk setiap field dari data master
+                        $('#sifat_pelaporan').val(data['master']['sifat_pelaporan']);
+                        $('#id').val(data['master']['id']);
+                        $('#kode_reimbust').val(data['master']['kode_reimbust']).attr('readonly', true);
+                        $('#nama').val(data['master']['nama']);
+                        $('#jabatan').val(data['master']['jabatan']);
+                        $('#departemen').val(data['master']['departemen']);
+                        $('#tgl_pengajuan').val(moment(data['master']['tgl_pengajuan']).format('DD-MM-YYYY'));
+                        $('#tujuan').val(data['master']['tujuan']);
+                        $('#status').val(data['master']['status']);
+                        $('#jumlah_prepayment').val(data['master']['jumlah_prepayment'].replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
 
-                    // Set nilai untuk setiap field dari data master
-                    $('#sifat_pelaporan').val(data['master']['sifat_pelaporan']);
-                    $('#id').val(data['master']['id']);
-                    $('#kode_reimbust').val(data['master']['kode_reimbust']).attr('readonly', true);
-                    $('#nama').val(data['master']['nama']);
-                    $('#jabatan').val(data['master']['jabatan']);
-                    $('#departemen').val(data['master']['departemen']);
-                    $('#tgl_pengajuan').val(moment(data['master']['tgl_pengajuan']).format('DD-MM-YYYY'));
-                    $('#tujuan').val(data['master']['tujuan']);
-                    $('#status').val(data['master']['status']);
-                    $('#jumlah_prepayment').val(data['master']['jumlah_prepayment'].replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
-
-                    //APPEND DATA TRANSAKSI DETAIL REIMBUST
-                    $(data['transaksi']).each(function(index) {
-                        //Nilai jumlah diformat menggunakan pemisah ribuan sebelum dimasukkan ke dalam elemen input.
-                        const jumlahFormatted = data['transaksi'][index]['jumlah'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-                        const tglNotaFormatted = moment(data['transaksi'][index]['tgl_nota']).format('DD-MM-YYYY');
-                        // Append Dari Form UPDATE
-                        const row = `
+                        //APPEND DATA TRANSAKSI DETAIL REIMBUST
+                        $(data['transaksi']).each(function(index) {
+                            //Nilai jumlah diformat menggunakan pemisah ribuan sebelum dimasukkan ke dalam elemen input.
+                            const jumlahFormatted = data['transaksi'][index]['jumlah'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                            const tglNotaFormatted = moment(data['transaksi'][index]['tgl_nota']).format('DD-MM-YYYY');
+                            // Append Dari Form UPDATE
+                            const row = `
                                 <tr id="row-${index + 1}">
                                     <td class="row-number">${index + 1}</td>
                                     <td>
@@ -530,7 +531,7 @@
                                         <input type="text" class="form-control tgl_nota" name="tgl_nota[${index + 1}]" style="cursor: pointer" autocomplete="off" value="${tglNotaFormatted}">
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control" id="jumlah-${index}" value="${jumlahFormatted}"  autocomplete="off">
+                                        <input type="text" class="form-control" id="jumlah-${index}" value="${jumlahFormatted}" name="jml[${index + 1}]" autocomplete="off">
                                         <input type="hidden" id="hidden_jumlah${index}" name="jumlah[${index + 1}]" value="${data['transaksi'][index]['jumlah']}">
                                     </td>
                                     <td>
@@ -538,31 +539,32 @@
                                             <input type="file" class="custom-file-input" name="kwitansi[${index + 1}]" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01">
                                             <label class="custom-file-label" for="inputGroupFile01">${data['transaksi'][index]['kwitansi']}</label>
                                         </div>
-                                        <input type="text" class="form-control" name="kwitansi_image[${index + 1}]" value="${data['transaksi'][index]['kwitansi']}">
+                                        <input type="hidden" class="form-control" name="kwitansi_image[${index + 1}]" value="${data['transaksi'][index]['kwitansi']}">
+                                        <span class="kwitansi-label">Max Size : 3MB</span>
                                     </td>
-                                    <td width="150" style="padding: 15px 10px">
-                                        <div class="btn btn-primary btn-lg btn-block btn-sm">Deklarasi ${index + 1}</div>
+                                    <td width="125" style="padding: 16px 10px !important">
+                                        <div class="btn btn-primary btn-lg btn-block btn-sm" data-toggle="modal" data-target="#exampleModal">Deklarasi</div>
                                     </td>
                                     <td><span class="btn delete-btn btn-danger" data-id="${index + 1}">Delete</span></td>
                                 </tr>
                                 `;
-                        $('#input-container').append(row);
-                        // Tambahkan format ke input jumlah yang baru
-                        formatJumlahInput(`#jumlah-${index}`);
+                            $('#input-container').append(row);
+                            // Tambahkan format ke input jumlah yang baru
+                            formatJumlahInput(`#jumlah-${index}`);
 
-                        //VALIDASI ROW YANG TELAH DI APPEND
-                        $("#form").validate().settings.rules[`rincian[${index + 1}]`] = {
-                            required: true
-                        };
-                        $("#form").validate().settings.rules[`nominal[${index + 1}]`] = {
-                            required: true
-                        };
-                        $("#form").validate().settings.rules[`keterangan[${index + 1}]`] = {
-                            required: true
-                        };
-                        rowCount = index + 1;
-                    });
-
+                            //VALIDASI ROW YANG TELAH DI APPEND
+                            $("#form").validate().settings.rules[`rincian[${index + 1}]`] = {
+                                required: true
+                            };
+                            $("#form").validate().settings.rules[`nominal[${index + 1}]`] = {
+                                required: true
+                            };
+                            $("#form").validate().settings.rules[`keterangan[${index + 1}]`] = {
+                                required: true
+                            };
+                            rowCount = index + 1;
+                        });
+                    }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     alert('Error get data from ajax');
@@ -572,32 +574,30 @@
 
         // UNTUK TAMPILAN READ ONLY
         if (aksi == "read") {
-            $('.aksi').hide();
-            $('#id').prop('readonly', true);
-            $('#sifat_pelaporan').prop('disabled', true);
-            $('#tgl_pengajuan').prop('disabled', true);
-            $('#nama').prop('disabled', true);
-            $('#departemen').prop('disabled', true);
-            $('#jabatan').prop('disabled', true);
-            $('#tujuan').prop('disabled', true);
-            $('#status').prop('disabled', true);
-            $('#jumlah_prepayment').prop('disabled', true);
-            $('th:last-child').remove();
+            // $('.aksi').hide();
+            // $('#id').prop('readonly', true);
+            // $('#sifat_pelaporan').prop('disabled', true);
+            // $('#tgl_pengajuan').prop('disabled', true);
+            // $('#nama').prop('disabled', false);
+            // $('#departemen').prop('disabled', true);
+            // $('#jabatan').prop('disabled', true);
+            // $('#tujuan').prop('disabled', true);
+            // $('#status').prop('disabled', true);
+            // $('#jumlah_prepayment').prop('disabled', true);
+            // $('th:last-child').remove();
 
             $.ajax({
-                url: "<?php echo site_url('reimbust/edit_data/') ?>" + id,
+                url: "<?php echo site_url('reimbust/read_detail/') ?>" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
                     $(data).each(function(index) {
-                        // console.log(data);
-                        //Nilai jumlah diformat menggunakan pemisah ribuan sebelum dimasukkan ke dalam elemen input.
-                        const nominalReadFormatted = data['transaksi'][index]['jumlah'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-                        // console.log(data['master']['sifat_pelaporan']);
+                        //Nilai nominal diformat menggunakan pemisah ribuan sebelum dimasukkan ke dalam elemen input.
+                        const nominalReadFormatted = data[index]['nominal'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
                         const row = `
                         <tr id="row-${index}">
                             <td class="row-number">${index + 1}</td>
-                            <td><input readonly type="text" class="form-control" name="sifat_pelaporan[${index}]" value="${data['master']['sifat_pelaporan']}"></td>
+                            <td><input readonly type="text" class="form-control" name="sifat_pelaporan[${index}]" value="${data[index]['sifat_pelaporan']}"></td>
                         </tr>
                         `;
                         $('#input-container').append(row);
@@ -618,18 +618,17 @@
                 url = "<?php echo site_url('reimbust/update') ?>";
             }
 
-            // Membuat FormData untuk menangani pengiriman file
             var formData = new FormData(this);
 
             $.ajax({
                 url: url,
                 type: "POST",
                 data: formData,
-                contentType: false, // Penting untuk tidak menetapkan contentType
-                processData: false, // Penting untuk tidak memproses data
+                contentType: false,
+                processData: false,
                 dataType: "JSON",
                 success: function(data) {
-                    if (data.status) { // Jika berhasil, tutup modal dan reload tabel ajax
+                    if (data.status) {
                         Swal.fire({
                             position: 'center',
                             icon: 'success',
@@ -639,10 +638,21 @@
                         }).then((result) => {
                             location.href = "<?= base_url('reimbust') ?>";
                         });
+                    } else {
+                        // Tampilkan pesan kesalahan
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: data.error
+                        });
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
-                    alert('Error adding / update data');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Error adding / updating data: ' + textStatus
+                    });
                 }
             });
         });
@@ -755,15 +765,7 @@
     })
 
     $(document).on('focus', '#tgl_pengajuan', function() {
-        $(this).datepicker({
-            dateFormat: 'dd-mm-yy', // Format default sementara
-            changeMonth: true,
-            changeYear: true,
-        }).datepicker('show');
-    });
-
-    // Inisialisasi Datepicker pada elemen dengan id 'tgl_nota'
-    $(document).on('focus', '.tgl_nota', function() {
+        // Inisialisasi dan tampilkan datepicker
         $(this).datepicker({
             dateFormat: 'dd-mm-yy', // Format default sementara
             changeMonth: true,
