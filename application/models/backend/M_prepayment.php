@@ -9,8 +9,8 @@ class M_prepayment extends CI_Model
     var $id = 'id';
     var $table = 'tbl_prepayment';
     var $table2 = 'tbl_prepayment_detail';
-    var $column_order = array(null, null, 'kode_prepayment', 'nama', 'jabatan', 'tgl_prepayment', 'prepayment', 'status');
-    var $column_search = array('kode_prepayment', 'nama', 'jabatan', 'tgl_prepayment', 'prepayment', 'status'); //field yang diizin untuk pencarian
+    var $column_order = array(null, null, 'kode_prepayment', 'nama', 'jabatan', 'tgl_prepayment', 'prepayment', 'tujuan', 'status');
+    var $column_search = array('kode_prepayment', 'nama', 'jabatan', 'tgl_prepayment', 'prepayment', 'tujuan', 'status'); //field yang diizin untuk pencarian
     var $order = array('id' => 'desc');
 
     // UNTUK QUERY DATA TABLE
@@ -34,20 +34,10 @@ class M_prepayment extends CI_Model
                     $this->db->or_like($item, $_POST['search']['value']);
                 }
 
-                if (count($this->column_search) - 1 == $i) {
+                if (count($this->column_search) - 1 == $i)
                     $this->db->group_end();
-                }
             }
-
             $i++;
-        }
-
-        //tampilan list hak akses
-        if (strtolower($this->session->userdata('fullname')) == 'head manager') {
-            $this->db->where('app2_name IS NULL');
-            $this->db->where('app_name IS NOT NULL');
-        } elseif (strtolower($this->session->userdata('fullname')) == 'finance') {
-            $this->db->where('app_name IS NULL');
         }
 
         if (isset($_POST['order'])) {

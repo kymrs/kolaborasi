@@ -1,11 +1,3 @@
-<style>
-    #appFilter {
-        border: 1px solid #ccc;
-        padding: 5px;
-        border-radius: 4px;
-    }
-</style>
-
 <div class="container-fluid">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"><?= $titleview ?></h1>
@@ -18,13 +10,6 @@
                     <a class="btn btn-primary btn-sm" href="<?= base_url('prepayment/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a>
                 </div>
                 <div class="card-body">
-                    <div>
-                        <label for="appFilter">app:</label>
-                        <select id="appFilter">
-                            <option value="">Show All</option>
-                            <!-- Options will be dynamically added by JavaScript -->
-                        </select>
-                    </div>
                     <table id="table" class="table table-bordered table-striped">
                         <thead>
                             <tr>
@@ -35,7 +20,7 @@
                                 <th>Jabatan</th>
                                 <th>Tanggal Pengajuan</th>
                                 <th>Prepayment</th>
-                                <!-- <th>Tujuan</th> -->
+                                <th>Tujuan</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -50,7 +35,7 @@
                                 <th>Jabatan</th>
                                 <th>Tanggal Pengajuan</th>
                                 <th>Prepayment</th>
-                                <!-- <th>Tujuan</th> -->
+                                <th>Tujuan</th>
                                 <th>Status</th>
                             </tr>
                         </tfoot>
@@ -65,7 +50,8 @@
 <?php $this->load->view('template/script'); ?>
 
 <script type="text/javascript">
-    var table;
+
+var table;
 
     // METHOD POST MENAMPILKAN DATA KE DATA TABLE
     $(document).ready(function() {
@@ -84,36 +70,13 @@
                     "className": 'dt-head-nowrap'
                 },
                 {
-                    "targets": [1, 3, 7],
+                    "targets": [1],
                     "className": 'dt-body-nowrap'
                 }, {
                     "targets": [0, 1],
                     "orderable": false,
                 },
             ],
-            "initComplete": function() {
-                let column = this.api().column(2); // Index of the column to filter (e.g., "aplicación")
-
-                // Create a dropdown filter dynamically
-                let select = $('#appFilter');
-
-                // Populate the select with unique values from the column
-                column
-                    .data()
-                    .unique()
-                    .sort()
-                    .each(function(d, j) {
-                        select.append('<option value="' + d + '">' + d + '</option>');
-                    });
-
-                // Apply listener for user change in value
-                select.on('change', function() {
-                    let val = $.fn.dataTable.util.escapeRegex($(this).val());
-
-                    // Filter the table based on the selected value
-                    column.search(val ? '^' + val + '$' : '', true, false).draw();
-                });
-            }
         });
     });
 
@@ -151,4 +114,5 @@
             }
         })
     };
+
 </script>

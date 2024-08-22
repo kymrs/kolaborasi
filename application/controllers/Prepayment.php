@@ -19,51 +19,24 @@ class Prepayment extends CI_Controller
 
     function get_list()
     {
-        $fullname = $this->session->userdata('fullname');
         $list = $this->M_prepayment->get_datatables();
         $data = array();
         $no = $_POST['start'];
         foreach ($list as $field) {
-            //STATUS
-            if ($field->status == 0) {
-                $status = 'On-process';
-            } elseif ($field->status == 1) {
-                $status = 'Revision';
-            } elseif ($field->status == 2) {
-                $status = 'Rejected';
-            } else {
-                $status = 'Approved';
-            }
-
-            //HAK AKSES
-            if (strtolower($fullname) == 'head manager') {
-                $action = '<a href="prepayment/app_form/' . $field->id . '" class="btn btn-success btn-circle btn-sm" title="Approval"><i class="fa fa-check" aria-hidden="true"></i></a>';
-            } elseif (strtolower($fullname) == 'finance') {
-                $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                        <a href="prepayment/app_form/' . $field->id . '" class="btn btn-success btn-circle btn-sm" title="Approval"><i class="fa fa-check" aria-hidden="true"></i></a>';
-            } else {
-                if ($field->app_name == null || $field->app2_name == null) {
-                    $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                                <a href="prepayment/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
-                                <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
-                                <a href="prepayment/app_form/' . $field->id . '" class="btn btn-success btn-circle btn-sm" title="Approval"><i class="fa fa-check" aria-hidden="true"></i></a>';
-                } else {
-                    $action = $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                    <a href="prepayment/app_form/' . $field->id . '" class="btn btn-success btn-circle btn-sm" title="Approval"><i class="fa fa-check" aria-hidden="true"></i></a>';
-                }
-            }
-
             $no++;
             $row = array();
             $row[] = $no;
-            $row[] = $action;
+            $row[] = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+            <a href="prepayment/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
+            <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
+            <a href="prepayment/app_form/' . $field->id . '" class="btn btn-success btn-circle btn-sm" title="Approval"><i class="fa fa-check" aria-hidden="true"></i></a>';
             $row[] = strtoupper($field->kode_prepayment);
             $row[] = $field->nama;
             $row[] = strtoupper($field->jabatan);
             $row[] = $field->tgl_prepayment;
             $row[] = $field->prepayment;
-            // $row[] = $field->tujuan;
-            $row[] = $status;
+            $row[] = $field->tujuan;
+            $row[] = $field->status;
 
             $data[] = $row;
         }
@@ -160,8 +133,7 @@ class Prepayment extends CI_Controller
             'jabatan' => $this->input->post('jabatan'),
             'prepayment' => $this->input->post('prepayment'),
             'tujuan' => $this->input->post('tujuan'),
-            'tgl_prepayment' => date('Y-m-d', strtotime($this->input->post('tgl_prepayment'))),
-            'total_nominal' => $this->input->post('total_nominal')
+            'tgl_prepayment' => date('Y-m-d', strtotime($this->input->post('tgl_prepayment')))
         );
         $inserted = $this->M_prepayment->save($data);
 
@@ -194,8 +166,7 @@ class Prepayment extends CI_Controller
             'jabatan' => $this->input->post('jabatan'),
             'prepayment' => $this->input->post('prepayment'),
             'tujuan' => $this->input->post('tujuan'),
-            'tgl_prepayment' => date('Y-m-d', strtotime($this->input->post('tgl_prepayment'))),
-            'total_nominal' => $this->input->post('total_nominal')
+            'tgl_prepayment' => date('Y-m-d', strtotime($this->input->post('tgl_prepayment')))
         );
         $this->db->where('id', $this->input->post('id'));
         //UPDATE DETAIL PREPAYMENT
@@ -250,19 +221,8 @@ class Prepayment extends CI_Controller
             'app_status' => $this->input->post('app_status'),
             'app_date' => date('Y-m-d H:i:s'),
         );
-        //UPDATE APPROVAL PERTAMA
         $this->db->where('id', $this->input->post('hidden_id'));
         $this->db->update('tbl_prepayment', $data);
-
-        // UPDATE STATUS PREPAYMENT
-        if ($this->input->post('app_status') == 'rejected') {
-            $this->db->where('id', $this->input->post('hidden_id'));
-            $this->db->update('tbl_prepayment', ['status' => 2]);
-        } elseif ($this->input->post('app_status') == 'revised') {
-            $this->db->where('id', $this->input->post('hidden_id'));
-            $this->db->update('tbl_prepayment', ['status' => 1]);
-        }
-
         echo json_encode(array("status" => TRUE));
     }
 
@@ -274,21 +234,8 @@ class Prepayment extends CI_Controller
             'app2_status' => $this->input->post('app2_status'),
             'app2_date' => date('Y-m-d H:i:s'),
         );
-        // UPDATE APPROVAL 2
         $this->db->where('id', $this->input->post('hidden_id'));
         $this->db->update('tbl_prepayment', $data);
-
-        // UPDATE STATUS PREPAYMENT
-        if ($this->input->post('app2_status') == 'rejected') {
-            $this->db->where('id', $this->input->post('hidden_id'));
-            $this->db->update('tbl_prepayment', ['status' => 2]);
-        } elseif ($this->input->post('app2_status') == 'revised') {
-            $this->db->where('id', $this->input->post('hidden_id'));
-            $this->db->update('tbl_prepayment', ['status' => 1]);
-        } elseif ($this->input->post('app2_status') == 'approved') {
-            $this->db->where('id', $this->input->post('hidden_id'));
-            $this->db->update('tbl_prepayment', ['status' => 3]);
-        }
         echo json_encode(array("status" => TRUE));
     }
 

@@ -27,7 +27,7 @@
                                     <label class="col-sm-5">Tanggal Pengajuan</label>
                                     <div class="col-sm-7">
                                         <div class="input-group date">
-                                            <input type="text" class="form-control" onchange="ubahPengajuan()" name="tgl_pengajuan" id="tgl_pengajuan" placeholder="DD-MM-YYYY" autocomplete="off">
+                                            <input type="text" class="form-control" name="tgl_pengajuan" id="tgl_pengajuan" placeholder="DD-MM-YYYY" autocomplete="off">
                                             <div class="input-group-append">
                                                 <div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
                                             </div>
@@ -189,6 +189,11 @@
         onSelect: function(dateText) {
             var date = $('#tgl_pengajuan').val();
             var id = dateText;
+            $('#tgl_pengajuan').removeClass('is-invalid');
+
+            if ($("#tgl_pengajuan-error").length) {
+                $("#tgl_pengajuan-error").remove();
+            }
             $.ajax({
                 url: "<?php echo site_url('reimbust/generate_kode') ?>",
                 type: "POST",
@@ -214,7 +219,6 @@
         var sifat_pelaporan = $('#sifat_pelaporan').val();
         let inputCount = 0;
         let deletedRows = [];
-        console.log(aksi);
 
         //MEMBUAT TAMPILAN HARGA MENJADI ADA TITIK
         $('#jumlah_prepayment').on('input', function() {
@@ -498,20 +502,19 @@
                 dataType: "JSON",
                 success: function(data) {
                     moment.locale('id')
+                    // Set nilai untuk setiap field dari data master    
+                    $('#sifat_pelaporan').val(data['master']['sifat_pelaporan']);
+                    $('#id').val(data['master']['id']);
+                    $('#kode_reimbust').val(data['master']['kode_reimbust']).attr('readonly', true);
+                    $('#nama').val(data['master']['nama']);
+                    $('#jabatan').val(data['master']['jabatan']);
+                    $('#departemen').val(data['master']['departemen']);
+                    $('#tgl_pengajuan').val(moment(data['master']['tgl_pengajuan']).format('DD-MM-YYYY'));
+                    $('#tujuan').val(data['master']['tujuan']);
+                    $('#status').val(data['master']['status']);
+                    $('#jumlah_prepayment').val(data['master']['jumlah_prepayment'].replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
 
                     if (aksi == 'update') {
-                        // Set nilai untuk setiap field dari data master
-                        $('#sifat_pelaporan').val(data['master']['sifat_pelaporan']);
-                        $('#id').val(data['master']['id']);
-                        $('#kode_reimbust').val(data['master']['kode_reimbust']).attr('readonly', true);
-                        $('#nama').val(data['master']['nama']);
-                        $('#jabatan').val(data['master']['jabatan']);
-                        $('#departemen').val(data['master']['departemen']);
-                        $('#tgl_pengajuan').val(moment(data['master']['tgl_pengajuan']).format('DD-MM-YYYY'));
-                        $('#tujuan').val(data['master']['tujuan']);
-                        $('#status').val(data['master']['status']);
-                        $('#jumlah_prepayment').val(data['master']['jumlah_prepayment'].replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
-
                         //APPEND DATA TRANSAKSI DETAIL REIMBUST
                         $(data['transaksi']).each(function(index) {
                             //Nilai jumlah diformat menggunakan pemisah ribuan sebelum dimasukkan ke dalam elemen input.
@@ -553,16 +556,81 @@
                             formatJumlahInput(`#jumlah-${index}`);
 
                             //VALIDASI ROW YANG TELAH DI APPEND
-                            $("#form").validate().settings.rules[`rincian[${index + 1}]`] = {
+                            $("#form").validate().settings.rules[`pemakaian[${index + 1}]`] = {
                                 required: true
                             };
-                            $("#form").validate().settings.rules[`nominal[${index + 1}]`] = {
+                            $("#form").validate().settings.rules[`tgl_nota[${index + 1}]`] = {
                                 required: true
                             };
-                            $("#form").validate().settings.rules[`keterangan[${index + 1}]`] = {
+                            $("#form").validate().settings.rules[`jml[${index + 1}]`] = {
                                 required: true
                             };
                             rowCount = index + 1;
+                        });
+                    }
+
+                    if (aksi == 'read') {
+                        //APPEND DATA TRANSAKSI DETAIL REIMBUST
+                        $(data['transaksi']).each(function(index) {
+                            //Nilai jumlah diformat menggunakan pemisah ribuan sebelum dimasukkan ke dalam elemen input.
+                            $('.aksi').hide();
+                            $('#add-row').hide();
+                            $('#action').hide();
+                            const jumlahFormatted = data['transaksi'][index]['jumlah'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                            const tglNotaFormatted = moment(data['transaksi'][index]['tgl_nota']).format('DD-MM-YYYY');
+                            // Append Dari Form UPDATE
+                            const row = `
+                                <tr id="row-${index + 1}">
+                                    <td class="row-number">${index + 1}</td>
+                                    <td>
+                                        <input type="text" class="form-control" name="pemakaian[${index + 1}]" value="${data['transaksi'][index]['pemakaian']}" autocomplete="off" disabled style="cursor: not-allowed">
+                                        
+                                        <input type="hidden" id="hidden_reimbust_id${index}" name="reimbust_id" value="${data['master']['id']}">
+                                        <input type="hidden" id="hidden_detail_id${index}" name="detail_id[${index + 1}]" value="${data['transaksi'][index]['id']}">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control tgl_nota" name="tgl_nota[${index + 1}]" style="cursor: pointer" autocomplete="off" value="${tglNotaFormatted}" disabled style="cursor: not-allowed">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" id="jumlah-${index}" value="${jumlahFormatted}" autocomplete="off" disabled style="cursor: not-allowed">
+                                        <input type="hidden" id="hidden_jumlah${index}" name="jumlah[${index + 1}]" value="${data['transaksi'][index]['jumlah']}">
+                                    </td>
+                                    <td width="150" style="padding: 15px 10px">
+                                        <div class="btn btn-primary btn-lg btn-block btn-sm openModal" data-kwitansi="${data['transaksi'][index]['kwitansi']}">Lihat Foto</div>
+                                    </td>
+                                    <td width="150" style="padding: 15px 10px">
+                                        <div class="btn btn-primary btn-lg btn-block btn-sm" data-toggle="modal" data-target="#exampleModal">Deklarasi ${index + 1}</div>
+                                    </td>
+                                    <td><span class="btn delete-btn btn-danger" data-id="${index + 1}" style="display: none">Delete</span></td>
+                                </tr>
+                                `;
+                            $('#input-container').append(row);
+                            // Tambahkan format ke input jumlah yang baru
+                            formatJumlahInput(`#jumlah-${index}`);
+                            rowCount = index + 1;
+                        });
+
+                        $(document).ready(function() {
+                            // Mendapatkan modal
+                            var modal = $('#myModal');
+
+                            // Mendapatkan gambar modal dan caption
+                            var modalImg = $("#img01");
+                            var captionText = $("#caption");
+
+                            // Ketika button diklik, tampilkan modal dengan gambar
+                            $('.openModal').on('click', function() {
+                                const kwitansi = $(this).data('kwitansi');
+
+                                modal.css("display", "block");
+                                modalImg.attr('src', `<?= base_url() ?>/assets/backend/img/reimbust/kwitansi/${kwitansi}`); // Ubah dengan path gambar yang ingin Anda tampilkan
+                                // captionText.text('Deskripsi gambar Anda di sini'); // Ubah dengan deskripsi gambar
+                            });
+
+                            // Ketika tombol close diklik, sembunyikan modal
+                            $('.close').on('click', function() {
+                                modal.css("display", "none");
+                            });
                         });
                     }
                 },
@@ -586,24 +654,24 @@
             // $('#jumlah_prepayment').prop('disabled', true);
             // $('th:last-child').remove();
 
-            $.ajax({
-                url: "<?php echo site_url('reimbust/read_detail/') ?>" + id,
-                type: "GET",
-                dataType: "JSON",
-                success: function(data) {
-                    $(data).each(function(index) {
-                        //Nilai nominal diformat menggunakan pemisah ribuan sebelum dimasukkan ke dalam elemen input.
-                        const nominalReadFormatted = data[index]['nominal'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-                        const row = `
-                        <tr id="row-${index}">
-                            <td class="row-number">${index + 1}</td>
-                            <td><input readonly type="text" class="form-control" name="sifat_pelaporan[${index}]" value="${data[index]['sifat_pelaporan']}"></td>
-                        </tr>
-                        `;
-                        $('#input-container').append(row);
-                    });
-                }
-            });
+            // $.ajax({
+            //     url: "<?php echo site_url('reimbust/read_detail/') ?>" + id,
+            //     type: "GET",
+            //     dataType: "JSON",
+            //     success: function(data) {
+            //         $(data).each(function(index) {
+            //             //Nilai nominal diformat menggunakan pemisah ribuan sebelum dimasukkan ke dalam elemen input.
+            //             const nominalReadFormatted = data[index]['nominal'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            //             const row = `
+            //             <tr id="row-${index}">
+            //                 <td class="row-number">${index + 1}</td>
+            //                 <td><input readonly type="text" class="form-control" name="sifat_pelaporan[${index}]" value="${data[index]['sifat_pelaporan']}"></td>
+            //             </tr>
+            //             `;
+            //             $('#input-container').append(row);
+            //         });
+            //     }
+            // });
         }
 
         $("#form").submit(function(e) {

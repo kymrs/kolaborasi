@@ -18,7 +18,7 @@ class Datanotifikasi extends CI_Controller
         $this->load->view('backend/home', $data);
     }
 
-    function get_list()
+     function get_list()
     {
         $list = $this->M_datanotifikasi->get_datatables();
         $data = array();
@@ -35,11 +35,12 @@ class Datanotifikasi extends CI_Controller
             $row[] = $field->jabatan;
             $row[] = $field->departemen;
             $row[] = $field->pengajuan;
-            $row[] = date("d M Y", strtotime($field->tanggal));
+            $row[] = $field->tanggal;
             $row[] = $field->waktu;
             $row[] = $field->alasan;
             $row[] = $field->status;
             $row[] = $field->catatan;
+            $row[] = $field->notifikasi;
             $data[] = $row;
         }
 
@@ -53,7 +54,7 @@ class Datanotifikasi extends CI_Controller
         echo json_encode($output);
     }
 
-    function read_form($id)
+         function read_form($id)
     {
         $data['aksi'] = 'read';
         $data['id'] = $id;
@@ -83,7 +84,7 @@ class Datanotifikasi extends CI_Controller
         $this->load->view('backend/home', $data);
     }
 
-    function edit_form($id)
+     function edit_form($id)
     {
         $data['id'] = $id;
         $data['title_view'] = "Edit Data Notifikasi";
@@ -91,7 +92,7 @@ class Datanotifikasi extends CI_Controller
         $this->load->view('backend/home', $data);
     }
 
-    function edit_data($id)
+       function edit_data($id)
     {
         $data = $this->M_datanotifikasi->get_by_id($id);
         echo json_encode($data);
@@ -123,6 +124,7 @@ class Datanotifikasi extends CI_Controller
             'alasan' => $this->input->post('alasan'),
             'status' => $this->input->post('status'),
             'catatan' => $this->input->post('catatan'),
+            'notifikasi' => $this->input->post('notifikasi'),
         );
         $this->M_datanotifikasi->save($data);
         echo json_encode(array("status" => TRUE));
@@ -140,15 +142,17 @@ class Datanotifikasi extends CI_Controller
             'alasan' => $this->input->post('alasan'),
             'status' => $this->input->post('status'),
             'catatan' => $this->input->post('catatan'),
+            'notifikasi' => $this->input->post('notifikasi'),
         );
         $this->db->where('id', $this->input->post('id'));
         $this->db->update('tbl_notifikasi', $data);
         echo json_encode(array("status" => TRUE));
     }
 
-    function delete($id)
+     function delete($id)
     {
         $this->M_datanotifikasi->delete($id);
         echo json_encode(array("status" => TRUE));
     }
+    
 }

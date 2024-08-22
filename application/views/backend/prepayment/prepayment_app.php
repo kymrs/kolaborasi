@@ -38,7 +38,7 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header text-right">
-                    <!-- <a class="btn btn-danger btn-sm" href="<?= base_url('prepayment') ?>"><i class="fas fa-file-pdf"></i>&nbsp;Print Out</a> -->
+                    <a class="btn btn-danger btn-sm" href="<?= base_url('prepayment') ?>"><i class="fas fa-file-pdf"></i>&nbsp;Print Out</a>
                     <a class="btn btn-secondary btn-sm" href="<?= base_url('prepayment') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
@@ -46,12 +46,8 @@
                     <div class="container mt-5">
                         <div class="form-header">
                             <h4>PT. MANDIRI CIPTA SEJAHTERA</h4>
-                            <p>Divisi:
-                            <div id="divisiCol"></div>
-                            </p>
-                            <p>Prepayment:
-                            <div id="prepaymentCol"></div>
-                            </p>
+                            <p>Divisi: <span>_____________________</span></p>
+                            <p>Prepayment: <span>_____________________</span></p>
                             <h5>FORM PENGAJUAN PREPAYMENT</h5>
                         </div>
 
@@ -109,41 +105,28 @@
                             <div class="row text-center">
                                 <div class="col-12 col-md-4 mb-3">
                                     <p>Yang Melakukan,</p>
-                                    <!-- <div class="signature-pad">
+                                    <div class="signature-pad">
                                         <canvas id="signature-pad" class="signature-pad" width=400 height=100></canvas>
-                                    </div> -->
-                                    <div><br><br></div>
-                                    <div id="doName"></div>
-                                    <!-- <button id="clear" class="btn btn-danger">Clear</button>
-                                    <button id="save" class="btn btn-primary">Save</button> -->
+                                    </div>
+                                    <p>_____________________</p>
+                                    <button id="clear" class="btn btn-danger">Clear</button>
+                                    <button id="save" class="btn btn-primary">Save</button>
                                 </div>
 
                                 <!-- Header and Content for "Mengetahui" -->
                                 <div class="col-12 col-md-4 mb-3">
                                     <p>Mengetahui,</p>
-                                    <br>
+                                    <div id="knowName"><br><br><br></div>
                                     <div id="knowStts"></div>
-                                    <br>
-                                    <div id="knowName"></div>
-                                    <?php if (strtolower($this->session->userdata('fullname')) != 'finance') { ?>
-                                        <button type="button" id="appBtn" class="btn btn-warning btn-block" data-toggle="modal" data-target="#appModal" data-id="<?= $id ?>" disabled>Approval</button>
-                                    <?php } else { ?>
-                                        <button type="button" id="appBtn" class="btn btn-warning btn-block" data-toggle="modal" data-target="#appModal" data-id="<?= $id ?>">Approval</button>
-                                    <?php } ?>
+                                    <button type="button" id="appBtn" class="btn btn-secondary btn-block" data-toggle="modal" data-target="#appModal" data-id="<?= $id ?>">Click Me</button>
                                 </div>
 
                                 <!-- Header and Content for "Menyetujui" -->
                                 <div class="col-12 col-md-4 mb-3">
                                     <p>Menyetujui,</p>
-                                    <br>
+                                    <div id="agreeName"><br><br><br></div>
                                     <div id="agreeStts"></div>
-                                    <br>
-                                    <div id="agreeName"></div>
-                                    <?php if (strtolower($this->session->userdata('fullname')) != 'head manager') { ?>
-                                        <button type="button" id="appBtn2" class="btn btn-warning btn-block" data-toggle="modal" data-target="#appModal" data-id="<?= $id ?>" disabled>Approval</button>
-                                    <?php } else { ?>
-                                        <button type="button" id="appBtn2" class="btn btn-warning btn-block" data-toggle="modal" data-target="#appModal" data-id="<?= $id ?>">Approval</button>
-                                    <?php } ?>
+                                    <button type="button" id="appBtn2" class="btn btn-secondary btn-block" data-toggle="modal" data-target="#appModal" data-id="<?= $id ?>">Click Me</button>
                                 </div>
                             </div>
                         </div>
@@ -165,20 +148,24 @@
 <div class="modal fade" id="appModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="exampleModalLabel">
-                    <i class="fas fa-check-circle"></i> Approval
-                </h5>
-                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Approval</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
                 <form id="approvalForm" action="">
                     <div class="form-group">
-                        <label for="app_status">Status <span class="text-danger">*</span></label>
-                        <select id="app_status" name="app_status" class="form-control" required>
-                            <option selected disabled>Choose status...</option>
+                        <label for="app_name">Nama</label>
+                        <input type="text" class="form-control" name="app_name" id="app_name" aria-describedby="emailHelp">
+                        <!-- HIDDEN INPUT -->
+                        <input type="hidden" id="hidden_id" name="hidden_id" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="app_status">Approve</label>
+                        <select id="app_status" name="app_status" class="form-control">
+                            <option selected disabled>Choose...</option>
                             <option value="approved">Approved</option>
                             <option value="rejected">Rejected</option>
                             <option value="revised">Revised</option>
@@ -186,18 +173,11 @@
                     </div>
                     <div class="form-group">
                         <label for="app_keterangan" class="col-form-label">Keterangan:</label>
-                        <textarea class="form-control" name="app_keterangan" id="app_keterangan" placeholder="Add your comments here"></textarea>
-                        <!-- HIDDEN INPUT -->
-                        <input type="hidden" name="app_name" id="app_name" value="<?= $this->session->userdata('fullname'); ?>">
-                        <input type="hidden" id="hidden_id" name="hidden_id" value="">
+                        <textarea class="form-control" name="app_keterangan" id="app_keterangan"></textarea>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                            <i class="fas fa-times"></i> Close
-                        </button>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Save changes
-                        </button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
                     </div>
                 </form>
             </div>
@@ -240,7 +220,7 @@
             type: "GET",
             dataType: "JSON",
             success: function(data) {
-                console.log(data);
+                // console.log(data);
                 // DATA PREPAYMENT
                 $('#tanggal').val(data['master']['tgl_prepayment']).attr('readonly', true);
                 $('#nama').val(data['master']['nama']).attr('readonly', true);
@@ -273,14 +253,10 @@
                     status2 = `_____________________`;
                 }
 
-                $('#doName').html(data['master']['nama']);
                 $('#knowName').html(nama);
                 $('#knowStts').html(status);
                 $('#agreeName').html(nama2);
                 $('#agreeStts').html(status2);
-
-                $('#divisiCol').html(`<p>${data['master']['divisi'].toUpperCase()}</p>`);
-                $('#prepaymentCol').html(`<p>${data['master']['prepayment']}</p>`);
 
 
                 //DATA PREPAYMENT DETAIL
