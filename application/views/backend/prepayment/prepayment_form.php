@@ -273,8 +273,6 @@
             deleteRow(id);
         });
 
-
-
         $('#form').submit(function(event) {
             // Tambahkan array deletedRows ke dalam form data sebelum submit
             $('<input>').attr({

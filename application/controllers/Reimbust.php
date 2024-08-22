@@ -58,6 +58,9 @@ class Reimbust extends CI_Controller
         $data['id'] = $id;
         $data['title_view'] = "Data Reimbust";
         $data['title'] = 'backend/reimbust/reimbust_form';
+        $this->db->select('kwitansi');
+        $this->db->where('reimbust_id', $id);
+        $data['kwitansi'] = $this->db->get('tbl_reimbust_detail')->result_array();
         $this->load->view('backend/home', $data);
     }
 
@@ -165,9 +168,15 @@ class Reimbust extends CI_Controller
                 $_FILES['file']['error'] = $_FILES['kwitansi']['error'][$i];
                 $_FILES['file']['size'] = $_FILES['kwitansi']['size'][$i];
 
+                // Cek jika ukuran file melebihi batas
+                if ($_FILES['file']['error'] == UPLOAD_ERR_INI_SIZE || $_FILES['file']['size'] > 3072 * 1024) {
+                    echo json_encode(array("status" => FALSE, "error" => "Ukuran file tidak boleh melebihi dari 3 MB."));
+                    return;
+                }
+
                 $config['upload_path'] = './assets/backend/img/reimbust/kwitansi/';
                 $config['allowed_types'] = 'jpg|png';
-                $config['max_size'] = 2048;
+                $config['max_size'] = 3072; // Batasan ukuran file dalam kilobytes (3 MB)
                 $config['encrypt_name'] = TRUE;
 
                 $this->upload->initialize($config);
@@ -179,6 +188,7 @@ class Reimbust extends CI_Controller
                     return;
                 }
             }
+
 
             $data2[] = [
                 'reimbust_id' => $reimbust_id,
@@ -244,12 +254,14 @@ class Reimbust extends CI_Controller
                     $_FILES['file']['error'] = $_FILES['kwitansi']['error'][$i];
                     $_FILES['file']['size'] = $_FILES['kwitansi']['size'][$i];
 
+
                     $config['upload_path'] = './assets/backend/img/reimbust/kwitansi/';
                     $config['allowed_types'] = 'jpg|png';
-                    $config['max_size'] = 2048;
+                    $config['max_size'] = 3072;
                     $config['encrypt_name'] = TRUE;
 
                     $this->upload->initialize($config);
+
 
                     if ($this->upload->do_upload('file')) {
                         $id = !empty($detail_id[$i]) ? $detail_id[$i] : NULL;

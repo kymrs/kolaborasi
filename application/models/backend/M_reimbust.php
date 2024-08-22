@@ -117,5 +117,22 @@ class M_reimbust extends CI_Model
     {
         $this->db->where($this->id, $id);
         $this->db->delete($this->table);
+
+        // ambil data tbl_reimbust_detail berdasarkan reimbust_id
+        $reimbust_detail = $this->db->get_where('tbl_reimbust_detail', ['reimbust_id' => $id])->result_array();
+
+        // looping data reimbust detail
+        foreach ($reimbust_detail as $rd) {
+            // ambil satu data kwitansi
+            $old_image = $rd['kwitansi'];
+
+            if ($old_image != 'default.jpg') {
+                // hapus file dari path
+                unlink(FCPATH . './assets/backend/img/reimbust/kwitansi/' . $old_image);
+            }
+        }
+
+        $this->db->where('reimbust_id', $id);
+        $this->db->delete('tbl_reimbust_detail');
     }
 }
