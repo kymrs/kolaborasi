@@ -10,7 +10,7 @@
                     <a class="btn btn-secondary btn-sm" href="<?= base_url('reimbust') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
-                    <form id="form" enctype="multipart/form-data">
+                    <form id="form" enctype="multipart/form-data" action="<?= base_url('reimbust/update') ?>" method="post">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group row">
@@ -27,7 +27,7 @@
                                     <label class="col-sm-5">Tanggal Pengajuan</label>
                                     <div class="col-sm-7">
                                         <div class="input-group date">
-                                            <input type="text" class="form-control" name="tgl_pengajuan" id="tgl_pengajuan" placeholder="DD-MM-YYYY" autocomplete="off">
+                                            <input type="text" class="form-control" onchange="ubahPengajuan()" name="tgl_pengajuan" id="tgl_pengajuan" placeholder="DD-MM-YYYY" autocomplete="off">
                                             <div class="input-group-append">
                                                 <div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
                                             </div>
@@ -182,6 +182,13 @@
         onSelect: function(dateText) {
             var date = $('#tgl_pengajuan').val();
             var id = dateText;
+            $('#tgl_pengajuan').removeClass("is-invalid");
+
+            // Menghapus label error secara manual jika ada
+            if ($("#tgl_pengajuan-error").length) {
+                $("#tgl_pengajuan-error").remove(); // Menghapus label error
+            }
+
             $.ajax({
                 url: "<?php echo site_url('reimbust/generate_kode') ?>",
                 type: "POST",
@@ -207,6 +214,7 @@
         var sifat_pelaporan = $('#sifat_pelaporan').val();
         let inputCount = 0;
         let deletedRows = [];
+        console.log(aksi);
 
         //MEMBUAT TAMPILAN HARGA MENJADI ADA TITIK
         $('#jumlah_prepayment').on('input', function() {
@@ -488,27 +496,28 @@
                 dataType: "JSON",
                 success: function(data) {
                     moment.locale('id')
+                    console.log(data)
 
-                    if (aksi == 'update') {
-                        // Set nilai untuk setiap field dari data master
-                        $('#sifat_pelaporan').val(data['master']['sifat_pelaporan']);
-                        $('#id').val(data['master']['id']);
-                        $('#kode_reimbust').val(data['master']['kode_reimbust']).attr('readonly', true);
-                        $('#nama').val(data['master']['nama']);
-                        $('#jabatan').val(data['master']['jabatan']);
-                        $('#departemen').val(data['master']['departemen']);
-                        $('#tgl_pengajuan').val(moment(data['master']['tgl_pengajuan']).format('DD-MM-YYYY'));
-                        $('#tujuan').val(data['master']['tujuan']);
-                        $('#status').val(data['master']['status']);
-                        $('#jumlah_prepayment').val(data['master']['jumlah_prepayment'].replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
 
-                        //APPEND DATA TRANSAKSI DETAIL REIMBUST
-                        $(data['transaksi']).each(function(index) {
-                            //Nilai jumlah diformat menggunakan pemisah ribuan sebelum dimasukkan ke dalam elemen input.
-                            const jumlahFormatted = data['transaksi'][index]['jumlah'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-                            const tglNotaFormatted = moment(data['transaksi'][index]['tgl_nota']).format('DD-MM-YYYY');
-                            // Append Dari Form UPDATE
-                            const row = `
+                    // Set nilai untuk setiap field dari data master
+                    $('#sifat_pelaporan').val(data['master']['sifat_pelaporan']);
+                    $('#id').val(data['master']['id']);
+                    $('#kode_reimbust').val(data['master']['kode_reimbust']).attr('readonly', true);
+                    $('#nama').val(data['master']['nama']);
+                    $('#jabatan').val(data['master']['jabatan']);
+                    $('#departemen').val(data['master']['departemen']);
+                    $('#tgl_pengajuan').val(moment(data['master']['tgl_pengajuan']).format('DD-MM-YYYY'));
+                    $('#tujuan').val(data['master']['tujuan']);
+                    $('#status').val(data['master']['status']);
+                    $('#jumlah_prepayment').val(data['master']['jumlah_prepayment'].replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
+
+                    //APPEND DATA TRANSAKSI DETAIL REIMBUST
+                    $(data['transaksi']).each(function(index) {
+                        //Nilai jumlah diformat menggunakan pemisah ribuan sebelum dimasukkan ke dalam elemen input.
+                        const jumlahFormatted = data['transaksi'][index]['jumlah'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                        const tglNotaFormatted = moment(data['transaksi'][index]['tgl_nota']).format('DD-MM-YYYY');
+                        // Append Dari Form UPDATE
+                        const row = `
                                 <tr id="row-${index + 1}">
                                     <td class="row-number">${index + 1}</td>
                                     <td>
@@ -537,23 +546,23 @@
                                     <td><span class="btn delete-btn btn-danger" data-id="${index + 1}">Delete</span></td>
                                 </tr>
                                 `;
-                            $('#input-container').append(row);
-                            // Tambahkan format ke input jumlah yang baru
-                            formatJumlahInput(`#jumlah-${index}`);
+                        $('#input-container').append(row);
+                        // Tambahkan format ke input jumlah yang baru
+                        formatJumlahInput(`#jumlah-${index}`);
 
-                            //VALIDASI ROW YANG TELAH DI APPEND
-                            $("#form").validate().settings.rules[`rincian[${index + 1}]`] = {
-                                required: true
-                            };
-                            $("#form").validate().settings.rules[`nominal[${index + 1}]`] = {
-                                required: true
-                            };
-                            $("#form").validate().settings.rules[`keterangan[${index + 1}]`] = {
-                                required: true
-                            };
-                            rowCount = index + 1;
-                        });
-                    }
+                        //VALIDASI ROW YANG TELAH DI APPEND
+                        $("#form").validate().settings.rules[`rincian[${index + 1}]`] = {
+                            required: true
+                        };
+                        $("#form").validate().settings.rules[`nominal[${index + 1}]`] = {
+                            required: true
+                        };
+                        $("#form").validate().settings.rules[`keterangan[${index + 1}]`] = {
+                            required: true
+                        };
+                        rowCount = index + 1;
+                    });
+
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     alert('Error get data from ajax');
@@ -576,17 +585,19 @@
             $('th:last-child').remove();
 
             $.ajax({
-                url: "<?php echo site_url('reimbust/read_detail/') ?>" + id,
+                url: "<?php echo site_url('reimbust/edit_data/') ?>" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
                     $(data).each(function(index) {
-                        //Nilai nominal diformat menggunakan pemisah ribuan sebelum dimasukkan ke dalam elemen input.
-                        const nominalReadFormatted = data[index]['nominal'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                        // console.log(data);
+                        //Nilai jumlah diformat menggunakan pemisah ribuan sebelum dimasukkan ke dalam elemen input.
+                        const nominalReadFormatted = data['transaksi'][index]['jumlah'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                        // console.log(data['master']['sifat_pelaporan']);
                         const row = `
                         <tr id="row-${index}">
                             <td class="row-number">${index + 1}</td>
-                            <td><input readonly type="text" class="form-control" name="sifat_pelaporan[${index}]" value="${data[index]['sifat_pelaporan']}"></td>
+                            <td><input readonly type="text" class="form-control" name="sifat_pelaporan[${index}]" value="${data['master']['sifat_pelaporan']}"></td>
                         </tr>
                         `;
                         $('#input-container').append(row);

@@ -9,9 +9,12 @@
                 <div class="card-header py-3">
                     <a class="btn btn-primary btn-sm" href="<?= base_url('datanotifikasi/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Notification</a>
                 </div>
-                <div class="card-body p-4"> <!-- Added padding for spacing -->
-                    <div class="table-responsive"> <!-- Table wrapper -->
-                        <table id="notificationTable" class="table table-bordered table-striped display nowrap w-100 mb-4"> <!-- Added margin-bottom -->
+                <div class="card-body p-4">
+                    <!-- Added padding for spacing -->
+                    <div class="table-responsive">
+                        <!-- Table wrapper -->
+                        <table id="notificationTable" class="table table-bordered table-striped display nowrap w-100 mb-4">
+                            <!-- Added margin-bottom -->
                             <thead>
                                 <tr>
                                     <th>No</th>
@@ -26,7 +29,6 @@
                                     <th>Alasan</th>
                                     <th>Status</th>
                                     <th>Catatan</th>
-                                    <th>Notifikasi</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -46,7 +48,6 @@
                                     <th>Alasan</th>
                                     <th>Status</th>
                                     <th>Catatan</th>
-                                    <th>Notifikasi</th>
                                 </tr>
                             </tfoot>
                         </table>
@@ -72,8 +73,7 @@
                 "url": "<?php echo site_url('datanotifikasi/get_list') ?>",
                 "type": "POST"
             },
-            "columnDefs": [
-                {
+            "columnDefs": [{
                     "targets": [2, 4, 6, 7, 8], // Adjusted indices to match the number of columns
                     "className": 'dt-head-nowrap'
                 },
