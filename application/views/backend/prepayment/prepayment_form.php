@@ -76,20 +76,25 @@
                             <button type="button" class="btn btn-success btn-sm" id="add-row"><i class="fa fa-plus" aria-hidden="true"></i> Add</button>
                         </div>
                         <!-- TABLE INPUT -->
-                        <div class="mt-2">
-                            <table class="table">
-                                <thead>
+                        <div class="mt-4">
+                            <table class="table table-bordered table-hover">
+                                <thead class="thead-dark">
                                     <tr>
-                                        <th scope="col">No</th>
+                                        <th scope="col" class="text-center">No</th>
                                         <th scope="col">Rincian</th>
                                         <th scope="col">Nominal</th>
                                         <th scope="col">Keterangan</th>
-                                        <th scope="col">Action</th>
+                                        <th scope="col" class="text-center">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody id="input-container">
                                     <!-- CONTAINER INPUTAN -->
                                 </tbody>
+                                <tr class="font-weight-bold">
+                                    <td colspan="4" id="total_nominal_row" class="text-right">Total</td>
+                                    <td id="total_nominal_view"></td>
+                                    <input type="hidden" id="total_nominal" name="total_nominal" value="">
+                                </tr>
                             </table>
                         </div>
                         <!-- PENENTUAN UPDATE ATAU ADD -->
@@ -123,6 +128,12 @@
         // MENGENERATE KODE PREPAYMENT SETELAH PILIH TANGGAL
         onSelect: function(dateText) {
             var id = dateText;
+            $('#tgl_prepayment').removeClass("is-invalid");
+
+            // Menghapus label error secara manual jika ada
+            if ($("#tgl_prepayment-error").length) {
+                $("#tgl_prepayment-error").remove(); // Menghapus label error
+            }
             $.ajax({
                 url: "<?php echo site_url('prepayment/generate_kode') ?>",
                 type: "POST",
@@ -169,7 +180,20 @@
                 // Pastikan elemen hidden dengan ID yang benar diperbarui
                 const hiddenId = `#hidden_${$(this).attr('id').replace('nominal-', 'nominal')}`;
                 $(hiddenId).val(cleanValue);
+
+                // Hitung total nominal setelah nilai berubah
+                calculateTotalNominal();
             });
+        }
+
+        function calculateTotalNominal() {
+            let total = 0;
+            $('input[name^="hidden_nominal"]').each(function() {
+                let value = parseInt($(this).val()) || 0; // Parse as integer, default to 0 if invalid
+                total += value;
+            });
+            $('#total_nominal_view').text(total.toLocaleString()); // Format total dengan pemisah ribuan
+            $('#total_nominal').val(total);
         }
 
         //MENAMBAH FORM INPUTAN DI ADD FORM
@@ -185,7 +209,7 @@
                         <input type="hidden" id="hidden_nominal${rowCount}" name="hidden_nominal[${rowCount}]" value="">
                     </td>
                     <td><input type="text" class="form-control" name="keterangan[${rowCount}]" value="" placeholder="Input here..." /></td>
-                    <td><span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span></td>
+                    <td><span class="btn btn-sm delete-btn btn-danger" data-id="${rowCount}">Delete</span></td>
                 </tr>
                 `;
             $('#input-container').append(row);
@@ -193,6 +217,9 @@
             formatJumlahInput(`#nominal-${rowCount}`);
             updateSubmitButtonState(); // Perbarui status tombol submit
             //checkDeleteButtonState(); // Cek tombol delete setelah baris ditambahkan
+
+            // Hitung total nominal setelah baris baru ditambahkan
+            calculateTotalNominal();
 
             //VALIDASI ROW YANG TELAH DI APPEND
             $("#form").validate().settings.rules[`rincian[${rowCount}]`] = {
@@ -221,6 +248,9 @@
             reorderRows();
             updateSubmitButtonState(); // Perbarui status tombol 
             //checkDeleteButtonState(); // Cek tombol delete setelah baris dihapus
+
+            // Hitung total nominal setelah baris dihapus
+            calculateTotalNominal();
         }
 
         // MENHATUR ULANG URUTAN ROW SAAT DIHAPUS
@@ -296,6 +326,11 @@
                 dataType: "JSON",
                 success: function(data) {
                     // moment.locale('id')
+                    let total_nominal = 0;
+                    console.log(data);
+                    for (let index = 0; index < data['transaksi'].length; index++) {
+                        total_nominal += parseInt(data['transaksi'][index]['nominal'], 10);
+                    }
                     //SET VALUE DATA MASTER PREPAYMENT
                     $('#id').val(data['master']['id']);
                     $('#kode_prepayment').val(data['master']['kode_prepayment']).attr('readonly', true);
@@ -305,6 +340,14 @@
                     $('#jabatan').val(data['master']['jabatan']);
                     $('#prepayment').val(data['master']['prepayment']);
                     $('#tujuan').val(data['master']['tujuan']);
+                    if (data['master']['total_nominal'] == null) {
+                        $('#total_nominal_view').text(total_nominal.toLocaleString());
+                        $('#total_nominal').val(total_nominal);
+                    } else {
+                        total_nominal = parseInt(data['master']['total_nominal'], 10);
+                        $('#total_nominal_view').text(total_nominal.toLocaleString());
+                        $('#total_nominal').val(data['master']['total_nominal']);
+                    }
 
                     //APPEND DATA TRANSAKSI DETAIL PREPAYMENT
                     if (aksi == 'update') {
@@ -356,9 +399,11 @@
             $('#tgl_prepayment').prop('disabled', true);
             $('#nama').prop('readonly', true);
             $('#jabatan').prop('disabled', true);
+            $('#divisi').prop('disabled', true);
             $('#prepayment').prop('readonly', true);
             $('#tujuan').prop('readonly', true);
-            $('#add-row').prop('disabled', true);
+            $('#total_nominal_row').attr('colspan', 3);
+            $('#add-row').toggle();
             $('th:last-child').remove();
 
             $.ajax({
@@ -373,7 +418,7 @@
                         <tr id="row-${index}">
                             <td class="row-number">${index + 1}</td>
                             <td><input readonly type="text" class="form-control" name="rincian[${index}]" value="${data[index]['rincian']}" /></td>
-                            <td><input readonly type="number" class="form-control" name="nominal[${index}]" value="${nominalReadFormatted}" /></td>
+                            <td><input readonly type="text" class="form-control" name="nominal[${index}]" value="${nominalReadFormatted}" /></td>
                             <td><input readonly type="text" class="form-control" name="keterangan[${index}]" value="${data[index]['keterangan']}" /></td>
                         </tr>
                         `;
@@ -401,6 +446,7 @@
                 data: $('#form').serialize(),
                 dataType: "JSON",
                 success: function(data) {
+                    console.log(data);
                     if (data.status) //if success close modal and reload ajax table
                     {
                         Swal.fire({
@@ -422,9 +468,6 @@
 
         $("#form").validate({
             rules: {
-                kode_prepayment: {
-                    required: true,
-                },
                 tgl_prepayment: {
                     required: true,
                 },
@@ -445,9 +488,6 @@
                 }
             },
             messages: {
-                kode_prepayment: {
-                    required: "Kode is required",
-                },
                 tgl_prepayment: {
                     required: "Tanggal is required",
                 },
