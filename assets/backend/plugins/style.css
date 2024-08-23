@@ -52,7 +52,72 @@ footer p {
     object-fit: contain;
 }
 
-
 .custom-file-label {
     padding-top: 7px;
+}
+
+/* Kwitansi Label */
+.kwitansi-label {
+    font-size: 0.7rem;
+    position: relative;
+    display: inline-block;
+}
+
+/* Gaya untuk modal */
+.kwitansi-modal {
+    display: none; /* Modal tidak tampil saat awal */
+    position: fixed;
+    z-index: 1;
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.9);
+}
+
+/* Gaya untuk gambar modal */
+.modal-content {
+    margin: auto;
+    display: block;
+    width: 80%;
+    max-width: 700px;
+}
+
+/* Gaya untuk tombol close */
+.close {
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    color: #fff;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.close:hover,
+.close:focus {
+    color: #bbb;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Gaya untuk gambar */
+#img01 {
+    width: 500px;
+    height: auto;
+    margin-bottom: 70px;
+}
+
+/* Gaya untuk caption */
+#caption {
+    margin: auto;
+    display: block;
+    width: 80%;
+    max-width: 700px;
+    text-align: center;
+    color: #ccc;
+    padding: 10px 0;
 }
