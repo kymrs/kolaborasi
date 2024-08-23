@@ -102,18 +102,19 @@
                                 </div>
                             </div>
 
-                            <div class="row text-center mb-3">
-                                <!-- Empty space for signature -->
-                                <div class="col-md-4">
-                                    <br><br><br>
-                                </div>
-                                <div class="col-md-4" id="knowName">
-                                    <!-- Status will be inserted here -->
-                                </div>
-                                <div class="col-md-4" id="agreeName">
-                                    <!-- Status will be inserted here -->
-                                </div>
-                            </div>
+                           <div class="row text-center mb-3">
+    <!-- Empty space for signature -->
+    <div class="col-md-4">
+        <br><br><br>
+        <span id="signNamaPengajuan"></span> <!-- New span element -->
+    </div>
+    <div class="col-md-4" id="knowName">
+        <!-- Status will be inserted here -->
+    </div>
+    <div class="col-md-4" id="agreeName">
+        <!-- Status will be inserted here -->
+    </div>
+</div>
 
                             <div class="row text-center mb-3">
                                 <!-- Signature line -->
@@ -161,6 +162,7 @@
     </div>
 </div>
 
+
 <div class="modal fade" id="appModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -201,167 +203,174 @@
 <?php $this->load->view('template/script'); ?>
 
 <script>
-    
-    $(document).ready(function() {
-        var id = $('#id').val();
-        var aksi = $('#aksi').val();
-        var kode = $('#kode').val();
 
-        if (id == 0) {
-            $('.aksi').text('Save');
-            $('#kode_deklarasi').val(kode).attr('readonly', true);
-        } else {
-            $('.aksi').text('Update');
-            $("select option[value='']").hide();
-            $.ajax({
-                url: "<?php echo site_url('datadeklarasi/edit_data') ?>/" + id,
-                type: "GET",
-                dataType: "JSON",
-                success: function(data) {
-                    moment.locale('id')
-                    $('#id').val(data.id);
-                    $('#kode_deklarasi').val(data.kode_deklarasi).attr('readonly', true);
-                    $('#tanggal').val(moment(data.tanggal).format('DD-MM-YYYY'));
-                    $('#nama_pengajuan').val(data.nama_pengajuan);
-                    $('#jabatan').val(data.jabatan);
-                    $('#nama_dibayar').val(data.nama_dibayar);
-                    $('#tujuan').val(data.tujuan);
-                    $('#sebesar').val(data.sebesar);
-                    $('#status').val(data.status);
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    alert('Error get data from ajax');
-                }
-            });
-        }
+$(document).ready(function() {
+    var id = $('#id').val();
+    var aksi = $('#aksi').val();
+    var kode = $('#kode').val();
 
-        if (aksi == "read") {
-            $('.aksi').hide();
-            $('#id').prop('readonly', true);
-            $('#tanggal').prop('disabled', true);
-            $('#nama_pengajuan').prop('readonly', true);
-            $('#jabatan').prop('disabled', true);
-            $('#nama_dibayar').prop('readonly', true);
-            $('#tujuan').prop('readonly', true);
-            $('#sebesar').prop('readonly', true);
-            $('#status').prop('disabled', true);
-        }
-
-        $("#form").submit(function(e) {
-            e.preventDefault();
-            var $form = $(this);
-            if (!$form.valid()) return false;
-            var url;
-            if (id == 0) {
-                url = "<?php echo site_url('datadeklarasi/add') ?>";
-            } else {
-                url = "<?php echo site_url('datadeklarasi/update') ?>";
+    if (id == 0) {
+        $('.aksi').text('Save');
+        $('#kode_deklarasi').val(kode).attr('readonly', true);
+    } else {
+        $('.aksi').text('Update');
+        $("select option[value='']").hide();
+        $.ajax({
+            url: "<?php echo site_url('datadeklarasi/edit_data') ?>/" + id,
+            type: "GET",
+            dataType: "JSON",
+            success: function(data) {
+                moment.locale('id')
+                $('#id').val(data.id);
+                $('#kode_deklarasi').val(data.kode_deklarasi).attr('readonly', true);
+                $('#tanggal').val(moment(data.tanggal).format('DD-MM-YYYY'));
+                $('#nama_pengajuan').val(data.nama_pengajuan);
+                $('#jabatan').val(data.jabatan);
+                $('#nama_dibayar').val(data.nama_dibayar);
+                $('#tujuan').val(data.tujuan);
+                $('#sebesar').val(data.sebesar.replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
+                $('#status').val(data.status);
+                $('#signNamaPengajuan').text(data.nama_pengajuan); // Populate the signature name on load
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert('Error get data from ajax');
             }
-
-            $.ajax({
-                url: url,
-                type: "POST",
-                data: $('#form').serialize(),
-                dataType: "JSON",
-                success: function(data) {
-                    if (data.status) //if success close modal and reload ajax table
-                    {
-                        Swal.fire({
-                            position: 'center',
-                            icon: 'success',
-                            title: 'Your data has been saved',
-                            showConfirmButton: false,
-                            timer: 1500
-                        }).then((result) => {
-                            location.href = "<?= base_url('datadeklarasi') ?>";
-                        })
-                    }
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    alert('Error adding / update data');
-                }
-            });
         });
+    }
 
-        $("#form").validate({
-            rules: {
-                tanggal: {
-                    required: true,
-                },
-                nama_pengajuan: {
-                    required: true,
-                },
-                jabatan: {
-                    required: true,
-                },
-                nama_dibayar: {
-                    required: true,
-                },
-                tujuan: {
-                    required: true,
-                },
-                sebesar: {
-                    required: true,
-                },
-                status: {
-                    required: true,
-                },
-            },
-            messages: {
-                tanggal: {
-                    required: "tanggal Harus Diisi",
-                },
-                nama_pengajuan: {
-                    required: "Nama Yang Mengajukan Harus Diisi",
-                },
-                jabatan: {
-                    required: "Jabatan Harus Diisi",
-                },
-                nama_dibayar: {
-                    required: "Nama Yang Menerima Pembayaran Harus Diisi",
-                },
-                tujuan: {
-                    required: "Tujuan Harus Diisi",
-                },
-                sebesar: {
-                    required: "Sebesar Harus Diisi",
-                },
-                status: {
-                    required: "Status Harus Diisi",
-                },
-            },
-            errorPlacement: function(error, element) {
-                if (element.parent().hasClass('input-group')) {
-                    error.insertAfter(element.parent());
-                } else {
-                    error.insertAfter(element);
+    if (aksi == "read") {
+        $('.aksi').hide();
+        $('#id').prop('readonly', true);
+        $('#tanggal').prop('disabled', true);
+        $('#nama_pengajuan').prop('readonly', true);
+        $('#jabatan').prop('disabled', true);
+        $('#nama_dibayar').prop('readonly', true);
+        $('#tujuan').prop('readonly', true);
+        $('#sebesar').prop('readonly', true).val(data.sebesar.replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
+        $('#status').prop('disabled', true);
+    }
+
+    $("#form").submit(function(e) {
+        e.preventDefault();
+        var $form = $(this);
+        if (!$form.valid()) return false;
+        var url;
+        if (id == 0) {
+            url = "<?php echo site_url('datadeklarasi/add') ?>";
+        } else {
+            url = "<?php echo site_url('datadeklarasi/update') ?>";
+        }
+
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: $('#form').serialize(),
+            dataType: "JSON",
+            success: function(data) {
+                if (data.status) {
+                    Swal.fire({
+                        position: 'center',
+                        icon: 'success',
+                        title: 'Your data has been saved',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then((result) => {
+                        location.href = "<?= base_url('datadeklarasi') ?>";
+                    })
                 }
             },
-        })
-    })
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert('Error adding / update data');
+            }
+        });
+    });
+
+    $("#form").validate({
+        rules: {
+            tanggal: {
+                required: true,
+            },
+            nama_pengajuan: {
+                required: true,
+            },
+            jabatan: {
+                required: true,
+            },
+            nama_dibayar: {
+                required: true,
+            },
+            tujuan: {
+                required: true,
+            },
+            sebesar: {
+                required: true,
+            },
+            status: {
+                required: true,
+            },
+        },
+        messages: {
+            tanggal: {
+                required: "tanggal Harus Diisi",
+            },
+            nama_pengajuan: {
+                required: "Nama Yang Mengajukan Harus Diisi",
+            },
+            jabatan: {
+                required: "Jabatan Harus Diisi",
+            },
+            nama_dibayar: {
+                required: "Nama Yang Menerima Pembayaran Harus Diisi",
+            },
+            tujuan: {
+                required: "Tujuan Harus Diisi",
+            },
+            sebesar: {
+                required: "Sebesar Harus Diisi",
+            },
+            status: {
+                required: "Status Harus Diisi",
+            },
+        },
+        errorPlacement: function(error, element) {
+            if (element.parent().hasClass('input-group')) {
+                error.insertAfter(element.parent());
+            } else {
+                error.insertAfter(element);
+            }
+        },
+    });
 
     $('#tanggal').datepicker({
         dateFormat: 'dd-mm-yy',
         minDate: new Date(),
     });
 
-   //MEMBUAT TAMPILAN HARGA MENJADI ADA TITIK
-        $('#sebesar').on('input', function() {
-            let value = $(this).val().replace(/[^,\d]/g, '');
-            let parts = value.split(',');
-            let integerPart = parts[0];
+    // MEMBUAT TAMPILAN HARGA MENJADI ADA TITIK
+    $('#sebesar').on('input', function() {
+        let value = $(this).val().replace(/[^,\d]/g, '');
+        let parts = value.split(',');
+        let integerPart = parts[0];
 
-            // Format tampilan dengan pemisah ribuan
-            integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        // Format tampilan dengan pemisah ribuan
+        integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 
-            // Set nilai yang diformat ke tampilan
-            $(this).val(parts[1] !== undefined ? integerPart + ',' + parts[1] : integerPart);
+        // Set nilai yang diformat ke tampilan
+        $(this).val(parts[1] !== undefined ? integerPart + ',' + parts[1] : integerPart);
 
-            // Hapus semua pemisah ribuan untuk pengiriman ke server
-            let cleanValue = value.replace(/\./g, '');
+        // Hapus semua pemisah ribuan untuk pengiriman ke server
+        let cleanValue = value.replace(/\./g, '');
 
-            // Anda mungkin ingin menyimpan nilai bersih ini di input hidden atau langsung mengirimkannya ke server
-            $('#hidden_sebesar').val(cleanValue);
-        });
+        // Anda mungkin ingin menyimpan nilai bersih ini di input hidden atau langsung mengirimkannya ke server
+        $('#hidden_sebesar').val(cleanValue);
+    });
+
+    // Update signature name on input
+    $('#nama_pengajuan').on('input', function() {
+        var namaPengajuan = $(this).val();
+        $('#signNamaPengajuan').text(namaPengajuan);
+    });
+
+});
 
 </script>
