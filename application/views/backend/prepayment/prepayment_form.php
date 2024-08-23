@@ -69,6 +69,28 @@
                                         <textarea class="form-control" id="tujuan" name="tujuan" rows="2"></textarea>
                                     </div>
                                 </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5">Mengetahui</label>
+                                    <div class="col-sm-7">
+                                        <select class="custom-select" name="app_name" aria-label="Default select example">
+                                            <option selected disabled>Pilih...</option>
+                                            <?php foreach ($mengetahui as $know) { ?>
+                                                <option value="<?= $know->fullname ?>"><?= $know->fullname ?></option>
+                                            <?php } ?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5">Menyetujui</label>
+                                    <div class="col-sm-7">
+                                        <select class="custom-select" name="app2_name" aria-label="Default select example">
+                                            <option selected disabled>Pilih...</option>
+                                            <?php foreach ($menyetujui as $agree) { ?>
+                                                <option value="<?= $agree->fullname ?>"><?= $agree->fullname ?></option>
+                                            <?php } ?>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <!-- BUTTON TAMBAH FORM -->

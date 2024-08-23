@@ -16,15 +16,16 @@
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
                     <a class="btn btn-primary btn-sm" href="<?= base_url('prepayment/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a>
+                    <label for="appFilter">Order:</label>
+                    <select id="appFilter" name="appFilter">
+                        <option selected disabled>Choose....</option>
+                        <option value="0">On-Process</option>
+                        <option value="3">Approved</option>
+                        <option value="1">Revised</option>
+                        <option value="2">Rejected</option>
+                    </select>
                 </div>
                 <div class="card-body">
-                    <div>
-                        <label for="appFilter">app:</label>
-                        <select id="appFilter">
-                            <option value="">Show All</option>
-                            <!-- Options will be dynamically added by JavaScript -->
-                        </select>
-                    </div>
                     <table id="table" class="table table-bordered table-striped">
                         <thead>
                             <tr>
@@ -77,7 +78,10 @@
             "order": [],
             "ajax": {
                 "url": "<?php echo site_url('prepayment/get_list') ?>",
-                "type": "POST"
+                "type": "POST",
+                "data": function(d) {
+                    d.status = $('#appFilter').val(); // Tambahkan parameter status ke permintaan server
+                }
             },
             "columnDefs": [{
                     "targets": [2, 5],
@@ -90,31 +94,12 @@
                     "targets": [0, 1],
                     "orderable": false,
                 },
-            ],
-            "initComplete": function() {
-                let column = this.api().column(2); // Index of the column to filter (e.g., "aplicación")
-
-                // Create a dropdown filter dynamically
-                let select = $('#appFilter');
-
-                // Populate the select with unique values from the column
-                column
-                    .data()
-                    .unique()
-                    .sort()
-                    .each(function(d, j) {
-                        select.append('<option value="' + d + '">' + d + '</option>');
-                    });
-
-                // Apply listener for user change in value
-                select.on('change', function() {
-                    let val = $.fn.dataTable.util.escapeRegex($(this).val());
-
-                    // Filter the table based on the selected value
-                    column.search(val ? '^' + val + '$' : '', true, false).draw();
-                });
-            }
+            ]
         });
+    });
+
+    $('#appFilter').change(function() {
+        table.ajax.reload(); // Muat ulang data di DataTable dengan filter baru
     });
 
     // MENGHAPUS DATA MENGGUNAKAN METHODE POST JQUERY

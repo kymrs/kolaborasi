@@ -19,8 +19,10 @@ class Prepayment extends CI_Controller
 
     function get_list()
     {
+        $id_level = $this->session->userdata('id_level');
         $fullname = $this->session->userdata('fullname');
-        $list = $this->M_prepayment->get_datatables();
+        $status = $this->input->post('status'); // Ambil status dari permintaan POST
+        $list = $this->M_prepayment->get_datatables($status);
         $data = array();
         $no = $_POST['start'];
         foreach ($list as $field) {
@@ -36,20 +38,25 @@ class Prepayment extends CI_Controller
             }
 
             //HAK AKSES
-            if (strtolower($fullname) == 'head manager') {
-                $action = '<a href="prepayment/app_form/' . $field->id . '" class="btn btn-success btn-circle btn-sm" title="Approval"><i class="fa fa-check" aria-hidden="true"></i></a>';
-            } elseif (strtolower($fullname) == 'finance') {
+            if ($id_level == 3 && $field->app_name == $fullname) {
+                $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                <a href="prepayment/app_form/' . $field->id . '" class="btn btn-success btn-circle btn-sm" title="Approval"><i class="fa fa-check" aria-hidden="true"></i></a>';
+            } elseif ($id_level == 4 && $field->app2_name == $fullname) {
                 $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
                         <a href="prepayment/app_form/' . $field->id . '" class="btn btn-success btn-circle btn-sm" title="Approval"><i class="fa fa-check" aria-hidden="true"></i></a>';
             } else {
-                if ($field->app_name == null || $field->app2_name == null) {
+                if ($field->app_status == 'approved' || $field->app2_status == 'approved') {
+                    $action = $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                    <a href="prepayment/app_form/' . $field->id . '" class="btn btn-success btn-circle btn-sm" title="Approval"><i class="fa fa-check" aria-hidden="true"></i></a>';
+                } elseif ($field->app_status == 'rejected' || $field->app2_status == 'rejected') {
+                    $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                    <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
+                    <a href="prepayment/app_form/' . $field->id . '" class="btn btn-success btn-circle btn-sm" title="Approval"><i class="fa fa-check" aria-hidden="true"></i></a>';
+                } elseif ($field->app_status != 'rejected' && $field->app2_status != 'rejected') {
                     $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
                                 <a href="prepayment/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
                                 <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
                                 <a href="prepayment/app_form/' . $field->id . '" class="btn btn-success btn-circle btn-sm" title="Approval"><i class="fa fa-check" aria-hidden="true"></i></a>';
-                } else {
-                    $action = $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                    <a href="prepayment/app_form/' . $field->id . '" class="btn btn-success btn-circle btn-sm" title="Approval"><i class="fa fa-check" aria-hidden="true"></i></a>';
                 }
             }
 
@@ -92,6 +99,8 @@ class Prepayment extends CI_Controller
     public function add_form()
     {
         $data['id'] = 0;
+        $data['mengetahui'] = $this->M_prepayment->mengetahui();
+        $data['menyetujui'] = $this->M_prepayment->menyetujui();
         $data['title'] = 'backend/prepayment/prepayment_form';
         $data['title_view'] = 'Prepayment Form';
         $this->load->view('backend/home', $data);
@@ -161,7 +170,9 @@ class Prepayment extends CI_Controller
             'prepayment' => $this->input->post('prepayment'),
             'tujuan' => $this->input->post('tujuan'),
             'tgl_prepayment' => date('Y-m-d', strtotime($this->input->post('tgl_prepayment'))),
-            'total_nominal' => $this->input->post('total_nominal')
+            'total_nominal' => $this->input->post('total_nominal'),
+            'app_name' => $this->input->post('app_name'),
+            'app2_name' => $this->input->post('app2_name')
         );
         $inserted = $this->M_prepayment->save($data);
 
@@ -195,7 +206,10 @@ class Prepayment extends CI_Controller
             'prepayment' => $this->input->post('prepayment'),
             'tujuan' => $this->input->post('tujuan'),
             'tgl_prepayment' => date('Y-m-d', strtotime($this->input->post('tgl_prepayment'))),
-            'total_nominal' => $this->input->post('total_nominal')
+            'total_nominal' => $this->input->post('total_nominal'),
+            'app_name' => $this->input->post('app_name'),
+            'app2_name' => $this->input->post('app2_name'),
+            'status' => 0
         );
         $this->db->where('id', $this->input->post('id'));
         //UPDATE DETAIL PREPAYMENT
