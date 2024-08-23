@@ -125,10 +125,10 @@
                                     <div id="knowStts"></div>
                                     <br>
                                     <div id="knowName"></div>
-                                    <?php if (strtolower($this->session->userdata('fullname')) != 'finance') { ?>
-                                        <button type="button" id="appBtn" class="btn btn-warning btn-block" data-toggle="modal" data-target="#appModal" data-id="<?= $id ?>" disabled>Approval</button>
-                                    <?php } else { ?>
+                                    <?php if ($this->session->userdata('id_level') == 3) { ?>
                                         <button type="button" id="appBtn" class="btn btn-warning btn-block" data-toggle="modal" data-target="#appModal" data-id="<?= $id ?>">Approval</button>
+                                    <?php } else { ?>
+                                        <button type="button" id="appBtn" class="btn btn-warning btn-block" data-toggle="modal" data-target="#appModal" data-id="<?= $id ?>" disabled>Approval</button>
                                     <?php } ?>
                                 </div>
 
@@ -139,10 +139,10 @@
                                     <div id="agreeStts"></div>
                                     <br>
                                     <div id="agreeName"></div>
-                                    <?php if (strtolower($this->session->userdata('fullname')) != 'head manager') { ?>
-                                        <button type="button" id="appBtn2" class="btn btn-warning btn-block" data-toggle="modal" data-target="#appModal" data-id="<?= $id ?>" disabled>Approval</button>
-                                    <?php } else { ?>
+                                    <?php if ($this->session->userdata('id_level') == 4) { ?>
                                         <button type="button" id="appBtn2" class="btn btn-warning btn-block" data-toggle="modal" data-target="#appModal" data-id="<?= $id ?>">Approval</button>
+                                    <?php } else { ?>
+                                        <button type="button" id="appBtn2" class="btn btn-warning btn-block" data-toggle="modal" data-target="#appModal" data-id="<?= $id ?>" disabled>Approval</button>
                                     <?php } ?>
                                 </div>
                             </div>
@@ -250,7 +250,7 @@
                 var nama, status, keterangan, nama2, status2, keterangan2, url;
 
                 // Memeriksa apakah data yang mengetahui ada
-                if (data['master']['app_name'] != null) {
+                if (data['master']['app_status'] != null) {
                     nama = data['master']['app_name'];
                     status = data['master']['app_status'];
                     keterangan = data['master']['app_keterangan'];
@@ -262,7 +262,7 @@
                 }
 
                 // Memeriksa apakah data yang menyetujui ada
-                if (data['master']['app2_name'] != null) {
+                if (data['master']['app2_status'] != null) {
                     nama2 = data['master']['app2_name'];
                     status2 = data['master']['app2_status'];
                     keterangan2 = data['master']['app2_keterangan'];
