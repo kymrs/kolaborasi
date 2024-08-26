@@ -166,8 +166,25 @@ class Prepayment extends CI_Controller
     // MENAMBAHKAN DATA
     public function add()
     {
+        $date = $this->input->post('tgl_prepayment');
+        $kode = $this->M_prepayment->max_kode($date)->row();
+        if (empty($kode->kode_prepayment)) {
+            $no_urut = 1;
+        } else {
+            $bln = substr($kode->kode_prepayment, 3, 2);
+            if ($bln != date('m')) {
+                $no_urut = 1;
+            } else {
+                $no_urut = substr($kode->kode_prepayment, 5) + 1;
+            }
+        }
+        $urutan = str_pad($no_urut, 4, "0", STR_PAD_LEFT);
+        $month = substr($date, 3, 2);
+        $year = substr($date, 8, 2);
+        $kode_prepayment = 'p' . $year . $month . $urutan;
+
         $data = array(
-            'kode_prepayment' => $this->input->post('kode_prepayment'),
+            'kode_prepayment' => $kode_prepayment,
             'nama' => $this->input->post('nama'),
             'divisi' => $this->input->post('divisi'),
             'jabatan' => $this->input->post('jabatan'),

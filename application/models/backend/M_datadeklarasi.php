@@ -42,6 +42,23 @@ class M_datadeklarasi extends CI_Model
             $i++;
         }
 
+        // Tambahkan pemfilteran berdasarkan status
+        if (!empty($_POST['status'])) {
+            $this->db->where('status', $_POST['status']);
+        }
+
+        //tampilan list hak akses
+        if ($this->session->userdata('id_level') == 3) {
+            $this->db->where('app_name', $this->session->userdata('fullname'));
+            $this->db->group_start(); // Start grouping
+            $this->db->where('app_status !=', 'rejected');
+            $this->db->or_where('app_status', null);
+            $this->db->group_end(); // End grouping
+        } elseif ($this->session->userdata('id_level') == 4) {
+            $this->db->where('app2_name', $this->session->userdata('fullname'));
+            $this->db->where('app_status', 'approved');
+        }
+
         if (isset($_POST['order'])) {
             $this->db->order_by($this->column_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
         } else if (isset($this->order)) {

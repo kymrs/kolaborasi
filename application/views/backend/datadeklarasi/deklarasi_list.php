@@ -8,6 +8,14 @@
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
                     <a class="btn btn-primary btn-sm" href="<?= base_url('datadeklarasi/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Notification</a>
+                    <label for="appFilter">Order:</label>
+                    <select id="appFilter" name="appFilter">
+                        <option value="" selected>Show all....</option>
+                        <option value="on-process">On-Process</option>
+                        <option value="approved">Approved</option>
+                        <option value="revised">Revised</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
                 </div>
                 <div class="card-body p-4">
                     <!-- Added padding for spacing -->
@@ -68,7 +76,10 @@
             "order": [],
             "ajax": {
                 "url": "<?php echo site_url('datadeklarasi/get_list') ?>",
-                "type": "POST"
+                "type": "POST",
+                "data": function(d) {
+                    d.status = $('#appFilter').val(); // Tambahkan parameter status ke permintaan server
+                }
             },
             "columnDefs": [{
                     "targets": [2, 4, 6], // Adjusted indices to match the number of columns
@@ -90,6 +101,10 @@
                 }
             ],
         });
+    });
+
+    $('#appFilter').change(function() {
+        table.ajax.reload(); // Muat ulang data di DataTable dengan filter baru
     });
 
     function delete_data(id) {
