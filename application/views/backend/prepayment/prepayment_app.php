@@ -288,15 +288,16 @@
                 for (let index = 0; index < data['transaksi'].length; index++) {
                     const row = `<tr>
                                     <td><input type="text" class="form-control" name="rincian[${index + 1}]" value="${data['transaksi'][index]['rincian']}" readonly></td>
-                                    <td><input type="text" class="form-control" name="nominal[${index + 1}]" value="${data['transaksi'][index]['nominal']}" readonly></td>
+                                    <td><input type="text" class="form-control" name="nominal[${index + 1}]" value="${data['transaksi'][index]['nominal'].replace(/\B(?=(\d{3})+(?!\d))/g, '.')}" readonly></td>
                                     <td><input type="text" class="form-control" name="keterangan[${index + 1}]" value="${data['transaksi'][index]['keterangan']}"readonly></td>
                                 </tr>`;
                     $('#input-container').append(row);
                     total += Number(data['transaksi'][index]['nominal']);
                 }
+                const totalFormatted = total.toLocaleString('de-DE');
                 const ttl_row = `<tr>
                                         <td colspan="2" class="text-right">Total:</td>
-                                        <td><input type="text" value="${total}" class="form-control" name="total" readonly></td>
+                                        <td><input type="text" value="${totalFormatted}" class="form-control" name="total" readonly></td>
                                     </tr>`;
                 $('#input-container').append(ttl_row);
             },

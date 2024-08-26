@@ -18,8 +18,8 @@
                     <a class="btn btn-primary btn-sm" href="<?= base_url('prepayment/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a>
                     <label for="appFilter">Order:</label>
                     <select id="appFilter" name="appFilter">
-                        <option selected disabled>Choose....</option>
-                        <option value="0">On-Process</option>
+                        <option value="" selected>Show all....</option>
+                        <option value="true">On-Process</option>
                         <option value="3">Approved</option>
                         <option value="1">Revised</option>
                         <option value="2">Rejected</option>
@@ -33,6 +33,7 @@
                                 <th>Action</th>
                                 <th>Kode Prepayment</th>
                                 <th>Nama</th>
+                                <th>Divisi</th>
                                 <th>Jabatan</th>
                                 <th>Tanggal Pengajuan</th>
                                 <th>Prepayment</th>
@@ -48,6 +49,7 @@
                                 <th>Action</th>
                                 <th>Kode Prepayment</th>
                                 <th>Nama</th>
+                                <th>Divisi</th>
                                 <th>Jabatan</th>
                                 <th>Tanggal Pengajuan</th>
                                 <th>Prepayment</th>

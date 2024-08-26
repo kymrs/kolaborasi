@@ -66,6 +66,7 @@ class Prepayment extends CI_Controller
             $row[] = $action;
             $row[] = strtoupper($field->kode_prepayment);
             $row[] = $field->nama;
+            $row[] = strtoupper($field->divisi);
             $row[] = strtoupper($field->jabatan);
             $row[] = $field->tgl_prepayment;
             $row[] = $field->prepayment;
@@ -115,6 +116,7 @@ class Prepayment extends CI_Controller
         $this->load->view('backend/home', $data);
     }
 
+    // MEREGENERATE KODE PREPAYMENT
     public function generate_kode()
     {
         $date = $this->input->post('date');

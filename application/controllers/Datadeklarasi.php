@@ -7,7 +7,7 @@ class Datadeklarasi extends CI_Controller
     function __construct()
     {
         parent::__construct();
-         $this->load->model('backend/M_datadeklarasi');
+        $this->load->model('backend/M_datadeklarasi');
         $this->M_login->getsecurity();
     }
 
@@ -18,7 +18,7 @@ class Datadeklarasi extends CI_Controller
         $this->load->view('backend/home', $data);
     }
 
-     function get_list()
+    function get_list()
     {
         $list = $this->M_datadeklarasi->get_datatables();
         $data = array();
@@ -51,7 +51,7 @@ class Datadeklarasi extends CI_Controller
         echo json_encode($output);
     }
 
-         function read_form($id)
+    function read_form($id)
     {
         $data['aksi'] = 'read';
         $data['id'] = $id;
@@ -62,7 +62,46 @@ class Datadeklarasi extends CI_Controller
 
     function add_form()
     {
-        $kode = $this->M_datadeklarasi->max_kode()->row();
+        // $kode = $this->M_datadeklarasi->max_kode()->row();
+        // if (empty($kode->kode_deklarasi)) {
+        //     $no_urut = 1;
+        // } else {
+        //     $bln = substr($kode->kode_deklarasi, 3, 2);
+        //     if ($bln != date('m')) {
+        //         $no_urut = 1;
+        //     } else {
+        //         $no_urut = substr($kode->kode_deklarasi, 5) + 1;
+        //     }
+        // }
+        // $urutan = str_pad($no_urut, 3, "0", STR_PAD_LEFT);
+        // $data['kode'] = 'B' . date('ym') . $urutan;
+        $data['mengetahui'] = $this->M_datadeklarasi->mengetahui();
+        $data['menyetujui'] = $this->M_datadeklarasi->menyetujui();
+        $data['id'] = 0;
+        $data['title_view'] = "Data deklarasi Form";
+        $data['title'] = 'backend/datadeklarasi/deklarasi_form';
+        $this->load->view('backend/home', $data);
+    }
+
+    function edit_form($id)
+    {
+        $data['id'] = $id;
+        $data['title_view'] = "Edit Data Deklarasi";
+        $data['title'] = 'backend/datadeklarasi/deklarasi_form';
+        $this->load->view('backend/home', $data);
+    }
+
+    function edit_data($id)
+    {
+        $data = $this->M_datadeklarasi->get_by_id($id);
+        echo json_encode($data);
+    }
+
+    // MEREGENERATE KODE DEKLARASI
+    public function generate_kode()
+    {
+        $date = $this->input->post('date');
+        $kode = $this->M_datadeklarasi->max_kode($date)->row();
         if (empty($kode->kode_deklarasi)) {
             $no_urut = 1;
         } else {
@@ -74,24 +113,9 @@ class Datadeklarasi extends CI_Controller
             }
         }
         $urutan = str_pad($no_urut, 3, "0", STR_PAD_LEFT);
-        $data['kode'] = 'B' . date('ym') . $urutan;
-        $data['id'] = 0;
-        $data['title_view'] = "Data deklarasi Form";
-        $data['title'] = 'backend/datadeklarasi/deklarasi_form';
-        $this->load->view('backend/home', $data);
-    }
-
-     function edit_form($id)
-    {
-        $data['id'] = $id;
-        $data['title_view'] = "Edit Data Deklarasi";
-        $data['title'] = 'backend/datadeklarasi/deklarasi_form';
-        $this->load->view('backend/home', $data);
-    }
-
-       function edit_data($id)
-    {
-        $data = $this->M_datadeklarasi->get_by_id($id);
+        $month = substr($date, 3, 2);
+        $year = substr($date, 8, 2);
+        $data = 'b' . $year . $month . $urutan;
         echo json_encode($data);
     }
 
@@ -140,10 +164,9 @@ class Datadeklarasi extends CI_Controller
         echo json_encode(array("status" => TRUE));
     }
 
-     function delete($id)
+    function delete($id)
     {
         $this->M_datadeklarasi->delete($id);
         echo json_encode(array("status" => TRUE));
     }
-    
 }
