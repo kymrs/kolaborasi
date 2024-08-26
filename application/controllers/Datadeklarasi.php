@@ -121,28 +121,29 @@ class Datadeklarasi extends CI_Controller
 
     public function add()
     {
-        $kode = $this->M_datadeklarasi->max_kode()->row();
-        if (empty($kode->kode_deklarasi)) {
-            $no_urut = 1;
-        } else {
-            $bln = substr($kode->kode_deklarasi, 3, 2);
-            if ($bln != date('m')) {
-                $no_urut = 1;
-            } else {
-                $no_urut = substr($kode->kode_deklarasi, 5) + 1;
-            }
-        }
-        $urutan = str_pad($no_urut, 3, "0", STR_PAD_LEFT);
-        $kode_deklarasi = 'B' . date('ym') . $urutan;
+        // $kode = $this->M_datadeklarasi->max_kode()->row();
+        // if (empty($kode->kode_deklarasi)) {
+        //     $no_urut = 1;
+        // } else {
+        //     $bln = substr($kode->kode_deklarasi, 3, 2);
+        //     if ($bln != date('m')) {
+        //         $no_urut = 1;
+        //     } else {
+        //         $no_urut = substr($kode->kode_deklarasi, 5) + 1;
+        //     }
+        // }
+        // $urutan = str_pad($no_urut, 3, "0", STR_PAD_LEFT);
+        // $kode_deklarasi = 'B' . date('ym') . $urutan;
         $data = array(
-            'kode_deklarasi' => $kode_deklarasi,
+            'kode_deklarasi' => $this->input->post('kode_deklarasi'),
             'tanggal' => date('Y-m-d', strtotime($this->input->post('tanggal'))),
             'nama_pengajuan' => $this->input->post('nama_pengajuan'),
             'jabatan' => $this->input->post('jabatan'),
             'nama_dibayar' => $this->input->post('nama_dibayar'),
             'tujuan' => $this->input->post('tujuan'),
             'sebesar' => $this->input->post('sebesar'),
-            'status' => $this->input->post('status'),
+            'mengetahui' => $this->input->post('mengetahui'),
+            'menyetujui' => $this->input->post('menyetujui'),
         );
         $this->M_datadeklarasi->save($data);
         echo json_encode(array("status" => TRUE));

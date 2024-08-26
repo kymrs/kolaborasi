@@ -305,7 +305,6 @@
             onSelect: function(dateText) {
                 var id = dateText;
                 $('#tgl_deklarasi').removeClass("is-invalid");
-                console.log(id);
 
                 // Menghapus label error secara manual jika ada
                 if ($("#tgl_deklarasi-error").length) {
@@ -319,7 +318,6 @@
                     },
                     dataType: "JSON",
                     success: function(data) {
-                        console.log(data);
                         $('#kode_deklarasi').val(data.toUpperCase());
                         $('#kode').val(data);
                     },

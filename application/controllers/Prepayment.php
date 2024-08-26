@@ -60,6 +60,7 @@ class Prepayment extends CI_Controller
                 }
             }
 
+            $formatted_nominal = number_format($field->total_nominal, 0, ',', '.');
             $no++;
             $row = array();
             $row[] = $no;
@@ -70,6 +71,7 @@ class Prepayment extends CI_Controller
             $row[] = strtoupper($field->jabatan);
             $row[] = $field->tgl_prepayment;
             $row[] = $field->prepayment;
+            $row[] = $formatted_nominal;
             // $row[] = $field->tujuan;
             $row[] = $status;
 

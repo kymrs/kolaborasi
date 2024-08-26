@@ -37,6 +37,7 @@
                                 <th>Jabatan</th>
                                 <th>Tanggal Pengajuan</th>
                                 <th>Prepayment</th>
+                                <th>Total nominal</th>
                                 <!-- <th>Tujuan</th> -->
                                 <th>Status</th>
                             </tr>
@@ -53,6 +54,7 @@
                                 <th>Jabatan</th>
                                 <th>Tanggal Pengajuan</th>
                                 <th>Prepayment</th>
+                                <th>Total nominal</th>
                                 <!-- <th>Tujuan</th> -->
                                 <th>Status</th>
                             </tr>
