@@ -147,9 +147,6 @@ class Reimbust extends CI_Controller
             'jumlah_prepayment' => $this->input->post('jumlah_prepayment')
         );
 
-        $reimbust_id = $this->M_reimbust->save($data1);
-
-
         // INISIASI VARIABEL INPUT DETAIL REIMBUST
         $pemakaian = $this->input->post('pemakaian');
         $tgl_nota = $this->input->post('tgl_nota');
@@ -189,6 +186,7 @@ class Reimbust extends CI_Controller
                 }
             }
 
+            $reimbust_id = $this->M_reimbust->save($data1);
 
             $data2[] = [
                 'reimbust_id' => $reimbust_id,
@@ -254,6 +252,11 @@ class Reimbust extends CI_Controller
                     $_FILES['file']['error'] = $_FILES['kwitansi']['error'][$i];
                     $_FILES['file']['size'] = $_FILES['kwitansi']['size'][$i];
 
+                    // Cek jika ukuran file melebihi batas
+                    if ($_FILES['file']['error'] == UPLOAD_ERR_INI_SIZE || $_FILES['file']['size'] > 3072 * 1024) {
+                        echo json_encode(array("status" => FALSE, "error" => "Ukuran file tidak boleh melebihi dari 3 MB."));
+                        return;
+                    }
 
                     $config['upload_path'] = './assets/backend/img/reimbust/kwitansi/';
                     $config['allowed_types'] = 'jpg|png';

@@ -23,6 +23,12 @@
                                         </select>
                                     </div>
                                 </div>
+                                <div class="form-group row" id="pelaporan_button">
+                                    <label class="col-sm-5"></label>
+                                    <div class="col-sm-7">
+                                        <div class="btn btn-primary btn-small" data-toggle="modal" data-target="#pelaporanModal">Pelaporan</div>
+                                    </div>
+                                </div>
                                 <div class="form-group row">
                                     <label class="col-sm-5">Tanggal Pengajuan</label>
                                     <div class="col-sm-7">
@@ -125,11 +131,55 @@
                         <?php } ?>
                         <?php if ($id == 0) { ?>
                             <input type="hidden" name="kode" id="kode" value="">
-                            <button type="submit" class="btn btn-primary btn-sm aksi"></button>
+                            <button type="submit" class="btn btn-primary btn-sm aksi" disabled style="cursor: not-allowed"></button>
                         <?php } else { ?>
                             <button type="submit" class="btn btn-primary btn-sm aksi"></button>
                         <?php } ?>
                         <!-- END PENENTUAN UPDATE ATAU ADD -->
+
+                        <!-- Modal Data Table Pelaporan -->
+                        <div class="modal fade" id="pelaporanModal" tabindex="-1" aria-labelledby="pelaporanModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="pelaporanModalLabel">Data Pelaporan</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <table id="table" class="table table-bordered table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>No</th>
+                                                    <th style="display: none">Action</th>
+                                                    <th>Kode Prepayment</th>
+                                                    <th>Nama</th>
+                                                    <th>Jabatan</th>
+                                                    <th>Tanggal Pengajuan</th>
+                                                    <th>Prepayment</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <th>No</th>
+                                                    <th style="display: none">Action</th>
+                                                    <th>Kode Prepayment</th>
+                                                    <th>Nama</th>
+                                                    <th>Jabatan</th>
+                                                    <th>Tanggal Pengajuan</th>
+                                                    <th>Prepayment</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                         <!-- Modal -->
                         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -181,6 +231,55 @@
 <?php $this->load->view('template/script'); ?>
 
 <script>
+    // Data table prepayment
+    var table;
+
+    // METHOD POST MENAMPILKAN DATA KE DATA TABLE
+    $(document).ready(function() {
+        var table = $('#table').DataTable({
+            "responsive": false,
+            "scrollX": true,
+            "processing": true,
+            "serverSide": true,
+            "order": [],
+            "ajax": {
+                "url": "<?php echo site_url('prepayment/get_list') ?>",
+                "type": "POST"
+            },
+            "columnDefs": [{
+                    "targets": [2, 5],
+                    "className": 'dt-head-nowrap'
+                },
+                {
+                    "targets": [1, 3, 7],
+                    "className": 'dt-body-nowrap'
+                }, {
+                    "targets": [0, 1],
+                    "orderable": false,
+                },
+            ]
+        });
+
+        // Event listener untuk baris tabel dalam modal
+        $('#table tbody').on('click', 'tr', function() {
+            // Ambil data dari baris yang diklik
+            let data = table.row(this).data();
+
+            // Masukkan data ke dalam input form di tampilan utama
+            $('#kode_reimbust').val(data[2]);
+            $('#nama').val(data[3]);
+            $('#jabatan').val(data[4]);
+            $('#tgl_pengajuan').val(data[5]);
+            $('#jumlah_prepayment').val(data[6]);
+            $('#hidden_jumlah_prepayment').val(data[6]);
+            $('#status').val(data[7]);
+
+            // Tutup modal setelah data dipilih
+            $('#pelaporanModal').modal('hide');
+        });
+    });
+
+
     $('#tgl_pengajuan').datepicker({
         dateFormat: 'dd-mm-yy',
         minDate: new Date(),
@@ -293,7 +392,7 @@
             // Tambahkan format ke input jumlah yang baru
             formatJumlahInput(`#jumlah-${rowCount}`);
             updateSubmitButtonState(); // Perbarui status tombol submit
-            // checkDeleteButtonState(); // Cek tombol delete setelah baris ditambahkan
+            checkDeleteButtonState(); // Cek tombol delete setelah baris ditambahkan
 
             //VALIDASI ROW YANG TELAH DI APPEND
             $("#form").validate().settings.rules[`pemakaian[${rowCount}]`] = {
@@ -372,7 +471,7 @@
             if (rowCount > 0) {
                 $('.aksi').prop('disabled', false).css('cursor', 'pointer'); // Enable submit button
             } else {
-                $('.aksi').prop('disabled', true).css('cursor', 'not-allowed'); // Disable submit button
+                $('.aksi').prop('disabled', true); // Disable submit button
             }
         }
 
@@ -416,22 +515,25 @@
         function handleSifatPelaporanChange(sifatPelaporan) {
             if (aksi == 'add') {
                 if (sifatPelaporan == 'Reimbust') {
+                    $('#pelaporan_button').css('display', 'none');
+                    $('#tgl_pengajuan').prop('disabled', false).css('cursor', 'pointer');
                     $('#nama').prop('disabled', false).css('cursor', 'auto');
                     $('#departemen').prop('disabled', false).css('cursor', 'pointer');
                     $('#jabatan').prop('disabled', false).css('cursor', 'auto');
-                    $('#tgl_pengajuan').prop('disabled', false).css('cursor', 'pointer');
                     $('#tujuan').prop('disabled', false).css('cursor', 'auto');
                     $('#status').prop('disabled', false).css('cursor', 'pointer');
                     $('#jumlah_prepayment').prop('disabled', false).css('cursor', 'auto');
                 } else if (sifatPelaporan == 'Pelaporan') {
-                    $('#nama').prop('disabled', true).css('cursor', 'auto');
-                    $('#departemen').prop('disabled', true).css('cursor', 'pointer');
-                    $('#jabatan').prop('disabled', false).css('cursor', 'auto');
+                    $('#pelaporan_button').css('display', 'flex');
                     $('#tgl_pengajuan').prop('disabled', false).css('cursor', 'pointer');
+                    $('#nama').prop('disabled', false).css('cursor', 'auto');
+                    $('#departemen').prop('disabled', false).css('cursor', 'pointer');
+                    $('#jabatan').prop('disabled', false).css('cursor', 'auto');
                     $('#tujuan').prop('disabled', false).css('cursor', 'auto');
                     $('#status').prop('disabled', false).css('cursor', 'pointer');
                     $('#jumlah_prepayment').prop('disabled', false).css('cursor', 'auto');
                 } else {
+                    $('#pelaporan_button').css('display', 'none');
                     $('#nama').prop('disabled', true).css('cursor', 'not-allowed');
                     $('#departemen').prop('disabled', true).css('cursor', 'not-allowed');
                     $('#jabatan').prop('disabled', true).css('cursor', 'not-allowed');
@@ -566,6 +668,25 @@
                                 required: true
                             };
                             rowCount = index + 1;
+
+                            // Inisialisasi Datepicker pada elemen dengan id 'tgl_nota'
+                            $(document).on('focus', '.tgl_nota', function() {
+                                $(this).datepicker({
+                                    dateFormat: 'dd-mm-yy', // Format default sementara
+                                    changeMonth: true,
+                                    changeYear: true,
+                                    onSelect: function(dateText, inst) {
+                                        // Hapus kelas error dan elemen pesan error saat tanggal dipilih
+                                        $(this).removeClass('is-invalid');
+
+                                        for (i = 1; i <= rowCount; i++) {
+                                            if ($(`#tgl_nota_${i}-error`).length) {
+                                                $(`#tgl_nota_${i}-error`).remove();
+                                            }
+                                        }
+                                    }
+                                }).datepicker('show');
+                            });
                         });
                     }
 

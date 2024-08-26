@@ -121,3 +121,18 @@ footer p {
     color: #ccc;
     padding: 10px 0;
 }
+
+/* Menghilangkan action pada datatable prepayment (pada modal data table tampilan reimbust) */
+
+#pelaporanModal #table tbody tr td:nth-child(2) {
+    display: none;
+}
+
+#pelaporanModal #table tbody tr {
+    cursor: pointer;
+}
+
+#pelaporanModal #table tbody tr:hover {
+    background-color: #888;
+    color: white;
+}
