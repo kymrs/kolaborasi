@@ -65,21 +65,21 @@
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="tujuan">Tujuan</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="tujuan" name="tujuan" required>
+                                        <input type="text" class="form-control" id="tujuan" name="tujuan">
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="sebesar">Sebesar</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="sebesar" required>
-                                        <input type="hidden" class="form-control" id="hidden_sebesar" name="sebesar" required>
+                                        <input type="text" class="form-control" id="sebesar">
+                                        <input type="hidden" class="form-control" id="hidden_sebesar" name="sebesar">
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="app_name">Mengetahui</label>
                                     <div class="col-sm-7">
                                         <select class="form-control" name="app_name" id="app_name">
-                                            <option value="">-- Pilih --</option>
+                                            <option selected disabled>-- Pilih --</option>
                                             <?php foreach ($mengetahui as $know) { ?>
                                                 <option value="<?= $know->fullname ?>"><?= $know->fullname ?></option>
                                             <?php } ?>
@@ -90,7 +90,7 @@
                                     <label class="col-sm-5" for="app2_name">Menyetujui</label>
                                     <div class="col-sm-7">
                                         <select class="form-control" name="app2_name" id="app2_name">
-                                            <option value="">-- Pilih --</option>
+                                            <option selected disabled>-- Pilih --</option>
                                             <?php foreach ($menyetujui as $agree) { ?>
                                                 <option value="<?= $agree->fullname ?>"><?= $agree->fullname ?></option>
                                             <?php } ?>
@@ -119,43 +119,6 @@
     </div>
 </div>
 
-
-<div class="modal fade" id="appModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Approval</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form method="POST" action="<?= base_url('deklarasi/approve') ?>">
-                    <div class="form-group">
-                        <label for="app_name">Nama</label>
-                        <input type="text" class="form-control" name="app_name" id="app_name" aria-describedby="emailHelp">
-                        <!-- HIDDEN INPUT -->
-                        <input type="hidden" id="hidden_id" name="hidden_id" value="">
-                    </div>
-                    <div class="form-group">
-                        <label for="app_status">Approve</label>
-                        <select id="app_status" name="app_status" class="form-control">
-                            <option selected disabled>Choose...</option>
-                            <option value="approved">Approved</option>
-                            <option value="rejected">Rejected</option>
-                            <option value="revised">Revised</option>
-                        </select>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Save changes</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
 <?php $this->load->view('template/footer'); ?>
 <?php $this->load->view('template/script'); ?>
 
@@ -176,6 +139,7 @@
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
+                    // console.log(data);
                     moment.locale('id')
                     $('#id').val(data.id);
                     $('#kode_deklarasi').val(data.kode_deklarasi).attr('readonly', true);
@@ -185,7 +149,10 @@
                     $('#nama_dibayar').val(data.nama_dibayar);
                     $('#tujuan').val(data.tujuan);
                     $('#sebesar').val(data.sebesar.replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
+                    $('#hidden_sebesar').val(data.sebesar);
                     $('#status').val(data.status);
+                    $('#app_name').val(data.app_name);
+                    $('#app2_name').val(data.app2_name);
                     $('#signNamaPengajuan').text(data.nama_pengajuan); // Populate the signature name on load
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
@@ -203,7 +170,8 @@
             $('#nama_dibayar').prop('readonly', true);
             $('#tujuan').prop('readonly', true);
             $('#sebesar').prop('readonly', true).val(data.sebesar.replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
-            $('#status').prop('disabled', true);
+            $('#app_name').prop('disabled', true);
+            $('#app2_name').prop('disabled', true);
         }
 
         $("#form").submit(function(e) {
@@ -223,6 +191,7 @@
                 data: $('#form').serialize(),
                 dataType: "JSON",
                 success: function(data) {
+                    console.log(data);
                     if (data.status) {
                         Swal.fire({
                             position: 'center',
@@ -258,12 +227,15 @@
                 tujuan: {
                     required: true,
                 },
-                sebesar: {
-                    required: true,
-                },
-                status: {
-                    required: true,
-                },
+                // sebesar: {
+                //     required: true,
+                // },
+                // app_name: {
+                //     required: true,
+                // },
+                // app2_name: {
+                //     require: true,
+                // }
             },
             messages: {
                 tgl_deklarasi: {
@@ -281,12 +253,15 @@
                 tujuan: {
                     required: "Tujuan Harus Diisi",
                 },
-                sebesar: {
-                    required: "Sebesar Harus Diisi",
-                },
-                status: {
-                    required: "Status Harus Diisi",
-                },
+                // sebesar: {
+                //     required: "Sebesar Harus Diisi",
+                // },
+                // app_name: {
+                //     required: "Yang Mengetahui Harus Diisi",
+                // },
+                // app2_name: {
+                //     required: "Yang Menyetujui Harus Diisi",
+                // }
             },
             errorPlacement: function(error, element) {
                 if (element.parent().hasClass('input-group')) {
