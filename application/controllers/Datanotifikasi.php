@@ -35,12 +35,11 @@ class Datanotifikasi extends CI_Controller
             $row[] = $field->jabatan;
             $row[] = $field->departemen;
             $row[] = $field->pengajuan;
-            $row[] = $field->tanggal;
+            $row[] = date("d M Y", strtotime($field->tanggal));
             $row[] = $field->waktu;
             $row[] = $field->alasan;
             $row[] = $field->status;
             $row[] = $field->catatan;
-            $row[] = $field->notifikasi;
             $data[] = $row;
         }
 
@@ -124,7 +123,6 @@ class Datanotifikasi extends CI_Controller
             'alasan' => $this->input->post('alasan'),
             'status' => $this->input->post('status'),
             'catatan' => $this->input->post('catatan'),
-            'notifikasi' => $this->input->post('notifikasi'),
         );
         $this->M_datanotifikasi->save($data);
         echo json_encode(array("status" => TRUE));
@@ -142,7 +140,6 @@ class Datanotifikasi extends CI_Controller
             'alasan' => $this->input->post('alasan'),
             'status' => $this->input->post('status'),
             'catatan' => $this->input->post('catatan'),
-            'notifikasi' => $this->input->post('notifikasi'),
         );
         $this->db->where('id', $this->input->post('id'));
         $this->db->update('tbl_notifikasi', $data);

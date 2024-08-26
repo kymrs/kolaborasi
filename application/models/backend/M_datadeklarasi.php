@@ -78,10 +78,11 @@ class M_datadeklarasi extends CI_Model
         return $this->db->get($this->table)->row();
     }
 
-    public function max_kode()
+    public function max_kode($date)
     {
+        $formatted_date = date('ym', strtotime($date));
         $this->db->select('kode_deklarasi');
-        $where = 'id=(SELECT max(id) FROM tbl_deklarasi where SUBSTRING(kode_deklarasi, 2, 4) = ' . date('ym') . ')';
+        $where = 'id=(SELECT max(id) FROM tbl_deklarasi where SUBSTRING(kode_deklarasi, 2, 4) = ' . $formatted_date . ')';
         $this->db->where($where);
         $query = $this->db->get('tbl_deklarasi');
         return $query;
@@ -91,6 +92,22 @@ class M_datadeklarasi extends CI_Model
     {
         $this->db->insert($this->table, $data);
         return $this->db->insert_id();
+    }
+
+    public function mengetahui()
+    {
+        $this->db->select('fullname');
+        $this->db->where('id_level', 3);
+        $query = $this->db->get('tbl_user');
+        return $query->result();
+    }
+
+    public function menyetujui()
+    {
+        $this->db->select('fullname');
+        $this->db->where('id_level', 4);
+        $query = $this->db->get('tbl_user');
+        return $query->result();
     }
 
     public function delete($id)

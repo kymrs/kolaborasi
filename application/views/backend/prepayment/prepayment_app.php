@@ -125,10 +125,10 @@
                                     <div id="knowStts"></div>
                                     <br>
                                     <div id="knowName"></div>
-                                    <?php if (strtolower($this->session->userdata('fullname')) != 'finance') { ?>
-                                        <button type="button" id="appBtn" class="btn btn-warning btn-block" data-toggle="modal" data-target="#appModal" data-id="<?= $id ?>" disabled>Approval</button>
-                                    <?php } else { ?>
+                                    <?php if ($this->session->userdata('id_level') == 3) { ?>
                                         <button type="button" id="appBtn" class="btn btn-warning btn-block" data-toggle="modal" data-target="#appModal" data-id="<?= $id ?>">Approval</button>
+                                    <?php } else { ?>
+                                        <button type="button" id="appBtn" class="btn btn-warning btn-block" data-toggle="modal" data-target="#appModal" data-id="<?= $id ?>" disabled>Approval</button>
                                     <?php } ?>
                                 </div>
 
@@ -139,10 +139,10 @@
                                     <div id="agreeStts"></div>
                                     <br>
                                     <div id="agreeName"></div>
-                                    <?php if (strtolower($this->session->userdata('fullname')) != 'head manager') { ?>
-                                        <button type="button" id="appBtn2" class="btn btn-warning btn-block" data-toggle="modal" data-target="#appModal" data-id="<?= $id ?>" disabled>Approval</button>
-                                    <?php } else { ?>
+                                    <?php if ($this->session->userdata('id_level') == 4) { ?>
                                         <button type="button" id="appBtn2" class="btn btn-warning btn-block" data-toggle="modal" data-target="#appModal" data-id="<?= $id ?>">Approval</button>
+                                    <?php } else { ?>
+                                        <button type="button" id="appBtn2" class="btn btn-warning btn-block" data-toggle="modal" data-target="#appModal" data-id="<?= $id ?>" disabled>Approval</button>
                                     <?php } ?>
                                 </div>
                             </div>
@@ -250,7 +250,7 @@
                 var nama, status, keterangan, nama2, status2, keterangan2, url;
 
                 // Memeriksa apakah data yang mengetahui ada
-                if (data['master']['app_name'] != null) {
+                if (data['master']['app_status'] != null) {
                     nama = data['master']['app_name'];
                     status = data['master']['app_status'];
                     keterangan = data['master']['app_keterangan'];
@@ -262,7 +262,7 @@
                 }
 
                 // Memeriksa apakah data yang menyetujui ada
-                if (data['master']['app2_name'] != null) {
+                if (data['master']['app2_status'] != null) {
                     nama2 = data['master']['app2_name'];
                     status2 = data['master']['app2_status'];
                     keterangan2 = data['master']['app2_keterangan'];
@@ -288,15 +288,16 @@
                 for (let index = 0; index < data['transaksi'].length; index++) {
                     const row = `<tr>
                                     <td><input type="text" class="form-control" name="rincian[${index + 1}]" value="${data['transaksi'][index]['rincian']}" readonly></td>
-                                    <td><input type="text" class="form-control" name="nominal[${index + 1}]" value="${data['transaksi'][index]['nominal']}" readonly></td>
+                                    <td><input type="text" class="form-control" name="nominal[${index + 1}]" value="${data['transaksi'][index]['nominal'].replace(/\B(?=(\d{3})+(?!\d))/g, '.')}" readonly></td>
                                     <td><input type="text" class="form-control" name="keterangan[${index + 1}]" value="${data['transaksi'][index]['keterangan']}"readonly></td>
                                 </tr>`;
                     $('#input-container').append(row);
                     total += Number(data['transaksi'][index]['nominal']);
                 }
+                const totalFormatted = total.toLocaleString('de-DE');
                 const ttl_row = `<tr>
                                         <td colspan="2" class="text-right">Total:</td>
-                                        <td><input type="text" value="${total}" class="form-control" name="total" readonly></td>
+                                        <td><input type="text" value="${totalFormatted}" class="form-control" name="total" readonly></td>
                                     </tr>`;
                 $('#input-container').append(ttl_row);
             },

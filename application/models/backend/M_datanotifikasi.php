@@ -7,8 +7,8 @@ class M_datanotifikasi extends CI_Model
 {
     var $id = 'id';
     var $table = 'tbl_notifikasi'; //nama tabel dari database
-    var $column_order = array(null, null, 'kode_notifikasi', 'nama', 'jabatan', 'departemen', 'pengajuan', 'tanggal', 'waktu', 'alasan', 'status', 'catatan', 'notifikasi');
-    var $column_search = array( 'kode_notifikasi', 'nama', 'jabatan', 'departemen', 'pengajuan', 'tanggal', 'waktu', 'alasan', 'status', 'catatan', 'notifikasi'); //field yang diizin untuk pencarian 
+    var $column_order = array(null, null, 'kode_notifikasi', 'nama', 'jabatan', 'departemen', 'pengajuan', 'tanggal', 'waktu', 'alasan', 'status', 'catatan');
+    var $column_search = array( 'kode_notifikasi', 'nama', 'jabatan', 'departemen', 'pengajuan', 'tanggal', 'waktu', 'alasan', 'status', 'catatan'); //field yang diizin untuk pencarian 
     var $order = array('id' => 'desc'); // default order 
 
     public function __construct()

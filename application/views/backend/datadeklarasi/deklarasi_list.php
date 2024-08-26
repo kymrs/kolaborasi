@@ -9,18 +9,21 @@
                 <div class="card-header py-3">
                     <a class="btn btn-primary btn-sm" href="<?= base_url('datadeklarasi/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Notification</a>
                 </div>
-                <div class="card-body p-4"> <!-- Added padding for spacing -->
-                    <div class="table-responsive"> <!-- Table wrapper -->
-                        <table id="declarationTable" class="table table-bordered table-striped display nowrap w-100 mb-4"> <!-- Added margin-bottom -->
+                <div class="card-body p-4">
+                    <!-- Added padding for spacing -->
+                    <div class="table-responsive">
+                        <!-- Table wrapper -->
+                        <table id="declarationTable" class="table table-bordered table-striped display nowrap w-100 mb-4">
+                            <!-- Added margin-bottom -->
                             <thead>
                                 <tr>
                                     <th>No</th>
                                     <th style="width: 120px;">Action</th>
                                     <th>Kode Deklarasi</th>
                                     <th>Tanggal</th>
-                                    <th>Nama Yang Mengajukan    </th>
+                                    <th>Pengaju</th>
                                     <th>Jabatan</th>
-                                    <th>Nama Yang menerima Pembayaran</th>
+                                    <th>Penerima</th>
                                     <th>Tujuan</th>
                                     <th>Sebesar</th>
                                     <th>Status</th>
@@ -35,9 +38,9 @@
                                     <th style="width: 120px;">Action</th>
                                     <th>Kode Deklarasi</th>
                                     <th>Tanggal</th>
-                                    <th>Nama Yang Mengajukan</th>
+                                    <th>Pengaju</th>
                                     <th>Jabatan</th>
-                                    <th>Nama Yang menerima Pembayaran</th>
+                                    <th>Penerima</th>
                                     <th>Tujuan</th>
                                     <th>Sebesar</th>
                                     <th>Status</th>
@@ -74,10 +77,17 @@
                 {
                     "targets": [1],
                     "className": 'dt-body-nowrap'
-                }, {
+                },
+                {
                     "targets": [0, 1], // Indices for non-orderable columns
                     "orderable": false,
                 },
+                {
+                    "targets": [8], // Adjust this index to the column containing the numeric values you want to format
+                    "render": function(data, type, row) {
+                        return formatNumber(data);
+                    }
+                }
             ],
         });
     });
@@ -99,7 +109,7 @@
                     dataType: "JSON",
                     success: function(data) {
                         Swal.fire({
-                            position: 'top-end',
+                            position: 'center',
                             icon: 'success',
                             title: 'Your data has been deleted',
                             showConfirmButton: false,
@@ -115,4 +125,11 @@
             }
         })
     };
+
+    function formatNumber(value) {
+        if (typeof value === 'number') {
+            value = value.toString();
+        }
+        return value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
 </script>
