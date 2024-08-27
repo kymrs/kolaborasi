@@ -137,7 +137,7 @@ class Prepayment extends CI_Controller
         $month = substr($date, 3, 2);
         $year = substr($date, 8, 2);
         $data = 'p' . $year . $month . $urutan;
-        echo json_encode($data);
+        echo json_encode($kode);
     }
 
     // UNTUK MENAMPILKAN FORM EDIT
