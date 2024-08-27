@@ -124,15 +124,18 @@ footer p {
 
 /* Menghilangkan action pada datatable prepayment (pada modal data table tampilan reimbust) */
 
-#pelaporanModal #table tbody tr td:nth-child(2) {
+#pelaporanModal #prepayment-table tbody tr td:nth-child(2),
+#deklarasiModal #deklarasi-table tbody tr td:nth-child(2) {
     display: none;
 }
 
-#pelaporanModal #table tbody tr {
+#pelaporanModal #prepayment-table tbody tr,
+#deklarasiModal #deklarasi-table tbody tr {
     cursor: pointer;
 }
 
-#pelaporanModal #table tbody tr:hover {
+#pelaporanModal #prepayment-table tbody tr:hover,
+#deklarasiModal #deklarasi-table tbody tr:hover {
     background-color: #888;
     color: white;
 }

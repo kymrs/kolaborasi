@@ -138,7 +138,7 @@
                         <?php } ?>
                         <!-- END PENENTUAN UPDATE ATAU ADD -->
 
-                        <!-- Modal Data Table Pelaporan -->
+                        <!-- Modal Data Table Prepayment -->
                         <div class="modal fade" id="pelaporanModal" tabindex="-1" aria-labelledby="pelaporanModalLabel" aria-hidden="true">
                             <div class="modal-dialog modal-xl modal-dialog-scrollable">
                                 <div class="modal-content">
@@ -149,7 +149,7 @@
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                        <table id="table" class="table table-bordered table-striped">
+                                        <table id="prepayment-table" class="table table-bordered table-striped">
                                             <thead>
                                                 <tr>
                                                     <th>No</th>
@@ -184,55 +184,47 @@
                             </div>
                         </div>
 
-                        <!-- Modal -->
-                        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog">
+                        <!-- Modal Data Table Deklarasi -->
+                        <div class="modal fade" id="deklarasiModal" tabindex="-1" aria-labelledby="deklarasiModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-xl modal-dialog-scrollable">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel">Deklarasi Form</h5>
+                                        <h5 class="modal-title" id="deklarasiModalLabel">Data Deklarasi</h5>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                        <div class="form-group">
-                                            <label for="tanggal">Tanggal</label>
-                                            <div class="input-group date" style="width: 150px !important">
-                                                <input type="date" class="form-control" name="tanggal" id="tanggal" placeholder="DD-MM-YYYY" autocomplete="off">
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="kode_deklarasi">Kode Deklarasi</label>
-                                            <input type="text" class="form-control" id="kode_deklarasi">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="nama_pengajuan">Nama yang mengajukan</label>
-                                            <input type="text" class="form-control" id="nama_pengajuan">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="jabatan">Jabatan</label>
-                                            <input type="text" class="form-control" id="jabatan">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="nama_penerima">Nama penerima</label>
-                                            <input type="text" class="form-control" id="nama_penerima">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="tujuan">Tujuan</label>
-                                            <input type="text" class="form-control" id="tujuan">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="sebesar">Sebesar</label>
-                                            <input type="text" class="form-control" id="sebesar">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="nama_penerima">Nama penerima</label>
-                                            <input type="text" class="form-control" id="nama_penerima">
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                        <button type="button" class="btn btn-primary">Save changes</button>
+                                        <table id="deklarasi-table" class="table table-bordered table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>No</th>
+                                                    <th style="display: none">Action</th>
+                                                    <th>Kode Deklarasi</th>
+                                                    <th>Tanggal</th>
+                                                    <th>Pengaju</th>
+                                                    <th>Jabatan</th>
+                                                    <th>Penerima</th>
+                                                    <th>Tujuan</th>
+                                                    <th>Sebesar</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <th>No</th>
+                                                    <th style="display: none">Action</th>
+                                                    <th>Kode Deklarasi</th>
+                                                    <th>Tanggal</th>
+                                                    <th>Pengaju</th>
+                                                    <th>Jabatan</th>
+                                                    <th>Penerima</th>
+                                                    <th>Tujuan</th>
+                                                    <th>Sebesar</th>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
@@ -261,7 +253,7 @@
 
     // METHOD POST MENAMPILKAN DATA KE DATA TABLE
     $(document).ready(function() {
-        var table = $('#table').DataTable({
+        var table = $('#prepayment-table').DataTable({
             "responsive": false,
             "scrollX": true,
             "processing": true,
@@ -280,6 +272,56 @@
                     "className": 'dt-body-nowrap'
                 }, {
                     "targets": [0, 1],
+                    "orderable": false,
+                },
+            ]
+        });
+
+        // Event listener untuk baris tabel dalam modal
+        $('#table tbody').on('click', 'tr', function() {
+            // Ambil data dari baris yang diklik
+            let data = table.row(this).data();
+
+            // Masukkan data ke dalam input form di tampilan utama
+            $('#kode_reimbust').val(data[2]);
+            $('#nama').val(data[3]);
+            $('#departemenPrepayment').val(data[4]);
+            $('#jabatan').val(data[5]);
+            $('#tgl_pengajuan').val(data[6]);
+            $('#jumlah_prepayment').val(data[8]);
+            var cleanedValue = data[8].replace(/\./g, '');
+            $('#hidden_jumlah_prepayment').val(cleanedValue);
+            $('#tujuan').val(data[7]);
+
+            // Tutup modal setelah data dipilih
+            $('#pelaporanModal').modal('hide');
+        });
+    });
+
+    // Data table deklarasi
+
+    // METHOD POST MENAMPILKAN DATA KE DATA TABLE
+    $(document).ready(function() {
+        var table = $('#deklarasi-table').DataTable({
+            "responsive": false,
+            "scrollX": true,
+            "processing": true,
+            "serverSide": true,
+            "order": [],
+            "ajax": {
+                "url": "<?php echo site_url('datadeklarasi/get_list') ?>",
+                "type": "POST"
+            },
+            "columnDefs": [{
+                    "targets": [2, 4, 6], // Adjusted indices to match the number of columns
+                    "className": 'dt-head-nowrap'
+                },
+                {
+                    "targets": [1],
+                    "className": 'dt-body-nowrap'
+                },
+                {
+                    "targets": [0, 1], // Indices for non-orderable columns
                     "orderable": false,
                 },
             ]
@@ -411,7 +453,7 @@
                             <span class="kwitansi-label">Max Size : 3MB</span>
                         </div>
                     </td>
-                    <td width="150" style="padding: 15px 10px"><div class="btn btn-primary btn-lg btn-block btn-sm" data-toggle="modal" data-target="#exampleModal" id="deklarasi">Deklarasi</div></td>
+                    <td width="150" style="padding: 15px 10px"><div class="btn btn-primary btn-lg btn-block btn-sm" data-toggle="modal" data-target="#deklarasiModal" id="deklarasi">Deklarasi</div></td>
                     <td><span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span></td>
                 </tr>
                 `;
@@ -474,16 +516,20 @@
                 const detailIdValue = $(this).find('input[name^="detail_id"]').val();
                 const pemakaianValue = $(this).find('input[name^="pemakaian"]').val();
                 const tgl_notaValue = $(this).find('input[name^="tgl_nota"]').val();
-                const jumlahValue = $(this).find('input[name^="jml"]').val();
-                const kwitansiValue = $(this).find('input[name^="kwitansi_image"]').val();
+                const jmlValue = $(this).find('input[name^="jml"]').val();
+                const jumlahValue = $(this).find('input[name^="jumlah"]').val();
+                const kwitansiValue = $(this).find('input[name^="kwitansi"]').val();
+                const kwitansiImageValue = $(this).find('input[name^="kwitansi_image"]').val();
 
                 $(this).attr('id', `row-${newRowNumber}`);
                 $(this).find('.row-number').text(newRowNumber);
                 $(this).find('input[name^="detail_id"]').attr('name', `detail_id[${newRowNumber}]`).attr('placeholder', `detail_id ${newRowNumber}`).val(detailIdValue);
                 $(this).find('input[name^="pemakaian"]').attr('name', `pemakaian[${newRowNumber}]`).attr('placeholder', `Pemakaian ${newRowNumber}`).val(pemakaianValue);
                 $(this).find('input[name^="tgl_nota"]').attr('name', `tgl_nota[${newRowNumber}]`).attr('placeholder', `Tanggal Nota ${newRowNumber}`).val(tgl_notaValue);
-                $(this).find('input[name^="jml"]').attr('name', `jml[${newRowNumber}]`).attr('placeholder', `Jumlah ${newRowNumber}`).val(jumlahValue);
-                $(this).find('input[name^="kwitansi_image"]').attr('name', `kwitansi_image[${newRowNumber}]`).attr('placeholder', `Input ${newRowNumber}`).val(kwitansiValue);
+                $(this).find('input[name^="jml"]').attr('name', `jml[${newRowNumber}]`).attr('placeholder', `Jumlah ${newRowNumber}`).val(jmlValue);
+                $(this).find('input[name^="jumlah"]').attr('name', `jumlah[${newRowNumber}]`).attr('placeholder', `Jumlah ${newRowNumber}`).val(jumlahValue);
+                $(this).find('input[name^="kwitansi"]').attr('name', `kwitansi[${newRowNumber}]`).attr('placeholder', `Input ${newRowNumber}`).val(kwitansiValue);
+                $(this).find('input[name^="kwitansi_image"]').attr('name', `kwitansi_image[${newRowNumber}]`).attr('placeholder', `Input ${newRowNumber}`).val(kwitansiImageValue);
                 $(this).find('.delete-btn').attr('data-id', newRowNumber).text('Delete');
             });
             rowCount = $('#input-container tr').length; // Update rowCount to the current number of rows
@@ -533,6 +579,19 @@
             $(this).next('.custom-file-label').addClass("selected").html(fileName);
         });
 
+        $('#sifat_pelaporan').on('change', function() {
+            var sifatPelaporan = $(this).val();
+
+            if (sifatPelaporan == 'Reimbust') {
+                $('input').val('');
+                $('textarea').val('');
+            } else if (sifatPelaporan != 'Reimbust' || sifatPelaporan != 'Pelaporan') {
+                $('input').val('');
+                $('textarea').val('');
+            }
+
+        });
+
         $('#sifat_pelaporan').on('input', function() {
             var sifatPelaporan = $(this).val();
             handleSifatPelaporanChange(sifatPelaporan);
@@ -543,27 +602,75 @@
             if (aksi == 'add') {
                 if (sifatPelaporan == 'Reimbust') {
                     $('#pelaporan_button').css('display', 'none');
-                    $('#tgl_pengajuan').prop('disabled', false).css('cursor', 'pointer');
-                    $('#nama').prop('disabled', false).css('cursor', 'auto');
+                    $('#tgl_pengajuan').prop({
+                        'disabled': false,
+                        'readonly': false
+                    }).css('cursor', 'pointer');
+                    $('#nama').prop({
+                        'disabled': false,
+                        'readonly': false
+                    }).css('cursor', 'auto');
                     $('#departemen').prop('disabled', false).css({
                         'cursor': 'pointer',
                         'display': 'block'
                     });
                     $('#departemenPrepayment').prop('disabled', true).css('display', 'none');
-                    $('#jabatan').prop('disabled', false).css('cursor', 'auto');
-                    $('#tujuan').prop('disabled', false).css('cursor', 'auto');
-                    $('#status').prop('disabled', false).css('cursor', 'pointer');
-                    $('#jumlah_prepayment').prop('disabled', false).css('cursor', 'auto');
+                    $('#jabatan').prop({
+                        'disabled': false,
+                        'readonly': false
+                    }).css('cursor', 'auto');
+                    $('#tujuan').prop({
+                        'disabled': false,
+                        'readonly': false
+                    }).css('cursor', 'auto');
+                    $('#status').prop({
+                        'disabled': false,
+                        'readonly': false
+                    }).css('cursor', 'pointer');
+                    $('#jumlah_prepayment').prop({
+                        'disabled': false,
+                        'readonly': false
+                    }).css('cursor', 'auto');
                 } else if (sifatPelaporan == 'Pelaporan') {
                     $('#pelaporan_button').css('display', 'flex');
-                    $('#tgl_pengajuan').prop('disabled', true).css('cursor', 'pointer');
-                    $('#nama').prop('disabled', true).css('cursor', 'auto');
-                    $('#departemen').prop('disabled', true).css('display', 'none');
-                    $('#departemenPrepayment').prop('disabled', true).css('display', 'block');
-                    $('#jabatan').prop('disabled', true).css('cursor', 'auto');
-                    $('#tujuan').prop('disabled', true).css('cursor', 'auto');
-                    $('#status').prop('disabled', true).css('cursor', 'pointer');
-                    $('#jumlah_prepayment').prop('disabled', true).css('cursor', 'auto');
+                    $('#tgl_pengajuan').prop({
+                        'disabled': false,
+                        'readonly': true
+                    }).css('cursor', 'not-allowed');
+                    $('#tgl_pengajuan').datepicker().on('focus', function() {
+                        $('.ui-datepicker').hide();
+                    });
+                    $('#nama').prop({
+                        'disabled': false,
+                        'readonly': true
+                    }).css('cursor', 'not-allowed');
+                    $('#departemen').prop({
+                        'disabled': false,
+                        'readonly': true
+                    }).css('display', 'none');
+                    $('#departemenPrepayment').prop({
+                        'disabled': false,
+                        'readonly': true
+                    }).css({
+                        'display': 'block',
+                        'cursor': 'not-allowed'
+                    });
+                    $('#jabatan').prop({
+                        'disabled': false,
+                        'readonly': true
+                    }).css('cursor', 'not-allowed');
+                    $('#tujuan').prop({
+                        'disabled': false,
+                        'readonly': true
+                    }).css('cursor', 'not-allowed');
+                    // $('#status').prop({
+                    //     'disabled': false,
+                    //     'readonly': true
+                    // }).css('cursor', 'pointer');
+                    $('#jumlah_prepayment').prop({
+                        'disabled': false,
+                        'readonly': true
+                    }).css('cursor', 'not-allowed');
                 } else {
                     $('#pelaporan_button').css('display', 'none');
                     $('#nama').prop('disabled', true).css('cursor', 'not-allowed');
@@ -594,14 +701,44 @@
                     $('#jumlah_prepayment').prop('readonly', false).css('cursor', 'auto');
                 } else if (sifatPelaporan == 'Pelaporan') {
                     $('#pelaporan_button').css('display', 'flex');
-                    $('#nama').prop('readonly', true).css('cursor', 'auto');
-                    $('#departemen').prop('disabled', true).css('display', 'none');
-                    $('#departemenPrepayment').prop('disabled', false).css('display', 'block');
-                    $('#jabatan').prop('readonly', false).css('cursor', 'auto');
-                    $('#tgl_pengajuan').prop('readonly', false).css('cursor', 'pointer');
-                    $('#tujuan').prop('readonly', false).css('cursor', 'auto');
-                    $('#status').prop('readonly', false).css('cursor', 'pointer');
-                    $('#jumlah_prepayment').prop('readonly', false).css('cursor', 'auto');
+                    $('#tgl_pengajuan').prop({
+                        'disabled': false,
+                        'readonly': true
+                    }).css('cursor', 'not-allowed');
+                    $('#tgl_pengajuan').datepicker().on('focus', function() {
+                        $('.ui-datepicker').hide();
+                    });
+                    $('#nama').prop({
+                        'disabled': false,
+                        'readonly': true
+                    }).css('cursor', 'not-allowed');
+                    $('#departemen').prop({
+                        'disabled': false,
+                        'readonly': true
+                    }).css('display', 'none');
+                    $('#departemenPrepayment').prop({
+                        'disabled': false,
+                        'readonly': true
+                    }).css({
+                        'display': 'block',
+                        'cursor': 'not-allowed'
+                    });
+                    $('#jabatan').prop({
+                        'disabled': false,
+                        'readonly': true
+                    }).css('cursor', 'not-allowed');
+                    $('#tujuan').prop({
+                        'disabled': false,
+                        'readonly': true
+                    }).css('cursor', 'not-allowed');
+                    // $('#status').prop({
+                    //     'disabled': false,
+                    //     'readonly': true
+                    // }).css('cursor', 'pointer');
+                    $('#jumlah_prepayment').prop({
+                        'disabled': false,
+                        'readonly': true
+                    }).css('cursor', 'not-allowed');
                 } else {
                     $('#nama').prop('readonly', true).css('cursor', 'not-allowed');
                     $('#departemen').prop('readonly', true).css('cursor', 'not-allowed');
@@ -691,7 +828,7 @@
                                     </td>
                                     <td>
                                         <input type="text" class="form-control" id="jumlah-${index}" value="${jumlahFormatted}" name="jml[${index + 1}]" autocomplete="off">
-                                        <input type="hidden" id="hidden_jumlah${index}" name="jumlah[${index + 1}]" value="${data['transaksi'][index]['jumlah']}">
+                                        <input type="text" id="hidden_jumlah${index}" name="jumlah[${index + 1}]" value="${data['transaksi'][index]['jumlah']}">
                                     </td>
                                     <td>
                                         <div class="custom-file">

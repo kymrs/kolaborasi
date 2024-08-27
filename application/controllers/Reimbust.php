@@ -238,18 +238,21 @@ class Reimbust extends CI_Controller
                     // Hapus row dari database berdasarkan id
                     $reimbust_detail = $this->db->get_where('tbl_reimbust_detail', ['id' => $id2])->row_array();
 
-                    $old_image = $reimbust_detail['kwitansi'];
-                    if ($old_image != 'default.jpg') {
-                        unlink(FCPATH . './assets/backend/img/reimbust/kwitansi/' . $old_image);
-                    }
+                    if ($reimbust_detail) {
+                        $old_image = $reimbust_detail['kwitansi'];
+                        if ($old_image != 'default.jpg') {
+                            @unlink(FCPATH . './assets/backend/img/reimbust/kwitansi/' . $old_image);
+                        }
 
-                    $this->db->where('id', $id2);
-                    $this->db->delete('tbl_reimbust_detail');
+                        $this->db->where('id', $id2);
+                        $this->db->delete('tbl_reimbust_detail');
+                    }
                 }
             }
 
             //MELAKUKAN REPLACE DATA LAMA DENGAN YANG BARU
             for ($i = 1; $i <= count($_POST['pemakaian']); $i++) {
+                $kwitansi = ''; // Inisialisasi variabel kwitansi
 
                 if (!empty($_FILES['kwitansi']['name'][$i])) {
                     $_FILES['file']['name'] = $_FILES['kwitansi']['name'][$i];
@@ -271,7 +274,6 @@ class Reimbust extends CI_Controller
 
                     $this->upload->initialize($config);
 
-
                     if ($this->upload->do_upload('file')) {
                         $id = !empty($detail_id[$i]) ? $detail_id[$i] : NULL;
 
@@ -280,10 +282,8 @@ class Reimbust extends CI_Controller
                         if ($reimbust_detail) {
                             $old_image = $reimbust_detail['kwitansi'];
 
-                            if ($old_image) {
-                                if ($old_image != 'default.jpg') {
-                                    unlink(FCPATH . './assets/backend/img/reimbust/kwitansi/' . $old_image);
-                                }
+                            if ($old_image && $old_image != 'default.jpg') {
+                                @unlink(FCPATH . './assets/backend/img/reimbust/kwitansi/' . $old_image);
                             }
                         }
                         $kwitansi = $this->upload->data('file_name');
@@ -296,32 +296,22 @@ class Reimbust extends CI_Controller
                 // Set id menjadi NULL jika reimbust_id tidak ada atau kosong
                 $id = !empty($detail_id[$i]) ? $detail_id[$i] : NULL;
 
-                if (!empty($kwitansi)) {
-                    $data2[] = array(
-                        'id' => $id,
-                        'reimbust_id' => $reimbust_id,
-                        'tgl_nota' => date('Y-m-d', strtotime($tgl_nota[$i])),
-                        'pemakaian' => $pemakaian[$i],
-                        'jumlah' => $jumlah[$i],
-                        'kwitansi' => $kwitansi
-                    );
-                } else {
-                    $data2[] = array(
-                        'id' => $id,
-                        'reimbust_id' => $reimbust_id,
-                        'tgl_nota' => date('Y-m-d', strtotime($tgl_nota[$i])),
-                        'pemakaian' => $pemakaian[$i],
-                        'jumlah' => $jumlah[$i],
-                        'kwitansi' => $kwitansi_image[$i]
-                    );
-                }
+                $data2 = array(
+                    'id' => $id,
+                    'reimbust_id' => $reimbust_id,
+                    'tgl_nota' => date('Y-m-d', strtotime($tgl_nota[$i])),
+                    'pemakaian' => $pemakaian[$i],
+                    'jumlah' => $jumlah[$i],
+                    'kwitansi' => !empty($kwitansi) ? $kwitansi : $kwitansi_image[$i]
+                );
 
                 // Menggunakan db->replace untuk memasukkan atau menggantikan data
-                $this->db->replace('tbl_reimbust_detail', $data2[$i - 1]);
+                $this->db->replace('tbl_reimbust_detail', $data2);
             }
         }
         echo json_encode(array("status" => TRUE));
     }
+
 
     function delete($id)
     {
