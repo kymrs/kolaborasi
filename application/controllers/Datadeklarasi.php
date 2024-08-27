@@ -178,7 +178,7 @@ class Datadeklarasi extends CI_Controller
             'jabatan' => $this->input->post('jabatan'),
             'nama_dibayar' => $this->input->post('nama_dibayar'),
             'tujuan' => $this->input->post('tujuan'),
-            'sebesar' => $this->input->post('sebesar'),
+            'sebesar' => $this->input->post('hidden_sebesar'),
             'app_name' => $this->input->post('app_name'),
             'app2_name' => $this->input->post('app2_name'),
         );
@@ -195,7 +195,7 @@ class Datadeklarasi extends CI_Controller
             'jabatan' => $this->input->post('jabatan'),
             'nama_dibayar' => $this->input->post('nama_dibayar'),
             'tujuan' => $this->input->post('tujuan'),
-            'sebesar' => $this->input->post('sebesar'),
+            'sebesar' => $this->input->post('hidden_sebesar'),
             'status' => $this->input->post('status'),
             'app_name' => $this->input->post('app_name'),
             'app2_name' => $this->input->post('app2_name'),

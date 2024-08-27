@@ -71,8 +71,8 @@
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="sebesar">Sebesar</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="sebesar">
-                                        <input type="hidden" class="form-control" id="hidden_sebesar" name="sebesar">
+                                        <input type="text" class="form-control" name="sebesar" id="sebesar">
+                                        <input type="hidden" class="form-control" id="hidden_sebesar" name="hidden_sebesar">
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -227,15 +227,15 @@
                 tujuan: {
                     required: true,
                 },
-                // sebesar: {
-                //     required: true,
-                // },
-                // app_name: {
-                //     required: true,
-                // },
-                // app2_name: {
-                //     require: true,
-                // }
+                sebesar: {
+                    required: true,
+                },
+                app_name: {
+                    required: true,
+                },
+                app2_name: {
+                    required: true,
+                }
             },
             messages: {
                 tgl_deklarasi: {
@@ -253,15 +253,15 @@
                 tujuan: {
                     required: "Tujuan Harus Diisi",
                 },
-                // sebesar: {
-                //     required: "Sebesar Harus Diisi",
-                // },
-                // app_name: {
-                //     required: "Yang Mengetahui Harus Diisi",
-                // },
-                // app2_name: {
-                //     required: "Yang Menyetujui Harus Diisi",
-                // }
+                sebesar: {
+                    required: "Sebesar Harus Diisi",
+                },
+                app_name: {
+                    required: "Yang Mengetahui Harus Diisi",
+                },
+                app2_name: {
+                    required: "Yang Menyetujui Harus Diisi",
+                }
             },
             errorPlacement: function(error, element) {
                 if (element.parent().hasClass('input-group')) {
@@ -270,6 +270,13 @@
                     error.insertAfter(element);
                 }
             },
+            highlight: function(element) {
+                $(element).addClass('is-invalid'); // Tambahkan kelas untuk menandai input tidak valid
+            },
+            unhighlight: function(element) {
+                $(element).removeClass('is-invalid'); // Hapus kelas jika input valid
+            },
+            focusInvalid: false, // Disable auto-focus on the first invalid field
         });
 
         $('#tgl_deklarasi').datepicker({

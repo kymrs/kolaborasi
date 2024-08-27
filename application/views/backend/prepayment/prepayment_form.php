@@ -144,8 +144,8 @@
 <script>
     $('#tgl_prepayment').datepicker({
         dateFormat: 'dd-mm-yy',
-        minDate: new Date(),
-        maxDate: new Date(),
+        // minDate: new Date(),
+        // maxDate: new Date(),
 
         // MENGENERATE KODE PREPAYMENT SETELAH PILIH TANGGAL
         onSelect: function(dateText) {
@@ -164,6 +164,7 @@
                 },
                 dataType: "JSON",
                 success: function(data) {
+                    console.log(data);
                     $('#kode_prepayment').val(data.toUpperCase());
                     $('#kode').val(data);
                 },

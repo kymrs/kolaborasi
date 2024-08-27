@@ -7,8 +7,8 @@ class M_datadeklarasi extends CI_Model
 {
     var $id = 'id';
     var $table = 'tbl_deklarasi'; //nama tabel dari database
-    var $column_order = array(null, null, 'kode_deklarasi', 'tanggal', 'nama_pengajuan', 'jabatan', 'nama_dibayar', 'tujuan', 'sebesar', 'status');
-    var $column_search = array('kode_deklarasi', 'tanggal', 'nama_pengajuan', 'jabatan', 'nama_dibayar', 'tujuan', 'sebesar', 'status'); //field yang diizin untuk pencarian 
+    var $column_order = array(null, null, 'kode_deklarasi', 'tgl_deklarasi', 'nama_pengajuan', 'jabatan', 'nama_dibayar', 'tujuan', 'sebesar', 'status');
+    var $column_search = array('kode_deklarasi', 'tgl_deklarasi', 'nama_pengajuan', 'jabatan', 'nama_dibayar', 'tujuan', 'sebesar', 'status'); //field yang diizin untuk pencarian 
     var $order = array('id' => 'desc'); // default order 
 
     public function __construct()
