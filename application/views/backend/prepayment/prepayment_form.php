@@ -30,12 +30,12 @@
                                         <input type="text" class="form-control" id="kode_prepayment" name="kode_prepayment" readonly>
                                     </div>
                                 </div>
-                                <div class="form-group row">
+                                <!-- <div class="form-group row">
                                     <label class="col-sm-5">Nama</label>
                                     <div class="col-sm-7">
                                         <input type="text" class="form-control" id="nama" name="nama" placeholder="Nama">
                                     </div>
-                                </div>
+                                </div> -->
                                 <div class="form-group row">
                                     <label class="col-sm-5">Divisi</label>
                                     <div class="col-sm-7">
@@ -67,28 +67,6 @@
                                     <label class="col-sm-5">Tujuan</label>
                                     <div class="col-sm-7">
                                         <textarea class="form-control" id="tujuan" name="tujuan" rows="2"></textarea>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-5">Mengetahui</label>
-                                    <div class="col-sm-7">
-                                        <select class="custom-select" name="app_name" aria-label="Default select example">
-                                            <option selected disabled>Pilih...</option>
-                                            <?php foreach ($mengetahui as $know) { ?>
-                                                <option value="<?= $know->fullname ?>"><?= $know->fullname ?></option>
-                                            <?php } ?>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-5">Menyetujui</label>
-                                    <div class="col-sm-7">
-                                        <select class="custom-select" name="app2_name" aria-label="Default select example">
-                                            <option selected disabled>Pilih...</option>
-                                            <?php foreach ($menyetujui as $agree) { ?>
-                                                <option value="<?= $agree->fullname ?>"><?= $agree->fullname ?></option>
-                                            <?php } ?>
-                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -164,7 +142,7 @@
                 },
                 dataType: "JSON",
                 success: function(data) {
-                    console.log(data);
+                    // console.log(data);
                     $('#kode_prepayment').val(data.toUpperCase());
                     $('#kode').val(data);
                 },
@@ -251,9 +229,9 @@
             $("#form").validate().settings.rules[`nominal[${rowCount}]`] = {
                 required: true
             };
-            $("#form").validate().settings.rules[`keterangan[${rowCount}]`] = {
-                required: true
-            };
+            // $("#form").validate().settings.rules[`keterangan[${rowCount}]`] = {
+            //     required: true
+            // };
         }
 
         // MENGHAPUS ROW
@@ -402,9 +380,9 @@
                             $("#form").validate().settings.rules[`nominal[${index + 1}]`] = {
                                 required: true
                             };
-                            $("#form").validate().settings.rules[`keterangan[${index + 1}]`] = {
-                                required: true
-                            };
+                            // $("#form").validate().settings.rules[`keterangan[${index + 1}]`] = {
+                            //     required: true
+                            // };
                             rowCount = index + 1;
                         });
                     }

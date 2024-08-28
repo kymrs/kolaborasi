@@ -19,10 +19,10 @@
                     <label for="appFilter">Order:</label>
                     <select id="appFilter" name="appFilter">
                         <option value="" selected>Show all....</option>
-                        <option value="true">On-Process</option>
-                        <option value="3">Approved</option>
-                        <option value="1">Revised</option>
-                        <option value="2">Rejected</option>
+                        <option value="on-process">On-Process</option>
+                        <option value="approved">Approved</option>
+                        <option value="revised">Revised</option>
+                        <option value="rejected">Rejected</option>
                     </select>
                 </div>
                 <div class="card-body">
