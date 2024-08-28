@@ -9,8 +9,8 @@ class M_prepayment extends CI_Model
     var $id = 'id';
     var $table = 'tbl_prepayment';
     var $table2 = 'tbl_prepayment_detail';
-    var $column_order = array(null, null, 'kode_prepayment', 'nama', 'divisi', 'jabatan', 'tgl_prepayment', 'prepayment', 'total_nominal', 'status');
-    var $column_search = array('kode_prepayment', 'nama', 'divisi', 'jabatan', 'tgl_prepayment', 'prepayment', 'total_nominal', 'status'); //field yang diizin untuk pencarian
+    var $column_order = array(null, null, 'kode_prepayment', 'id_user', 'divisi', 'jabatan', 'tgl_prepayment', 'prepayment', 'total_nominal', 'status');
+    var $column_search = array('kode_prepayment', 'id_user', 'divisi', 'jabatan', 'tgl_prepayment', 'prepayment', 'total_nominal', 'status'); //field yang diizin untuk pencarian
     var $order = array('id' => 'desc');
 
     // UNTUK QUERY DATA TABLE
@@ -47,17 +47,14 @@ class M_prepayment extends CI_Model
             $this->db->where('status', $_POST['status']);
         }
 
-        //tampilan list hak akses
-        if ($this->session->userdata('id_level') == 3) {
-            $this->db->where('app_name', $this->session->userdata('fullname'));
-            $this->db->group_start(); // Start grouping
-            $this->db->where('app_status !=', 'rejected');
-            $this->db->or_where('app_status', null);
-            $this->db->group_end(); // End grouping
-        } elseif ($this->session->userdata('id_level') == 4) {
-            $this->db->where('app2_name', $this->session->userdata('fullname'));
-            $this->db->where('app_status', 'approved');
-        }
+        // HAK AKSES SIAPA YANG DAPAT MELIHAT RECORD PREPAYMENT
+        $this->db->group_start(); // Membuka group_start untuk kondisi OR
+        $this->db->where('id_user', $this->session->userdata('id_user'));
+        $this->db->or_group_start() // Membuka or_group_start untuk kondisi app_name hingga app7_name
+            ->where('app_name', $this->session->userdata('fullname'))
+            ->or_where('app2_name', $this->session->userdata('fullname'))
+            ->group_end(); // Menutup or_group_start
+        $this->db->group_end(); // Menutup group_start untuk kondisi OR
 
         if (isset($_POST['order'])) {
             $this->db->order_by($this->column_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
@@ -115,22 +112,14 @@ class M_prepayment extends CI_Model
         return $query;
     }
 
-    // UNTUK QUERY MENAMPILKAN SELECT MENGETAHUI DI ADD_FORM
-    public function mengetahui()
+    // UNTUK QUERY MENENTUKAN SIAPA YANG MELAKUKAN APPROVAL
+    public function approval($id)
     {
-        $this->db->select('fullname');
-        $this->db->where('id_level', 3);
-        $query = $this->db->get('tbl_user');
-        return $query->result();
-    }
-
-    // UNTUK QUERY MENAMPILKAN SELECT MENYETUJUI DI ADD_FORM
-    public function menyetujui()
-    {
-        $this->db->select('fullname');
-        $this->db->where('id_level', 4);
-        $query = $this->db->get('tbl_user');
-        return $query->result();
+        $this->db->select('app_id, app2_id');
+        $this->db->from('tbl_approval');
+        $this->db->where('id_user', $id);
+        $query = $this->db->get();
+        return $query->row();
     }
 
     // UNTUK QUERY INSERT DATA PREPAYMENT
@@ -162,7 +151,6 @@ class M_prepayment extends CI_Model
     }
 
     // UNTUK QUERY APPROVE DATA PREPAYMENT
-
     public function approve2($data)
     {
         // var_dump($data);
