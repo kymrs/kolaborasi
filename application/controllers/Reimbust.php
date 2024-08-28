@@ -138,6 +138,7 @@ class Reimbust extends CI_Controller
         $pemakaian = $this->input->post('pemakaian');
         $tgl_nota = $this->input->post('tgl_nota');
         $jumlah = $this->input->post('jumlah');
+        $deklarasi = $this->input->post('deklarasi');
 
         // PERULANGAN UNTUK CEK UKURAN FILE
         for ($i = 1; $i <= count($pemakaian); $i++) {
@@ -197,7 +198,8 @@ class Reimbust extends CI_Controller
                 'pemakaian' => $pemakaian[$i],
                 'tgl_nota' => date('Y-m-d', strtotime($tgl_nota[$i])),
                 'jumlah' => $jumlah[$i],
-                'kwitansi' => $kwitansi
+                'kwitansi' => $kwitansi,
+                'deklarasi' => $deklarasi[$i]
             ];
         }
 
@@ -222,7 +224,6 @@ class Reimbust extends CI_Controller
 
         $this->db->where('id', $this->input->post('id'));
 
-        //UPDATE DETAIL PREPAYMENT
         $detail_id = $this->input->post('detail_id');
         $reimbust_id = $this->input->post('id');
         $pemakaian = $this->input->post('pemakaian');
@@ -231,11 +232,10 @@ class Reimbust extends CI_Controller
         $kwitansi_image = $this->input->post('kwitansi_image');
 
         if ($this->db->update('tbl_reimbust', $data)) {
-            // UNTUK MENGHAPUS ROW YANG TELAH DIDELETE
+            // 1. Hapus Baris yang Telah Dihapus
             $deletedRows = json_decode($this->input->post('deleted_rows'), true);
             if (!empty($deletedRows)) {
                 foreach ($deletedRows as $id2) {
-                    // Hapus row dari database berdasarkan id
                     $reimbust_detail = $this->db->get_where('tbl_reimbust_detail', ['id' => $id2])->row_array();
 
                     if ($reimbust_detail) {
@@ -250,8 +250,8 @@ class Reimbust extends CI_Controller
                 }
             }
 
-            //MELAKUKAN REPLACE DATA LAMA DENGAN YANG BARU
-            for ($i = 1; $i <= count($_POST['pemakaian']); $i++) {
+            // 2. Replace Data Lama dengan yang Baru
+            foreach ($pemakaian as $i => $p) {
                 $kwitansi = ''; // Inisialisasi variabel kwitansi
 
                 if (!empty($_FILES['kwitansi']['name'][$i])) {
@@ -261,7 +261,6 @@ class Reimbust extends CI_Controller
                     $_FILES['file']['error'] = $_FILES['kwitansi']['error'][$i];
                     $_FILES['file']['size'] = $_FILES['kwitansi']['size'][$i];
 
-                    // Cek jika ukuran file melebihi batas
                     if ($_FILES['file']['error'] == UPLOAD_ERR_INI_SIZE || $_FILES['file']['size'] > 3072 * 1024) {
                         echo json_encode(array("status" => FALSE, "error" => "Ukuran file tidak boleh melebihi dari 3 MB."));
                         return;
@@ -293,7 +292,6 @@ class Reimbust extends CI_Controller
                     }
                 }
 
-                // Set id menjadi NULL jika reimbust_id tidak ada atau kosong
                 $id = !empty($detail_id[$i]) ? $detail_id[$i] : NULL;
 
                 $data2 = array(
@@ -305,13 +303,12 @@ class Reimbust extends CI_Controller
                     'kwitansi' => !empty($kwitansi) ? $kwitansi : $kwitansi_image[$i]
                 );
 
-                // Menggunakan db->replace untuk memasukkan atau menggantikan data
+                // Replace data di tbl_reimbust_detail
                 $this->db->replace('tbl_reimbust_detail', $data2);
             }
         }
         echo json_encode(array("status" => TRUE));
     }
-
 
     function delete($id)
     {

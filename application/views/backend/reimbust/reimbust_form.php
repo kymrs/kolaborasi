@@ -10,7 +10,7 @@
                     <a class="btn btn-secondary btn-sm" href="<?= base_url('reimbust') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
-                    <form id="form" enctype="multipart/form-data" method="post" action="<?= base_url('reimbust/add') ?>">
+                    <form id="form" enctype="multipart/form-data">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group row">
@@ -278,7 +278,7 @@
         });
 
         // Event listener untuk baris tabel dalam modal
-        $('#table tbody').on('click', 'tr', function() {
+        $('#prepayment-table tbody').on('click', 'tr', function() {
             // Ambil data dari baris yang diklik
             let data = table.row(this).data();
 
@@ -313,11 +313,11 @@
                 "type": "POST"
             },
             "columnDefs": [{
-                    "targets": [2, 4, 6], // Adjusted indices to match the number of columns
+                    "targets": [2, 3, 4, 6], // Adjusted indices to match the number of columns
                     "className": 'dt-head-nowrap'
                 },
                 {
-                    "targets": [1],
+                    "targets": [1, 3],
                     "className": 'dt-body-nowrap'
                 },
                 {
@@ -327,27 +327,27 @@
             ]
         });
 
+        // Variabel untuk menyimpan rowCount
+        var currentRowCount;
+
+        // Event listener untuk tombol modal deklarasi
+        $(document).on('click', '[id^=deklarasi-modal]', function() {
+            // Simpan rowCount dari tombol yang diklik
+            currentRowCount = $(this).data('id');
+        });
+
         // Event listener untuk baris tabel dalam modal
-        $('#table tbody').on('click', 'tr', function() {
+        $('#deklarasi-table tbody').on('click', 'tr', function() {
             // Ambil data dari baris yang diklik
             let data = table.row(this).data();
 
-            // Masukkan data ke dalam input form di tampilan utama
-            $('#kode_reimbust').val(data[2]);
-            $('#nama').val(data[3]);
-            $('#departemenPrepayment').val(data[4]);
-            $('#jabatan').val(data[5]);
-            $('#tgl_pengajuan').val(data[6]);
-            $('#jumlah_prepayment').val(data[8]);
-            var cleanedValue = data[8].replace(/\./g, '');
-            $('#hidden_jumlah_prepayment').val(cleanedValue);
-            $('#tujuan').val(data[7]);
+            // Gunakan rowCount yang tersimpan untuk mengisi input yang sesuai
+            $('#deklarasi' + currentRowCount).val(data[2]);
 
             // Tutup modal setelah data dipilih
-            $('#pelaporanModal').modal('hide');
+            $('#deklarasiModal').modal('hide');
         });
     });
-
 
     $('#tgl_pengajuan').datepicker({
         dateFormat: 'dd-mm-yy',
@@ -453,7 +453,10 @@
                             <span class="kwitansi-label">Max Size : 3MB</span>
                         </div>
                     </td>
-                    <td width="150" style="padding: 15px 10px"><div class="btn btn-primary btn-lg btn-block btn-sm" data-toggle="modal" data-target="#deklarasiModal" id="deklarasi">Deklarasi</div></td>
+                    <td width="150" style="padding: 15px 10px">
+                        <div class="btn btn-primary btn-lg btn-block btn-sm" data-toggle="modal" data-target="#deklarasiModal" data-id="${rowCount}" id="deklarasi-modal${rowCount}">Deklarasi</div>
+                        <input type="text" class="form-control" id="deklarasi${rowCount}" placeholder="Deklarasi ${rowCount}" name="deklarasi[${rowCount}]" autocomplete="off">
+                    </td>
                     <td><span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span></td>
                 </tr>
                 `;
@@ -462,6 +465,10 @@
             formatJumlahInput(`#jumlah-${rowCount}`);
             updateSubmitButtonState(); // Perbarui status tombol submit
             checkDeleteButtonState(); // Cek tombol delete setelah baris ditambahkan
+
+            $(`#deklarasi-modal${rowCount}`).on('click', function() {
+                var rowId = $(this).data('id');
+            });
 
             //VALIDASI ROW YANG TELAH DI APPEND
             $("#form").validate().settings.rules[`pemakaian[${rowCount}]`] = {
@@ -519,7 +526,8 @@
                 const jmlValue = $(this).find('input[name^="jml"]').val();
                 const jumlahValue = $(this).find('input[name^="jumlah"]').val();
                 const kwitansiValue = $(this).find('input[name^="kwitansi"]').val();
-                const kwitansiImageValue = $(this).find('input[name^="kwitansi_image"]').val();
+                const kwitansiImageValue = $(this).find('#kwitansi_image').val();
+                const deklarasiValue = $(this).find('input[name^="deklarasi"]').val();
 
                 $(this).attr('id', `row-${newRowNumber}`);
                 $(this).find('.row-number').text(newRowNumber);
@@ -529,7 +537,8 @@
                 $(this).find('input[name^="jml"]').attr('name', `jml[${newRowNumber}]`).attr('placeholder', `Jumlah ${newRowNumber}`).val(jmlValue);
                 $(this).find('input[name^="jumlah"]').attr('name', `jumlah[${newRowNumber}]`).attr('placeholder', `Jumlah ${newRowNumber}`).val(jumlahValue);
                 $(this).find('input[name^="kwitansi"]').attr('name', `kwitansi[${newRowNumber}]`).attr('placeholder', `Input ${newRowNumber}`).val(kwitansiValue);
-                $(this).find('input[name^="kwitansi_image"]').attr('name', `kwitansi_image[${newRowNumber}]`).attr('placeholder', `Input ${newRowNumber}`).val(kwitansiImageValue);
+                $(this).find('#kwitansi_image').attr('name', `kwitansi_image[${newRowNumber}]`).attr('placeholder', `Input ${newRowNumber}`).val(kwitansiImageValue);
+                $(this).find('input[name^="deklarasi"]').attr('name', `deklarasi[${newRowNumber}]`).attr('placeholder', `Input ${newRowNumber}`).val(deklarasiValue);
                 $(this).find('.delete-btn').attr('data-id', newRowNumber).text('Delete');
             });
             rowCount = $('#input-container tr').length; // Update rowCount to the current number of rows
@@ -583,11 +592,21 @@
             var sifatPelaporan = $(this).val();
 
             if (sifatPelaporan == 'Reimbust') {
-                $('input').val('');
-                $('textarea').val('');
+                $('#tgl_pengajuan').val('');
+                $('#kode_reimbust').val('');
+                $('#nama').val('');
+                $('#departemen').val('');
+                $('#jabatan').val('');
+                $('#tujuan').val('');
+                $('#jumlah_prepayment').val('');
             } else if (sifatPelaporan != 'Reimbust' || sifatPelaporan != 'Pelaporan') {
-                $('input').val('');
-                $('textarea').val('');
+                $('#tgl_pengajuan').val('');
+                $('#kode_reimbust').val('');
+                $('#nama').val('');
+                $('#departemen').val('');
+                $('#jabatan').val('');
+                $('#tujuan').val('');
+                $('#jumlah_prepayment').val('');
             }
 
         });
@@ -606,6 +625,7 @@
                         'disabled': false,
                         'readonly': false
                     }).css('cursor', 'pointer');
+                    $('#tgl_pengajuan').css('pointer-events', 'auto');
                     $('#nama').prop({
                         'disabled': false,
                         'readonly': false
@@ -637,9 +657,7 @@
                         'disabled': false,
                         'readonly': true
                     }).css('cursor', 'not-allowed');
-                    $('#tgl_pengajuan').datepicker().on('focus', function() {
-                        $('.ui-datepicker').hide();
-                    });
+                    $('#tgl_pengajuan').css('pointer-events', 'none');
                     $('#nama').prop({
                         'disabled': false,
                         'readonly': true
@@ -828,18 +846,19 @@
                                     </td>
                                     <td>
                                         <input type="text" class="form-control" id="jumlah-${index}" value="${jumlahFormatted}" name="jml[${index + 1}]" autocomplete="off">
-                                        <input type="text" id="hidden_jumlah${index}" name="jumlah[${index + 1}]" value="${data['transaksi'][index]['jumlah']}">
+                                        <input type="hidden" id="hidden_jumlah${index}" name="jumlah[${index + 1}]" value="${data['transaksi'][index]['jumlah']}">
                                     </td>
                                     <td>
                                         <div class="custom-file">
                                             <input type="file" class="custom-file-input" name="kwitansi[${index + 1}]" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01">
                                             <label class="custom-file-label" for="inputGroupFile01">${data['transaksi'][index]['kwitansi']}</label>
                                         </div>
-                                        <input type="hidden" class="form-control" name="kwitansi_image[${index + 1}]" value="${data['transaksi'][index]['kwitansi']}">
+                                        <input type="hidden" class="form-control" id="kwitansi_image" name="kwitansi_image[${index + 1}]" value="${data['transaksi'][index]['kwitansi']}">
                                         <span class="kwitansi-label">Max Size : 3MB</span>
                                     </td>
                                     <td width="125" style="padding: 16px 10px !important">
-                                        <div class="btn btn-primary btn-lg btn-block btn-sm" data-toggle="modal" data-target="#exampleModal">Deklarasi</div>
+                                        <div class="btn btn-primary btn-lg btn-block btn-sm" data-toggle="modal" data-target="#deklarasiModal" data-id="${index + 1}" id="deklarasi-modal${index + 1}">Deklarasi</div>
+                                        <input type="text" class="form-control" id="deklarasi${rowCount}" placeholder="Deklarasi ${rowCount}" name="deklarasi[${index + 1}]" autocomplete="off">
                                     </td>
                                     <td><span class="btn delete-btn btn-danger" data-id="${index + 1}">Delete</span></td>
                                 </tr>
@@ -988,56 +1007,56 @@
             // });
         }
 
-        // $("#form").submit(function(e) {
-        //     e.preventDefault();
-        //     var $form = $(this);
-        //     if (!$form.valid()) return false;
+        $("#form").submit(function(e) {
+            e.preventDefault();
+            var $form = $(this);
+            if (!$form.valid()) return false;
 
-        //     var url;
-        //     if (id == 0) {
-        //         url = "<?php echo site_url('reimbust/add') ?>";
-        //     } else {
-        //         url = "<?php echo site_url('reimbust/update') ?>";
-        //     }
+            var url;
+            if (id == 0) {
+                url = "<?php echo site_url('reimbust/add') ?>";
+            } else {
+                url = "<?php echo site_url('reimbust/update') ?>";
+            }
 
-        //     var formData = new FormData(this);
+            var formData = new FormData(this);
 
-        //     $.ajax({
-        //         url: url,
-        //         type: "POST",
-        //         data: formData,
-        //         contentType: false,
-        //         processData: false,
-        //         dataType: "JSON",
-        //         success: function(data) {
-        //             if (data.status) {
-        //                 Swal.fire({
-        //                     position: 'center',
-        //                     icon: 'success',
-        //                     title: 'Your data has been saved',
-        //                     showConfirmButton: false,
-        //                     timer: 1500
-        //                 }).then((result) => {
-        //                     location.href = "<?= base_url('reimbust') ?>";
-        //                 });
-        //             } else {
-        //                 // Tampilkan pesan kesalahan
-        //                 Swal.fire({
-        //                     icon: 'error',
-        //                     title: 'Oops...',
-        //                     text: data.error
-        //                 });
-        //             }
-        //         },
-        //         error: function(jqXHR, textStatus, errorThrown) {
-        //             Swal.fire({
-        //                 icon: 'error',
-        //                 title: 'Error',
-        //                 text: 'Error adding / updating data: ' + textStatus
-        //             });
-        //         }
-        //     });
-        // });
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: formData,
+                contentType: false,
+                processData: false,
+                dataType: "JSON",
+                success: function(data) {
+                    if (data.status) {
+                        Swal.fire({
+                            position: 'center',
+                            icon: 'success',
+                            title: 'Your data has been saved',
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then((result) => {
+                            location.href = "<?= base_url('reimbust') ?>";
+                        });
+                    } else {
+                        // Tampilkan pesan kesalahan
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: data.error
+                        });
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Error adding / updating data: ' + textStatus
+                    });
+                }
+            });
+        });
 
 
         // $("#form").submit(function(e) {
