@@ -48,6 +48,7 @@ class M_prepayment extends CI_Model
         }
 
         // HAK AKSES SIAPA YANG DAPAT MELIHAT RECORD PREPAYMENT
+
         $this->db->group_start(); // Membuka group_start untuk kondisi OR
         $this->db->where('id_user', $this->session->userdata('id_user'));
         $this->db->or_group_start() // Membuka or_group_start untuk kondisi app_name hingga app7_name
