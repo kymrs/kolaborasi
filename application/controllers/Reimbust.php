@@ -196,7 +196,7 @@ class Reimbust extends CI_Controller
             $data2[] = [
                 'reimbust_id' => $reimbust_id,
                 'pemakaian' => $pemakaian[$i],
-                'tgl_nota' => date('Y-m-d', strtotime($tgl_nota[$i])),
+                'tgl_nota' => !empty($tgl_nota[$i]) ? date('Y-m-d', strtotime($tgl_nota[$i])) : date('Y-m-d'),
                 'jumlah' => $jumlah[$i],
                 'kwitansi' => $kwitansi,
                 'deklarasi' => $deklarasi[$i]
@@ -230,6 +230,7 @@ class Reimbust extends CI_Controller
         $jumlah = $this->input->post('jumlah');
         $tgl_nota = $this->input->post('tgl_nota');
         $kwitansi_image = $this->input->post('kwitansi_image');
+        $deklarasi = $this->input->post('deklarasi');
 
         if ($this->db->update('tbl_reimbust', $data)) {
             // 1. Hapus Baris yang Telah Dihapus
@@ -254,7 +255,8 @@ class Reimbust extends CI_Controller
             foreach ($pemakaian as $i => $p) {
                 $kwitansi = ''; // Inisialisasi variabel kwitansi
 
-                if (!empty($_FILES['kwitansi']['name'][$i])) {
+                // Cek apakah file kwitansi untuk indeks $i ada
+                if (isset($_FILES['kwitansi']['name'][$i]) && !empty($_FILES['kwitansi']['name'][$i])) {
                     $_FILES['file']['name'] = $_FILES['kwitansi']['name'][$i];
                     $_FILES['file']['type'] = $_FILES['kwitansi']['type'][$i];
                     $_FILES['file']['tmp_name'] = $_FILES['kwitansi']['tmp_name'][$i];
@@ -297,10 +299,11 @@ class Reimbust extends CI_Controller
                 $data2 = array(
                     'id' => $id,
                     'reimbust_id' => $reimbust_id,
-                    'tgl_nota' => date('Y-m-d', strtotime($tgl_nota[$i])),
+                    'tgl_nota' => !empty($tgl_nota[$i]) ? date('Y-m-d', strtotime($tgl_nota[$i])) : date('Y-m-d'),
                     'pemakaian' => $pemakaian[$i],
                     'jumlah' => $jumlah[$i],
-                    'kwitansi' => !empty($kwitansi) ? $kwitansi : $kwitansi_image[$i]
+                    'kwitansi' => !empty($kwitansi) ? $kwitansi : (isset($kwitansi_image[$i]) ? $kwitansi_image[$i] : ''),
+                    'deklarasi' => $deklarasi[$i]
                 );
 
                 // Replace data di tbl_reimbust_detail

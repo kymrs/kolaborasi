@@ -15,20 +15,21 @@
                             <div class="col-md-6">
                                 <div class="form-group row">
                                     <label class="col-sm-5">Sifat Pelaporan</label>
-                                    <div class="col-sm-7">
-                                        <select class="form-control" id="sifat_pelaporan" name="sifat_pelaporan">
+                                    <div class="col-sm-7" style="display: flex; justify-content: space-between; align-items: center">
+                                        <select class="form-control" id="sifat_pelaporan" name="sifat_pelaporan" style="display: inline-block">
                                             <option value="">-- Pilih --</option>
                                             <option value="Reimbust">Reimbust</option>
                                             <option value="Pelaporan">Pelaporan</option>
                                         </select>
+                                        <div class="btn btn-primary btn-small" data-toggle="modal" data-target="#pelaporanModal" id="pelaporan_button" style="margin-left: 7px;"><i class="fas fa-solid fa-search"></i></div>
                                     </div>
                                 </div>
-                                <div class="form-group row" id="pelaporan_button">
+                                <!-- <div class="form-group row" >
                                     <label class="col-sm-5"></label>
                                     <div class="col-sm-7">
                                         <div class="btn btn-primary btn-small" data-toggle="modal" data-target="#pelaporanModal">Pelaporan</div>
                                     </div>
-                                </div>
+                                </div> -->
                                 <div class="form-group row">
                                     <label class="col-sm-5">Tanggal Pengajuan</label>
                                     <div class="col-sm-7">
@@ -49,7 +50,7 @@
                                 <div class="form-group row">
                                     <label class="col-sm-5">Nama</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="nama" name="nama" autocomplete="off" placeholder="Nama">
+                                        <input type="text" class="form-control" id="nama" name="nama" autocomplete="off" placeholder="Nama" value="">
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -184,18 +185,66 @@
                             </div>
                         </div>
 
-                        <!-- Modal Data Table Deklarasi -->
+                        <!-- Modal Data Table Deklarasi add & update -->
                         <div class="modal fade" id="deklarasiModal" tabindex="-1" aria-labelledby="deklarasiModalLabel" aria-hidden="true">
                             <div class="modal-dialog modal-xl modal-dialog-scrollable">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="deklarasiModalLabel">Data Deklarasi</h5>
+                                        <a style="position: relative; right: 75px" class="btn btn-primary btn-sm" href="<?= base_url('datadeklarasi/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
+                                            <span style="position: relative; bottom: 5px" aria-hidden="true">&times;</span>
                                         </button>
                                     </div>
                                     <div class="modal-body">
                                         <table id="deklarasi-table" class="table table-bordered table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>No</th>
+                                                    <th style="display: none">Action</th>
+                                                    <th>Kode Deklarasi</th>
+                                                    <th>Tanggal</th>
+                                                    <th>Pengaju</th>
+                                                    <th>Jabatan</th>
+                                                    <th>Penerima</th>
+                                                    <th>Tujuan</th>
+                                                    <th>Sebesar</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <th>No</th>
+                                                    <th style="display: none">Action</th>
+                                                    <th>Kode Deklarasi</th>
+                                                    <th>Tanggal</th>
+                                                    <th>Pengaju</th>
+                                                    <th>Jabatan</th>
+                                                    <th>Penerima</th>
+                                                    <th>Tujuan</th>
+                                                    <th>Sebesar</th>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modal Data Table Deklarasi read -->
+                        <div class="modal fade" id="deklarasiModalRead" tabindex="-1" aria-labelledby="deklarasiModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="deklarasiModalLabel">Data Deklarasi</h5>
+                                        <a style="position: relative; right: 75px" class="btn btn-primary btn-sm" href="<?= base_url('datadeklarasi/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span style="position: relative; bottom: 5px" aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <table id="deklarasi-table-read" class="table table-bordered table-striped">
                                             <thead>
                                                 <tr>
                                                     <th>No</th>
@@ -313,7 +362,7 @@
                 "type": "POST"
             },
             "columnDefs": [{
-                    "targets": [2, 3, 4, 6], // Adjusted indices to match the number of columns
+                    "targets": [2, 3, 4, 6],
                     "className": 'dt-head-nowrap'
                 },
                 {
@@ -321,7 +370,7 @@
                     "className": 'dt-body-nowrap'
                 },
                 {
-                    "targets": [0, 1], // Indices for non-orderable columns
+                    "targets": [0, 1],
                     "orderable": false,
                 },
             ]
@@ -332,20 +381,70 @@
 
         // Event listener untuk tombol modal deklarasi
         $(document).on('click', '[id^=deklarasi-modal]', function() {
-            // Simpan rowCount dari tombol yang diklik
             currentRowCount = $(this).data('id');
         });
 
         // Event listener untuk baris tabel dalam modal
         $('#deklarasi-table tbody').on('click', 'tr', function() {
-            // Ambil data dari baris yang diklik
             let data = table.row(this).data();
-
-            // Gunakan rowCount yang tersimpan untuk mengisi input yang sesuai
             $('#deklarasi' + currentRowCount).val(data[2]);
+            $('#deklarasi-modal' + currentRowCount).text(data[2]);
+
+            if ($('#deklarasi' + currentRowCount).val().trim() !== '') {
+                // Disable semua input di baris yang sama
+                $('#deklarasi' + currentRowCount).closest('tr').find('input').prop('readonly', true);
+                $('#kwitansi-upload' + currentRowCount).css('pointer-events', 'none');
+                $('#upload' + currentRowCount).css('background-color', '#EAECF4').text('Deklarasi').val('');
+                $('#pemakaian' + currentRowCount).css('cursor', 'not-allowed').attr('placeholder', 'Deklarasi').val('');
+                $('#inputGroupFile01' + currentRowCount).val('');
+                $('#tgl_nota_' + currentRowCount).css({
+                    'cursor': 'not-allowed',
+                    'pointer-events': 'none'
+                }).attr('placeholder', 'Deklarasi').val('');
+                $('#jumlah-' + currentRowCount).css('cursor', 'not-allowed').attr('placeholder', 'Deklarasi').val('');
+                $('#hidden_jumlah' + currentRowCount).attr('placeholder', 'Deklarasi').val('');
+
+                $("#form").validate().settings.rules[`pemakaian[${currentRowCount}]`] = {
+                    required: false
+                };
+                $("#form").validate().settings.rules[`tgl_nota[${currentRowCount}]`] = {
+                    required: false
+                };
+                $("#form").validate().settings.rules[`jml[${currentRowCount}]`] = {
+                    required: false
+                };
+            }
 
             // Tutup modal setelah data dipilih
             $('#deklarasiModal').modal('hide');
+        });
+    });
+
+    // Deklarasi Modal Read
+    $(document).ready(function() {
+        var table = $('#deklarasi-table-read').DataTable({
+            "responsive": false,
+            "scrollX": true,
+            "processing": true,
+            "serverSide": true,
+            "order": [],
+            "ajax": {
+                "url": "<?php echo site_url('datadeklarasi/get_list') ?>",
+                "type": "POST"
+            },
+            "columnDefs": [{
+                    "targets": [2, 3, 4, 6],
+                    "className": 'dt-head-nowrap'
+                },
+                {
+                    "targets": [1, 3],
+                    "className": 'dt-body-nowrap'
+                },
+                {
+                    "targets": [0, 1],
+                    "orderable": false,
+                },
+            ]
         });
     });
 
@@ -438,7 +537,7 @@
             const row = `
                 <tr id="row-${rowCount}">
                     <td class="row-number">${rowCount}</td>
-                    <td><input type="text" class="form-control" name="pemakaian[${rowCount}]" value="" placeholder="Pemakaian ${rowCount}"  autocomplete="off"></td>
+                    <td><input type="text" class="form-control" name="pemakaian[${rowCount}]" value="" placeholder="Pemakaian ${rowCount}"  autocomplete="off" id="pemakaian${rowCount}"></td>
                     <td>
                         <input type="text" class="form-control tgl_nota" name="tgl_nota[${rowCount}]" id="tgl_nota_${rowCount}" style="cursor: pointer" autocomplete="off" placeholder="Tanggal Nota ${rowCount}">
                     </td>
@@ -446,16 +545,16 @@
                         <input type="text" class="form-control" id="jumlah-${rowCount}" placeholder="Jumlah ${rowCount}" name="jml[${rowCount}]" autocomplete="off">
                         <input type="hidden" id="hidden_jumlah${rowCount}" name="jumlah[${rowCount}]" value="">
                     </td>
-                    <td style="padding: 12px 12px 5px !important">
+                    <td style="padding: 12px 12px 5px !important" id="kwitansi-upload${rowCount}">
                         <div class="custom-file">
-                            <input type="file" class="custom-file-input" name="kwitansi[${rowCount}]" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01">
-                            <label class="custom-file-label" for="inputGroupFile01">Upload..</label>
+                            <input type="file" class="custom-file-input" name="kwitansi[${rowCount}]" id="inputGroupFile01${rowCount}" aria-describedby="inputGroupFileAddon01">
+                            <label class="custom-file-label" for="inputGroupFile01" id="upload${rowCount}">Upload..</label>
                             <span class="kwitansi-label">Max Size : 3MB</span>
                         </div>
                     </td>
                     <td width="150" style="padding: 15px 10px">
                         <div class="btn btn-primary btn-lg btn-block btn-sm" data-toggle="modal" data-target="#deklarasiModal" data-id="${rowCount}" id="deklarasi-modal${rowCount}">Deklarasi</div>
-                        <input type="text" class="form-control" id="deklarasi${rowCount}" placeholder="Deklarasi ${rowCount}" name="deklarasi[${rowCount}]" autocomplete="off">
+                        <input type="hidden" class="form-control" id="deklarasi${rowCount}" placeholder="Deklarasi ${rowCount}" name="deklarasi[${rowCount}]" autocomplete="off">
                     </td>
                     <td><span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span></td>
                 </tr>
@@ -481,6 +580,30 @@
                 required: true
             };
 
+            $(document).ready(function() {
+                // Event listener untuk input dengan ID yang dimulai dengan 'deklarasi'
+                $(document).on('input change', '[id^=deklarasi]', function() {
+                    // Cek jika input memiliki value
+                    if ($(this).val().trim() !== '') {
+                        // Disable semua input kecuali input dengan ID 'deklarasi'
+                        $(this).closest('tr').find('input').not(this).prop('disabled', true);
+                    } else {
+                        // Enable kembali semua input jika value dihapus
+                        $(this).closest('tr').find('input').prop('disabled', false);
+                    }
+                });
+            });
+
+            // $(document).ready(function() {
+            //     $('.custom-file-input').on('change', function() {
+            //         if ($(this).val()) {
+            //             $(`#deklarasi-modal${rowCount}`).text('tes');
+            //         } else {
+            //             $(`#deklarasi${rowCount}`).css('display', 'block');
+            //         }
+            //     });
+            // });
+
             // Inisialisasi Datepicker pada elemen dengan id 'tgl_nota'
             $(document).on('focus', '.tgl_nota', function() {
                 $(this).datepicker({
@@ -499,7 +622,6 @@
                     }
                 }).datepicker('show');
             });
-
         }
 
         function deleteRow(id) {
@@ -596,6 +718,7 @@
                 $('#kode_reimbust').val('');
                 $('#nama').val('');
                 $('#departemen').val('');
+                $('#departemenPrepayment').val('');
                 $('#jabatan').val('');
                 $('#tujuan').val('');
                 $('#jumlah_prepayment').val('');
@@ -604,6 +727,7 @@
                 $('#kode_reimbust').val('');
                 $('#nama').val('');
                 $('#departemen').val('');
+                $('#departemenPrepayment').val('');
                 $('#jabatan').val('');
                 $('#tujuan').val('');
                 $('#jumlah_prepayment').val('');
@@ -652,7 +776,7 @@
                         'readonly': false
                     }).css('cursor', 'auto');
                 } else if (sifatPelaporan == 'Pelaporan') {
-                    $('#pelaporan_button').css('display', 'flex');
+                    $('#pelaporan_button').css('display', 'inline-block');
                     $('#tgl_pengajuan').prop({
                         'disabled': false,
                         'readonly': true
@@ -706,6 +830,11 @@
             } else if (aksi == 'update') {
                 if (sifatPelaporan == 'Reimbust') {
                     $('#pelaporan_button').css('display', 'none');
+                    $('#tgl_pengajuan').prop({
+                        'disabled': false,
+                        'readonly': false
+                    }).css('cursor', 'pointer');
+                    $('#tgl_pengajuan').css('pointer-events', 'auto');
                     $('#nama').prop('readonly', false).css('cursor', 'auto');
                     $('#departemen').prop('disabled', false).css({
                         'display': 'block',
@@ -713,19 +842,16 @@
                     });
                     $('#departemenPrepayment').prop('disabled', true).css('display', 'none');
                     $('#jabatan').prop('readonly', false).css('cursor', 'auto');
-                    $('#tgl_pengajuan').prop('readonly', false).css('cursor', 'pointer');
                     $('#tujuan').prop('readonly', false).css('cursor', 'auto');
                     $('#status').prop('readonly', false).css('cursor', 'pointer');
                     $('#jumlah_prepayment').prop('readonly', false).css('cursor', 'auto');
                 } else if (sifatPelaporan == 'Pelaporan') {
-                    $('#pelaporan_button').css('display', 'flex');
+                    $('#pelaporan_button').css('display', 'inline-block');
                     $('#tgl_pengajuan').prop({
                         'disabled': false,
                         'readonly': true
                     }).css('cursor', 'not-allowed');
-                    $('#tgl_pengajuan').datepicker().on('focus', function() {
-                        $('.ui-datepicker').hide();
-                    });
+                    $('#tgl_pengajuan').css('pointer-events', 'none');
                     $('#nama').prop({
                         'disabled': false,
                         'readonly': true
@@ -836,7 +962,7 @@
                                 <tr id="row-${index + 1}">
                                     <td class="row-number">${index + 1}</td>
                                     <td>
-                                        <input type="text" class="form-control" name="pemakaian[${index + 1}]" value="${data['transaksi'][index]['pemakaian']}" autocomplete="off">
+                                        <input type="text" class="form-control" name="pemakaian[${index + 1}]" value="${data['transaksi'][index]['pemakaian']}" autocomplete="off" placeholder="${data['transaksi'][index]['pemakaian'] ? data['transaksi'][index]['pemakaian'] : 'Deklarasi'}">
                                         
                                         <input type="hidden" id="hidden_reimbust_id${index}" name="reimbust_id" value="${data['master']['id']}">
                                         <input type="hidden" id="hidden_detail_id${index}" name="detail_id[${index + 1}]" value="${data['transaksi'][index]['id']}">
@@ -848,17 +974,23 @@
                                         <input type="text" class="form-control" id="jumlah-${index}" value="${jumlahFormatted}" name="jml[${index + 1}]" autocomplete="off">
                                         <input type="hidden" id="hidden_jumlah${index}" name="jumlah[${index + 1}]" value="${data['transaksi'][index]['jumlah']}">
                                     </td>
-                                    <td>
+                                    <td id="kwitansi-upload${index + 1}">
                                         <div class="custom-file">
                                             <input type="file" class="custom-file-input" name="kwitansi[${index + 1}]" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01">
-                                            <label class="custom-file-label" for="inputGroupFile01">${data['transaksi'][index]['kwitansi']}</label>
+                                            <label class="custom-file-label" for="inputGroupFile01" id="upload${index + 1}">${data['transaksi'][index]['kwitansi']}</label>
                                         </div>
                                         <input type="hidden" class="form-control" id="kwitansi_image" name="kwitansi_image[${index + 1}]" value="${data['transaksi'][index]['kwitansi']}">
                                         <span class="kwitansi-label">Max Size : 3MB</span>
                                     </td>
                                     <td width="125" style="padding: 16px 10px !important">
-                                        <div class="btn btn-primary btn-lg btn-block btn-sm" data-toggle="modal" data-target="#deklarasiModal" data-id="${index + 1}" id="deklarasi-modal${index + 1}">Deklarasi</div>
-                                        <input type="text" class="form-control" id="deklarasi${rowCount}" placeholder="Deklarasi ${rowCount}" name="deklarasi[${index + 1}]" autocomplete="off">
+                                        <div class="btn btn-primary btn-lg btn-block btn-sm" 
+                                            data-toggle="modal" 
+                                            data-target="#deklarasiModal" 
+                                            data-id="${index + 1}" 
+                                            id="deklarasi-modal${index + 1}">
+                                            ${data['transaksi'][index]['deklarasi'] ? data['transaksi'][index]['deklarasi'] : 'Deklarasi'}
+                                        </div>
+                                        <input type="hidden" class="form-control" id="deklarasi${index + 1}" placeholder="Deklarasi ${index + 1}" name="deklarasi[${index + 1}]" autocomplete="off" value="${data['transaksi'][index]['deklarasi']}">
                                     </td>
                                     <td><span class="btn delete-btn btn-danger" data-id="${index + 1}">Delete</span></td>
                                 </tr>
@@ -868,16 +1000,41 @@
                             formatJumlahInput(`#jumlah-${index}`);
 
                             //VALIDASI ROW YANG TELAH DI APPEND
-                            $("#form").validate().settings.rules[`pemakaian[${index + 1}]`] = {
-                                required: true
-                            };
-                            $("#form").validate().settings.rules[`tgl_nota[${index + 1}]`] = {
-                                required: true
-                            };
-                            $("#form").validate().settings.rules[`jml[${index + 1}]`] = {
-                                required: true
-                            };
+                            // $("#form").validate().settings.rules[`pemakaian[${index + 1}]`] = {
+                            //     required: true
+                            // };
+                            // $("#form").validate().settings.rules[`tgl_nota[${index + 1}]`] = {
+                            //     required: true
+                            // };
+                            // $("#form").validate().settings.rules[`jml[${index + 1}]`] = {
+                            //     required: true
+                            // };
                             rowCount = index + 1;
+
+                            $(document).ready(function() {
+                                // Cek nilai input dan hapus value serta tambahkan placeholder jika perlu
+                                $('input[id^="jumlah-"]').each(function() {
+                                    var $input = $(this);
+                                    var value = $input.val();
+
+                                    if (value == '0') {
+                                        $input.val(''); // Hapus nilai input
+                                        $input.attr('placeholder', 'Deklarasi'); // Tambahkan placeholder
+                                    }
+                                });
+                            });
+
+                            $(document).ready(function() {
+                                // Cek nilai label dan lakukan tindakan jika nilainya adalah "null"
+                                $('label[id^="upload"]').each(function() {
+                                    var $label = $(this);
+                                    var text = $label.text().trim(); // Ambil teks dari label
+
+                                    if (text === 'null') {
+                                        $label.text('Deklarasi'); // Hapus teks label
+                                    }
+                                });
+                            });
 
                             // Inisialisasi Datepicker pada elemen dengan id 'tgl_nota'
                             $(document).on('focus', '.tgl_nota', function() {
@@ -914,7 +1071,7 @@
                                 <tr id="row-${index + 1}">
                                     <td class="row-number">${index + 1}</td>
                                     <td>
-                                        <input type="text" class="form-control" name="pemakaian[${index + 1}]" value="${data['transaksi'][index]['pemakaian']}" autocomplete="off" disabled style="cursor: not-allowed">
+                                        <input type="text" class="form-control" name="pemakaian[${index + 1}]" value="${data['transaksi'][index]['pemakaian']}" autocomplete="off" disabled style="cursor: not-allowed" placeholder="${data['transaksi'][index]['pemakaian'] ? data['transaksi'][index]['pemakaian'] : 'Deklarasi'}">
                                         
                                         <input type="hidden" id="hidden_reimbust_id${index}" name="reimbust_id" value="${data['master']['id']}">
                                         <input type="hidden" id="hidden_detail_id${index}" name="detail_id[${index + 1}]" value="${data['transaksi'][index]['id']}">
@@ -923,14 +1080,20 @@
                                         <input type="text" class="form-control tgl_nota" name="tgl_nota[${index + 1}]" style="cursor: pointer" autocomplete="off" value="${tglNotaFormatted}" disabled style="cursor: not-allowed">
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control" id="jumlah-${index}" value="${jumlahFormatted}" autocomplete="off" disabled style="cursor: not-allowed">
+                                        <input type="text" class="form-control" id="jumlah-${index}" value="${jumlahFormatted}" name="jml[${index + 1}]" autocomplete="off" disabled style="cursor: not-allowed">
                                         <input type="hidden" id="hidden_jumlah${index}" name="jumlah[${index + 1}]" value="${data['transaksi'][index]['jumlah']}">
                                     </td>
                                     <td width="150" style="padding: 15px 10px">
                                         <div class="btn btn-primary btn-lg btn-block btn-sm openModal" data-kwitansi="${data['transaksi'][index]['kwitansi']}">Lihat Foto</div>
                                     </td>
                                     <td width="150" style="padding: 15px 10px">
-                                        <div class="btn btn-primary btn-lg btn-block btn-sm" data-toggle="modal" data-target="#exampleModal">Deklarasi ${index + 1}</div>
+                                        <a href="<?= base_url() ?>datadeklarasi/read_form/25" class="btn btn-primary btn-lg btn-block btn-sm" 
+                                            data-id="${index + 1}"
+                                            data-deklarasi="${data['transaksi'][index]['deklarasi']}"
+                                            id="deklarasi-modal${index + 1}">
+                                            ${data['transaksi'][index]['deklarasi'] ? data['transaksi'][index]['deklarasi'] : 'Deklarasi'}
+                                        </a>
+                                        <input type="hidden" class="form-control" id="deklarasi${index + 1}" placeholder="Deklarasi ${index + 1}" name="deklarasi[${index + 1}]" autocomplete="off" value="${data['transaksi'][index]['deklarasi']}">
                                     </td>
                                     <td><span class="btn delete-btn btn-danger" data-id="${index + 1}" style="display: none">Delete</span></td>
                                 </tr>
@@ -953,16 +1116,38 @@
                             $('.openModal').on('click', function() {
                                 const kwitansi = $(this).data('kwitansi');
 
-                                console.log(kwitansi)
-
-                                modal.css("display", "block");
-                                modalImg.attr('src', `<?= base_url() ?>/assets/backend/img/reimbust/kwitansi/${kwitansi}`); // Ubah dengan path gambar yang ingin Anda tampilkan
-                                // captionText.text('Deskripsi gambar Anda di sini'); // Ubah dengan deskripsi gambar
+                                if (!kwitansi) {
+                                    $(this).text('Deklarasi');
+                                    $(this).css({
+                                        'background-color': '#EAECF4',
+                                        'color': '#888',
+                                        'border-color': '#EAECF4',
+                                        'cursor': 'not-allowed'
+                                    });
+                                } else {
+                                    // Jika data kwitansi ada, lanjutkan dengan membuka modal
+                                    modal.css("display", "block");
+                                    modalImg.attr('src', `<?= base_url() ?>/assets/backend/img/reimbust/kwitansi/${kwitansi}`);
+                                    // captionText.text('Deskripsi gambar Anda di sini'); // Ubah dengan deskripsi gambar
+                                }
                             });
 
                             // Ketika tombol close diklik, sembunyikan modal
                             $('.close').on('click', function() {
                                 modal.css("display", "none");
+                            });
+                        });
+
+                        $(document).ready(function() {
+                            // Cek nilai input dan hapus value serta tambahkan placeholder jika perlu
+                            $('input[id^="jumlah-"]').each(function() {
+                                var $input = $(this);
+                                var value = $input.val();
+
+                                if (value == '0') {
+                                    $input.val(''); // Hapus nilai input
+                                    $input.attr('placeholder', 'Deklarasi'); // Tambahkan placeholder
+                                }
                             });
                         });
                     }
@@ -1133,7 +1318,7 @@
                     required: "Jabatan is required",
                 },
                 sifat_pelaporan: {
-                    required: "Sifat Pelaporan is required",
+                    required: " ",
                 },
                 tgl_pengajuan: {
                     required: "Tanggal Pengajuan is required",
