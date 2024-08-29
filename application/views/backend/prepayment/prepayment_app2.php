@@ -173,7 +173,7 @@
     <div class="container">
         <div class="form-container">
             <div class="d-flex justify-content-end mb-3">
-                <a class="btn btn-danger btn-sm mr-2" href="<?= base_url('prepayment') ?>"><i class="fas fa-file-pdf"></i>&nbsp;Print Out</a>
+                <a class="btn btn-danger btn-sm mr-2" href="<?= base_url('prepayment/generate_pdf/' . $id) ?>"><i class="fas fa-file-pdf"></i>&nbsp;Print Out</a>
                 <?php if ($user->app_name == $app_name) { ?>
                     <a class="btn btn-warning btn-sm mr-2" id="appBtn" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
                 <?php } elseif ($user->app2_name == $app2_name) { ?>

@@ -335,6 +335,62 @@ class Prepayment extends CI_Controller
         echo json_encode(array("status" => TRUE));
     }
 
+    // GENERATE PREPAYMENT MENJADI PDF MENGGUNAKAN FPDF
+    public function generate_pdf($id)
+    {
+        // Load FPDF library
+        $this->load->library('fpdf');
+
+        // Load data from database based on $id
+        $data['master'] = $this->M_prepayment->get_by_id($id);
+        $data['transaksi'] = $this->M_prepayment->get_by_id_detail($id);
+
+        // Start FPDF
+        $pdf = new FPDF('P', 'mm', 'A4');
+        $pdf->AddPage();
+
+        // Set font for title
+        $pdf->SetFont('Arial', 'B', 14);
+        $pdf->Cell(0, 10, 'FORM PENGAJUAN PREPAYMENT', 0, 1, 'C');
+
+        // Set font for header section
+        $pdf->SetFont('Arial', '', 12);
+        $pdf->Cell(40, 10, 'Divisi: ' . $data['master']->divisi);
+        $pdf->Cell(60, 10, 'Prepayment: ' . $data['master']->prepayment, 0, 1);
+
+        // Add form data
+        $pdf->Cell(40, 10, 'Tanggal: ' . $data['master']->tgl_prepayment);
+        $pdf->Cell(60, 10, 'Nama: ' . $data['master']->id_user, 0, 1);
+        $pdf->Cell(40, 10, 'Jabatan: ' . $data['master']->jabatan, 0, 1);
+        $pdf->Cell(40, 10, 'Tujuan: ' . $data['master']->tujuan, 0, 1);
+
+        // Add table header
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->Cell(60, 10, 'Rincian', 1);
+        $pdf->Cell(60, 10, 'Nominal', 1);
+        $pdf->Cell(60, 10, 'Keterangan', 1, 1);
+
+        // Add table data
+        $pdf->SetFont('Arial', '', 12);
+        foreach ($data['transaksi'] as $row) {
+            $pdf->Cell(60, 10, $row->rincian, 1);
+            $pdf->Cell(60, 10, $row->nominal, 1);
+            $pdf->Cell(60, 10, $row->keterangan, 1, 1);
+        }
+
+        // Add signature section
+        $pdf->Ln(10);
+        $pdf->Cell(60, 10, 'Yang melakukan', 1);
+        $pdf->Cell(60, 10, 'Mengetahui', 1);
+        $pdf->Cell(60, 10, 'Menyetujui', 1, 1);
+        $pdf->Cell(60, 20, '', 1);
+        $pdf->Cell(60, 20, '', 1);
+        $pdf->Cell(60, 20, '', 1, 1);
+
+        // Output the PDF
+        $pdf->Output();
+    }
+
     // QUERY UNTUK INPUT TANDA TANGAN
     function signature()
     {
