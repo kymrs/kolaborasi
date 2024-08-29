@@ -8,7 +8,7 @@
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
                     <a class="btn btn-primary btn-sm" href="<?= base_url('datadeklarasi/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Notification</a>
-                    <label for="appFilter">Order:</label>
+                    <label for="appFilter">Filter:</label>
                     <select id="appFilter" name="appFilter">
                         <option value="" selected>Show all....</option>
                         <option value="on-process">On-Process</option>

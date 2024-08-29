@@ -7,8 +7,8 @@ class M_datadeklarasi extends CI_Model
 {
     var $id = 'id';
     var $table = 'tbl_deklarasi'; //nama tabel dari database
-    var $column_order = array(null, null, 'kode_deklarasi', 'tgl_deklarasi', 'nama_pengajuan', 'jabatan', 'nama_dibayar', 'tujuan', 'sebesar', 'status');
-    var $column_search = array('kode_deklarasi', 'tgl_deklarasi', 'nama_pengajuan', 'jabatan', 'nama_dibayar', 'tujuan', 'sebesar', 'status'); //field yang diizin untuk pencarian 
+    var $column_order = array(null, null, 'kode_deklarasi', 'tgl_deklarasi', 'name', 'jabatan', 'nama_dibayar', 'tujuan', 'sebesar', 'status');
+    var $column_search = array('kode_deklarasi', 'tgl_deklarasi', 'name', 'jabatan', 'nama_dibayar', 'tujuan', 'sebesar', 'status'); //field yang diizin untuk pencarian 
     var $order = array('id' => 'desc'); // default order 
 
     public function __construct()
@@ -19,7 +19,10 @@ class M_datadeklarasi extends CI_Model
     private function _get_datatables_query()
     {
 
+        // $this->db->from($this->table);
+        $this->db->select('tbl_deklarasi.*, tbl_data_user.name');
         $this->db->from($this->table);
+        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_deklarasi.id_pengaju', 'left');
 
         $i = 0;
 
@@ -31,9 +34,17 @@ class M_datadeklarasi extends CI_Model
                 if ($i === 0) // looping awal
                 {
                     $this->db->group_start();
-                    $this->db->like($item, $_POST['search']['value']);
+                    if ($item == 'name') {
+                        $this->db->like('tbl_data_user.' . $item, $_POST['search']['value']);
+                    } else {
+                        $this->db->like('tbl_deklarasi.' . $item, $_POST['search']['value']);
+                    }
                 } else {
-                    $this->db->or_like($item, $_POST['search']['value']);
+                    if ($item == 'name') {
+                        $this->db->or_like('tbl_data_user.' . $item, $_POST['search']['value']);
+                    } else {
+                        $this->db->or_like('tbl_deklarasi.' . $item, $_POST['search']['value']);
+                    }
                 }
 
                 if (count($this->column_search) - 1 == $i)
@@ -47,17 +58,12 @@ class M_datadeklarasi extends CI_Model
             $this->db->where('status', $_POST['status']);
         }
 
-        //tampilan list hak akses
-        if ($this->session->userdata('id_level') == 3) {
-            $this->db->where('app_name', $this->session->userdata('fullname'));
-            $this->db->group_start(); // Start grouping
-            $this->db->where('app_status !=', 'rejected');
-            $this->db->or_where('app_status', null);
-            $this->db->group_end(); // End grouping
-        } elseif ($this->session->userdata('id_level') == 4) {
-            $this->db->where('app2_name', $this->session->userdata('fullname'));
-            $this->db->where('app_status', 'approved');
-        }
+        // Tambahkan kondisi WHERE untuk user ID atau nama approval
+        $this->db->group_start()
+            ->where('tbl_deklarasi.id_pengaju', $this->session->userdata('id_user'))
+            ->or_where('tbl_deklarasi.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+            ->or_where('tbl_deklarasi.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+            ->group_end();
 
         if (isset($_POST['order'])) {
             $this->db->order_by($this->column_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
@@ -103,6 +109,16 @@ class M_datadeklarasi extends CI_Model
         $this->db->where($where);
         $query = $this->db->get('tbl_deklarasi');
         return $query;
+    }
+
+    // UNTUK QUERY MENENTUKAN SIAPA YANG MELAKUKAN APPROVAL
+    public function approval($id)
+    {
+        $this->db->select('app_id, app2_id');
+        $this->db->from('tbl_data_user');
+        $this->db->where('id_user', $id);
+        $query = $this->db->get();
+        return $query->row();
     }
 
     public function save($data)

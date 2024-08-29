@@ -27,36 +27,18 @@ class Datadeklarasi extends CI_Controller
         $no = $_POST['start'];
         foreach ($list as $field) {
 
-            //HAK AKSES
-            if ($id_level == 3 && $field->app_name == $fullname) {
-                $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                <a href="datadeklarasi/app_form/' . $field->id . '" class="btn btn-success btn-circle btn-sm" title="Approval"><i class="fa fa-check" aria-hidden="true"></i></a>';
-            } elseif ($id_level == 4 && $field->app2_name == $fullname) {
-                $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                        <a href="datadeklarasi/app_form/' . $field->id . '" class="btn btn-success btn-circle btn-sm" title="Approval"><i class="fa fa-check" aria-hidden="true"></i></a>';
-            } else {
-                if ($field->app_status == 'approved' || $field->app2_status == 'approved') {
-                    $action = $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                    <a href="datadeklarasi/app_form/' . $field->id . '" class="btn btn-success btn-circle btn-sm" title="Approval"><i class="fa fa-check" aria-hidden="true"></i></a>';
-                } elseif ($field->app_status == 'rejected' || $field->app2_status == 'rejected') {
-                    $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                    <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
-                    <a href="datadeklarasi/app_form/' . $field->id . '" class="btn btn-success btn-circle btn-sm" title="Approval"><i class="fa fa-check" aria-hidden="true"></i></a>';
-                } elseif ($field->app_status != 'rejected' && $field->app2_status != 'rejected') {
-                    $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+            $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
                                 <a href="datadeklarasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
                                 <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
                                 <a href="datadeklarasi/app_form/' . $field->id . '" class="btn btn-success btn-circle btn-sm" title="Approval"><i class="fa fa-check" aria-hidden="true"></i></a>';
-                }
-            }
 
             $no++;
             $row = array();
             $row[] = $no;
             $row[] = $action;
-            $row[] = $field->kode_deklarasi;
+            $row[] = strtoupper($field->kode_deklarasi);
             $row[] = date("d M Y", strtotime($field->tgl_deklarasi));
-            $row[] = $field->nama_pengajuan;
+            $row[] = $field->name;
             $row[] = $field->jabatan;
             $row[] = $field->nama_dibayar;
             $row[] = $field->tujuan;
@@ -88,21 +70,6 @@ class Datadeklarasi extends CI_Controller
 
     function add_form()
     {
-        // $kode = $this->M_datadeklarasi->max_kode()->row();
-        // if (empty($kode->kode_deklarasi)) {
-        //     $no_urut = 1;
-        // } else {
-        //     $bln = substr($kode->kode_deklarasi, 3, 2);
-        //     if ($bln != date('m')) {
-        //         $no_urut = 1;
-        //     } else {
-        //         $no_urut = substr($kode->kode_deklarasi, 5) + 1;
-        //     }
-        // }
-        // $urutan = str_pad($no_urut, 3, "0", STR_PAD_LEFT);
-        // $data['kode'] = 'B' . date('ym') . $urutan;
-        $data['mengetahui'] = $this->M_datadeklarasi->mengetahui();
-        $data['menyetujui'] = $this->M_datadeklarasi->menyetujui();
         $data['id'] = 0;
         $data['title_view'] = "Data deklarasi Form";
         $data['title'] = 'backend/datadeklarasi/deklarasi_form';
@@ -130,7 +97,7 @@ class Datadeklarasi extends CI_Controller
     {
         $data['id'] = $id;
         $data['title'] = 'backend/datadeklarasi/deklarasi_app';
-        $data['title_view'] = 'Prepayment Approval';
+        $data['title_view'] = 'Deklarasi Approval';
         $this->load->view('backend/home', $data);
     }
 
@@ -143,11 +110,7 @@ class Datadeklarasi extends CI_Controller
             $no_urut = 1;
         } else {
             $bln = substr($kode->kode_deklarasi, 3, 2);
-            if ($bln != date('m')) {
-                $no_urut = 1;
-            } else {
-                $no_urut = substr($kode->kode_deklarasi, 5) + 1;
-            }
+            $no_urut = substr($kode->kode_deklarasi, 5) + 1;
         }
         $urutan = str_pad($no_urut, 3, "0", STR_PAD_LEFT);
         $month = substr($date, 3, 2);
@@ -158,31 +121,47 @@ class Datadeklarasi extends CI_Controller
 
     public function add()
     {
-        // $kode = $this->M_datadeklarasi->max_kode()->row();
-        // if (empty($kode->kode_deklarasi)) {
-        //     $no_urut = 1;
-        // } else {
-        //     $bln = substr($kode->kode_deklarasi, 3, 2);
-        //     if ($bln != date('m')) {
-        //         $no_urut = 1;
-        //     } else {
-        //         $no_urut = substr($kode->kode_deklarasi, 5) + 1;
-        //     }
-        // }
-        // $urutan = str_pad($no_urut, 3, "0", STR_PAD_LEFT);
-        // $kode_deklarasi = 'B' . date('ym') . $urutan;
+        // INSERT KODE DEKLARASI
+        $date = $this->input->post('tgl_deklarasi');
+        $kode = $this->M_datadeklarasi->max_kode($date)->row();
+        if (empty($kode->kode_deklarasi)) {
+            $no_urut = 1;
+        } else {
+            $bln = substr($kode->kode_deklarasi, 3, 2);
+            $no_urut = substr($kode->kode_deklarasi, 5) + 1;
+        }
+        $urutan = str_pad($no_urut, 3, "0", STR_PAD_LEFT);
+        $month = substr($date, 3, 2);
+        $year = substr($date, 8, 2);
+        $kode_deklarasi = 'b' . $year . $month . $urutan;
+
+        // MENCARI SIAPA YANG AKAN MELAKUKAN APPROVAL PERMINTAAN
+        $approval = $this->M_datadeklarasi->approval($this->session->userdata('id_user'));
+        $id = $this->session->userdata('id_user');
+
         $data = array(
-            'kode_deklarasi' => $this->input->post('kode_deklarasi'),
+            'kode_deklarasi' => $kode_deklarasi,
             'tgl_deklarasi' => date('Y-m-d', strtotime($this->input->post('tgl_deklarasi'))),
-            'nama_pengajuan' => $this->input->post('nama_pengajuan'),
-            'jabatan' => $this->input->post('jabatan'),
+            'id_pengaju' => $id,
+            'jabatan' => $this->db->select('jabatan')
+                ->from('tbl_data_user')
+                ->where('id_user', $id)
+                ->get()
+                ->row('jabatan'),
             'nama_dibayar' => $this->input->post('nama_dibayar'),
             'tujuan' => $this->input->post('tujuan'),
             'sebesar' => $this->input->post('hidden_sebesar'),
-            'app_name' => $this->input->post('app_name'),
-            'app2_name' => $this->input->post('app2_name'),
+            'app_name' => $this->db->select('name')
+                ->from('tbl_data_user')
+                ->where('id_user', $approval->app_id)
+                ->get()
+                ->row('name'),
+            'app2_name' => $this->db->select('name')
+                ->from('tbl_data_user')
+                ->where('id_user', $approval->app2_id)
+                ->get()
+                ->row('name')
         );
-        // var_dump($data);
         $this->M_datadeklarasi->save($data);
         echo json_encode(array("status" => TRUE));
     }
@@ -191,14 +170,10 @@ class Datadeklarasi extends CI_Controller
     {
         $data = array(
             'tgl_deklarasi' => date('Y-m-d', strtotime($this->input->post('tgl_deklarasi'))),
-            'nama_pengajuan' => $this->input->post('nama_pengajuan'),
-            'jabatan' => $this->input->post('jabatan'),
             'nama_dibayar' => $this->input->post('nama_dibayar'),
             'tujuan' => $this->input->post('tujuan'),
             'sebesar' => $this->input->post('hidden_sebesar'),
             'status' => $this->input->post('status'),
-            'app_name' => $this->input->post('app_name'),
-            'app2_name' => $this->input->post('app2_name'),
         );
         $this->db->where('id', $this->input->post('id'));
         $this->db->update('tbl_deklarasi', $data);

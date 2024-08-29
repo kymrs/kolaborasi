@@ -33,25 +33,6 @@
                                         <input type="text" class="form-control" id="kode_deklarasi" name="kode_deklarasi" value="" required>
                                     </div>
                                 </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-5" for="nama_pengajuan">Nama yang mengajukan</label>
-                                    <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="nama_pengajuan" name="nama_pengajuan" required>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-5" for="jabatan">Jabatan</label>
-                                    <div class="col-sm-7">
-                                        <select class="form-control" name="jabatan" id="jabatan">
-                                            <option value="">-- Pilih --</option>
-                                            <option value="Magang">Magang</option>
-                                            <option value="Karyawan">Karyawan</option>
-                                            <option value="Supervisor">Supervisor</option>
-                                            <option value="Manager">Manager</option>
-                                            <option value="General Manager">General Manager</option>
-                                        </select>
-                                    </div>
-                                </div>
                             </div>
 
                             <div class="col-md-6">
@@ -73,28 +54,6 @@
                                     <div class="col-sm-7">
                                         <input type="text" class="form-control" name="sebesar" id="sebesar">
                                         <input type="hidden" class="form-control" id="hidden_sebesar" name="hidden_sebesar">
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-5" for="app_name">Mengetahui</label>
-                                    <div class="col-sm-7">
-                                        <select class="form-control" name="app_name" id="app_name">
-                                            <option selected disabled>-- Pilih --</option>
-                                            <?php foreach ($mengetahui as $know) { ?>
-                                                <option value="<?= $know->fullname ?>"><?= $know->fullname ?></option>
-                                            <?php } ?>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-5" for="app2_name">Menyetujui</label>
-                                    <div class="col-sm-7">
-                                        <select class="form-control" name="app2_name" id="app2_name">
-                                            <option selected disabled>-- Pilih --</option>
-                                            <?php foreach ($menyetujui as $agree) { ?>
-                                                <option value="<?= $agree->fullname ?>"><?= $agree->fullname ?></option>
-                                            <?php } ?>
-                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -143,7 +102,7 @@
                     moment.locale('id')
                     $('#id').val(data.id);
                     $('#kode_deklarasi').val(data.kode_deklarasi).attr('readonly', true);
-                    $('#tgl_deklarasi').val(moment(data.tgl_deklarasi).format('DD-MM-YYYY'));
+                    $('#tgl_deklarasi').val(moment(data.tgl_deklarasi).format('DD-MM-YYYY')).attr('disabled', true);
                     $('#nama_pengajuan').val(data.nama_pengajuan);
                     $('#jabatan').val(data.jabatan);
                     $('#nama_dibayar').val(data.nama_dibayar);
@@ -281,7 +240,8 @@
 
         $('#tgl_deklarasi').datepicker({
             dateFormat: 'dd-mm-yy',
-            minDate: new Date(),
+            // minDate: new Date(),
+            // maxDate: new Date(),
 
             // MENGENERATE KODE DEKLARASI SETELAH PILIH TANGGAL
             onSelect: function(dateText) {

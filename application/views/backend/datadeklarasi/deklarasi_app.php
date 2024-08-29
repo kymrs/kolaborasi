@@ -7,8 +7,8 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header text-right">
-                    <!-- <a class="btn btn-danger btn-sm" href="<?= base_url('prepayment') ?>"><i class="fas fa-file-pdf"></i>&nbsp;Print Out</a> -->
-                    <a class="btn btn-secondary btn-sm" href="<?= base_url('prepayment') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+                    <!-- <a class="btn btn-danger btn-sm" href="<?= base_url('datadeklarasi') ?>"><i class="fas fa-file-pdf"></i>&nbsp;Print Out</a> -->
+                    <a class="btn btn-secondary btn-sm" href="<?= base_url('datadeklarasi') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
                     <!-- CONTAINER -->

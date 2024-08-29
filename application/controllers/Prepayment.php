@@ -28,22 +28,26 @@ class Prepayment extends CI_Controller
         foreach ($list as $field) {
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
-            if ($field->app_name == $this->session->userdata('fullname')) {
-                $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                                <a href="prepayment/app_form/' . $field->id . '" class="btn btn-success btn-circle btn-sm" title="Approval"><i class="fa fa-check" aria-hidden="true"></i></a>';
-            } elseif ($field->app2_name == $this->session->userdata('fullname')) {
-                $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                                <a href="prepayment/app_form/' . $field->id . '" class="btn btn-success btn-circle btn-sm" title="Approval"><i class="fa fa-check" aria-hidden="true"></i></a>';
-            } elseif ($field->status == 'rejected') {
-                $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
-                <a href="prepayment/app_form/' . $field->id . '" class="btn btn-success btn-circle btn-sm" title="Approval"><i class="fa fa-check" aria-hidden="true"></i></a>';
-            } else {
-                $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+            // if ($field->app_name == $this->session->userdata('fullname')) {
+            //     $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+            //                     <a href="prepayment/app_form/' . $field->id . '" class="btn btn-success btn-circle btn-sm" title="Approval"><i class="fa fa-check" aria-hidden="true"></i></a>';
+            // } elseif ($field->app2_name == $this->session->userdata('fullname')) {
+            //     $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+            //                     <a href="prepayment/app_form/' . $field->id . '" class="btn btn-success btn-circle btn-sm" title="Approval"><i class="fa fa-check" aria-hidden="true"></i></a>';
+            // } elseif ($field->status == 'rejected') {
+            //     $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+            //     <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
+            //     <a href="prepayment/app_form/' . $field->id . '" class="btn btn-success btn-circle btn-sm" title="Approval"><i class="fa fa-check" aria-hidden="true"></i></a>';
+            // } else {
+            //     $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+            //                     <a href="prepayment/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
+            //                     <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
+            //                     <a href="prepayment/app_form/' . $field->id . '" class="btn btn-success btn-circle btn-sm" title="Approval"><i class="fa fa-check" aria-hidden="true"></i></a>';
+            // }
+            $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
                                 <a href="prepayment/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
                                 <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
                                 <a href="prepayment/app_form/' . $field->id . '" class="btn btn-success btn-circle btn-sm" title="Approval"><i class="fa fa-check" aria-hidden="true"></i></a>';
-            }
 
             $formatted_nominal = number_format($field->total_nominal, 0, ',', '.');
             $no++;
@@ -51,10 +55,7 @@ class Prepayment extends CI_Controller
             $row[] = $no;
             $row[] = $action;
             $row[] = strtoupper($field->kode_prepayment);
-            $row[] = $this->db->select('fullname')
-                ->from('tbl_user')
-                ->where('id_user', $field->id_user)
-                ->get()->row('fullname');
+            $row[] = $field->name;
             $row[] = strtoupper($field->divisi);
             $row[] = strtoupper($field->jabatan);
             $row[] = $field->tgl_prepayment;
@@ -100,9 +101,19 @@ class Prepayment extends CI_Controller
     {
         $data['id'] = $id;
         $data['user'] = $this->M_prepayment->get_by_id($id);
+        $data['app_name'] = $this->db->select('name')
+            ->from('tbl_data_user')
+            ->where('id_user', $this->session->userdata('id_user'))
+            ->get()
+            ->row('name');
+        $data['app2_name'] = $this->db->select('name')
+            ->from('tbl_data_user')
+            ->where('id_user', $this->session->userdata('id_user'))
+            ->get()
+            ->row('name');
         $data['title'] = 'backend/prepayment/prepayment_app';
         $data['title_view'] = 'Prepayment Approval';
-        $this->load->view('backend/prepayment/prepayment_app', $data);
+        $this->load->view('backend/prepayment/prepayment_app2', $data);
     }
 
     // MEREGENERATE KODE PREPAYMENT
@@ -115,11 +126,6 @@ class Prepayment extends CI_Controller
         } else {
             $bln = substr($kode->kode_prepayment, 3, 2);
             $no_urut = substr($kode->kode_prepayment, 5) + 1;
-            // if ($bln != date('m')) {
-            //     $no_urut = 1;
-            // } else {
-            //     $no_urut = substr($kode->kode_prepayment, 5) + 1;
-            // }
         }
         $urutan = str_pad($no_urut, 4, "0", STR_PAD_LEFT);
         $month = substr($date, 3, 2);
@@ -142,10 +148,10 @@ class Prepayment extends CI_Controller
     {
         $data['master'] = $this->M_prepayment->get_by_id($id);
         $data['transaksi'] = $this->M_prepayment->get_by_id_detail($id);
-        $data['nama'] = $this->db->select('fullname')
-            ->from('tbl_user')
+        $data['nama'] = $this->db->select('name')
+            ->from('tbl_data_user')
             ->where('id_user', $data['master']->id_user)
-            ->get()->row('fullname');
+            ->get()->row('name');
         echo json_encode($data);
     }
 
@@ -174,26 +180,35 @@ class Prepayment extends CI_Controller
 
         // MENCARI SIAPA YANG AKAN MELAKUKAN APPROVAL PERMINTAAN
         $approval = $this->M_prepayment->approval($this->session->userdata('id_user'));
+        $id = $this->session->userdata('id_user');
 
         $data = array(
             'kode_prepayment' => $kode_prepayment,
-            'id_user' => $this->session->userdata('id_user'),
-            'divisi' => $this->input->post('divisi'),
-            'jabatan' => $this->input->post('jabatan'),
+            'id_user' => $id,
             'prepayment' => $this->input->post('prepayment'),
             'tujuan' => $this->input->post('tujuan'),
             'tgl_prepayment' => date('Y-m-d', strtotime($this->input->post('tgl_prepayment'))),
             'total_nominal' => $this->input->post('total_nominal'),
-            'app_name' => $this->db->select('fullname')
-                ->from('tbl_user')
+            'divisi' => $this->db->select('divisi')
+                ->from('tbl_data_user')
+                ->where('id_user', $id)
+                ->get()
+                ->row('divisi'),
+            'jabatan' => $this->db->select('jabatan')
+                ->from('tbl_data_user')
+                ->where('id_user', $id)
+                ->get()
+                ->row('jabatan'),
+            'app_name' => $this->db->select('name')
+                ->from('tbl_data_user')
                 ->where('id_user', $approval->app_id)
                 ->get()
-                ->row('fullname'),
-            'app2_name' => $this->db->select('fullname')
-                ->from('tbl_user')
+                ->row('name'),
+            'app2_name' => $this->db->select('name')
+                ->from('tbl_data_user')
                 ->where('id_user', $approval->app2_id)
                 ->get()
-                ->row('fullname')
+                ->row('name')
         );
         $inserted = $this->M_prepayment->save($data);
 
@@ -221,16 +236,11 @@ class Prepayment extends CI_Controller
     {
         $data = array(
             'kode_prepayment' => $this->input->post('kode_prepayment'),
-            'nama' => $this->input->post('nama'),
-            'divisi' => $this->input->post('divisi'),
-            'jabatan' => $this->input->post('jabatan'),
             'prepayment' => $this->input->post('prepayment'),
             'tujuan' => $this->input->post('tujuan'),
             'tgl_prepayment' => date('Y-m-d', strtotime($this->input->post('tgl_prepayment'))),
             'total_nominal' => $this->input->post('total_nominal'),
-            'app_name' => $this->input->post('app_name'),
-            'app2_name' => $this->input->post('app2_name'),
-            'status' => 0
+            'status' => 'on-process'
         );
         $this->db->where('id', $this->input->post('id'));
         //UPDATE DETAIL PREPAYMENT
@@ -280,7 +290,6 @@ class Prepayment extends CI_Controller
     public function approve()
     {
         $data = array(
-            'app_name' => $this->input->post('app_name'),
             'app_keterangan' => $this->input->post('app_keterangan'),
             'app_status' => $this->input->post('app_status'),
             'app_date' => date('Y-m-d H:i:s'),
@@ -304,7 +313,6 @@ class Prepayment extends CI_Controller
     function approve2()
     {
         $data = array(
-            'app2_name' => $this->input->post('app2_name'),
             'app2_keterangan' => $this->input->post('app2_keterangan'),
             'app2_status' => $this->input->post('app2_status'),
             'app2_date' => date('Y-m-d H:i:s'),

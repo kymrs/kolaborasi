@@ -31,12 +31,6 @@
                                     </div>
                                 </div>
                                 <!-- <div class="form-group row">
-                                    <label class="col-sm-5">Nama</label>
-                                    <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="nama" name="nama" placeholder="Nama">
-                                    </div>
-                                </div> -->
-                                <div class="form-group row">
                                     <label class="col-sm-5">Divisi</label>
                                     <div class="col-sm-7">
                                         <select class="form-control" name="divisi" id="divisi">
@@ -46,7 +40,7 @@
                                             <option value="ga">General Affair</option>
                                         </select>
                                     </div>
-                                </div>
+                                </div> -->
                             </div>
 
                             <!-- SEBELAH KANAN -->
@@ -57,12 +51,12 @@
                                         <input type="text" class="form-control" id="prepayment" name="prepayment" placeholder="Prepayment for....">
                                     </div>
                                 </div>
-                                <div class="form-group row">
+                                <!-- <div class="form-group row">
                                     <label class="col-sm-5">Jabatan</label>
                                     <div class="col-sm-7">
                                         <input type="text" class="form-control" id="jabatan" name="jabatan" placeholder="Jabatan....">
                                     </div>
-                                </div>
+                                </div> -->
                                 <div class="form-group row">
                                     <label class="col-sm-5">Tujuan</label>
                                     <div class="col-sm-7">
@@ -337,8 +331,8 @@
                     $('#kode_prepayment').val(data['master']['kode_prepayment']).attr('readonly', true);
                     $('#tgl_prepayment').val(moment(data['master']['tgl_prepayment']).format('DD-MM-YYYY'));
                     $('#nama').val(data['master']['nama']);
-                    $('#divisi').val(data['master']['divisi']);
-                    $('#jabatan').val(data['master']['jabatan']);
+                    // $('#divisi').val(data['master']['divisi']);
+                    // $('#jabatan').val(data['master']['jabatan']);
                     $('#prepayment').val(data['master']['prepayment']);
                     $('#tujuan').val(data['master']['tujuan']);
                     if (data['master']['total_nominal'] == null) {
@@ -399,8 +393,8 @@
             $('#id').prop('readonly', true);
             $('#tgl_prepayment').prop('disabled', true);
             $('#nama').prop('readonly', true);
-            $('#jabatan').prop('disabled', true);
-            $('#divisi').prop('disabled', true);
+            // $('#jabatan').prop('disabled', true);
+            // $('#divisi').prop('disabled', true);
             $('#prepayment').prop('readonly', true);
             $('#tujuan').prop('readonly', true);
             $('#total_nominal_row').attr('colspan', 3);
@@ -475,12 +469,6 @@
                 nama: {
                     required: true,
                 },
-                divisi: {
-                    required: true,
-                },
-                jabatan: {
-                    required: true,
-                },
                 prepayment: {
                     required: true,
                 },
@@ -495,12 +483,7 @@
                 nama: {
                     required: "Nama is required",
                 },
-                divisi: {
-                    required: "Divisi is required",
-                },
-                jabatan: {
-                    required: "Jabatan is required",
-                },
+
                 prepayment: {
                     required: "Prepayment is required",
                 },

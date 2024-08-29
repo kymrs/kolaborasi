@@ -18,7 +18,7 @@ class Datanotifikasi extends CI_Controller
         $this->load->view('backend/home', $data);
     }
 
-     function get_list()
+    function get_list()
     {
         $list = $this->M_datanotifikasi->get_datatables();
         $data = array();
@@ -30,16 +30,14 @@ class Datanotifikasi extends CI_Controller
             $row[] = '<a href="datanotifikasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
             <a href="datanotifikasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
 			<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>';
-            $row[] = $field->kode_notifikasi;
-            $row[] = $field->nama;
+            $row[] = strtoupper($field->kode_notifikasi);
+            $row[] = $field->name;
             $row[] = $field->jabatan;
             $row[] = $field->departemen;
             $row[] = $field->pengajuan;
-            $row[] = date("d M Y", strtotime($field->tanggal));
-            $row[] = $field->waktu;
+            $row[] = date("d M Y", strtotime($field->tgl_notifikasi));
             $row[] = $field->alasan;
             $row[] = $field->status;
-            $row[] = $field->catatan;
             $data[] = $row;
         }
 
@@ -53,7 +51,7 @@ class Datanotifikasi extends CI_Controller
         echo json_encode($output);
     }
 
-         function read_form($id)
+    function read_form($id)
     {
         $data['aksi'] = 'read';
         $data['id'] = $id;
@@ -62,28 +60,33 @@ class Datanotifikasi extends CI_Controller
         $this->load->view('backend/home', $data);
     }
 
-    function add_form()
+    // MEREGENERATE KODE PREPAYMENT
+    public function generate_kode()
     {
-        $kode = $this->M_datanotifikasi->max_kode()->row();
+        $date = $this->input->post('date');
+        $kode = $this->M_datanotifikasi->max_kode($date)->row();
         if (empty($kode->kode_notifikasi)) {
             $no_urut = 1;
         } else {
             $bln = substr($kode->kode_notifikasi, 3, 2);
-            if ($bln != date('m')) {
-                $no_urut = 1;
-            } else {
-                $no_urut = substr($kode->kode_notifikasi, 5) + 1;
-            }
+            $no_urut = substr($kode->kode_notifikasi, 5) + 1;
         }
         $urutan = str_pad($no_urut, 3, "0", STR_PAD_LEFT);
-        $data['kode'] = 'B' . date('ym') . $urutan;
+        $month = substr($date, 3, 2);
+        $year = substr($date, 8, 2);
+        $data = 'n' . $year . $month . $urutan;
+        echo json_encode($data);
+    }
+
+    function add_form()
+    {
         $data['id'] = 0;
         $data['title_view'] = "Data Notifikasi Form";
         $data['title'] = 'backend/datanotifikasi/notifikasi_form';
         $this->load->view('backend/home', $data);
     }
 
-     function edit_form($id)
+    function edit_form($id)
     {
         $data['id'] = $id;
         $data['title_view'] = "Edit Data Notifikasi";
@@ -91,7 +94,7 @@ class Datanotifikasi extends CI_Controller
         $this->load->view('backend/home', $data);
     }
 
-       function edit_data($id)
+    function edit_data($id)
     {
         $data = $this->M_datanotifikasi->get_by_id($id);
         echo json_encode($data);
@@ -99,30 +102,51 @@ class Datanotifikasi extends CI_Controller
 
     public function add()
     {
-        $kode = $this->M_datanotifikasi->max_kode()->row();
+        // INSERT KODE DEKLARASI
+        $date = $this->input->post('tgl_notifikasi');
+        $kode = $this->M_datanotifikasi->max_kode($date)->row();
         if (empty($kode->kode_notifikasi)) {
             $no_urut = 1;
         } else {
             $bln = substr($kode->kode_notifikasi, 3, 2);
-            if ($bln != date('m')) {
-                $no_urut = 1;
-            } else {
-                $no_urut = substr($kode->kode_notifikasi, 5) + 1;
-            }
+            $no_urut = substr($kode->kode_notifikasi, 5) + 1;
         }
         $urutan = str_pad($no_urut, 3, "0", STR_PAD_LEFT);
-        $kode_notifikasi = 'B' . date('ym') . $urutan;
+        $month = substr($date, 3, 2);
+        $year = substr($date, 8, 2);
+        $kode_notifikasi = 'n' . $year . $month . $urutan;
+
+        // MENCARI SIAPA YANG AKAN MELAKUKAN APPROVAL PERMINTAAN
+        $approval = $this->M_datanotifikasi->approval($this->session->userdata('id_user'));
+        $id = $this->session->userdata('id_user');
+
         $data = array(
             'kode_notifikasi' => $kode_notifikasi,
-            'nama' => $this->input->post('nama'),
-            'jabatan' => $this->input->post('jabatan'),
-            'departemen' => $this->input->post('departemen'),
+            'id_user' => $id,
+            'jabatan' => $this->db->select('jabatan')
+                ->from('tbl_data_user')
+                ->where('id_user', $id)
+                ->get()
+                ->row('jabatan'),
+            'departemen' => $this->db->select('divisi')
+                ->from('tbl_data_user')
+                ->where('id_user', $id)
+                ->get()
+                ->row('divisi'),
             'pengajuan' => $this->input->post('pengajuan'),
-            'tanggal' => date('Y-m-d', strtotime($this->input->post('tanggal'))),
+            'tgl_notifikasi' => date('Y-m-d', strtotime($this->input->post('tanggal'))),
             'waktu' => $this->input->post('waktu'),
             'alasan' => $this->input->post('alasan'),
-            'status' => $this->input->post('status'),
-            'catatan' => $this->input->post('catatan'),
+            'app_name' => $this->db->select('name')
+                ->from('tbl_data_user')
+                ->where('id_user', $approval->app_id)
+                ->get()
+                ->row('name'),
+            'app2_name' => $this->db->select('name')
+                ->from('tbl_data_user')
+                ->where('id_user', $approval->app2_id)
+                ->get()
+                ->row('name')
         );
         $this->M_datanotifikasi->save($data);
         echo json_encode(array("status" => TRUE));
@@ -131,25 +155,18 @@ class Datanotifikasi extends CI_Controller
     public function update()
     {
         $data = array(
-            'nama' => $this->input->post('nama'),
-            'jabatan' => $this->input->post('jabatan'),
-            'departemen' => $this->input->post('departemen'),
             'pengajuan' => $this->input->post('pengajuan'),
-            'tanggal' => date('Y-m-d', strtotime($this->input->post('tanggal'))),
             'waktu' => $this->input->post('waktu'),
             'alasan' => $this->input->post('alasan'),
-            'status' => $this->input->post('status'),
-            'catatan' => $this->input->post('catatan'),
         );
         $this->db->where('id', $this->input->post('id'));
         $this->db->update('tbl_notifikasi', $data);
         echo json_encode(array("status" => TRUE));
     }
 
-     function delete($id)
+    function delete($id)
     {
         $this->M_datanotifikasi->delete($id);
         echo json_encode(array("status" => TRUE));
     }
-    
 }

@@ -7,8 +7,8 @@ class M_datanotifikasi extends CI_Model
 {
     var $id = 'id';
     var $table = 'tbl_notifikasi'; //nama tabel dari database
-    var $column_order = array(null, null, 'kode_notifikasi', 'nama', 'jabatan', 'departemen', 'pengajuan', 'tanggal', 'waktu', 'alasan', 'status', 'catatan');
-    var $column_search = array( 'kode_notifikasi', 'nama', 'jabatan', 'departemen', 'pengajuan', 'tanggal', 'waktu', 'alasan', 'status', 'catatan'); //field yang diizin untuk pencarian 
+    var $column_order = array(null, null, 'kode_notifikasi', 'name', 'jabatan', 'departemen', 'pengajuan', 'tgl_notifikasi', 'waktu', 'alasan', 'status', 'catatan');
+    var $column_search = array('kode_notifikasi', 'name', 'jabatan', 'departemen', 'pengajuan', 'tgl_notifikasi', 'waktu', 'alasan', 'status', 'catatan'); //field yang diizin untuk pencarian 
     var $order = array('id' => 'desc'); // default order 
 
     public function __construct()
@@ -19,7 +19,10 @@ class M_datanotifikasi extends CI_Model
     private function _get_datatables_query()
     {
 
-        $this->db->from($this->table);
+        // $this->db->from($this->table);
+        $this->db->select('tbl_notifikasi.*, tbl_data_user.name');
+        $this->db->from('tbl_notifikasi');
+        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_notifikasi.id_user');
 
         $i = 0;
 
@@ -31,9 +34,17 @@ class M_datanotifikasi extends CI_Model
                 if ($i === 0) // looping awal
                 {
                     $this->db->group_start();
-                    $this->db->like($item, $_POST['search']['value']);
+                    if ($item == 'name') {
+                        $this->db->like('tbl_data_user.' . $item, $_POST['search']['value']);
+                    } else {
+                        $this->db->like('tbl_notifikasi.' . $item, $_POST['search']['value']);
+                    }
                 } else {
-                    $this->db->or_like($item, $_POST['search']['value']);
+                    if ($item == 'name') {
+                        $this->db->or_like('tbl_data_user.' . $item, $_POST['search']['value']);
+                    } else {
+                        $this->db->or_like('tbl_notifikasi.' . $item, $_POST['search']['value']);
+                    }
                 }
 
                 if (count($this->column_search) - 1 == $i)
@@ -41,6 +52,18 @@ class M_datanotifikasi extends CI_Model
             }
             $i++;
         }
+
+        // Tambahkan pemfilteran berdasarkan status
+        if (!empty($_POST['status'])) {
+            $this->db->where('status', $_POST['status']);
+        }
+
+        // Tambahkan kondisi WHERE untuk user ID atau nama approval
+        $this->db->group_start()
+            ->where('tbl_notifikasi.id_user', $this->session->userdata('id_user'))
+            ->or_where('tbl_notifikasi.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+            ->or_where('tbl_notifikasi.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+            ->group_end();
 
         if (isset($_POST['order'])) {
             $this->db->order_by($this->column_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
@@ -78,13 +101,24 @@ class M_datanotifikasi extends CI_Model
         return $this->db->get($this->table)->row();
     }
 
-    public function max_kode()
+    public function max_kode($date)
     {
+        $formatted_date = date('ym', strtotime($date));
         $this->db->select('kode_notifikasi');
-        $where = 'id=(SELECT max(id) FROM tbl_notifikasi where SUBSTRING(kode_notifikasi, 2, 4) = ' . date('ym') . ')';
+        $where = 'id=(SELECT max(id) FROM tbl_notifikasi where SUBSTRING(kode_notifikasi, 2, 4) = ' . $formatted_date . ')';
         $this->db->where($where);
         $query = $this->db->get('tbl_notifikasi');
         return $query;
+    }
+
+    // UNTUK QUERY MENENTUKAN SIAPA YANG MELAKUKAN APPROVAL
+    public function approval($id)
+    {
+        $this->db->select('app_id, app2_id');
+        $this->db->from('tbl_data_user');
+        $this->db->where('id_user', $id);
+        $query = $this->db->get();
+        return $query->row();
     }
 
     public function save($data)
