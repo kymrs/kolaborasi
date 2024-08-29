@@ -97,21 +97,37 @@
                     type: "POST",
                     dataType: "JSON",
                     success: function(data) {
+                        if (data.status) {
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'success',
+                                title: 'Your data has been deleted',
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then(() => {
+                                location.href = "<?= base_url('reimbust') ?>";
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: data.error // Menampilkan pesan kesalahan dari server
+                            });
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
                         Swal.fire({
                             position: 'center',
                             icon: 'success',
                             title: 'Your data has been deleted',
                             showConfirmButton: false,
                             timer: 1500
-                        }).then((result) => {
+                        }).then(() => {
                             location.href = "<?= base_url('reimbust') ?>";
-                        })
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        alert('Error deleting data');
+                        });
                     }
                 });
             }
-        })
-    };
+        });
+    }
 </script>

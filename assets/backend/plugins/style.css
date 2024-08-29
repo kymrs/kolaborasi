@@ -125,17 +125,28 @@ footer p {
 /* Menghilangkan action pada datatable prepayment (pada modal data table tampilan reimbust) */
 
 #pelaporanModal #prepayment-table tbody tr td:nth-child(2),
-#deklarasiModal #deklarasi-table tbody tr td:nth-child(2) {
+#deklarasiModal #deklarasi-table tbody tr td:nth-child(2), 
+#deklarasiModalRead #deklarasi-table-read tbody tr td:nth-child(2) {
     display: none;
 }
 
 #pelaporanModal #prepayment-table tbody tr,
-#deklarasiModal #deklarasi-table tbody tr {
+#deklarasiModal #deklarasi-table tbody tr,
+#deklarasiModalRead #deklarasi-table-read tbody tr {
     cursor: pointer;
+    transition: 200ms;
 }
 
 #pelaporanModal #prepayment-table tbody tr:hover,
-#deklarasiModal #deklarasi-table tbody tr:hover {
+#deklarasiModal #deklarasi-table tbody tr:hover,
+#deklarasiModalRead #deklarasi-table-read tbody tr:hover {
     background-color: #888;
+    color: white;
+}
+
+#pelaporanModal #prepayment-table tbody tr:active,
+#deklarasiModal #deklarasi-table tbody tr:active,
+#deklarasiModalRead #deklarasi-table-read tbody tr:active {
+    background-color: #4E73DF;
     color: white;
 }
