@@ -101,18 +101,12 @@
                     // console.log(data);
                     moment.locale('id')
                     $('#id').val(data.id);
-                    $('#kode_deklarasi').val(data.kode_deklarasi).attr('readonly', true);
-                    $('#tgl_deklarasi').val(moment(data.tgl_deklarasi).format('DD-MM-YYYY')).attr('disabled', true);
-                    $('#nama_pengajuan').val(data.nama_pengajuan);
-                    $('#jabatan').val(data.jabatan);
-                    $('#nama_dibayar').val(data.nama_dibayar);
-                    $('#tujuan').val(data.tujuan);
-                    $('#sebesar').val(data.sebesar.replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
+                    $('#kode_deklarasi').val(data['master'].kode_deklarasi.toUpperCase()).attr('readonly', true);
+                    $('#tgl_deklarasi').val(moment(data['master'].tgl_deklarasi).format('DD-MM-YYYY')).attr('disabled', true);
+                    $('#nama_dibayar').val(data['master'].nama_dibayar);
+                    $('#tujuan').val(data['master'].tujuan);
+                    $('#sebesar').val(data['master'].sebesar.replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
                     $('#hidden_sebesar').val(data.sebesar);
-                    $('#status').val(data.status);
-                    $('#app_name').val(data.app_name);
-                    $('#app2_name').val(data.app2_name);
-                    $('#signNamaPengajuan').text(data.nama_pengajuan); // Populate the signature name on load
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     alert('Error get data from ajax');

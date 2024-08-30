@@ -33,17 +33,6 @@ class Pdf extends FPDF
     {
         parent::__construct();
     }
-
-    function WriteHTML($html)
-    {
-        // Parsing HTML string
-        $html = str_replace("\n", ' ', $html);
-        $html = preg_replace('/<br(\s+)?\/?>/i', "\n", $html);
-        $html = strip_tags($html, "<b><i><u><a><img><p><br><ul><li><ol><table><tr><td><th>");
-
-        // Output HTML
-        $this->Write(5, $html);
-    }
 }
 
 // // Instantiation of inherited class

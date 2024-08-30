@@ -30,7 +30,7 @@ class Datadeklarasi extends CI_Controller
             $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
                                 <a href="datadeklarasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
                                 <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
-                                <a href="datadeklarasi/app_form/' . $field->id . '" class="btn btn-success btn-circle btn-sm" title="Approval"><i class="fa fa-check" aria-hidden="true"></i></a>';
+                                <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
 
             $no++;
             $row = array();
@@ -59,27 +59,33 @@ class Datadeklarasi extends CI_Controller
 
     function read_form($id)
     {
-        $data['mengetahui'] = $this->M_datadeklarasi->mengetahui();
-        $data['menyetujui'] = $this->M_datadeklarasi->menyetujui();
-        $data['aksi'] = 'read';
         $data['id'] = $id;
+        $data['user'] = $this->M_datadeklarasi->get_by_id($id);
+        $data['app_name'] = $this->db->select('name')
+            ->from('tbl_data_user')
+            ->where('id_user', $this->session->userdata('id_user'))
+            ->get()
+            ->row('name');
+        $data['app2_name'] = $this->db->select('name')
+            ->from('tbl_data_user')
+            ->where('id_user', $this->session->userdata('id_user'))
+            ->get()
+            ->row('name');
         $data['title_view'] = "Data deklarasi";
-        $data['title'] = 'backend/datadeklarasi/deklarasi_form';
-        $this->load->view('backend/home', $data);
+        $this->load->view('backend/datadeklarasi/deklarasi_read', $data);
     }
 
     function add_form()
     {
         $data['id'] = 0;
         $data['title_view'] = "Data deklarasi Form";
+        $data['aksi'] = 'update';
         $data['title'] = 'backend/datadeklarasi/deklarasi_form';
         $this->load->view('backend/home', $data);
     }
 
     function edit_form($id)
     {
-        $data['mengetahui'] = $this->M_datadeklarasi->mengetahui();
-        $data['menyetujui'] = $this->M_datadeklarasi->menyetujui();
         $data['id'] = $id;
         $data['title_view'] = "Edit Data Deklarasi";
         $data['title'] = 'backend/datadeklarasi/deklarasi_form';
@@ -88,17 +94,12 @@ class Datadeklarasi extends CI_Controller
 
     function edit_data($id)
     {
-        $data = $this->M_datadeklarasi->get_by_id($id);
+        $data['master'] = $this->M_datadeklarasi->get_by_id($id);
+        $data['nama'] = $this->db->select('name')
+            ->from('tbl_data_user')
+            ->where('id_user', $data['master']->id_pengaju)
+            ->get()->row('name');
         echo json_encode($data);
-    }
-
-    // UNTUK MENAMPILKAN FORM APPROVAL
-    public function app_form($id)
-    {
-        $data['id'] = $id;
-        $data['title'] = 'backend/datadeklarasi/deklarasi_app';
-        $data['title_view'] = 'Deklarasi Approval';
-        $this->load->view('backend/home', $data);
     }
 
     // MEREGENERATE KODE DEKLARASI
@@ -235,5 +236,96 @@ class Datadeklarasi extends CI_Controller
             $this->db->update('tbl_deklarasi', ['status' => 'approved']);
         }
         echo json_encode(array("status" => TRUE));
+    }
+
+    // PRINTOUT FPDF
+    public function generate_pdf($id)
+    {
+        // Load FPDF library
+        $this->load->library('fpdf');
+
+        // Load data from database based on $id
+        $data['master'] = $this->M_datadeklarasi->get_by_id($id);
+        $data['user'] = $this->db->select('name')
+            ->from('tbl_data_user')
+            ->where('id_user', $data['master']->id_pengaju)
+            ->get()
+            ->row('name');
+        $data['app_status'] = strtoupper($data['master']->app_status);
+        $data['app2_status'] = strtoupper($data['master']->app2_status);
+
+        // Start FPDF
+        $pdf = new FPDF('P', 'mm', 'A4');
+        $pdf->SetTitle('Form Deklarasi');
+        $pdf->AddPage();
+
+        // Set font for title
+        $pdf->SetFont('Arial', 'B', 14);
+        $pdf->Cell(0, 10, 'PT. MANDIRI CIPTA SEJAHTERA', 0, 1, 'C');
+
+        // Title of the form
+        $pdf->Ln(8);
+        $pdf->SetFont('Arial', 'B', 14);
+        $pdf->Cell(0, 10, 'FORM DEKLARASI', 0, 1, 'C');
+        $pdf->Ln(5);
+
+        // Set font for form data
+        $pdf->SetFont('Arial', '', 12);
+        $pdf->Cell(40, 10, 'Tanggal:', 0, 0);
+        $pdf->Cell(60, 10, $data['master']->tgl_deklarasi, 0, 1);
+        $pdf->Cell(40, 10, 'Nama:', 0, 0);
+        $pdf->Cell(60, 10, $data['user'], 0, 1);
+        $pdf->Cell(40, 10, 'Jabatan:', 0, 0);
+        $pdf->Cell(60, 10, $data['master']->jabatan, 0, 1);
+
+        $pdf->Ln(5);
+        $pdf->SetFont('Arial', '', 12);
+        $pdf->Cell(60, 10, 'Telah/akan melakukan pembayaran kepada:', 0, 1);
+
+        // Set font for form data
+        $pdf->SetFont('Arial', '', 12);
+        $pdf->Cell(40, 10, 'Nama:', 0, 0);
+        $pdf->Cell(60, 10, $data['master']->nama_dibayar, 0, 1);
+        $pdf->Cell(40, 10, 'Tujuan:', 0, 0);
+        $pdf->Cell(60, 10, $data['master']->tujuan, 0, 1);
+        $pdf->Cell(40, 10, 'Sebesar:', 0, 0);
+        $pdf->Cell(60, 10, $data['master']->sebesar, 0, 1);
+
+        // Add Signature Section
+        $pdf->Ln(10);
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->SetFillColor(0, 123, 255); // Background color for headers
+        $pdf->SetTextColor(255, 255, 255); // White text color
+        $pdf->Cell(60, 10, 'Yang melakukan', 1, 0, 'C', true);
+        $pdf->Cell(60, 10, 'Mengetahui', 1, 0, 'C', true);
+        $pdf->Cell(60, 10, 'Menyetujui', 1, 1, 'C', true);
+
+        // Empty cells for signatures
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->SetTextColor(0, 0, 0); // Reset text color
+        $pdf->Cell(60, 20, '', 1, 0, 'C');
+        $pdf->Cell(60, 20, $data['app_status'], 1, 0, 'C');
+        $pdf->Cell(60, 20, $data['app2_status'], 1, 1, 'C');
+
+        // Empty cells for signatures
+        $pdf->SetFont('Arial', '', 12);
+        $pdf->SetTextColor(0, 0, 0); // Reset text color
+        $pdf->Cell(60, 8, $data['user'], 1, 0, 'C');
+        $pdf->Cell(60, 8, $data['master']->app_name, 1, 0, 'C');
+        $pdf->Cell(60, 8, $data['master']->app2_name, 1, 1, 'C');
+
+        // Add keterangan
+        $pdf->Ln(5);
+        $pdf->SetFont('Arial', '', 12);
+        $pdf->Cell(40, 10, 'Keterangan:', 0, 0);
+        $pdf->Ln(8);
+        if ($data['master']->app_keterangan != null) {
+            $pdf->Cell(60, 10, '*' . $data['master']->app_keterangan, 0, 1);
+        } elseif ($data['master']->app2_keterangan != null) {
+            $pdf->Cell(60, 10, '*' . $data['master']->app2_keterangan, 0, 1);
+        }
+
+        // Output the PDF
+        $pdf->Output('I', 'Prepayment.pdf');
     }
 }
