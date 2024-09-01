@@ -8,8 +8,8 @@ class M_reimbust extends CI_Model
     var $id = 'id';
     var $table = 'tbl_reimbust'; //nama tabel dari database
     var $table2 = 'tbl_reimbust_detail';
-    var $column_order = array(null, null, 'kode_reimbust', 'nama', 'jabatan', 'departemen', 'sifat_pelaporan', 'tgl_pengajuan', 'tujuan', 'jumlah_prepayment', 'status');
-    var $column_search = array('kode_reimbust', 'nama', 'jabatan', 'departemen', 'sifat_pelaporan', 'tgl_pengajuan', 'tujuan', 'jumlah_prepayment', 'status'); //field yang diizin untuk pencarian 
+    var $column_order = array(null, null, 'kode_reimbust', 'jabatan', 'departemen', 'sifat_pelaporan', 'tgl_pengajuan', 'tujuan', 'jumlah_prepayment', 'status');
+    var $column_search = array('kode_reimbust', 'jabatan', 'departemen', 'sifat_pelaporan', 'tgl_pengajuan', 'tujuan', 'jumlah_prepayment', 'status'); //field yang diizin untuk pencarian 
     var $order = array('id' => 'desc'); // default order 
 
     public function __construct()
@@ -19,8 +19,9 @@ class M_reimbust extends CI_Model
 
     private function _get_datatables_query()
     {
-
+        $this->db->select('tbl_reimbust.*, tbl_data_user.name'); // Memilih kolom dari kedua tabel
         $this->db->from($this->table);
+        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_reimbust.id_user', 'left'); // JOIN dengan tabel tbl_user
 
         $i = 0;
 

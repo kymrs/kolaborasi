@@ -47,7 +47,6 @@ class M_prepayment extends CI_Model
                     $this->db->group_end();
                 }
             }
-
             $i++;
         }
 

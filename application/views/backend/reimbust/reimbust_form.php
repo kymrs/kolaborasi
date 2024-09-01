@@ -47,13 +47,13 @@
                                         <input type="text" class="form-control" id="kode_reimbust" name="kode_reimbust" placeholder="Kode Reimbust">
                                     </div>
                                 </div>
-                                <div class="form-group row">
+                                <!-- <div class="form-group row">
                                     <label class="col-sm-5">Nama</label>
                                     <div class="col-sm-7">
                                         <input type="text" class="form-control" id="nama" name="nama" autocomplete="off" placeholder="Nama" value="">
                                     </div>
-                                </div>
-                                <div class="form-group row">
+                                </div> -->
+                                <!-- <div class="form-group row">
                                     <label class="col-sm-5">Departemen</label>
                                     <div class="col-sm-7">
                                         <select class="form-control" name="departemen" id="departemen">
@@ -64,17 +64,17 @@
                                         </select>
                                         <input type="text" class="form-control" id="departemenPrepayment" name="departemen" autocomplete="off" placeholder="Departemen">
                                     </div>
-                                </div>
+                                </div> -->
                             </div>
 
                             <!-- SEBELAH KANAN -->
                             <div class="col-md-6">
-                                <div class="form-group row">
+                                <!-- <div class="form-group row">
                                     <label class="col-sm-5">Jabatan</label>
                                     <div class="col-sm-7">
                                         <input type="text" class="form-control" id="jabatan" name="jabatan" autocomplete="off" placeholder="Jabatan">
                                     </div>
-                                </div>
+                                </div> -->
                                 <div class="form-group row">
                                     <label class="col-sm-5">Tujuan</label>
                                     <div class="col-sm-7">
@@ -333,9 +333,9 @@
 
             // Masukkan data ke dalam input form di tampilan utama
             $('#kode_reimbust').val(data[2]);
-            $('#nama').val(data[3]);
+            // $('#nama').val(data[3]);
             $('#departemenPrepayment').val(data[4]);
-            $('#jabatan').val(data[5]);
+            // $('#jabatan').val(data[5]);
             $('#tgl_pengajuan').val(data[6]);
             $('#jumlah_prepayment').val(data[8]);
             var cleanedValue = data[8].replace(/\./g, '');
@@ -716,19 +716,19 @@
             if (sifatPelaporan == 'Reimbust') {
                 $('#tgl_pengajuan').val('');
                 $('#kode_reimbust').val('');
-                $('#nama').val('');
-                $('#departemen').val('');
-                $('#departemenPrepayment').val('');
-                $('#jabatan').val('');
+                // $('#nama').val('');
+                // $('#departemen').val('');
+                // $('#departemenPrepayment').val('');
+                // $('#jabatan').val('');
                 $('#tujuan').val('');
                 $('#jumlah_prepayment').val('');
             } else if (sifatPelaporan != 'Reimbust' || sifatPelaporan != 'Pelaporan') {
                 $('#tgl_pengajuan').val('');
                 $('#kode_reimbust').val('');
-                $('#nama').val('');
-                $('#departemen').val('');
-                $('#departemenPrepayment').val('');
-                $('#jabatan').val('');
+                // $('#nama').val('');
+                // $('#departemen').val('');
+                // $('#departemenPrepayment').val('');
+                // $('#jabatan').val('');
                 $('#tujuan').val('');
                 $('#jumlah_prepayment').val('');
             }
@@ -750,19 +750,19 @@
                         'readonly': false
                     }).css('cursor', 'pointer');
                     $('#tgl_pengajuan').css('pointer-events', 'auto');
-                    $('#nama').prop({
-                        'disabled': false,
-                        'readonly': false
-                    }).css('cursor', 'auto');
-                    $('#departemen').prop('disabled', false).css({
-                        'cursor': 'pointer',
-                        'display': 'block'
-                    });
-                    $('#departemenPrepayment').prop('disabled', true).css('display', 'none');
-                    $('#jabatan').prop({
-                        'disabled': false,
-                        'readonly': false
-                    }).css('cursor', 'auto');
+                    // $('#nama').prop({
+                    //     'disabled': false,
+                    //     'readonly': false
+                    // }).css('cursor', 'auto');
+                    // $('#departemen').prop('disabled', false).css({
+                    //     'cursor': 'pointer',
+                    //     'display': 'block'
+                    // });
+                    // $('#departemenPrepayment').prop('disabled', true).css('display', 'none');
+                    // $('#jabatan').prop({
+                    //     'disabled': false,
+                    //     'readonly': false
+                    // }).css('cursor', 'auto');
                     $('#tujuan').prop({
                         'disabled': false,
                         'readonly': false
@@ -782,25 +782,25 @@
                         'readonly': true
                     }).css('cursor', 'not-allowed');
                     $('#tgl_pengajuan').css('pointer-events', 'none');
-                    $('#nama').prop({
-                        'disabled': false,
-                        'readonly': true
-                    }).css('cursor', 'not-allowed');
-                    $('#departemen').prop({
-                        'disabled': false,
-                        'readonly': true
-                    }).css('display', 'none');
-                    $('#departemenPrepayment').prop({
-                        'disabled': false,
-                        'readonly': true
-                    }).css({
-                        'display': 'block',
-                        'cursor': 'not-allowed'
-                    });
-                    $('#jabatan').prop({
-                        'disabled': false,
-                        'readonly': true
-                    }).css('cursor', 'not-allowed');
+                    // $('#nama').prop({
+                    //     'disabled': false,
+                    //     'readonly': true
+                    // }).css('cursor', 'not-allowed');
+                    // $('#departemen').prop({
+                    //     'disabled': false,
+                    //     'readonly': true
+                    // }).css('display', 'none');
+                    // $('#departemenPrepayment').prop({
+                    //     'disabled': false,
+                    //     'readonly': true
+                    // }).css({
+                    //     'display': 'block',
+                    //     'cursor': 'not-allowed'
+                    // });
+                    // $('#jabatan').prop({
+                    //     'disabled': false,
+                    //     'readonly': true
+                    // }).css('cursor', 'not-allowed');
                     $('#tujuan').prop({
                         'disabled': false,
                         'readonly': true
@@ -815,13 +815,13 @@
                     }).css('cursor', 'not-allowed');
                 } else {
                     $('#pelaporan_button').css('display', 'none');
-                    $('#nama').prop('disabled', true).css('cursor', 'not-allowed');
-                    $('#departemen').prop('disabled', true).css({
-                        'cursor': 'not-allowed',
-                        'display': 'block'
-                    });
-                    $('#departemenPrepayment').prop('disabled', true).css('display', 'none');
-                    $('#jabatan').prop('disabled', true).css('cursor', 'not-allowed');
+                    // $('#nama').prop('disabled', true).css('cursor', 'not-allowed');
+                    // $('#departemen').prop('disabled', true).css({
+                    //     'cursor': 'not-allowed',
+                    //     'display': 'block'
+                    // });
+                    // $('#departemenPrepayment').prop('disabled', true).css('display', 'none');
+                    // $('#jabatan').prop('disabled', true).css('cursor', 'not-allowed');
                     $('#tgl_pengajuan').prop('disabled', true).css('cursor', 'not-allowed');
                     $('#tujuan').prop('disabled', true).css('cursor', 'not-allowed');
                     $('#status').prop('disabled', true).css('cursor', 'not-allowed');
@@ -835,13 +835,13 @@
                         'readonly': false
                     }).css('cursor', 'pointer');
                     $('#tgl_pengajuan').css('pointer-events', 'auto');
-                    $('#nama').prop('readonly', false).css('cursor', 'auto');
-                    $('#departemen').prop('disabled', false).css({
-                        'display': 'block',
-                        'cursor': 'pointer'
-                    });
-                    $('#departemenPrepayment').prop('disabled', true).css('display', 'none');
-                    $('#jabatan').prop('readonly', false).css('cursor', 'auto');
+                    // $('#nama').prop('readonly', false).css('cursor', 'auto');
+                    // $('#departemen').prop('disabled', false).css({
+                    //     'display': 'block',
+                    //     'cursor': 'pointer'
+                    // });
+                    // $('#departemenPrepayment').prop('disabled', true).css('display', 'none');
+                    // $('#jabatan').prop('readonly', false).css('cursor', 'auto');
                     $('#tujuan').prop('readonly', false).css('cursor', 'auto');
                     $('#status').prop('readonly', false).css('cursor', 'pointer');
                     $('#jumlah_prepayment').prop('readonly', false).css('cursor', 'auto');
@@ -852,25 +852,25 @@
                         'readonly': true
                     }).css('cursor', 'not-allowed');
                     $('#tgl_pengajuan').css('pointer-events', 'none');
-                    $('#nama').prop({
-                        'disabled': false,
-                        'readonly': true
-                    }).css('cursor', 'not-allowed');
-                    $('#departemen').prop({
-                        'disabled': false,
-                        'readonly': true
-                    }).css('display', 'none');
-                    $('#departemenPrepayment').prop({
-                        'disabled': false,
-                        'readonly': true
-                    }).css({
-                        'display': 'block',
-                        'cursor': 'not-allowed'
-                    });
-                    $('#jabatan').prop({
-                        'disabled': false,
-                        'readonly': true
-                    }).css('cursor', 'not-allowed');
+                    // $('#nama').prop({
+                    //     'disabled': false,
+                    //     'readonly': true
+                    // }).css('cursor', 'not-allowed');
+                    // $('#departemen').prop({
+                    //     'disabled': false,
+                    //     'readonly': true
+                    // }).css('display', 'none');
+                    // $('#departemenPrepayment').prop({
+                    //     'disabled': false,
+                    //     'readonly': true
+                    // }).css({
+                    //     'display': 'block',
+                    //     'cursor': 'not-allowed'
+                    // });
+                    // $('#jabatan').prop({
+                    //     'disabled': false,
+                    //     'readonly': true
+                    // }).css('cursor', 'not-allowed');
                     $('#tujuan').prop({
                         'disabled': false,
                         'readonly': true
@@ -884,9 +884,9 @@
                         'readonly': true
                     }).css('cursor', 'not-allowed');
                 } else {
-                    $('#nama').prop('readonly', true).css('cursor', 'not-allowed');
-                    $('#departemen').prop('readonly', true).css('cursor', 'not-allowed');
-                    $('#jabatan').prop('readonly', true).css('cursor', 'not-allowed');
+                    // $('#nama').prop('readonly', true).css('cursor', 'not-allowed');
+                    // $('#departemen').prop('readonly', true).css('cursor', 'not-allowed');
+                    // $('#jabatan').prop('readonly', true).css('cursor', 'not-allowed');
                     $('#tgl_pengajuan').prop('readonly', true).css('cursor', 'not-allowed');
                     $('#tujuan').prop('readonly', true).css('cursor', 'not-allowed');
                     $('#status').prop('readonly', true).css('cursor', 'not-allowed');
@@ -907,7 +907,7 @@
                     $('#pelaporan_button').prop('disabled', true).css('display', 'none');
                 } else {
                     $('#pelaporan_button').css('display', 'none');
-                    $('#departemen').prop('disabled', true).css('display', 'none');
+                    // $('#departemen').prop('disabled', true).css('display', 'none');
                     $('input').prop('disabled', true).css('cursor', 'not-allowed');
                     $('select').prop('disabled', true).css('cursor', 'not-allowed');
                     $('textarea').prop('disabled', true).css('cursor', 'not-allowed');
@@ -941,11 +941,11 @@
                     // Set nilai untuk setiap field dari data master    
                     $('#sifat_pelaporan').val(data['master']['sifat_pelaporan']);
                     $('#id').val(data['master']['id']);
-                    $('#kode_reimbust').val(data['master']['kode_reimbust']).attr('readonly', true);
-                    $('#nama').val(data['master']['nama']);
-                    $('#jabatan').val(data['master']['jabatan']);
-                    $('#departemen').val(data['master']['departemen']);
-                    $('#departemenPrepayment').val(data['master']['departemen']);
+                    // $('#kode_reimbust').val(data['master']['kode_reimbust']).attr('readonly', true);
+                    // $('#nama').val(data['master']['nama']);
+                    // $('#jabatan').val(data['master']['jabatan']);
+                    // $('#departemen').val(data['master']['departemen']);
+                    // $('#departemenPrepayment').val(data['master']['departemen']);
                     $('#tgl_pengajuan').val(moment(data['master']['tgl_pengajuan']).format('DD-MM-YYYY'));
                     $('#tujuan').val(data['master']['tujuan']);
                     $('#status').val(data['master']['status']);
@@ -1282,15 +1282,15 @@
 
         $("#form").validate({
             rules: {
-                nama: {
-                    required: true,
-                },
-                departemen: {
-                    required: true,
-                },
-                jabatan: {
-                    required: true,
-                },
+                // nama: {
+                //     required: true,
+                // },
+                // departemen: {
+                //     required: true,
+                // },
+                // jabatan: {
+                //     required: true,
+                // },
                 sifat_pelaporan: {
                     required: true,
                 },
@@ -1308,15 +1308,15 @@
                 },
             },
             messages: {
-                nama: {
-                    required: "Nama is required",
-                },
-                departemen: {
-                    required: "Departemen is required",
-                },
-                jabatan: {
-                    required: "Jabatan is required",
-                },
+                // nama: {
+                //     required: "Nama is required",
+                // },
+                // departemen: {
+                //     required: "Departemen is required",
+                // },
+                // jabatan: {
+                //     required: "Jabatan is required",
+                // },
                 sifat_pelaporan: {
                     required: " ",
                 },
