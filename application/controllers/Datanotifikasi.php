@@ -53,11 +53,20 @@ class Datanotifikasi extends CI_Controller
 
     function read_form($id)
     {
-        $data['aksi'] = 'read';
         $data['id'] = $id;
+        $data['user'] = $this->M_datanotifikasi->get_by_id($id);
+        $data['app_name'] = $this->db->select('name')
+            ->from('tbl_data_user')
+            ->where('id_user', $this->session->userdata('id_user'))
+            ->get()
+            ->row('name');
+        $data['app2_name'] = $this->db->select('name')
+            ->from('tbl_data_user')
+            ->where('id_user', $this->session->userdata('id_user'))
+            ->get()
+            ->row('name');
         $data['title_view'] = "Data Notifikasi";
-        $data['title'] = 'backend/datanotifikasi/notifikasi_form';
-        $this->load->view('backend/home', $data);
+        $this->load->view('backend/datanotifikasi/notifikasi_read', $data);
     }
 
     // MEREGENERATE KODE PREPAYMENT
@@ -96,7 +105,11 @@ class Datanotifikasi extends CI_Controller
 
     function edit_data($id)
     {
-        $data = $this->M_datanotifikasi->get_by_id($id);
+        $data['master'] = $this->M_datanotifikasi->get_by_id($id);
+        $data['nama'] = $this->db->select('name')
+            ->from('tbl_data_user')
+            ->where('id_user', $data['master']->id_user)
+            ->get()->row('name');
         echo json_encode($data);
     }
 
@@ -134,7 +147,7 @@ class Datanotifikasi extends CI_Controller
                 ->get()
                 ->row('divisi'),
             'pengajuan' => $this->input->post('pengajuan'),
-            'tgl_notifikasi' => date('Y-m-d', strtotime($this->input->post('tanggal'))),
+            'tgl_notifikasi' => date('Y-m-d', strtotime($this->input->post('tgl_notifikasi'))),
             'waktu' => $this->input->post('waktu'),
             'alasan' => $this->input->post('alasan'),
             'app_name' => $this->db->select('name')
@@ -167,6 +180,57 @@ class Datanotifikasi extends CI_Controller
     function delete($id)
     {
         $this->M_datanotifikasi->delete($id);
+        echo json_encode(array("status" => TRUE));
+    }
+
+    //APPROVE DATA
+    public function approve()
+    {
+        $data = array(
+            'app_name' => $this->input->post('app_name'),
+            'app_keterangan' => $this->input->post('app_keterangan'),
+            'app_status' => $this->input->post('app_status'),
+            'app_date' => date('Y-m-d H:i:s'),
+        );
+        //UPDATE APPROVAL PERTAMA
+        $this->db->where('id', $this->input->post('hidden_id'));
+        $this->db->update('tbl_notifikasi', $data);
+
+        // UPDATE STATUS PREPAYMENT
+        if ($this->input->post('app_status') == 'rejected') {
+            $this->db->where('id', $this->input->post('hidden_id'));
+            $this->db->update('tbl_notifikasi', ['status' => 'rejected']);
+        } elseif ($this->input->post('app_status') == 'revised') {
+            $this->db->where('id', $this->input->post('hidden_id'));
+            $this->db->update('tbl_notifikasi', ['status' => 'revised']);
+        }
+
+        echo json_encode(array("status" => TRUE));
+    }
+
+    function approve2()
+    {
+        $data = array(
+            'app2_name' => $this->input->post('app2_name'),
+            'app2_keterangan' => $this->input->post('app2_keterangan'),
+            'app2_status' => $this->input->post('app2_status'),
+            'app2_date' => date('Y-m-d H:i:s'),
+        );
+        // UPDATE APPROVAL 2
+        $this->db->where('id', $this->input->post('hidden_id'));
+        $this->db->update('tbl_notifikasi', $data);
+
+        // UPDATE STATUS PREPAYMENT
+        if ($this->input->post('app2_status') == 'rejected') {
+            $this->db->where('id', $this->input->post('hidden_id'));
+            $this->db->update('tbl_notifikasi', ['status' => 'rejected']);
+        } elseif ($this->input->post('app2_status') == 'revised') {
+            $this->db->where('id', $this->input->post('hidden_id'));
+            $this->db->update('tbl_notifikasi', ['status' => 'revised']);
+        } elseif ($this->input->post('app2_status') == 'approved') {
+            $this->db->where('id', $this->input->post('hidden_id'));
+            $this->db->update('tbl_notifikasi', ['status' => 'approved']);
+        }
         echo json_encode(array("status" => TRUE));
     }
 }
