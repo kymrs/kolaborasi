@@ -28,9 +28,10 @@ class Reimbust extends CI_Controller
             $row[] = $no;
             $row[] = '<a href="reimbust/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
             <a href="reimbust/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
-			<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>';
+			<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
+			<a href="reimbust/app_form/' . $field->id . '" class="btn btn-success btn-circle btn-sm" title="Approval"><i class="fas fa-file-pdf" aria-hidden="true"></i></a>';
             $row[] = $field->kode_reimbust;
-            $row[] = $field->nama;
+            $row[] = $field->name;
             $row[] = $field->jabatan;
             $row[] = $field->departemen;
             $row[] = $field->sifat_pelaporan;
@@ -86,6 +87,26 @@ class Reimbust extends CI_Controller
         $this->load->view('backend/home', $data);
     }
 
+    // UNTUK MENAMPILKAN FORM APPROVAL
+    public function app_form($id)
+    {
+        $data['id'] = $id;
+        $data['user'] = $this->M_reimbust->get_by_id($id);
+        $data['app_name'] = $this->db->select('name')
+            ->from('tbl_data_user')
+            ->where('id_user', $this->session->userdata('id_user'))
+            ->get()
+            ->row('name');
+        $data['app2_name'] = $this->db->select('name')
+            ->from('tbl_data_user')
+            ->where('id_user', $this->session->userdata('id_user'))
+            ->get()
+            ->row('name');
+        // $data['title'] = 'backend/reimbust/reimbust_app';
+        $data['title_view'] = 'Reimbust Approval';
+        $this->load->view('backend/reimbust/reimbust_app', $data);
+    }
+
     public function generate_kode()
     {
         $date = $this->input->post('date');
@@ -103,7 +124,7 @@ class Reimbust extends CI_Controller
         $urutan = str_pad($no_urut, 4, "0", STR_PAD_LEFT);
         $month = substr($date, 3, 2);
         $year = substr($date, 8, 2);
-        $data = 'p' . $year . $month . $urutan;
+        $data = 'r' . $year . $month . $urutan;
         echo json_encode($data);
     }
 
@@ -120,6 +141,10 @@ class Reimbust extends CI_Controller
     {
         $data['master'] = $this->M_reimbust->get_by_id($id);
         $data['transaksi'] = $this->M_reimbust->get_by_id_detail($id);
+        $data['nama'] = $this->db->select('name')
+            ->from('tbl_data_user')
+            ->where('id_user', $data['master']->id_user)
+            ->get()->row('name');
         echo json_encode($data);
     }
 
@@ -139,6 +164,12 @@ class Reimbust extends CI_Controller
         $tgl_nota = $this->input->post('tgl_nota');
         $jumlah = $this->input->post('jumlah');
         $deklarasi = $this->input->post('deklarasi');
+        $id_user = $this->session->userdata('id_user');
+
+        $data_user = $this->db->get_where('tbl_data_user', ['id_user' => $id_user])->row_array();
+
+        $departemen = $data_user['divisi'];
+        $jabatan = $data_user['jabatan'];
 
         // PERULANGAN UNTUK CEK UKURAN FILE
         for ($i = 1; $i <= count($pemakaian); $i++) {
@@ -153,9 +184,9 @@ class Reimbust extends CI_Controller
         // Inisialisasi data untuk tabel reimbust
         $data1 = array(
             'kode_reimbust' => $this->input->post('kode_reimbust'),
-            'nama' => $this->input->post('nama'),
-            'jabatan' => $this->input->post('jabatan'),
-            'departemen' => $this->input->post('departemen'),
+            'id_user' => $id_user,
+            'jabatan' => $jabatan,
+            'departemen' => $departemen,
             'sifat_pelaporan' => $this->input->post('sifat_pelaporan'),
             'tgl_pengajuan' => date('Y-m-d', strtotime($this->input->post('tgl_pengajuan'))),
             'tujuan' => $this->input->post('tujuan'),
@@ -213,7 +244,6 @@ class Reimbust extends CI_Controller
         $this->load->library('upload');
 
         $data = array(
-            'nama' => $this->input->post('nama'),
             'jabatan' => $this->input->post('jabatan'),
             'departemen' => $this->input->post('departemen'),
             'sifat_pelaporan' => $this->input->post('sifat_pelaporan'),
