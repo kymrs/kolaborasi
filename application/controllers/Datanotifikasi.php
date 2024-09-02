@@ -24,12 +24,17 @@ class Datanotifikasi extends CI_Controller
         $data = array();
         $no = $_POST['start'];
         foreach ($list as $field) {
+
+            $action = '<a href="datanotifikasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+            <a href="datanotifikasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
+			<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
+            <a class="btn btn-success btn-circle btn-sm" href="datanotifikasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+
+
             $no++;
             $row = array();
             $row[] = $no;
-            $row[] = '<a href="datanotifikasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-            <a href="datanotifikasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
-			<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>';
+            $row[] = $action;
             $row[] = strtoupper($field->kode_notifikasi);
             $row[] = $field->name;
             $row[] = $field->jabatan;
@@ -232,5 +237,117 @@ class Datanotifikasi extends CI_Controller
             $this->db->update('tbl_notifikasi', ['status' => 'approved']);
         }
         echo json_encode(array("status" => TRUE));
+    }
+
+    // PRINTOUT FPDF
+    public function generate_pdf($id)
+    {
+        // Load FPDF library
+        $this->load->library('fpdf');
+
+        // Load data from database based on $id
+        $data['master'] = $this->M_datanotifikasi->get_by_id($id);
+        $data['user'] = $this->db->select('name')
+            ->from('tbl_data_user')
+            ->where('id_user', $data['master']->id_user)
+            ->get()
+            ->row('name');
+        $data['app_status'] = strtoupper($data['master']->app_status);
+        $data['app2_status'] = strtoupper($data['master']->app2_status);
+
+        // Start FPDF
+        $pdf = new FPDF('P', 'mm', 'A4');
+        $pdf->SetTitle('Form Notifikasi');
+        $pdf->AddPage();
+
+        // Set font for title
+        $pdf->SetFont('Arial', 'B', 14);
+        $pdf->Cell(0, 10, 'PT. MANDIRI CIPTA SEJAHTERA', 0, 1, 'C');
+
+        // Title of the form
+        $pdf->Ln(8);
+        $pdf->SetFont('Arial', 'B', 14);
+        $pdf->Cell(0, 10, 'FORM NOTIFIKASI', 0, 1, 'C');
+        $pdf->Ln(5);
+
+        $pdf->Ln(5);
+        $pdf->SetFont('Arial', '', 12);
+        $pdf->Cell(60, 10, 'Saya yang bertanda tangan dibawah ini:', 0, 1);
+
+        // Set font for form data
+        $pdf->SetFont('Arial', '', 12);
+        $pdf->Cell(40, 10, 'Nama:', 0, 0);
+        $pdf->Cell(60, 10, $data['user'], 0, 1);
+        $pdf->Cell(40, 10, 'Jabatan:', 0, 0);
+        $pdf->Cell(60, 10, $data['master']->jabatan, 0, 1);
+
+        $pdf->Ln(5);
+        $pdf->Cell(40, 10, 'Mengajukan izin:', 0, 0);
+        $pdf->Cell(60, 10, $data['master']->pengajuan, 0, 1);
+
+        // Set font for form data
+        $pdf->Ln(5);
+        $pdf->SetFont('Arial', '', 12);
+        $pdf->Cell(40, 10, 'Tanggal:', 0, 0);
+        $pdf->Cell(60, 10, $data['master']->tgl_notifikasi, 0, 1);
+        $pdf->Cell(40, 10, 'Waktu:', 0, 0);
+        $pdf->Cell(60, 10, $data['master']->waktu, 0, 1);
+        $pdf->Cell(40, 10, 'Alasan:', 0, 0);
+        $pdf->Cell(60, 10, $data['master']->alasan, 0, 1);
+
+        $pdf->Ln(5);
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->Cell(60, 10, 'DIISI OLEH ATASAN KARYAWAN BERSANGKUTAN:', 0, 1);
+
+        $pdf->Ln(5);
+        $pdf->Cell(40, 10, 'Notifikasi ini:', 0, 0);
+        $pdf->Cell(60, 10, $data['master']->status, 0, 1);
+        $pdf->Cell(40, 10, 'Dengan alasan:', 0, 0);
+        $pdf->Cell(60, 10, $data['master']->catatan, 0, 1);
+
+        $pdf->Ln(5);
+        $pdf->SetFont('Arial', '', 12);
+        $pdf->Cell(60, 10, 'CATATAN HUMAN CAPITAL DEPARTEMENT', 0, 1);
+
+        $pdf->Ln(5);
+        $pdf->Cell(40, 10, 'Notifikasi ke:', 0, 0);
+        $pdf->Cell(60, 10, $data['master']->kode_notifikasi, 0, 1);
+
+        // Add Signature Section
+        $pdf->Ln(10);
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->SetFillColor(0, 123, 255); // Background color for headers
+        $pdf->SetTextColor(255, 255, 255); // White text color
+        $pdf->Cell(60, 10, 'Yang melakukan', 1, 0, 'C', true);
+        $pdf->Cell(60, 10, 'Mengetahui', 1, 0, 'C', true);
+        $pdf->Cell(60, 10, 'Menyetujui', 1, 1, 'C', true);
+
+        // Empty cells for signatures
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->SetTextColor(0, 0, 0); // Reset text color
+        $pdf->Cell(60, 20, '', 1, 0, 'C');
+        $pdf->Cell(60, 20, $data['app_status'], 1, 0, 'C');
+        $pdf->Cell(60, 20, $data['app2_status'], 1, 1, 'C');
+
+        // Empty cells for signatures
+        $pdf->SetFont('Arial', '', 12);
+        $pdf->SetTextColor(0, 0, 0); // Reset text color
+        $pdf->Cell(60, 8, $data['user'], 1, 0, 'C');
+        $pdf->Cell(60, 8, $data['master']->app_name, 1, 0, 'C');
+        $pdf->Cell(60, 8, $data['master']->app2_name, 1, 1, 'C');
+
+        // Add keterangan
+        $pdf->Ln(5);
+        $pdf->SetFont('Arial', '', 12);
+        $pdf->Cell(40, 10, 'Keterangan:', 0, 0);
+        $pdf->Ln(8);
+        if ($data['master']->app_keterangan != null) {
+            $pdf->Cell(60, 10, '*' . $data['master']->app_keterangan, 0, 1);
+        } elseif ($data['master']->app2_keterangan != null) {
+            $pdf->Cell(60, 10, '*' . $data['master']->app2_keterangan, 0, 1);
+        }
+
+        // Output the PDF
+        $pdf->Output('I', 'Deklarasi.pdf');
     }
 }
