@@ -128,16 +128,17 @@
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
+                    // console.log(data);
                     moment.locale('id');
-                    $('#id').val(data.id);
-                    $('#kode_notifikasi').val(data.kode_notifikasi.toUpperCase()).attr('readonly', true);
-                    $('#nama').val(data.nama);
-                    $('#jabatan').val(data.jabatan);
-                    $('#departemen').val(data.departemen);
-                    $('#pengajuan').val(data.pengajuan);
-                    $('#tgl_notifikasi').val(moment(data.tgl_notifikasi).format('DD-MM-YYYY')).attr('disabled', true); // Changed to 'DD-MM-YYYY'
-                    $('#waktu').val(data.waktu);
-                    $('#alasan').val(data.alasan);
+                    $('#id').val(data['master'].id);
+                    $('#kode_notifikasi').val(data['master'].kode_notifikasi.toUpperCase()).attr('readonly', true);
+                    $('#nama').val(data['nama']);
+                    $('#jabatan').val(data['master'].jabatan);
+                    $('#departemen').val(data['master'].departemen);
+                    $('#pengajuan').val(data['master'].pengajuan);
+                    $('#tgl_notifikasi').val(moment(data['master'].tgl_notifikasi).format('DD-MM-YYYY')).attr('disabled', true); // Changed to 'DD-MM-YYYY'
+                    $('#waktu').val(data['master'].waktu);
+                    $('#alasan').val(data['master'].alasan);
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     alert('Error getting data from ajax');
@@ -171,6 +172,7 @@
                 data: $form.serialize(),
                 dataType: "JSON",
                 success: function(data) {
+                    console.log(data);
                     if (data.status) {
                         Swal.fire({
                             position: 'center',

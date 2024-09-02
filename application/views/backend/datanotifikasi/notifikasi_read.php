@@ -206,6 +206,12 @@
                     <span id="jabatan" class="form-control-plaintext"></span>
                 </div>
             </div>
+            <div class="form-group row">
+                <label for="pengajuan" class="col-sm-3 col-form-label">Mengajukan izin:</label>
+                <div class="col-sm-9">
+                    <span id="pengajuan" class="form-control-plaintext"></span>
+                </div>
+            </div>
 
             <div class="form-group row">
                 <label for="tanggal" class="col-sm-3 col-form-label">Tanggal:</label>
@@ -365,14 +371,15 @@
                 dataType: "JSON",
                 success: function(data) {
                     // console.log(data);
-                    // DATA PREPAYMENT
+                    // DATA NOTIFIKASI
+                    $('#pengajuan').text(data['master']['pengajuan']);
                     $('#tanggal').text(data['master']['tgl_notifikasi']);
                     $('#nama_pembayar').text(data['nama']);
                     $('#jabatan').text(data['master']['jabatan']);
                     $('#tujuan').text(data['master']['tujuan']);
                     $('#waktu').text(data['master']['waktu']);
                     $('#alasan').text(data['master']['alasan']);
-                    // DATA APPROVAL PREPAYMENT
+                    // DATA APPROVAL NOTIFIKASI
                     var nama, status, keterangan, nama2, status2, keterangan2, url;
 
                     // Memeriksa apakah data yang mengetahui ada

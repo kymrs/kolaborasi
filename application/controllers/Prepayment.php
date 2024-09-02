@@ -19,35 +19,38 @@ class Prepayment extends CI_Controller
 
     function get_list()
     {
-        $id_level = $this->session->userdata('id_level');
-        $fullname = $this->session->userdata('fullname');
+        // INISIAI VARIABLE YANG DIBUTUHKAN
+        $fullname = $this->db->select('name')
+            ->from('tbl_data_user')
+            ->where('id_user', $this->session->userdata('id_user'))
+            ->get()
+            ->row('name');
         $status = $this->input->post('status'); // Ambil status dari permintaan POST
         $list = $this->M_prepayment->get_datatables($status);
         $data = array();
         $no = $_POST['start'];
+
+        //LOOPING DATATABLES
         foreach ($list as $field) {
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
-            // if ($field->app_name == $this->session->userdata('fullname')) {
-            //     $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-            //                     <a href="prepayment/app_form/' . $field->id . '" class="btn btn-success btn-circle btn-sm" title="Approval"><i class="fa fa-check" aria-hidden="true"></i></a>';
-            // } elseif ($field->app2_name == $this->session->userdata('fullname')) {
-            //     $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-            //                     <a href="prepayment/app_form/' . $field->id . '" class="btn btn-success btn-circle btn-sm" title="Approval"><i class="fa fa-check" aria-hidden="true"></i></a>';
-            // } elseif ($field->status == 'rejected') {
-            //     $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-            //     <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
-            //     <a href="prepayment/app_form/' . $field->id . '" class="btn btn-success btn-circle btn-sm" title="Approval"><i class="fa fa-check" aria-hidden="true"></i></a>';
-            // } else {
-            //     $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-            //                     <a href="prepayment/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
-            //                     <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
-            //                     <a href="prepayment/app_form/' . $field->id . '" class="btn btn-success btn-circle btn-sm" title="Approval"><i class="fa fa-check" aria-hidden="true"></i></a>';
-            // }
-            $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+            if ($field->app_name == $fullname) {
+                $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                                <a class="btn btn-success btn-circle btn-sm" href="prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+            } elseif ($field->app2_name == $fullname) {
+                $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
+                                <a class="btn btn-success btn-circle btn-sm" href="prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+            } elseif ($field->status == 'rejected') {
+                $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
+                <a class="btn btn-success btn-circle btn-sm" href="prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+            } else {
+                $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
                                 <a href="prepayment/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
                                 <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
                                 <a class="btn btn-success btn-circle btn-sm" href="prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+            }
+
 
             $formatted_nominal = number_format($field->total_nominal, 0, ',', '.');
             $no++;
@@ -284,6 +287,11 @@ class Prepayment extends CI_Controller
             'app_status' => $this->input->post('app_status'),
             'app_date' => date('Y-m-d H:i:s'),
         );
+
+        if ($this->input->post('app_status') === 'revised') {
+            $data['status'] = 'revised';
+        }
+
         //UPDATE APPROVAL PERTAMA
         $this->db->where('id', $this->input->post('hidden_id'));
         $this->db->update('tbl_prepayment', $data);
@@ -307,6 +315,11 @@ class Prepayment extends CI_Controller
             'app2_status' => $this->input->post('app2_status'),
             'app2_date' => date('Y-m-d H:i:s'),
         );
+
+        if ($this->input->post('app2_status') === 'revised') {
+            $data['status'] = 'revised';
+        }
+
         // UPDATE APPROVAL 2
         $this->db->where('id', $this->input->post('hidden_id'));
         $this->db->update('tbl_prepayment', $data);
@@ -323,6 +336,31 @@ class Prepayment extends CI_Controller
             $this->db->update('tbl_prepayment', ['status' => 'approved']);
         }
         echo json_encode(array("status" => TRUE));
+    }
+
+    function formatIndonesianDate($date)
+    {
+        $bulan = [
+            1 => 'Januari',
+            2 => 'Februari',
+            3 => 'Maret',
+            4 => 'April',
+            5 => 'Mei',
+            6 => 'Juni',
+            7 => 'Juli',
+            8 => 'Agustus',
+            9 => 'September',
+            10 => 'Oktober',
+            11 => 'November',
+            12 => 'Desember'
+        ];
+
+        $date = new DateTime($date);
+        $day = $date->format('d');
+        $month = $bulan[(int)$date->format('m')];
+        $year = $date->format('Y');
+
+        return "$day $month $year";
     }
 
     // GENERATE PREPAYMENT MENJADI PDF MENGGUNAKAN FPDF
@@ -342,10 +380,13 @@ class Prepayment extends CI_Controller
         $data['app_status'] = strtoupper($data['master']->app_status);
         $data['app2_status'] = strtoupper($data['master']->app2_status);
 
+        // Format tgl_prepayment to Indonesian date
+        $formattedDate = $this->formatIndonesianDate($data['master']->tgl_prepayment);
+
         // Start FPDF
         $pdf = new FPDF('P', 'mm', 'A4');
         $pdf->SetTitle('Form Pengajuan Prepayment');
-        $pdf->AddPage();
+        $pdf->AddPage('P', 'Letter');
 
         // Set font for title
         $pdf->SetFont('Arial', 'B', 14);
@@ -366,7 +407,7 @@ class Prepayment extends CI_Controller
         // Set font for form data
         $pdf->SetFont('Arial', '', 12);
         $pdf->Cell(40, 10, 'Tanggal:', 0, 0);
-        $pdf->Cell(60, 10, $data['master']->tgl_prepayment, 0, 1);
+        $pdf->Cell(60, 10, $formattedDate, 0, 1);
         $pdf->Cell(40, 10, 'Nama:', 0, 0);
         $pdf->Cell(60, 10, $data['user'], 0, 1);
         $pdf->Cell(40, 10, 'Jabatan:', 0, 0);
@@ -387,14 +428,14 @@ class Prepayment extends CI_Controller
         $pdf->SetFillColor(255, 255, 255); // Row color
         foreach ($data['transaksi'] as $row) {
             $pdf->Cell(60, 10, $row['rincian'], 1, 0, 'L', true);
-            $pdf->Cell(60, 10, $row['nominal'], 1, 0, 'L', true);
+            $pdf->Cell(60, 10, number_format($row['nominal'], 0, ',', '.'), 1, 0, 'L', true);
             $pdf->Cell(60, 10, $row['keterangan'], 1, 1, 'L', true);
         }
         $pdf->SetFont('Arial', 'B', 12);
         $pdf->SetFillColor(248, 249, 250); // Background color
         $pdf->Cell(60, 10, '', 0, 0, false);
         $pdf->Cell(60, 10, 'Total', 1, 0, 'R', true);
-        $pdf->Cell(60, 10, $data['master']->total_nominal, 1, 2, 'C', true);
+        $pdf->Cell(60, 10, number_format($data['master']->total_nominal, 0, ',', '.'), 1, 2, 'C', true);
 
         // Add Signature Section
         $pdf->Ln(10);

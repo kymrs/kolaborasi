@@ -55,14 +55,16 @@ class M_prepayment extends CI_Model
             $this->db->where('status', $_POST['status']);
         }
 
-        // HAK AKSES SIAPA YANG DAPAT MELIHAT RECORD PREPAYMENT
-
         // Tambahkan kondisi WHERE untuk user ID atau nama approval
         $this->db->group_start()
             ->where('tbl_prepayment.id_user', $this->session->userdata('id_user'))
-            ->or_where('tbl_prepayment.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-            ->or_where('tbl_prepayment.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+            ->or_where('tbl_prepayment.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") AND tbl_prepayment.app_status NOT IN ('rejected', 'approved') AND tbl_prepayment.status != 'revised'", FALSE)
+            ->or_where('tbl_prepayment.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") AND tbl_prepayment.app_status NOT IN ('rejected', 'waiting', 'revised') AND tbl_prepayment.app2_status NOT IN ('rejected', 'approved') AND tbl_prepayment.status != 'revised'", FALSE)
             ->group_end();
+
+        // $this->db->group_start()
+        //     ->where("tbl_prepayment.app_status NOT IN ('rejected', 'approved', 'revised')", NULL, FALSE)
+        //     ->group_end();
 
         if (isset($_POST['order'])) {
             $this->db->order_by($this->column_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);

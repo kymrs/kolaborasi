@@ -20,15 +20,35 @@ class Datanotifikasi extends CI_Controller
 
     function get_list()
     {
-        $list = $this->M_datanotifikasi->get_datatables();
+        // INISIAI VARIABLE YANG DIBUTUHKAN
+        $fullname = $this->db->select('name')
+            ->from('tbl_data_user')
+            ->where('id_user', $this->session->userdata('id_user'))
+            ->get()
+            ->row('name');
+        $status = $this->input->post('status'); // Ambil status dari permintaan POST
+        $list = $this->M_datanotifikasi->get_datatables($status);
         $data = array();
         $no = $_POST['start'];
         foreach ($list as $field) {
 
-            $action = '<a href="datanotifikasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-            <a href="datanotifikasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
-			<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
-            <a class="btn btn-success btn-circle btn-sm" href="datanotifikasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+            // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
+            if ($field->app_name == $fullname) {
+                $action = '<a href="datanotifikasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                                <a class="btn btn-success btn-circle btn-sm" href="datanotifikasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+            } elseif ($field->app2_name == $fullname) {
+                $action = '<a href="datanotifikasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
+                                <a class="btn btn-success btn-circle btn-sm" href="datanotifikasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+            } elseif ($field->status == 'rejected') {
+                $action = '<a href="datanotifikasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
+                <a class="btn btn-success btn-circle btn-sm" href="datanotifikasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+            } else {
+                $action = '<a href="datanotifikasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                        <a href="datanotifikasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
+			            <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
+                        <a class="btn btn-success btn-circle btn-sm" href="datanotifikasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+            }
 
 
             $no++;
@@ -176,6 +196,7 @@ class Datanotifikasi extends CI_Controller
             'pengajuan' => $this->input->post('pengajuan'),
             'waktu' => $this->input->post('waktu'),
             'alasan' => $this->input->post('alasan'),
+            'status' => 'on-process'
         );
         $this->db->where('id', $this->input->post('id'));
         $this->db->update('tbl_notifikasi', $data);
@@ -192,7 +213,6 @@ class Datanotifikasi extends CI_Controller
     public function approve()
     {
         $data = array(
-            'app_name' => $this->input->post('app_name'),
             'app_keterangan' => $this->input->post('app_keterangan'),
             'app_status' => $this->input->post('app_status'),
             'app_date' => date('Y-m-d H:i:s'),
@@ -216,7 +236,6 @@ class Datanotifikasi extends CI_Controller
     function approve2()
     {
         $data = array(
-            'app2_name' => $this->input->post('app2_name'),
             'app2_keterangan' => $this->input->post('app2_keterangan'),
             'app2_status' => $this->input->post('app2_status'),
             'app2_date' => date('Y-m-d H:i:s'),
@@ -258,7 +277,7 @@ class Datanotifikasi extends CI_Controller
         // Start FPDF
         $pdf = new FPDF('P', 'mm', 'A4');
         $pdf->SetTitle('Form Notifikasi');
-        $pdf->AddPage();
+        $pdf->AddPage('P', 'Letter');
 
         // Set font for title
         $pdf->SetFont('Arial', 'B', 14);
@@ -300,18 +319,20 @@ class Datanotifikasi extends CI_Controller
         $pdf->Cell(60, 10, 'DIISI OLEH ATASAN KARYAWAN BERSANGKUTAN:', 0, 1);
 
         $pdf->Ln(5);
+        $pdf->SetFont('Arial', '', 12);
         $pdf->Cell(40, 10, 'Notifikasi ini:', 0, 0);
         $pdf->Cell(60, 10, $data['master']->status, 0, 1);
         $pdf->Cell(40, 10, 'Dengan alasan:', 0, 0);
         $pdf->Cell(60, 10, $data['master']->catatan, 0, 1);
 
         $pdf->Ln(5);
-        $pdf->SetFont('Arial', '', 12);
+        $pdf->SetFont('Arial', 'B', 12);
         $pdf->Cell(60, 10, 'CATATAN HUMAN CAPITAL DEPARTEMENT', 0, 1);
 
         $pdf->Ln(5);
+        $pdf->SetFont('Arial', '', 12);
         $pdf->Cell(40, 10, 'Notifikasi ke:', 0, 0);
-        $pdf->Cell(60, 10, $data['master']->kode_notifikasi, 0, 1);
+        $pdf->Cell(60, 10, strtoupper($data['master']->kode_notifikasi), 0, 1);
 
         // Add Signature Section
         $pdf->Ln(10);

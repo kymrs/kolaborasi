@@ -372,14 +372,17 @@
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
+                    moment.locale('id');
+                    // Format tampilan dengan pemisah ribuan
+                    formatedNumber = data['master']['sebesar'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
                     // console.log(data);
                     // DATA PREPAYMENT
-                    $('#tanggal').text(data['master']['tgl_deklarasi']);
+                    $('#tanggal').text(moment(data['master']['tgl_deklarasi']).format('DD MMMM YYYY'));
                     $('#nama_pembayar').text(data['nama']);
                     $('#jabatan').text(data['master']['jabatan']);
                     $('#nama_penerima').text(data['master']['nama_dibayar']);
                     $('#tujuan').text(data['master']['tujuan']);
-                    $('#sebesar').text(data['master']['sebesar']);
+                    $('#sebesar').text(formatedNumber);
                     // DATA APPROVAL PREPAYMENT
                     var nama, status, keterangan, nama2, status2, keterangan2, url;
 

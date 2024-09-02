@@ -61,8 +61,8 @@ class M_datadeklarasi extends CI_Model
         // Tambahkan kondisi WHERE untuk user ID atau nama approval
         $this->db->group_start()
             ->where('tbl_deklarasi.id_pengaju', $this->session->userdata('id_user'))
-            ->or_where('tbl_deklarasi.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-            ->or_where('tbl_deklarasi.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+            ->or_where('tbl_deklarasi.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") AND tbl_deklarasi.app_status NOT IN ('rejected', 'approved') AND tbl_deklarasi.status != 'revised'", FALSE)
+            ->or_where('tbl_deklarasi.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") AND tbl_deklarasi.app_status NOT IN ('rejected', 'waiting', 'revised') AND tbl_deklarasi.app2_status NOT IN ('rejected', 'approved') AND tbl_deklarasi.status != 'revised'", FALSE)
             ->group_end();
 
         if (isset($_POST['order'])) {
