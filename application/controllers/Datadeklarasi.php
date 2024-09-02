@@ -20,17 +20,37 @@ class Datadeklarasi extends CI_Controller
 
     function get_list()
     {
-        $id_level = $this->session->userdata('id_level');
-        $fullname = $this->session->userdata('fullname');
-        $list = $this->M_datadeklarasi->get_datatables();
+        // INISIAI VARIABLE YANG DIBUTUHKAN
+        $fullname = $this->db->select('name')
+            ->from('tbl_data_user')
+            ->where('id_user', $this->session->userdata('id_user'))
+            ->get()
+            ->row('name');
+        $status = $this->input->post('status'); // Ambil status dari permintaan POST
+        $list = $this->M_datadeklarasi->get_datatables($status);
         $data = array();
         $no = $_POST['start'];
+
+        //LOOPING DATATABLES
         foreach ($list as $field) {
 
-            $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+            // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
+            if ($field->app_name == $fullname) {
+                $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                                <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+            } elseif ($field->app2_name == $fullname) {
+                $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
+                                <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+            } elseif ($field->status == 'rejected') {
+                $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
+                <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+            } else {
+                $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
                                 <a href="datadeklarasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
                                 <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
                                 <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+            }
 
             $no++;
             $row = array();
@@ -174,7 +194,7 @@ class Datadeklarasi extends CI_Controller
             'nama_dibayar' => $this->input->post('nama_dibayar'),
             'tujuan' => $this->input->post('tujuan'),
             'sebesar' => $this->input->post('hidden_sebesar'),
-            'status' => $this->input->post('status'),
+            'status' => 'on-process'
         );
         $this->db->where('id', $this->input->post('id'));
         $this->db->update('tbl_deklarasi', $data);
@@ -191,11 +211,15 @@ class Datadeklarasi extends CI_Controller
     public function approve()
     {
         $data = array(
-            'app_name' => $this->input->post('app_name'),
             'app_keterangan' => $this->input->post('app_keterangan'),
             'app_status' => $this->input->post('app_status'),
             'app_date' => date('Y-m-d H:i:s'),
         );
+
+        if ($this->input->post('app_status') === 'revised') {
+            $data['status'] = 'revised';
+        }
+
         //UPDATE APPROVAL PERTAMA
         $this->db->where('id', $this->input->post('hidden_id'));
         $this->db->update('tbl_deklarasi', $data);
@@ -215,11 +239,15 @@ class Datadeklarasi extends CI_Controller
     function approve2()
     {
         $data = array(
-            'app2_name' => $this->input->post('app2_name'),
             'app2_keterangan' => $this->input->post('app2_keterangan'),
             'app2_status' => $this->input->post('app2_status'),
             'app2_date' => date('Y-m-d H:i:s'),
         );
+
+        if ($this->input->post('app_status') === 'revised') {
+            $data['status'] = 'revised';
+        }
+
         // UPDATE APPROVAL 2
         $this->db->where('id', $this->input->post('hidden_id'));
         $this->db->update('tbl_deklarasi', $data);
@@ -238,6 +266,31 @@ class Datadeklarasi extends CI_Controller
         echo json_encode(array("status" => TRUE));
     }
 
+    function formatIndonesianDate($date)
+    {
+        $bulan = [
+            1 => 'Januari',
+            2 => 'Februari',
+            3 => 'Maret',
+            4 => 'April',
+            5 => 'Mei',
+            6 => 'Juni',
+            7 => 'Juli',
+            8 => 'Agustus',
+            9 => 'September',
+            10 => 'Oktober',
+            11 => 'November',
+            12 => 'Desember'
+        ];
+
+        $date = new DateTime($date);
+        $day = $date->format('d');
+        $month = $bulan[(int)$date->format('m')];
+        $year = $date->format('Y');
+
+        return "$day $month $year";
+    }
+
     // PRINTOUT FPDF
     public function generate_pdf($id)
     {
@@ -254,10 +307,13 @@ class Datadeklarasi extends CI_Controller
         $data['app_status'] = strtoupper($data['master']->app_status);
         $data['app2_status'] = strtoupper($data['master']->app2_status);
 
+        // Format tgl_prepayment to Indonesian date
+        $formattedDate = $this->formatIndonesianDate($data['master']->tgl_deklarasi);
+
         // Start FPDF
         $pdf = new FPDF('P', 'mm', 'A4');
         $pdf->SetTitle('Form Deklarasi');
-        $pdf->AddPage();
+        $pdf->AddPage('P', 'Letter');
 
         // Set font for title
         $pdf->SetFont('Arial', 'B', 14);
@@ -272,7 +328,7 @@ class Datadeklarasi extends CI_Controller
         // Set font for form data
         $pdf->SetFont('Arial', '', 12);
         $pdf->Cell(40, 10, 'Tanggal:', 0, 0);
-        $pdf->Cell(60, 10, $data['master']->tgl_deklarasi, 0, 1);
+        $pdf->Cell(60, 10, $formattedDate, 0, 1);
         $pdf->Cell(40, 10, 'Nama:', 0, 0);
         $pdf->Cell(60, 10, $data['user'], 0, 1);
         $pdf->Cell(40, 10, 'Jabatan:', 0, 0);
@@ -289,7 +345,7 @@ class Datadeklarasi extends CI_Controller
         $pdf->Cell(40, 10, 'Tujuan:', 0, 0);
         $pdf->Cell(60, 10, $data['master']->tujuan, 0, 1);
         $pdf->Cell(40, 10, 'Sebesar:', 0, 0);
-        $pdf->Cell(60, 10, $data['master']->sebesar, 0, 1);
+        $pdf->Cell(60, 10, number_format($data['master']->sebesar, 0, ',', '.'), 0, 1);
 
         // Add Signature Section
         $pdf->Ln(10);
@@ -326,6 +382,6 @@ class Datadeklarasi extends CI_Controller
         }
 
         // Output the PDF
-        $pdf->Output('I', 'Prepayment.pdf');
+        $pdf->Output('I', 'Deklarasi.pdf');
     }
 }

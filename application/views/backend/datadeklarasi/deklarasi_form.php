@@ -100,13 +100,13 @@
                 success: function(data) {
                     // console.log(data);
                     moment.locale('id')
-                    $('#id').val(data.id);
+                    $('#id').val(data['master'].id);
                     $('#kode_deklarasi').val(data['master'].kode_deklarasi.toUpperCase()).attr('readonly', true);
                     $('#tgl_deklarasi').val(moment(data['master'].tgl_deklarasi).format('DD-MM-YYYY')).attr('disabled', true);
                     $('#nama_dibayar').val(data['master'].nama_dibayar);
                     $('#tujuan').val(data['master'].tujuan);
                     $('#sebesar').val(data['master'].sebesar.replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
-                    $('#hidden_sebesar').val(data.sebesar);
+                    $('#hidden_sebesar').val(data['master'].sebesar);
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     alert('Error get data from ajax');
@@ -144,7 +144,7 @@
                 data: $('#form').serialize(),
                 dataType: "JSON",
                 success: function(data) {
-                    console.log(data);
+                    // console.log(data);
                     if (data.status) {
                         Swal.fire({
                             position: 'center',
