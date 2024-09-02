@@ -102,6 +102,15 @@ class M_reimbust extends CI_Model
         return $query;
     }
 
+    public function approval($id)
+    {
+        $this->db->select('app_id, app2_id');
+        $this->db->from('tbl_data_user');
+        $this->db->where('id_user', $id);
+        $query = $this->db->get();
+        return $query->row();
+    }
+
     public function save($data)
     {
         $this->db->insert($this->table, $data);

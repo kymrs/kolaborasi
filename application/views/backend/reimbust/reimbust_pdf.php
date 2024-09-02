@@ -65,7 +65,6 @@
         /* Table Main */
         .no-prepayment {
             margin-top: 30px;
-            display: inline-block;
             float: right;
             margin-right: 200px;
         }
@@ -110,6 +109,15 @@
 <body>
     <div class="container">
         <div class="form-container">
+
+            <div class="d-flex justify-content-end mb-3">
+                <?php if ($user->app_name == $app_name) { ?>
+                    <a class="btn btn-warning btn-sm mr-2" id="appBtn" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
+                <?php } elseif ($user->app2_name == $app2_name) { ?>
+                    <a class="btn btn-warning btn-sm mr-2" id="appBtn2" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
+                <?php } ?>
+                <a class="btn btn-secondary btn-sm" href="<?= base_url('reimbust') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+            </div>
 
             <!-- Header -->
             <div class="header">

@@ -29,7 +29,7 @@ class Reimbust extends CI_Controller
             $row[] = '<a href="reimbust/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
             <a href="reimbust/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
 			<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
-			<a href="reimbust/app_form/' . $field->id . '" class="btn btn-success btn-circle btn-sm" title="Approval"><i class="fas fa-file-pdf" aria-hidden="true"></i></a>';
+			<a href="reimbust/generate_pdf/' . $field->id . '" class="btn btn-success btn-circle btn-sm" title="PDF"><i class="fas fa-file-pdf" aria-hidden="true"></i></a>';
             $row[] = $field->kode_reimbust;
             $row[] = $field->name;
             $row[] = $field->jabatan;
@@ -56,9 +56,20 @@ class Reimbust extends CI_Controller
     function read_form($id)
     {
         $data['aksi'] = 'read';
+        $data['user'] = $this->M_reimbust->get_by_id($id);
+        $data['app_name'] = $this->db->select('name')
+            ->from('tbl_data_user')
+            ->where('id_user', $this->session->userdata('id_user'))
+            ->get()
+            ->row('name');
+        $data['app2_name'] = $this->db->select('name')
+            ->from('tbl_data_user')
+            ->where('id_user', $this->session->userdata('id_user'))
+            ->get()
+            ->row('name');
         $data['id'] = $id;
         $data['title_view'] = "Data Reimbust";
-        $data['title'] = 'backend/reimbust/reimbust_form';
+        $data['title'] = 'backend/reimbust/reimbust_pdf';
         $this->db->select('kwitansi');
         $this->db->where('reimbust_id', $id);
         $data['kwitansi'] = $this->db->get('tbl_reimbust_detail')->result_array();
@@ -88,23 +99,244 @@ class Reimbust extends CI_Controller
     }
 
     // UNTUK MENAMPILKAN FORM APPROVAL
-    public function app_form($id)
+    // public function pdf($id)
+    // {
+    //     // Ambil data berdasarkan ID
+    //     $data['id'] = $id;
+    //     $data['user'] = $this->M_reimbust->get_by_id($id);
+
+    //     // Ambil nama user dari database
+    //     $data['app_name'] = $this->db->select('name')
+    //         ->from('tbl_data_user')
+    //         ->where('id_user', $this->session->userdata('id_user'))
+    //         ->get()
+    //         ->row('name');
+    //     $data['app2_name'] = $this->db->select('name')
+    //         ->from('tbl_data_user')
+    //         ->where('id_user', $this->session->userdata('id_user'))
+    //         ->get()
+    //         ->row('name');
+
+    //     // Load library Dompdf
+    //     $this->load->library('dompdf_gen');
+
+    //     // Load view sebagai string
+    //     $html = $this->load->view('backend/reimbust/reimbust_pdf', $data, true);
+
+    //     // Load HTML ke Dompdf
+    //     $this->dompdf_gen->load_html($html);
+
+    //     // Render PDF
+    //     $this->dompdf_gen->render();
+
+    //     // Output file PDF (dapat disesuaikan untuk mendownload atau menampilkan)
+    //     $this->dompdf_gen->stream("reimbust_$id.pdf", array('Attachment' => 0)); // Attachment 0 untuk menampilkan di browser
+    // }
+
+    public function generate_pdf($id)
     {
-        $data['id'] = $id;
-        $data['user'] = $this->M_reimbust->get_by_id($id);
-        $data['app_name'] = $this->db->select('name')
+        // Load FPDF library
+        $this->load->library('fpdf');
+
+        // Load data from database based on $id
+        $data['master'] = $this->M_reimbust->get_by_id($id);
+        $data['transaksi'] = $this->M_reimbust->get_by_id_detail($id);
+        $data['user'] = $this->db->select('name')
             ->from('tbl_data_user')
-            ->where('id_user', $this->session->userdata('id_user'))
+            ->where('id_user', $data['master']->id_user)
             ->get()
             ->row('name');
-        $data['app2_name'] = $this->db->select('name')
-            ->from('tbl_data_user')
-            ->where('id_user', $this->session->userdata('id_user'))
-            ->get()
-            ->row('name');
-        // $data['title'] = 'backend/reimbust/reimbust_app';
-        $data['title_view'] = 'Reimbust Approval';
-        $this->load->view('backend/reimbust/reimbust_app', $data);
+        // $data['app_status'] = strtoupper($data['master']->app_status);
+        // $data['app2_status'] = strtoupper($data['master']->app2_status);
+
+        // Start FPDF
+        $pdf = new FPDF('L', 'mm', 'Letter');
+        $pdf->SetTitle('Form Pengajuan Prepayment');
+        $pdf->AddPage();
+
+        // Mengatur margin kiri, atas, dan kanan
+        $pdf->SetMargins(10, 10, 0); // Margin kiri 20mm, atas 10mm, kanan 20mm
+
+        // Mengatur margin bawah (dan aktifkan auto page break)
+        $pdf->SetAutoPageBreak(true, 5); // Margin bawah 15mm
+
+        // Logo
+        $pdf->Image(base_url('') . '/assets/backend/img/reimbust/kwitansi/default.jpg', 10, -3, 45, 45);
+
+        // Set font
+        $pdf->SetFont('Arial', 'B', 14);
+
+        // Teks yang ingin ditampilkan
+        $text1 = 'FORM PELAPORAN / REIMBUST';
+        $text2 = 'PT. MANDIRI CIPTA SEJAHTERA';
+
+        // Menghitung lebar teks
+        $textWidth1 = $pdf->GetStringWidth($text1);
+        $textWidth2 = $pdf->GetStringWidth($text2);
+
+        // Menghitung posisi X agar teks berada di tengah halaman
+        $pageWidth = $pdf->GetPageWidth();
+        $x1 = ($pageWidth - $textWidth1) / 2;
+        $x2 = ($pageWidth - $textWidth2) / 2;
+
+        // Menempatkan teks di tengah halaman secara horizontal
+        $pdf->SetXY($x1, 9); // Y posisi diatur dengan nilai tetap
+        $pdf->Cell($textWidth1, 10, $text1, 0, 1, 'C');
+
+        $pdf->SetXY($x2, 18); // Y posisi diatur dengan nilai tetap
+        $pdf->Cell($textWidth2, 10, $text2, 0, 1, 'C');
+
+        // Enter
+        $pdf->SetY(35); // Posisi Y (vertikal) dari garis
+        $pdf->SetX(10); // Posisi X (horizontal) dari garis
+
+        // Field Master
+
+        $pdf->SetFont('Arial', '', 10);
+
+        function Cell($pdf, $width, $height, $text, $align = 'L', $fill = false)
+        {
+            $pdf->Cell($width, $height, $text, 0, 0, $align, $fill);
+        }
+
+        // Function to create a row in the table
+        function Row($pdf, $height, $data, $widths, $fill = false)
+        {
+            $pdf->SetX(10); // Start at X position
+
+            for ($i = 0; $i < count($data); $i++) {
+                // Adjust the width of columns as needed to reduce space
+                $pdf->Cell($widths[$i], $height, $data[$i], 0, 0, 'L', $fill);
+            }
+
+            $pdf->Ln(); // Move to the next line
+        }
+
+        // Set column widths (adjust widths as necessary to reduce spacing)
+        $widths = array(43, 3.5, 60); // Adjusted width for the columns
+
+        $tanggal = $data['master']->tgl_pengajuan;
+        $formatted_date = date('d F Y', strtotime($tanggal));
+
+        // Array untuk mengubah nama bulan
+        $months = [
+            'January' => 'Januari',
+            'February' => 'Februari',
+            'March' => 'Maret',
+            'April' => 'April',
+            'May' => 'Mei',
+            'June' => 'Juni',
+            'July' => 'Juli',
+            'August' => 'Agustus',
+            'September' => 'September',
+            'October' => 'Oktober',
+            'November' => 'November',
+            'December' => 'Desember'
+        ];
+
+        // Mengganti nama bulan
+        $month = date('F', strtotime($tanggal));
+        $translated_month = $months[$month];
+        $formatted_date = str_replace($month, $translated_month, $formatted_date);
+
+        // Add some data with adjusted column widths
+        Row($pdf, 10, array('NAMA', ':', $data['user']), $widths, false);
+        $pdf->Ln(-3);
+        Row($pdf, 10, array('JABATAN', ':', $data['master']->jabatan), $widths, false);
+        $pdf->Ln(-3);
+        Row($pdf, 10, array('DEPARTEMEN', ':', $data['master']->departemen), $widths, false);
+        $pdf->Ln(-3);
+        Row($pdf, 10, array('SIFAT PELAPORAN', ':', $data['master']->sifat_pelaporan), $widths, false);
+        $pdf->Ln(-3);
+        Row($pdf, 10, array('TANGGAL', ':', $formatted_date), $widths, false);
+        $pdf->Ln(-3);
+        Row($pdf, 10, array('TUJUAN', ':',  $data['master']->tujuan), $widths, false);
+
+        // Set font for the table header
+        $pdf->SetY($pdf->GetY() + -1); // Move down from previous cell
+
+        $jumlah_prepayment = number_format($data['master']->jumlah_prepayment, 0, ',', '.');
+
+        // Add table headers
+        // Tambahkan "JUMLAH PREPAYMENT" dalam satu Cell
+        $pdf->SetFont('Arial', '', 9);
+        $pdf->Cell(193, 7, 'No. Prepayment : ' . $data['master']->kode_reimbust, 0, 1, 'R');
+
+        $pdf->SetFont('Arial', 'B', 10);
+
+        $pdf->Cell(193, 8.5, 'JUMLAH PREPAYMENT', 1, 0, 'L');
+        $pdf->Cell(66, 8.5, 'BUKTI PENGELUARAN', 1, 0, 'C');
+
+        // Tambahkan "Rp. 500.000" dalam Cell terpisah, dengan posisi terpisah dari teks
+        $pdf->Cell(-67, 8.5, 'Rp. ' . $jumlah_prepayment, 0, 1, 'R');
+        $pdf->Cell(120, 8.5, 'PEMAKAIAN', 1);
+        $pdf->Cell(40, 8.5, 'TGL NOTA', 1, 0, 'C');
+        $pdf->Cell(33, 8.5, 'JUMLAH', 1, 0, 'C');
+        $pdf->Cell(33, 8.5, 'KWITANSI', 1, 0, 'C');
+        $pdf->Cell(33, 8.5, 'DEKLARASI', 1, 1, 'C');
+
+        // Set font for table body
+        $pdf->SetFont('Arial', '', 10);
+
+        // Add table data
+        $no = 1;
+        foreach ($data['transaksi'] as $row) {
+            $tanggal = $row['tgl_nota'];
+            $formatted_date = date('d F Y', strtotime($tanggal));
+
+            // Array untuk mengubah nama bulan
+            $months = [
+                'January' => 'Januari',
+                'February' => 'Februari',
+                'March' => 'Maret',
+                'April' => 'April',
+                'May' => 'Mei',
+                'June' => 'Juni',
+                'July' => 'Juli',
+                'August' => 'Agustus',
+                'September' => 'September',
+                'October' => 'Oktober',
+                'November' => 'November',
+                'December' => 'Desember'
+            ];
+
+            // Mengganti nama bulan
+            $month = date('F', strtotime($tanggal));
+            $translated_month = $months[$month];
+            $formatted_date = str_replace($month, $translated_month, $formatted_date);
+
+            $pdf->Cell(120, 8.5, $no++ . '. ' . $row['pemakaian'], 1);
+            $pdf->Cell(40, 8.5, $formatted_date, 1, 0, 'C');
+            $jumlah = number_format($row['jumlah'], 0, ',', '.');
+            $pdf->Cell(33, 8.5, $jumlah, 1, 0, 'C');
+            $pdf->Cell(33, 8.5, $row['kwitansi'] ? 'Kwitansi' : '', 1, 0, 'C');
+            $pdf->Cell(33, 8.5, $row['deklarasi'], 1, 1, 'C');
+        }
+
+        // Add total and remaining prepayment
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->Cell(259, 8.5, 'JUMLAH PREPAYMENT', 1, 0, 'L');
+        $pdf->Cell(-1, 8.5, 'Rp. ' . $jumlah_prepayment, 0, 1, 'R');
+        $pdf->Cell(259, 8.5, 'SISA PREPAYMENT', 1, 0, 'L');
+        $pdf->Cell(-1, 8.5, 'Rp. ' . $jumlah_prepayment, 0, 1, 'R');
+
+        $pdf->Ln(10);
+
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(50, 8.5, 'YANG MELAKUKAN', 1, 0, 'C');
+        $pdf->Cell(50, 8.5, 'MENGETAHUI', 1, 0, 'C');
+        $pdf->Cell(50, 8.5, 'MENYETUJUI', 1, 1, 'C');
+
+        $pdf->Cell(50, 18, 'APPROVED', 1, 0, 'C');
+        $pdf->Cell(50, 18, 'APPROVED', 1, 0, 'C');
+        $pdf->Cell(50, 18, 'APPROVED', 1, 1, 'C');
+
+        $pdf->Cell(50, 8.5, 'Aldo', 1, 0, 'C');
+        $pdf->Cell(50, 8.5, 'Rakha', 1, 0, 'C');
+        $pdf->Cell(50, 8.5, 'Naufal', 1, 1, 'C');
+
+        // Output the PDF
+        $pdf->Output('I', 'Reimbust.pdf');
     }
 
     public function generate_kode()
@@ -122,9 +354,9 @@ class Reimbust extends CI_Controller
             }
         }
         $urutan = str_pad($no_urut, 4, "0", STR_PAD_LEFT);
-        $month = substr($date, 3, 2);
+        $$bulan = substr($date, 3, 2);
         $year = substr($date, 8, 2);
-        $data = 'r' . $year . $month . $urutan;
+        $data = 'r' . $year . $$bulan . $urutan;
         echo json_encode($data);
     }
 
@@ -167,6 +399,7 @@ class Reimbust extends CI_Controller
         $id_user = $this->session->userdata('id_user');
 
         $data_user = $this->db->get_where('tbl_data_user', ['id_user' => $id_user])->row_array();
+        $approval = $this->M_reimbust->approval($this->session->userdata('id_user'));
 
         $departemen = $data_user['divisi'];
         $jabatan = $data_user['jabatan'];
@@ -191,7 +424,17 @@ class Reimbust extends CI_Controller
             'tgl_pengajuan' => date('Y-m-d', strtotime($this->input->post('tgl_pengajuan'))),
             'tujuan' => $this->input->post('tujuan'),
             'status' => $this->input->post('status'),
-            'jumlah_prepayment' => $this->input->post('jumlah_prepayment')
+            'jumlah_prepayment' => $this->input->post('jumlah_prepayment'),
+            'app_name' => $this->db->select('name')
+                ->from('tbl_data_user')
+                ->where('id_user', $approval->app_id)
+                ->get()
+                ->row('name'),
+            'app2_name' => $this->db->select('name')
+                ->from('tbl_data_user')
+                ->where('id_user', $approval->app2_id)
+                ->get()
+                ->row('name')
         );
 
         // Hanya simpan ke database jika tidak ada file yang melebihi 3 MB
@@ -346,6 +589,55 @@ class Reimbust extends CI_Controller
     function delete($id)
     {
         $this->M_reimbust->delete($id);
+        echo json_encode(array("status" => TRUE));
+    }
+
+    //APPROVE DATA
+    public function approve()
+    {
+        $data = array(
+            'app_keterangan' => $this->input->post('app_keterangan'),
+            'app_status' => $this->input->post('app_status'),
+            'app_date' => date('Y-m-d H:i:s'),
+        );
+        //UPDATE APPROVAL PERTAMA
+        $this->db->where('id', $this->input->post('hidden_id'));
+        $this->db->update('tbl_reimbust', $data);
+
+        // UPDATE STATUS REIMBUST
+        if ($this->input->post('app_status') == 'rejected') {
+            $this->db->where('id', $this->input->post('hidden_id'));
+            $this->db->update('tbl_reimbust', ['status' => 'rejected']);
+        } elseif ($this->input->post('app_status') == 'revised') {
+            $this->db->where('id', $this->input->post('hidden_id'));
+            $this->db->update('tbl_reimbust', ['status' => 'revised']);
+        }
+
+        echo json_encode(array("status" => TRUE));
+    }
+
+    function approve2()
+    {
+        $data = array(
+            'app2_keterangan' => $this->input->post('app2_keterangan'),
+            'app2_status' => $this->input->post('app2_status'),
+            'app2_date' => date('Y-m-d H:i:s'),
+        );
+        // UPDATE APPROVAL 2
+        $this->db->where('id', $this->input->post('hidden_id'));
+        $this->db->update('tbl_reimbust', $data);
+
+        // UPDATE STATUS REIMBUST
+        if ($this->input->post('app2_status') == 'rejected') {
+            $this->db->where('id', $this->input->post('hidden_id'));
+            $this->db->update('tbl_reimbust', ['status' => 'rejected']);
+        } elseif ($this->input->post('app2_status') == 'rejected') {
+            $this->db->where('id', $this->input->post('revised'));
+            $this->db->update('tbl_reimbust', ['status' => 'revised']);
+        } elseif ($this->input->post('app2_status') == 'approved') {
+            $this->db->where('id', $this->input->post('hidden_id'));
+            $this->db->update('tbl_reimbust', ['status' => 'approved']);
+        }
         echo json_encode(array("status" => TRUE));
     }
 }
