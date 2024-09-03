@@ -6,8 +6,20 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <a class="btn btn-primary btn-sm" href="<?= base_url('reimbust/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a>
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <a class="btn btn-primary btn-sm" href="<?= base_url('reimbust/add_form') ?>">
+                        <i class="fa fa-plus"></i>&nbsp;Add Data
+                    </a>
+                    <div class="d-flex align-items-center">
+                        <label for="appFilter" class="mr-2 mb-0">Filter:</label>
+                        <select id="appFilter" name="appFilter" class="form-control form-control-sm" style="cursor: pointer;">
+                            <option value="" selected>Show all....</option>
+                            <option value="on-process">On-Process</option>
+                            <option value="approved">Approved</option>
+                            <option value="revised">Revised</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="card-body">
                     <table id="table" class="table table-bordered table-striped">
@@ -64,7 +76,13 @@
             "order": [],
             "ajax": {
                 "url": "<?php echo site_url('reimbust/get_list') ?>",
-                "type": "POST"
+                "type": "POST",
+                "data": function(d) {
+                    d.status = $('#appFilter').val(); // Tambahkan parameter status ke permintaan server
+                }
+            },
+            "language": {
+                "infoFiltered": ""
             },
             "columnDefs": [{
                     "targets": [2, 6, 7, 9],
@@ -79,6 +97,10 @@
                 },
             ],
         });
+    });
+
+    $('#appFilter').change(function() {
+        table.ajax.reload(); // Muat ulang data di DataTable dengan filter baru
     });
 
     function delete_data(id) {
