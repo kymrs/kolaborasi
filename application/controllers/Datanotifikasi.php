@@ -290,7 +290,7 @@ class Datanotifikasi extends CI_Controller
         $pdf->Cell(0, 10, 'PT. MANDIRI CIPTA SEJAHTERA', 0, 1, 'C');
 
         // Title of the form
-        $pdf->Ln(8);
+        $pdf->Ln(5);
         $pdf->SetFont('Arial', 'B', 14);
         $pdf->Cell(0, 10, 'FORM NOTIFIKASI', 0, 1, 'C');
         $pdf->Ln(5);
