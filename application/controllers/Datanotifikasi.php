@@ -44,10 +44,16 @@ class Datanotifikasi extends CI_Controller
                 <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
                 <a class="btn btn-success btn-circle btn-sm" href="datanotifikasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } else {
-                $action = '<a href="datanotifikasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                if ($field->app_status == 'approved') {
+                    $action = '<a href="datanotifikasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+			            <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
+                        <a class="btn btn-success btn-circle btn-sm" href="datanotifikasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                } else {
+                    $action = '<a href="datanotifikasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
                         <a href="datanotifikasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
 			            <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
                         <a class="btn btn-success btn-circle btn-sm" href="datanotifikasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                }
             }
 
 

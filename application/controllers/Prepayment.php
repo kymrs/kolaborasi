@@ -45,10 +45,16 @@ class Prepayment extends CI_Controller
                 <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
                 <a class="btn btn-success btn-circle btn-sm" href="prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } else {
-                $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                                <a href="prepayment/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
-                                <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
-                                <a class="btn btn-success btn-circle btn-sm" href="prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                if ($field->app_status == 'approved') {
+                    $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+			            <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
+                        <a class="btn btn-success btn-circle btn-sm" href="prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                } else {
+                    $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                        <a href="prepayment/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
+			            <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
+                        <a class="btn btn-success btn-circle btn-sm" href="prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                }
             }
 
 
@@ -465,8 +471,11 @@ class Prepayment extends CI_Controller
         $pdf->SetFont('Arial', '', 12);
         $pdf->Cell(40, 10, 'Keterangan:', 0, 0);
         $pdf->Ln(8);
-        $pdf->Cell(60, 10, '*' . $data['master']->app_keterangan, 0, 1);
-        $pdf->Cell(60, 10, '*' . $data['master']->app2_keterangan, 0, 1);
+        if ($data['master']->app_keterangan != null) {
+            $pdf->Cell(60, 10, '*' . $data['master']->app_keterangan, 0, 1);
+        } elseif ($data['master']->app2_keterangan != null) {
+            $pdf->Cell(60, 10, '*' . $data['master']->app2_keterangan, 0, 1);
+        }
 
         // Output the PDF
         $pdf->Output('I', 'Prepayment.pdf');
