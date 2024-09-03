@@ -372,9 +372,9 @@
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
-                    moment.locale('id')
+                    // console.log(data);
                     // DATA PREPAYMENT
-                    $('#tanggal').html(moment(data['master']['tgl_prepayment']).format('DD MMMM YYYY'));
+                    $('#tanggal').html(data['master']['tgl_prepayment']);
                     $('#nama').html(data['nama']);
                     $('#jabatan').html(data['master']['jabatan']);
                     $('#tujuan').html(data['master']['tujuan']);

@@ -8,8 +8,8 @@ class M_reimbust extends CI_Model
     var $id = 'id';
     var $table = 'tbl_reimbust'; //nama tabel dari database
     var $table2 = 'tbl_reimbust_detail';
-    var $column_order = array(null, null, 'kode_reimbust', 'jabatan', 'departemen', 'sifat_pelaporan', 'tgl_pengajuan', 'tujuan', 'jumlah_prepayment', 'status');
-    var $column_search = array('kode_reimbust', 'jabatan', 'departemen', 'sifat_pelaporan', 'tgl_pengajuan', 'tujuan', 'jumlah_prepayment', 'status'); //field yang diizin untuk pencarian 
+    var $column_order = array(null, null, 'kode_reimbust', 'name', 'jabatan', 'departemen', 'sifat_pelaporan', 'tgl_pengajuan', 'tujuan', 'jumlah_prepayment', 'status');
+    var $column_search = array('kode_reimbust', 'name', 'jabatan', 'departemen', 'sifat_pelaporan', 'tgl_pengajuan', 'tujuan', 'jumlah_prepayment', 'status'); //field yang diizin untuk pencarian 
     var $order = array('id' => 'desc'); // default order 
 
     public function __construct()
@@ -33,16 +33,41 @@ class M_reimbust extends CI_Model
                 if ($i === 0) // looping awal
                 {
                     $this->db->group_start();
-                    $this->db->like($item, $_POST['search']['value']);
+                    if ($item == 'name') {
+                        $this->db->like('tbl_data_user.' . $item, $_POST['search']['value']);
+                    } else {
+                        $this->db->like('tbl_reimbust.' . $item, $_POST['search']['value']);
+                    }
                 } else {
-                    $this->db->or_like($item, $_POST['search']['value']);
+                    if ($item == 'name') {
+                        $this->db->or_like('tbl_data_user.' . $item, $_POST['search']['value']);
+                    } else {
+                        $this->db->or_like('tbl_reimbust.' . $item, $_POST['search']['value']);
+                    }
                 }
 
-                if (count($this->column_search) - 1 == $i)
+                if (count($this->column_search) - 1 == $i) {
                     $this->db->group_end();
+                }
             }
             $i++;
         }
+
+        // Tambahkan pemfilteran berdasarkan status
+        if (!empty($_POST['status'])) {
+            $this->db->where('status', $_POST['status']);
+        }
+
+        // Tambahkan kondisi WHERE untuk user ID atau nama approval
+        $this->db->group_start()
+            ->where('tbl_reimbust.id_user', $this->session->userdata('id_user'))
+            ->or_where('tbl_reimbust.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") AND tbl_reimbust.app_status NOT IN ('rejected', 'approved') AND tbl_reimbust.status != 'revised'", FALSE)
+            ->or_where('tbl_reimbust.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") AND tbl_reimbust.app_status NOT IN ('rejected', 'waiting', 'revised') AND tbl_reimbust.app2_status NOT IN ('rejected', 'approved') AND tbl_reimbust.status != 'revised'", FALSE)
+            ->group_end();
+
+        // $this->db->group_start()
+        //     ->where("tbl_reimbust.app_status NOT IN ('rejected', 'approved', 'revised')", NULL, FALSE)
+        //     ->group_end();
 
         if (isset($_POST['order'])) {
             $this->db->order_by($this->column_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);

@@ -7,7 +7,7 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            font-family: 'Calibri', sans-serif;
+            font-family: Arial, Helvetica, sans-serif;
             background-color: #f4f6f9;
             padding: 0;
             color: #333;
@@ -108,17 +108,15 @@
 
 <body>
     <div class="container">
+        <div class="d-flex justify-content-end mb-3" style="margin-right: 19px">
+            <?php if ($user->app_name == $app_name) { ?>
+                <a class="btn btn-warning btn-sm mr-2" id="appBtn" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
+            <?php } elseif ($user->app2_name == $app2_name) { ?>
+                <a class="btn btn-warning btn-sm mr-2" id="appBtn2" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
+            <?php } ?>
+            <a class="btn btn-secondary btn-sm" href="<?= base_url('reimbust') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+        </div>
         <div class="form-container">
-
-            <div class="d-flex justify-content-end mb-3">
-                <?php if ($user->app_name == $app_name) { ?>
-                    <a class="btn btn-warning btn-sm mr-2" id="appBtn" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
-                <?php } elseif ($user->app2_name == $app2_name) { ?>
-                    <a class="btn btn-warning btn-sm mr-2" id="appBtn2" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
-                <?php } ?>
-                <a class="btn btn-secondary btn-sm" href="<?= base_url('reimbust') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
-            </div>
-
             <!-- Header -->
             <div class="header">
                 <div class="logo">
@@ -210,13 +208,13 @@
                     </tr>
                     <tr style="height: 75px">
                         <td></td>
-                        <td></td>
-                        <td></td>
+                        <td id="statusMengetahui"></td>
+                        <td id="statusMenyetujui"></td>
                     </tr>
                     <tr>
-                        <td>Tes Gunawan</td>
-                        <td>Tes Sugyono</td>
-                        <td>Tes Saepudin</td>
+                        <td id="melakukan"></td>
+                        <td id="mengetahui"></td>
+                        <td id="menyetujui"></td>
                     </tr>
                 </table>
             </div>
@@ -239,12 +237,13 @@
                     <form id="approvalForm" action="">
                         <div class="form-group">
                             <label for="app_status">Status <span class="text-danger">*</span></label>
-                            <select id="app_status" name="app_status" class="form-control" required>
+                            <select id="app_status" name="app_status" class="form-control" style="cursor: pointer;" required>
                                 <option selected disabled>Choose status...</option>
                                 <option value="approved">Approved</option>
                                 <option value="rejected">Rejected</option>
                                 <option value="revised">Revised</option>
                             </select>
+                            <input type="hidden" id="hidden_id" value="<?php echo $id ?>">
                         </div>
                         <div class="form-group">
                             <label for="app_keterangan" class="col-form-label">Keterangan:</label>
@@ -275,6 +274,7 @@
 
     <script>
         $(document).ready(function() {
+
             //INISIAI VARIABLE JQUERY
             var id = $('#hidden_id').val();
             let url = "";
@@ -284,21 +284,21 @@
             //     $('#hidden_id').val(id);
             // });
 
-            // $('#appBtn').click(function() {
-            //     $('#app_name').attr('name', 'app_name');
-            //     $('#app_keterangan').attr('name', 'app_keterangan');
-            //     $('#app_status').attr('name', 'app_status');
-            //     $('#approvalForm').attr('action', '<?= site_url('prepayment/approve') ?>');
-            // });
+            $('#appBtn').click(function() {
+                $('#app_name').attr('name', 'app_name');
+                $('#app_keterangan').attr('name', 'app_keterangan');
+                $('#app_status').attr('name', 'app_status');
+                $('#approvalForm').attr('action', '<?= site_url('reimbust/approve') ?>');
+            });
 
-            // $('#appBtn2').click(function() {
-            //     $('#app_name').attr('name', 'app2_name');
-            //     $('#app_keterangan').attr('name', 'app2_keterangan');
-            //     $('#app_status').attr('name', 'app2_status');
-            //     $('#approvalForm').attr('action', '<?= site_url('prepayment/approve2') ?>');
-            // });
+            $('#appBtn2').click(function() {
+                $('#app_name').attr('name', 'app2_name');
+                $('#app_keterangan').attr('name', 'app2_keterangan');
+                $('#app_status').attr('name', 'app2_status');
+                $('#approvalForm').attr('action', '<?= site_url('reimbust/approve2') ?>');
+            });
 
-            // // Handle the approval button click event
+            // Handle the approval button click event
             // $('#confirmApproval').click(function() {
             //     const id = $('#hidden_id').val();
             //     // Implement the logic to process the approval
@@ -313,7 +313,7 @@
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
-                    console.log(data);
+                    // console.log(data);
                     // DATA PREPAYMENT
                     $('#nama').html(data['nama']);
                     $('#jabatan').html(data['master']['jabatan']);
@@ -323,48 +323,27 @@
                     $('#tujuan').html(data['master']['tujuan']);
                     $('#kode_reimbust').html(data['master']['kode_reimbust']);
                     $('#jumlah_prepayment').html(data['master']['jumlah_prepayment'].replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
-                    // if (data['master']['app_keterangan'] != null) {
-                    //     $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app_keterangan']}</span>`);
-                    // }
-                    // if (data['master']['app2_keterangan'] != null) {
-                    //     $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app2_keterangan']}</span>`);
-                    // }
+
                     // DATA APPROVAL PREPAYMENT
                     var nama, status, keterangan, nama2, status2, keterangan2, url;
 
                     // Memeriksa apakah data yang mengetahui ada
-                    // if (data['master']['app_status'] != null) {
-                    //     nama = data['master']['app_name'];
-                    //     status = data['master']['app_status'];
-                    //     keterangan = data['master']['app_keterangan'];
-                    //     url = "<?php echo site_url('prepayment/approve') ?>";
-                    //     $('#note_id').append(`<p>* ${keterangan}</p>`);
-                    // } else {
-                    //     nama = `<br><br><br>`;
-                    //     status = `_____________________`;
-                    // }
+                    if (data['master']['app_status'] != null) {
+                        nama = data['master']['app_name'];
+                        status = data['master']['app_status'];
+                        keterangan = data['master']['app_keterangan'];
+                        url = "<?php echo site_url('reimbust/approve') ?>";
+                        $('#note_id').append(`<p>* ${keterangan}</p>`);
+                    }
 
                     // Memeriksa apakah data yang menyetujui ada
-                    // if (data['master']['app2_status'] != null) {
-                    //     nama2 = data['master']['app2_name'];
-                    //     status2 = data['master']['app2_status'];
-                    //     keterangan2 = data['master']['app2_keterangan'];
-                    //     url = "<?php echo site_url('prepayment/approve2') ?>";
-                    //     $('#note_id').append(`<p>* ${keterangan2}</p>`);
-                    // } else {
-                    //     nama2 = `<br><br><br>`;
-                    //     status2 = `_____________________`;
-                    // }
-
-                    // $('#melakukan').html(`<div class="signature-text text-center">${data['nama']}</div>`);
-                    // $('#mengetahui').html(`<div class="signature-text text-center">${data['master']['app_name']}</div>`);
-                    // $('#menyetujui').html(`<div class="signature-text text-center">${data['master']['app2_name']}</div>`);
-                    // $('#statusMengetahui').html(`<div class="signature-text text-center">${data['master']['app_status'].toUpperCase()}</div>`);
-                    // $('#statusMenyetujui').html(`<div class="signature-text text-center">${data['master']['app2_status'].toUpperCase()}</div>`);
-
-                    // $('#divisiCol').html(data['master']['divisi']);
-                    // $('#prepaymentCol').html(data['master']['prepayment']);
-
+                    if (data['master']['app2_status'] != null) {
+                        nama2 = data['master']['app2_name'];
+                        status2 = data['master']['app2_status'];
+                        keterangan2 = data['master']['app2_keterangan'];
+                        url = "<?php echo site_url('reimbust/approve2') ?>";
+                        $('#note_id').append(`<p>* ${keterangan2}</p>`);
+                    }
 
                     //DATA PREPAYMENT DETAIL
                     let total = 0;
@@ -394,6 +373,12 @@
                                     </tr>
                                     `;
                     $('#input-container').append(ttl_row);
+
+                    $('#melakukan').text(`${data['nama']}`);
+                    $('#mengetahui').text(`${data['master']['app_name']}`);
+                    $('#menyetujui').text(`${data['master']['app2_name']}`);
+                    $('#statusMengetahui').text(`${data['master']['app_status'].toUpperCase()}`);
+                    $('#statusMenyetujui').text(`${data['master']['app2_status'].toUpperCase()}`);
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     alert('Error get data from ajax');
@@ -454,35 +439,35 @@
             }
 
             // APPROVE
-            // $('#approvalForm').submit(function(e) {
-            //     e.preventDefault();
-            //     var url = $(this).attr('action');
-            //     // MENGINPUT APPROVAL
-            //     $.ajax({
-            //         url: url, // Mengambil action dari form
-            //         type: "POST",
-            //         data: $(this).serialize(), // Mengambil semua data dari form
-            //         dataType: "JSON",
-            //         success: function(data) {
-            //             console.log(data);
-            //             if (data.status) //if success close modal and reload ajax table
-            //             {
-            //                 Swal.fire({
-            //                     position: 'center',
-            //                     icon: 'success',
-            //                     title: 'Your data has been saved',
-            //                     showConfirmButton: false,
-            //                     timer: 1500
-            //                 }).then((result) => {
-            //                     location.href = "<?= base_url('prepayment') ?>";
-            //                 })
-            //             }
-            //         },
-            //         error: function(jqXHR, textStatus, errorThrown) {
-            //             alert('Error adding / update data');
-            //         }
-            //     });
-            // });
+            $('#approvalForm').submit(function(e) {
+                e.preventDefault();
+                var url = $(this).attr('action');
+                // MENGINPUT APPROVAL
+                $.ajax({
+                    url: url, // Mengambil action dari form
+                    type: "POST",
+                    data: $(this).serialize(), // Mengambil semua data dari form
+                    dataType: "JSON",
+                    success: function(data) {
+                        console.log(data);
+                        if (data.status) //if success close modal and reload ajax table
+                        {
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'success',
+                                title: 'Your data has been saved',
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then((result) => {
+                                location.href = "<?= base_url('reimbust') ?>";
+                            })
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert('Error adding / update data');
+                    }
+                });
+            });
 
             // Example: Load data into the form fields and tables
             // $('#divisiCol').text('Finance');
@@ -506,7 +491,7 @@
             //     </tr>
             // `);
 
-            $('#keterangan').append(`<span class="form-control-plaintext">*Berikut ini merupakan catatan keterangan prepayment.</span>`);
+            // $('#keterangan').append(`<span class="form-control-plaintext">*Berikut ini merupakan catatan keterangan prepayment.</span>`);
         });
     </script>
 </body>

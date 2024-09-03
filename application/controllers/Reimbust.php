@@ -19,17 +19,41 @@ class Reimbust extends CI_Controller
 
     function get_list()
     {
-        $list = $this->M_reimbust->get_datatables();
+        // INISIAI VARIABLE YANG DIBUTUHKAN
+        $fullname = $this->db->select('name')
+            ->from('tbl_data_user')
+            ->where('id_user', $this->session->userdata('id_user'))
+            ->get()
+            ->row('name');
+        $status = $this->input->post('status'); // Ambil status dari permintaan POST
+        $list = $this->M_reimbust->get_datatables($status);
         $data = array();
         $no = $_POST['start'];
+
         foreach ($list as $field) {
+
+            // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
+            if ($field->app_name == $fullname) {
+                $action = '<a href="reimbust/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                                            <a class="btn btn-success btn-circle btn-sm" href="reimbust/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+            } elseif ($field->app2_name == $fullname) {
+                $action = '<a href="reimbust/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
+                                            <a class="btn btn-success btn-circle btn-sm" href="reimbust/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+            } elseif ($field->status == 'rejected') {
+                $action = '<a href="reimbust/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                            <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
+                            <a class="btn btn-success btn-circle btn-sm" href="reimbust/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+            } else {
+                $action = '<a href="reimbust/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                                            <a href="reimbust/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
+                                            <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
+                                            <a class="btn btn-success btn-circle btn-sm" href="reimbust/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+            }
+
             $no++;
             $row = array();
             $row[] = $no;
-            $row[] = '<a href="reimbust/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-            <a href="reimbust/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
-			<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
-			<a href="reimbust/generate_pdf/' . $field->id . '" class="btn btn-success btn-circle btn-sm" title="PDF"><i class="fas fa-file-pdf" aria-hidden="true"></i></a>';
+            $row[] = $action;
             $row[] = $field->kode_reimbust;
             $row[] = $field->name;
             $row[] = $field->jabatan;
@@ -69,7 +93,7 @@ class Reimbust extends CI_Controller
             ->row('name');
         $data['id'] = $id;
         $data['title_view'] = "Data Reimbust";
-        $data['title'] = 'backend/reimbust/reimbust_pdf';
+        $data['title'] = 'backend/reimbust/reimbust_read';
         $this->db->select('kwitansi');
         $this->db->where('reimbust_id', $id);
         $data['kwitansi'] = $this->db->get('tbl_reimbust_detail')->result_array();
@@ -121,7 +145,7 @@ class Reimbust extends CI_Controller
     //     $this->load->library('dompdf_gen');
 
     //     // Load view sebagai string
-    //     $html = $this->load->view('backend/reimbust/reimbust_pdf', $data, true);
+    //     $html = $this->load->view('backend/reimbust/reimbust_read', $data, true);
 
     //     // Load HTML ke Dompdf
     //     $this->dompdf_gen->load_html($html);
@@ -146,8 +170,8 @@ class Reimbust extends CI_Controller
             ->where('id_user', $data['master']->id_user)
             ->get()
             ->row('name');
-        // $data['app_status'] = strtoupper($data['master']->app_status);
-        // $data['app2_status'] = strtoupper($data['master']->app2_status);
+        $data['app_status'] = strtoupper($data['master']->app_status);
+        $data['app2_status'] = strtoupper($data['master']->app2_status);
 
         // Start FPDF
         $pdf = new FPDF('L', 'mm', 'Letter');
@@ -280,6 +304,8 @@ class Reimbust extends CI_Controller
 
         // Add table data
         $no = 1;
+        $totalJumlah = 0;
+        $jumlahPengurangan = $data['master']->jumlah_prepayment;
         foreach ($data['transaksi'] as $row) {
             $tanggal = $row['tgl_nota'];
             $formatted_date = date('d F Y', strtotime($tanggal));
@@ -307,18 +333,22 @@ class Reimbust extends CI_Controller
 
             $pdf->Cell(120, 8.5, $no++ . '. ' . $row['pemakaian'], 1);
             $pdf->Cell(40, 8.5, $formatted_date, 1, 0, 'C');
-            $jumlah = number_format($row['jumlah'], 0, ',', '.');
-            $pdf->Cell(33, 8.5, $jumlah, 1, 0, 'C');
+            $jumlah = $row['jumlah'];
+
+            $totalJumlah += $jumlah;
+            $sisaPrepayment = $jumlahPengurangan - $totalJumlah;
+
+            $pdf->Cell(33, 8.5, number_format($jumlah, 0, ',', '.'), 1, 0, 'C');
             $pdf->Cell(33, 8.5, $row['kwitansi'] ? 'Kwitansi' : '', 1, 0, 'C');
             $pdf->Cell(33, 8.5, $row['deklarasi'], 1, 1, 'C');
         }
 
         // Add total and remaining prepayment
         $pdf->SetFont('Arial', 'B', 10);
-        $pdf->Cell(259, 8.5, 'JUMLAH PREPAYMENT', 1, 0, 'L');
-        $pdf->Cell(-1, 8.5, 'Rp. ' . $jumlah_prepayment, 0, 1, 'R');
+        $pdf->Cell(259, 8.5, 'TOTAL PEMAKAIAN', 1, 0, 'L');
+        $pdf->Cell(-1, 8.5, 'Rp. ' . number_format($totalJumlah, 0, ',', '.'), 0, 1, 'R');
         $pdf->Cell(259, 8.5, 'SISA PREPAYMENT', 1, 0, 'L');
-        $pdf->Cell(-1, 8.5, 'Rp. ' . $jumlah_prepayment, 0, 1, 'R');
+        $pdf->Cell(-1, 8.5, 'Rp. ' . number_format($sisaPrepayment, 0, ',', '.'), 0, 1, 'R');
 
         $pdf->Ln(10);
 
@@ -327,16 +357,16 @@ class Reimbust extends CI_Controller
         $pdf->Cell(50, 8.5, 'MENGETAHUI', 1, 0, 'C');
         $pdf->Cell(50, 8.5, 'MENYETUJUI', 1, 1, 'C');
 
-        $pdf->Cell(50, 18, 'APPROVED', 1, 0, 'C');
-        $pdf->Cell(50, 18, 'APPROVED', 1, 0, 'C');
-        $pdf->Cell(50, 18, 'APPROVED', 1, 1, 'C');
+        $pdf->Cell(50, 18, '', 1, 0, 'C');
+        $pdf->Cell(50, 18, $data['app_status'], 1, 0, 'C');
+        $pdf->Cell(50, 18, $data['app2_status'], 1, 1, 'C');
 
-        $pdf->Cell(50, 8.5, 'Aldo', 1, 0, 'C');
-        $pdf->Cell(50, 8.5, 'Rakha', 1, 0, 'C');
-        $pdf->Cell(50, 8.5, 'Naufal', 1, 1, 'C');
+        $pdf->Cell(50, 8.5, $data['user'], 1, 0, 'C');
+        $pdf->Cell(50, 8.5, $data['master']->app_name, 1, 0, 'C');
+        $pdf->Cell(50, 8.5, $data['master']->app2_name, 1, 1, 'C');
 
         // Output the PDF
-        $pdf->Output('I', 'Reimbust.pdf');
+        $pdf->Output('I', 'Reimbust - ' . $data['master']->kode_reimbust . '.pdf');
     }
 
     public function generate_kode()

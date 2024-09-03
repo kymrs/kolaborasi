@@ -62,9 +62,9 @@
                                             <option value="IT">IT</option>
                                             <option value="General Affair">General Affair</option>
                                         </select>
-                                        <input type="text" class="form-control" id="departemenPrepayment" name="departemen" autocomplete="off" placeholder="Departemen">
                                     </div>
                                 </div> -->
+                                <input type="hidden" class="form-control" id="departemenPrepayment" name="departemen" autocomplete="off" placeholder="Departemen">
                             </div>
 
                             <!-- SEBELAH KANAN -->
@@ -72,9 +72,9 @@
                                 <!-- <div class="form-group row">
                                     <label class="col-sm-5">Jabatan</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="jabatan" name="jabatan" autocomplete="off" placeholder="Jabatan">
-                                    </div>
-                                </div> -->
+                                        </div>
+                                    </div> -->
+                                <input type="hidden" class="form-control" id="jabatan" name="jabatan" autocomplete="off" placeholder="Jabatan">
                                 <div class="form-group row">
                                     <label class="col-sm-5">Tujuan</label>
                                     <div class="col-sm-7">
@@ -335,7 +335,7 @@
             $('#kode_reimbust').val(data[2]);
             // $('#nama').val(data[3]);
             $('#departemenPrepayment').val(data[4]);
-            // $('#jabatan').val(data[5]);
+            $('#jabatan').val(data[5]);
             $('#tgl_pengajuan').val(data[6]);
             $('#jumlah_prepayment').val(data[8]);
             var cleanedValue = data[8].replace(/\./g, '');
