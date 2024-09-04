@@ -3,12 +3,9 @@
 
 <head>
     <?php $this->load->view('template/header'); ?>
-    <!-- Include Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f4f6f9;
+        body .container {
+            font-family: Arial, Helvetica, sans-serif;
             padding: 0;
             color: #333;
         }
@@ -23,148 +20,100 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
         }
 
+        /* Header */
+
         .header {
-            text-align: center;
-            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+        }
+
+        .header .logo {
+            width: 130px;
+            margin-right: 10px;
         }
 
         .header h1 {
-            margin: 0;
-            font-size: 24px;
-            text-transform: uppercase;
+            font-size: 1.4rem;
+            font-weight: bold;
         }
 
-        .header .d-flex {
-            margin-top: 15px;
-            /* Added margin-top for spacing */
-            margin-bottom: 10px;
+        .header-field tr td:nth-child(2) {
+            padding-left: 20px;
+            padding-right: 5px;
         }
 
-        .header p {
-            margin: 0;
-            font-size: 14px;
+        .title {
+            text-align: center;
+            margin-top: 10px;
         }
 
-        .header h2 {
-            margin-top: 20px;
-            font-size: 20px;
-            font-weight: normal;
+        .title h1 {
+            font-weight: bold;
+            font-size: 1.4rem;
         }
 
-        .d-flex p {
-            margin-bottom: 0;
+        /* Main field */
+        .main-field tr td:nth-child(2) {
+            padding-left: 25px;
+            padding-right: 5px;
         }
 
-        .form-section {
-            margin-bottom: 25px;
-        }
-
-        .form-section label {
-            font-weight: 600;
-            color: #495057;
-        }
-
-        .table-rincian,
-        .table-section {
+        .main-field tr td:nth-child(3) {
             width: 100%;
-            margin-top: 25px;
-            border: 1px solid #e0e0e0;
-            border-radius: 5px;
-            overflow: hidden;
+            border-bottom: 1.5px solid #444;
         }
 
-        .table-rincian th,
-        .table-rincian td,
-        .table-section th,
-        .table-section td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #e0e0e0;
+        /* Transaction Field */
+        .transaction-field table {
+            width: 100%;
         }
 
-        .table-rincian th {
-            background-color: #f8f9fa;
-            font-weight: 600;
+        .transaction-field table tr,
+        .transaction-field table tr th,
+        .transaction-field table tr td {
+            border: 1.5px solid #444;
+            padding: 5px;
         }
 
-        .table-rincian td,
-        .table-section td {
-            height: 40px;
-            font-size: 14px;
-            color: #495057;
+        .transaction-field table tr th:nth-child(1) {
+            width: 30%;
         }
 
-        .table-section th {
-            background-color: #007bff;
-            color: #ffffff;
+        .transaction-field table tr th:nth-child(2) {
+            width: 30%;
+        }
+
+        .transaction-field table tr th:nth-child(3) {
+            width: 42%;
+        }
+
+        .transaction-field table tr th {
             text-align: center;
         }
 
-        .signature-text {
-            margin-top: 10px;
-            font-size: 14px;
-            color: #495057;
+        .transaction-field table {
+            margin-top: 30px;
         }
 
-        .form-control {
-            border-radius: 4px;
-            padding: 10px;
-            font-size: 14px;
+        /* Table Approve */
+        .table-approve {
+            margin-top: 35px;
         }
 
-        .btn {
-            border-radius: 5px;
-            font-weight: 600;
+        .table-approve table {
+            width: 60%;
         }
 
-        .modal-content {
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        .table-approve table tr td {
+            border: 1.5px solid #444;
+            padding: 2.5px;
+            width: 100px;
+            text-align: center;
         }
 
-        .modal-header {
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .modal-footer {
-            border-top: 1px solid #e0e0e0;
-        }
-
-        /* Responsive Styles */
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 22px;
-            }
-
-            .header h2 {
-                font-size: 18px;
-            }
-
-            .table-rincian th,
-            .table-rincian td,
-            .table-section th,
-            .table-section td {
-                font-size: 12px;
-                padding: 8px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .header h1 {
-                font-size: 20px;
-            }
-
-            .header h2 {
-                font-size: 16px;
-            }
-
-            .table-rincian th,
-            .table-rincian td,
-            .table-section th,
-            .table-section td {
-                font-size: 10px;
-                padding: 6px;
-            }
+        /* Keterangan */
+        .keterangan-field {
+            margin-top: 35px;
         }
     </style>
 </head>
@@ -173,9 +122,9 @@
     <div class="container">
         <div class="form-container">
             <div class="d-flex justify-content-end mb-3">
-                <?php if ($user->app_name == $app_name && $user->app_status != 'rejected' && !in_array($user->app2_status, ['approved', 'rejected'])) { ?>
+                <?php if ($user->app_name == $app_name && !in_array($user->status, ['rejected', 'approved']) && !in_array($user->app_status, ['approved', 'rejected'])) { ?>
                     <a class="btn btn-warning btn-sm mr-2" id="appBtn" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
-                <?php } elseif ($user->app2_name == $app2_name && !in_array($user->app2_status, ['approved', 'rejected'])) { ?>
+                <?php } elseif ($user->app2_name == $app2_name && !in_array($user->status, ['rejected', 'approved'])) { ?>
                     <a class="btn btn-warning btn-sm mr-2" id="appBtn2" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
                 <?php } ?>
                 <a class="btn btn-secondary btn-sm" href="<?= base_url('prepayment') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
@@ -183,104 +132,100 @@
 
             <!-- Header Section -->
             <div class="header">
-                <h1>PT. MANDIRI CIPTA SEJAHTERA</h1>
-                <div class="d-flex justify-content-center align-items-center">
-                    <p class="mb-1 mr-3"><strong>Divisi:</strong> <span id="divisiCol"></span></p>
-                    <p class="mb-1"><strong>Prepayment:</strong> <span id="prepaymentCol"></span></p>
-                </div>
-                <h2>FORM PENGAJUAN PREPAYMENT</h2>
-            </div>
-
-            <!-- Form Sections -->
-            <div class="form-group row">
-                <label for="tanggal" class="col-sm-3 col-form-label">Tanggal:</label>
-                <div class="col-sm-9">
-                    <span id="tanggal" class="form-control-plaintext"></span>
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="nama" class="col-sm-3 col-form-label">Nama:</label>
-                <div class="col-sm-9">
-                    <span id="nama" class="form-control-plaintext"></span>
+                <img src="<?= base_url('assets/backend/img/reimbust/kwitansi/default.jpg') ?>" alt="" class="logo">
+                <div class="header-field">
+                    <h1>PT. MANDIRI CIPTA SEJAHTERA</h1>
+                    <table>
+                        <tr>
+                            <td>Divisi</td>
+                            <td>:</td>
+                            <td id="divisiTxt">tess</td>
+                        </tr>
+                        <tr>
+                            <td>Prepayment</td>
+                            <td>:</td>
+                            <td id="prepaymentTxt">tess</td>
+                        </tr>
+                    </table>
                 </div>
             </div>
-            <div class="form-group row">
-                <label for="jabatan" class="col-sm-3 col-form-label">Jabatan:</label>
-                <div class="col-sm-9">
-                    <span id="jabatan" class="form-control-plaintext"></span>
-                </div>
+            <div class="title">
+                <h1>FORM PENGAJUAN PREPAYMENT</h1>
             </div>
-
-            <p>Dengan ini bermaksud mengajukan prepayment untuk:</p>
-
-            <div class="form-group row">
-                <label for="tujuan" class="col-sm-3 col-form-label">Tujuan:</label>
-                <div class="col-sm-9">
-                    <span id="tujuan" class="form-control-plaintext"></span>
-                    <input type="hidden" id="hidden_id" value="<?php echo $id ?>">
-                </div>
-            </div>
-
-            <!-- Rincian Table -->
-            <table class="table table-bordered table-rincian">
-                <thead>
+            <div class="main-field">
+                <table>
                     <tr>
-                        <th>Rincian</th>
-                        <th>Nominal</th>
-                        <th>Keterangan</th>
-                    </tr>
-                </thead>
-                <tbody id="input-container">
-                    <!-- Rows will be appended here -->
-                </tbody>
-            </table>
-
-            <!-- Signature Table -->
-            <table class="table table-bordered table-section">
-                <thead>
-                    <tr>
-                        <th>Yang melakukan</th>
-                        <th>Mengetahui</th>
-                        <th>Menyetujui</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            <p class="text-center signature-text">CREATED</p>
-                            <!-- GENERATE INPUTAN -->
-                        </td>
-                        <td id="statusMengetahui">
-                            <!-- GENERATE INPUTAN -->
-                        </td>
-                        <td id="statusMenyetujui">
-                            <!-- GENERATE INPUTAN -->
-                        </td>
+                        <td>Tanggal</td>
+                        <td>:</td>
+                        <td class="line" id="tanggalTxt">tess</td>
                     </tr>
                     <tr>
-                        <td id="melakukan">
-                            <!-- GENERATE INPUTAN -->
-                        </td>
-                        <td id="mengetahui">
-                            <!-- GENERATE INPUTAN -->
-                        </td>
-                        <td id="menyetujui">
-                            <!-- GENERATE INPUTAN -->
-                        </td>
+                        <td>Nama</td>
+                        <td>:</td>
+                        <td class="line" id="namaTxt">tess</td>
                     </tr>
-                </tbody>
-            </table>
+                    <tr>
+                        <td>Jabatan</td>
+                        <td>:</td>
+                        <td class="line" id="jabatanTxt">tess</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">Dengan ini bermaksud mengajukan prepayment untuk :</td>
+                    </tr>
+                    <tr>
+                        <td>Tujuan</td>
+                        <td>:</td>
+                        <td class="line" id="tujuanTxt"></td>
+                        <!-- HIDDEN INPUT -->
+                        <input type="hidden" name="hidden_id" id="hidden_id" value="<?= $id ?>">
+                    </tr>
+                </table>
+            </div>
 
-            <!-- Comment Section -->
-            <div class="form-group row">
-                <label for="keterangan" class="col-sm-3 col-form-label">Keterangan:</label>
-                <!-- HIDDEN INPUT -->
-                <input type="hidden" id="hidden_id" name="hidden_id" value="<?= $id ?>">
-                <div class="col-sm-9">
-                    <div id="keterangan"></div>
+            <div class="transaction-field">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rincian</th>
+                            <th>Nominal</th>
+                            <th>Keterangan</th>
+                        </tr>
+                    </thead>
+                    <tbody id="input-container">
+                        <!-- GENERATE ROW DETAIL PREPAYMENT -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-approve">
+                <table>
+                    <tr>
+                        <td>Yang melakukan</td>
+                        <td>Mengetahui</td>
+                        <td>Menyetujui</td>
+                    </tr>
+                    <tr style="height: 75px">
+                        <td id="statusMelakukan"></td>
+                        <td id="statusMengetahui"></td>
+                        <td id="statusMenyetujui"></td>
+                    </tr>
+                    <tr>
+                        <td id="melakukan"></td>
+                        <td id="mengetahui"></td>
+                        <td id="menyetujui"></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="keterangan-field">
+                <span>Keterangan :</span>
+                <div id="keterangan">
+                    <!-- GENERATE KETERANGAN -->
                 </div>
             </div>
+
         </div>
+    </div>
     </div>
 
     <!-- Modal -->
@@ -374,11 +319,14 @@
                 dataType: "JSON",
                 success: function(data) {
                     // console.log(data);
+                    moment.locale('id')
                     // DATA PREPAYMENT
-                    $('#tanggal').html(data['master']['tgl_prepayment']);
-                    $('#nama').html(data['nama']);
-                    $('#jabatan').html(data['master']['jabatan']);
-                    $('#tujuan').html(data['master']['tujuan']);
+                    $('#divisiTxt').text(data['master']['divisi']);
+                    $('#prepaymentTxt').text(data['master']['prepayment']);
+                    $('#tanggalTxt').text(moment(data['master']['tgl_prepayment']).format('D MMMM YYYY'));
+                    $('#namaTxt').text(data['nama']);
+                    $('#jabatanTxt').text(data['master']['jabatan']);
+                    $('#tujuanTxt').text(data['master']['tujuan']);
                     if (data['master']['app_keterangan'] != null) {
                         $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app_keterangan']}</span>`);
                     }
@@ -386,7 +334,7 @@
                         $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app2_keterangan']}</span>`);
                     }
                     // DATA APPROVAL PREPAYMENT
-                    var nama, status, keterangan, nama2, status2, keterangan2, url;
+                    var nama, date, status, keterangan, nama2, date2, status2, keterangan2, url;
 
                     // Memeriksa apakah data yang mengetahui ada
                     if (data['master']['app_status'] != null) {
@@ -395,9 +343,12 @@
                         keterangan = data['master']['app_keterangan'];
                         url = "<?php echo site_url('prepayment/approve') ?>";
                         $('#note_id').append(`<p>* ${keterangan}</p>`);
-                    } else {
-                        nama = `<br><br><br>`;
-                        status = `_____________________`;
+                    }
+                    if (data['master']['app_date'] == null) {
+                        date = '';
+                    }
+                    if (data['master']['app_date'] != null) {
+                        date = moment(data['master']['app_date']).format('D MMMM YYYY');
                     }
 
                     // Memeriksa apakah data yang menyetujui ada
@@ -407,16 +358,20 @@
                         keterangan2 = data['master']['app2_keterangan'];
                         url = "<?php echo site_url('prepayment/approve2') ?>";
                         $('#note_id').append(`<p>* ${keterangan2}</p>`);
-                    } else {
-                        nama2 = `<br><br><br>`;
-                        status2 = `_____________________`;
+                    }
+                    if (data['master']['app2_date'] == null) {
+                        date2 = '';
+                    }
+                    if (data['master']['app2_date'] != null) {
+                        date2 = moment(data['master']['app2_date']).format('D MMMM YYYY');
                     }
 
                     $('#melakukan').html(`<div class="signature-text text-center">${data['nama']}</div>`);
                     $('#mengetahui').html(`<div class="signature-text text-center">${data['master']['app_name']}</div>`);
                     $('#menyetujui').html(`<div class="signature-text text-center">${data['master']['app2_name']}</div>`);
-                    $('#statusMengetahui').html(`<div class="signature-text text-center">${data['master']['app_status'].toUpperCase()}</div>`);
-                    $('#statusMenyetujui').html(`<div class="signature-text text-center">${data['master']['app2_status'].toUpperCase()}</div>`);
+                    $('#statusMelakukan').html(`<div class="signature-text text-center">CREATED<br><span>${moment(data['master']['created_at']).format('D MMMM YYYY')}</span></div>`);
+                    $('#statusMengetahui').html(`<div class="signature-text text-center">${data['master']['app_status'].toUpperCase()}<br><span>${date}</span></div>`);
+                    $('#statusMenyetujui').html(`<div class="signature-text text-center">${data['master']['app2_status'].toUpperCase()}<br><span>${date2}</span></div>`);
 
                     $('#divisiCol').html(data['master']['divisi']);
                     $('#prepaymentCol').html(data['master']['prepayment']);
@@ -427,7 +382,7 @@
                     for (let index = 0; index < data['transaksi'].length; index++) {
                         const row = `<tr>
                                     <td>${data['transaksi'][index]['rincian']}</td>
-                                    <td>${data['transaksi'][index]['nominal'].replace(/\B(?=(\d{3})+(?!\d))/g, '.')}</td>
+                                    <td>Rp. <span style="float: right">${data['transaksi'][index]['nominal'].replace(/\B(?=(\d{3})+(?!\d))/g, '.')}</span></td>
                                     <td>${data['transaksi'][index]['keterangan']}</td>
                                 </tr>`;
                         $('#input-container').append(row);
@@ -435,8 +390,7 @@
                     }
                     const totalFormatted = total.toLocaleString('de-DE');
                     const ttl_row = `<tr>
-                                        <td colspan="2" class="text-right">Total:</td>
-                                        <td>${totalFormatted}</td>
+                                        <td colspan="3"><span style="font-weight: bold">Total : </span><span style="float: right">Rp. <span id="total">${totalFormatted}</span></span></td>
                                     </tr>`;
                     $('#input-container').append(ttl_row);
                 },
@@ -456,7 +410,7 @@
                     data: $(this).serialize(), // Mengambil semua data dari form
                     dataType: "JSON",
                     success: function(data) {
-                        console.log(data);
+                        // console.log(data);
                         if (data.status) //if success close modal and reload ajax table
                         {
                             Swal.fire({

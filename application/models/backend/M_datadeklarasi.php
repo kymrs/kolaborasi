@@ -58,12 +58,19 @@ class M_datadeklarasi extends CI_Model
             $this->db->where('status', $_POST['status']);
         }
 
-        // Tambahkan kondisi WHERE untuk user ID atau nama approval
-        $this->db->group_start()
-            ->where('tbl_deklarasi.id_pengaju', $this->session->userdata('id_user'))
-            ->or_where('tbl_deklarasi.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-            ->or_where('tbl_deklarasi.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-            ->group_end();
+        // Tambahkan kondisi berdasarkan tab yang dipilih
+        if (!empty($_POST['tab'])) {
+            if ($_POST['tab'] == 'personal') {
+                $this->db->where('tbl_deklarasi.id_pengaju', $this->session->userdata('id_user'));
+            } elseif ($_POST['tab'] == 'employee') {
+                $this->db->group_start()
+                    ->where('tbl_deklarasi.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                    ->where('tbl_deklarasi.id_pengaju !=', $this->session->userdata('id_user'))
+                    ->or_where('tbl_deklarasi.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_deklarasi.app_status = 'approved'", FALSE)
+                    ->where('tbl_deklarasi.id_pengaju !=', $this->session->userdata('id_user'))
+                    ->group_end();
+            }
+        }
 
         // $this->db->group_start()
         //     ->where('tbl_deklarasi.id_pengaju', $this->session->userdata('id_user'))

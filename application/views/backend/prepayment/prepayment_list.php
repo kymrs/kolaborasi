@@ -29,6 +29,18 @@
                         </select>
                     </div>
                 </div>
+                <!-- NAV TABS -->
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="personalTab" href="#" data-tab="personal">Personal</a>
+                    </li>
+                    <?php if ($approval > 0) { ?>
+                        <li class="nav-item">
+                            <a class="nav-link" id="employeeTab" href="#" data-tab="employee">Employee</a>
+                        </li>
+                    <?php } ?>
+                </ul>
+
                 <div class="card-body">
                     <table id="table" class="table table-bordered table-striped">
                         <thead>
@@ -41,8 +53,7 @@
                                 <th>Jabatan</th>
                                 <th>Tanggal Pengajuan</th>
                                 <th>Prepayment</th>
-                                <th>Total nominal</th>
-                                <!-- <th>Tujuan</th> -->
+                                <th>Total Nominal</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -58,8 +69,7 @@
                                 <th>Jabatan</th>
                                 <th>Tanggal Pengajuan</th>
                                 <th>Prepayment</th>
-                                <th>Total nominal</th>
-                                <!-- <th>Tujuan</th> -->
+                                <th>Total Nominal</th>
                                 <th>Status</th>
                             </tr>
                         </tfoot>
@@ -89,17 +99,18 @@
                 "type": "POST",
                 "data": function(d) {
                     d.status = $('#appFilter').val(); // Tambahkan parameter status ke permintaan server
+                    d.tab = $('.nav-tabs .nav-link.active').data('tab'); // Tambahkan parameter tab ke permintaan server
                 }
             },
-            "language": {
-                "infoFiltered": ""
-            },
+            // "language": {
+            //     "infoFiltered": ""
+            // },
             "columnDefs": [{
-                    "targets": [2, 5],
+                    "targets": [2, 6, 8],
                     "className": 'dt-head-nowrap'
                 },
                 {
-                    "targets": [1, 3, 7],
+                    "targets": [1, 3, 4, 9],
                     "className": 'dt-body-nowrap'
                 }, {
                     "targets": [0, 1],
@@ -111,6 +122,15 @@
 
     $('#appFilter').change(function() {
         table.ajax.reload(); // Muat ulang data di DataTable dengan filter baru
+    });
+
+    // Event listener untuk nav tabs
+    $('.nav-tabs a').on('click', function(e) {
+        e.preventDefault();
+        $('.nav-tabs a').removeClass('active'); // Hapus kelas aktif dari semua tab
+        $(this).addClass('active'); // Tambahkan kelas aktif ke tab yang diklik
+
+        table.ajax.reload(); // Muat ulang data di DataTable saat tab berubah
     });
 
     // MENGHAPUS DATA MENGGUNAKAN METHODE POST JQUERY

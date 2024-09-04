@@ -14,6 +14,17 @@ class Prepayment extends CI_Controller
     {
         $data['title'] = "backend/prepayment/prepayment_list";
         $data['titleview'] = "Data Prepayment";
+        $name = $this->db->select('name')
+            ->from('tbl_data_user')
+            ->where('id_user', $this->session->userdata('id_user'))
+            ->get()
+            ->row('name');
+        $data['approval'] = $this->db->select('COUNT(*) as total_approval')
+            ->from('tbl_prepayment')
+            ->where('app_name', $name)
+            ->or_where('app2_name', $name)
+            ->get()
+            ->row('total_approval');
         $this->load->view('backend/home', $data);
     }
 
@@ -25,8 +36,7 @@ class Prepayment extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $status = $this->input->post('status'); // Ambil status dari permintaan POST
-        $list = $this->M_prepayment->get_datatables($status);
+        $list = $this->M_prepayment->get_datatables();
         $data = array();
         $no = $_POST['start'];
 
@@ -40,14 +50,13 @@ class Prepayment extends CI_Controller
             } elseif ($field->app2_name == $name) {
                 $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
                                 <a class="btn btn-success btn-circle btn-sm" href="prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
-            } elseif ($field->status == 'rejected') {
+            } elseif (in_array($field->status, ['rejected', 'approved'])) {
                 $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
                 <a class="btn btn-success btn-circle btn-sm" href="prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } else {
-                if ($field->app_status == 'approved') {
+                if ($field->status == 'revised') {
                     $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-			            <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
+                        <a href="prepayment/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
                         <a class="btn btn-success btn-circle btn-sm" href="prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
                 } else {
                     $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
@@ -101,9 +110,9 @@ class Prepayment extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $data['title'] = 'backend/prepayment/prepayment_app';
+        $data['title'] = 'backend/prepayment/prepayment_read';
         $data['title_view'] = 'Prepayment Approval';
-        $this->load->view('backend/prepayment/prepayment_read', $data);
+        $this->load->view('backend/home', $data);
     }
 
     // UNTUK MENAMPILKAN FORM ADD
@@ -209,6 +218,12 @@ class Prepayment extends CI_Controller
                 ->get()
                 ->row('name')
         );
+
+        // BILA YANG MEMBUAT PREPAYMENT DAPAT MENGAPPROVE SENDIRI
+        if ($approval->app_id == $this->session->userdata('id_user')) {
+            $data['app_status'] = 'approved';
+        }
+
         $inserted = $this->M_prepayment->save($data);
 
         if ($inserted) {
@@ -239,9 +254,16 @@ class Prepayment extends CI_Controller
             'tujuan' => $this->input->post('tujuan'),
             'tgl_prepayment' => date('Y-m-d', strtotime($this->input->post('tgl_prepayment'))),
             'total_nominal' => $this->input->post('total_nominal'),
+            'app_status' => 'waiting',
+            'app_date' => null,
+            'app_keterangan' => null,
+            'app2_status' => 'waiting',
+            'app2_date' => null,
+            'app2_keterangan' => null,
             'status' => 'on-process'
         );
         $this->db->where('id', $this->input->post('id'));
+
         //UPDATE DETAIL PREPAYMENT
         $prepayment_id = $this->input->post('id');
         $id_detail = $this->input->post('hidden_id_detail[]');
@@ -369,7 +391,6 @@ class Prepayment extends CI_Controller
         return "$day $month $year";
     }
 
-    // GENERATE PREPAYMENT MENJADI PDF MENGGUNAKAN FPDF
     public function generate_pdf($id)
     {
         // Load FPDF library
@@ -394,77 +415,76 @@ class Prepayment extends CI_Controller
         $pdf->SetTitle('Form Pengajuan Prepayment');
         $pdf->AddPage('P', 'Letter');
 
-        // Set font for title
-        $pdf->SetFont('Arial', 'B', 14);
+        // Arial bold 12
+        $pdf->SetFont('Arial', 'B', 12);
+        // Title
         $pdf->Cell(0, 10, 'PT. MANDIRI CIPTA SEJAHTERA', 0, 1, 'L');
-
-        // Set smaller font and position for header info
         $pdf->SetFont('Arial', '', 12);
-        // $pdf->Cell(60, 10, '', 0, 1); // Adding space
-        $pdf->Cell(60, 10, 'Divisi: ' . $data['master']->divisi, 0, 2, 'L');
-        $pdf->Cell(60, 10, 'Prepayment: ' . $data['master']->prepayment, 0, 1, 'L');
+        $pdf->Cell(0, 10, 'Divisi : Finance', 0, 1, 'L');
+        $pdf->Cell(0, 10, 'Prepayment : kebutuhan', 0, 1, 'L');
+        // Line break
+        $pdf->Ln(5);
 
-        // Title of the form
-        $pdf->Ln(8);
+        // Form Title
         $pdf->SetFont('Arial', 'B', 14);
         $pdf->Cell(0, 10, 'FORM PENGAJUAN PREPAYMENT', 0, 1, 'C');
         $pdf->Ln(5);
 
-        // Set font for form data
+        // Form Fields
         $pdf->SetFont('Arial', '', 12);
-        $pdf->Cell(40, 10, 'Tanggal:', 0, 0);
-        $pdf->Cell(60, 10, $formattedDate, 0, 1);
-        $pdf->Cell(40, 10, 'Nama:', 0, 0);
-        $pdf->Cell(60, 10, $data['user'], 0, 1);
-        $pdf->Cell(40, 10, 'Jabatan:', 0, 0);
-        $pdf->Cell(60, 10, $data['master']->jabatan, 0, 1);
-        $pdf->Cell(40, 10, 'Tujuan:', 0, 0);
-        $pdf->Cell(60, 10, $data['master']->tujuan, 0, 1);
+        $pdf->Cell(30, 10, 'Tanggal', 0, 0);
+        $pdf->Cell(5, 10, ':', 0, 0);
+        $pdf->Cell(50, 10, '9 Oktober 2024', 0, 1);
 
-        // Add Rincian Table
+        $pdf->Cell(30, 10, 'Nama', 0, 0);
+        $pdf->Cell(5, 10, ':', 0, 0);
+        $pdf->Cell(50, 10, 'Rahmatullah', 0, 1);
+
+        $pdf->Cell(30, 10, 'Jabatan', 0, 0);
+        $pdf->Cell(5, 10, ':', 0, 0);
+        $pdf->Cell(50, 10, 'Staff', 0, 1);
+
+        $pdf->Cell(60, 10, 'Dengan ini bermaksud mengajukan prepayment untuk :', 0, 1);
+
+        $pdf->Cell(30, 10, 'Tujuan', 0, 0);
+        $pdf->Cell(5, 10, ':', 0, 0);
+        $pdf->Cell(50, 10, 'asdasdasda', 0, 1);
         $pdf->Ln(5);
-        $pdf->SetFont('Arial', 'B', 12);
-        $pdf->SetFillColor(248, 249, 250); // Background color
-        $pdf->Cell(60, 10, 'Rincian', 1, 0, 'L', true);
-        $pdf->Cell(60, 10, 'Nominal', 1, 0, 'L', true);
-        $pdf->Cell(60, 10, 'Keterangan', 1, 1, 'L', true);
 
-        // Add table data
+        // Table Header
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->Cell(60, 10, 'Rincian', 1, 0, 'C');
+        $pdf->Cell(55, 10, 'Nominal', 1, 0, 'C');
+        $pdf->Cell(80, 10, 'Keterangan', 1, 1, 'C');
+
+        // Table Content
         $pdf->SetFont('Arial', '', 12);
-        $pdf->SetFillColor(255, 255, 255); // Row color
-        foreach ($data['transaksi'] as $row) {
-            $pdf->Cell(60, 10, $row['rincian'], 1, 0, 'L', true);
-            $pdf->Cell(60, 10, number_format($row['nominal'], 0, ',', '.'), 1, 0, 'L', true);
-            $pdf->Cell(60, 10, $row['keterangan'], 1, 1, 'L', true);
-        }
-        $pdf->SetFont('Arial', 'B', 12);
-        $pdf->SetFillColor(248, 249, 250); // Background color
-        $pdf->Cell(60, 10, '', 0, 0, false);
-        $pdf->Cell(60, 10, 'Total', 1, 0, 'R', true);
-        $pdf->Cell(60, 10, number_format($data['master']->total_nominal, 0, ',', '.'), 1, 2, 'C', true);
+        $pdf->Cell(60, 10, 'Hub Assy', 1, 0);
+        $pdf->Cell(55, 10, 'Rp. 30.000', 1, 0, 'C');
+        $pdf->Cell(80, 10, 'qwqwqw', 1, 1);
 
-        // Add Signature Section
+        // Table Footer
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->Cell(60, 10, 'Total :', 1, 0, 'R');
+        $pdf->SetFont('Arial', '', 12);
+        $pdf->Cell(135, 10, 'Rp. 30.000', 1, 1, 'C');
         $pdf->Ln(10);
-        $pdf->SetFont('Arial', 'B', 12);
-        $pdf->SetFillColor(0, 123, 255); // Background color for headers
-        $pdf->SetTextColor(255, 255, 255); // White text color
-        $pdf->Cell(60, 10, 'Yang melakukan', 1, 0, 'C', true);
-        $pdf->Cell(60, 10, 'Mengetahui', 1, 0, 'C', true);
-        $pdf->Cell(60, 10, 'Menyetujui', 1, 1, 'C', true);
 
-        // Empty cells for signatures
+        // Approval Section
         $pdf->SetFont('Arial', 'B', 12);
-        $pdf->SetTextColor(0, 0, 0); // Reset text color
-        $pdf->Cell(60, 20, '', 1, 0, 'C');
-        $pdf->Cell(60, 20, $data['app_status'], 1, 0, 'C');
-        $pdf->Cell(60, 20, $data['app2_status'], 1, 1, 'C');
+        $pdf->Cell(45, 10, 'Yang melakukan', 1, 0, 'C');
+        $pdf->Cell(45, 10, 'Mengetahui', 1, 0, 'C');
+        $pdf->Cell(45, 10, 'Menyetujui', 1, 1, 'C');
 
-        // Empty cells for signatures
         $pdf->SetFont('Arial', '', 12);
-        $pdf->SetTextColor(0, 0, 0); // Reset text color
-        $pdf->Cell(60, 8, $data['user'], 1, 0, 'C');
-        $pdf->Cell(60, 8, $data['master']->app_name, 1, 0, 'C');
-        $pdf->Cell(60, 8, $data['master']->app2_name, 1, 1, 'C');
+        $pdf->Cell(45, 25, 'CREATED', 1, 0, 'C');
+        $pdf->Cell(45, 25, 'WAITING', 1, 0, 'C');
+        $pdf->Cell(45, 25, 'WAITING', 1, 1, 'C');
+        $pdf->Ln(0);
+
+        $pdf->Cell(45, 10, 'Rahmat', 1, 0, 'C');
+        $pdf->Cell(45, 10, 'Marimar Elsa', 1, 0, 'C');
+        $pdf->Cell(45, 10, 'Tyas', 1, 1, 'C');
 
         // Add keterangan
         $pdf->Ln(5);
@@ -480,6 +500,118 @@ class Prepayment extends CI_Controller
         // Output the PDF
         $pdf->Output('I', 'Prepayment.pdf');
     }
+
+    // GENERATE PREPAYMENT MENJADI PDF MENGGUNAKAN FPDF
+    // public function generate_pdf($id)
+    // {
+    //     // Load FPDF library
+    //     $this->load->library('fpdf');
+
+    //     // Load data from database based on $id
+    //     $data['master'] = $this->M_prepayment->get_by_id($id);
+    //     $data['transaksi'] = $this->M_prepayment->get_by_id_detail($id);
+    //     $data['user'] = $this->db->select('name')
+    //         ->from('tbl_data_user')
+    //         ->where('id_user', $data['master']->id_user)
+    //         ->get()
+    //         ->row('name');
+    //     $data['app_status'] = strtoupper($data['master']->app_status);
+    //     $data['app2_status'] = strtoupper($data['master']->app2_status);
+
+    //     // Format tgl_prepayment to Indonesian date
+    //     $formattedDate = $this->formatIndonesianDate($data['master']->tgl_prepayment);
+
+    //     // Start FPDF
+    //     $pdf = new FPDF('P', 'mm', 'A4');
+    //     $pdf->SetTitle('Form Pengajuan Prepayment');
+    //     $pdf->AddPage('P', 'Letter');
+
+    //     // Set font for title
+    //     $pdf->SetFont('Arial', 'B', 14);
+    //     $pdf->Cell(0, 10, 'PT. MANDIRI CIPTA SEJAHTERA', 0, 1, 'L');
+
+    //     // Set smaller font and position for header info
+    //     $pdf->SetFont('Arial', '', 12);
+    //     // $pdf->Cell(60, 10, '', 0, 1); // Adding space
+    //     $pdf->Cell(60, 10, 'Divisi: ' . $data['master']->divisi, 0, 2, 'L');
+    //     $pdf->Cell(60, 10, 'Prepayment: ' . $data['master']->prepayment, 0, 1, 'L');
+
+    //     // Title of the form
+    //     $pdf->Ln(8);
+    //     $pdf->SetFont('Arial', 'B', 14);
+    //     $pdf->Cell(0, 10, 'FORM PENGAJUAN PREPAYMENT', 0, 1, 'C');
+    //     $pdf->Ln(5);
+
+    //     // Set font for form data
+    //     $pdf->SetFont('Arial', '', 12);
+    //     $pdf->Cell(40, 10, 'Tanggal:', 0, 0);
+    //     $pdf->Cell(60, 10, $formattedDate, 0, 1);
+    //     $pdf->Cell(40, 10, 'Nama:', 0, 0);
+    //     $pdf->Cell(60, 10, $data['user'], 0, 1);
+    //     $pdf->Cell(40, 10, 'Jabatan:', 0, 0);
+    //     $pdf->Cell(60, 10, $data['master']->jabatan, 0, 1);
+    //     $pdf->Cell(40, 10, 'Tujuan:', 0, 0);
+    //     $pdf->Cell(60, 10, $data['master']->tujuan, 0, 1);
+
+    //     // Add Rincian Table
+    //     $pdf->Ln(5);
+    //     $pdf->SetFont('Arial', 'B', 12);
+    //     $pdf->SetFillColor(248, 249, 250); // Background color
+    //     $pdf->Cell(60, 10, 'Rincian', 1, 0, 'L', true);
+    //     $pdf->Cell(60, 10, 'Nominal', 1, 0, 'L', true);
+    //     $pdf->Cell(60, 10, 'Keterangan', 1, 1, 'L', true);
+
+    //     // Add table data
+    //     $pdf->SetFont('Arial', '', 12);
+    //     $pdf->SetFillColor(255, 255, 255); // Row color
+    //     foreach ($data['transaksi'] as $row) {
+    //         $pdf->Cell(60, 10, $row['rincian'], 1, 0, 'L', true);
+    //         $pdf->Cell(60, 10, number_format($row['nominal'], 0, ',', '.'), 1, 0, 'L', true);
+    //         $pdf->Cell(60, 10, $row['keterangan'], 1, 1, 'L', true);
+    //     }
+    //     $pdf->SetFont('Arial', 'B', 12);
+    //     $pdf->SetFillColor(248, 249, 250); // Background color
+    //     $pdf->Cell(60, 10, '', 0, 0, false);
+    //     $pdf->Cell(60, 10, 'Total', 1, 0, 'R', true);
+    //     $pdf->Cell(60, 10, number_format($data['master']->total_nominal, 0, ',', '.'), 1, 2, 'C', true);
+
+    //     // Add Signature Section
+    //     $pdf->Ln(10);
+    //     $pdf->SetFont('Arial', 'B', 12);
+    //     $pdf->SetFillColor(0, 123, 255); // Background color for headers
+    //     $pdf->SetTextColor(255, 255, 255); // White text color
+    //     $pdf->Cell(60, 10, 'Yang melakukan', 1, 0, 'C', true);
+    //     $pdf->Cell(60, 10, 'Mengetahui', 1, 0, 'C', true);
+    //     $pdf->Cell(60, 10, 'Menyetujui', 1, 1, 'C', true);
+
+    //     // Empty cells for signatures
+    //     $pdf->SetFont('Arial', 'B', 12);
+    //     $pdf->SetTextColor(0, 0, 0); // Reset text color
+    //     $pdf->Cell(60, 20, '', 1, 0, 'C');
+    //     $pdf->Cell(60, 20, $data['app_status'], 1, 0, 'C');
+    //     $pdf->Cell(60, 20, $data['app2_status'], 1, 1, 'C');
+
+    //     // Empty cells for signatures
+    //     $pdf->SetFont('Arial', '', 12);
+    //     $pdf->SetTextColor(0, 0, 0); // Reset text color
+    //     $pdf->Cell(60, 8, $data['user'], 1, 0, 'C');
+    //     $pdf->Cell(60, 8, $data['master']->app_name, 1, 0, 'C');
+    //     $pdf->Cell(60, 8, $data['master']->app2_name, 1, 1, 'C');
+
+    //     // Add keterangan
+    //     $pdf->Ln(5);
+    //     $pdf->SetFont('Arial', '', 12);
+    //     $pdf->Cell(40, 10, 'Keterangan:', 0, 0);
+    //     $pdf->Ln(8);
+    //     if ($data['master']->app_keterangan != null) {
+    //         $pdf->Cell(60, 10, '*' . $data['master']->app_keterangan, 0, 1);
+    //     } elseif ($data['master']->app2_keterangan != null) {
+    //         $pdf->Cell(60, 10, '*' . $data['master']->app2_keterangan, 0, 1);
+    //     }
+
+    //     // Output the PDF
+    //     $pdf->Output('I', 'Prepayment.pdf');
+    // }
 
     // QUERY UNTUK INPUT TANDA TANGAN
     function signature()
