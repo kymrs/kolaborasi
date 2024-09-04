@@ -21,8 +21,8 @@
                     <div class="d-flex align-items-center">
                         <label for="appFilter" class="mr-2 mb-0">Filter:</label>
                         <select id="appFilter" name="appFilter" class="form-control form-control-sm">
-                            <option value="" selected>Show all....</option>
-                            <option value="on-process">On-Process</option>
+                            <!-- <option value="" selected>Show all....</option> -->
+                            <option value="on-process" selected>On-Process</option>
                             <option value="approved">Approved</option>
                             <option value="revised">Revised</option>
                             <option value="rejected">Rejected</option>

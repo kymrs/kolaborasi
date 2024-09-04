@@ -62,9 +62,15 @@ class M_datanotifikasi extends CI_Model
         if ($this->session->userdata('fullname') != 'super admin') {
             $this->db->group_start()
                 ->where('tbl_notifikasi.id_user', $this->session->userdata('id_user'))
-                ->or_where('tbl_notifikasi.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") AND tbl_notifikasi.app_status NOT IN ('rejected', 'approved') AND tbl_notifikasi.status != 'revised'", FALSE)
-                ->or_where('tbl_notifikasi.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") AND tbl_notifikasi.app_status NOT IN ('rejected', 'waiting', 'revised') AND tbl_notifikasi.app2_status NOT IN ('rejected', 'approved') AND tbl_notifikasi.status != 'revised'", FALSE)
+                ->or_where('tbl_notifikasi.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                ->or_where('tbl_notifikasi.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
                 ->group_end();
+
+            // $this->db->group_start()
+            //     ->where('tbl_notifikasi.id_user', $this->session->userdata('id_user'))
+            //     ->or_where('tbl_notifikasi.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") AND tbl_notifikasi.app_status NOT IN ('rejected', 'approved') AND tbl_notifikasi.status != 'revised'", FALSE)
+            //     ->or_where('tbl_notifikasi.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") AND tbl_notifikasi.app_status NOT IN ('rejected', 'waiting', 'revised') AND tbl_notifikasi.app2_status NOT IN ('rejected', 'approved') AND tbl_notifikasi.status != 'revised'", FALSE)
+            //     ->group_end();
         }
 
         if (isset($_POST['order'])) {
