@@ -3,8 +3,6 @@
 
 <head>
     <?php $this->load->view('template/header'); ?>
-    <!-- Include Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -23,148 +21,69 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
         }
 
+        /* header */
         .header {
-            text-align: center;
-            margin-bottom: 30px;
+            height: 165px;
         }
 
-        .header h1 {
-            margin: 0;
-            font-size: 24px;
-            text-transform: uppercase;
+        .header .logo {
+            width: 150px;
         }
 
-        .header .d-flex {
-            margin-top: 15px;
-            /* Added margin-top for spacing */
-            margin-bottom: 10px;
+        .header .title {
+            width: 100%;
+            position: relative;
+            bottom: 100px;
         }
 
-        .header p {
-            margin: 0;
-            font-size: 14px;
-        }
-
-        .header h2 {
-            margin-top: 20px;
-            font-size: 20px;
-            font-weight: normal;
-        }
-
-        .d-flex p {
-            margin-bottom: 0;
-        }
-
-        .form-section {
+        .header .title h1 {
             margin-bottom: 25px;
         }
 
-        .form-section label {
-            font-weight: 600;
-            color: #495057;
-        }
-
-        .table-rincian,
-        .table-section {
-            width: 100%;
-            margin-top: 25px;
-            border: 1px solid #e0e0e0;
-            border-radius: 5px;
-            overflow: hidden;
-        }
-
-        .table-rincian th,
-        .table-rincian td,
-        .table-section th,
-        .table-section td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .table-rincian th {
-            background-color: #f8f9fa;
-            font-weight: 600;
-        }
-
-        .table-rincian td,
-        .table-section td {
-            height: 40px;
-            font-size: 14px;
-            color: #495057;
-        }
-
-        .table-section th {
-            background-color: #007bff;
-            color: #ffffff;
+        .header .title h1,
+        .header .title h2 {
+            font-size: 1.4rem;
+            font-weight: bold;
             text-align: center;
         }
 
-        .signature-text {
-            margin-top: 10px;
-            font-size: 14px;
-            color: #495057;
+        /* Main Field */
+        .main-field table {
+            width: 100%;
         }
 
-        .form-control {
-            border-radius: 4px;
-            padding: 10px;
-            font-size: 14px;
+        .main-field table tr td {
+            padding: 5px;
         }
 
-        .btn {
-            border-radius: 5px;
-            font-weight: 600;
+        .main-field table tr td:nth-child(1) {
+            width: 16%;
         }
 
-        .modal-content {
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        .main-field table tr td:nth-child(2) {
+            width: 2%;
         }
 
-        .modal-header {
-            border-bottom: 1px solid #e0e0e0;
+        .main-field table tr td:nth-child(3) {
+            width: 82%;
+            border-bottom: 1.5px solid #444;
         }
 
-        .modal-footer {
-            border-top: 1px solid #e0e0e0;
+        /* Table Approve */
+        .table-approve {
+            margin-top: 35px;
+            /* border: 1px solid #444; */
         }
 
-        /* Responsive Styles */
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 22px;
-            }
-
-            .header h2 {
-                font-size: 18px;
-            }
-
-            .table-rincian th,
-            .table-rincian td,
-            .table-section th,
-            .table-section td {
-                font-size: 12px;
-                padding: 8px;
-            }
+        .table-approve table {
+            width: 60%;
         }
 
-        @media (max-width: 480px) {
-            .header h1 {
-                font-size: 20px;
-            }
-
-            .header h2 {
-                font-size: 16px;
-            }
-
-            .table-rincian th,
-            .table-rincian td,
-            .table-section th,
-            .table-section td {
-                font-size: 10px;
-                padding: 6px;
-            }
+        .table-approve table tr td {
+            border: 1.5px solid #444;
+            padding: 2.5px;
+            width: 100px;
+            text-align: center;
         }
     </style>
 </head>
@@ -183,101 +102,69 @@
 
             <!-- Header Section -->
             <div class="header">
-                <h1>PT. MANDIRI CIPTA SEJAHTERA</h1>
-                <div class="d-flex justify-content-center align-items-center">
-                    <p class="mb-1 mr-3"><strong>Divisi:</strong> <span id="divisi"></span></p>
-                    <p class="mb-1"><strong>Deklarasi:</strong> <span id="kodedeklarasi"></span></p>
-                </div>
-                <h2>FORM DEKLARASI</h2>
-            </div>
-
-            <!-- Form Sections -->
-            <div class="form-group row">
-                <label for="tanggal" class="col-sm-3 col-form-label">Tanggal:</label>
-                <div class="col-sm-9">
-                    <span id="tanggal" class="form-control-plaintext"></span>
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="nama_pembayar" class="col-sm-3 col-form-label">Nama:</label>
-                <div class="col-sm-9">
-                    <span id="nama_pembayar" class="form-control-plaintext"></span>
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="jabatan" class="col-sm-3 col-form-label">Jabatan:</label>
-                <div class="col-sm-9">
-                    <span id="jabatan" class="form-control-plaintext"></span>
+                <img src="<?= base_url() ?>assets/backend/img/reimbust/kwitansi/default.jpg" alt="Logo" class="logo">
+                <div class="title">
+                    <h1>PT. MANDIRI CIPTA SEJAHTERA</h1>
+                    <h2>FORM DEKLARASI</h2>
                 </div>
             </div>
 
-            <p>Telah/akan melakukan pembayaran kepada:</p>
-
-            <div class="form-group row">
-                <label for="nama_penerima" class="col-sm-3 col-form-label">Nama:</label>
-                <div class="col-sm-9">
-                    <span id="nama_penerima" class="form-control-plaintext"></span>
-                    <input type="hidden" id="hidden_id" value="<?php echo $id ?>">
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="tujuan" class="col-sm-3 col-form-label">Tujuan:</label>
-                <div class="col-sm-9">
-                    <span id="tujuan" class="form-control-plaintext"></span>
-                    <input type="hidden" id="hidden_id" value="<?php echo $id ?>">
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="sebesar" class="col-sm-3 col-form-label">Sebesar:</label>
-                <div class="col-sm-9">
-                    <span id="sebesar" class="form-control-plaintext"></span>
-                    <input type="hidden" id="hidden_id" value="<?php echo $id ?>">
-                </div>
-            </div>
-
-            <!-- Signature Table -->
-            <table class="table table-bordered table-section">
-                <thead>
+            <div class="main-field">
+                <table>
                     <tr>
-                        <th>Yang melakukan</th>
-                        <th>Mengetahui</th>
-                        <th>Menyetujui</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>
-
-                        </td>
-                        <td id="signature_mengetahui">
-                            <!-- GENERATE STATUS -->
-                        </td>
-                        <td id="signature_menyetujui">
-                            <!-- GENERATE STATUS -->
-                        </td>
+                        <td>Tanggal</td>
+                        <td>:</td>
+                        <td class="line"></td>
                     </tr>
                     <tr>
-                        <td id="melakukan">
-                            <div class="signature-text text-center">Rakha</div>
-                        </td>
-                        <td id="mengetahui">
-                            <div class="signature-text  text-center">Pak Deden</div>
-                        </td>
-                        <td id="menyetujui">
-                            <div class="signature-text  text-center">Pak Heri</div>
-                        </td>
+                        <td>Nama</td>
+                        <td>:</td>
+                        <td class="line"></td>
                     </tr>
-                </tbody>
-            </table>
+                    <tr>
+                        <td>Jabatan</td>
+                        <td>:</td>
+                        <td class="line"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">Telah/akan melakukan pembayaran kepada :</td>
+                    </tr>
+                    <tr>
+                        <td>Nama</td>
+                        <td>:</td>
+                        <td class="line"></td>
+                    </tr>
+                    <tr>
+                        <td>Tujuan</td>
+                        <td>:</td>
+                        <td class="line"></td>
+                    </tr>
+                    <tr>
+                        <td>Sebesar</td>
+                        <td>:</td>
+                        <td class="line"></td>
+                    </tr>
+                </table>
+            </div>
 
-            <!-- Comment Section -->
-            <div class="form-group row">
-                <label for="keterangan" class="col-sm-3 col-form-label">Keterangan:</label>
-                <div class="col-sm-9">
-                    <span id="keterangan" class="form-control-plaintext"></span>
-                    <!-- HIDDEN INPUT -->
-                    <input type="hidden" id="hidden_id" name="hidden_id" value="<?= $id ?>">
-                </div>
+            <div class="table-approve">
+                <table>
+                    <tr>
+                        <td>Yang melakukan</td>
+                        <td>Mengetahui</td>
+                        <td>Menyetujui</td>
+                    </tr>
+                    <tr style="height: 75px">
+                        <td></td>
+                        <td id="statusMengetahui"></td>
+                        <td id="statusMenyetujui"></td>
+                    </tr>
+                    <tr>
+                        <td id="melakukan"></td>
+                        <td id="mengetahui"></td>
+                        <td id="menyetujui"></td>
+                    </tr>
+                </table>
             </div>
         </div>
     </div>

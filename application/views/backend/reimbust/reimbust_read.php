@@ -100,6 +100,22 @@
             text-align: center;
         }
 
+        /* Transaction Field */
+        .kwitansi {
+            background-color: #4268D6;
+            padding: 5px;
+            color: #fff;
+            display: inline-block;
+            font-size: 0.8rem;
+            border-radius: 7px;
+            cursor: pointer;
+            transition: 300ms;
+        }
+
+        .kwitansi:hover {
+            scale: 0.95;
+        }
+
         .clear {
             clear: both;
         }
@@ -109,9 +125,9 @@
 <body>
     <div class="container">
         <div class="d-flex justify-content-end mb-3" style="margin-right: 19px">
-            <?php if ($user->app_name == $app_name) { ?>
+            <?php if ($user->app_name == $app_name && $user->app_status != 'rejected' && !in_array($user->app2_status, ['approved', 'rejected'])) { ?>
                 <a class="btn btn-warning btn-sm mr-2" id="appBtn" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
-            <?php } elseif ($user->app2_name == $app2_name) { ?>
+            <?php } elseif ($user->app2_name == $app2_name && !in_array($user->app2_status, ['approved', 'rejected'])) { ?>
                 <a class="btn btn-warning btn-sm mr-2" id="appBtn2" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
             <?php } ?>
             <a class="btn btn-secondary btn-sm" href="<?= base_url('reimbust') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
@@ -120,7 +136,7 @@
             <!-- Header -->
             <div class="header">
                 <div class="logo">
-                    <img src="<?= base_url() ?>assets/backend/img/reimbust/kwitansi/default.jpg" alt="">
+                    <img src="<?= base_url() ?>assets/backend/img/reimbust/kwitansi/default.jpg" alt="Logo">
                 </div>
                 <div class="title">
                     <h1>FORM PELAPORAN / REIMBUST</h1>
@@ -354,7 +370,7 @@
                                         <td colspan="2">${index + 1}. ${data['transaksi'][index]['pemakaian']}</td>
                                         <td style="text-align: center">${getFormattedDate(moment(data['transaksi'][index]['tgl_nota']).format('DD MM YYYY'))}</td>
                                         <td style="text-align: center">${data['transaksi'][index]['jumlah'].replace(/\B(?=(\d{3})+(?!\d))/g, '.')}</td>
-                                        <td style="text-align: center">${data['transaksi'][index]['kwitansi'] ? 'Kwitansi' : '-'}</td>
+                                        <td style="text-align: center"> <span class="kwitansi">${data['transaksi'][index]['kwitansi'] ? 'Kwitansi' : '-'}</span></td>
                                         <td style="text-align: center">${data['transaksi'][index]['deklarasi'] ? data['transaksi'][index]['deklarasi'] : '-'}</td>
                                     </tr>
                                 `;

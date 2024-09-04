@@ -61,12 +61,14 @@ class M_reimbust extends CI_Model
         // Tambahkan kondisi WHERE untuk user ID atau nama approval
         $this->db->group_start()
             ->where('tbl_reimbust.id_user', $this->session->userdata('id_user'))
-            ->or_where('tbl_reimbust.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") AND tbl_reimbust.app_status NOT IN ('rejected', 'approved') AND tbl_reimbust.status != 'revised'", FALSE)
-            ->or_where('tbl_reimbust.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") AND tbl_reimbust.app_status NOT IN ('rejected', 'waiting', 'revised') AND tbl_reimbust.app2_status NOT IN ('rejected', 'approved') AND tbl_reimbust.status != 'revised'", FALSE)
+            ->or_where('tbl_reimbust.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+            ->or_where('tbl_reimbust.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
             ->group_end();
 
         // $this->db->group_start()
-        //     ->where("tbl_reimbust.app_status NOT IN ('rejected', 'approved', 'revised')", NULL, FALSE)
+        //     ->where('tbl_reimbust.id_user', $this->session->userdata('id_user'))
+        //     ->or_where('tbl_reimbust.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") AND tbl_reimbust.app_status NOT IN ('rejected', 'approved') AND tbl_reimbust.status != 'revised'", FALSE)
+        //     ->or_where('tbl_reimbust.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") AND tbl_reimbust.app_status NOT IN ('rejected', 'waiting', 'revised') AND tbl_reimbust.app2_status NOT IN ('rejected', 'approved') AND tbl_reimbust.status != 'revised'", FALSE)
         //     ->group_end();
 
         if (isset($_POST['order'])) {

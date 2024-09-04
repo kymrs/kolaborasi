@@ -3,18 +3,16 @@
 
 <head>
     <?php $this->load->view('template/header'); ?>
-    <!-- Include Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: Arial, Helvetica, sans-serif;
             background-color: #f4f6f9;
             padding: 0;
             color: #333;
         }
 
         .form-container {
-            max-width: 800px;
+            max-width: 700px;
             margin: 15px auto;
             padding: 25px;
             border: 1px solid #e0e0e0;
@@ -23,148 +21,102 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
+        /* header */
         .header h1 {
-            margin: 0;
-            font-size: 24px;
-            text-transform: uppercase;
-        }
-
-        .header .d-flex {
-            margin-top: 15px;
-            /* Added margin-top for spacing */
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            margin: 0;
-            font-size: 14px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 50px;
         }
 
         .header h2 {
-            margin-top: 20px;
-            font-size: 20px;
-            font-weight: normal;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
         }
 
-        .d-flex p {
-            margin-bottom: 0;
+        /* main field */
+        .main-field table tr td {
+            padding: 3px 0;
         }
 
-        .form-section {
-            margin-bottom: 25px;
+        .main-field table tr td:nth-child(1) {
+            width: 20%;
         }
 
-        .form-section label {
-            font-weight: 600;
-            color: #495057;
+        .main-field table tr td:nth-child(2) {
+            width: 2%;
         }
 
-        .table-rincian,
-        .table-section {
+        .main-field table {
             width: 100%;
+        }
+
+        .main-field .status1 {
+            margin: 15px 0;
+        }
+
+        .main-field .status2 {
+            margin: 15px 0;
+        }
+
+        .main-field .status2 h1 {
+            font-size: 1rem;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .main-field .alasan {
+            position: relative;
+            bottom: 30px;
+            text-align: justify;
+            margin: 0;
+        }
+
+        /* Note */
+        .note h4 {
+            margin-top: 20px;
+            font-size: 1rem;
+        }
+
+        .note p {
+            margin-top: 20px;
+            border-bottom: 2px dotted #444;
+            text-align: justify;
+        }
+
+        /* note hc */
+        .note-hc h1 {
             margin-top: 25px;
-            border: 1px solid #e0e0e0;
-            border-radius: 5px;
-            overflow: hidden;
+            font-size: 1rem;
+            font-weight: bold;
         }
 
-        .table-rincian th,
-        .table-rincian td,
-        .table-section th,
-        .table-section td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #e0e0e0;
+        .note-hc table tr td:nth-child(1) {
+            width: 25%;
         }
 
-        .table-rincian th {
-            background-color: #f8f9fa;
-            font-weight: 600;
+        /* Table Approve */
+        .table-approve {
+            margin-top: 35px;
         }
 
-        .table-rincian td,
-        .table-section td {
-            height: 40px;
-            font-size: 14px;
-            color: #495057;
+        .table-approve table {
+            width: 70%;
         }
 
-        .table-section th {
-            background-color: #007bff;
-            color: #ffffff;
+        .table-approve table tr td {
+            border: 1.5px solid #444;
+            padding: 2.5px;
+            width: 100px;
             text-align: center;
         }
 
-        .signature-text {
-            margin-top: 10px;
-            font-size: 14px;
-            color: #495057;
-        }
-
-        .form-control {
-            border-radius: 4px;
-            padding: 10px;
-            font-size: 14px;
-        }
-
-        .btn {
-            border-radius: 5px;
-            font-weight: 600;
-        }
-
-        .modal-content {
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .modal-header {
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .modal-footer {
-            border-top: 1px solid #e0e0e0;
-        }
-
-        /* Responsive Styles */
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 22px;
-            }
-
-            .header h2 {
-                font-size: 18px;
-            }
-
-            .table-rincian th,
-            .table-rincian td,
-            .table-section th,
-            .table-section td {
-                font-size: 12px;
-                padding: 8px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .header h1 {
-                font-size: 20px;
-            }
-
-            .header h2 {
-                font-size: 16px;
-            }
-
-            .table-rincian th,
-            .table-rincian td,
-            .table-section th,
-            .table-section td {
-                font-size: 10px;
-                padding: 6px;
-            }
+        .table-approve table tr:nth-child(1) td:nth-child(1),
+        .table-approve table tr:nth-child(1) td:nth-child(2),
+        .table-approve table tr:nth-child(1) td:nth-child(3) {
+            width: 25%;
         }
     </style>
 </head>
@@ -181,102 +133,108 @@
                 <a class="btn btn-secondary btn-sm" href="<?= base_url('datanotifikasi') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
             </div>
 
-            <!-- Header Section -->
             <div class="header">
                 <h1>PT. MANDIRI CIPTA SEJAHTERA</h1>
-                <!-- <div class="d-flex justify-content-center align-items-center">
-                    <p class="mb-1 mr-3"><strong>Divisi:</strong> <span id="divisi"></span></p>
-                    <p class="mb-1"><strong>Notifikasi:</strong> <span id="kodedeklarasi"></span></p>
-                </div> -->
-                <h2>FORM NOTIFIKASI</h2>
+                <h2>NOTIFIKASI</h2>
             </div>
 
-            <!-- Form Sections -->
-            <p>Saya yang bertanda tangan dibawah ini:</p>
-
-            <div class="form-group row">
-                <label for="nama_pembayar" class="col-sm-3 col-form-label">Nama:</label>
-                <div class="col-sm-9">
-                    <span id="nama_pembayar" class="form-control-plaintext"></span>
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="jabatan" class="col-sm-3 col-form-label">Jabatan:</label>
-                <div class="col-sm-9">
-                    <span id="jabatan" class="form-control-plaintext"></span>
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="pengajuan" class="col-sm-3 col-form-label">Mengajukan izin:</label>
-                <div class="col-sm-9">
-                    <span id="pengajuan" class="form-control-plaintext"></span>
-                </div>
-            </div>
-
-            <div class="form-group row">
-                <label for="tanggal" class="col-sm-3 col-form-label">Tanggal:</label>
-                <div class="col-sm-9">
-                    <span id="tanggal" class="form-control-plaintext"></span>
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="waktu" class="col-sm-3 col-form-label">Waktu:</label>
-                <div class="col-sm-9">
-                    <span id="waktu" class="form-control-plaintext"></span>
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="alasan" class="col-sm-3 col-form-label">Alasan:</label>
-                <div class="col-sm-9">
-                    <span id="alasan" class="form-control-plaintext"></span>
-                    <input type="hidden" id="hidden_id" value="<?php echo $id ?>">
-                </div>
-            </div>
-
-            <!-- Signature Table -->
-            <table class="table table-bordered table-section">
-                <thead>
+            <div class="main-field">
+                <p>Saya yang bertanda tangan dibawah ini :</p>
+                <table>
                     <tr>
-                        <th>Yang melakukan</th>
-                        <th>Mengetahui</th>
-                        <th>Menyetujui</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>
-
-                        </td>
-                        <td id="signature_mengetahui">
-                            <!-- GENERATE STATUS -->
-                        </td>
-                        <td id="signature_menyetujui">
-                            <!-- GENERATE STATUS -->
-                        </td>
+                        <td>Nama</td>
+                        <td>:</td>
+                        <td></td>
                     </tr>
                     <tr>
-                        <td id="melakukan">
-                            <div class="signature-text text-center">Rakha</div>
-                        </td>
-                        <td id="mengetahui">
-                            <div class="signature-text  text-center">Pak Deden</div>
-                        </td>
-                        <td id="menyetujui">
-                            <div class="signature-text  text-center">Pak Heri</div>
-                        </td>
+                        <td>Jabatan</td>
+                        <td>:</td>
+                        <td></td>
                     </tr>
-                </tbody>
-            </table>
+                    <tr>
+                        <td>Department</td>
+                        <td>:</td>
+                        <td></td>
+                    </tr>
+                </table>
+                <div class="status1">
+                    <p>
+                        Mengajukan Izin ( <i class="fas fa-check" id="izin" style="display: inline;"></i> )
+                        Tidak Masuk ( <i class="fas fa-check" id="izin" style="display: none;"></i> )
+                        Pulang Awal ( <i class="fas fa-check" id="pulang" style="display: none;"></i> )
+                        Datang Terlambat ( <i class="fas fa-check" id="terlambat" style="display: none;"></i> )
+                    </p>
+                </div>
+                <table>
+                    <tr>
+                        <td>Tanggal</td>
+                        <td>:</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Waktu</td>
+                        <td>:</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Alasan</td>
+                        <td>:</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td class="alasan">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ipsum laboriosam voluptate non accusantium modi inventore ab consequatur corporis id aspernatur.</td>
+                    </tr>
+                </table>
+                <div class="status2">
+                    <h1>DIISI OLEH ATASAN KARYAWAN BERSANGKUTAN</h1>
+                    <p>
+                        <span style="margin-right: 30px;">Notifikasi ini</span>
+                        Disetujui ( <i class="fas fa-check" id="izin" style="display: inline;"></i> )
+                        Tidak Disetujui ( <i class="fas fa-check" id="pulang" style="display: none;"></i> )
+                    </p>
+                </div>
 
-            <!-- Comment Section -->
-            <div class="form-group row">
-                <label for="keterangan" class="col-sm-3 col-form-label">Keterangan:</label>
-                <div class="col-sm-9">
-                    <span id="keterangan" class="form-control-plaintext"></span>
-                    <!-- HIDDEN INPUT -->
-                    <input type="hidden" id="hidden_id" name="hidden_id" value="<?= $id ?>">
+                <div class="note">
+                    <h4>Dengan catatan <span style="position: relative; left: 12px">:</span></h4>
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde quam, autem labore praesentium perspiciatis enim magnam ex. Illo, soluta cumque.</p>
+                </div>
+
+                <div class="note-hc">
+                    <h1>CATATAN HUMAN CAPITAL DEPARTEMENT</h1>
+                    <table>
+                        <tr>
+                            <td>NOTIFIKASI KE</td>
+                            <td>:</td>
+                            <td>
+                                <span id="tahun">teess</span>
+                                <span>( TAHUN BERJALAN )</span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="table-approve">
+                    <table>
+                        <tr>
+                            <td>DEPT. HEAD</td>
+                            <td>HC-DEPARTMENT</td>
+                            <td>KARYAWAN</td>
+                        </tr>
+                        <tr style="height: 75px">
+                            <td></td>
+                            <td id="statusMengetahui"></td>
+                            <td id="statusMenyetujui"></td>
+                        </tr>
+                        <tr>
+                            <td id="melakukan"></td>
+                            <td id="mengetahui"></td>
+                            <td id="menyetujui"></td>
+                        </tr>
+                    </table>
                 </div>
             </div>
+
         </div>
     </div>
 
