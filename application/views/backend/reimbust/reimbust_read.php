@@ -4,11 +4,10 @@
 <head>
     <?php $this->load->view('template/header'); ?>
     <!-- Include Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"> -->
     <style>
-        body {
+        body .container {
             font-family: Arial, Helvetica, sans-serif;
-            background-color: #f4f6f9;
             padding: 0;
             color: #333;
         }
@@ -282,6 +281,13 @@
         </div>
     </div>
 
+    <!-- Modal -->
+    <div id="myModal" class="kwitansi-modal">
+        <span class="close">&times;</span>
+        <img class="modal-content" id="img01">
+        <!-- <div id="caption"></div> -->
+    </div>
+
     <!-- Include jQuery and Bootstrap JS -->
     <?php $this->load->view('template/script'); ?>
     <!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -370,7 +376,9 @@
                                         <td colspan="2">${index + 1}. ${data['transaksi'][index]['pemakaian']}</td>
                                         <td style="text-align: center">${getFormattedDate(moment(data['transaksi'][index]['tgl_nota']).format('DD MM YYYY'))}</td>
                                         <td style="text-align: center">${data['transaksi'][index]['jumlah'].replace(/\B(?=(\d{3})+(?!\d))/g, '.')}</td>
-                                        <td style="text-align: center"> <span class="kwitansi">${data['transaksi'][index]['kwitansi'] ? 'Kwitansi' : '-'}</span></td>
+                                        <td>
+                                            <div style="scale: 0.8" class="btn btn-primary btn-block btn-sm openModal" data-kwitansi="${data['transaksi'][index]['kwitansi']}">Lihat Foto</div>
+                                        </td>
                                         <td style="text-align: center">${data['transaksi'][index]['deklarasi'] ? data['transaksi'][index]['deklarasi'] : '-'}</td>
                                     </tr>
                                 `;
@@ -378,6 +386,49 @@
                         total += Number(data['transaksi'][index]['jumlah']);
                         sisa -= Number(data['transaksi'][index]['jumlah']);
                     }
+
+                    // Mendapatkan modal
+                    var modal = $('#myModal');
+
+                    // Mendapatkan gambar modal dan caption
+                    var modalImg = $("#img01");
+                    var captionText = $("#caption");
+
+                    // Ketika button diklik, tampilkan modal dengan gambar
+                    $('.openModal').on('click', function() {
+                        const kwitansi = $(this).data('kwitansi');
+                        if (!kwitansi) {
+                            $(this).text('Deklarasi');
+                            $(this).css({
+                                'background-color': '#EAECF4',
+                                'color': '#888',
+                                'border-color': '#EAECF4',
+                                'cursor': 'not-allowed'
+                            });
+                        } else {
+                            // Jika data kwitansi ada, lanjutkan dengan membuka modal
+                            modal.css("display", "block");
+                            modalImg.attr('src', `<?= base_url() ?>/assets/backend/img/reimbust/kwitansi/${kwitansi}`);
+                            // captionText.text('Deskripsi gambar Anda di sini'); // Ubah dengan deskripsi gambar
+                        }
+                    });
+
+                    // Ketika tombol close diklik, sembunyikan modal
+                    $(document).ready(function() {
+                        // Ketika tombol close diklik
+                        $('.close').on('click', function() {
+                            modal.css("display", "none");
+                        });
+
+                        // Ketika klik di luar modal, modal akan ditutup
+                        $(window).on('click', function(event) {
+                            // Cek jika klik terjadi di luar modal
+                            if ($(event.target).is(modal)) {
+                                modal.css("display", "none");
+                            }
+                        });
+                    });
+
                     const totalFormatted = total.toLocaleString('de-DE');
                     const sisaFormatted = sisa.toLocaleString('de-DE');
                     const ttl_row = `

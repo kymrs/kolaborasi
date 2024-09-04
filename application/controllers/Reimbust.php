@@ -76,7 +76,7 @@ class Reimbust extends CI_Controller
             );
             $row[] = date("d", strtotime($field->tgl_pengajuan)) . " " . $bulanIndo[date("n", strtotime($field->tgl_pengajuan))] . " " . date("Y", strtotime($field->tgl_pengajuan));
             $row[] = $field->tujuan;
-            $row[] = number_format($field->jumlah_prepayment, 0, ',', '.');;
+            $row[] = 'Rp. ' . number_format($field->jumlah_prepayment, 0, ',', '.');;
             $row[] = $field->status;
 
             $data[] = $row;
@@ -468,7 +468,6 @@ class Reimbust extends CI_Controller
             'sifat_pelaporan' => $this->input->post('sifat_pelaporan'),
             'tgl_pengajuan' => date('Y-m-d', strtotime($this->input->post('tgl_pengajuan'))),
             'tujuan' => $this->input->post('tujuan'),
-            'status' => $this->input->post('status'),
             'jumlah_prepayment' => $this->input->post('jumlah_prepayment'),
             'app_name' => $this->db->select('name')
                 ->from('tbl_data_user')
@@ -481,7 +480,6 @@ class Reimbust extends CI_Controller
                 ->get()
                 ->row('name')
         );
-
         // Hanya simpan ke database jika tidak ada file yang melebihi 3 MB
         $reimbust_id = $this->M_reimbust->save($data1);
 
@@ -532,12 +530,11 @@ class Reimbust extends CI_Controller
         $this->load->library('upload');
 
         $data = array(
-            'jabatan' => $this->input->post('jabatan'),
-            'departemen' => $this->input->post('departemen'),
             'sifat_pelaporan' => $this->input->post('sifat_pelaporan'),
             'tgl_pengajuan' => date('Y-m-d', strtotime($this->input->post('tgl_pengajuan'))),
+            'kode_reimbust' => $this->input->post('kode_reimbust'),
             'tujuan' => $this->input->post('tujuan'),
-            'status' => $this->input->post('status')
+            'jumlah_prepayment' => $this->input->post('jumlah_prepayment')
         );
 
         $this->db->where('id', $this->input->post('id'));

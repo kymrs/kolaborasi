@@ -10,7 +10,7 @@
                     <a class="btn btn-secondary btn-sm" href="<?= base_url('reimbust') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
-                    <form id="form" enctype="multipart/form-data">
+                    <form id="form" enctype="multipart/form-data" action="<?= base_url('reimbust/add') ?>">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group row">
@@ -396,13 +396,20 @@
                 $('#deklarasi' + currentRowCount).closest('tr').find('input').prop('readonly', true);
                 $('#kwitansi-upload' + currentRowCount).css('pointer-events', 'none');
                 $('#upload' + currentRowCount).css('background-color', '#EAECF4').text('Deklarasi').val('');
-                $('#pemakaian' + currentRowCount).css('cursor', 'not-allowed').attr('placeholder', 'Deklarasi').val('');
+                $('#pemakaian' + currentRowCount).css('cursor', 'not-allowed').attr('placeholder', 'Deklarasi').val(data[7]);
                 $('#inputGroupFile01' + currentRowCount).val('');
                 $('#tgl_nota_' + currentRowCount).css({
                     'cursor': 'not-allowed',
                     'pointer-events': 'none'
-                }).attr('placeholder', 'Deklarasi').val('');
-                $('#jumlah-' + currentRowCount).css('cursor', 'not-allowed').attr('placeholder', 'Deklarasi').val('');
+                }).attr('placeholder', 'Deklarasi').val(data[3]);
+
+                function formatRupiah(angka) {
+                    return angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                }
+                $('#jumlah-' + currentRowCount)
+                    .css('cursor', 'not-allowed')
+                    .attr('placeholder', 'Deklarasi')
+                    .val(formatRupiah(data[8]));
                 $('#hidden_jumlah' + currentRowCount).attr('placeholder', 'Deklarasi').val(data[8]);
 
                 $("#form").validate().settings.rules[`pemakaian[${currentRowCount}]`] = {
@@ -942,7 +949,7 @@
                     // Set nilai untuk setiap field dari data master    
                     $('#sifat_pelaporan').val(data['master']['sifat_pelaporan']);
                     $('#id').val(data['master']['id']);
-                    // $('#kode_reimbust').val(data['master']['kode_reimbust']).attr('readonly', true);
+                    $('#kode_reimbust').val(data['master']['kode_reimbust']).attr('readonly', true);
                     // $('#nama').val(data['master']['nama']);
                     // $('#jabatan').val(data['master']['jabatan']);
                     // $('#departemen').val(data['master']['departemen']);
@@ -1073,7 +1080,7 @@
                                     <td class="row-number">${index + 1}</td>
                                     <td>
                                         <input type="text" class="form-control" name="pemakaian[${index + 1}]" value="${data['transaksi'][index]['pemakaian']}" autocomplete="off" disabled style="cursor: not-allowed" placeholder="${data['transaksi'][index]['pemakaian'] ? data['transaksi'][index]['pemakaian'] : 'Deklarasi'}">
-                                        
+
                                         <input type="hidden" id="hidden_reimbust_id${index}" name="reimbust_id" value="${data['master']['id']}">
                                         <input type="hidden" id="hidden_detail_id${index}" name="detail_id[${index + 1}]" value="${data['transaksi'][index]['id']}">
                                     </td>
@@ -1244,42 +1251,6 @@
             });
         });
 
-
-        // $("#form").submit(function(e) {
-        //     e.preventDefault();
-        //     var $form = $(this);
-        //     if (!$form.valid()) return false;
-        //     var url;
-        //     if (id == 0) {
-        //         url = "<?php echo site_url('reimbust/add') ?>";
-        //     } else {
-        //         url = "<?php echo site_url('reimbust/update') ?>";
-        //     }
-
-        //     $.ajax({
-        //         url: url,
-        //         type: "POST",
-        //         data: $('#form').serialize(),
-        //         dataType: "JSON",
-        //         success: function(data) {
-        //             if (data.status) //if success close modal and reload ajax table
-        //             {
-        //                 Swal.fire({
-        //                     position: 'center',
-        //                     icon: 'success',
-        //                     title: 'Your data has been saved',
-        //                     showConfirmButton: false,
-        //                     timer: 1500
-        //                 }).then((result) => {
-        //                     location.href = "<?= base_url('reimbust') ?>";
-        //                 })
-        //             }
-        //         },
-        //         error: function(jqXHR, textStatus, errorThrown) {
-        //             alert('Error adding / update data');
-        //         }
-        //     });
-        // });
 
         $("#form").validate({
             rules: {
