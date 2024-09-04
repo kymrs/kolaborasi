@@ -108,7 +108,8 @@ class Datadeklarasi extends CI_Controller
             ->get()
             ->row('name');
         $data['title_view'] = "Data deklarasi";
-        $this->load->view('backend/datadeklarasi/deklarasi_read2', $data);
+        $data['title'] = 'backend/datadeklarasi/deklarasi_read';
+        $this->load->view('backend/home', $data);
     }
 
     function add_form()

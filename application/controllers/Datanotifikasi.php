@@ -107,7 +107,8 @@ class Datanotifikasi extends CI_Controller
             ->get()
             ->row('name');
         $data['title_view'] = "Data Notifikasi";
-        $this->load->view('backend/datanotifikasi/notifikasi_read2', $data);
+        $data['title'] = 'backend/datanotifikasi/notifikasi_read';
+        $this->load->view('backend/home', $data);
     }
 
     // MEREGENERATE KODE PREPAYMENT
