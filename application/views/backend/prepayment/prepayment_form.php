@@ -328,7 +328,7 @@
                     }
                     //SET VALUE DATA MASTER PREPAYMENT
                     $('#id').val(data['master']['id']);
-                    $('#kode_prepayment').val(data['master']['kode_prepayment']).attr('readonly', true);
+                    $('#kode_prepayment').val(data['master']['kode_prepayment'].toUpperCase()).attr('readonly', true);
                     $('#tgl_prepayment').val(moment(data['master']['tgl_prepayment']).format('DD-MM-YYYY'));
                     $('#nama').val(data['master']['nama']);
                     // $('#divisi').val(data['master']['divisi']);

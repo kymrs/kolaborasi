@@ -15,6 +15,17 @@ class Datadeklarasi extends CI_Controller
     {
         $data['title'] = "backend/datadeklarasi/deklarasi_list";
         $data['titleview'] = "Data Deklarasi";
+        $name = $this->db->select('name')
+            ->from('tbl_data_user')
+            ->where('id_user', $this->session->userdata('id_user'))
+            ->get()
+            ->row('name');
+        $data['approval'] = $this->db->select('COUNT(*) as total_approval')
+            ->from('tbl_deklarasi')
+            ->where('app_name', $name)
+            ->or_where('app2_name', $name)
+            ->get()
+            ->row('total_approval');
         $this->load->view('backend/home', $data);
     }
 
@@ -41,14 +52,13 @@ class Datadeklarasi extends CI_Controller
             } elseif ($field->app2_name == $fullname) {
                 $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
                                 <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
-            } elseif ($field->status == 'rejected') {
+            } elseif (in_array($field->status, ['rejected', 'approved'])) {
                 $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
                 <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } else {
-                if ($field->app_status == 'approved') {
+                if ($field->app_status == 'revised' || $field->app2_status == 'revised') {
                     $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-			            <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
+                        <a href="datadeklarasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
                         <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
                 } else {
                     $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
@@ -189,6 +199,12 @@ class Datadeklarasi extends CI_Controller
                 ->get()
                 ->row('name')
         );
+
+        // BILA YANG MEMBUAT PREPAYMENT DAPAT MENGAPPROVE SENDIRI
+        if ($approval->app_id == $this->session->userdata('id_user')) {
+            $data['app_status'] = 'approved';
+        }
+
         $this->M_datadeklarasi->save($data);
         echo json_encode(array("status" => TRUE));
     }
@@ -200,6 +216,12 @@ class Datadeklarasi extends CI_Controller
             'nama_dibayar' => $this->input->post('nama_dibayar'),
             'tujuan' => $this->input->post('tujuan'),
             'sebesar' => $this->input->post('hidden_sebesar'),
+            'app_status' => 'waiting',
+            'app_date' => null,
+            'app_keterangan' => null,
+            'app2_status' => 'waiting',
+            'app2_date' => null,
+            'app2_keterangan' => null,
             'status' => 'on-process'
         );
         $this->db->where('id', $this->input->post('id'));
