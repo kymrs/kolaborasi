@@ -59,7 +59,22 @@ class Reimbust extends CI_Controller
             $row[] = $field->jabatan;
             $row[] = $field->departemen;
             $row[] = $field->sifat_pelaporan;
-            $row[] = date("d m Y", strtotime($field->tgl_pengajuan));
+            // Array bulan bahasa Indonesia
+            $bulanIndo = array(
+                1 => 'Januari',
+                2 => 'Februari',
+                3 => 'Maret',
+                4 => 'April',
+                5 => 'Mei',
+                6 => 'Juni',
+                7 => 'Juli',
+                8 => 'Agustus',
+                9 => 'September',
+                10 => 'Oktober',
+                11 => 'November',
+                12 => 'Desember'
+            );
+            $row[] = date("d", strtotime($field->tgl_pengajuan)) . " " . $bulanIndo[date("n", strtotime($field->tgl_pengajuan))] . " " . date("Y", strtotime($field->tgl_pengajuan));
             $row[] = $field->tujuan;
             $row[] = number_format($field->jumlah_prepayment, 0, ',', '.');;
             $row[] = $field->status;
@@ -384,9 +399,9 @@ class Reimbust extends CI_Controller
             }
         }
         $urutan = str_pad($no_urut, 4, "0", STR_PAD_LEFT);
-        $$bulan = substr($date, 3, 2);
+        $bulan = substr($date, 3, 2);
         $year = substr($date, 8, 2);
-        $data = 'r' . $year . $$bulan . $urutan;
+        $data = 'r' . $year . $bulan . $urutan;
         echo json_encode($data);
     }
 
@@ -485,7 +500,7 @@ class Reimbust extends CI_Controller
                 $config['upload_path'] = './assets/backend/img/reimbust/kwitansi/';
                 $config['allowed_types'] = 'jpg|png';
                 $config['max_size'] = 3072; // Batasan ukuran file dalam kilobytes (3 MB)
-                $config['encrypt_name'] = TRUE;
+                // $config['encrypt_name'] = TRUE;
 
                 $this->upload->initialize($config);
 

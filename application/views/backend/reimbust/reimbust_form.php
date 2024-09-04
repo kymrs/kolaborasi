@@ -387,6 +387,7 @@
         // Event listener untuk baris tabel dalam modal
         $('#deklarasi-table tbody').on('click', 'tr', function() {
             let data = table.row(this).data();
+            // console.log(data);
             $('#deklarasi' + currentRowCount).val(data[2]);
             $('#deklarasi-modal' + currentRowCount).text(data[2]);
 
@@ -402,7 +403,7 @@
                     'pointer-events': 'none'
                 }).attr('placeholder', 'Deklarasi').val('');
                 $('#jumlah-' + currentRowCount).css('cursor', 'not-allowed').attr('placeholder', 'Deklarasi').val('');
-                $('#hidden_jumlah' + currentRowCount).attr('placeholder', 'Deklarasi').val('');
+                $('#hidden_jumlah' + currentRowCount).attr('placeholder', 'Deklarasi').val(data[8]);
 
                 $("#form").validate().settings.rules[`pemakaian[${currentRowCount}]`] = {
                     required: false
