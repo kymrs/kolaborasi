@@ -345,6 +345,9 @@ class Datadeklarasi extends CI_Controller
         $pdf->SetTitle('Form Deklarasi');
         $pdf->AddPage('P', 'Letter');
 
+        // Logo
+        $pdf->Image(base_url('') . '/assets/backend/img/reimbust/kwitansi/default.jpg', 8, -3, 46, 46);
+
         // Set font for title
         $pdf->SetFont('Arial', 'B', 14);
         $pdf->Cell(0, 10, 'PT. MANDIRI CIPTA SEJAHTERA', 0, 1, 'C');
@@ -389,7 +392,7 @@ class Datadeklarasi extends CI_Controller
         // Empty cells for signatures
         $pdf->SetFont('Arial', 'B', 12);
         $pdf->SetTextColor(0, 0, 0); // Reset text color
-        $pdf->Cell(60, 20, '', 1, 0, 'C');
+        $pdf->Cell(60, 20, 'CREATED', 1, 0, 'C');
         $pdf->Cell(60, 20, $data['app_status'], 1, 0, 'C');
         $pdf->Cell(60, 20, $data['app2_status'], 1, 1, 'C');
 
@@ -405,9 +408,10 @@ class Datadeklarasi extends CI_Controller
         $pdf->SetFont('Arial', '', 12);
         $pdf->Cell(40, 10, 'Keterangan:', 0, 0);
         $pdf->Ln(8);
-        if ($data['master']->app_keterangan != null) {
+        if ($data['master']->app_keterangan != null && $data['master']->app_keterangan != '') {
             $pdf->Cell(60, 10, '*' . $data['master']->app_keterangan, 0, 1);
-        } elseif ($data['master']->app2_keterangan != null) {
+        }
+        if ($data['master']->app2_keterangan != null && $data['master']->app2_keterangan != '') {
             $pdf->Cell(60, 10, '*' . $data['master']->app2_keterangan, 0, 1);
         }
 

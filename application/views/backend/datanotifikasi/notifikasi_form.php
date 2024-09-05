@@ -27,13 +27,14 @@
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="kode_notifikasi">Kode Notifikasi</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="kode_notifikasi" name="kode_notifikasi" required>
+                                        <input type="text" class="form-control" id="kode_notifikasi" name="kode_notifikasi">
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="pengajuan">Pengajuan</label>
                                     <div class="col-sm-7">
                                         <select class="form-control" id="pengajuan" name="pengajuan">
+                                            <option value="" selected disabled>Pilih opsi...</option>
                                             <option value="izin">Izin Tidak Masuk</option>
                                             <option value="pulang awal">Pulang Awal</option>
                                             <option value="datang terlambat">Datang Terlambat</option>
@@ -112,6 +113,39 @@
 <?php $this->load->view('template/script'); ?>
 
 <script>
+    $('#tgl_notifikasi').datepicker({
+        dateFormat: 'dd-mm-yy',
+        // minDate: new Date(),
+        // maxDate: new Date(),
+
+        // MENGENERATE KODE NOTIFIKASI SETELAH PILIH TANGGAL
+        onSelect: function(dateText) {
+            var id = dateText;
+            $('#tgl_notifikasi').removeClass("is-invalid");
+
+            // Menghapus label error secara manual jika ada
+            if ($("#tgl_notifikasi-error").length) {
+                $("#tgl_notifikasi-error").remove(); // Menghapus label error
+            }
+            $.ajax({
+                url: "<?php echo site_url('datanotifikasi/generate_kode') ?>",
+                type: "POST",
+                data: {
+                    "date": dateText
+                },
+                dataType: "JSON",
+                success: function(data) {
+                    // console.log(data);
+                    $('#kode_notifikasi').val(data.toUpperCase());
+                    $('#kode').val(data);
+                },
+                error: function(error) {
+                    alert("error" + error);
+                }
+            });
+        }
+    });
+
     $(document).ready(function() {
         var id = $('#id').val();
         var aksi = $('#aksi').val();
@@ -227,39 +261,13 @@
                     error.insertAfter(element);
                 }
             },
-        });
-
-        $('#tgl_notifikasi').datepicker({
-            dateFormat: 'dd-mm-yy',
-            // minDate: new Date(),
-            // maxDate: new Date(),
-
-            // MENGENERATE KODE NOTIFIKASI SETELAH PILIH TANGGAL
-            onSelect: function(dateText) {
-                var id = dateText;
-                $('#tgl_notifikasi').removeClass("is-invalid");
-
-                // Menghapus label error secara manual jika ada
-                if ($("#tgl_notifikasi-error").length) {
-                    $("#tgl_notifikasi-error").remove(); // Menghapus label error
-                }
-                $.ajax({
-                    url: "<?php echo site_url('datanotifikasi/generate_kode') ?>",
-                    type: "POST",
-                    data: {
-                        "date": dateText
-                    },
-                    dataType: "JSON",
-                    success: function(data) {
-                        // console.log(data);
-                        $('#kode_notifikasi').val(data.toUpperCase());
-                        $('#kode').val(data);
-                    },
-                    error: function(error) {
-                        alert("error" + error);
-                    }
-                });
-            }
+            highlight: function(element) {
+                $(element).addClass('is-invalid'); // Tambahkan kelas untuk menandai input tidak valid
+            },
+            unhighlight: function(element) {
+                $(element).removeClass('is-invalid'); // Hapus kelas jika input valid
+            },
+            focusInvalid: false, // Disable auto-focus on the first invalid field
         });
 
     });
