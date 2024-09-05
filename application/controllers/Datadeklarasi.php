@@ -153,7 +153,7 @@ class Datadeklarasi extends CI_Controller
         $urutan = str_pad($no_urut, 3, "0", STR_PAD_LEFT);
         $month = substr($date, 3, 2);
         $year = substr($date, 8, 2);
-        $data = 'b' . $year . $month . $urutan;
+        $data = 'd' . $year . $month . $urutan;
         echo json_encode($data);
     }
 
@@ -171,7 +171,7 @@ class Datadeklarasi extends CI_Controller
         $urutan = str_pad($no_urut, 3, "0", STR_PAD_LEFT);
         $month = substr($date, 3, 2);
         $year = substr($date, 8, 2);
-        $kode_deklarasi = 'b' . $year . $month . $urutan;
+        $kode_deklarasi = 'd' . $year . $month . $urutan;
 
         // MENCARI SIAPA YANG AKAN MELAKUKAN APPROVAL PERMINTAAN
         $approval = $this->M_datadeklarasi->approval($this->session->userdata('id_user'));
