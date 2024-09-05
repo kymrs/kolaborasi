@@ -10,12 +10,12 @@
                     <a class="btn btn-secondary btn-sm" href="<?= base_url('reimbust') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
-                    <form id="form" enctype="multipart/form-data" action="<?= base_url('reimbust/add') ?>">
+                    <form id="form" enctype="multipart/form-data" action="<?= base_url('reimbust/add') ?>" method="post">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group row">
                                     <label class="col-sm-5">Sifat Pelaporan</label>
-                                    <div class="col-sm-7" style="display: flex; justify-content: space-between; align-items: center">
+                                    <div class="col-sm-7" style="justify-content: space-between; align-items: center" id="parent_sifat_pelaporan">
                                         <select class="form-control" id="sifat_pelaporan" name="sifat_pelaporan" style="display: inline-block">
                                             <option value="">-- Pilih --</option>
                                             <option value="Reimbust">Reimbust</option>
@@ -790,6 +790,7 @@
                     }).css('cursor', 'auto');
                 } else if (sifatPelaporan == 'Pelaporan') {
                     $('#pelaporan_button').css('display', 'inline-block');
+                    $('#parent_sifat_pelaporan').css('display', 'flex');
                     $('#tgl_pengajuan').prop({
                         'disabled': false,
                         'readonly': true
@@ -828,6 +829,7 @@
                     }).css('cursor', 'not-allowed');
                 } else {
                     $('#pelaporan_button').css('display', 'none');
+                    $('#parent_sifat_pelaporan').css('display', 'inline-block');
                     // $('#nama').prop('disabled', true).css('cursor', 'not-allowed');
                     // $('#departemen').prop('disabled', true).css({
                     //     'cursor': 'not-allowed',
@@ -1220,56 +1222,56 @@
             // });
         }
 
-        $("#form").submit(function(e) {
-            e.preventDefault();
-            var $form = $(this);
-            if (!$form.valid()) return false;
+        // $("#form").submit(function(e) {
+        //     e.preventDefault();
+        //     var $form = $(this);
+        //     if (!$form.valid()) return false;
 
-            var url;
-            if (id == 0) {
-                url = "<?php echo site_url('reimbust/add') ?>";
-            } else {
-                url = "<?php echo site_url('reimbust/update') ?>";
-            }
+        //     var url;
+        //     if (id == 0) {
+        //         url = "<?php echo site_url('reimbust/add') ?>";
+        //     } else {
+        //         url = "<?php echo site_url('reimbust/update') ?>";
+        //     }
 
-            var formData = new FormData(this);
+        //     var formData = new FormData(this);
 
-            $.ajax({
-                url: url,
-                type: "POST",
-                data: formData,
-                contentType: false,
-                processData: false,
-                dataType: "JSON",
-                success: function(data) {
-                    if (data.status) {
-                        Swal.fire({
-                            position: 'center',
-                            icon: 'success',
-                            title: 'Your data has been saved',
-                            showConfirmButton: false,
-                            timer: 1500
-                        }).then((result) => {
-                            location.href = "<?= base_url('reimbust') ?>";
-                        });
-                    } else {
-                        // Tampilkan pesan kesalahan
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            text: data.error
-                        });
-                    }
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Error adding / updating data: ' + textStatus
-                    });
-                }
-            });
-        });
+        //     $.ajax({
+        //         url: url,
+        //         type: "POST",
+        //         data: formData,
+        //         contentType: false,
+        //         processData: false,
+        //         dataType: "JSON",
+        //         success: function(data) {
+        //             if (data.status) {
+        //                 Swal.fire({
+        //                     position: 'center',
+        //                     icon: 'success',
+        //                     title: 'Your data has been saved',
+        //                     showConfirmButton: false,
+        //                     timer: 1500
+        //                 }).then((result) => {
+        //                     location.href = "<?= base_url('reimbust') ?>";
+        //                 });
+        //             } else {
+        //                 // Tampilkan pesan kesalahan
+        //                 Swal.fire({
+        //                     icon: 'error',
+        //                     title: 'Oops...',
+        //                     text: data.error
+        //                 });
+        //             }
+        //         },
+        //         error: function(jqXHR, textStatus, errorThrown) {
+        //             Swal.fire({
+        //                 icon: 'error',
+        //                 title: 'Error',
+        //                 text: 'Error adding / updating data: ' + textStatus
+        //             });
+        //         }
+        //     });
+        // });
 
 
         $("#form").validate({
@@ -1310,7 +1312,7 @@
                 //     required: "Jabatan is required",
                 // },
                 sifat_pelaporan: {
-                    required: " ",
+                    required: "Pilih Sifat Pelaporan!",
                 },
                 tgl_pengajuan: {
                     required: "Tanggal Pengajuan is required",
