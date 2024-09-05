@@ -134,7 +134,7 @@ footer p {
 #deklarasiModal #deklarasi-table tbody tr,
 #deklarasiModalRead #deklarasi-table-read tbody tr {
     cursor: pointer;
-    transition: 200ms;
+    transition: 250ms;
 }
 
 #pelaporanModal #prepayment-table tbody tr:hover,
@@ -142,6 +142,7 @@ footer p {
 #deklarasiModalRead #deklarasi-table-read tbody tr:hover {
     background-color: #888;
     color: white;
+    scale: 0.990;
 }
 
 #pelaporanModal #prepayment-table tbody tr:active,

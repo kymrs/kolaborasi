@@ -10,12 +10,12 @@
                     <a class="btn btn-secondary btn-sm" href="<?= base_url('reimbust') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
-                    <form id="form" enctype="multipart/form-data" action="<?= base_url('reimbust/add') ?>">
+                    <form id="form" enctype="multipart/form-data" action="<?= base_url('reimbust/add') ?>" method="post">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group row">
                                     <label class="col-sm-5">Sifat Pelaporan</label>
-                                    <div class="col-sm-7" style="display: flex; justify-content: space-between; align-items: center">
+                                    <div class="col-sm-7" style="justify-content: space-between; align-items: center" id="parent_sifat_pelaporan">
                                         <select class="form-control" id="sifat_pelaporan" name="sifat_pelaporan" style="display: inline-block">
                                             <option value="">-- Pilih --</option>
                                             <option value="Reimbust">Reimbust</option>
@@ -313,11 +313,11 @@
                 "type": "POST"
             },
             "columnDefs": [{
-                    "targets": [2, 5],
+                    "targets": [2, 5, 6],
                     "className": 'dt-head-nowrap'
                 },
                 {
-                    "targets": [1, 3, 7],
+                    "targets": [1, 3, 4, 5, 7],
                     "className": 'dt-body-nowrap'
                 }, {
                     "targets": [0, 1],
@@ -362,11 +362,11 @@
                 "type": "POST"
             },
             "columnDefs": [{
-                    "targets": [2, 3, 4, 6],
+                    "targets": [2],
                     "className": 'dt-head-nowrap'
                 },
                 {
-                    "targets": [1, 3],
+                    "targets": [3, 4, 5, 7],
                     "className": 'dt-body-nowrap'
                 },
                 {
@@ -411,6 +411,11 @@
                     .attr('placeholder', 'Deklarasi')
                     .val(formatRupiah(data[8]));
                 $('#hidden_jumlah' + currentRowCount).attr('placeholder', 'Deklarasi').val(data[8]);
+                $('.jumlah-' + currentRowCount)
+                    .css('cursor', 'not-allowed')
+                    .attr('placeholder', 'Deklarasi')
+                    .val(formatRupiah(data[8]));
+                $('.hidden_jumlah' + currentRowCount).attr('placeholder', 'Deklarasi').val(data[8]);
 
                 $("#form").validate().settings.rules[`pemakaian[${currentRowCount}]`] = {
                     required: false
@@ -785,6 +790,7 @@
                     }).css('cursor', 'auto');
                 } else if (sifatPelaporan == 'Pelaporan') {
                     $('#pelaporan_button').css('display', 'inline-block');
+                    $('#parent_sifat_pelaporan').css('display', 'flex');
                     $('#tgl_pengajuan').prop({
                         'disabled': false,
                         'readonly': true
@@ -823,6 +829,7 @@
                     }).css('cursor', 'not-allowed');
                 } else {
                     $('#pelaporan_button').css('display', 'none');
+                    $('#parent_sifat_pelaporan').css('display', 'inline-block');
                     // $('#nama').prop('disabled', true).css('cursor', 'not-allowed');
                     // $('#departemen').prop('disabled', true).css({
                     //     'cursor': 'not-allowed',
@@ -970,17 +977,17 @@
                                 <tr id="row-${index + 1}">
                                     <td class="row-number">${index + 1}</td>
                                     <td>
-                                        <input type="text" class="form-control" name="pemakaian[${index + 1}]" value="${data['transaksi'][index]['pemakaian']}" autocomplete="off" placeholder="${data['transaksi'][index]['pemakaian'] ? data['transaksi'][index]['pemakaian'] : 'Deklarasi'}">
+                                        <input type="text" class="form-control" name="pemakaian[${index + 1}]" value="${data['transaksi'][index]['pemakaian']}" id="pemakaian${index + 1}" autocomplete="off" placeholder="${data['transaksi'][index]['pemakaian'] ? data['transaksi'][index]['pemakaian'] : 'Deklarasi'}">
                                         
                                         <input type="hidden" id="hidden_reimbust_id${index}" name="reimbust_id" value="${data['master']['id']}">
                                         <input type="hidden" id="hidden_detail_id${index}" name="detail_id[${index + 1}]" value="${data['transaksi'][index]['id']}">
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control tgl_nota" name="tgl_nota[${index + 1}]" style="cursor: pointer" autocomplete="off" value="${tglNotaFormatted}">
+                                        <input type="text" class="form-control tgl_nota" name="tgl_nota[${index + 1}]" id="tgl_nota_${index + 1}" style="cursor: pointer" autocomplete="off" value="${tglNotaFormatted}">
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control" id="jumlah-${index}" value="${jumlahFormatted}" name="jml[${index + 1}]" autocomplete="off">
-                                        <input type="hidden" id="hidden_jumlah${index}" name="jumlah[${index + 1}]" value="${data['transaksi'][index]['jumlah']}">
+                                        <input type="text" class="form-control jumlah-${index + 1}" id="jumlah-${index}" value="${jumlahFormatted}" name="jml[${index + 1}]" autocomplete="off">
+                                        <input class="hidden_jumlah${index + 1}" type="hidden" id="hidden_jumlah${index}" name="jumlah[${index + 1}]" value="${data['transaksi'][index]['jumlah']}">
                                     </td>
                                     <td id="kwitansi-upload${index + 1}">
                                         <div class="custom-file">
@@ -1040,6 +1047,21 @@
 
                                     if (text === 'null') {
                                         $label.text('Deklarasi'); // Hapus teks label
+                                    }
+                                });
+                            });
+
+                            $(document).ready(function() {
+                                // Iterasi setiap baris transaksi
+                                $('tr[id^="row-"]').each(function() {
+                                    var index = $(this).attr('id').replace('row-', ''); // Ambil indeks dari ID elemen
+                                    var deklarasiValue = $('#deklarasi' + index).val(); // Ambil nilai deklarasi
+
+                                    // Jika deklarasi kosong, buat input lainnya readonly
+                                    if (deklarasiValue !== '') {
+                                        $(this).find('input[type="text"]').attr('readonly', true); // Buat semua input teks dalam baris ini readonly
+                                        $(this).find('.custom-file-input').attr('disabled', true); // Disable input file
+                                        $(this).find('.btn-primary').attr('disabled', true); // Disable tombol modal deklarasi
                                     }
                                 });
                             });
@@ -1200,56 +1222,56 @@
             // });
         }
 
-        $("#form").submit(function(e) {
-            e.preventDefault();
-            var $form = $(this);
-            if (!$form.valid()) return false;
+        // $("#form").submit(function(e) {
+        //     e.preventDefault();
+        //     var $form = $(this);
+        //     if (!$form.valid()) return false;
 
-            var url;
-            if (id == 0) {
-                url = "<?php echo site_url('reimbust/add') ?>";
-            } else {
-                url = "<?php echo site_url('reimbust/update') ?>";
-            }
+        //     var url;
+        //     if (id == 0) {
+        //         url = "<?php echo site_url('reimbust/add') ?>";
+        //     } else {
+        //         url = "<?php echo site_url('reimbust/update') ?>";
+        //     }
 
-            var formData = new FormData(this);
+        //     var formData = new FormData(this);
 
-            $.ajax({
-                url: url,
-                type: "POST",
-                data: formData,
-                contentType: false,
-                processData: false,
-                dataType: "JSON",
-                success: function(data) {
-                    if (data.status) {
-                        Swal.fire({
-                            position: 'center',
-                            icon: 'success',
-                            title: 'Your data has been saved',
-                            showConfirmButton: false,
-                            timer: 1500
-                        }).then((result) => {
-                            location.href = "<?= base_url('reimbust') ?>";
-                        });
-                    } else {
-                        // Tampilkan pesan kesalahan
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            text: data.error
-                        });
-                    }
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Error adding / updating data: ' + textStatus
-                    });
-                }
-            });
-        });
+        //     $.ajax({
+        //         url: url,
+        //         type: "POST",
+        //         data: formData,
+        //         contentType: false,
+        //         processData: false,
+        //         dataType: "JSON",
+        //         success: function(data) {
+        //             if (data.status) {
+        //                 Swal.fire({
+        //                     position: 'center',
+        //                     icon: 'success',
+        //                     title: 'Your data has been saved',
+        //                     showConfirmButton: false,
+        //                     timer: 1500
+        //                 }).then((result) => {
+        //                     location.href = "<?= base_url('reimbust') ?>";
+        //                 });
+        //             } else {
+        //                 // Tampilkan pesan kesalahan
+        //                 Swal.fire({
+        //                     icon: 'error',
+        //                     title: 'Oops...',
+        //                     text: data.error
+        //                 });
+        //             }
+        //         },
+        //         error: function(jqXHR, textStatus, errorThrown) {
+        //             Swal.fire({
+        //                 icon: 'error',
+        //                 title: 'Error',
+        //                 text: 'Error adding / updating data: ' + textStatus
+        //             });
+        //         }
+        //     });
+        // });
 
 
         $("#form").validate({
@@ -1290,7 +1312,7 @@
                 //     required: "Jabatan is required",
                 // },
                 sifat_pelaporan: {
-                    required: " ",
+                    required: "Pilih Sifat Pelaporan!",
                 },
                 tgl_pengajuan: {
                     required: "Tanggal Pengajuan is required",

@@ -58,12 +58,20 @@ class M_reimbust extends CI_Model
             $this->db->where('status', $_POST['status']);
         }
 
-        // Tambahkan kondisi WHERE untuk user ID atau nama approval
-        $this->db->group_start()
-            ->where('tbl_reimbust.id_user', $this->session->userdata('id_user'))
-            ->or_where('tbl_reimbust.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-            ->or_where('tbl_reimbust.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-            ->group_end();
+        // Tambahkan kondisi berdasarkan tab yang dipilih
+        if (!empty($_POST['tab'])) {
+            if ($_POST['tab'] == 'personal') {
+                $this->db->where('tbl_reimbust.id_user', $this->session->userdata('id_user'));
+            } elseif ($_POST['tab'] == 'employee') {
+                $this->db->group_start()
+                    ->where('tbl_reimbust.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                    ->where('tbl_reimbust.id_user !=', $this->session->userdata('id_user'))
+                    ->or_where('tbl_reimbust.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_reimbust.app_status = 'approved'", FALSE)
+                    ->where('tbl_reimbust.id_user !=', $this->session->userdata('id_user'))
+                    ->group_end();
+            }
+        }
+
 
         // $this->db->group_start()
         //     ->where('tbl_reimbust.id_user', $this->session->userdata('id_user'))
@@ -97,7 +105,25 @@ class M_reimbust extends CI_Model
 
     public function count_all()
     {
+        $this->db->select('tbl_reimbust.*, tbl_data_user.name'); // Memilih kolom dari kedua tabel
         $this->db->from($this->table);
+        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_reimbust.id_user', 'left'); // JOIN dengan tabel tbl_user
+        // Tambahkan pemfilteran berdasarkan status
+        if (!empty($_POST['status'])) {
+            $this->db->where('status', $_POST['status']);
+        }
+
+        // Tambahkan kondisi be'rdasarkan tab yang dipilih
+        if (!empty($_POST['tab'])) {
+            if ($_POST['tab'] == 'personal') {
+                $this->db->where('tbl_reimbust.id_user', $this->session->userdata('id_user'));
+            } elseif ($_POST['tab'] == 'employee') {
+                $this->db->group_start()
+                    ->where('tbl_reimbust.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                    ->or_where('tbl_reimbust.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                    ->group_end();
+            }
+        }
         return $this->db->count_all_results();
     }
 

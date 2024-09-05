@@ -222,7 +222,7 @@
                         <td>Menyetujui</td>
                     </tr>
                     <tr style="height: 75px">
-                        <td></td>
+                        <td id="statusMelakukan"></td>
                         <td id="statusMengetahui"></td>
                         <td id="statusMenyetujui"></td>
                     </tr>
@@ -336,7 +336,8 @@
                 dataType: "JSON",
                 success: function(data) {
                     // console.log(data);
-                    // DATA PREPAYMENT
+                    moment.locale('id')
+                    // DATA REIMBUST
                     $('#nama').html(data['nama']);
                     $('#jabatan').html(data['master']['jabatan']);
                     $('#departemen').html(data['master']['departemen']);
@@ -345,8 +346,14 @@
                     $('#tujuan').html(data['master']['tujuan']);
                     $('#kode_reimbust').html(data['master']['kode_reimbust']);
                     $('#jumlah_prepayment').html(data['master']['jumlah_prepayment'].replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
+                    if (data['master']['app_keterangan'] != null) {
+                        $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app_keterangan']}</span>`);
+                    }
+                    if (data['master']['app2_keterangan'] != null) {
+                        $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app2_keterangan']}</span>`);
+                    }
 
-                    // DATA APPROVAL PREPAYMENT
+                    // DATA APPROVAL REIMBUST
                     var nama, status, keterangan, nama2, status2, keterangan2, url;
 
                     // Memeriksa apakah data yang mengetahui ada
@@ -358,6 +365,13 @@
                         $('#note_id').append(`<p>* ${keterangan}</p>`);
                     }
 
+                    if (data['master']['app_date'] == null) {
+                        date = '';
+                    }
+                    if (data['master']['app_date'] != null) {
+                        date = moment(data['master']['app_date']).format('D MMMM YYYY');
+                    }
+
                     // Memeriksa apakah data yang menyetujui ada
                     if (data['master']['app2_status'] != null) {
                         nama2 = data['master']['app2_name'];
@@ -367,7 +381,14 @@
                         $('#note_id').append(`<p>* ${keterangan2}</p>`);
                     }
 
-                    //DATA PREPAYMENT DETAIL
+                    if (data['master']['app2_date'] == null) {
+                        date2 = '';
+                    }
+                    if (data['master']['app2_date'] != null) {
+                        date2 = moment(data['master']['app2_date']).format('D MMMM YYYY');
+                    }
+
+                    //DATA REIMBUST DETAIL
                     let total = 0;
                     let sisa = data['master']['jumlah_prepayment'];
                     for (let index = 0; index < data['transaksi'].length; index++) {
@@ -377,9 +398,14 @@
                                         <td style="text-align: center">${getFormattedDate(moment(data['transaksi'][index]['tgl_nota']).format('DD MM YYYY'))}</td>
                                         <td style="text-align: center">${data['transaksi'][index]['jumlah'].replace(/\B(?=(\d{3})+(?!\d))/g, '.')}</td>
                                         <td>
-                                            <div style="scale: 0.8" class="btn btn-primary btn-block btn-sm openModal" data-kwitansi="${data['transaksi'][index]['kwitansi']}">Lihat Foto</div>
+                                            <div style="scale: 0.8; text-align: center" class="openModal" data-kwitansi="${data['transaksi'][index]['kwitansi']}">${data['transaksi'][index]['kwitansi'] ? '<div class="btn btn-primary btn-block btn-sm ">Lihat Foto</div>' : '-'}</div>
                                         </td>
-                                        <td style="text-align: center">${data['transaksi'][index]['deklarasi'] ? data['transaksi'][index]['deklarasi'] : '-'}</td>
+                                        <td style="text-align: center">
+                                            <div style="scale: 0.8" data-id="${index + 1}" id="deklarasi-modal${index + 1}">
+                                                ${data['transaksi'][index]['deklarasi'] ? `<div class="btn btn-primary btn-block btn-sm" data-deklarasi="${data['transaksi'][index]['deklarasi']}">${data['transaksi'][index]['deklarasi']}</div>` : '-'}
+                                            </div>
+                                        </div>
+                                        </td>
                                     </tr>
                                 `;
                         $('#input-container').append(row);
@@ -397,15 +423,7 @@
                     // Ketika button diklik, tampilkan modal dengan gambar
                     $('.openModal').on('click', function() {
                         const kwitansi = $(this).data('kwitansi');
-                        if (!kwitansi) {
-                            $(this).text('Deklarasi');
-                            $(this).css({
-                                'background-color': '#EAECF4',
-                                'color': '#888',
-                                'border-color': '#EAECF4',
-                                'cursor': 'not-allowed'
-                            });
-                        } else {
+                        if (kwitansi) {
                             // Jika data kwitansi ada, lanjutkan dengan membuka modal
                             modal.css("display", "block");
                             modalImg.attr('src', `<?= base_url() ?>/assets/backend/img/reimbust/kwitansi/${kwitansi}`);
@@ -429,6 +447,52 @@
                         });
                     });
 
+                    $(document).on('click', '[data-deklarasi]', function() {
+                        var deklarasi = $(this).data('deklarasi');
+
+                        $.ajax({
+                            url: '<?= site_url('reimbust/detail_deklarasi') ?>', // URL method controller
+                            method: 'POST',
+                            data: {
+                                deklarasi: deklarasi
+                            },
+                            success: function(response) {
+                                var data = JSON.parse(response);
+                                if (data.status === 'success') {
+                                    // Redirect ke URL yang dikirim dari server
+                                    window.location.href = data.redirect_url;
+                                } else {
+                                    console.log('Error: ' + data.message);
+                                }
+                            },
+                            error: function(error) {
+                                console.log('Terjadi kesalahan: ', error);
+                            }
+                        });
+                    });
+
+                    $(document).on('mouseenter', '[data-deklarasi]', function() {
+                        // Simpan teks asli sebagai data atribut
+                        var originalText = $(this).text();
+                        $(this).data('original-text', originalText);
+
+                        // Ubah teks menjadi "detail"
+                        $(this).text('Detail');
+
+                        // Ubah background menjadi merah (opsional)
+                        // $(this).css('background-color', 'red');
+                    });
+
+                    $(document).on('mouseleave', '[data-deklarasi]', function() {
+                        // Kembalikan teks ke nilai aslinya
+                        var originalText = $(this).data('original-text');
+                        $(this).text(originalText);
+
+                        // Kembalikan background ke default (opsional)
+                        // $(this).css('background-color', '');
+                    });
+
+
                     const totalFormatted = total.toLocaleString('de-DE');
                     const sisaFormatted = sisa.toLocaleString('de-DE');
                     const ttl_row = `
@@ -444,6 +508,7 @@
                     $('#melakukan').text(`${data['nama']}`);
                     $('#mengetahui').text(`${data['master']['app_name']}`);
                     $('#menyetujui').text(`${data['master']['app2_name']}`);
+                    $('#statusMelakukan').html('CREATED<br>' + `${moment(data['master']['created_at']).format('D MMMM YYYY')}`);
                     $('#statusMengetahui').text(`${data['master']['app_status'].toUpperCase()}`);
                     $('#statusMenyetujui').text(`${data['master']['app2_status'].toUpperCase()}`);
                 },
