@@ -72,12 +72,6 @@ class M_datadeklarasi extends CI_Model
             }
         }
 
-        // $this->db->group_start()
-        //     ->where('tbl_deklarasi.id_pengaju', $this->session->userdata('id_user'))
-        //     ->or_where('tbl_deklarasi.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") AND tbl_deklarasi.app_status NOT IN ('rejected', 'approved') AND tbl_deklarasi.status != 'revised'", FALSE)
-        //     ->or_where('tbl_deklarasi.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") AND tbl_deklarasi.app_status NOT IN ('rejected', 'waiting', 'revised') AND tbl_deklarasi.app2_status NOT IN ('rejected', 'approved') AND tbl_deklarasi.status != 'revised'", FALSE)
-        //     ->group_end();
-
         if (isset($_POST['order'])) {
             $this->db->order_by($this->column_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
         } else if (isset($this->order)) {
@@ -104,7 +98,27 @@ class M_datadeklarasi extends CI_Model
 
     public function count_all()
     {
+        $this->db->select('tbl_deklarasi.*, tbl_data_user.name');
         $this->db->from($this->table);
+        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_deklarasi.id_pengaju', 'left');
+
+        if (!empty($_POST['status'])) {
+            $this->db->where('status', $_POST['status']);
+        }
+
+        if (!empty($_POST['tab'])) {
+            if ($_POST['tab'] == 'personal') {
+                $this->db->where('tbl_deklarasi.id_pengaju', $this->session->userdata('id_user'));
+            } elseif ($_POST['tab'] == 'employee') {
+                $this->db->group_start()
+                    ->where('tbl_deklarasi.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                    ->where('tbl_deklarasi.id_pengaju !=', $this->session->userdata('id_user'))
+                    ->or_where('tbl_deklarasi.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_deklarasi.app_status = 'approved'", FALSE)
+                    ->where('tbl_deklarasi.id_pengaju !=', $this->session->userdata('id_user'))
+                    ->group_end();
+            }
+        }
+
         return $this->db->count_all_results();
     }
 
