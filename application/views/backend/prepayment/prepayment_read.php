@@ -122,7 +122,7 @@
     <div class="container">
         <div class="form-container">
             <div class="d-flex justify-content-end mb-3">
-                <?php if ($user->app_name == $app_name && !in_array($user->status, ['rejected', 'approved']) && !in_array($user->app_status, ['approved', 'rejected'])) { ?>
+                <?php if ($user->app_name == $app_name && !in_array($user->status, ['rejected', 'approved'])) { ?>
                     <a class="btn btn-warning btn-sm mr-2" id="appBtn" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
                 <?php } elseif ($user->app2_name == $app2_name && !in_array($user->status, ['rejected', 'approved'])) { ?>
                     <a class="btn btn-warning btn-sm mr-2" id="appBtn2" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
@@ -327,10 +327,10 @@
                     $('#namaTxt').text(data['nama']);
                     $('#jabatanTxt').text(data['master']['jabatan']);
                     $('#tujuanTxt').text(data['master']['tujuan']);
-                    if (data['master']['app_keterangan'] != null) {
+                    if (data['master']['app_keterangan'] != null && data['master']['app_keterangan'] != '') {
                         $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app_keterangan']}</span>`);
                     }
-                    if (data['master']['app2_keterangan'] != null) {
+                    if (data['master']['app2_keterangan'] != null && data['master']['app2_keterangan'] != '') {
                         $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app2_keterangan']}</span>`);
                     }
                     // DATA APPROVAL PREPAYMENT

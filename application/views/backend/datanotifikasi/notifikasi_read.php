@@ -5,14 +5,14 @@
     <?php $this->load->view('template/header'); ?>
     <style>
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: Arial, Helvetica, sans-serif;
             background-color: #f4f6f9;
             padding: 0;
             color: #333;
         }
 
         .form-container {
-            max-width: 800px;
+            max-width: 700px;
             margin: 15px auto;
             padding: 25px;
             border: 1px solid #e0e0e0;
@@ -22,61 +22,88 @@
         }
 
         /* header */
-        .header {
-            height: 165px;
+        .header h1 {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 50px;
         }
 
-        .header .logo {
-            width: 150px;
-        }
-
-        .header .title {
-            width: 100%;
-            position: relative;
-            bottom: 100px;
-        }
-
-        .header .title h1 {
-            margin-bottom: 25px;
-        }
-
-        .header .title h1,
-        .header .title h2 {
-            font-size: 1.4rem;
+        .header h2 {
+            font-size: 1.2rem;
             font-weight: bold;
             text-align: center;
+            margin-bottom: 20px;
         }
 
-        /* Main Field */
-        .main-field table {
-            width: 100%;
-        }
-
+        /* main field */
         .main-field table tr td {
-            padding: 5px;
+            padding: 3px 0;
         }
 
         .main-field table tr td:nth-child(1) {
-            width: 16%;
+            width: 20%;
         }
 
         .main-field table tr td:nth-child(2) {
             width: 2%;
         }
 
-        .main-field table tr td:nth-child(3) {
-            width: 82%;
-            border-bottom: 1.5px solid #444;
+        .main-field table {
+            width: 100%;
+        }
+
+        .main-field .status1 {
+            margin: 15px 0;
+        }
+
+        .main-field .status2 {
+            margin: 15px 0;
+        }
+
+        .main-field .status2 h1 {
+            font-size: 1rem;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .main-field .alasan {
+            position: relative;
+            bottom: 30px;
+            text-align: justify;
+            margin: 0;
+        }
+
+        /* Note */
+        .note h4 {
+            margin-top: 20px;
+            font-size: 1rem;
+        }
+
+        .note p {
+            margin-top: 20px;
+            border-bottom: 2px dotted #444;
+            text-align: justify;
+        }
+
+        /* note hc */
+        .note-hc h1 {
+            margin-top: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .note-hc table tr td:nth-child(1) {
+            width: 25%;
         }
 
         /* Table Approve */
         .table-approve {
             margin-top: 35px;
-            /* border: 1px solid #444; */
         }
 
         .table-approve table {
-            width: 60%;
+            width: 70%;
         }
 
         .table-approve table tr td {
@@ -85,6 +112,12 @@
             width: 100px;
             text-align: center;
         }
+
+        .table-approve table tr:nth-child(1) td:nth-child(1),
+        .table-approve table tr:nth-child(1) td:nth-child(2),
+        .table-approve table tr:nth-child(1) td:nth-child(3) {
+            width: 25%;
+        }
     </style>
 </head>
 
@@ -92,80 +125,116 @@
     <div class="container">
         <div class="form-container">
             <div class="d-flex justify-content-end mb-3">
-                <?php if ($user->app_name == $app_name && !in_array($user->app_status, ['rejected']) && !in_array($user->app2_status, ['approved', 'rejected'])) { ?>
+                <?php if ($user->app_name == $app_name && !in_array($user->app_status, ['rejected', 'approved'])) { ?>
                     <a class="btn btn-warning btn-sm mr-2" id="appBtn" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
                 <?php } elseif ($user->app2_name == $app2_name && !in_array($user->app2_status, ['approved', 'rejected'])) { ?>
                     <a class="btn btn-warning btn-sm mr-2" id="appBtn2" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
                 <?php } ?>
-                <a class="btn btn-secondary btn-sm" href="<?= base_url('datadeklarasi') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+                <a class="btn btn-secondary btn-sm" href="<?= base_url('datanotifikasi') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
             </div>
 
-            <!-- Header Section -->
             <div class="header">
-                <img src="<?= base_url() ?>assets/backend/img/reimbust/kwitansi/default.jpg" alt="Logo" class="logo">
-                <div class="title">
-                    <h1>PT. MANDIRI CIPTA SEJAHTERA</h1>
-                    <h2>FORM DEKLARASI</h2>
-                </div>
+                <h1>PT. MANDIRI CIPTA SEJAHTERA</h1>
+                <h2>NOTIFIKASI</h2>
             </div>
 
             <div class="main-field">
+                <p>Saya yang bertanda tangan dibawah ini :</p>
                 <table>
-                    <tr>
-                        <td>Tanggal</td>
-                        <td>:</td>
-                        <td class="line"></td>
-                    </tr>
                     <tr>
                         <td>Nama</td>
                         <td>:</td>
-                        <td class="line"></td>
+                        <td id="namaTxt"></td>
                     </tr>
                     <tr>
                         <td>Jabatan</td>
                         <td>:</td>
-                        <td class="line"></td>
+                        <td id="jabatanTxt"></td>
                     </tr>
                     <tr>
-                        <td colspan="3">Telah/akan melakukan pembayaran kepada :</td>
-                    </tr>
-                    <tr>
-                        <td>Nama</td>
+                        <td>Department</td>
                         <td>:</td>
-                        <td class="line"></td>
-                    </tr>
-                    <tr>
-                        <td>Tujuan</td>
-                        <td>:</td>
-                        <td class="line"></td>
-                    </tr>
-                    <tr>
-                        <td>Sebesar</td>
-                        <td>:</td>
-                        <td class="line"></td>
+                        <td id="departementTxt"></td>
                     </tr>
                 </table>
-            </div>
-
-            <div class="table-approve">
+                <div class="status1">
+                    <p>
+                        Mengajukan Izin :
+                        ( <i class="fas fa-check" id="izin" style="display: none;"></i> )Tidak Masuk
+                        ( <i class="fas fa-check" id="pulang" style="display: none;"></i> )Pulang Awal
+                        ( <i class="fas fa-check" id="terlambat" style="display: none;"></i> )Datang Terlambat
+                    </p>
+                </div>
                 <table>
                     <tr>
-                        <td>Yang melakukan</td>
-                        <td>Mengetahui</td>
-                        <td>Menyetujui</td>
-                    </tr>
-                    <tr style="height: 75px">
-                        <td></td>
-                        <td id="statusMengetahui"></td>
-                        <td id="statusMenyetujui"></td>
+                        <td>Tanggal</td>
+                        <td>:</td>
+                        <td id="tanggalTxt"></td>
                     </tr>
                     <tr>
-                        <td id="melakukan"></td>
-                        <td id="mengetahui"></td>
-                        <td id="menyetujui"></td>
+                        <td>Waktu</td>
+                        <td>:</td>
+                        <td id="waktuTxt"></td>
+                    </tr>
+                    <tr>
+                        <td>Alasan</td>
+                        <td>:</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td class="alasan" id="alasanTxt">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ipsum laboriosam voluptate non accusantium modi inventore ab consequatur corporis id aspernatur.</td>
                     </tr>
                 </table>
+                <div class="status2">
+                    <h1>DIISI OLEH ATASAN KARYAWAN BERSANGKUTAN</h1>
+                    <p>
+                        <span style="margin-right: 30px;">Notifikasi ini</span>
+                        Disetujui ( <i class="fas fa-check" id="boleh" style="display: none;"></i> )
+                        Tidak Disetujui ( <i class="fas fa-check" id="tidakBoleh" style="display: none;"></i> )
+                    </p>
+                </div>
+
+                <div class="note">
+                    <h4>Dengan catatan <span style="position: relative; left: 12px">:</span></h4>
+                    <p id="catatan">Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde quam, autem labore praesentium perspiciatis enim magnam ex. Illo, soluta cumque.</p>
+                </div>
+
+                <div class="note-hc">
+                    <h1>CATATAN HUMAN CAPITAL DEPARTEMENT</h1>
+                    <table>
+                        <tr>
+                            <td>NOTIFIKASI KE</td>
+                            <td>:</td>
+                            <td>
+                                <span id="tahun">teess</span>
+                                <span>( TAHUN BERJALAN )</span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="table-approve">
+                    <table>
+                        <tr>
+                            <td>DEPT. HEAD</td>
+                            <td>HC-DEPARTMENT</td>
+                            <td>KARYAWAN</td>
+                        </tr>
+                        <tr style="height: 75px">
+                            <td id="statusMelakukan"></td>
+                            <td id="statusMengetahui"></td>
+                            <td id="statusMenyetujui"></td>
+                        </tr>
+                        <tr>
+                            <td id="melakukan"></td>
+                            <td id="mengetahui"></td>
+                            <td id="menyetujui"></td>
+                        </tr>
+                    </table>
+                </div>
             </div>
+
         </div>
     </div>
 
@@ -234,14 +303,14 @@
                 $('#app_name').attr('name', 'app_name');
                 $('#app_keterangan').attr('name', 'app_keterangan');
                 $('#app_status').attr('name', 'app_status');
-                $('#approvalForm').attr('action', '<?= site_url('datadeklarasi/approve') ?>');
+                $('#approvalForm').attr('action', '<?= site_url('datanotifikasi/approve') ?>');
             });
 
             $('#appBtn2').click(function() {
                 $('#app_name').attr('name', 'app2_name');
                 $('#app_keterangan').attr('name', 'app2_keterangan');
                 $('#app_status').attr('name', 'app2_status');
-                $('#approvalForm').attr('action', '<?= site_url('datadeklarasi/approve2') ?>');
+                $('#approvalForm').attr('action', '<?= site_url('datanotifikasi/approve2') ?>');
             });
 
             // Handle the approval button click event
@@ -255,22 +324,42 @@
 
             // Additional logic to dynamically load data into the form
             $.ajax({
-                url: "<?php echo site_url('datadeklarasi/edit_data') ?>/" + id,
+                url: "<?php echo site_url('datanotifikasi/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
-                    moment.locale('id');
-                    // Format tampilan dengan pemisah ribuan
-                    formatedNumber = data['master']['sebesar'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
                     // console.log(data);
-                    // DATA PREPAYMENT
-                    $('#tanggal').text(moment(data['master']['tgl_deklarasi']).format('DD MMMM YYYY'));
+                    // DATA NOTIFIKASI
+                    $('#namaTxt').text(data.nama);
+                    $('#departementTxt').text(data['master']['departemen']);
+                    $('#tanggalTxt').text(data['master']['tgl_notifikasi']);
                     $('#nama_pembayar').text(data['nama']);
-                    $('#jabatan').text(data['master']['jabatan']);
-                    $('#nama_penerima').text(data['master']['nama_dibayar']);
-                    $('#tujuan').text(data['master']['tujuan']);
-                    $('#sebesar').text(formatedNumber);
-                    // DATA APPROVAL PREPAYMENT
+                    $('#jabatanTxt').text(data['master']['jabatan']);
+                    $('#tujuanTxt').text(data['master']['tujuan']);
+                    $('#waktuTxt').text(data['master']['waktu']);
+                    $('#alasanTxt').text(data['master']['alasan']);
+                    $('#catatan').text(data['master']['catatan']);
+
+                    // STATUS IZIN
+                    if (data['master']['pengajuan'] === 'izin') {
+                        $('#izin').show();
+                    } else if (data['master']['pengajuan'] === 'pulang awal') {
+                        $('#pulang').show();
+                    } else if (data['master']['pengajuan'] === 'datang terlambat') {
+                        $('#terlambat').show();
+                    }
+
+                    // STATUS PERSETUJUAN
+                    if (data['master']['status'] == 'approved') {
+                        $('#boleh').show();
+                    }
+                    if (data['master']['status'] == 'rejected') {
+                        $('#tidakBoleh').show();
+                    } else {
+
+                    }
+
+                    // DATA APPROVAL NOTIFIKASI
                     var nama, status, keterangan, nama2, status2, keterangan2, url;
 
                     // Memeriksa apakah data yang mengetahui ada
@@ -280,9 +369,12 @@
                         keterangan = data['master']['app_keterangan'];
                         url = "<?php echo site_url('prepayment/approve') ?>";
                         $('#note_id').append(`<p>* ${keterangan}</p>`);
-                    } else {
-                        nama = `<br><br><br>`;
-                        status = `_____________________`;
+                    }
+                    if (data['master']['app_date'] == null) {
+                        date = '';
+                    }
+                    if (data['master']['app_date'] != null) {
+                        date = moment(data['master']['app_date']).format('D MMMM YYYY');
                     }
 
                     // Memeriksa apakah data yang menyetujui ada
@@ -292,16 +384,27 @@
                         keterangan2 = data['master']['app2_keterangan'];
                         url = "<?php echo site_url('prepayment/approve2') ?>";
                         $('#note_id').append(`<p>* ${keterangan2}</p>`);
-                    } else {
-                        nama2 = `<br><br><br>`;
-                        status2 = `_____________________`;
+                    }
+                    if (data['master']['app2_date'] == null) {
+                        date2 = '';
+                    }
+                    if (data['master']['app2_date'] != null) {
+                        date2 = moment(data['master']['app2_date']).format('D MMMM YYYY');
+                    }
+
+                    if (data['master']['app_keterangan'] != null) {
+                        $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app_keterangan']}</span>`);
+                    }
+                    if (data['master']['app2_keterangan'] != null) {
+                        $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app2_keterangan']}</span>`);
                     }
 
                     $('#melakukan').html(`<div class="signature-text text-center">${data['nama']}</div>`);
                     $('#mengetahui').html(`<div class="signature-text text-center">${data['master']['app_name']}</div>`);
                     $('#menyetujui').html(`<div class="signature-text text-center">${data['master']['app2_name']}</div>`);
-                    $('#signature_mengetahui').html(`<div class="signature-text text-center">${data['master']['app_status'].toUpperCase()}</div>`);
-                    $('#signature_menyetujui').html(`<div class="signature-text text-center">${data['master']['app2_status'].toUpperCase()}</div>`);
+                    $('#statusMelakukan').html(`<div class="signature-text text-center">CREATED<br><span>${moment(data['master']['created_at']).format('D MMMM YYYY')}</span></div>`);
+                    $('#statusMengetahui').html(`<div class="signature-text text-center">${data['master']['app_status'].toUpperCase()}<br><span>${date}</span></div>`);
+                    $('#statusMenyetujui').html(`<div class="signature-text text-center">${data['master']['app2_status'].toUpperCase()}<br><span>${date2}</span></div>`);
 
                     $('#divisiCol').html(data['master']['divisi']);
                     $('#prepaymentCol').html(data['master']['prepayment']);
@@ -332,7 +435,7 @@
                                 showConfirmButton: false,
                                 timer: 1500
                             }).then((result) => {
-                                location.href = "<?= base_url('datadeklarasi') ?>";
+                                location.href = "<?= base_url('datanotifikasi') ?>";
                             })
                         }
                     },

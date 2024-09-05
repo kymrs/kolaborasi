@@ -76,7 +76,7 @@ class Prepayment extends CI_Controller
             $row[] = $field->name;
             $row[] = strtoupper($field->divisi);
             $row[] = strtoupper($field->jabatan);
-            $row[] = $field->tgl_prepayment;
+            $row[] = date("d M Y", strtotime($field->tgl_prepayment));
             $row[] = $field->prepayment;
             $row[] = $formatted_nominal;
             // $row[] = $field->tujuan;
@@ -222,6 +222,7 @@ class Prepayment extends CI_Controller
         // BILA YANG MEMBUAT PREPAYMENT DAPAT MENGAPPROVE SENDIRI
         if ($approval->app_id == $this->session->userdata('id_user')) {
             $data['app_status'] = 'approved';
+            $data['app_date'] = date('Y-m-d H:i:s');
         }
 
         $inserted = $this->M_prepayment->save($data);
@@ -415,15 +416,22 @@ class Prepayment extends CI_Controller
         $pdf->SetTitle('Form Pengajuan Prepayment');
         $pdf->AddPage('P', 'Letter');
 
-        // Arial bold 12
+        // Logo
+        $pdf->Image(base_url('') . '/assets/backend/img/reimbust/kwitansi/default.jpg', 8, -3, 37, 37);
+
+        // Set posisi untuk title dan elemen lainnya (menyesuaikan jarak dari logo)
+        $pdf->SetXY(46, 5); // Geser ke kanan untuk judul
         $pdf->SetFont('Arial', 'B', 12);
-        // Title
-        $pdf->Cell(0, 10, 'PT. MANDIRI CIPTA SEJAHTERA', 0, 1, 'L');
+        $pdf->Cell(0, 8, 'PT. MANDIRI CIPTA SEJAHTERA', 0, 1, 'L');
+
+        // Pindahkan posisi sedikit ke bawah dan tetap sejajar
+        $pdf->SetX(46); // Tetap di posisi yang sama untuk elemen lain
         $pdf->SetFont('Arial', '', 12);
-        $pdf->Cell(0, 10, 'Divisi : Finance', 0, 1, 'L');
-        $pdf->Cell(0, 10, 'Prepayment : kebutuhan', 0, 1, 'L');
-        // Line break
-        $pdf->Ln(5);
+        $pdf->Cell(0, 8, 'Divisi: ' . $data['master']->divisi, 0, 1, 'L');
+
+        $pdf->SetX(46); // Tetap di posisi yang sama untuk elemen lainnya
+        $pdf->Cell(0, 5, 'Prepayment: ' . $data['master']->prepayment, 0, 1, 'L');
+        $pdf->Ln(8);
 
         // Form Title
         $pdf->SetFont('Arial', 'B', 14);
@@ -434,21 +442,21 @@ class Prepayment extends CI_Controller
         $pdf->SetFont('Arial', '', 12);
         $pdf->Cell(30, 10, 'Tanggal', 0, 0);
         $pdf->Cell(5, 10, ':', 0, 0);
-        $pdf->Cell(50, 10, '9 Oktober 2024', 0, 1);
+        $pdf->Cell(50, 10, $formattedDate, 0, 1);
 
         $pdf->Cell(30, 10, 'Nama', 0, 0);
         $pdf->Cell(5, 10, ':', 0, 0);
-        $pdf->Cell(50, 10, 'Rahmatullah', 0, 1);
+        $pdf->Cell(50, 10, $data['user'], 0, 1);
 
         $pdf->Cell(30, 10, 'Jabatan', 0, 0);
         $pdf->Cell(5, 10, ':', 0, 0);
-        $pdf->Cell(50, 10, 'Staff', 0, 1);
+        $pdf->Cell(50, 10, $data['master']->jabatan, 0, 1);
 
         $pdf->Cell(60, 10, 'Dengan ini bermaksud mengajukan prepayment untuk :', 0, 1);
 
         $pdf->Cell(30, 10, 'Tujuan', 0, 0);
         $pdf->Cell(5, 10, ':', 0, 0);
-        $pdf->Cell(50, 10, 'asdasdasda', 0, 1);
+        $pdf->Cell(50, 10, $data['master']->tujuan, 0, 1);
         $pdf->Ln(5);
 
         // Table Header
@@ -459,15 +467,18 @@ class Prepayment extends CI_Controller
 
         // Table Content
         $pdf->SetFont('Arial', '', 12);
-        $pdf->Cell(60, 10, 'Hub Assy', 1, 0);
-        $pdf->Cell(55, 10, 'Rp. 30.000', 1, 0, 'C');
-        $pdf->Cell(80, 10, 'qwqwqw', 1, 1);
+        $pdf->SetFillColor(255, 255, 255); // Row color
+        foreach ($data['transaksi'] as $row) {
+            $pdf->Cell(60, 10, $row['rincian'], 1, 0, 'C', true);
+            $pdf->Cell(55, 10, number_format($row['nominal'], 0, ',', '.'), 1, 0, 'C', true);
+            $pdf->Cell(80, 10, $row['keterangan'], 1, 1, 'C', true);
+        }
 
         // Table Footer
         $pdf->SetFont('Arial', 'B', 12);
-        $pdf->Cell(60, 10, 'Total :', 1, 0, 'R');
+        $pdf->Cell(60, 10, 'Total :', 1, 0, 'C');
         $pdf->SetFont('Arial', '', 12);
-        $pdf->Cell(135, 10, 'Rp. 30.000', 1, 1, 'C');
+        $pdf->Cell(135, 10, number_format($data['master']->total_nominal, 0, ',', '.'), 1, 1, 'C');
         $pdf->Ln(10);
 
         // Approval Section
@@ -477,14 +488,14 @@ class Prepayment extends CI_Controller
         $pdf->Cell(45, 10, 'Menyetujui', 1, 1, 'C');
 
         $pdf->SetFont('Arial', '', 12);
-        $pdf->Cell(45, 25, 'CREATED', 1, 0, 'C');
-        $pdf->Cell(45, 25, 'WAITING', 1, 0, 'C');
-        $pdf->Cell(45, 25, 'WAITING', 1, 1, 'C');
+        $pdf->Cell(45, 25, "CREATED", 1, 0, 'C');
+        $pdf->Cell(45, 25, $data['app_status'], 1, 0, 'C');
+        $pdf->Cell(45, 25, $data['app2_status'], 1, 1, 'C');
         $pdf->Ln(0);
 
-        $pdf->Cell(45, 10, 'Rahmat', 1, 0, 'C');
-        $pdf->Cell(45, 10, 'Marimar Elsa', 1, 0, 'C');
-        $pdf->Cell(45, 10, 'Tyas', 1, 1, 'C');
+        $pdf->Cell(45, 10, $data['user'], 1, 0, 'C');
+        $pdf->Cell(45, 10, $data['master']->app_name, 1, 0, 'C');
+        $pdf->Cell(45, 10, $data['master']->app_name, 1, 1, 'C');
 
         // Add keterangan
         $pdf->Ln(5);

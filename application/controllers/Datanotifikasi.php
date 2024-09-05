@@ -107,7 +107,8 @@ class Datanotifikasi extends CI_Controller
             ->get()
             ->row('name');
         $data['title_view'] = "Data Notifikasi";
-        $this->load->view('backend/datanotifikasi/notifikasi_read2', $data);
+        $data['title'] = 'backend/datanotifikasi/notifikasi_read';
+        $this->load->view('backend/home', $data);
     }
 
     // MEREGENERATE KODE PREPAYMENT
@@ -206,6 +207,7 @@ class Datanotifikasi extends CI_Controller
         // BILA YANG MEMBUAT PREPAYMENT DAPAT MENGAPPROVE SENDIRI
         if ($approval->app_id == $this->session->userdata('id_user')) {
             $data['app_status'] = 'approved';
+            $data['app_date'] = date('Y-m-d H:i:s');
         }
 
         $this->M_datanotifikasi->save($data);
