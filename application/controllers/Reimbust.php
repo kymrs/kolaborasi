@@ -14,6 +14,17 @@ class Reimbust extends CI_Controller
     {
         $data['title'] = "backend/reimbust/reimbust_list";
         $data['titleview'] = "Data Reimbust";
+        $name = $this->db->select('name')
+            ->from('tbl_data_user')
+            ->where('id_user', $this->session->userdata('id_user'))
+            ->get()
+            ->row('name');
+        $data['approval'] = $this->db->select('COUNT(*) as total_approval')
+            ->from('tbl_reimbust')
+            ->where('app_name', $name)
+            ->or_where('app2_name', $name)
+            ->get()
+            ->row('total_approval');
         $this->load->view('backend/home', $data);
     }
 
@@ -354,8 +365,8 @@ class Reimbust extends CI_Controller
             $sisaPrepayment = $jumlahPengurangan - $totalJumlah;
 
             $pdf->Cell(33, 8.5, number_format($jumlah, 0, ',', '.'), 1, 0, 'C');
-            $pdf->Cell(33, 8.5, $row['kwitansi'] ? 'Kwitansi' : '', 1, 0, 'C');
-            $pdf->Cell(33, 8.5, $row['deklarasi'], 1, 1, 'C');
+            $pdf->Cell(33, 8.5, $row['kwitansi'] ? 'Kwitansi' : '-', 1, 0, 'C');
+            $pdf->Cell(33, 8.5, $row['deklarasi'] ? 'Deklarasi' : '-', 1, 1, 'C');
         }
 
         // Add total and remaining prepayment
@@ -429,6 +440,42 @@ class Reimbust extends CI_Controller
     {
         $data = $this->M_reimbust->get_by_id_detail($id);
         echo json_encode($data);
+    }
+
+    public function detail_deklarasi()
+    {
+        if ($this->input->is_ajax_request()) {
+            $deklarasi = $this->input->post('deklarasi');
+
+            // Mengambil data deklarasi dari database
+            $deklarasiRecord = $this->db->get_where('tbl_deklarasi', ['kode_deklarasi' => $deklarasi])->row_array();
+
+            // Debug log
+            log_message('debug', 'Deklarasi: ' . print_r($deklarasi, true));
+            log_message('debug', 'Deklarasi Record: ' . print_r($deklarasiRecord, true));
+
+            if ($deklarasiRecord) {
+                // Mengambil ID dari record yang ditemukan
+                $deklarasiId = $deklarasiRecord['id']; // Pastikan 'id' adalah nama kolom yang sesuai
+                $redirect_url = site_url('datadeklarasi/read_form/' . $deklarasiId);
+
+                $response = array(
+                    'status' => 'success',
+                    'message' => 'Data berhasil diproses',
+                    'redirect_url' => $redirect_url
+                );
+            } else {
+                $response = array(
+                    'status' => 'error',
+                    'message' => 'Data deklarasi tidak ditemukan'
+                );
+            }
+
+            // Mengirimkan response JSON
+            echo json_encode($response);
+        } else {
+            show_error('No direct access allowed', 403);
+        }
     }
 
     public function add()

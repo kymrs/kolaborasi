@@ -313,11 +313,11 @@
                 "type": "POST"
             },
             "columnDefs": [{
-                    "targets": [2, 5],
+                    "targets": [2, 5, 6],
                     "className": 'dt-head-nowrap'
                 },
                 {
-                    "targets": [1, 3, 7],
+                    "targets": [1, 3, 4, 5, 7],
                     "className": 'dt-body-nowrap'
                 }, {
                     "targets": [0, 1],
@@ -362,11 +362,11 @@
                 "type": "POST"
             },
             "columnDefs": [{
-                    "targets": [2, 3, 4, 6],
+                    "targets": [2],
                     "className": 'dt-head-nowrap'
                 },
                 {
-                    "targets": [1, 3],
+                    "targets": [3, 4, 5, 7],
                     "className": 'dt-body-nowrap'
                 },
                 {
@@ -411,6 +411,11 @@
                     .attr('placeholder', 'Deklarasi')
                     .val(formatRupiah(data[8]));
                 $('#hidden_jumlah' + currentRowCount).attr('placeholder', 'Deklarasi').val(data[8]);
+                $('.jumlah-' + currentRowCount)
+                    .css('cursor', 'not-allowed')
+                    .attr('placeholder', 'Deklarasi')
+                    .val(formatRupiah(data[8]));
+                $('.hidden_jumlah' + currentRowCount).attr('placeholder', 'Deklarasi').val(data[8]);
 
                 $("#form").validate().settings.rules[`pemakaian[${currentRowCount}]`] = {
                     required: false
@@ -970,17 +975,17 @@
                                 <tr id="row-${index + 1}">
                                     <td class="row-number">${index + 1}</td>
                                     <td>
-                                        <input type="text" class="form-control" name="pemakaian[${index + 1}]" value="${data['transaksi'][index]['pemakaian']}" autocomplete="off" placeholder="${data['transaksi'][index]['pemakaian'] ? data['transaksi'][index]['pemakaian'] : 'Deklarasi'}">
+                                        <input type="text" class="form-control" name="pemakaian[${index + 1}]" value="${data['transaksi'][index]['pemakaian']}" id="pemakaian${index + 1}" autocomplete="off" placeholder="${data['transaksi'][index]['pemakaian'] ? data['transaksi'][index]['pemakaian'] : 'Deklarasi'}">
                                         
                                         <input type="hidden" id="hidden_reimbust_id${index}" name="reimbust_id" value="${data['master']['id']}">
                                         <input type="hidden" id="hidden_detail_id${index}" name="detail_id[${index + 1}]" value="${data['transaksi'][index]['id']}">
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control tgl_nota" name="tgl_nota[${index + 1}]" style="cursor: pointer" autocomplete="off" value="${tglNotaFormatted}">
+                                        <input type="text" class="form-control tgl_nota" name="tgl_nota[${index + 1}]" id="tgl_nota_${index + 1}" style="cursor: pointer" autocomplete="off" value="${tglNotaFormatted}">
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control" id="jumlah-${index}" value="${jumlahFormatted}" name="jml[${index + 1}]" autocomplete="off">
-                                        <input type="hidden" id="hidden_jumlah${index}" name="jumlah[${index + 1}]" value="${data['transaksi'][index]['jumlah']}">
+                                        <input type="text" class="form-control jumlah-${index + 1}" id="jumlah-${index}" value="${jumlahFormatted}" name="jml[${index + 1}]" autocomplete="off">
+                                        <input class="hidden_jumlah${index + 1}" type="hidden" id="hidden_jumlah${index}" name="jumlah[${index + 1}]" value="${data['transaksi'][index]['jumlah']}">
                                     </td>
                                     <td id="kwitansi-upload${index + 1}">
                                         <div class="custom-file">
@@ -1040,6 +1045,21 @@
 
                                     if (text === 'null') {
                                         $label.text('Deklarasi'); // Hapus teks label
+                                    }
+                                });
+                            });
+
+                            $(document).ready(function() {
+                                // Iterasi setiap baris transaksi
+                                $('tr[id^="row-"]').each(function() {
+                                    var index = $(this).attr('id').replace('row-', ''); // Ambil indeks dari ID elemen
+                                    var deklarasiValue = $('#deklarasi' + index).val(); // Ambil nilai deklarasi
+
+                                    // Jika deklarasi kosong, buat input lainnya readonly
+                                    if (deklarasiValue !== '') {
+                                        $(this).find('input[type="text"]').attr('readonly', true); // Buat semua input teks dalam baris ini readonly
+                                        $(this).find('.custom-file-input').attr('disabled', true); // Disable input file
+                                        $(this).find('.btn-primary').attr('disabled', true); // Disable tombol modal deklarasi
                                     }
                                 });
                             });

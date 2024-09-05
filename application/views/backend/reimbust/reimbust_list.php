@@ -21,6 +21,18 @@
                         </select>
                     </div>
                 </div>
+
+                <!-- NAV TABS -->
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="personalTab" href="#" data-tab="personal">Personal</a>
+                    </li>
+                    <?php if ($approval > 0) { ?>
+                        <li class="nav-item">
+                            <a class="nav-link" id="employeeTab" href="#" data-tab="employee">Employee</a>
+                        </li>
+                    <?php } ?>
+                </ul>
                 <div class="card-body">
                     <table id="table" class="table table-bordered table-striped">
                         <thead>
@@ -67,6 +79,7 @@
 
 <script type="text/javascript">
     var table;
+
     $(document).ready(function() {
         table = $('#table').DataTable({
             "responsive": false,
@@ -79,6 +92,7 @@
                 "type": "POST",
                 "data": function(d) {
                     d.status = $('#appFilter').val(); // Tambahkan parameter status ke permintaan server
+                    d.tab = $('.nav-tabs .nav-link.active').data('tab'); // Tambahkan parameter tab ke permintaan server
                 }
             },
             "language": {
@@ -101,6 +115,15 @@
 
     $('#appFilter').change(function() {
         table.ajax.reload(); // Muat ulang data di DataTable dengan filter baru
+    });
+
+    // Event listener untuk nav tabs
+    $('.nav-tabs a').on('click', function(e) {
+        e.preventDefault();
+        $('.nav-tabs a').removeClass('active'); // Hapus kelas aktif dari semua tab
+        $(this).addClass('active'); // Tambahkan kelas aktif ke tab yang diklik
+
+        table.ajax.reload(); // Muat ulang data di DataTable saat tab berubah
     });
 
     function delete_data(id) {
