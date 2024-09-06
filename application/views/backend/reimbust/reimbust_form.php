@@ -303,6 +303,39 @@
 <?php $this->load->view('template/script'); ?>
 
 <script>
+    $('#tgl_pengajuan').datepicker({
+        dateFormat: 'dd-mm-yy',
+        // minDate: new Date(),
+        // maxDate: new Date(),
+
+        // MENGENERATE KODE PREPAYMENT SETELAH PILIH TANGGAL
+        onSelect: function(dateText) {
+            var id = dateText;
+            $('#tgl_pengajuan').removeClass("is-invalid");
+
+            // Menghapus label error secara manual jika ada
+            if ($("#tgl_pengajuan-error").length) {
+                $("#tgl_pengajuan-error").remove(); // Menghapus label error
+            }
+            $.ajax({
+                url: "<?php echo site_url('reimbust/generate_kode') ?>",
+                type: "POST",
+                data: {
+                    "date": dateText
+                },
+                dataType: "JSON",
+                success: function(data) {
+                    // console.log(data);
+                    $('#kode_reimbust').val(data.toUpperCase());
+                    $('#kode').val(data);
+                },
+                error: function(error) {
+                    alert("error" + error);
+                }
+            });
+        }
+    });
+
     // Data table prepayment
     var table;
 
@@ -341,9 +374,6 @@
             let data = table.row(this).data();
 
             // Masukkan data ke dalam input form di tampilan utama
-
-
-
             $('#kode_prepayment_input').val(data[2]);
             // $('#nama').val(data[3]);
             $('#departemenPrepayment').val(data[4]);
@@ -473,36 +503,36 @@
         });
     });
 
-    $('#tgl_pengajuan').datepicker({
-        dateFormat: 'dd-mm-yy',
-        minDate: new Date(),
+    // $('#tgl_pengajuan').datepicker({
+    //     dateFormat: 'dd-mm-yy',
+    //     // minDate: new Date(),
 
-        // MENGENERATE KODE PREPAYMENT SETELAH PILIH TANGGAL
-        onSelect: function(dateText) {
-            var date = $('#tgl_pengajuan').val();
-            var id = dateText;
-            $('#tgl_pengajuan').removeClass('is-invalid');
+    //     // MENGENERATE KODE PREPAYMENT SETELAH PILIH TANGGAL
+    //     onSelect: function(dateText) {
+    //         var date = $('#tgl_pengajuan').val();
+    //         var id = dateText;
+    //         $('#tgl_pengajuan').removeClass('is-invalid');
 
-            if ($("#tgl_pengajuan-error").length) {
-                $("#tgl_pengajuan-error").remove();
-            }
-            $.ajax({
-                url: "<?php echo site_url('reimbust/generate_kode') ?>",
-                type: "POST",
-                data: {
-                    "date": dateText
-                },
-                dataType: "JSON",
-                success: function(data) {
-                    $('#kode_reimbust').val(data.toUpperCase());
-                    $('#kode').val(data);
-                },
-                error: function(error) {
-                    alert("error" + error);
-                }
-            });
-        }
-    });
+    //         if ($("#tgl_pengajuan-error").length) {
+    //             $("#tgl_pengajuan-error").remove();
+    //         }
+    //         $.ajax({
+    //             url: "<?php echo site_url('reimbust/generate_kode') ?>",
+    //             type: "POST",
+    //             data: {
+    //                 "date": dateText
+    //             },
+    //             dataType: "JSON",
+    //             success: function(data) {
+    //                 $('#kode_reimbust').val(data.toUpperCase());
+    //                 $('#kode').val(data);
+    //             },
+    //             error: function(error) {
+    //                 alert("error" + error);
+    //             }
+    //         });
+    //     }
+    // });
 
     $(document).ready(function() {
         var id = $('#id').val();

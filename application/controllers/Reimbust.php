@@ -136,19 +136,19 @@ class Reimbust extends CI_Controller
 
     public function add_form()
     {
-        $kode = $this->M_reimbust->max_kode()->row();
-        if (empty($kode->kode_reimbust)) {
-            $no_urut = 1;
-        } else {
-            $bln = substr($kode->kode_reimbust, 3, 2);
-            if ($bln != date('m')) {
-                $no_urut = 1;
-            } else {
-                $no_urut = substr($kode->kode_reimbust, 5) + 1;
-            }
-        }
-        $urutan = str_pad($no_urut, 3, "0", STR_PAD_LEFT);
-        $data['kode'] = 'B' . date('ym') . $urutan;
+        // $kode = $this->M_reimbust->max_kode()->row();
+        // if (empty($kode->kode_reimbust)) {
+        //     $no_urut = 1;
+        // } else {
+        //     $bln = substr($kode->kode_reimbust, 3, 2);
+        //     if ($bln != date('m')) {
+        //         $no_urut = 1;
+        //     } else {
+        //         $no_urut = substr($kode->kode_reimbust, 5) + 1;
+        //     }
+        // }
+        // $urutan = str_pad($no_urut, 3, "0", STR_PAD_LEFT);
+        // $data['kode'] = 'B' . date('ym') . $urutan;
         $data['id'] = 0;
         $data['aksi'] = 'add';
         $data['title_view'] = "Data Reimbust Form";
@@ -467,7 +467,7 @@ class Reimbust extends CI_Controller
         // Menggunakan Cell() untuk mencetak teks tanggal dengan margin
         $pdf->Cell(50, 18, $date2, 0, 0, 'C');
 
-        // Kembali ke posisi sebelumnya untuk elemen berikutnya
+        // Kembali ke posisi sebelumnya untuk elemen berikutnya 
         $pdf->SetXY($x + -150, $y + 18); // Mengatur posisi untuk elemen berikutnya jika diperlukan
 
         // Menulis elemen selanjutnya dengan ukuran baris yang lebih kecil
@@ -480,6 +480,7 @@ class Reimbust extends CI_Controller
         $pdf->Output('I', 'Reimbust - ' . $data['master']->kode_reimbust . '.pdf');
     }
 
+    // MEREGENERATE KODE REIMBUST
     public function generate_kode()
     {
         $date = $this->input->post('date');
@@ -488,16 +489,12 @@ class Reimbust extends CI_Controller
             $no_urut = 1;
         } else {
             $bln = substr($kode->kode_reimbust, 3, 2);
-            if ($bln != date('m')) {
-                $no_urut = 1;
-            } else {
-                $no_urut = substr($kode->kode_reimbust, 5) + 1;
-            }
+            $no_urut = substr($kode->kode_reimbust, 5) + 1;
         }
         $urutan = str_pad($no_urut, 4, "0", STR_PAD_LEFT);
-        $bulan = substr($date, 3, 2);
+        $month = substr($date, 3, 2);
         $year = substr($date, 8, 2);
-        $data = 'r' . $year . $bulan . $urutan;
+        $data = 'r' . $year . $month . $urutan;
         echo json_encode($data);
     }
 
@@ -565,6 +562,20 @@ class Reimbust extends CI_Controller
 
     public function add()
     {
+        // INSERT KODE REIMBUST SAAT SUBMIT
+        $date = $this->input->post('tgl_pengajuan');
+        $kode = $this->M_reimbust->max_kode($date)->row();
+        if (empty($kode->kode_reimbust)) {
+            $no_urut = 1;
+        } else {
+            $bln = substr($kode->kode_reimbust, 3, 2);
+            $no_urut = substr($kode->kode_reimbust, 5) + 1;
+        }
+        $urutan = str_pad($no_urut, 4, "0", STR_PAD_LEFT);
+        $month = substr($date, 3, 2);
+        $year = substr($date, 8, 2);
+        $kode_reimbust = 'r' . $year . $month . $urutan;
+
         // Load library upload
         $this->load->library('upload');
 
@@ -596,7 +607,7 @@ class Reimbust extends CI_Controller
 
         // Inisialisasi data untuk tabel reimbust
         $data1 = array(
-            'kode_reimbust' => $this->input->post('kode_reimbust'),
+            'kode_reimbust' => $kode_reimbust,
             'kode_prepayment' => $this->input->post('kode_prepayment'),
             'id_user' => $id_user,
             'jabatan' => $jabatan,
