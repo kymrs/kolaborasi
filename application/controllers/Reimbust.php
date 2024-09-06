@@ -461,7 +461,7 @@ class Reimbust extends CI_Controller
             $date2 = '';
         }
         if ($data['master']->app2_date != null) {
-            $date2 = tanggal_indonesia($data['master']->app_date2);
+            $date2 = tanggal_indonesia($data['master']->app2_date);
         }
 
         // Menggunakan Cell() untuk mencetak teks tanggal dengan margin

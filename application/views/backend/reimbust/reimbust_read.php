@@ -118,6 +118,11 @@
         .clear {
             clear: both;
         }
+
+        /* Keterangan Field */
+        .keterangan-field {
+            margin-top: 20px;
+        }
     </style>
 </head>
 
@@ -232,6 +237,12 @@
                         <td id="menyetujui"></td>
                     </tr>
                 </table>
+            </div>
+            <div class="keterangan-field">
+                <span>Keterangan :</span>
+                <div id="keterangan">
+                    <!-- GENERATE KETERANGAN -->
+                </div>
             </div>
         </div>
     </div>
