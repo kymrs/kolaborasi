@@ -78,7 +78,8 @@ class Datadeklarasi extends CI_Controller
             $row[] = $field->jabatan;
             $row[] = $field->nama_dibayar;
             $row[] = $field->tujuan;
-            $row[] = $field->sebesar;
+            $row[] = 'Rp. ' . number_format($field->sebesar, 0, ',', '.');;
+            // $row[] = $field->sebesar;
             $row[] = $field->status;
             $data[] = $row;
         }

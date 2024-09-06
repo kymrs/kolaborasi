@@ -284,11 +284,12 @@
     <!-- Modal -->
     <div id="myModal" class="kwitansi-modal">
         <span class="close">&times;</span>
-        <img class="modal-content" id="img01">
+        <img class="modal-content-kwitansi" id="img01">
         <!-- <div id="caption"></div> -->
     </div>
 
     <!-- Include jQuery and Bootstrap JS -->
+    <?php $this->load->view('template/footer'); ?>
     <?php $this->load->view('template/script'); ?>
     <!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
@@ -344,7 +345,7 @@
                     $('#sifat_pelaporan').html(data['master']['sifat_pelaporan']);
                     $('#tgl_pengajuan').html(getFormattedDate(moment(data['master']['tgl_pengajuan']).format('DD MM YYYY')));
                     $('#tujuan').html(data['master']['tujuan']);
-                    $('#kode_reimbust').html(data['master']['kode_reimbust']);
+                    $('#kode_reimbust').html(data['master']['kode_prepayment'] ? data['master']['kode_prepayment'] : '-');
                     $('#jumlah_prepayment').html(data['master']['jumlah_prepayment'].replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
                     if (data['master']['app_keterangan'] != null) {
                         $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app_keterangan']}</span>`);
@@ -372,15 +373,29 @@
                         date = moment(data['master']['app_date']).format('D MMMM YYYY');
                     }
 
+                    // Memeriksa apakah data yang mengetahui ada
+                    if (data['master']['app_status'] != null) {
+                        nama = data['master']['app_name'];
+                        status = data['master']['app_status'];
+                        keterangan = data['master']['app_keterangan'];
+                        url = "<?php echo site_url('reimbust/approve') ?>";
+                        $('#note_id').append(`<p>* ${keterangan}</p>`);
+                    }
+                    if (data['master']['app_date'] == null) {
+                        date = '';
+                    }
+                    if (data['master']['app_date'] != null) {
+                        date = moment(data['master']['app_date']).format('D MMMM YYYY');
+                    }
+
                     // Memeriksa apakah data yang menyetujui ada
                     if (data['master']['app2_status'] != null) {
                         nama2 = data['master']['app2_name'];
                         status2 = data['master']['app2_status'];
                         keterangan2 = data['master']['app2_keterangan'];
-                        url = "<?php echo site_url('reimbust/approve2') ?>";
+                        url = "<?php echo site_url('prepayment/approve2') ?>";
                         $('#note_id').append(`<p>* ${keterangan2}</p>`);
                     }
-
                     if (data['master']['app2_date'] == null) {
                         date2 = '';
                     }
@@ -509,8 +524,8 @@
                     $('#mengetahui').text(`${data['master']['app_name']}`);
                     $('#menyetujui').text(`${data['master']['app2_name']}`);
                     $('#statusMelakukan').html('CREATED<br>' + `${moment(data['master']['created_at']).format('D MMMM YYYY')}`);
-                    $('#statusMengetahui').text(`${data['master']['app_status'].toUpperCase()}`);
-                    $('#statusMenyetujui').text(`${data['master']['app2_status'].toUpperCase()}`);
+                    $('#statusMengetahui').html(`<div>${data['master']['app_status'].toUpperCase()}<br><span>${date}</span></div></div>`);
+                    $('#statusMenyetujui').html(`<div>${data['master']['app2_status'].toUpperCase()}<br><span>${date2}</span></div></div>`);
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     alert('Error get data from ajax');

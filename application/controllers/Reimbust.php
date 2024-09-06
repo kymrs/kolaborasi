@@ -310,7 +310,7 @@ class Reimbust extends CI_Controller
         // Add table headers
         // Tambahkan "JUMLAH PREPAYMENT" dalam satu Cell
         $pdf->SetFont('Arial', '', 9);
-        $pdf->Cell(193, 7, 'No. Prepayment : ' . $data['master']->kode_reimbust, 0, 1, 'R');
+        $pdf->Cell(193, 7, 'No. Prepayment : ' . (!empty($data['master']->kode_prepayment) ? $data['master']->kode_prepayment : '-'), 0, 1, 'R');
 
         $pdf->SetFont('Arial', 'B', 10);
 
@@ -383,13 +383,90 @@ class Reimbust extends CI_Controller
         $pdf->Cell(50, 8.5, 'MENGETAHUI', 1, 0, 'C');
         $pdf->Cell(50, 8.5, 'MENYETUJUI', 1, 1, 'C');
 
-        $pdf->Cell(50, 18, '', 1, 0, 'C');
-        $pdf->Cell(50, 18, $data['app_status'], 1, 0, 'C');
-        $pdf->Cell(50, 18, $data['app2_status'], 1, 1, 'C');
+        // Logic tanggal bahasa indonesia
+        function tanggal_indonesia($tanggal)
+        {
+            $bulanInggris = array(
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+            );
+            $bulanIndonesia = array(
+                'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+            );
 
+            $bulan = date('F', strtotime($tanggal));
+            $tanggal_indo = date('d', strtotime($tanggal)) . ' ' . str_replace($bulanInggris, $bulanIndonesia, $bulan) . ' ' . date('Y', strtotime($tanggal));
+
+            return $tanggal_indo;
+        }
+
+        $pdf->Cell(50, 18, 'CREATED', 1, 0, 'C');
+
+        // Menyimpan posisi saat ini
+        $x = $pdf->GetX();
+        $y = $pdf->GetY();
+
+        // Mengatur posisi X dan Y dengan margin tambahan untuk teks tanggal
+        $pdf->SetXY($x + -50, $y + 5); // Menambahkan margin horizontal dan vertikal
+
+        // Menggunakan Cell() untuk mencetak teks tanggal dengan margin
+        $pdf->Cell(50, 18, tanggal_indonesia($data['master']->created_at), 0, 0, 'C');
+
+        // Kembali ke posisi sebelumnya untuk elemen berikutnya
+        $pdf->SetXY($x + 0, $y); // Mengatur posisi untuk elemen berikutnya jika diperlukan
+
+        // Approval 1
+        $pdf->Cell(50, 18, strtoupper($data['master']->app_status), 1, 0, 'C');
+
+        // Menyimpan posisi saat ini
+        $x = $pdf->GetX();
+        $y = $pdf->GetY();
+
+        // Mengatur posisi X dan Y dengan margin tambahan untuk teks tanggal
+        $pdf->SetXY($x + -50, $y + 5); // Menambahkan margin horizontal dan vertikal
+
+        if ($data['master']->app_date == null) {
+            $date = '';
+        }
+        if ($data['master']->app_date != null) {
+            $date = tanggal_indonesia($data['master']->app_date);
+        }
+
+        // Menggunakan Cell() untuk mencetak teks tanggal dengan margin
+        $pdf->Cell(50, 18, $date, 0, 0, 'C');
+
+        // Kembali ke posisi sebelumnya untuk elemen berikutnya
+        $pdf->SetXY($x + 0, $y); // Mengatur posisi untuk elemen berikutnya jika diperlukan
+
+        // Approval 2
+        $pdf->Cell(50, 18, strtoupper($data['master']->app2_status), 1, 0, 'C');
+
+        // Menyimpan posisi saat ini
+        $x = $pdf->GetX();
+        $y = $pdf->GetY();
+
+        // Mengatur posisi X dan Y dengan margin tambahan untuk teks tanggal
+        $pdf->SetXY($x + -50, $y + 5); // Menambahkan margin horizontal dan vertikal
+
+        if ($data['master']->app2_date == null) {
+            $date2 = '';
+        }
+        if ($data['master']->app2_date != null) {
+            $date2 = tanggal_indonesia($data['master']->app_date2);
+        }
+
+        // Menggunakan Cell() untuk mencetak teks tanggal dengan margin
+        $pdf->Cell(50, 18, $date2, 0, 0, 'C');
+
+        // Kembali ke posisi sebelumnya untuk elemen berikutnya
+        $pdf->SetXY($x + -150, $y + 18); // Mengatur posisi untuk elemen berikutnya jika diperlukan
+
+        // Menulis elemen selanjutnya dengan ukuran baris yang lebih kecil
         $pdf->Cell(50, 8.5, $data['user'], 1, 0, 'C');
         $pdf->Cell(50, 8.5, $data['master']->app_name, 1, 0, 'C');
         $pdf->Cell(50, 8.5, $data['master']->app2_name, 1, 1, 'C');
+
 
         // Output the PDF
         $pdf->Output('I', 'Reimbust - ' . $data['master']->kode_reimbust . '.pdf');
@@ -487,6 +564,9 @@ class Reimbust extends CI_Controller
         $pemakaian = $this->input->post('pemakaian');
         $tgl_nota = $this->input->post('tgl_nota');
         $jumlah = $this->input->post('jumlah');
+
+        // Bersihkan input untuk hanya mengambil angka
+        $jumlahClean = preg_replace('/\D/', '', $jumlah);
         $deklarasi = $this->input->post('deklarasi');
         $id_user = $this->session->userdata('id_user');
 
@@ -509,6 +589,7 @@ class Reimbust extends CI_Controller
         // Inisialisasi data untuk tabel reimbust
         $data1 = array(
             'kode_reimbust' => $this->input->post('kode_reimbust'),
+            'kode_prepayment' => $this->input->post('kode_prepayment'),
             'id_user' => $id_user,
             'jabatan' => $jabatan,
             'departemen' => $departemen,
@@ -561,7 +642,7 @@ class Reimbust extends CI_Controller
                 'reimbust_id' => $reimbust_id,
                 'pemakaian' => $pemakaian[$i],
                 'tgl_nota' => !empty($tgl_nota[$i]) ? date('Y-m-d', strtotime($tgl_nota[$i])) : date('Y-m-d'),
-                'jumlah' => $jumlah[$i],
+                'jumlah' => $jumlahClean[$i],
                 'kwitansi' => $kwitansi,
                 'deklarasi' => $deklarasi[$i]
             ];
@@ -581,7 +662,14 @@ class Reimbust extends CI_Controller
             'tgl_pengajuan' => date('Y-m-d', strtotime($this->input->post('tgl_pengajuan'))),
             'kode_reimbust' => $this->input->post('kode_reimbust'),
             'tujuan' => $this->input->post('tujuan'),
-            'jumlah_prepayment' => $this->input->post('jumlah_prepayment')
+            'jumlah_prepayment' => $this->input->post('jumlah_prepayment'),
+            'app_status' => 'waiting',
+            'app_date' => null,
+            'app_keterangan' => null,
+            'app2_status' => 'waiting',
+            'app2_date' => null,
+            'app2_keterangan' => null,
+            'status' => 'on-process'
         );
 
         $this->db->where('id', $this->input->post('id'));

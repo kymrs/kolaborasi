@@ -72,7 +72,6 @@ class M_reimbust extends CI_Model
             }
         }
 
-
         // $this->db->group_start()
         //     ->where('tbl_reimbust.id_user', $this->session->userdata('id_user'))
         //     ->or_where('tbl_reimbust.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") AND tbl_reimbust.app_status NOT IN ('rejected', 'approved') AND tbl_reimbust.status != 'revised'", FALSE)
