@@ -1,7 +1,7 @@
 <head>
     <?php $this->load->view('template/header'); ?>
     <style>
-        body .container {
+        body .container-main {
             font-family: Arial, Helvetica, sans-serif;
             background-color: #f4f6f9;
             padding: 0;
@@ -122,7 +122,7 @@
 
     <div class="row">
         <div class="col-lg-12">
-            <div class="container">
+            <div class="container-main">
                 <div class="form-container">
                     <div class="d-flex justify-content-end mb-3">
                         <?php if ($user->app_name == $app_name && !in_array($user->app_status, ['rejected', 'approved'])) { ?>

@@ -1,7 +1,7 @@
 <head>
     <?php $this->load->view('template/header'); ?>
     <style>
-        body .container {
+        body .container-main {
             font-family: 'Poppins', sans-serif;
             background-color: #f4f6f9;
             padding: 0;
@@ -12,7 +12,7 @@
             max-width: 800px;
             margin: 15px auto;
             padding: 25px;
-            border: 1px solid #e0e0e0;
+            border: 1px solid #e0e0 e0;
             border-radius: 10px;
             background-color: #ffffff;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
@@ -94,7 +94,7 @@
 
     <div class="row">
         <div class="col-lg-12">
-            <div class="container">
+            <div class="container-main">
                 <div class="form-container">
                     <div class="d-flex justify-content-end mb-3">
                         <?php if ($user->app_name == $app_name && !in_array($user->app_status, ['rejected', 'approved'])) { ?>

@@ -54,7 +54,10 @@ class Prepayment extends CI_Controller
                 $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
                 <a class="btn btn-success btn-circle btn-sm" href="prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } else {
-                if ($field->status == 'revised') {
+                if ($field->app_status == 'approved') {
+                    $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                <a class="btn btn-success btn-circle btn-sm" href="prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                } elseif ($field->status == 'revised') {
                     $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
                         <a href="prepayment/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
                         <a class="btn btn-success btn-circle btn-sm" href="prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
