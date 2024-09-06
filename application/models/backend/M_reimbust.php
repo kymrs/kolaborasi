@@ -72,7 +72,6 @@ class M_reimbust extends CI_Model
             }
         }
 
-
         // $this->db->group_start()
         //     ->where('tbl_reimbust.id_user', $this->session->userdata('id_user'))
         //     ->or_where('tbl_reimbust.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") AND tbl_reimbust.app_status NOT IN ('rejected', 'approved') AND tbl_reimbust.status != 'revised'", FALSE)
@@ -141,15 +140,12 @@ class M_reimbust extends CI_Model
         return $this->db->get($this->table2)->result_array();
     }
 
-    public function max_kode($date = null)
+    // UNTUK QUERY MENGAMBIL KODE UNTUK DIGENERATE DI CONTROLLER
+    public function max_kode($date)
     {
-        if ($date === null) {
-            $date = date('ym');
-        } else {
-            $date = date('ym', strtotime($date));
-        }
+        $formatted_date = date('ym', strtotime($date));
         $this->db->select('kode_reimbust');
-        $where = 'id=(SELECT max(id) FROM tbl_reimbust where SUBSTRING(kode_reimbust, 2, 4) = ' . $date . ')';
+        $where = 'id=(SELECT max(id) FROM tbl_reimbust where SUBSTRING(kode_reimbust, 2, 4) = ' . $formatted_date . ')';
         $this->db->where($where);
         $query = $this->db->get('tbl_reimbust');
         return $query;

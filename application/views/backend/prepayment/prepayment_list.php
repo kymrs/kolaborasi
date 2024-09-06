@@ -120,6 +120,17 @@
         });
     });
 
+    // Restore filter value from localStorage
+    var savedStatus = localStorage.getItem('appFilterStatus');
+    if (savedStatus) {
+        $('#appFilter').val(savedStatus).change();
+    }
+
+    // Save filter value to localStorage on change
+    $('#appFilter').on('change', function() {
+        localStorage.setItem('appFilterStatus', $(this).val());
+    });
+
     $('#appFilter').change(function() {
         table.ajax.reload(); // Muat ulang data di DataTable dengan filter baru
     });

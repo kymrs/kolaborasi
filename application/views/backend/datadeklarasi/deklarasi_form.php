@@ -30,7 +30,7 @@
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="kode_deklarasi">Kode Deklarasi</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="kode_deklarasi" name="kode_deklarasi" value="" required>
+                                        <input type="text" class="form-control" id="kode_deklarasi" name="kode_deklarasi" value="">
                                     </div>
                                 </div>
                             </div>
@@ -82,6 +82,38 @@
 <?php $this->load->view('template/script'); ?>
 
 <script>
+    $('#tgl_deklarasi').datepicker({
+        dateFormat: 'dd-mm-yy',
+        // minDate: new Date(),
+        // maxDate: new Date(),
+
+        // MENGENERATE KODE DEKLARASI SETELAH PILIH TANGGAL
+        onSelect: function(dateText) {
+            var id = dateText;
+            $('#tgl_deklarasi').removeClass("is-invalid");
+
+            // Menghapus label error secara manual jika ada
+            if ($("#tgl_deklarasi-error").length) {
+                $("#tgl_deklarasi-error").remove(); // Menghapus label error
+            }
+            $.ajax({
+                url: "<?php echo site_url('datadeklarasi/generate_kode') ?>",
+                type: "POST",
+                data: {
+                    "date": dateText
+                },
+                dataType: "JSON",
+                success: function(data) {
+                    $('#kode_deklarasi').val(data.toUpperCase());
+                    $('#kode').val(data);
+                },
+                error: function(error) {
+                    alert("error" + error);
+                }
+            });
+        }
+    });
+
     $(document).ready(function() {
         var id = $('#id').val();
         var aksi = $('#aksi').val();
@@ -168,6 +200,9 @@
                 tgl_deklarasi: {
                     required: true,
                 },
+                // kode_deklarasi: {
+                //     required: true,
+                // },
                 nama_pengajuan: {
                     required: true,
                 },
@@ -192,8 +227,11 @@
             },
             messages: {
                 tgl_deklarasi: {
-                    required: "tanggal Harus Diisi",
+                    required: "Tanggal Harus Diisi",
                 },
+                // kode_deklarasi: {
+                //     required: "Kode Harus Diisi",
+                // },
                 nama_pengajuan: {
                     required: "Nama Yang Mengajukan Harus Diisi",
                 },
@@ -230,38 +268,6 @@
                 $(element).removeClass('is-invalid'); // Hapus kelas jika input valid
             },
             focusInvalid: false, // Disable auto-focus on the first invalid field
-        });
-
-        $('#tgl_deklarasi').datepicker({
-            dateFormat: 'dd-mm-yy',
-            // minDate: new Date(),
-            // maxDate: new Date(),
-
-            // MENGENERATE KODE DEKLARASI SETELAH PILIH TANGGAL
-            onSelect: function(dateText) {
-                var id = dateText;
-                $('#tgl_deklarasi').removeClass("is-invalid");
-
-                // Menghapus label error secara manual jika ada
-                if ($("#tgl_deklarasi-error").length) {
-                    $("#tgl_deklarasi-error").remove(); // Menghapus label error
-                }
-                $.ajax({
-                    url: "<?php echo site_url('datadeklarasi/generate_kode') ?>",
-                    type: "POST",
-                    data: {
-                        "date": dateText
-                    },
-                    dataType: "JSON",
-                    success: function(data) {
-                        $('#kode_deklarasi').val(data.toUpperCase());
-                        $('#kode').val(data);
-                    },
-                    error: function(error) {
-                        alert("error" + error);
-                    }
-                });
-            }
         });
 
         // MEMBUAT TAMPILAN HARGA MENJADI ADA TITIK

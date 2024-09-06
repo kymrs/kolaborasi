@@ -54,7 +54,10 @@ class Prepayment extends CI_Controller
                 $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
                 <a class="btn btn-success btn-circle btn-sm" href="prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } else {
-                if ($field->status == 'revised') {
+                if ($field->app_status == 'approved') {
+                    $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                <a class="btn btn-success btn-circle btn-sm" href="prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                } elseif ($field->status == 'revised') {
                     $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
                         <a href="prepayment/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
                         <a class="btn btn-success btn-circle btn-sm" href="prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
@@ -410,6 +413,9 @@ class Prepayment extends CI_Controller
 
         // Format tgl_prepayment to Indonesian date
         $formattedDate = $this->formatIndonesianDate($data['master']->tgl_prepayment);
+        $created_at = $this->formatIndonesianDate($data['master']->created_at);
+        $app_date = $this->formatIndonesianDate($data['master']->app_date);
+        $app2_date = $this->formatIndonesianDate($data['master']->app2_date);
 
         // Start FPDF
         $pdf = new FPDF('P', 'mm', 'A4');
@@ -481,30 +487,87 @@ class Prepayment extends CI_Controller
         $pdf->Cell(135, 10, number_format($data['master']->total_nominal, 0, ',', '.'), 1, 1, 'C');
         $pdf->Ln(10);
 
-        // Approval Section
-        $pdf->SetFont('Arial', 'B', 12);
-        $pdf->Cell(45, 10, 'Yang melakukan', 1, 0, 'C');
-        $pdf->Cell(45, 10, 'Mengetahui', 1, 0, 'C');
-        $pdf->Cell(45, 10, 'Menyetujui', 1, 1, 'C');
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(50, 8.5, 'YANG MELAKUKAN', 1, 0, 'C');
+        $pdf->Cell(50, 8.5, 'MENGETAHUI', 1, 0, 'C');
+        $pdf->Cell(50, 8.5, 'MENYETUJUI', 1, 1, 'C');
 
-        $pdf->SetFont('Arial', '', 12);
-        $pdf->Cell(45, 25, "CREATED", 1, 0, 'C');
-        $pdf->Cell(45, 25, $data['app_status'], 1, 0, 'C');
-        $pdf->Cell(45, 25, $data['app2_status'], 1, 1, 'C');
-        $pdf->Ln(0);
+        $pdf->Cell(50, 18, 'CREATED', 1, 0, 'C');
 
-        $pdf->Cell(45, 10, $data['user'], 1, 0, 'C');
-        $pdf->Cell(45, 10, $data['master']->app_name, 1, 0, 'C');
-        $pdf->Cell(45, 10, $data['master']->app_name, 1, 1, 'C');
+        // Menyimpan posisi saat ini
+        $x = $pdf->GetX();
+        $y = $pdf->GetY();
+
+        // Mengatur posisi X dan Y dengan margin tambahan untuk teks tanggal
+        $pdf->SetXY($x + -50, $y + 5); // Menambahkan margin horizontal dan vertikal
+
+        // Menggunakan Cell() untuk mencetak teks tanggal dengan margin
+        $pdf->Cell(50, 18, $created_at, 0, 0, 'C');
+
+        // Kembali ke posisi sebelumnya untuk elemen berikutnya
+        $pdf->SetXY($x + 0, $y); // Mengatur posisi untuk elemen berikutnya jika diperlukan
+
+        // Approval 1
+        $pdf->Cell(50, 18, strtoupper($data['master']->app_status), 1, 0, 'C');
+
+        // Menyimpan posisi saat ini
+        $x = $pdf->GetX();
+        $y = $pdf->GetY();
+
+        // Mengatur posisi X dan Y dengan margin tambahan untuk teks tanggal
+        $pdf->SetXY($x + -50, $y + 5); // Menambahkan margin horizontal dan vertikal
+
+        if ($data['master']->app_date == null) {
+            $date = '';
+        }
+        if ($data['master']->app_date != null) {
+            $date = $app_date;
+        }
+
+        // Menggunakan Cell() untuk mencetak teks tanggal dengan margin
+        $pdf->Cell(50, 18, $date, 0, 0, 'C');
+
+        // Kembali ke posisi sebelumnya untuk elemen berikutnya
+        $pdf->SetXY($x + 0, $y); // Mengatur posisi untuk elemen berikutnya jika diperlukan
+
+        // Approval 2
+        $pdf->Cell(50, 18, strtoupper($data['master']->app2_status), 1, 0, 'C');
+
+        // Menyimpan posisi saat ini
+        $x = $pdf->GetX();
+        $y = $pdf->GetY();
+
+        // Mengatur posisi X dan Y dengan margin tambahan untuk teks tanggal
+        $pdf->SetXY($x + -50, $y + 5); // Menambahkan margin horizontal dan vertikal
+
+        if ($data['master']->app2_date == null) {
+            $date2 = '';
+        }
+        if ($data['master']->app2_date != null) {
+            $date2 = $app2_date;
+        }
+
+        // Menggunakan Cell() untuk mencetak teks tanggal dengan margin
+        $pdf->Cell(50, 18, $date2, 0, 0, 'C');
+
+        // Kembali ke posisi sebelumnya untuk elemen berikutnya
+        $pdf->SetXY($x + -150, $y + 18); // Mengatur posisi untuk elemen berikutnya jika diperlukan
+
+        // Menulis elemen selanjutnya dengan ukuran baris yang lebih kecil
+        $pdf->Cell(50, 8.5, $data['user'], 1, 0, 'C');
+        $pdf->Cell(50, 8.5, $data['master']->app_name, 1, 0, 'C');
+        $pdf->Cell(50, 8.5, $data['master']->app2_name, 1, 1, 'C');
+
 
         // Add keterangan
         $pdf->Ln(5);
         $pdf->SetFont('Arial', '', 12);
         $pdf->Cell(40, 10, 'Keterangan:', 0, 0);
         $pdf->Ln(8);
-        if ($data['master']->app_keterangan != null) {
+        if ($data['master']->app_keterangan != null && $data['master']->app_keterangan != '') {
             $pdf->Cell(60, 10, '*' . $data['master']->app_keterangan, 0, 1);
-        } elseif ($data['master']->app2_keterangan != null) {
+        }
+        if ($data['master']->app2_keterangan != null && $data['master']->app2_keterangan != '') {
             $pdf->Cell(60, 10, '*' . $data['master']->app2_keterangan, 0, 1);
         }
 

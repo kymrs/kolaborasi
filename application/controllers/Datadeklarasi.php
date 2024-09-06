@@ -56,6 +56,10 @@ class Datadeklarasi extends CI_Controller
                 $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
                 <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } else {
+                if ($field->app_status == 'approved') {
+                    $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                                <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                }
                 if ($field->app_status == 'revised' || $field->app2_status == 'revised') {
                     $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
                         <a href="datadeklarasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
@@ -78,7 +82,8 @@ class Datadeklarasi extends CI_Controller
             $row[] = $field->jabatan;
             $row[] = $field->nama_dibayar;
             $row[] = $field->tujuan;
-            $row[] = $field->sebesar;
+            $row[] = 'Rp. ' . number_format($field->sebesar, 0, ',', '.');;
+            // $row[] = $field->sebesar;
             $row[] = $field->status;
             $data[] = $row;
         }
@@ -339,11 +344,17 @@ class Datadeklarasi extends CI_Controller
 
         // Format tgl_prepayment to Indonesian date
         $formattedDate = $this->formatIndonesianDate($data['master']->tgl_deklarasi);
+        $created_at = $this->formatIndonesianDate($data['master']->created_at);
+        $app_date = $this->formatIndonesianDate($data['master']->app_date);
+        $app2_date = $this->formatIndonesianDate($data['master']->app2_date);
 
         // Start FPDF
         $pdf = new FPDF('P', 'mm', 'A4');
         $pdf->SetTitle('Form Deklarasi');
         $pdf->AddPage('P', 'Letter');
+
+        // Logo
+        $pdf->Image(base_url('') . '/assets/backend/img/reimbust/kwitansi/default.jpg', 8, -3, 46, 46);
 
         // Set font for title
         $pdf->SetFont('Arial', 'B', 14);
@@ -377,37 +388,88 @@ class Datadeklarasi extends CI_Controller
         $pdf->Cell(40, 10, 'Sebesar:', 0, 0);
         $pdf->Cell(60, 10, number_format($data['master']->sebesar, 0, ',', '.'), 0, 1);
 
-        // Add Signature Section
-        $pdf->Ln(10);
-        $pdf->SetFont('Arial', 'B', 12);
-        $pdf->SetFillColor(0, 123, 255); // Background color for headers
-        $pdf->SetTextColor(255, 255, 255); // White text color
-        $pdf->Cell(60, 10, 'Yang melakukan', 1, 0, 'C', true);
-        $pdf->Cell(60, 10, 'Mengetahui', 1, 0, 'C', true);
-        $pdf->Cell(60, 10, 'Menyetujui', 1, 1, 'C', true);
+        //APPROVAL
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(50, 8.5, 'YANG MELAKUKAN', 1, 0, 'C');
+        $pdf->Cell(50, 8.5, 'MENGETAHUI', 1, 0, 'C');
+        $pdf->Cell(50, 8.5, 'MENYETUJUI', 1, 1, 'C');
 
-        // Empty cells for signatures
-        $pdf->SetFont('Arial', 'B', 12);
-        $pdf->SetTextColor(0, 0, 0); // Reset text color
-        $pdf->Cell(60, 20, '', 1, 0, 'C');
-        $pdf->Cell(60, 20, $data['app_status'], 1, 0, 'C');
-        $pdf->Cell(60, 20, $data['app2_status'], 1, 1, 'C');
+        $pdf->Cell(50, 18, 'CREATED', 1, 0, 'C');
 
-        // Empty cells for signatures
-        $pdf->SetFont('Arial', '', 12);
-        $pdf->SetTextColor(0, 0, 0); // Reset text color
-        $pdf->Cell(60, 8, $data['user'], 1, 0, 'C');
-        $pdf->Cell(60, 8, $data['master']->app_name, 1, 0, 'C');
-        $pdf->Cell(60, 8, $data['master']->app2_name, 1, 1, 'C');
+        // Menyimpan posisi saat ini
+        $x = $pdf->GetX();
+        $y = $pdf->GetY();
+
+        // Mengatur posisi X dan Y dengan margin tambahan untuk teks tanggal
+        $pdf->SetXY($x + -50, $y + 5); // Menambahkan margin horizontal dan vertikal
+
+        // Menggunakan Cell() untuk mencetak teks tanggal dengan margin
+        $pdf->Cell(50, 18, $created_at, 0, 0, 'C');
+
+        // Kembali ke posisi sebelumnya untuk elemen berikutnya
+        $pdf->SetXY($x + 0, $y); // Mengatur posisi untuk elemen berikutnya jika diperlukan
+
+        // Approval 1
+        $pdf->Cell(50, 18, strtoupper($data['master']->app_status), 1, 0, 'C');
+
+        // Menyimpan posisi saat ini
+        $x = $pdf->GetX();
+        $y = $pdf->GetY();
+
+        // Mengatur posisi X dan Y dengan margin tambahan untuk teks tanggal
+        $pdf->SetXY($x + -50, $y + 5); // Menambahkan margin horizontal dan vertikal
+
+        if ($data['master']->app_date == null) {
+            $date = '';
+        }
+        if ($data['master']->app_date != null) {
+            $date = $app_date;
+        }
+
+        // Menggunakan Cell() untuk mencetak teks tanggal dengan margin
+        $pdf->Cell(50, 18, $date, 0, 0, 'C');
+
+        // Kembali ke posisi sebelumnya untuk elemen berikutnya
+        $pdf->SetXY($x + 0, $y); // Mengatur posisi untuk elemen berikutnya jika diperlukan
+
+        // Approval 2
+        $pdf->Cell(50, 18, strtoupper($data['master']->app2_status), 1, 0, 'C');
+
+        // Menyimpan posisi saat ini
+        $x = $pdf->GetX();
+        $y = $pdf->GetY();
+
+        // Mengatur posisi X dan Y dengan margin tambahan untuk teks tanggal
+        $pdf->SetXY($x + -50, $y + 5); // Menambahkan margin horizontal dan vertikal
+
+        if ($data['master']->app2_date == null) {
+            $date2 = '';
+        }
+        if ($data['master']->app2_date != null) {
+            $date2 = $app2_date;
+        }
+
+        // Menggunakan Cell() untuk mencetak teks tanggal dengan margin
+        $pdf->Cell(50, 18, $date2, 0, 0, 'C');
+
+        // Kembali ke posisi sebelumnya untuk elemen berikutnya
+        $pdf->SetXY($x + -150, $y + 18); // Mengatur posisi untuk elemen berikutnya jika diperlukan
+
+        // Menulis elemen selanjutnya dengan ukuran baris yang lebih kecil
+        $pdf->Cell(50, 8.5, $data['user'], 1, 0, 'C');
+        $pdf->Cell(50, 8.5, $data['master']->app_name, 1, 0, 'C');
+        $pdf->Cell(50, 8.5, $data['master']->app2_name, 1, 1, 'C');
+
 
         // Add keterangan
         $pdf->Ln(5);
         $pdf->SetFont('Arial', '', 12);
         $pdf->Cell(40, 10, 'Keterangan:', 0, 0);
         $pdf->Ln(8);
-        if ($data['master']->app_keterangan != null) {
+        if ($data['master']->app_keterangan != null && $data['master']->app_keterangan != '') {
             $pdf->Cell(60, 10, '*' . $data['master']->app_keterangan, 0, 1);
-        } elseif ($data['master']->app2_keterangan != null) {
+        }
+        if ($data['master']->app2_keterangan != null && $data['master']->app2_keterangan != '') {
             $pdf->Cell(60, 10, '*' . $data['master']->app2_keterangan, 0, 1);
         }
 
