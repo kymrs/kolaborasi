@@ -73,7 +73,7 @@ class Reimbust extends CI_Controller
             $row = array();
             $row[] = $no;
             $row[] = $action;
-            $row[] = $field->kode_reimbust;
+            $row[] = strtoupper($field->kode_reimbust);
             $row[] = $field->name;
             $row[] = $field->jabatan;
             $row[] = $field->departemen;
