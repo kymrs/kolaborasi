@@ -204,7 +204,8 @@
                         <input type="hidden" id="hidden_nominal${rowCount}" name="hidden_nominal[${rowCount}]" value="">
                     </td>
                     <td><input type="text" class="form-control" name="keterangan[${rowCount}]" value="" placeholder="Input here..." /></td>
-                    <td><span class="btn btn-sm delete-btn btn-danger" data-id="${rowCount}">Delete</span></td>
+                    
+                    <td><span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span></td>
                 </tr>
                 `;
             $('#input-container').append(row);
@@ -223,6 +224,13 @@
             $("#form").validate().settings.rules[`nominal[${rowCount}]`] = {
                 required: true
             };
+            $("#form").validate().settings.messages[`rincian[${rowCount}]`] = {
+                required: "Rincian harus diisi"
+            };
+            $("#form").validate().settings.messages[`nominal[${rowCount}]`] = {
+                required: "Nominal harus diisi"
+            };
+
             // $("#form").validate().settings.rules[`keterangan[${rowCount}]`] = {
             //     required: true
             // };
@@ -478,17 +486,17 @@
             },
             messages: {
                 tgl_prepayment: {
-                    required: "Tanggal is required",
+                    required: "Tanggal harus diisi",
                 },
                 nama: {
-                    required: "Nama is required",
+                    required: "Nama harus diisi",
                 },
 
                 prepayment: {
-                    required: "Prepayment is required",
+                    required: "Prepayment harus diisi",
                 },
                 tujuan: {
-                    required: "Tujuan is required",
+                    required: "Tujuan harus diisi",
                 }
             },
             errorPlacement: function(error, element) {
