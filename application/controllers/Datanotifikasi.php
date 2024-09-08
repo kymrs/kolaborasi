@@ -14,7 +14,7 @@ class Datanotifikasi extends CI_Controller
     public function index()
     {
         $data['title'] = "backend/datanotifikasi/notifikasi_list";
-        $data['titleview'] = "Data Notifikasi";
+        $data['titleview'] = "Notifikasi";
         $name = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $this->session->userdata('id_user'))

@@ -14,7 +14,7 @@ class Datadeklarasi extends CI_Controller
     public function index()
     {
         $data['title'] = "backend/datadeklarasi/deklarasi_list";
-        $data['titleview'] = "Data Deklarasi";
+        $data['titleview'] = "Deklarasi";
         $name = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $this->session->userdata('id_user'))
