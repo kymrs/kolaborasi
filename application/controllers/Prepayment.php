@@ -320,22 +320,18 @@ class Prepayment extends CI_Controller
             'app_date' => date('Y-m-d H:i:s'),
         );
 
+        // UPDATE STATUS DEKLARASI
         if ($this->input->post('app_status') === 'revised') {
             $data['status'] = 'revised';
+        } elseif ($this->input->post('app_status') === 'approved') {
+            $data['status'] = 'on-process';
+        } elseif ($this->input->post('app_status') === 'rejected') {
+            $data['status'] = 'rejected';
         }
 
         //UPDATE APPROVAL PERTAMA
         $this->db->where('id', $this->input->post('hidden_id'));
         $this->db->update('tbl_prepayment', $data);
-
-        // UPDATE STATUS PREPAYMENT
-        if ($this->input->post('app_status') == 'rejected') {
-            $this->db->where('id', $this->input->post('hidden_id'));
-            $this->db->update('tbl_prepayment', ['status' => 'rejected']);
-        } elseif ($this->input->post('app_status') == 'revised') {
-            $this->db->where('id', $this->input->post('hidden_id'));
-            $this->db->update('tbl_prepayment', ['status' => 'revised']);
-        }
 
         echo json_encode(array("status" => TRUE));
     }
@@ -348,25 +344,19 @@ class Prepayment extends CI_Controller
             'app2_date' => date('Y-m-d H:i:s'),
         );
 
+        // UPDATE STATUS DEKLARASI
         if ($this->input->post('app2_status') === 'revised') {
             $data['status'] = 'revised';
+        } elseif ($this->input->post('app2_status') === 'approved') {
+            $data['status'] = 'approved';
+        } elseif ($this->input->post('app2_status') === 'rejected') {
+            $data['status'] = 'rejected';
         }
 
         // UPDATE APPROVAL 2
         $this->db->where('id', $this->input->post('hidden_id'));
         $this->db->update('tbl_prepayment', $data);
 
-        // UPDATE STATUS PREPAYMENT
-        if ($this->input->post('app2_status') == 'rejected') {
-            $this->db->where('id', $this->input->post('hidden_id'));
-            $this->db->update('tbl_prepayment', ['status' => 'rejected']);
-        } elseif ($this->input->post('app2_status') == 'rejected') {
-            $this->db->where('id', $this->input->post('revised'));
-            $this->db->update('tbl_prepayment', ['status' => 'revised']);
-        } elseif ($this->input->post('app2_status') == 'approved') {
-            $this->db->where('id', $this->input->post('hidden_id'));
-            $this->db->update('tbl_prepayment', ['status' => 'approved']);
-        }
         echo json_encode(array("status" => TRUE));
     }
 

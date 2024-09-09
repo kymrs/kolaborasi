@@ -333,6 +333,7 @@ class Datanotifikasi extends CI_Controller
         $data['app_status'] = strtoupper($data['master']->app_status);
         $data['app2_status'] = strtoupper($data['master']->app2_status);
 
+        $formattedDate = $this->formatIndonesianDate($data['master']->tgl_notifikasi);
         $created_at = $this->formatIndonesianDate($data['master']->created_at);
         $app_date = $this->formatIndonesianDate($data['master']->app_date);
         $app2_date = $this->formatIndonesianDate($data['master']->app2_date);
@@ -371,7 +372,7 @@ class Datanotifikasi extends CI_Controller
         $pdf->Ln(5);
         $pdf->SetFont('Arial', '', 12);
         $pdf->Cell(40, 10, 'Tanggal:', 0, 0);
-        $pdf->Cell(60, 10, $data['master']->tgl_notifikasi, 0, 1);
+        $pdf->Cell(60, 10, $formattedDate, 0, 1);
         $pdf->Cell(40, 10, 'Waktu:', 0, 0);
         $pdf->Cell(60, 10, $data['master']->waktu, 0, 1);
         $pdf->Cell(40, 10, 'Alasan:', 0, 0);
@@ -383,8 +384,7 @@ class Datanotifikasi extends CI_Controller
 
         if ($data['master']->app_status == 'approved') {
             $status = 'Diizinkan';
-        }
-        if ($data['master']->app_status == 'rejected') {
+        } elseif ($data['master']->app_status == 'rejected') {
             $status = 'Tidak Disetujui';
         } else {
             $status = '';

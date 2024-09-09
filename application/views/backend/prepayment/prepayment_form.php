@@ -373,7 +373,7 @@
                         `;
                             $('#input-container').append(row);
                             // Tambahkan format ke input nominal yang baru
-                            formatJumlahInput(`#nominal-${index}`);
+                            formatJumlahInput(`#nominal-${index+1}`);
 
                             //VALIDASI ROW YANG TELAH DI APPEND
                             $("#form").validate().settings.rules[`rincian[${index + 1}]`] = {
