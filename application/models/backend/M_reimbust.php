@@ -65,6 +65,7 @@ class M_reimbust extends CI_Model
             } elseif ($_POST['tab'] == 'employee') {
                 $this->db->group_start()
                     ->where('tbl_reimbust.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                    // ->where('tbl_reimbust.app_status !=', 'approved')
                     ->where('tbl_reimbust.id_user !=', $this->session->userdata('id_user'))
                     ->or_where('tbl_reimbust.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_reimbust.app_status = 'approved'", FALSE)
                     ->where('tbl_reimbust.id_user !=', $this->session->userdata('id_user'))

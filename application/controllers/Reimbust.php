@@ -36,8 +36,7 @@ class Reimbust extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $status = $this->input->post('status'); // Ambil status dari permintaan POST
-        $list = $this->M_reimbust->get_datatables($status);
+        $list = $this->M_reimbust->get_datatables();
         $data = array();
         $no = $_POST['start'];
 
