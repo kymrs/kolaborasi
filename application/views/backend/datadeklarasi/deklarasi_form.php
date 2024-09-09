@@ -239,7 +239,7 @@
                     required: "Jabatan is required",
                 },
                 nama_dibayar: {
-                    required: "Nama Yang Menerima Pembayaran is required",
+                    required: "Nama Penerima is required",
                 },
                 tujuan: {
                     required: "Tujuan is required",

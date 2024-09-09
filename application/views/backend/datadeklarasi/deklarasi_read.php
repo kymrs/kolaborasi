@@ -97,7 +97,7 @@
             <div class="container-main">
                 <div class="form-container">
                     <div class="d-flex justify-content-end mb-3">
-                        <?php if ($user->app_name == $app_name && !in_array($user->app_status, ['rejected', 'approved'])) { ?>
+                        <?php if ($user->app_name == $app_name && !in_array($user->status, ['approved'])) { ?>
                             <a class="btn btn-warning btn-sm mr-2" id="appBtn" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
                         <?php } elseif ($user->app2_name == $app2_name && !in_array($user->app2_status, ['approved', 'rejected'])) { ?>
                             <a class="btn btn-warning btn-sm mr-2" id="appBtn2" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
@@ -107,7 +107,7 @@
 
                     <!-- Header Section -->
                     <div class="header">
-                        <img src="<?= base_url('assets/backend/img/logo.jpg') ?>" alt="" class="logo">
+                        <img src="<?= base_url('assets/backend/img/reimbust/kwitansi/default.jpg') ?>" alt="" class="logo">
                         <div class="title">
                             <h1>PT. MANDIRI CIPTA SEJAHTERA</h1>
                             <h2>FORM DEKLARASI</h2>
@@ -175,7 +175,7 @@
                     </div>
 
                     <div class="keterangan-field">
-                        <span>Keterangan :</span>
+                        <!-- <span>Keterangan :</span> -->
                         <div id="keterangan">
                             <!-- GENERATE KETERANGAN -->
                         </div>
@@ -250,17 +250,78 @@
         });
 
         $('#appBtn').click(function() {
-            $('#app_name').attr('name', 'app_name');
             $('#app_keterangan').attr('name', 'app_keterangan');
             $('#app_status').attr('name', 'app_status');
             $('#approvalForm').attr('action', '<?= site_url('datadeklarasi/approve') ?>');
+
+            // Additional logic to dynamically load data into the form
+            $.ajax({
+                url: "<?php echo site_url('datadeklarasi/edit_data') ?>/" + id,
+                type: "GET",
+                dataType: "JSON",
+                success: function(data) {
+                    // DATA APPROVAL PREPAYMENT
+                    var nama, status, Keterangan;
+
+                    // Memeriksa apakah data yang mengetahui ada
+                    if (data['master']['app_status'] != null) {
+                        nama = data['master']['app_name'];
+                        status = data['master']['app_status'];
+                        keterangan = data['master']['app_keterangan'];
+                        url = "<?php echo site_url('prepayment/approve') ?>";
+                        $('#app_status').val(status);
+                        $('#app_keterangan').val(keterangan);
+                        // $('#note_id').append(`<p>* ${keterangan}</p>`);
+                    }
+                    if (data['master']['app_date'] == null) {
+                        date = '';
+                    }
+                    if (data['master']['app_date'] != null) {
+                        date = data['master']['app_date'];
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    alert('Error get data from ajax');
+                }
+            });
         });
 
         $('#appBtn2').click(function() {
-            $('#app_name').attr('name', 'app2_name');
-            $('#app_keterangan').attr('name', 'app2_keterangan');
-            $('#app_status').attr('name', 'app2_status');
+            $('#app_keterangan').attr('name', 'app2_keterangan').attr('id', 'app2_keterangan');
+            $('#app_status').attr('name', 'app2_status').attr('id', 'app2_status');
             $('#approvalForm').attr('action', '<?= site_url('datadeklarasi/approve2') ?>');
+
+            // Additional logic to dynamically load data into the form
+            $.ajax({
+                url: "<?php echo site_url('datadeklarasi/edit_data') ?>/" + id,
+                type: "GET",
+                dataType: "JSON",
+                success: function(data) {
+                    // DATA APPROVAL PREPAYMENT
+                    var nama2, status2, keterangan2, url;
+
+                    // Memeriksa apakah data yang menyetujui ada
+                    if (data['master']['app2_status'] != null) {
+                        nama2 = data['master']['app2_name'];
+                        status2 = data['master']['app2_status'];
+                        keterangan2 = data['master']['app2_keterangan'];
+                        url = "<?php echo site_url('prepayment/approve2') ?>";
+                        $('#app2_status').val(status2);
+                        $('#app2_keterangan').val(keterangan2);
+                        // $('#note_id').append(`<p>* ${keterangan2}</p>`);
+                    }
+                    if (data['master']['app2_date'] == null) {
+                        date2 = '';
+                    }
+                    if (data['master']['app2_date'] != null) {
+                        date2 = data['master']['app2_date'];
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    alert('Error get data from ajax');
+                }
+            });
+
         });
 
         // Handle the approval button click event
@@ -281,7 +342,6 @@
                 moment.locale('id');
                 // Format tampilan dengan pemisah ribuan
                 formatedNumber = data['master']['sebesar'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-                console.log(data);
                 // DATA PREPAYMENT
                 $('#tanggalTxt').text(moment(data['master']['tgl_deklarasi']).format('DD MMMM YYYY'));
                 $('#namaTxt').text(data['nama']);
@@ -289,49 +349,39 @@
                 $('#nama2Txt').text(data['master']['nama_dibayar']);
                 $('#tujuanTxt').text(data['master']['tujuan']);
                 $('#sebesarTxt').text(formatedNumber);
-                if (data['master']['app_keterangan'] != '') {
-                    $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app_keterangan']}</span>`);
+                if ((data['master']['app_keterangan'] !== null && data['master']['app_keterangan'] !== '') ||
+                    (data['master']['app2_keterangan'] !== null && data['master']['app2_keterangan'] !== '')) {
+                    $('#keterangan').append(`<span>Keterangan :</span>`);
                 }
-                if (data['master']['app2_keterangan'] != '') {
-                    $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app2_keterangan']}</span>`);
+                if (data['master']['app_keterangan'] != '' && data['master']['app_keterangan'] != null) {
+                    $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app_keterangan']}(${data['master']['app_name']})</span>`);
+                }
+                if (data['master']['app2_keterangan'] != '' && data['master']['app2_keterangan'] != null) {
+                    $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app2_keterangan']}(${data['master']['app2_name']})</span>`);
                 }
                 // DATA APPROVAL PREPAYMENT
                 var nama, status, keterangan, nama2, status2, keterangan2, url;
 
                 // Memeriksa apakah data yang mengetahui ada
-                if (data['master']['app_status'] != null) {
-                    nama = data['master']['app_name'];
-                    status = data['master']['app_status'];
-                    keterangan = data['master']['app_keterangan'];
-                    url = "<?php echo site_url('prepayment/approve') ?>";
-                    $('#note_id').append(`<p>* ${keterangan}</p>`);
-                }
                 if (data['master']['app_date'] == null) {
                     date = '';
                 }
                 if (data['master']['app_date'] != null) {
-                    date = moment(data['master']['app_date']).format('D MMMM YYYY');
+                    date = data['master']['app_date'];
                 }
 
                 // Memeriksa apakah data yang menyetujui ada
-                if (data['master']['app2_status'] != null) {
-                    nama2 = data['master']['app2_name'];
-                    status2 = data['master']['app2_status'];
-                    keterangan2 = data['master']['app2_keterangan'];
-                    url = "<?php echo site_url('prepayment/approve2') ?>";
-                    $('#note_id').append(`<p>* ${keterangan2}</p>`);
-                }
                 if (data['master']['app2_date'] == null) {
                     date2 = '';
                 }
                 if (data['master']['app2_date'] != null) {
-                    date2 = moment(data['master']['app2_date']).format('D MMMM YYYY');
+                    date2 = data['master']['app2_date'];
                 }
 
                 $('#melakukan').html(`<div class="signature-text text-center">${data['nama']}</div>`);
                 $('#mengetahui').html(`<div class="signature-text text-center">${data['master']['app_name']}</div>`);
                 $('#menyetujui').html(`<div class="signature-text text-center">${data['master']['app2_name']}</div>`);
-                $('#statusMelakukan').html(`<div class="signature-text text-center">CREATED<br><span>${moment(data['master']['created_at']).format('D MMMM YYYY')}</span></div>`);
+                $('#statusMelakukan').html(`<div class="signature-text text-center">CREATED<br><span>${data['master']['created_at']}</span></div>`);
                 $('#statusMengetahui').html(`<div class="signature-text text-center">${data['master']['app_status'].toUpperCase()}<br><span>${date}</span></div>`);
                 $('#statusMenyetujui').html(`<div class="signature-text text-center">${data['master']['app2_status'].toUpperCase()}<br><span>${date2}</span></div>`);
 
@@ -405,7 +455,5 @@
                 });
             }
         });
-
-        $('#keterangan').text('This prepayment is requested for the ongoing project development phase.');
     });
 </script>

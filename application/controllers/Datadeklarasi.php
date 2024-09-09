@@ -37,8 +37,7 @@ class Datadeklarasi extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $status = $this->input->post('status'); // Ambil status dari permintaan POST
-        $list = $this->M_datadeklarasi->get_datatables($status);
+        $list = $this->M_datadeklarasi->get_datatables();
         $data = array();
         $no = $_POST['start'];
 
@@ -55,11 +54,10 @@ class Datadeklarasi extends CI_Controller
             } elseif (in_array($field->status, ['rejected', 'approved'])) {
                 $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
                 <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+            } elseif ($field->app_status == 'approved') {
+                $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                            <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } else {
-                if ($field->app_status == 'approved') {
-                    $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                                <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
-                }
                 if ($field->app_status == 'revised' || $field->app2_status == 'revised') {
                     $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
                         <a href="datadeklarasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
@@ -120,7 +118,7 @@ class Datadeklarasi extends CI_Controller
     function add_form()
     {
         $data['id'] = 0;
-        $data['title_view'] = "Data deklarasi Form";
+        $data['title_view'] = "Deklarasi Form";
         $data['aksi'] = 'update';
         $data['title'] = 'backend/datadeklarasi/deklarasi_form';
         $this->load->view('backend/home', $data);
@@ -176,7 +174,7 @@ class Datadeklarasi extends CI_Controller
         $urutan = str_pad($no_urut, 3, "0", STR_PAD_LEFT);
         $month = substr($date, 3, 2);
         $year = substr($date, 8, 2);
-        $kode_deklarasi = 'd' . $year . $month . $urutan;
+        $kode_deklarasi = 'D' . $year . $month . $urutan;
 
         // MENCARI SIAPA YANG AKAN MELAKUKAN APPROVAL PERMINTAAN
         $approval = $this->M_datadeklarasi->approval($this->session->userdata('id_user'));
@@ -251,22 +249,18 @@ class Datadeklarasi extends CI_Controller
             'app_date' => date('Y-m-d H:i:s'),
         );
 
+        // UPDATE STATUS DEKLARASI
         if ($this->input->post('app_status') === 'revised') {
             $data['status'] = 'revised';
+        } elseif ($this->input->post('app_status') === 'approved') {
+            $data['status'] = 'on-process';
+        } elseif ($this->input->post('app_status') === 'rejected') {
+            $data['status'] = 'rejected';
         }
 
         //UPDATE APPROVAL PERTAMA
         $this->db->where('id', $this->input->post('hidden_id'));
         $this->db->update('tbl_deklarasi', $data);
-
-        // UPDATE STATUS PREPAYMENT
-        if ($this->input->post('app_status') == 'rejected') {
-            $this->db->where('id', $this->input->post('hidden_id'));
-            $this->db->update('tbl_deklarasi', ['status' => 'rejected']);
-        } elseif ($this->input->post('app_status') == 'revised') {
-            $this->db->where('id', $this->input->post('hidden_id'));
-            $this->db->update('tbl_deklarasi', ['status' => 'revised']);
-        }
 
         echo json_encode(array("status" => TRUE));
     }
@@ -279,25 +273,19 @@ class Datadeklarasi extends CI_Controller
             'app2_date' => date('Y-m-d H:i:s'),
         );
 
-        if ($this->input->post('app_status') === 'revised') {
+        // UPDATE STATUS DEKLARASI
+        if ($this->input->post('app2_status') === 'revised') {
             $data['status'] = 'revised';
+        } elseif ($this->input->post('app2_status') === 'approved') {
+            $data['status'] = 'approved';
+        } elseif ($this->input->post('app2_status') === 'rejected') {
+            $data['status'] = 'rejected';
         }
 
         // UPDATE APPROVAL 2
         $this->db->where('id', $this->input->post('hidden_id'));
         $this->db->update('tbl_deklarasi', $data);
 
-        // UPDATE STATUS PREPAYMENT
-        if ($this->input->post('app2_status') == 'rejected') {
-            $this->db->where('id', $this->input->post('hidden_id'));
-            $this->db->update('tbl_deklarasi', ['status' => 'rejected']);
-        } elseif ($this->input->post('app2_status') == 'revised') {
-            $this->db->where('id', $this->input->post('hidden_id'));
-            $this->db->update('tbl_deklarasi', ['status' => 'revised']);
-        } elseif ($this->input->post('app2_status') == 'approved') {
-            $this->db->where('id', $this->input->post('hidden_id'));
-            $this->db->update('tbl_deklarasi', ['status' => 'approved']);
-        }
         echo json_encode(array("status" => TRUE));
     }
 
@@ -354,14 +342,14 @@ class Datadeklarasi extends CI_Controller
         $pdf->AddPage('P', 'Letter');
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/reimbust/kwitansi/default.jpg', 8, -3, 46, 46);
+        $pdf->Image(base_url('') . '/assets/backend/img/reimbust/kwitansi/default.jpg', 14, -3, 46, 46);
 
         // Set font for title
         $pdf->SetFont('Arial', 'B', 14);
-        $pdf->Cell(0, 10, 'PT. MANDIRI CIPTA SEJAHTERA', 0, 1, 'C');
+        $pdf->Cell(0, 25, 'PT. MANDIRI CIPTA SEJAHTERA', 0, 1, 'C');
 
         // Title of the form
-        $pdf->Ln(8);
+        $pdf->Ln(7);
         $pdf->SetFont('Arial', 'B', 14);
         $pdf->Cell(0, 10, 'FORM DEKLARASI', 0, 1, 'C');
         $pdf->Ln(5);
@@ -464,7 +452,9 @@ class Datadeklarasi extends CI_Controller
         // Add keterangan
         $pdf->Ln(5);
         $pdf->SetFont('Arial', '', 12);
-        $pdf->Cell(40, 10, 'Keterangan:', 0, 0);
+        if (($data['master']->app_keterangan != null && $data['master']->app_keterangan != '') && ($data['master']->app2_keterangan != null && $data['master']->app2_keterangan != '')) {
+            $pdf->Cell(40, 10, 'Keterangan:', 0, 0);
+        }
         $pdf->Ln(8);
         if ($data['master']->app_keterangan != null && $data['master']->app_keterangan != '') {
             $pdf->Cell(60, 10, '*' . $data['master']->app_keterangan, 0, 1);

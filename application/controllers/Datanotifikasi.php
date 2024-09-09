@@ -135,7 +135,7 @@ class Datanotifikasi extends CI_Controller
     function add_form()
     {
         $data['id'] = 0;
-        $data['title_view'] = "Data Notifikasi Form";
+        $data['title_view'] = "Notifikasi Form";
         $data['title'] = 'backend/datanotifikasi/notifikasi_form';
         $this->load->view('backend/home', $data);
     }
@@ -172,7 +172,7 @@ class Datanotifikasi extends CI_Controller
         $urutan = str_pad($no_urut, 3, "0", STR_PAD_LEFT);
         $month = substr($date, 3, 2);
         $year = substr($date, 8, 2);
-        $kode_notifikasi = 'n' . $year . $month . $urutan;
+        $kode_notifikasi = 'N' . $year . $month . $urutan;
 
         // MENCARI SIAPA YANG AKAN MELAKUKAN APPROVAL PERMINTAAN
         $approval = $this->M_datanotifikasi->approval($this->session->userdata('id_user'));
@@ -251,18 +251,19 @@ class Datanotifikasi extends CI_Controller
             'app_date' => date('Y-m-d H:i:s'),
             'catatan' => $this->input->post('app_catatan')
         );
+
+        // UPDATE STATUS DEKLARASI
+        if ($this->input->post('app_status') === 'revised') {
+            $data['status'] = 'revised';
+        } elseif ($this->input->post('app_status') === 'approved') {
+            $data['status'] = 'on-process';
+        } elseif ($this->input->post('app_status') === 'rejected') {
+            $data['status'] = 'rejected';
+        }
+
         //UPDATE APPROVAL PERTAMA
         $this->db->where('id', $this->input->post('hidden_id'));
         $this->db->update('tbl_notifikasi', $data);
-
-        // UPDATE STATUS PREPAYMENT
-        if ($this->input->post('app_status') == 'rejected') {
-            $this->db->where('id', $this->input->post('hidden_id'));
-            $this->db->update('tbl_notifikasi', ['status' => 'rejected']);
-        } elseif ($this->input->post('app_status') == 'revised') {
-            $this->db->where('id', $this->input->post('hidden_id'));
-            $this->db->update('tbl_notifikasi', ['status' => 'revised']);
-        }
 
         echo json_encode(array("status" => TRUE));
     }
@@ -274,21 +275,20 @@ class Datanotifikasi extends CI_Controller
             'app2_status' => $this->input->post('app2_status'),
             'app2_date' => date('Y-m-d H:i:s'),
         );
+
+        // UPDATE STATUS DEKLARASI
+        if ($this->input->post('app2_status') === 'revised') {
+            $data['status'] = 'revised';
+        } elseif ($this->input->post('app2_status') === 'approved') {
+            $data['status'] = 'approved';
+        } elseif ($this->input->post('app2_status') === 'rejected') {
+            $data['status'] = 'rejected';
+        }
+
         // UPDATE APPROVAL 2
         $this->db->where('id', $this->input->post('hidden_id'));
         $this->db->update('tbl_notifikasi', $data);
 
-        // UPDATE STATUS PREPAYMENT
-        if ($this->input->post('app2_status') == 'rejected') {
-            $this->db->where('id', $this->input->post('hidden_id'));
-            $this->db->update('tbl_notifikasi', ['status' => 'rejected']);
-        } elseif ($this->input->post('app2_status') == 'revised') {
-            $this->db->where('id', $this->input->post('hidden_id'));
-            $this->db->update('tbl_notifikasi', ['status' => 'revised']);
-        } elseif ($this->input->post('app2_status') == 'approved') {
-            $this->db->where('id', $this->input->post('hidden_id'));
-            $this->db->update('tbl_notifikasi', ['status' => 'approved']);
-        }
         echo json_encode(array("status" => TRUE));
     }
 

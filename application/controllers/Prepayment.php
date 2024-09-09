@@ -187,7 +187,7 @@ class Prepayment extends CI_Controller
         $urutan = str_pad($no_urut, 4, "0", STR_PAD_LEFT);
         $month = substr($date, 3, 2);
         $year = substr($date, 8, 2);
-        $kode_prepayment = 'p' . $year . $month . $urutan;
+        $kode_prepayment = 'P' . $year . $month . $urutan;
 
         // MENCARI SIAPA YANG AKAN MELAKUKAN APPROVAL PERMINTAAN
         $approval = $this->M_prepayment->approval($this->session->userdata('id_user'));
