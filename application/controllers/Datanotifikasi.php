@@ -343,17 +343,20 @@ class Datanotifikasi extends CI_Controller
         $pdf->SetTitle('Form Notifikasi');
         $pdf->AddPage('P', 'Letter');
 
+        // Logo
+        $pdf->Image(base_url('') . '/assets/backend/img/reimbust/kwitansi/default.jpg', 14, -3, 46, 46);
+
         // Set font for title
         $pdf->SetFont('Arial', 'B', 14);
-        $pdf->Cell(0, 10, 'PT. MANDIRI CIPTA SEJAHTERA', 0, 1, 'C');
+        $pdf->Cell(0, 28, 'PT. MANDIRI CIPTA SEJAHTERA', 0, 1, 'C');
 
         // Title of the form
-        $pdf->Ln(5);
+        $pdf->Ln(1);
         $pdf->SetFont('Arial', 'B', 14);
         $pdf->Cell(0, 10, 'FORM NOTIFIKASI', 0, 1, 'C');
-        $pdf->Ln(5);
+        $pdf->Ln(3);
 
-        $pdf->Ln(5);
+        $pdf->Ln(1);
         $pdf->SetFont('Arial', '', 12);
         $pdf->Cell(60, 10, 'Saya yang bertanda tangan dibawah ini:', 0, 1);
 

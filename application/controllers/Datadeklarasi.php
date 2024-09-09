@@ -452,15 +452,15 @@ class Datadeklarasi extends CI_Controller
         // Add keterangan
         $pdf->Ln(5);
         $pdf->SetFont('Arial', '', 12);
-        if (($data['master']->app_keterangan != null && $data['master']->app_keterangan != '') && ($data['master']->app2_keterangan != null && $data['master']->app2_keterangan != '')) {
+        if (($data['master']->app_keterangan != null && $data['master']->app_keterangan != '') || ($data['master']->app2_keterangan != null && $data['master']->app2_keterangan != '')) {
             $pdf->Cell(40, 10, 'Keterangan:', 0, 0);
         }
         $pdf->Ln(8);
         if ($data['master']->app_keterangan != null && $data['master']->app_keterangan != '') {
-            $pdf->Cell(60, 10, '*' . $data['master']->app_keterangan, 0, 1);
+            $pdf->Cell(60, 10, '*' . $data['master']->app_keterangan . '(' . $data['master']->app_name . ')', 0, 1);
         }
         if ($data['master']->app2_keterangan != null && $data['master']->app2_keterangan != '') {
-            $pdf->Cell(60, 10, '*' . $data['master']->app2_keterangan, 0, 1);
+            $pdf->Cell(60, 10, '*' . $data['master']->app2_keterangan . '(' . $data['master']->app2_name . ')', 0, 1);
         }
 
         // Output the PDF

@@ -54,19 +54,24 @@ class M_datanotifikasi extends CI_Model
         }
 
         // Tambahkan pemfilteran berdasarkan status
+        // Tambahkan kondisi jika id_user login sesuai dengan app2_name
+        $id_user_logged_in = $this->session->userdata('id_user'); // Mengambil id_user dari sesi pengguna yang login
+
         if (!empty($_POST['status'])) {
             $this->db->group_start(); // Start grouping conditions
 
             if ($_POST['status'] == 'on-process') {
                 // Conditions for 'on-process' status
                 $this->db->where('app_status', 'waiting')
-                    ->where('app2_status', 'waiting');
+                    ->where('app2_status', 'waiting')
+                    ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
             } elseif ($_POST['status'] == 'approved') {
                 // Conditions for 'approved' status
                 $this->db->where('app_status', $_POST['status'])
                     ->where('app2_status', 'approved')
                     ->or_where('app_status', $_POST['status'])
-                    ->where('app2_status', 'waiting');
+                    ->where('app2_status', 'approved')
+                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status != "approved" AND status = "on-process")', NULL, FALSE);
             } elseif ($_POST['status'] == 'revised') {
                 $this->db->where('status', $_POST['status']);
             } elseif ($_POST['status'] == 'rejected') {
@@ -120,8 +125,32 @@ class M_datanotifikasi extends CI_Model
         $this->db->from('tbl_notifikasi');
         $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_notifikasi.id_user');
 
+        // Tambahkan pemfilteran berdasarkan status
+        // Tambahkan kondisi jika id_user login sesuai dengan app2_name
+        $id_user_logged_in = $this->session->userdata('id_user'); // Mengambil id_user dari sesi pengguna yang login
+
         if (!empty($_POST['status'])) {
-            $this->db->where('status', $_POST['status']);
+            $this->db->group_start(); // Start grouping conditions
+
+            if ($_POST['status'] == 'on-process') {
+                // Conditions for 'on-process' status
+                $this->db->where('app_status', 'waiting')
+                    ->where('app2_status', 'waiting')
+                    ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
+            } elseif ($_POST['status'] == 'approved') {
+                // Conditions for 'approved' status
+                $this->db->where('app_status', $_POST['status'])
+                    ->where('app2_status', 'approved')
+                    ->or_where('app_status', $_POST['status'])
+                    ->where('app2_status', 'approved')
+                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status != "approved" AND status = "on-process")', NULL, FALSE);
+            } elseif ($_POST['status'] == 'revised') {
+                $this->db->where('status', $_POST['status']);
+            } elseif ($_POST['status'] == 'rejected') {
+                $this->db->where('status', $_POST['status']);
+            }
+
+            $this->db->group_end(); // End grouping conditions
         }
 
         if (!empty($_POST['tab'])) {
