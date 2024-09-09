@@ -55,8 +55,27 @@ class M_datadeklarasi extends CI_Model
 
         // Tambahkan pemfilteran berdasarkan status
         if (!empty($_POST['status'])) {
-            $this->db->where('status', $_POST['status']);
+            $this->db->group_start(); // Start grouping conditions
+
+            if ($_POST['status'] == 'on-process') {
+                // Conditions for 'on-process' status
+                $this->db->where('app_status', 'waiting')
+                    ->where('app2_status', 'waiting');
+            } elseif ($_POST['status'] == 'approved') {
+                // Conditions for 'approved' status
+                $this->db->where('app_status', $_POST['status'])
+                    ->where('app2_status', 'approved')
+                    ->or_where('app_status', $_POST['status'])
+                    ->where('app2_status', 'waiting');
+            } elseif ($_POST['status'] == 'revised') {
+                $this->db->where('status', $_POST['status']);
+            } elseif ($_POST['status'] == 'rejected') {
+                $this->db->where('status', $_POST['status']);
+            }
+
+            $this->db->group_end(); // End grouping conditions
         }
+
 
         // Tambahkan kondisi berdasarkan tab yang dipilih
         if (!empty($_POST['tab'])) {

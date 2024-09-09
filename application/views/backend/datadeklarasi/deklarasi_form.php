@@ -227,31 +227,31 @@
             },
             messages: {
                 tgl_deklarasi: {
-                    required: "Tanggal Harus Diisi",
+                    required: "Tanggal is required",
                 },
                 // kode_deklarasi: {
-                //     required: "Kode Harus Diisi",
+                //     required: "Kode is required",
                 // },
                 nama_pengajuan: {
-                    required: "Nama Yang Mengajukan Harus Diisi",
+                    required: "Nama Yang Mengajukan is required",
                 },
                 jabatan: {
-                    required: "Jabatan Harus Diisi",
+                    required: "Jabatan is required",
                 },
                 nama_dibayar: {
-                    required: "Nama Yang Menerima Pembayaran Harus Diisi",
+                    required: "Nama Penerima is required",
                 },
                 tujuan: {
-                    required: "Tujuan Harus Diisi",
+                    required: "Tujuan is required",
                 },
                 sebesar: {
-                    required: "Sebesar Harus Diisi",
+                    required: "Sebesar is required",
                 },
                 app_name: {
-                    required: "Yang Mengetahui Harus Diisi",
+                    required: "Yang Mengetahui is required",
                 },
                 app2_name: {
-                    required: "Yang Menyetujui Harus Diisi",
+                    required: "Yang Menyetujui is required",
                 }
             },
             errorPlacement: function(error, element) {
