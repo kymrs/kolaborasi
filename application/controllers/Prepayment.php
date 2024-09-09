@@ -320,22 +320,18 @@ class Prepayment extends CI_Controller
             'app_date' => date('Y-m-d H:i:s'),
         );
 
+        // UPDATE STATUS DEKLARASI
         if ($this->input->post('app_status') === 'revised') {
             $data['status'] = 'revised';
+        } elseif ($this->input->post('app_status') === 'approved') {
+            $data['status'] = 'on-process';
+        } elseif ($this->input->post('app_status') === 'rejected') {
+            $data['status'] = 'rejected';
         }
 
         //UPDATE APPROVAL PERTAMA
         $this->db->where('id', $this->input->post('hidden_id'));
         $this->db->update('tbl_prepayment', $data);
-
-        // UPDATE STATUS PREPAYMENT
-        if ($this->input->post('app_status') == 'rejected') {
-            $this->db->where('id', $this->input->post('hidden_id'));
-            $this->db->update('tbl_prepayment', ['status' => 'rejected']);
-        } elseif ($this->input->post('app_status') == 'revised') {
-            $this->db->where('id', $this->input->post('hidden_id'));
-            $this->db->update('tbl_prepayment', ['status' => 'revised']);
-        }
 
         echo json_encode(array("status" => TRUE));
     }
@@ -348,25 +344,19 @@ class Prepayment extends CI_Controller
             'app2_date' => date('Y-m-d H:i:s'),
         );
 
+        // UPDATE STATUS DEKLARASI
         if ($this->input->post('app2_status') === 'revised') {
             $data['status'] = 'revised';
+        } elseif ($this->input->post('app2_status') === 'approved') {
+            $data['status'] = 'approved';
+        } elseif ($this->input->post('app2_status') === 'rejected') {
+            $data['status'] = 'rejected';
         }
 
         // UPDATE APPROVAL 2
         $this->db->where('id', $this->input->post('hidden_id'));
         $this->db->update('tbl_prepayment', $data);
 
-        // UPDATE STATUS PREPAYMENT
-        if ($this->input->post('app2_status') == 'rejected') {
-            $this->db->where('id', $this->input->post('hidden_id'));
-            $this->db->update('tbl_prepayment', ['status' => 'rejected']);
-        } elseif ($this->input->post('app2_status') == 'rejected') {
-            $this->db->where('id', $this->input->post('revised'));
-            $this->db->update('tbl_prepayment', ['status' => 'revised']);
-        } elseif ($this->input->post('app2_status') == 'approved') {
-            $this->db->where('id', $this->input->post('hidden_id'));
-            $this->db->update('tbl_prepayment', ['status' => 'approved']);
-        }
         echo json_encode(array("status" => TRUE));
     }
 
@@ -562,13 +552,15 @@ class Prepayment extends CI_Controller
         // Add keterangan
         $pdf->Ln(5);
         $pdf->SetFont('Arial', '', 12);
-        $pdf->Cell(40, 10, 'Keterangan:', 0, 0);
+        if (($data['master']->app_keterangan != null && $data['master']->app_keterangan != '') || ($data['master']->app2_keterangan != null && $data['master']->app2_keterangan != '')) {
+            $pdf->Cell(40, 10, 'Keterangan:', 0, 0);
+        }
         $pdf->Ln(8);
         if ($data['master']->app_keterangan != null && $data['master']->app_keterangan != '') {
-            $pdf->Cell(60, 10, '*' . $data['master']->app_keterangan, 0, 1);
+            $pdf->Cell(60, 10, '*' . $data['master']->app_keterangan . '(' . $data['master']->app_name . ')', 0, 1);
         }
         if ($data['master']->app2_keterangan != null && $data['master']->app2_keterangan != '') {
-            $pdf->Cell(60, 10, '*' . $data['master']->app2_keterangan, 0, 1);
+            $pdf->Cell(60, 10, '*' . $data['master']->app2_keterangan . '(' . $data['master']->app2_name . ')', 0, 1);
         }
 
         // Output the PDF

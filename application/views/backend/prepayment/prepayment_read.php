@@ -299,6 +299,26 @@
             $('#app_keterangan').attr('name', 'app_keterangan');
             $('#app_status').attr('name', 'app_status');
             $('#approvalForm').attr('action', '<?= site_url('prepayment/approve') ?>');
+            $.ajax({
+                url: "<?php echo site_url('prepayment/edit_data') ?>/" + id,
+                type: "GET",
+                dataType: "JSON",
+                success: function(data) {
+                    var nama, date, status, keterangan;
+                    // Memeriksa apakah data yang mengetahui ada
+                    if (data['master']['app_status'] != null) {
+                        nama = data['master']['app_name'];
+                        status = data['master']['app_status'];
+                        keterangan = data['master']['app_keterangan'];
+                        $('#app_status').val(status);
+                        $('#app_keterangan').val(keterangan);
+                        // $('#note_id').append(`<p>* ${keterangan}</p>`);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    alert('Error get data from ajax');
+                }
+            });
         });
 
         $('#appBtn2').click(function() {
@@ -306,6 +326,26 @@
             $('#app_keterangan').attr('name', 'app2_keterangan');
             $('#app_status').attr('name', 'app2_status');
             $('#approvalForm').attr('action', '<?= site_url('prepayment/approve2') ?>');
+
+            $.ajax({
+                url: "<?php echo site_url('prepayment/edit_data') ?>/" + id,
+                type: "GET",
+                dataType: "JSON",
+                success: function(data) {
+                    var nama2, date2, status2, keterangan2;
+                    if (data['master']['app2_status'] != null) {
+                        nama2 = data['master']['app2_name'];
+                        status2 = data['master']['app2_status'];
+                        keterangan2 = data['master']['app2_keterangan'];
+                        $('#app2_status').val(status2);
+                        $('#app2_keterangan').val(keterangan2);
+                        // $('#note_id').append(`<p>* ${keterangan2}</p>`);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    alert('Error get data from ajax');
+                }
+            });
         });
 
         // Handle the approval button click event
@@ -323,7 +363,6 @@
             type: "GET",
             dataType: "JSON",
             success: function(data) {
-                // console.log(data);
                 moment.locale('id')
                 // DATA PREPAYMENT
                 $('#divisiTxt').text(data['master']['divisi']);
@@ -343,17 +382,7 @@
                     $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app2_keterangan']}(${data['master']['app_name']})</span>`);
                 }
                 // DATA APPROVAL PREPAYMENT
-                var nama, date, status, keterangan, nama2, date2, status2, keterangan2, url;
 
-                // Memeriksa apakah data yang mengetahui ada
-                if (data['master']['app_status'] != null) {
-                    nama = data['master']['app_name'];
-                    status = data['master']['app_status'];
-                    url = "<?php echo site_url('prepayment/approve') ?>";
-                    $('#app_status').val(status);
-                    $('#app_keterangan').val(keterangan);
-                    // $('#note_id').append(`<p>* ${keterangan}</p>`);
-                }
                 if (data['master']['app_date'] == null) {
                     date = '';
                 }
@@ -362,19 +391,11 @@
                 }
 
                 // Memeriksa apakah data yang menyetujui ada
-                if (data['master']['app2_status'] != null) {
-                    nama2 = data['master']['app2_name'];
-                    status2 = data['master']['app2_status'];
-                    url = "<?php echo site_url('prepayment/approve2') ?>";
-                    $('#app2_status').val(status2);
-                    $('#app2_keterangan').val(keterangan2);
-                    // $('#note_id').append(`<p>* ${keterangan2}</p>`);
-                }
                 if (data['master']['app2_date'] == null) {
                     date2 = '';
                 }
                 if (data['master']['app2_date'] != null) {
-                    date2 = ['master']['app2_date'];
+                    date2 = data['master']['app2_date'];
                 }
 
                 $('#melakukan').html(`<div class="signature-text text-center">${data['nama']}</div>`);
