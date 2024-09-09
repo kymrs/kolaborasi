@@ -333,13 +333,13 @@
             });
 
             // Handle the approval button click event
-            // $('#confirmApproval').click(function() {
-            //     const id = $('#hidden_id').val();
-            //     // Implement the logic to process the approval
-            //     console.log('Approval confirmed for ID:', id);
-            //     // Close the modal
-            //     $('#appModal').modal('hide');
-            // });
+            $('#confirmApproval').click(function() {
+                const id = $('#hidden_id').val();
+                // Implement the logic to process the approval
+                console.log('Approval confirmed for ID:', id);
+                // Close the modal
+                $('#appModal').modal('hide');
+            });
 
             // Additional logic to dynamically load data into the form
             $.ajax({
@@ -396,7 +396,7 @@
                         date = '';
                     }
                     if (data['master']['app_date'] != null) {
-                        date = moment(data['master']['app_date']).format('D MMMM YYYY');
+                        date = moment(data['master']['app_date']).format('D-MM-YYYY HH:mm:ss');
                     }
 
                     // Memeriksa apakah data yang menyetujui ada
@@ -411,7 +411,7 @@
                         date2 = '';
                     }
                     if (data['master']['app2_date'] != null) {
-                        date2 = moment(data['master']['app2_date']).format('D MMMM YYYY');
+                        date2 = moment(data['master']['app2_date']).format('D-MM-YYYY HH:mm:ss');
                     }
 
                     // Keterangan
@@ -540,7 +540,7 @@
                     $('#melakukan').text(`${data['nama']}`);
                     $('#mengetahui').text(`${data['master']['app_name']}`);
                     $('#menyetujui').text(`${data['master']['app2_name']}`);
-                    $('#statusMelakukan').html('CREATED<br>' + `${moment(data['master']['created_at']).format('D MMMM YYYY')}`);
+                    $('#statusMelakukan').html('CREATED<br>' + `${moment(data['master']['created_at']).format('D-MM-YYYY HH:mm:ss')}`);
                     $('#statusMengetahui').html(`<div>${data['master']['app_status'].toUpperCase()}<br><span>${date}</span></div></div>`);
                     $('#statusMenyetujui').html(`<div>${data['master']['app2_status'].toUpperCase()}<br><span>${date2}</span></div></div>`);
                 },
