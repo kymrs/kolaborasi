@@ -438,8 +438,9 @@
                 $('#deklarasi' + currentRowCount).closest('tr').find('input').prop('readonly', true);
                 $('#kwitansi-upload' + currentRowCount).css('pointer-events', 'none');
                 $('#upload' + currentRowCount).css('background-color', '#EAECF4').text('Deklarasi').val('');
+                $('.kwitansi_image' + currentRowCount).val('');
                 $('#pemakaian' + currentRowCount).css('cursor', 'not-allowed').attr('placeholder', 'Deklarasi').val(data[7]);
-                $('#inputGroupFile01' + currentRowCount).val('');
+                $('#inputGroupFile01' + currentRowCount).val('').attr('name', '');
                 $('#tgl_nota_' + currentRowCount).css({
                     'cursor': 'not-allowed',
                     'pointer-events': 'none'
@@ -1054,9 +1055,9 @@
                                     <td id="kwitansi-upload${index + 1}">
                                         <div class="custom-file">
                                             <input type="file" class="custom-file-input" name="kwitansi[${index + 1}]" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01">
-                                            <label class="custom-file-label" for="inputGroupFile01" id="upload${index + 1}">${data['transaksi'][index]['kwitansi']}</label>
+                                            <label class="custom-file-label" for="inputGroupFile01" id="upload${index + 1}">${data['transaksi'][index]['kwitansi'] ? data['transaksi'][index]['kwitansi'] : 'Deklarasi'}</label>
                                         </div>
-                                        <input type="hidden" class="form-control" id="kwitansi_image" name="kwitansi_image[${index + 1}]" value="${data['transaksi'][index]['kwitansi']}">
+                                        <input type="hidden" class="form-control kwitansi_image${index + 1}" id="kwitansi_image" name="kwitansi_image[${index + 1}]" value="${data['transaksi'][index]['kwitansi']}">
                                         <span class="kwitansi-label">Max Size : 3MB</span>
                                     </td>
                                     <td width="125" style="padding: 16px 10px !important">

@@ -668,6 +668,7 @@ class Reimbust extends CI_Controller
         }
 
         $this->M_reimbust->save_detail($data2);
+
         echo json_encode(array("status" => TRUE));
     }
 
@@ -697,6 +698,9 @@ class Reimbust extends CI_Controller
         $reimbust_id = $this->input->post('id');
         $pemakaian = $this->input->post('pemakaian');
         $jumlah = $this->input->post('jumlah');
+
+        // Bersihkan input untuk hanya mengambil angka
+        $jumlahClean = preg_replace('/\D/', '', $jumlah);
         $tgl_nota = $this->input->post('tgl_nota');
         $kwitansi_image = $this->input->post('kwitansi_image');
         $deklarasi = $this->input->post('deklarasi');
@@ -770,7 +774,7 @@ class Reimbust extends CI_Controller
                     'reimbust_id' => $reimbust_id,
                     'tgl_nota' => !empty($tgl_nota[$i]) ? date('Y-m-d', strtotime($tgl_nota[$i])) : date('Y-m-d'),
                     'pemakaian' => $pemakaian[$i],
-                    'jumlah' => $jumlah[$i],
+                    'jumlah' => $jumlahClean[$i],
                     'kwitansi' => !empty($kwitansi) ? $kwitansi : (isset($kwitansi_image[$i]) ? $kwitansi_image[$i] : ''),
                     'deklarasi' => $deklarasi[$i]
                 );

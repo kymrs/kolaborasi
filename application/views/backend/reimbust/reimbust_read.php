@@ -238,7 +238,7 @@
                     </tr>
                 </table>
             </div>
-            <div class="keterangan-field">
+            <div class="keterangan-field" id="keterangan-field" style="display: none;">
                 <span>Keterangan :</span>
                 <div id="keterangan">
                     <!-- GENERATE KETERANGAN -->
@@ -414,6 +414,11 @@
                         date2 = moment(data['master']['app2_date']).format('D MMMM YYYY');
                     }
 
+                    // Keterangan
+                    if (data['master']['app_keterangan'] || data['master']['app2_keterangan'] != null) {
+                        $('#keterangan-field').css('display', 'inline-block');
+                    }
+
                     //DATA REIMBUST DETAIL
                     let total = 0;
                     let sisa = data['master']['jumlah_prepayment'];
@@ -485,8 +490,8 @@
                             success: function(response) {
                                 var data = JSON.parse(response);
                                 if (data.status === 'success') {
-                                    // Redirect ke URL yang dikirim dari server
-                                    window.location.href = data.redirect_url;
+                                    // Buka URL yang dikirim dari server di tab baru
+                                    window.open(data.redirect_url, '_blank');
                                 } else {
                                     console.log('Error: ' + data.message);
                                 }
@@ -495,6 +500,7 @@
                                 console.log('Terjadi kesalahan: ', error);
                             }
                         });
+
                     });
 
                     $(document).on('mouseenter', '[data-deklarasi]', function() {
