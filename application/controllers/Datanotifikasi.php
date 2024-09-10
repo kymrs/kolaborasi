@@ -108,6 +108,20 @@ class Datanotifikasi extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
+        $sql = '
+            WITH RankedNotifikasi AS (
+                SELECT *,
+                       ROW_NUMBER() OVER (ORDER BY created_at ASC) AS row_num
+                FROM tbl_notifikasi
+                WHERE id_user = ' . $data['user']->id_user . '
+                AND YEAR(created_at) = ' . date('Y', strtotime($data['user']->created_at)) . '
+            )
+            SELECT row_num
+            FROM RankedNotifikasi
+            WHERE id = ' . $id . ';
+        ';
+        $query = $this->db->query($sql);
+        $data['ke'] = $query->row()->row_num;
         $data['title_view'] = "Data Notifikasi";
         $data['title'] = 'backend/datanotifikasi/notifikasi_read';
         $this->load->view('backend/home', $data);

@@ -209,8 +209,8 @@
                                     <td>NOTIFIKASI KE</td>
                                     <td>:</td>
                                     <td>
-                                        <span id="no_notifikasi">teess</span>
-                                        <span id="tahun_notifikasi">( TAHUN BERJALAN )</span>
+                                        <span id="no_notifikasi"><?= $ke ?></span>
+                                        <span id="tahun_notifikasi">( <?= date('Y', strtotime($user->created_at)) ?> )</span>
                                     </td>
                                 </tr>
                             </table>
