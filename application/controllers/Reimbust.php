@@ -8,6 +8,7 @@ class Reimbust extends CI_Controller
         parent::__construct();
         $this->load->model('backend/M_reimbust');
         $this->M_login->getsecurity();
+        date_default_timezone_set('Asia/Jakarta');
     }
 
     public function index()
@@ -95,7 +96,7 @@ class Reimbust extends CI_Controller
             $row[] = date("d", strtotime($field->tgl_pengajuan)) . " " . $bulanIndo[date("n", strtotime($field->tgl_pengajuan))] . " " . date("Y", strtotime($field->tgl_pengajuan));
             $row[] = $field->tujuan;
             $row[] = 'Rp. ' . number_format($field->jumlah_prepayment, 0, ',', '.');;
-            $row[] = $field->status;
+            $row[] = ucwords($field->status);
 
             $data[] = $row;
         }
@@ -391,80 +392,107 @@ class Reimbust extends CI_Controller
         $pdf->Cell(50, 8.5, 'MENYETUJUI', 1, 1, 'C');
 
         // Logic tanggal bahasa indonesia
-        function tanggal_indonesia($tanggal)
-        {
-            $bulanInggris = array(
-                'January', 'February', 'March', 'April', 'May', 'June',
-                'July', 'August', 'September', 'October', 'November', 'December'
-            );
-            $bulanIndonesia = array(
-                'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-                'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-            );
+        // function tanggal_indonesia($tanggal)
+        // {
+        //     $bulanInggris = array(
+        //         'January', 'February', 'March', 'April', 'May', 'June',
+        //         'July', 'August', 'September', 'October', 'November', 'December'
+        //     );
+        //     $bulanIndonesia = array(
+        //         'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        //         'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        //     );
 
-            $bulan = date('F', strtotime($tanggal));
-            $tanggal_indo = date('d', strtotime($tanggal)) . ' ' . str_replace($bulanInggris, $bulanIndonesia, $bulan) . ' ' . date('Y', strtotime($tanggal));
+        //     $bulan = date('F', strtotime($tanggal));
+        //     $tanggal_indo = date('d', strtotime($tanggal)) . ' ' . str_replace($bulanInggris, $bulanIndonesia, $bulan) . ' ' . date('Y', strtotime($tanggal));
 
-            return $tanggal_indo;
-        }
+        //     return $tanggal_indo;
+        // }
 
-        $pdf->Cell(50, 18, 'CREATED', 1, 0, 'C');
+        $pdf->Cell(50, 13.5, 'CREATED', 0, 0, 'C');
+
+        $x = $pdf->GetX();
+        $y = $pdf->GetY();
+
+        $pdf->SetXY($x + -50, $y + 0); // Menambahkan margin horizontal dan vertikal
+        $pdf->Cell(50, 18, '', 1, 0, 'C');
+
+        // Kembali ke posisi sebelumnya untuk elemen berikutnya
+        $pdf->SetXY($x + 0, $y); // Mengatur posisi untuk elemen berikutnya jika diperlukan
 
         // Menyimpan posisi saat ini
         $x = $pdf->GetX();
         $y = $pdf->GetY();
 
         // Mengatur posisi X dan Y dengan margin tambahan untuk teks tanggal
-        $pdf->SetXY($x + -50, $y + 5); // Menambahkan margin horizontal dan vertikal
+        $pdf->SetXY($x + -50, $y + 4.5); // Menambahkan margin horizontal dan vertikal
 
         // Menggunakan Cell() untuk mencetak teks tanggal dengan margin
-        $pdf->Cell(50, 18, tanggal_indonesia($data['master']->created_at), 0, 0, 'C');
+        $pdf->Cell(50, 15, date('d-m-Y H:i:s', strtotime($data['master']->created_at)), 0, 0, 'C');
 
         // Kembali ke posisi sebelumnya untuk elemen berikutnya
         $pdf->SetXY($x + 0, $y); // Mengatur posisi untuk elemen berikutnya jika diperlukan
 
         // Approval 1
-        $pdf->Cell(50, 18, strtoupper($data['master']->app_status), 1, 0, 'C');
+        $pdf->Cell(50, 13.5, strtoupper($data['master']->app_status), 0, 0, 'C');
+
+        $x = $pdf->GetX();
+        $y = $pdf->GetY();
+
+        $pdf->SetXY($x + -50, $y + 0); // Menambahkan margin horizontal dan vertikal
+        $pdf->Cell(50, 18, '', 1, 0, 'C');
+
+        // Kembali ke posisi sebelumnya untuk elemen berikutnya
+        $pdf->SetXY($x + 0, $y); // Mengatur posisi untuk elemen berikutnya jika diperlukan
 
         // Menyimpan posisi saat ini
         $x = $pdf->GetX();
         $y = $pdf->GetY();
 
         // Mengatur posisi X dan Y dengan margin tambahan untuk teks tanggal
-        $pdf->SetXY($x + -50, $y + 5); // Menambahkan margin horizontal dan vertikal
+        $pdf->SetXY($x + -50, $y + 4.5); // Menambahkan margin horizontal dan vertikal
 
         if ($data['master']->app_date == null) {
             $date = '';
         }
         if ($data['master']->app_date != null) {
-            $date = tanggal_indonesia($data['master']->app_date);
+            $date = date('d-m-Y H:i:s', strtotime($data['master']->app_date));
         }
 
         // Menggunakan Cell() untuk mencetak teks tanggal dengan margin
-        $pdf->Cell(50, 18, $date, 0, 0, 'C');
+        $pdf->Cell(50, 15, $date, 0, 0, 'C');
 
         // Kembali ke posisi sebelumnya untuk elemen berikutnya
         $pdf->SetXY($x + 0, $y); // Mengatur posisi untuk elemen berikutnya jika diperlukan
 
         // Approval 2
-        $pdf->Cell(50, 18, strtoupper($data['master']->app2_status), 1, 0, 'C');
+        $pdf->Cell(50, 13.5, strtoupper($data['master']->app2_status), 0, 0, 'C');
+
+        $x = $pdf->GetX();
+        $y = $pdf->GetY();
+
+        $pdf->SetXY($x + -50, $y + 0); // Menambahkan margin horizontal dan vertikal
+        $pdf->Cell(50, 18, '', 1, 0, 'C');
+
+        // Kembali ke posisi sebelumnya untuk elemen berikutnya
+        $pdf->SetXY($x + 0, $y); // Mengatur posisi untuk elemen berikutnya jika diperlukan
 
         // Menyimpan posisi saat ini
         $x = $pdf->GetX();
         $y = $pdf->GetY();
 
         // Mengatur posisi X dan Y dengan margin tambahan untuk teks tanggal
-        $pdf->SetXY($x + -50, $y + 5); // Menambahkan margin horizontal dan vertikal
+        $pdf->SetXY($x + -50, $y + 4.5); // Menambahkan margin horizontal dan vertikal
 
         if ($data['master']->app2_date == null) {
             $date2 = '';
         }
         if ($data['master']->app2_date != null) {
-            $date2 = tanggal_indonesia($data['master']->app2_date);
+            $date2 = date('d-m-Y H:i:s', strtotime($data['master']->app2_date));
         }
 
         // Menggunakan Cell() untuk mencetak teks tanggal dengan margin
-        $pdf->Cell(50, 18, $date2, 0, 0, 'C');
+        $pdf->Cell(50, 15, $date2, 0, 0, 'C');
 
         // Kembali ke posisi sebelumnya untuk elemen berikutnya 
         $pdf->SetXY($x + -150, $y + 18); // Mengatur posisi untuk elemen berikutnya jika diperlukan
@@ -644,7 +672,7 @@ class Reimbust extends CI_Controller
                 $config['upload_path'] = './assets/backend/img/reimbust/kwitansi/';
                 $config['allowed_types'] = 'jpg|png';
                 $config['max_size'] = 3072; // Batasan ukuran file dalam kilobytes (3 MB)
-                // $config['encrypt_name'] = TRUE;
+                $config['encrypt_name'] = TRUE;
 
                 $this->upload->initialize($config);
 

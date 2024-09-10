@@ -54,8 +54,31 @@ class M_reimbust extends CI_Model
         }
 
         // Tambahkan pemfilteran berdasarkan status
+        // Tambahkan kondisi jika id_user login sesuai dengan app2_name
+        $id_user_logged_in = $this->session->userdata('id_user'); // Mengambil id_user dari sesi pengguna yang login
+
         if (!empty($_POST['status'])) {
-            $this->db->where('status', $_POST['status']);
+            $this->db->group_start(); // Start grouping conditions
+
+            if ($_POST['status'] == 'on-process') {
+                // Conditions for 'on-process' status
+                $this->db->where('app_status', 'waiting')
+                    ->where('app2_status', 'waiting')
+                    ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
+            } elseif ($_POST['status'] == 'approved') {
+                // Conditions for 'approved' status
+                $this->db->where('app_status', $_POST['status'])
+                    ->where('app2_status', 'approved')
+                    ->or_where('app_status', $_POST['status'])
+                    ->where('app2_status', 'approved')
+                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status != "approved" AND status = "on-process")', NULL, FALSE);
+            } elseif ($_POST['status'] == 'revised') {
+                $this->db->where('status', $_POST['status']);
+            } elseif ($_POST['status'] == 'rejected') {
+                $this->db->where('status', $_POST['status']);
+            }
+
+            $this->db->group_end(); // End grouping conditions
         }
 
         // Tambahkan kondisi berdasarkan tab yang dipilih
@@ -65,19 +88,12 @@ class M_reimbust extends CI_Model
             } elseif ($_POST['tab'] == 'employee') {
                 $this->db->group_start()
                     ->where('tbl_reimbust.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-                    // ->where('tbl_reimbust.app_status !=', 'approved')
                     ->where('tbl_reimbust.id_user !=', $this->session->userdata('id_user'))
                     ->or_where('tbl_reimbust.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_reimbust.app_status = 'approved'", FALSE)
                     ->where('tbl_reimbust.id_user !=', $this->session->userdata('id_user'))
                     ->group_end();
             }
         }
-
-        // $this->db->group_start()
-        //     ->where('tbl_reimbust.id_user', $this->session->userdata('id_user'))
-        //     ->or_where('tbl_reimbust.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") AND tbl_reimbust.app_status NOT IN ('rejected', 'approved') AND tbl_reimbust.status != 'revised'", FALSE)
-        //     ->or_where('tbl_reimbust.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") AND tbl_reimbust.app_status NOT IN ('rejected', 'waiting', 'revised') AND tbl_reimbust.app2_status NOT IN ('rejected', 'approved') AND tbl_reimbust.status != 'revised'", FALSE)
-        //     ->group_end();
 
         if (isset($_POST['order'])) {
             $this->db->order_by($this->column_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);

@@ -359,10 +359,10 @@
                     $('#kode_reimbust').html(data['master']['kode_prepayment'] ? data['master']['kode_prepayment'] : '-');
                     $('#jumlah_prepayment').html(data['master']['jumlah_prepayment'].replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
                     if (data['master']['app_keterangan'] != null) {
-                        $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app_keterangan']}</span>`);
+                        $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app_keterangan']} (${data['master']['app_name']})</span>`);
                     }
                     if (data['master']['app2_keterangan'] != null) {
-                        $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app2_keterangan']}</span>`);
+                        $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app2_keterangan']} (${data['master']['app2_name']})</span>`);
                     }
 
                     // DATA APPROVAL REIMBUST
@@ -460,6 +460,22 @@
                             modalImg.attr('src', `<?= base_url() ?>/assets/backend/img/reimbust/kwitansi/${kwitansi}`);
                             // captionText.text('Deskripsi gambar Anda di sini'); // Ubah dengan deskripsi gambar
                         }
+                    });
+
+                    $(document).ready(function() {
+                        // Inisialisasi tombol submit dalam keadaan disabled
+                        $('#approvalForm button[type="submit"]').prop('disabled', true).css('cursor', 'not-allowed');
+
+                        // Event listener untuk elemen select
+                        $('#app_status').change(function() {
+                            if ($(this).val() === null || $(this).val() === 'Choose status...') {
+                                // Nonaktifkan tombol submit jika tidak ada status yang dipilih
+                                $('#approvalForm button[type="submit"]').prop('disabled', true);
+                            } else {
+                                // Aktifkan tombol submit jika status telah dipilih
+                                $('#approvalForm button[type="submit"]').prop('disabled', false);
+                            }
+                        });
                     });
 
                     // Ketika tombol close diklik, sembunyikan modal
