@@ -1061,7 +1061,7 @@
                                             <input type="file" class="custom-file-input" name="kwitansi[${index + 1}]" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01">
                                             <label class="custom-file-label" for="inputGroupFile01" id="upload${index + 1}">${data['transaksi'][index]['kwitansi'] ? data['transaksi'][index]['kwitansi'] : 'Deklarasi'}</label>
                                         </div>
-                                        <input type="text" class="form-control kwitansi_image${index + 1}" id="kwitansi_image" name="kwitansi_image[${index + 1}]" value="${data['transaksi'][index]['kwitansi'] ? data['transaksi'][index]['kwitansi'] : ''}">
+                                        <input type="hidden" class="form-control kwitansi_image${index + 1}" id="kwitansi_image" name="kwitansi_image[${index + 1}]" value="${data['transaksi'][index]['kwitansi'] ? data['transaksi'][index]['kwitansi'] : ''}">
                                         <span class="kwitansi-label">Max Size : 3MB</span>
                                     </td>
                                     <td width="125" style="padding: 16px 10px !important">

@@ -313,23 +313,67 @@
             var id = $('#hidden_id').val();
             let url = "";
 
-            // $('#appModal').on('show.bs.modal', function(e) {
-            //     var id = $(e.relatedTarget).data('id');
-            //     $('#hidden_id').val(id);
-            // });
+            $('#appModal').on('show.bs.modal', function(e) {
+                var id = $(e.relatedTarget).data('id');
+                $('#hidden_id').val(id);
+            });
 
             $('#appBtn').click(function() {
-                $('#app_name').attr('name', 'app_name');
                 $('#app_keterangan').attr('name', 'app_keterangan');
                 $('#app_status').attr('name', 'app_status');
                 $('#approvalForm').attr('action', '<?= site_url('reimbust/approve') ?>');
+                $.ajax({
+                    url: "<?php echo site_url('reimbust/edit_data') ?>/" + id,
+                    type: "GET",
+                    dataType: "JSON",
+                    success: function(data) {
+                        var nama, date, status, keterangan;
+                        // Memeriksa apakah data yang mengetahui ada
+                        if (data['master']['app_status'] == 'waiting') {
+                            $('#app_status').val();
+                            $('#app_keterangan').val();
+                        } else {
+                            nama = data['master']['app_name'];
+                            status = data['master']['app_status'];
+                            keterangan = data['master']['app_keterangan'];
+                            $('#app_status').val(status);
+                            $('#app_keterangan').val(keterangan);
+                            // $('#note_id').append(`<p>* ${keterangan}</p>`);
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert('Error get data from ajax');
+                    }
+                });
             });
 
             $('#appBtn2').click(function() {
-                $('#app_name').attr('name', 'app2_name');
-                $('#app_keterangan').attr('name', 'app2_keterangan');
-                $('#app_status').attr('name', 'app2_status');
+                $('#app_keterangan').attr('name', 'app2_keterangan').attr('id', 'app2_keterangan');
+                $('#app_status').attr('name', 'app2_status').attr('id', 'app2_status');
                 $('#approvalForm').attr('action', '<?= site_url('reimbust/approve2') ?>');
+
+                $.ajax({
+                    url: "<?php echo site_url('reimbust/edit_data') ?>/" + id,
+                    type: "GET",
+                    dataType: "JSON",
+                    success: function(data) {
+                        var nama2, date2, status2, keterangan2;
+                        if (data['master']['app2_status'] == 'waiting') {
+                            $('#app2_status').val();
+                            $('#app2_keterangan').val();
+                        } else {
+                            nama2 = data['master']['app2_name'];
+                            status2 = data['master']['app2_status'];
+                            keterangan2 = data['master']['app2_keterangan'];
+                            $('#app2_status').val(status2);
+                            $('#app2_keterangan').val(keterangan2);
+                            // $('#note_id').append(`<p>* ${keterangan2}</p>`);
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert('Error get data from ajax');
+                    }
+                });
             });
 
             // Handle the approval button click event
