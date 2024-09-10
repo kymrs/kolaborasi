@@ -98,14 +98,16 @@
         }
 
         .table-approve table {
-            width: 60%;
+            width: 100%;
+            border-collapse: collapse;
         }
 
         .table-approve table tr td {
-            border: 1.5px solid #444;
-            padding: 2.5px;
-            width: 100px;
             text-align: center;
+            width: 25%;
+            padding: 10px;
+            font-size: 14px;
+            border: 1.4px solid black;
         }
 
         /* Keterangan */
@@ -122,7 +124,7 @@
             <div class="container">
                 <div class="form-container">
                     <div class="d-flex justify-content-end mb-3">
-                        <?php if ($user->app_name == $app_name && !in_array($user->status, ['approved'])) { ?>
+                        <?php if ($user->app_name == $app_name && $user->app2_status != 'rejected' && !in_array($user->status, ['approved'])) { ?>
                             <a class="btn btn-warning btn-sm mr-2" id="appBtn" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
                         <?php } elseif ($user->app2_name == $app2_name && !in_array($user->status, ['rejected', 'approved'])) { ?>
                             <a class="btn btn-warning btn-sm mr-2" id="appBtn2" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
@@ -249,7 +251,7 @@
                     <div class="form-group">
                         <label for="app_status">Status <span class="text-danger">*</span></label>
                         <select id="app_status" name="app_status" class="form-control" required>
-                            <option selected disabled>Choose status...</option>
+                            <option selected disabled value="Choose status...">Choose status...</option>
                             <option value="approved">Approved</option>
                             <option value="rejected">Rejected</option>
                             <option value="revised">Revised</option>
@@ -295,7 +297,6 @@
         });
 
         $('#appBtn').click(function() {
-            $('#app_name').attr('name', 'app_name');
             $('#app_keterangan').attr('name', 'app_keterangan');
             $('#app_status').attr('name', 'app_status');
             $('#approvalForm').attr('action', '<?= site_url('prepayment/approve') ?>');
@@ -306,7 +307,10 @@
                 success: function(data) {
                     var nama, date, status, keterangan;
                     // Memeriksa apakah data yang mengetahui ada
-                    if (data['master']['app_status'] != null) {
+                    if (data['master']['app_status'] == 'waiting') {
+                        $('#app_status').val();
+                        $('#app_keterangan').val();
+                    } else {
                         nama = data['master']['app_name'];
                         status = data['master']['app_status'];
                         keterangan = data['master']['app_keterangan'];
@@ -322,9 +326,8 @@
         });
 
         $('#appBtn2').click(function() {
-            $('#app_name').attr('name', 'app2_name');
-            $('#app_keterangan').attr('name', 'app2_keterangan');
-            $('#app_status').attr('name', 'app2_status');
+            $('#app_keterangan').attr('name', 'app2_keterangan').attr('id', 'app2_keterangan');
+            $('#app_status').attr('name', 'app2_status').attr('id', 'app2_status');
             $('#approvalForm').attr('action', '<?= site_url('prepayment/approve2') ?>');
 
             $.ajax({
@@ -333,7 +336,10 @@
                 dataType: "JSON",
                 success: function(data) {
                     var nama2, date2, status2, keterangan2;
-                    if (data['master']['app2_status'] != null) {
+                    if (data['master']['app2_status'] == 'waiting') {
+                        $('#app2_status').val();
+                        $('#app2_keterangan').val();
+                    } else {
                         nama2 = data['master']['app2_name'];
                         status2 = data['master']['app2_status'];
                         keterangan2 = data['master']['app2_keterangan'];
@@ -432,35 +438,67 @@
         });
 
         // APPROVE
-        $('#approvalForm').submit(function(e) {
-            e.preventDefault();
-            var url = $(this).attr('action');
-            // MENGINPUT APPROVAL
-            $.ajax({
-                url: url, // Mengambil action dari form
-                type: "POST",
-                data: $(this).serialize(), // Mengambil semua data dari form
-                dataType: "JSON",
-                success: function(data) {
-                    // console.log(data);
-                    if (data.status) //if success close modal and reload ajax table
-                    {
-                        Swal.fire({
-                            position: 'center',
-                            icon: 'success',
-                            title: 'Your data has been saved',
-                            showConfirmButton: false,
-                            timer: 1500
-                        }).then((result) => {
-                            location.href = "<?= base_url('prepayment') ?>";
-                        })
-                    }
+        // APPROVE
+        $("#approvalForm").validate({
+            rules: {
+                app_status: {
+                    required: true,
                 },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    alert('Error adding / update data');
+                app2_status: {
+                    required: true,
                 }
-            });
 
+            },
+            messages: {
+                app_status: {
+                    required: "Status is required",
+                },
+                app2_status: {
+                    required: "Status is required",
+                }
+
+            },
+            errorPlacement: function(error, element) {
+                if (element.parent().hasClass('input-group')) {
+                    error.insertAfter(element.parent());
+                } else {
+                    error.insertAfter(element);
+                }
+            },
+            highlight: function(element) {
+                $(element).addClass('is-invalid'); // Tambahkan kelas untuk menandai input tidak valid
+            },
+            unhighlight: function(element) {
+                $(element).removeClass('is-invalid'); // Hapus kelas jika input valid
+            },
+            focusInvalid: false, // Disable auto-focus on the first invalid field
+            submitHandler: function(form) {
+                // MENGINPUT APPROVAL
+                $.ajax({
+                    url: $(form).attr('action'), // Mengambil action dari form
+                    type: "POST",
+                    data: $(form).serialize(), // Mengambil semua data dari form
+                    dataType: "JSON",
+                    success: function(data) {
+                        // console.log(data);
+                        if (data.status) //if success close modal and reload ajax table
+                        {
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'success',
+                                title: 'Your data has been saved',
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then((result) => {
+                                location.href = "<?= base_url('prepayment') ?>";
+                            })
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert('Error adding / update data');
+                    }
+                });
+            }
         });
 
         // Example: Load data into the form fields and tables

@@ -8,6 +8,7 @@ class Prepayment extends CI_Controller
         parent::__construct();
         $this->load->model('backend/M_prepayment');
         $this->M_login->getsecurity();
+        date_default_timezone_set('Asia/Jakarta');
     }
 
     public function index()
@@ -457,96 +458,64 @@ class Prepayment extends CI_Controller
 
         // Table Header
         $pdf->SetFont('Arial', 'B', 12);
-        $pdf->Cell(60, 10, 'Rincian', 1, 0, 'C');
+        $pdf->Cell(55, 10, 'Rincian', 1, 0, 'C');
         $pdf->Cell(55, 10, 'Nominal', 1, 0, 'C');
-        $pdf->Cell(80, 10, 'Keterangan', 1, 1, 'C');
+        $pdf->Cell(79, 10, 'Keterangan', 1, 1, 'C');
 
         // Table Content
         $pdf->SetFont('Arial', '', 12);
         $pdf->SetFillColor(255, 255, 255); // Row color
         foreach ($data['transaksi'] as $row) {
-            $pdf->Cell(60, 10, $row['rincian'], 1, 0, 'C', true);
+            $pdf->Cell(55, 10, $row['rincian'], 1, 0, 'C', true);
             $pdf->Cell(55, 10, number_format($row['nominal'], 0, ',', '.'), 1, 0, 'C', true);
-            $pdf->Cell(80, 10, $row['keterangan'], 1, 1, 'C', true);
+            $pdf->Cell(79, 10, $row['keterangan'], 1, 1, 'C', true);
         }
 
         // Table Footer
         $pdf->SetFont('Arial', 'B', 12);
-        $pdf->Cell(60, 10, 'Total :', 1, 0, 'C');
+        $pdf->Cell(55, 10, 'Total :', 1, 0, 'C');
         $pdf->SetFont('Arial', '', 12);
-        $pdf->Cell(135, 10, number_format($data['master']->total_nominal, 0, ',', '.'), 1, 1, 'C');
+        $pdf->Cell(134, 10, number_format($data['master']->total_nominal, 0, ',', '.'), 1, 1, 'C');
         $pdf->Ln(10);
 
+        //APPROVAL
+        $pdf->SetFont('Arial', 'B', 12);
+
+        // Membuat header tabel
+        $pdf->Cell(63, 8.5, 'Yang Melakukan', 1, 0, 'C');
+        $pdf->Cell(63, 8.5, 'Mengetahui', 1, 0, 'C');
+        $pdf->Cell(63, 8.5, 'Menyetujui', 1, 1, 'C');
+
+        // Set font normal untuk konten tabel
         $pdf->SetFont('Arial', '', 10);
-        $pdf->Cell(50, 8.5, 'YANG MELAKUKAN', 1, 0, 'C');
-        $pdf->Cell(50, 8.5, 'MENGETAHUI', 1, 0, 'C');
-        $pdf->Cell(50, 8.5, 'MENYETUJUI', 1, 1, 'C');
 
-        $pdf->Cell(50, 18, 'CREATED', 1, 0, 'C');
+        // Baris pemisah
+        $pdf->Cell(63, 5, '', 'LR', 0, 'C');
+        $pdf->Cell(63, 5, '', 0, 0, 'C');
+        $pdf->Cell(63, 5, '', 'LR', 1, 'C');
 
-        // Menyimpan posisi saat ini
-        $x = $pdf->GetX();
-        $y = $pdf->GetY();
+        // Baris pertama (Status)
+        $pdf->Cell(63, 5, 'CREATED', 'LR', 0, 'C');
+        $pdf->Cell(63, 5, strtoupper($data['master']->app_status), 0, 0, 'C');
+        $pdf->Cell(63, 5, strtoupper($data['master']->app2_status), 'LR', 1, 'C');
 
-        // Mengatur posisi X dan Y dengan margin tambahan untuk teks tanggal
-        $pdf->SetXY($x + -50, $y + 5); // Menambahkan margin horizontal dan vertikal
+        // Baris kedua (Tanggal)
+        $pdf->Cell(63, 5, $data['master']->created_at, 'LR', 0, 'C');
+        $pdf->Cell(63, 5, $data['master']->app_date, 0, 0, 'C');
+        $pdf->Cell(63, 5, $data['master']->app2_date, 'LR', 1, 'C');
 
-        // Menggunakan Cell() untuk mencetak teks tanggal dengan margin
-        $pdf->Cell(50, 18, $created_at, 0, 0, 'C');
+        // Baris pemisah
+        $pdf->Cell(63, 5, '', 'LR', 0, 'C');
+        $pdf->Cell(63, 5, '', 0, 0, 'C');
+        $pdf->Cell(63, 5, '', 'LR', 1, 'C');
 
-        // Kembali ke posisi sebelumnya untuk elemen berikutnya
-        $pdf->SetXY($x + 0, $y); // Mengatur posisi untuk elemen berikutnya jika diperlukan
+        // Jarak kosong untuk pemisah
+        $pdf->Ln(0);
 
-        // Approval 1
-        $pdf->Cell(50, 18, strtoupper($data['master']->app_status), 1, 0, 'C');
-
-        // Menyimpan posisi saat ini
-        $x = $pdf->GetX();
-        $y = $pdf->GetY();
-
-        // Mengatur posisi X dan Y dengan margin tambahan untuk teks tanggal
-        $pdf->SetXY($x + -50, $y + 5); // Menambahkan margin horizontal dan vertikal
-
-        if ($data['master']->app_date == null) {
-            $date = '';
-        }
-        if ($data['master']->app_date != null) {
-            $date = $app_date;
-        }
-
-        // Menggunakan Cell() untuk mencetak teks tanggal dengan margin
-        $pdf->Cell(50, 18, $date, 0, 0, 'C');
-
-        // Kembali ke posisi sebelumnya untuk elemen berikutnya
-        $pdf->SetXY($x + 0, $y); // Mengatur posisi untuk elemen berikutnya jika diperlukan
-
-        // Approval 2
-        $pdf->Cell(50, 18, strtoupper($data['master']->app2_status), 1, 0, 'C');
-
-        // Menyimpan posisi saat ini
-        $x = $pdf->GetX();
-        $y = $pdf->GetY();
-
-        // Mengatur posisi X dan Y dengan margin tambahan untuk teks tanggal
-        $pdf->SetXY($x + -50, $y + 5); // Menambahkan margin horizontal dan vertikal
-
-        if ($data['master']->app2_date == null) {
-            $date2 = '';
-        }
-        if ($data['master']->app2_date != null) {
-            $date2 = $app2_date;
-        }
-
-        // Menggunakan Cell() untuk mencetak teks tanggal dengan margin
-        $pdf->Cell(50, 18, $date2, 0, 0, 'C');
-
-        // Kembali ke posisi sebelumnya untuk elemen berikutnya
-        $pdf->SetXY($x + -150, $y + 18); // Mengatur posisi untuk elemen berikutnya jika diperlukan
-
-        // Menulis elemen selanjutnya dengan ukuran baris yang lebih kecil
-        $pdf->Cell(50, 8.5, $data['user'], 1, 0, 'C');
-        $pdf->Cell(50, 8.5, $data['master']->app_name, 1, 0, 'C');
-        $pdf->Cell(50, 8.5, $data['master']->app2_name, 1, 1, 'C');
+        // Baris ketiga (Nama pengguna)
+        $pdf->Cell(63, 8.5, $data['user'], 1, 0, 'C');
+        $pdf->Cell(63, 8.5, $data['master']->app_name, 1, 0, 'C');
+        $pdf->Cell(63, 8.5, $data['master']->app2_name, 1, 1, 'C');
 
 
         // Add keterangan

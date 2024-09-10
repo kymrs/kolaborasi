@@ -9,6 +9,7 @@ class Datadeklarasi extends CI_Controller
         parent::__construct();
         $this->load->model('backend/M_datadeklarasi');
         $this->M_login->getsecurity();
+        date_default_timezone_set('Asia/Jakarta');
     }
 
     public function index()
@@ -54,20 +55,18 @@ class Datadeklarasi extends CI_Controller
             } elseif (in_array($field->status, ['rejected', 'approved'])) {
                 $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
                 <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+            } elseif ($field->app_status == 'revised' || $field->app2_status == 'revised') {
+                $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                    <a href="datadeklarasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
+                    <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app_status == 'approved') {
                 $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
                             <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } else {
-                if ($field->app_status == 'revised' || $field->app2_status == 'revised') {
-                    $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                        <a href="datadeklarasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
-                        <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
-                } else {
-                    $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
                         <a href="datadeklarasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
 			            <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
                         <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
-                }
             }
 
             $no++;
@@ -356,97 +355,67 @@ class Datadeklarasi extends CI_Controller
 
         // Set font for form data
         $pdf->SetFont('Arial', '', 12);
-        $pdf->Cell(40, 10, 'Tanggal:', 0, 0);
-        $pdf->Cell(60, 10, $formattedDate, 0, 1);
-        $pdf->Cell(40, 10, 'Nama:', 0, 0);
-        $pdf->Cell(60, 10, $data['user'], 0, 1);
-        $pdf->Cell(40, 10, 'Jabatan:', 0, 0);
-        $pdf->Cell(60, 10, $data['master']->jabatan, 0, 1);
+        $pdf->Cell(40, 10, 'Tanggal', 0, 0);
+        $pdf->Cell(60, 10, ':' . $formattedDate, 0, 1);
+        $pdf->Cell(40, 10, 'Nama', 0, 0);
+        $pdf->Cell(60, 10, ':' . $data['user'], 0, 1);
+        $pdf->Cell(40, 10, 'Jabatan', 0, 0);
+        $pdf->Cell(60, 10, ':' . $data['master']->jabatan, 0, 1);
 
-        $pdf->Ln(5);
+        $pdf->Ln(1);
         $pdf->SetFont('Arial', '', 12);
         $pdf->Cell(60, 10, 'Telah/akan melakukan pembayaran kepada:', 0, 1);
 
         // Set font for form data
         $pdf->SetFont('Arial', '', 12);
-        $pdf->Cell(40, 10, 'Nama:', 0, 0);
-        $pdf->Cell(60, 10, $data['master']->nama_dibayar, 0, 1);
-        $pdf->Cell(40, 10, 'Tujuan:', 0, 0);
-        $pdf->Cell(60, 10, $data['master']->tujuan, 0, 1);
-        $pdf->Cell(40, 10, 'Sebesar:', 0, 0);
-        $pdf->Cell(60, 10, number_format($data['master']->sebesar, 0, ',', '.'), 0, 1);
+        $pdf->Cell(40, 10, 'Nama', 0, 0);
+        $pdf->Cell(60, 10, ':' . $data['master']->nama_dibayar, 0, 1);
+        $pdf->Cell(40, 10, 'Tujuan', 0, 0);
+        $pdf->Cell(60, 10, ':' . $data['master']->tujuan, 0, 1);
+        $pdf->Cell(40, 10, 'Sebesar', 0, 0);
+        $pdf->Cell(60, 10, ':' . number_format($data['master']->sebesar, 0, ',', '.'), 0, 1);
 
-        //APPROVAL
+        // Jarak kosong untuk pemisah
+        $pdf->Ln(3);
+
+        // Set font untuk header
+        $pdf->SetFont('Arial', 'B', 12);
+
+        // Membuat header tabel
+        $pdf->Cell(63, 8.5, 'Yang Melakukan', 1, 0, 'C');
+        $pdf->Cell(63, 8.5, 'Mengetahui', 1, 0, 'C');
+        $pdf->Cell(63, 8.5, 'Menyetujui', 1, 1, 'C');
+
+        // Set font normal untuk konten tabel
         $pdf->SetFont('Arial', '', 10);
-        $pdf->Cell(50, 8.5, 'YANG MELAKUKAN', 1, 0, 'C');
-        $pdf->Cell(50, 8.5, 'MENGETAHUI', 1, 0, 'C');
-        $pdf->Cell(50, 8.5, 'MENYETUJUI', 1, 1, 'C');
 
-        $pdf->Cell(50, 18, 'CREATED', 1, 0, 'C');
+        // Baris pemisah
+        $pdf->Cell(63, 5, '', 'LR', 0, 'C');
+        $pdf->Cell(63, 5, '', 0, 0, 'C');
+        $pdf->Cell(63, 5, '', 'LR', 1, 'C');
 
-        // Menyimpan posisi saat ini
-        $x = $pdf->GetX();
-        $y = $pdf->GetY();
+        // Baris pertama (Status)
+        $pdf->Cell(63, 5, 'CREATED', 'LR', 0, 'C');
+        $pdf->Cell(63, 5, strtoupper($data['master']->app_status), 0, 0, 'C');
+        $pdf->Cell(63, 5, strtoupper($data['master']->app2_status), 'LR', 1, 'C');
 
-        // Mengatur posisi X dan Y dengan margin tambahan untuk teks tanggal
-        $pdf->SetXY($x + -50, $y + 5); // Menambahkan margin horizontal dan vertikal
+        // Baris kedua (Tanggal)
+        $pdf->Cell(63, 5, $data['master']->created_at, 'LR', 0, 'C');
+        $pdf->Cell(63, 5, $data['master']->app_date, 0, 0, 'C');
+        $pdf->Cell(63, 5, $data['master']->app2_date, 'LR', 1, 'C');
 
-        // Menggunakan Cell() untuk mencetak teks tanggal dengan margin
-        $pdf->Cell(50, 18, $created_at, 0, 0, 'C');
+        // Baris pemisah
+        $pdf->Cell(63, 5, '', 'LR', 0, 'C');
+        $pdf->Cell(63, 5, '', 0, 0, 'C');
+        $pdf->Cell(63, 5, '', 'LR', 1, 'C');
 
-        // Kembali ke posisi sebelumnya untuk elemen berikutnya
-        $pdf->SetXY($x + 0, $y); // Mengatur posisi untuk elemen berikutnya jika diperlukan
+        // Jarak kosong untuk pemisah
+        $pdf->Ln(0);
 
-        // Approval 1
-        $pdf->Cell(50, 18, strtoupper($data['master']->app_status), 1, 0, 'C');
-
-        // Menyimpan posisi saat ini
-        $x = $pdf->GetX();
-        $y = $pdf->GetY();
-
-        // Mengatur posisi X dan Y dengan margin tambahan untuk teks tanggal
-        $pdf->SetXY($x + -50, $y + 5); // Menambahkan margin horizontal dan vertikal
-
-        if ($data['master']->app_date == null) {
-            $date = '';
-        }
-        if ($data['master']->app_date != null) {
-            $date = $app_date;
-        }
-
-        // Menggunakan Cell() untuk mencetak teks tanggal dengan margin
-        $pdf->Cell(50, 18, $date, 0, 0, 'C');
-
-        // Kembali ke posisi sebelumnya untuk elemen berikutnya
-        $pdf->SetXY($x + 0, $y); // Mengatur posisi untuk elemen berikutnya jika diperlukan
-
-        // Approval 2
-        $pdf->Cell(50, 18, strtoupper($data['master']->app2_status), 1, 0, 'C');
-
-        // Menyimpan posisi saat ini
-        $x = $pdf->GetX();
-        $y = $pdf->GetY();
-
-        // Mengatur posisi X dan Y dengan margin tambahan untuk teks tanggal
-        $pdf->SetXY($x + -50, $y + 5); // Menambahkan margin horizontal dan vertikal
-
-        if ($data['master']->app2_date == null) {
-            $date2 = '';
-        }
-        if ($data['master']->app2_date != null) {
-            $date2 = $app2_date;
-        }
-
-        // Menggunakan Cell() untuk mencetak teks tanggal dengan margin
-        $pdf->Cell(50, 18, $date2, 0, 0, 'C');
-
-        // Kembali ke posisi sebelumnya untuk elemen berikutnya
-        $pdf->SetXY($x + -150, $y + 18); // Mengatur posisi untuk elemen berikutnya jika diperlukan
-
-        // Menulis elemen selanjutnya dengan ukuran baris yang lebih kecil
-        $pdf->Cell(50, 8.5, $data['user'], 1, 0, 'C');
-        $pdf->Cell(50, 8.5, $data['master']->app_name, 1, 0, 'C');
-        $pdf->Cell(50, 8.5, $data['master']->app2_name, 1, 1, 'C');
+        // Baris ketiga (Nama pengguna)
+        $pdf->Cell(63, 8.5, $data['user'], 1, 0, 'C');
+        $pdf->Cell(63, 8.5, $data['master']->app_name, 1, 0, 'C');
+        $pdf->Cell(63, 8.5, $data['master']->app2_name, 1, 1, 'C');
 
 
         // Add keterangan
@@ -457,10 +426,10 @@ class Datadeklarasi extends CI_Controller
         }
         $pdf->Ln(8);
         if ($data['master']->app_keterangan != null && $data['master']->app_keterangan != '') {
-            $pdf->Cell(60, 10, '*' . $data['master']->app_keterangan . '(' . $data['master']->app_name . ')', 0, 1);
+            $pdf->Cell(60, 10, '*' . $data['master']->app_keterangan . ' ' . '(' . $data['master']->app_name . ')', 0, 1);
         }
         if ($data['master']->app2_keterangan != null && $data['master']->app2_keterangan != '') {
-            $pdf->Cell(60, 10, '*' . $data['master']->app2_keterangan . '(' . $data['master']->app2_name . ')', 0, 1);
+            $pdf->Cell(60, 10, '*' . $data['master']->app2_keterangan . ' ' . '(' . $data['master']->app2_name . ')', 0, 1);
         }
 
         // Output the PDF

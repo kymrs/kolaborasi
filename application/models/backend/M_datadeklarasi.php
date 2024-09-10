@@ -64,6 +64,7 @@ class M_datadeklarasi extends CI_Model
                 // Conditions for 'on-process' status
                 $this->db->where('app_status', 'waiting')
                     ->where('app2_status', 'waiting')
+                    ->or_where('id_pengaju =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
                     ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
             } elseif ($_POST['status'] == 'approved') {
                 // Conditions for 'approved' status
@@ -137,6 +138,7 @@ class M_datadeklarasi extends CI_Model
                 // Conditions for 'on-process' status
                 $this->db->where('app_status', 'waiting')
                     ->where('app2_status', 'waiting')
+                    ->or_where('id_pengaju =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
                     ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
             } elseif ($_POST['status'] == 'approved') {
                 // Conditions for 'approved' status

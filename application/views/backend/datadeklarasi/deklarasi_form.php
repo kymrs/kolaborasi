@@ -134,7 +134,7 @@
                     moment.locale('id')
                     $('#id').val(data['master'].id);
                     $('#kode_deklarasi').val(data['master'].kode_deklarasi.toUpperCase()).attr('readonly', true);
-                    $('#tgl_deklarasi').val(moment(data['master'].tgl_deklarasi).format('DD-MM-YYYY')).attr('disabled', true);
+                    $('#tgl_deklarasi').val(moment(data['master'].tgl_deklarasi).format('DD-MM-YYYY'));
                     $('#nama_dibayar').val(data['master'].nama_dibayar);
                     $('#tujuan').val(data['master'].tujuan);
                     $('#sebesar').val(data['master'].sebesar.replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
@@ -233,7 +233,7 @@
                 //     required: "Kode is required",
                 // },
                 nama_pengajuan: {
-                    required: "Nama Yang Mengajukan is required",
+                    required: "Nama Pengaju is required",
                 },
                 jabatan: {
                     required: "Jabatan is required",

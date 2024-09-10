@@ -73,14 +73,16 @@
         }
 
         .table-approve table {
-            width: 60%;
+            width: 100%;
+            border-collapse: collapse;
         }
 
         .table-approve table tr td {
-            border: 1.5px solid #444;
-            padding: 2.5px;
-            width: 100px;
             text-align: center;
+            width: 25%;
+            padding: 10px;
+            font-size: 14px;
+            border: 1.4px solid black;
         }
 
         /* Keterangan */
@@ -97,7 +99,7 @@
             <div class="container-main">
                 <div class="form-container">
                     <div class="d-flex justify-content-end mb-3">
-                        <?php if ($user->app_name == $app_name && !in_array($user->status, ['approved'])) { ?>
+                        <?php if ($user->app_name == $app_name && $user->app2_status != 'rejected' && !in_array($user->status, ['approved'])) { ?>
                             <a class="btn btn-warning btn-sm mr-2" id="appBtn" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
                         <?php } elseif ($user->app2_name == $app2_name && !in_array($user->app2_status, ['approved', 'rejected'])) { ?>
                             <a class="btn btn-warning btn-sm mr-2" id="appBtn2" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
@@ -264,11 +266,13 @@
                     var nama, status, Keterangan;
 
                     // Memeriksa apakah data yang mengetahui ada
-                    if (data['master']['app_status'] != null) {
+                    if (data['master']['app_status'] == 'waiting') {
+                        $('#app_status').val();
+                        $('#app_keterangan').val();
+                    } else {
                         nama = data['master']['app_name'];
                         status = data['master']['app_status'];
                         keterangan = data['master']['app_keterangan'];
-                        url = "<?php echo site_url('prepayment/approve') ?>";
                         $('#app_status').val(status);
                         $('#app_keterangan').val(keterangan);
                         // $('#note_id').append(`<p>* ${keterangan}</p>`);
@@ -301,11 +305,13 @@
                     var nama2, status2, keterangan2, url;
 
                     // Memeriksa apakah data yang menyetujui ada
-                    if (data['master']['app2_status'] != null) {
+                    if (data['master']['app2_status'] == 'waiting') {
+                        $('#app2_status').val();
+                        $('#app2_keterangan').val();
+                    } else {
                         nama2 = data['master']['app2_name'];
                         status2 = data['master']['app2_status'];
                         keterangan2 = data['master']['app2_keterangan'];
-                        url = "<?php echo site_url('prepayment/approve2') ?>";
                         $('#app2_status').val(status2);
                         $('#app2_keterangan').val(keterangan2);
                         // $('#note_id').append(`<p>* ${keterangan2}</p>`);
@@ -354,10 +360,10 @@
                     $('#keterangan').append(`<span>Keterangan :</span>`);
                 }
                 if (data['master']['app_keterangan'] != '' && data['master']['app_keterangan'] != null) {
-                    $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app_keterangan']}(${data['master']['app_name']})</span>`);
+                    $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app_keterangan']} (${data['master']['app_name']})</span>`);
                 }
                 if (data['master']['app2_keterangan'] != '' && data['master']['app2_keterangan'] != null) {
-                    $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app2_keterangan']}(${data['master']['app2_name']})</span>`);
+                    $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app2_keterangan']} (${data['master']['app2_name']})</span>`);
                 }
                 // DATA APPROVAL PREPAYMENT
                 var nama, status, keterangan, nama2, status2, keterangan2, url;
