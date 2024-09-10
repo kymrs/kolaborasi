@@ -225,10 +225,10 @@
                 required: true
             };
             $("#form").validate().settings.messages[`rincian[${rowCount}]`] = {
-                required: "Rincian harus diisi"
+                required: "Rincian is required"
             };
             $("#form").validate().settings.messages[`nominal[${rowCount}]`] = {
-                required: "Nominal harus diisi"
+                required: "Nominal is required"
             };
 
             // $("#form").validate().settings.rules[`keterangan[${rowCount}]`] = {
@@ -361,8 +361,8 @@
                         <tr id="row-${index + 1}">
                             <td class="row-number">${index + 1}</td>
                             <td><input type="text" class="form-control" name="rincian[${index + 1}]" value="${data['transaksi'][index]['rincian']}" />
-                                <input type="hidden" id="hidden_id${index}" name="hidden_id" value="${data['master']['id']}">
-                                <input type="hidden" id="hidden_id_detail${index}" name="hidden_id_detail[${index + 1}]" value="${data['transaksi'][index]['id']}">
+                                <input type="hidden" id="hidden_id${index + 1}" name="hidden_id" value="${data['master']['id']}">
+                                <input type="hidden" id="hidden_id_detail${index + 1}" name="hidden_id_detail[${index + 1}]" value="${data['transaksi'][index]['id']}">
                             </td>
                             <td><input type="text" class="form-control" id="nominal-${index + 1}" name="nominal[${index + 1}]" value="${nominalFormatted}" />
                                 <input type="hidden" id="hidden_nominal${index + 1}" name="hidden_nominal[${index + 1}]" value="${data['transaksi'][index]['nominal']}">

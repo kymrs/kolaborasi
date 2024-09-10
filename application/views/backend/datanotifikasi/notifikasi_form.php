@@ -242,16 +242,16 @@
             },
             messages: {
                 pengajuan: {
-                    required: "Pengajuan Harus Diisi"
+                    required: "Pengajuan is required"
                 },
                 tgl_notifikasi: {
-                    required: "Tanggal Harus Diisi"
+                    required: "Tanggal is required"
                 },
                 waktu: {
-                    required: "Waktu Harus Diisi"
+                    required: "Waktu is required"
                 },
                 alasan: {
-                    required: "Alasan Harus Diisi"
+                    required: "Alasan is required"
                 },
             },
             errorPlacement: function(error, element) {
