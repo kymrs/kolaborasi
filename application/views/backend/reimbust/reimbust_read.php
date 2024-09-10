@@ -140,11 +140,11 @@
             <!-- Header -->
             <div class="header">
                 <div class="logo">
-                    <img src="<?= base_url() ?>assets/backend/img/reimbust/kwitansi/default.jpg" alt="Logo">
+                    <img src="<?= base_url() ?>assets/backend/img/logo-sw.png" alt="Logo">
                 </div>
                 <div class="title">
                     <h1>FORM PELAPORAN / REIMBUST</h1>
-                    <h2>PT. MANDIRI CIPTA SEJAHTERA</h2>
+                    <h2>KOLABORASI</h2>
                 </div>
             </div>
 

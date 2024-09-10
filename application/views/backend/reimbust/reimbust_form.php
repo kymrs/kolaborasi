@@ -104,7 +104,7 @@
                                 <div class="form-group row" id="kode_prepayment">
                                     <label class="col-sm-5">Kode Prepayment</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" readonly placeholder="Kode Prepayment" name="kode_prepayment" id="kode_prepayment_input">
+                                        <input type="text" class="form-control" readonly placeholder="Kode Prepayment" name="kode_prepayment" id="kode_prepayment_input" style="cursor: not-allowed;">
                                     </div>
                                 </div>
                             </div>
@@ -197,7 +197,7 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="deklarasiModalLabel">Data Deklarasi</h5>
-                                        <a style="position: relative; right: 75px" class="btn btn-primary btn-sm" href="<?= base_url('datadeklarasi/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a>
+                                        <!-- <a style="position: relative; right: 75px" class="btn btn-primary btn-sm" href="<?= base_url('datadeklarasi/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a> -->
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span style="position: relative; bottom: 5px" aria-hidden="true">&times;</span>
                                         </button>
@@ -400,7 +400,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('datadeklarasi/get_list') ?>",
+                "url": "<?php echo site_url('reimbust/get_list2') ?>",
                 "type": "POST"
             },
             "columnDefs": [{
@@ -471,10 +471,14 @@
                 };
             }
 
+            // Sembunyikan baris yang diklik setelah data dipilih
+            $(this).hide();
+
             // Tutup modal setelah data dipilih
             $('#deklarasiModal').modal('hide');
         });
     });
+
 
     // Deklarasi Modal Read
     $(document).ready(function() {
@@ -1057,7 +1061,7 @@
                                             <input type="file" class="custom-file-input" name="kwitansi[${index + 1}]" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01">
                                             <label class="custom-file-label" for="inputGroupFile01" id="upload${index + 1}">${data['transaksi'][index]['kwitansi'] ? data['transaksi'][index]['kwitansi'] : 'Deklarasi'}</label>
                                         </div>
-                                        <input type="hidden" class="form-control kwitansi_image${index + 1}" id="kwitansi_image" name="kwitansi_image[${index + 1}]" value="${data['transaksi'][index]['kwitansi']}">
+                                        <input type="text" class="form-control kwitansi_image${index + 1}" id="kwitansi_image" name="kwitansi_image[${index + 1}]" value="${data['transaksi'][index]['kwitansi'] ? data['transaksi'][index]['kwitansi'] : ''}">
                                         <span class="kwitansi-label">Max Size : 3MB</span>
                                     </td>
                                     <td width="125" style="padding: 16px 10px !important">

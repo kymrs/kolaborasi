@@ -111,6 +111,71 @@ class Reimbust extends CI_Controller
         echo json_encode($output);
     }
 
+    function get_list2()
+    {
+        // INISIAI VARIABLE YANG DIBUTUHKAN
+        $fullname = $this->db->select('name')
+            ->from('tbl_data_user')
+            ->where('id_user', $this->session->userdata('id_user'))
+            ->get()
+            ->row('name');
+        $list = $this->M_reimbust->get_datatables2();
+        $data = array();
+        $no = $_POST['start'];
+
+        //LOOPING DATATABLES
+        foreach ($list as $field) {
+
+            // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
+            if ($field->app_name == $fullname) {
+                $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                                <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+            } elseif ($field->app2_name == $fullname) {
+                $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
+                                <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+            } elseif (in_array($field->status, ['rejected', 'approved'])) {
+                $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+            } elseif ($field->app_status == 'revised' || $field->app2_status == 'revised') {
+                $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                    <a href="datadeklarasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
+                    <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+            } elseif ($field->app_status == 'approved') {
+                $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                            <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+            } else {
+                $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                        <a href="datadeklarasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
+			            <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
+                        <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+            }
+
+            $no++;
+            $row = array();
+            $row[] = $no;
+            $row[] = $action;
+            $row[] = strtoupper($field->kode_deklarasi);
+            $row[] = date("d M Y", strtotime($field->tgl_deklarasi));
+            $row[] = $field->name;
+            $row[] = $field->jabatan;
+            $row[] = $field->nama_dibayar;
+            $row[] = $field->tujuan;
+            $row[] = 'Rp. ' . number_format($field->sebesar, 0, ',', '.');;
+            // $row[] = $field->sebesar;
+            $row[] = $field->status;
+            $data[] = $row;
+        }
+
+        $output = array(
+            "draw" => $_POST['draw'],
+            "recordsTotal" => $this->M_reimbust->count_all2(),
+            "recordsFiltered" => $this->M_reimbust->count_filtered2(),
+            "data" => $data,
+        );
+        //output dalam format JSON
+        echo json_encode($output);
+    }
+
     function read_form($id)
     {
         $data['aksi'] = 'read';
@@ -692,9 +757,13 @@ class Reimbust extends CI_Controller
                 'kwitansi' => $kwitansi,
                 'deklarasi' => $deklarasi[$i]
             ];
+
+            // Update data deklarasi yang di tampilkan di modal, jika gambar di submit maka is active akan menjadi 0
+            $this->db->update('tbl_deklarasi', ['is_active' => 0], ['kode_deklarasi' => $deklarasi[$i]]);
         }
 
         $this->M_reimbust->save_detail($data2);
+
 
         echo json_encode(array("status" => TRUE));
     }

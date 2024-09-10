@@ -134,9 +134,9 @@
 
                     <!-- Header Section -->
                     <div class="header">
-                        <img src="<?= base_url('assets/backend/img/reimbust/kwitansi/default.jpg') ?>" alt="" class="logo">
+                        <img src="<?= base_url('assets/backend/img/logo-sw.png') ?>" alt="" class="logo">
                         <div class="header-field">
-                            <h1>PT. MANDIRI CIPTA SEJAHTERA</h1>
+                            <h1>KOLABORASI</h1>
                             <table>
                                 <tr>
                                     <td>Divisi</td>
