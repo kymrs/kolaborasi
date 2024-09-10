@@ -345,6 +345,20 @@ class Datanotifikasi extends CI_Controller
             ->row('name');
         $data['app_status'] = strtoupper($data['master']->app_status);
         $data['app2_status'] = strtoupper($data['master']->app2_status);
+        $sql = '
+            WITH RankedNotifikasi AS (
+                SELECT *,
+                       ROW_NUMBER() OVER (ORDER BY created_at ASC) AS row_num
+                FROM tbl_notifikasi
+                WHERE id_user = ' . $data['master']->id_user . '
+                AND YEAR(created_at) = ' . date('Y', strtotime($data['master']->created_at)) . '
+            )
+            SELECT row_num
+            FROM RankedNotifikasi
+            WHERE id = ' . $id . ';
+        ';
+        $query = $this->db->query($sql);
+        $data['ke'] = $query->row()->row_num;
 
         $formattedDate = $this->formatIndonesianDate($data['master']->tgl_notifikasi);
         $created_at = $this->formatIndonesianDate($data['master']->created_at);
@@ -376,21 +390,21 @@ class Datanotifikasi extends CI_Controller
         // Set font for form data
         $pdf->SetFont('Arial', '', 12);
         $pdf->Cell(40, 10, 'Nama', 0, 0);
-        $pdf->Cell(60, 10, ':' . $data['user'], 0, 1);
+        $pdf->Cell(60, 10, ': ' . $data['user'], 0, 1);
         $pdf->Cell(40, 10, 'Jabatan', 0, 0);
-        $pdf->Cell(60, 10, ':' . $data['master']->jabatan, 0, 1);
+        $pdf->Cell(60, 10, ': ' . $data['master']->jabatan, 0, 1);
         $pdf->Cell(40, 10, 'Mengajukan izin', 0, 0);
-        $pdf->Cell(60, 10, ':' . $data['master']->pengajuan, 0, 1);
+        $pdf->Cell(60, 10, ': ' . $data['master']->pengajuan, 0, 1);
 
         // Set font for form data
 
         $pdf->SetFont('Arial', '', 12);
         $pdf->Cell(40, 10, 'Tanggal', 0, 0);
-        $pdf->Cell(60, 10, ':' . $formattedDate, 0, 1);
+        $pdf->Cell(60, 10, ': ' . $formattedDate, 0, 1);
         $pdf->Cell(40, 10, 'Waktu', 0, 0);
-        $pdf->Cell(60, 10, ':' . $data['master']->waktu, 0, 1);
+        $pdf->Cell(60, 10, ': ' . $data['master']->waktu, 0, 1);
         $pdf->Cell(40, 10, 'Alasan', 0, 0);
-        $pdf->Cell(60, 10, ':' . $data['master']->alasan, 0, 1);
+        $pdf->Cell(60, 10, ': ' . $data['master']->alasan, 0, 1);
 
         $pdf->Ln(3);
         $pdf->SetFont('Arial', 'B', 12);
@@ -407,9 +421,9 @@ class Datanotifikasi extends CI_Controller
         $pdf->Ln(3);
         $pdf->SetFont('Arial', '', 12);
         $pdf->Cell(40, 10, 'Notifikasi ini', 0, 0);
-        $pdf->Cell(60, 10, ':' . $status, 0, 1);
+        $pdf->Cell(60, 10, ': ' . $status, 0, 1);
         $pdf->Cell(40, 10, 'Dengan alasan', 0, 0);
-        $pdf->Cell(60, 10, ':' . $data['master']->catatan, 0, 1);
+        $pdf->Cell(60, 10, ': ' . $data['master']->catatan, 0, 1);
 
         $pdf->Ln(3);
         $pdf->SetFont('Arial', 'B', 12);
@@ -418,7 +432,7 @@ class Datanotifikasi extends CI_Controller
         $pdf->Ln(3);
         $pdf->SetFont('Arial', '', 12);
         $pdf->Cell(40, 10, 'Notifikasi ke', 0, 0);
-        $pdf->Cell(60, 10, ':' . strtoupper($data['master']->kode_notifikasi), 0, 1);
+        $pdf->Cell(60, 10, ': ' . $data['ke'] . ' (' . date('Y', strtotime($data['master']->created_at)) . ')', 0, 1);
         $pdf->Ln(3);
 
         //APPROVAL
