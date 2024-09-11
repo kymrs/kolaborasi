@@ -1,20 +1,20 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Prepayment extends CI_Controller
+class Prepayment_pu extends CI_Controller
 {
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('backend/M_prepayment');
+        $this->load->model('backend/M_prepayment_pu');
         $this->M_login->getsecurity();
         date_default_timezone_set('Asia/Jakarta');
     }
 
     public function index()
     {
-        $data['title'] = "backend/prepayment/prepayment_list";
-        $data['titleview'] = "Data Prepayment";
+        $data['title'] = "backend/prepayment_pu/prepayment_list_pu";
+        $data['titleview'] = "Data Prepayment Pengenumroh";
         $name = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $this->session->userdata('id_user'))
@@ -37,7 +37,7 @@ class Prepayment extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $list = $this->M_prepayment->get_datatables();
+        $list = $this->M_prepayment_pu->get_datatables();
         $data = array();
         $no = $_POST['start'];
 
@@ -46,26 +46,26 @@ class Prepayment extends CI_Controller
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             if ($field->app_name == $fullname) {
-                $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                                <a class="btn btn-success btn-circle btn-sm" href="prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="prepayment_pu/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                                <a class="btn btn-success btn-circle btn-sm" href="prepayment_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app2_name == $fullname) {
-                $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
-                                <a class="btn btn-success btn-circle btn-sm" href="prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="prepayment_pu/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
+                                <a class="btn btn-success btn-circle btn-sm" href="prepayment_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif (in_array($field->status, ['rejected', 'approved'])) {
-                $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                <a class="btn btn-success btn-circle btn-sm" href="prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="prepayment_pu/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                <a class="btn btn-success btn-circle btn-sm" href="prepayment_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app_status == 'revised' || $field->app2_status == 'revised') {
-                $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                    <a href="prepayment/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
-                    <a class="btn btn-success btn-circle btn-sm" href="prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="prepayment_pu/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                    <a href="prepayment_pu/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
+                    <a class="btn btn-success btn-circle btn-sm" href="prepayment_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app_status == 'approved') {
-                $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                            <a class="btn btn-success btn-circle btn-sm" href="prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="prepayment_pu/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                            <a class="btn btn-success btn-circle btn-sm" href="prepayment_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } else {
-                $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                        <a href="prepayment/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
+                $action = '<a href="prepayment_pu/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                        <a href="prepayment_pu/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
 			            <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
-                        <a class="btn btn-success btn-circle btn-sm" href="prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                        <a class="btn btn-success btn-circle btn-sm" href="prepayment_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             }
 
 
@@ -89,8 +89,8 @@ class Prepayment extends CI_Controller
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_prepayment->count_all(),
-            "recordsFiltered" => $this->M_prepayment->count_filtered(),
+            "recordsTotal" => $this->M_prepayment_pu->count_all(),
+            "recordsFiltered" => $this->M_prepayment_pu->count_filtered(),
             "data" => $data,
         );
         //output dalam format JSON
@@ -101,7 +101,7 @@ class Prepayment extends CI_Controller
     public function read_form($id)
     {
         $data['id'] = $id;
-        $data['user'] = $this->M_prepayment->get_by_id($id);
+        $data['user'] = $this->M_prepayment_pu->get_by_id($id);
         $data['app_name'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $this->session->userdata('id_user'))
@@ -112,8 +112,8 @@ class Prepayment extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $data['title'] = 'backend/prepayment/prepayment_read';
-        $data['title_view'] = 'Prepayment Approval';
+        $data['title'] = 'backend/prepayment_pu/prepayment_read_pu';
+        $data['title_view'] = 'Prepayment Pengenumroh';
         $this->load->view('backend/home', $data);
     }
 
@@ -121,8 +121,8 @@ class Prepayment extends CI_Controller
     public function add_form()
     {
         $data['id'] = 0;
-        $data['title'] = 'backend/prepayment/prepayment_form';
-        $data['title_view'] = 'Prepayment Form';
+        $data['title'] = 'backend/prepayment_pu/prepayment_form_pu';
+        $data['title_view'] = 'Prepayment Pengenumroh Form';
         $this->load->view('backend/home', $data);
     }
 
@@ -130,7 +130,7 @@ class Prepayment extends CI_Controller
     public function generate_kode()
     {
         $date = $this->input->post('date');
-        $kode = $this->M_prepayment->max_kode($date)->row();
+        $kode = $this->M_prepayment_pu->max_kode($date)->row();
         if (empty($kode->kode_prepayment)) {
             $no_urut = 1;
         } else {
@@ -149,15 +149,15 @@ class Prepayment extends CI_Controller
     {
         $data['id'] = $id;
         $data['aksi'] = 'update';
-        $data['title_view'] = "Edit Data Prepayment";
-        $data['title'] = 'backend/prepayment/prepayment_form';
+        $data['title_view'] = "Edit Data Prepayment Pengenumroh";
+        $data['title'] = 'backend/prepayment_pu/prepayment_form_pu';
         $this->load->view('backend/home', $data);
     }
 
     function edit_data($id)
     {
-        $data['master'] = $this->M_prepayment->get_by_id($id);
-        $data['transaksi'] = $this->M_prepayment->get_by_id_detail($id);
+        $data['master'] = $this->M_prepayment_pu->get_by_id($id);
+        $data['transaksi'] = $this->M_prepayment_pu->get_by_id_detail($id);
         $data['nama'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $data['master']->id_user)
@@ -167,7 +167,7 @@ class Prepayment extends CI_Controller
 
     function read_detail($id)
     {
-        $data = $this->M_prepayment->get_by_id_detail($id);
+        $data = $this->M_prepayment_pu->get_by_id_detail($id);
         echo json_encode($data);
     }
 
@@ -176,7 +176,7 @@ class Prepayment extends CI_Controller
     {
         // INSERT KODE PREPAYMENT SAAT SUBMIT
         $date = $this->input->post('tgl_prepayment');
-        $kode = $this->M_prepayment->max_kode($date)->row();
+        $kode = $this->M_prepayment_pu->max_kode($date)->row();
         if (empty($kode->kode_prepayment)) {
             $no_urut = 1;
         } else {
@@ -189,7 +189,7 @@ class Prepayment extends CI_Controller
         $kode_prepayment = 'P' . $year . $month . $urutan;
 
         // MENCARI SIAPA YANG AKAN MELAKUKAN APPROVAL PERMINTAAN
-        $approval = $this->M_prepayment->approval($this->session->userdata('id_user'));
+        $approval = $this->M_prepayment_pu->approval($this->session->userdata('id_user'));
         $id = $this->session->userdata('id_user');
 
         $data = array(
@@ -227,7 +227,7 @@ class Prepayment extends CI_Controller
             $data['app_date'] = date('Y-m-d H:i:s');
         }
 
-        $inserted = $this->M_prepayment->save($data);
+        $inserted = $this->M_prepayment_pu->save($data);
 
         if ($inserted) {
             // INISIASI VARIABEL INPUT DETAIL PREPAYMENT
@@ -243,7 +243,7 @@ class Prepayment extends CI_Controller
                     'keterangan' => $keterangan[$i]
                 );
             }
-            $this->M_prepayment->save_detail($data2);
+            $this->M_prepayment_pu->save_detail($data2);
         }
         echo json_encode(array("status" => TRUE));
     }
@@ -305,8 +305,8 @@ class Prepayment extends CI_Controller
     // MENGHAPUS DATA
     function delete($id)
     {
-        $this->M_prepayment->delete($id);
-        $this->M_prepayment->delete_detail($id);
+        $this->M_prepayment_pu->delete($id);
+        $this->M_prepayment_pu->delete_detail($id);
         echo json_encode(array("status" => TRUE));
     }
 
@@ -390,8 +390,8 @@ class Prepayment extends CI_Controller
         $this->load->library('fpdf');
 
         // Load data from database based on $id
-        $data['master'] = $this->M_prepayment->get_by_id($id);
-        $data['transaksi'] = $this->M_prepayment->get_by_id_detail($id);
+        $data['master'] = $this->M_prepayment_pu->get_by_id($id);
+        $data['transaksi'] = $this->M_prepayment_pu->get_by_id_detail($id);
         $data['user'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $data['master']->id_user)
@@ -541,8 +541,8 @@ class Prepayment extends CI_Controller
     //     $this->load->library('fpdf');
 
     //     // Load data from database based on $id
-    //     $data['master'] = $this->M_prepayment->get_by_id($id);
-    //     $data['transaksi'] = $this->M_prepayment->get_by_id_detail($id);
+    //     $data['master'] = $this->M_prepayment_pu->get_by_id($id);
+    //     $data['transaksi'] = $this->M_prepayment_pu->get_by_id_detail($id);
     //     $data['user'] = $this->db->select('name')
     //         ->from('tbl_data_user')
     //         ->where('id_user', $data['master']->id_user)

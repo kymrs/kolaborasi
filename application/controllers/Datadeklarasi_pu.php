@@ -15,7 +15,7 @@ class Datadeklarasi_pu extends CI_Controller
     public function index()
     {
         $data['title'] = "backend/datadeklarasi_pu/deklarasi_list_pu";
-        $data['titleview'] = "Deklarasi";
+        $data['titleview'] = "Deklarasi Pengenumroh";
         $name = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $this->session->userdata('id_user'))
@@ -109,7 +109,7 @@ class Datadeklarasi_pu extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $data['title_view'] = "Data deklarasi";
+        $data['title_view'] = "Data Deklarasi Pengenumroh";
         $data['title'] = 'backend/datadeklarasi_pu/deklarasi_read_pu';
         $this->load->view('backend/home', $data);
     }
@@ -117,7 +117,7 @@ class Datadeklarasi_pu extends CI_Controller
     function add_form()
     {
         $data['id'] = 0;
-        $data['title_view'] = "Deklarasi Form";
+        $data['title_view'] = "Deklarasi Pengenumroh Form";
         $data['aksi'] = 'update';
         $data['title'] = 'backend/datadeklarasi_pu/deklarasi_form_pu';
         $this->load->view('backend/home', $data);
@@ -126,7 +126,7 @@ class Datadeklarasi_pu extends CI_Controller
     function edit_form($id)
     {
         $data['id'] = $id;
-        $data['title_view'] = "Edit Data Deklarasi";
+        $data['title_view'] = "Edit Data Deklarasi Pengenumroh";
         $data['title'] = 'backend/datadeklarasi_pu/deklarasi_form_pu';
         $this->load->view('backend/home', $data);
     }

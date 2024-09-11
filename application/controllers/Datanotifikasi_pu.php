@@ -1,21 +1,21 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Datanotifikasi extends CI_Controller
+class Datanotifikasi_pu extends CI_Controller
 {
 
     function __construct()
     {
         parent::__construct();
-        $this->load->model('backend/M_datanotifikasi');
+        $this->load->model('backend/M_datanotifikasi_pu');
         $this->M_login->getsecurity();
         date_default_timezone_set('Asia/Jakarta');
     }
 
     public function index()
     {
-        $data['title'] = "backend/datanotifikasi/notifikasi_list";
-        $data['titleview'] = "Notifikasi";
+        $data['title'] = "backend/datanotifikasi_pu/notifikasi_list_pu";
+        $data['titleview'] = "Notifikasi Pengenumroh";
         $name = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $this->session->userdata('id_user'))
@@ -39,33 +39,33 @@ class Datanotifikasi extends CI_Controller
             ->get()
             ->row('name');
         $status = $this->input->post('status'); // Ambil status dari permintaan POST
-        $list = $this->M_datanotifikasi->get_datatables($status);
+        $list = $this->M_datanotifikasi_pu->get_datatables($status);
         $data = array();
         $no = $_POST['start'];
         foreach ($list as $field) {
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             if ($field->app_name == $fullname) {
-                $action = '<a href="datanotifikasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                                <a class="btn btn-success btn-circle btn-sm" href="datanotifikasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="datanotifikasi_pu/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                                <a class="btn btn-success btn-circle btn-sm" href="datanotifikasi_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app2_name == $fullname) {
-                $action = '<a href="datanotifikasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
-                                <a class="btn btn-success btn-circle btn-sm" href="datanotifikasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="datanotifikasi_pu/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
+                                <a class="btn btn-success btn-circle btn-sm" href="datanotifikasi_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif (in_array($field->status, ['rejected', 'approved'])) {
-                $action = '<a href="datanotifikasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                <a class="btn btn-success btn-circle btn-sm" href="datanotifikasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="datanotifikasi_pu/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                <a class="btn btn-success btn-circle btn-sm" href="datanotifikasi_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app_status == 'revised' || $field->app2_status == 'revised') {
-                $action = '<a href="datanotifikasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                    <a href="datanotifikasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
-                    <a class="btn btn-success btn-circle btn-sm" href="datanotifikasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="datanotifikasi_pu/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                    <a href="datanotifikasi_pu/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
+                    <a class="btn btn-success btn-circle btn-sm" href="datanotifikasi_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app_status == 'approved') {
-                $action = '<a href="datanotifikasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                            <a class="btn btn-success btn-circle btn-sm" href="datanotifikasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="datanotifikasi_pu/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                            <a class="btn btn-success btn-circle btn-sm" href="datanotifikasi_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } else {
-                $action = '<a href="datanotifikasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                        <a href="datanotifikasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
+                $action = '<a href="datanotifikasi_pu/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                        <a href="datanotifikasi_pu/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
 			            <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
-                        <a class="btn btn-success btn-circle btn-sm" href="datanotifikasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                        <a class="btn btn-success btn-circle btn-sm" href="datanotifikasi_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             }
 
 
@@ -86,8 +86,8 @@ class Datanotifikasi extends CI_Controller
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_datanotifikasi->count_all(),
-            "recordsFiltered" => $this->M_datanotifikasi->count_filtered(),
+            "recordsTotal" => $this->M_datanotifikasi_pu->count_all(),
+            "recordsFiltered" => $this->M_datanotifikasi_pu->count_filtered(),
             "data" => $data,
         );
         //output dalam format JSON
@@ -97,7 +97,7 @@ class Datanotifikasi extends CI_Controller
     function read_form($id)
     {
         $data['id'] = $id;
-        $data['user'] = $this->M_datanotifikasi->get_by_id($id);
+        $data['user'] = $this->M_datanotifikasi_pu->get_by_id($id);
         $data['app_name'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $this->session->userdata('id_user'))
@@ -122,8 +122,8 @@ class Datanotifikasi extends CI_Controller
         ';
         $query = $this->db->query($sql);
         $data['ke'] = $query->row()->row_num;
-        $data['title_view'] = "Data Notifikasi";
-        $data['title'] = 'backend/datanotifikasi/notifikasi_read';
+        $data['title_view'] = "Data Notifikasi Pengenumroh";
+        $data['title'] = 'backend/datanotifikasi_pu/notifikasi_read_pu';
         $this->load->view('backend/home', $data);
     }
 
@@ -131,7 +131,7 @@ class Datanotifikasi extends CI_Controller
     public function generate_kode()
     {
         $date = $this->input->post('date');
-        $kode = $this->M_datanotifikasi->max_kode($date)->row();
+        $kode = $this->M_datanotifikasi_pu->max_kode($date)->row();
         if (empty($kode->kode_notifikasi)) {
             $no_urut = 1;
         } else {
@@ -149,21 +149,21 @@ class Datanotifikasi extends CI_Controller
     {
         $data['id'] = 0;
         $data['title_view'] = "Notifikasi Form";
-        $data['title'] = 'backend/datanotifikasi/notifikasi_form';
+        $data['title'] = 'backend/datanotifikasi_pu/notifikasi_form_pu';
         $this->load->view('backend/home', $data);
     }
 
     function edit_form($id)
     {
         $data['id'] = $id;
-        $data['title_view'] = "Edit Data Notifikasi";
-        $data['title'] = 'backend/datanotifikasi/notifikasi_form';
+        $data['title_view'] = "Edit Data Notifikasi Pengenumroh";
+        $data['title'] = 'backend/datanotifikasi_pu/notifikasi_form_pu';
         $this->load->view('backend/home', $data);
     }
 
     function edit_data($id)
     {
-        $data['master'] = $this->M_datanotifikasi->get_by_id($id);
+        $data['master'] = $this->M_datanotifikasi_pu->get_by_id($id);
         $data['nama'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $data['master']->id_user)
@@ -175,7 +175,7 @@ class Datanotifikasi extends CI_Controller
     {
         // INSERT KODE DEKLARASI
         $date = $this->input->post('tgl_notifikasi');
-        $kode = $this->M_datanotifikasi->max_kode($date)->row();
+        $kode = $this->M_datanotifikasi_pu->max_kode($date)->row();
         if (empty($kode->kode_notifikasi)) {
             $no_urut = 1;
         } else {
@@ -188,7 +188,7 @@ class Datanotifikasi extends CI_Controller
         $kode_notifikasi = 'N' . $year . $month . $urutan;
 
         // MENCARI SIAPA YANG AKAN MELAKUKAN APPROVAL PERMINTAAN
-        $approval = $this->M_datanotifikasi->approval($this->session->userdata('id_user'));
+        $approval = $this->M_datanotifikasi_pu->approval($this->session->userdata('id_user'));
         $id = $this->session->userdata('id_user');
 
         $data = array(
@@ -226,7 +226,7 @@ class Datanotifikasi extends CI_Controller
             $data['app_date'] = date('Y-m-d H:i:s');
         }
 
-        $this->M_datanotifikasi->save($data);
+        $this->M_datanotifikasi_pu->save($data);
         echo json_encode(array("status" => TRUE));
     }
 
@@ -251,7 +251,7 @@ class Datanotifikasi extends CI_Controller
 
     function delete($id)
     {
-        $this->M_datanotifikasi->delete($id);
+        $this->M_datanotifikasi_pu->delete($id);
         echo json_encode(array("status" => TRUE));
     }
 
@@ -337,7 +337,7 @@ class Datanotifikasi extends CI_Controller
         $this->load->library('fpdf');
 
         // Load data from database based on $id
-        $data['master'] = $this->M_datanotifikasi->get_by_id($id);
+        $data['master'] = $this->M_datanotifikasi_pu->get_by_id($id);
         $data['user'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $data['master']->id_user)

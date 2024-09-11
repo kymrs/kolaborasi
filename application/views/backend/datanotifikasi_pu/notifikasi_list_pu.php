@@ -7,7 +7,7 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                    <a class="btn btn-primary btn-sm" href="<?= base_url('datanotifikasi/add_form') ?>">
+                    <a class="btn btn-primary btn-sm" href="<?= base_url('datanotifikasi_pu/add_form') ?>">
                         <i class="fa fa-plus"></i>&nbsp;Add Data
                     </a>
                     <div class="d-flex align-items-center">
@@ -91,7 +91,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('datanotifikasi/get_list') ?>",
+                "url": "<?php echo site_url('datanotifikasi_pu/get_list') ?>",
                 "type": "POST",
                 "data": function(d) {
                     d.status = $('#appFilter').val(); // Tambahkan parameter status ke permintaan server
@@ -152,7 +152,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: "<?php echo site_url('datanotifikasi/delete/') ?>" + id,
+                        url: "<?php echo site_url('datanotifikasi_pu/delete/') ?>" + id,
                         type: "POST",
                         dataType: "JSON",
                         success: function(data) {

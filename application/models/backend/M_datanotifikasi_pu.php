@@ -3,7 +3,7 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-class M_datanotifikasi extends CI_Model
+class M_datanotifikasi_pu extends CI_Model
 {
     var $id = 'id';
     var $table = 'tbl_notifikasi'; //nama tabel dari database
