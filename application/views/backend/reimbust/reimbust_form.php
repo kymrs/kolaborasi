@@ -348,7 +348,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('prepayment/get_list') ?>",
+                "url": "<?php echo site_url('reimbust/get_list3') ?>",
                 "type": "POST",
                 "data": function(d) {
                     d.status = 'approved';

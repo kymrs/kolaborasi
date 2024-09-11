@@ -5,6 +5,7 @@ if (!defined('BASEPATH'))
 
 class M_reimbust extends CI_Model
 {
+    // Reimbust
     var $id = 'id';
     var $table = 'tbl_reimbust'; //nama tabel dari database
     var $table2 = 'tbl_reimbust_detail';
@@ -12,10 +13,17 @@ class M_reimbust extends CI_Model
     var $column_search = array('kode_reimbust', 'name', 'jabatan', 'departemen', 'sifat_pelaporan', 'tgl_pengajuan', 'tujuan', 'jumlah_prepayment', 'status'); //field yang diizin untuk pencarian 
     var $order = array('id' => 'desc'); // default order 
 
+    // Deklarasi
     var $table3 = 'tbl_deklarasi'; //nama tabel dari database
     var $column_order2 = array(null, null, 'kode_deklarasi', 'tgl_deklarasi', 'name', 'jabatan', 'nama_dibayar', 'tujuan', 'sebesar', 'status');
     var $column_search2 = array('kode_deklarasi', 'tgl_deklarasi', 'name', 'jabatan', 'nama_dibayar', 'tujuan', 'sebesar', 'status'); //field yang diizin untuk pencarian 
     var $order2 = array('id' => 'desc'); // default order 
+
+    // Prepayment
+    var $table4 = 'tbl_prepayment';
+    var $column_order3 = array(null, null, 'kode_prepayment', 'name', 'divisi', 'jabatan', 'tgl_prepayment', 'prepayment', 'total_nominal', 'status');
+    var $column_search3 = array('kode_prepayment', 'name', 'divisi', 'jabatan', 'tgl_prepayment', 'prepayment', 'total_nominal', 'status'); //field yang diizin untuk pencarian
+    var $order3 = array('id' => 'desc');
 
     public function __construct()
     {
@@ -327,6 +335,161 @@ class M_reimbust extends CI_Model
             }
         }
 
+        return $this->db->count_all_results();
+    }
+
+    // Prepayment
+    function _get_datatables_query3()
+    {
+        $this->db->where('is_active', 1);
+        $this->db->select('tbl_prepayment.*, tbl_data_user.name'); // Memilih kolom dari kedua tabel
+        $this->db->from($this->table4);
+        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_prepayment.id_user', 'left'); // JOIN dengan tabel tbl_user
+
+        $i = 0;
+
+        foreach ($this->column_search3 as $item) // looping awal
+        {
+            if ($_POST['search']['value']) // jika datatable mengirimkan pencarian dengan metode POST
+            {
+
+                if ($i === 0) // looping awal
+                {
+                    $this->db->group_start();
+                    if ($item == 'name') {
+                        $this->db->like('tbl_data_user.' . $item, $_POST['search']['value']);
+                    } else {
+                        $this->db->like('tbl_prepayment.' . $item, $_POST['search']['value']);
+                    }
+                } else {
+                    if ($item == 'name') {
+                        $this->db->or_like('tbl_data_user.' . $item, $_POST['search']['value']);
+                    } else {
+                        $this->db->or_like('tbl_prepayment.' . $item, $_POST['search']['value']);
+                    }
+                }
+
+                if (count($this->column_search3) - 1 == $i) {
+                    $this->db->group_end();
+                }
+            }
+            $i++;
+        }
+
+        // Tambahkan pemfilteran berdasarkan status
+        // Tambahkan kondisi jika id_user login sesuai dengan app2_name
+        $id_user_logged_in = $this->session->userdata('id_user'); // Mengambil id_user dari sesi pengguna yang login
+
+        if (!empty($_POST['status'])) {
+            $this->db->group_start(); // Start grouping conditions
+
+            if ($_POST['status'] == 'on-process') {
+                // Conditions for 'on-process' status
+                $this->db->where('app_status', 'waiting')
+                    ->where('app2_status', 'waiting')
+                    ->or_where('tbl_prepayment.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
+                    ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
+            } elseif ($_POST['status'] == 'approved') {
+                // Conditions for 'approved' status
+                $this->db->where('app_status', $_POST['status'])
+                    ->where('app2_status', 'approved')
+                    ->or_where('app_status', $_POST['status'])
+                    ->where('app2_status', 'approved')
+                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status != "approved" AND status = "on-process")', NULL, FALSE);
+            } elseif ($_POST['status'] == 'revised') {
+                $this->db->where('status', $_POST['status']);
+            } elseif ($_POST['status'] == 'rejected') {
+                $this->db->where('status', $_POST['status']);
+            }
+
+            $this->db->group_end(); // End grouping conditions
+        }
+
+        // Tambahkan kondisi berdasarkan tab yang dipilih
+        if (!empty($_POST['tab'])) {
+            if ($_POST['tab'] == 'personal') {
+                $this->db->where('tbl_prepayment.id_user', $this->session->userdata('id_user'));
+            } elseif ($_POST['tab'] == 'employee') {
+                $this->db->group_start()
+                    ->where('tbl_prepayment.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                    ->where('tbl_prepayment.id_user !=', $this->session->userdata('id_user'))
+                    ->or_where('tbl_prepayment.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_prepayment.app_status = 'approved'", FALSE)
+                    ->where('tbl_prepayment.id_user !=', $this->session->userdata('id_user'))
+                    ->group_end();
+            }
+        }
+
+        if (isset($_POST['order'])) {
+            $this->db->order_by($this->column_order3[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+        } else if (isset($this->order3)) {
+            $order = $this->order3;
+            $this->db->order_by(key($order), $order[key($order)]);
+        }
+    }
+
+    // UNTUK MENAMPILKAN HASIL QUERY KE DATA TABLES
+    function get_datatables3()
+    {
+        $this->_get_datatables_query3();
+        if ($_POST['length'] != -1)
+            $this->db->limit($_POST['length'], $_POST['start']);
+        $query = $this->db->get();
+        return $query->result();
+    }
+
+    function count_filtered3()
+    {
+        $this->_get_datatables_query3();
+        $query = $this->db->get();
+        return $query->num_rows();
+    }
+
+    public function count_all3()
+    {
+        $this->db->select('tbl_prepayment.*, tbl_data_user.name'); // Memilih kolom dari kedua tabel
+        $this->db->from($this->table4);
+        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_prepayment.id_user', 'left'); // JOIN dengan tabel tbl_user
+        // Tambahkan pemfilteran berdasarkan status
+        // Tambahkan pemfilteran berdasarkan status
+        // Tambahkan kondisi jika id_user login sesuai dengan app2_name
+        $id_user_logged_in = $this->session->userdata('id_user'); // Mengambil id_user dari sesi pengguna yang login
+
+        if (!empty($_POST['status'])) {
+            $this->db->group_start(); // Start grouping conditions
+
+            if ($_POST['status'] == 'on-process') {
+                // Conditions for 'on-process' status
+                $this->db->where('app_status', 'waiting')
+                    ->where('app2_status', 'waiting')
+                    ->or_where('tbl_prepayment.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
+                    ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
+            } elseif ($_POST['status'] == 'approved') {
+                // Conditions for 'approved' status
+                $this->db->where('app_status', $_POST['status'])
+                    ->where('app2_status', 'approved')
+                    ->or_where('app_status', $_POST['status'])
+                    ->where('app2_status', 'approved')
+                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status != "approved" AND status = "on-process")', NULL, FALSE);
+            } elseif ($_POST['status'] == 'revised') {
+                $this->db->where('status', $_POST['status']);
+            } elseif ($_POST['status'] == 'rejected') {
+                $this->db->where('status', $_POST['status']);
+            }
+
+            $this->db->group_end(); // End grouping conditions
+        }
+
+        // Tambahkan kondisi berdasarkan tab yang dipilih
+        if (!empty($_POST['tab'])) {
+            if ($_POST['tab'] == 'personal') {
+                $this->db->where('tbl_prepayment.id_user', $this->session->userdata('id_user'));
+            } elseif ($_POST['tab'] == 'employee') {
+                $this->db->group_start()
+                    ->where('tbl_prepayment.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                    ->or_where('tbl_prepayment.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                    ->group_end();
+            }
+        }
         return $this->db->count_all_results();
     }
 

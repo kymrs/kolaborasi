@@ -29,6 +29,7 @@ class Reimbust extends CI_Controller
         $this->load->view('backend/home', $data);
     }
 
+    // get list reimbust
     function get_list()
     {
         // INISIAI VARIABLE YANG DIBUTUHKAN
@@ -109,6 +110,7 @@ class Reimbust extends CI_Controller
         echo json_encode($output);
     }
 
+    // get list deklarasi
     function get_list2()
     {
         // INISIAI VARIABLE YANG DIBUTUHKAN
@@ -168,6 +170,75 @@ class Reimbust extends CI_Controller
             "draw" => $_POST['draw'],
             "recordsTotal" => $this->M_reimbust->count_all2(),
             "recordsFiltered" => $this->M_reimbust->count_filtered2(),
+            "data" => $data,
+        );
+        //output dalam format JSON
+        echo json_encode($output);
+    }
+
+    // get list prepayment
+    function get_list3()
+    {
+        // INISIAI VARIABLE YANG DIBUTUHKAN
+        $fullname = $this->db->select('name')
+            ->from('tbl_data_user')
+            ->where('id_user', $this->session->userdata('id_user'))
+            ->get()
+            ->row('name');
+        $list = $this->M_reimbust->get_datatables3();
+        $data = array();
+        $no = $_POST['start'];
+
+        //LOOPING DATATABLES
+        foreach ($list as $field) {
+
+            // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
+            if ($field->app_name == $fullname) {
+                $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                                <a class="btn btn-success btn-circle btn-sm" href="prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+            } elseif ($field->app2_name == $fullname) {
+                $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
+                                <a class="btn btn-success btn-circle btn-sm" href="prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+            } elseif (in_array($field->status, ['rejected', 'approved'])) {
+                $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                <a class="btn btn-success btn-circle btn-sm" href="prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+            } elseif ($field->app_status == 'revised' || $field->app2_status == 'revised') {
+                $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                    <a href="prepayment/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
+                    <a class="btn btn-success btn-circle btn-sm" href="prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+            } elseif ($field->app_status == 'approved') {
+                $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                            <a class="btn btn-success btn-circle btn-sm" href="prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+            } else {
+                $action = '<a href="prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                        <a href="prepayment/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
+                        <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
+                        <a class="btn btn-success btn-circle btn-sm" href="prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+            }
+
+
+            $formatted_nominal = number_format($field->total_nominal, 0, ',', '.');
+            $no++;
+            $row = array();
+            $row[] = $no;
+            $row[] = $action;
+            $row[] = strtoupper($field->kode_prepayment);
+            $row[] = $field->name;
+            $row[] = strtoupper($field->divisi);
+            $row[] = strtoupper($field->jabatan);
+            $row[] = date("d M Y", strtotime($field->tgl_prepayment));
+            $row[] = $field->prepayment;
+            $row[] = $formatted_nominal;
+            // $row[] = $field->tujuan;
+            $row[] = $field->status;
+
+            $data[] = $row;
+        }
+
+        $output = array(
+            "draw" => $_POST['draw'],
+            "recordsTotal" => $this->M_reimbust->count_all3(),
+            "recordsFiltered" => $this->M_reimbust->count_filtered3(),
             "data" => $data,
         );
         //output dalam format JSON
@@ -759,6 +830,7 @@ class Reimbust extends CI_Controller
             // Update data deklarasi yang di tampilkan di modal, jika gambar di submit maka is active akan menjadi 0
             $this->db->update('tbl_deklarasi', ['is_active' => 0], ['kode_deklarasi' => $deklarasi[$i]]);
         }
+        $this->db->update('tbl_prepayment', ['is_active' => 0], ['kode_prepayment' => $this->input->post('kode_prepayment')]);
 
         $this->M_reimbust->save_detail($data2);
 
