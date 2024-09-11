@@ -22,11 +22,15 @@
         .header {
             display: flex;
             align-items: center;
+            margin-bottom: 30px;
         }
 
         .header .logo {
-            width: 130px;
-            margin-right: 10px;
+            width: 160px;
+            position: relative;
+            right: 17px;
+            top: -50px;
+            margin-bottom: -70px;
         }
 
         .header h1 {
@@ -134,17 +138,16 @@
 
                     <!-- Header Section -->
                     <div class="header">
-                        <img src="<?= base_url('assets/backend/img/logo-sw.png') ?>" alt="" class="logo">
                         <div class="header-field">
-                            <h1>PENGENUMROH</h1>
+                            <img src="<?= base_url('assets/backend/img/logo-pu.png') ?>" alt="" class="logo">
                             <table>
                                 <tr>
-                                    <td>Divisi</td>
+                                    <td style="font-weight: bold;">Divisi</td>
                                     <td>:</td>
                                     <td id="divisiTxt">tess</td>
                                 </tr>
                                 <tr>
-                                    <td>Prepayment</td>
+                                    <td style="font-weight: bold;">Prepayment</td>
                                     <td>:</td>
                                     <td id="prepaymentTxt">tess</td>
                                 </tr>

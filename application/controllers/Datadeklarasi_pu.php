@@ -341,14 +341,14 @@ class Datadeklarasi_pu extends CI_Controller
         $pdf->AddPage('P', 'Letter');
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/reimbust/kwitansi/default.jpg', 14, -3, 46, 46);
+        $pdf->Image(base_url('') . '/assets/backend/img/logo-pu.png', 14, -3, 46, 46);
 
-        // Set font for title
-        $pdf->SetFont('Arial', 'B', 14);
-        $pdf->Cell(0, 25, 'PT. MANDIRI CIPTA SEJAHTERA', 0, 1, 'C');
+        // // Set font for title
+        // $pdf->SetFont('Arial', 'B', 14);
+        // $pdf->Cell(0, 25, 'PT. MANDIRI CIPTA SEJAHTERA', 0, 1, 'C');
 
         // Title of the form
-        $pdf->Ln(7);
+        $pdf->Ln(25);
         $pdf->SetFont('Arial', 'B', 14);
         $pdf->Cell(0, 10, 'FORM DEKLARASI', 0, 1, 'C');
         $pdf->Ln(5);

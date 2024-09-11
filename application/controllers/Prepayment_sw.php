@@ -412,20 +412,25 @@ class Prepayment_sw extends CI_Controller
         $pdf->AddPage('P', 'Letter');
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/reimbust/kwitansi/default.jpg', 8, -3, 37, 37);
+        $pdf->Image(base_url('') . '/assets/backend/img/logo-sw.png', 8, 10, 40, 30);
 
         // Set posisi untuk title dan elemen lainnya (menyesuaikan jarak dari logo)
-        $pdf->SetXY(46, 5); // Geser ke kanan untuk judul
-        $pdf->SetFont('Arial', 'B', 12);
-        $pdf->Cell(0, 8, 'PT. MANDIRI CIPTA SEJAHTERA', 0, 1, 'L');
+        // $pdf->SetXY(46, 5); // Geser ke kanan untuk judul
+        // $pdf->SetFont('Arial', 'B', 12);
+        // $pdf->Cell(0, 8, 'SEBELASWARNA', 0, 1, 'L');
 
         // Pindahkan posisi sedikit ke bawah dan tetap sejajar
-        $pdf->SetX(46); // Tetap di posisi yang sama untuk elemen lain
+        // $pdf->SetX(46); // Tetap di posisi yang sama untuk elemen lain
+        $pdf->Ln(27);
         $pdf->SetFont('Arial', '', 12);
-        $pdf->Cell(0, 8, 'Divisi: ' . $data['master']->divisi, 0, 1, 'L');
+        $pdf->Cell(30, 10, 'Divisi', 0, 0);
+        $pdf->Cell(5, 10, ':', 0, 0);
+        $pdf->Cell(50, 10, $data['master']->divisi, 0, 1);
 
-        $pdf->SetX(46); // Tetap di posisi yang sama untuk elemen lainnya
-        $pdf->Cell(0, 5, 'Prepayment: ' . $data['master']->prepayment, 0, 1, 'L');
+        // $pdf->SetX(46); // Tetap di posisi yang sama untuk elemen lainnya
+        $pdf->Cell(30, 10, 'Prepayment', 0, 0);
+        $pdf->Cell(5, 10, ':', 0, 0);
+        $pdf->Cell(50, 10, $data['master']->prepayment, 0, 1);
         $pdf->Ln(8);
 
         // Form Title

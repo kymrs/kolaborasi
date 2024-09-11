@@ -19,17 +19,31 @@
         }
 
         /* header */
-        .header h1 {
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin-bottom: 50px;
+        .header {
+            height: 165px;
         }
 
-        .header h2 {
-            font-size: 1.2rem;
+        .header .logo {
+            width: 200px;
+            position: relative;
+            bottom: 15px;
+        }
+
+        .header .title {
+            width: 100%;
+            position: relative;
+            bottom: 3px;
+        }
+
+        .header .title h1 {
+            margin-bottom: 25px;
+        }
+
+        .header .title h1,
+        .header .title h2 {
+            font-size: 1.4rem;
             font-weight: bold;
             text-align: center;
-            margin-bottom: 20px;
         }
 
         /* main field */
@@ -136,8 +150,11 @@
                     </div>
 
                     <div class="header">
-                        <h1>SEBELASWARNA</h1>
-                        <h2>NOTIFIKASI</h2>
+                        <img src="<?= base_url('assets/backend/img/logo-sw.png') ?>" alt="" class="logo">
+                        <div class="title">
+                            <!-- <h1>SEBELASWARNA</h1> -->
+                            <h2>FORM NOTIFIKASI</h2>
+                        </div>
                     </div>
 
                     <div class="main-field">
@@ -361,7 +378,7 @@
             $('#approvalForm').attr('action', '<?= site_url('datanotifikasi_sw/approve2') ?>');
 
             $.ajax({
-                url: "<?php echo site_url('datanotifikasi/edit_data') ?>/" + id,
+                url: "<?php echo site_url('datanotifikasi_sw/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {

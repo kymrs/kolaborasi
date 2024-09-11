@@ -6,7 +6,7 @@ if (!defined('BASEPATH'))
 class M_datanotifikasi_pu extends CI_Model
 {
     var $id = 'id';
-    var $table = 'tbl_notifikasi'; //nama tabel dari database
+    var $table = 'tbl_notifikasi_pu'; //nama tabel dari database
     var $column_order = array(null, null, 'kode_notifikasi', 'name', 'jabatan', 'departemen', 'pengajuan', 'tgl_notifikasi', 'waktu', 'alasan', 'status', 'catatan');
     var $column_search = array('kode_notifikasi', 'name', 'jabatan', 'departemen', 'pengajuan', 'tgl_notifikasi', 'waktu', 'alasan', 'status', 'catatan'); //field yang diizin untuk pencarian 
     var $order = array('id' => 'desc'); // default order 
@@ -20,9 +20,9 @@ class M_datanotifikasi_pu extends CI_Model
     {
 
         // $this->db->from($this->table);
-        $this->db->select('tbl_notifikasi.*, tbl_data_user.name');
-        $this->db->from('tbl_notifikasi');
-        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_notifikasi.id_user');
+        $this->db->select('tbl_notifikasi_pu.*, tbl_data_user.name');
+        $this->db->from('tbl_notifikasi_pu');
+        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_notifikasi_pu.id_user');
 
         $i = 0;
 
@@ -37,13 +37,13 @@ class M_datanotifikasi_pu extends CI_Model
                     if ($item == 'name') {
                         $this->db->like('tbl_data_user.' . $item, $_POST['search']['value']);
                     } else {
-                        $this->db->like('tbl_notifikasi.' . $item, $_POST['search']['value']);
+                        $this->db->like('tbl_notifikasi_pu.' . $item, $_POST['search']['value']);
                     }
                 } else {
                     if ($item == 'name') {
                         $this->db->or_like('tbl_data_user.' . $item, $_POST['search']['value']);
                     } else {
-                        $this->db->or_like('tbl_notifikasi.' . $item, $_POST['search']['value']);
+                        $this->db->or_like('tbl_notifikasi_pu.' . $item, $_POST['search']['value']);
                     }
                 }
 
@@ -64,7 +64,7 @@ class M_datanotifikasi_pu extends CI_Model
                 // Conditions for 'on-process' status
                 $this->db->where('app_status', 'waiting')
                     ->where('app2_status', 'waiting')
-                    ->or_where('tbl_notifikasi.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
+                    ->or_where('tbl_notifikasi_pu.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
                     ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
             } elseif ($_POST['status'] == 'approved') {
                 // Conditions for 'approved' status
@@ -85,13 +85,13 @@ class M_datanotifikasi_pu extends CI_Model
         // Tambahkan kondisi berdasarkan tab yang dipilih
         if (!empty($_POST['tab'])) {
             if ($_POST['tab'] == 'personal') {
-                $this->db->where('tbl_notifikasi.id_user', $this->session->userdata('id_user'));
+                $this->db->where('tbl_notifikasi_pu.id_user', $this->session->userdata('id_user'));
             } elseif ($_POST['tab'] == 'employee') {
                 $this->db->group_start()
-                    ->where('tbl_notifikasi.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-                    ->where('tbl_notifikasi.id_user !=', $this->session->userdata('id_user'))
-                    ->or_where('tbl_notifikasi.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_notifikasi.app_status = 'approved'", FALSE)
-                    ->where('tbl_notifikasi.id_user !=', $this->session->userdata('id_user'))
+                    ->where('tbl_notifikasi_pu.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                    ->where('tbl_notifikasi_pu.id_user !=', $this->session->userdata('id_user'))
+                    ->or_where('tbl_notifikasi_pu.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_notifikasi_pu.app_status = 'approved'", FALSE)
+                    ->where('tbl_notifikasi_pu.id_user !=', $this->session->userdata('id_user'))
                     ->group_end();
             }
         }
@@ -122,9 +122,9 @@ class M_datanotifikasi_pu extends CI_Model
 
     public function count_all()
     {
-        $this->db->select('tbl_notifikasi.*, tbl_data_user.name');
-        $this->db->from('tbl_notifikasi');
-        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_notifikasi.id_user');
+        $this->db->select('tbl_notifikasi_pu.*, tbl_data_user.name');
+        $this->db->from('tbl_notifikasi_pu');
+        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_notifikasi_pu.id_user');
 
         // Tambahkan pemfilteran berdasarkan status
         // Tambahkan kondisi jika id_user login sesuai dengan app2_name
@@ -137,7 +137,7 @@ class M_datanotifikasi_pu extends CI_Model
                 // Conditions for 'on-process' status
                 $this->db->where('app_status', 'waiting')
                     ->where('app2_status', 'waiting')
-                    ->or_where('tbl_notifikasi.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
+                    ->or_where('tbl_notifikasi_pu.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
                     ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
             } elseif ($_POST['status'] == 'approved') {
                 // Conditions for 'approved' status
@@ -157,13 +157,13 @@ class M_datanotifikasi_pu extends CI_Model
 
         if (!empty($_POST['tab'])) {
             if ($_POST['tab'] == 'personal') {
-                $this->db->where('tbl_notifikasi.id_user', $this->session->userdata('id_user'));
+                $this->db->where('tbl_notifikasi_pu.id_user', $this->session->userdata('id_user'));
             } elseif ($_POST['tab'] == 'employee') {
                 $this->db->group_start()
-                    ->where('tbl_notifikasi.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-                    ->where('tbl_notifikasi.id_user !=', $this->session->userdata('id_user'))
-                    ->or_where('tbl_notifikasi.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_notifikasi.app_status = 'approved'", FALSE)
-                    ->where('tbl_notifikasi.id_user !=', $this->session->userdata('id_user'))
+                    ->where('tbl_notifikasi_pu.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                    ->where('tbl_notifikasi_pu.id_user !=', $this->session->userdata('id_user'))
+                    ->or_where('tbl_notifikasi_pu.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_notifikasi_pu.app_status = 'approved'", FALSE)
+                    ->where('tbl_notifikasi_pu.id_user !=', $this->session->userdata('id_user'))
                     ->group_end();
             }
         }
@@ -181,9 +181,9 @@ class M_datanotifikasi_pu extends CI_Model
     {
         $formatted_date = date('ym', strtotime($date));
         $this->db->select('kode_notifikasi');
-        $where = 'id=(SELECT max(id) FROM tbl_notifikasi where SUBSTRING(kode_notifikasi, 2, 4) = ' . $formatted_date . ')';
+        $where = 'id=(SELECT max(id) FROM tbl_notifikasi_pu where SUBSTRING(kode_notifikasi, 2, 4) = ' . $formatted_date . ')';
         $this->db->where($where);
-        $query = $this->db->get('tbl_notifikasi');
+        $query = $this->db->get('tbl_notifikasi_pu');
         return $query;
     }
 

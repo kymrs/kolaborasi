@@ -198,7 +198,7 @@
             e.preventDefault();
             var $form = $(this);
             if (!$form.valid()) return false;
-            var url = (id == 0) ? "<?php echo site_url('datanotifikasi_sw/add') ?>" : "<?php echo site_url('datanotifikasi/update') ?>";
+            var url = (id == 0) ? "<?php echo site_url('datanotifikasi_sw/add') ?>" : "<?php echo site_url('datanotifikasi_sw/update') ?>";
 
             $.ajax({
                 url: url,
@@ -215,7 +215,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then((result) => {
-                            location.href = "<?= base_url('datanotifikasi') ?>";
+                            location.href = "<?= base_url('datanotifikasi_sw') ?>";
                         });
                     }
                 },

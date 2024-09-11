@@ -341,14 +341,14 @@ class Datadeklarasi_sw extends CI_Controller
         $pdf->AddPage('P', 'Letter');
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/reimbust/kwitansi/default.jpg', 14, -3, 46, 46);
+        $pdf->Image(base_url('') . '/assets/backend/img/logo-sw.png', 14, 5, 40, 30);
 
         // Set font for title
-        $pdf->SetFont('Arial', 'B', 14);
-        $pdf->Cell(0, 25, 'PT. MANDIRI CIPTA SEJAHTERA', 0, 1, 'C');
+        // $pdf->SetFont('Arial', 'B', 14);
+        // $pdf->Cell(0, 25, 'SEBELASWARNA', 0, 1, 'C');
 
         // Title of the form
-        $pdf->Ln(7);
+        $pdf->Ln(25);
         $pdf->SetFont('Arial', 'B', 14);
         $pdf->Cell(0, 10, 'FORM DEKLARASI', 0, 1, 'C');
         $pdf->Ln(5);
@@ -356,11 +356,11 @@ class Datadeklarasi_sw extends CI_Controller
         // Set font for form data
         $pdf->SetFont('Arial', '', 12);
         $pdf->Cell(40, 10, 'Tanggal', 0, 0);
-        $pdf->Cell(60, 10, ':' . $formattedDate, 0, 1);
+        $pdf->Cell(60, 10, ': ' . $formattedDate, 0, 1);
         $pdf->Cell(40, 10, 'Nama', 0, 0);
-        $pdf->Cell(60, 10, ':' . $data['user'], 0, 1);
+        $pdf->Cell(60, 10, ': ' . $data['user'], 0, 1);
         $pdf->Cell(40, 10, 'Jabatan', 0, 0);
-        $pdf->Cell(60, 10, ':' . $data['master']->jabatan, 0, 1);
+        $pdf->Cell(60, 10, ': ' . $data['master']->jabatan, 0, 1);
 
         $pdf->Ln(1);
         $pdf->SetFont('Arial', '', 12);
@@ -369,11 +369,11 @@ class Datadeklarasi_sw extends CI_Controller
         // Set font for form data
         $pdf->SetFont('Arial', '', 12);
         $pdf->Cell(40, 10, 'Nama', 0, 0);
-        $pdf->Cell(60, 10, ':' . $data['master']->nama_dibayar, 0, 1);
+        $pdf->Cell(60, 10, ': ' . $data['master']->nama_dibayar, 0, 1);
         $pdf->Cell(40, 10, 'Tujuan', 0, 0);
-        $pdf->Cell(60, 10, ':' . $data['master']->tujuan, 0, 1);
+        $pdf->Cell(60, 10, ': ' . $data['master']->tujuan, 0, 1);
         $pdf->Cell(40, 10, 'Sebesar', 0, 0);
-        $pdf->Cell(60, 10, ':' . number_format($data['master']->sebesar, 0, ',', '.'), 0, 1);
+        $pdf->Cell(60, 10, ': ' . number_format($data['master']->sebesar, 0, ',', '.'), 0, 1);
 
         // Jarak kosong untuk pemisah
         $pdf->Ln(3);

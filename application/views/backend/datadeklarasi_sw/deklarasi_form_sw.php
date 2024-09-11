@@ -185,7 +185,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then((result) => {
-                            location.href = "<?= base_url('datadeklarasi') ?>";
+                            location.href = "<?= base_url('datadeklarasi_sw') ?>";
                         })
                     }
                 },

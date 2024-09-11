@@ -24,13 +24,15 @@
         }
 
         .header .logo {
-            width: 150px;
+            width: 200px;
+            position: relative;
+            bottom: 15px;
         }
 
         .header .title {
             width: 100%;
             position: relative;
-            bottom: 100px;
+            bottom: 3px;
         }
 
         .header .title h1 {
@@ -111,7 +113,7 @@
                     <div class="header">
                         <img src="<?= base_url('assets/backend/img/logo-sw.png') ?>" alt="" class="logo">
                         <div class="title">
-                            <h1>SEBELASWARNA</h1>
+                            <!-- <h1>SEBELASWARNA</h1> -->
                             <h2>FORM DEKLARASI</h2>
                         </div>
                     </div>

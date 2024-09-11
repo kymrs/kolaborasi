@@ -22,11 +22,13 @@
         .header {
             display: flex;
             align-items: center;
+            margin-bottom: 30px;
         }
 
         .header .logo {
-            width: 130px;
-            margin-right: 10px;
+            width: 160px;
+            position: relative;
+            right: 17px;
         }
 
         .header h1 {
@@ -42,6 +44,7 @@
         .title {
             text-align: center;
             margin-top: 10px;
+            margin-bottom: 30px;
         }
 
         .title h1 {
@@ -134,17 +137,16 @@
 
                     <!-- Header Section -->
                     <div class="header">
-                        <img src="<?= base_url('assets/backend/img/logo-sw.png') ?>" alt="" class="logo">
                         <div class="header-field">
-                            <h1>SEBELASWARNA</h1>
+                            <img src="<?= base_url('assets/backend/img/logo-sw.png') ?>" alt="" class="logo">
                             <table>
                                 <tr>
-                                    <td>Divisi</td>
+                                    <td style="font-weight: bold;">Divisi</td>
                                     <td>:</td>
                                     <td id="divisiTxt">tess</td>
                                 </tr>
                                 <tr>
-                                    <td>Prepayment</td>
+                                    <td style="font-weight: bold;">Prepayment</td>
                                     <td>:</td>
                                     <td id="prepaymentTxt">tess</td>
                                 </tr>
@@ -301,7 +303,7 @@
             $('#app_status').attr('name', 'app_status');
             $('#approvalForm').attr('action', '<?= site_url('prepayment_sw/approve') ?>');
             $.ajax({
-                url: "<?php echo site_url('prepayment/edit_data') ?>/" + id,
+                url: "<?php echo site_url('prepayment_sw/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -382,10 +384,10 @@
                     $('#keterangan').append(`<span>Keterangan :</span>`);
                 }
                 if (data['master']['app_keterangan'] !== null && data['master']['app_keterangan'] !== '') {
-                    $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app_keterangan']}(${data['master']['app_name']})</span>`);
+                    $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app_keterangan']} (${data['master']['app_name']})</span>`);
                 }
                 if (data['master']['app2_keterangan'] !== null && data['master']['app2_keterangan'] !== '') {
-                    $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app2_keterangan']}(${data['master']['app_name']})</span>`);
+                    $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app2_keterangan']} (${data['master']['app_name']})</span>`);
                 }
                 // DATA APPROVAL PREPAYMENT
 
@@ -437,7 +439,6 @@
             }
         });
 
-        // APPROVE
         // APPROVE
         $("#approvalForm").validate({
             rules: {
