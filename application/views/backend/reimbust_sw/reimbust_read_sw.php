@@ -134,7 +134,7 @@
             <?php } elseif ($user->app2_name == $app2_name && !in_array($user->app2_status, ['approved', 'rejected'])) { ?>
                 <a class="btn btn-warning btn-sm mr-2" id="appBtn2" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
             <?php } ?>
-            <a class="btn btn-secondary btn-sm" href="<?= base_url('reimbust') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+            <a class="btn btn-secondary btn-sm" href="<?= base_url('reimbust_sw') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
         </div>
         <div class="form-container">
             <!-- Header -->
@@ -144,7 +144,7 @@
                 </div>
                 <div class="title">
                     <h1>FORM PELAPORAN / REIMBUST</h1>
-                    <h2>KOLABORASI</h2>
+                    <h2>SEBELASWARNA</h2>
                 </div>
             </div>
 
@@ -321,9 +321,9 @@
             $('#appBtn').click(function() {
                 $('#app_keterangan').attr('name', 'app_keterangan');
                 $('#app_status').attr('name', 'app_status');
-                $('#approvalForm').attr('action', '<?= site_url('reimbust/approve') ?>');
+                $('#approvalForm').attr('action', '<?= site_url('reimbust_sw/approve') ?>');
                 $.ajax({
-                    url: "<?php echo site_url('reimbust/edit_data') ?>/" + id,
+                    url: "<?php echo site_url('reimbust_sw/edit_data') ?>/" + id,
                     type: "GET",
                     dataType: "JSON",
                     success: function(data) {
@@ -350,10 +350,10 @@
             $('#appBtn2').click(function() {
                 $('#app_keterangan').attr('name', 'app2_keterangan').attr('id', 'app2_keterangan');
                 $('#app_status').attr('name', 'app2_status').attr('id', 'app2_status');
-                $('#approvalForm').attr('action', '<?= site_url('reimbust/approve2') ?>');
+                $('#approvalForm').attr('action', '<?= site_url('reimbust_sw/approve2') ?>');
 
                 $.ajax({
-                    url: "<?php echo site_url('reimbust/edit_data') ?>/" + id,
+                    url: "<?php echo site_url('reimbust_sw/edit_data') ?>/" + id,
                     type: "GET",
                     dataType: "JSON",
                     success: function(data) {
@@ -387,7 +387,7 @@
 
             // Additional logic to dynamically load data into the form
             $.ajax({
-                url: "<?php echo site_url('reimbust/edit_data') ?>/" + id,
+                url: "<?php echo site_url('reimbust_sw/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -417,7 +417,7 @@
                         nama = data['master']['app_name'];
                         status = data['master']['app_status'];
                         keterangan = data['master']['app_keterangan'];
-                        url = "<?php echo site_url('reimbust/approve') ?>";
+                        url = "<?php echo site_url('reimbust_sw/approve') ?>";
                         $('#note_id').append(`<p>* ${keterangan}</p>`);
                     }
 
@@ -433,7 +433,7 @@
                         nama = data['master']['app_name'];
                         status = data['master']['app_status'];
                         keterangan = data['master']['app_keterangan'];
-                        url = "<?php echo site_url('reimbust/approve') ?>";
+                        url = "<?php echo site_url('reimbust_sw/approve') ?>";
                         $('#note_id').append(`<p>* ${keterangan}</p>`);
                     }
                     if (data['master']['app_date'] == null) {
@@ -542,7 +542,7 @@
                         var deklarasi = $(this).data('deklarasi');
 
                         $.ajax({
-                            url: '<?= site_url('reimbust/detail_deklarasi') ?>', // URL method controller
+                            url: '<?= site_url('reimbust_sw/detail_deklarasi') ?>', // URL method controller
                             method: 'POST',
                             data: {
                                 deklarasi: deklarasi
@@ -683,7 +683,7 @@
                                 showConfirmButton: false,
                                 timer: 1500
                             }).then((result) => {
-                                location.href = "<?= base_url('reimbust') ?>";
+                                location.href = "<?= base_url('reimbust_sw') ?>";
                             })
                         }
                     },

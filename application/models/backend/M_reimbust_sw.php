@@ -3,7 +3,7 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-class M_reimbust extends CI_Model
+class M_reimbust_sw extends CI_Model
 {
     // Reimbust
     var $id = 'id';

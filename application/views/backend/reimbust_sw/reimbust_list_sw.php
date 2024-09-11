@@ -7,7 +7,7 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                    <a class="btn btn-primary btn-sm" href="<?= base_url('reimbust/add_form') ?>">
+                    <a class="btn btn-primary btn-sm" href="<?= base_url('reimbust_sw/add_form') ?>">
                         <i class="fa fa-plus"></i>&nbsp;Add Data
                     </a>
                     <div class="d-flex align-items-center">
@@ -88,7 +88,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('reimbust/get_list') ?>",
+                "url": "<?php echo site_url('reimbust_sw/get_list') ?>",
                 "type": "POST",
                 "data": function(d) {
                     d.status = $('#appFilter').val(); // Tambahkan parameter status ke permintaan server
@@ -149,7 +149,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: "<?php echo site_url('reimbust/delete/') ?>" + id,
+                    url: "<?php echo site_url('reimbust_sw/delete/') ?>" + id,
                     type: "POST",
                     dataType: "JSON",
                     success: function(data) {
@@ -161,7 +161,7 @@
                                 showConfirmButton: false,
                                 timer: 1500
                             }).then(() => {
-                                location.href = "<?= base_url('reimbust') ?>";
+                                location.href = "<?= base_url('reimbust_sw') ?>";
                             });
                         } else {
                             Swal.fire({
@@ -179,7 +179,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then(() => {
-                            location.href = "<?= base_url('reimbust') ?>";
+                            location.href = "<?= base_url('reimbust_sw') ?>";
                         });
                     }
                 });

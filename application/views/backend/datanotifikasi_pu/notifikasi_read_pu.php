@@ -136,7 +136,7 @@
                     </div>
 
                     <div class="header">
-                        <h1>PT. MANDIRI CIPTA SEJAHTERA</h1>
+                        <h1>PENGENUMROH</h1>
                         <h2>NOTIFIKASI</h2>
                     </div>
 
