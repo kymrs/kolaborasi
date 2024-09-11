@@ -691,7 +691,7 @@ class Reimbust_pu extends CI_Controller
             $deklarasi = $this->input->post('deklarasi');
 
             // Mengambil data deklarasi dari database
-            $deklarasiRecord = $this->db->get_where('tbl_deklarasi', ['kode_deklarasi' => $deklarasi])->row_array();
+            $deklarasiRecord = $this->db->get_where('tbl_deklarasi_pu', ['kode_deklarasi' => $deklarasi])->row_array();
 
             // Debug log
             log_message('debug', 'Deklarasi: ' . print_r($deklarasi, true));
@@ -828,7 +828,7 @@ class Reimbust_pu extends CI_Controller
             ];
 
             // Update data deklarasi yang di tampilkan di modal, jika gambar di submit maka is active akan menjadi 0
-            $this->db->update('tbl_deklarasi', ['is_active' => 0], ['kode_deklarasi' => $deklarasi[$i]]);
+            $this->db->update('tbl_deklarasi_pu', ['is_active' => 0], ['kode_deklarasi' => $deklarasi[$i]]);
         }
         $this->db->update('tbl_prepayment', ['is_active' => 0], ['kode_prepayment' => $this->input->post('kode_prepayment')]);
 

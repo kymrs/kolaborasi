@@ -14,13 +14,13 @@ class M_reimbust_pu extends CI_Model
     var $order = array('id' => 'desc'); // default order 
 
     // Deklarasi
-    var $table3 = 'tbl_deklarasi'; //nama tabel dari database
+    var $table3 = 'tbl_deklarasi_pu'; //nama tabel dari database
     var $column_order2 = array(null, null, 'kode_deklarasi', 'tgl_deklarasi', 'name', 'jabatan', 'nama_dibayar', 'tujuan', 'sebesar', 'status');
     var $column_search2 = array('kode_deklarasi', 'tgl_deklarasi', 'name', 'jabatan', 'nama_dibayar', 'tujuan', 'sebesar', 'status'); //field yang diizin untuk pencarian 
     var $order2 = array('id' => 'desc'); // default order 
 
     // Prepayment
-    var $table4 = 'tbl_prepayment';
+    var $table4 = 'tbl_prepayment_pu';
     var $column_order3 = array(null, null, 'kode_prepayment', 'name', 'divisi', 'jabatan', 'tgl_prepayment', 'prepayment', 'total_nominal', 'status');
     var $column_search3 = array('kode_prepayment', 'name', 'divisi', 'jabatan', 'tgl_prepayment', 'prepayment', 'total_nominal', 'status'); //field yang diizin untuk pencarian
     var $order3 = array('id' => 'desc');
@@ -186,9 +186,9 @@ class M_reimbust_pu extends CI_Model
 
         // $this->db->from($this->table);
         $this->db->where('is_active', 1);
-        $this->db->select('tbl_deklarasi.*, tbl_data_user.name');
+        $this->db->select('tbl_deklarasi_pu.*, tbl_data_user.name');
         $this->db->from($this->table3);
-        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_deklarasi.id_pengaju', 'left');
+        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_deklarasi_pu.id_pengaju', 'left');
 
         $i = 0;
 
@@ -203,13 +203,13 @@ class M_reimbust_pu extends CI_Model
                     if ($item == 'name') {
                         $this->db->like('tbl_data_user.' . $item, $_POST['search']['value']);
                     } else {
-                        $this->db->like('tbl_deklarasi.' . $item, $_POST['search']['value']);
+                        $this->db->like('tbl_deklarasi_pu.' . $item, $_POST['search']['value']);
                     }
                 } else {
                     if ($item == 'name') {
                         $this->db->or_like('tbl_data_user.' . $item, $_POST['search']['value']);
                     } else {
-                        $this->db->or_like('tbl_deklarasi.' . $item, $_POST['search']['value']);
+                        $this->db->or_like('tbl_deklarasi_pu.' . $item, $_POST['search']['value']);
                     }
                 }
 
@@ -252,13 +252,13 @@ class M_reimbust_pu extends CI_Model
         // Tambahkan kondisi berdasarkan tab yang dipilih
         // if (!empty($_POST['tab'])) {
         //     if ($_POST['tab'] == 'personal') {
-        //         $this->db->where('tbl_deklarasi.id_pengaju', $this->session->userdata('id_user'));
+        //         $this->db->where('tbl_deklarasi_pu.id_pengaju', $this->session->userdata('id_user'));
         //     } elseif ($_POST['tab'] == 'employee') {
         //         $this->db->group_start()
-        //             ->where('tbl_deklarasi.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-        //             ->where('tbl_deklarasi.id_pengaju !=', $this->session->userdata('id_user'))
-        //             ->or_where('tbl_deklarasi.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_deklarasi.app_status = 'approved'", FALSE)
-        //             ->where('tbl_deklarasi.id_pengaju !=', $this->session->userdata('id_user'))
+        //             ->where('tbl_deklarasi_pu.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+        //             ->where('tbl_deklarasi_pu.id_pengaju !=', $this->session->userdata('id_user'))
+        //             ->or_where('tbl_deklarasi_pu.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_deklarasi_pu.app_status = 'approved'", FALSE)
+        //             ->where('tbl_deklarasi_pu.id_pengaju !=', $this->session->userdata('id_user'))
         //             ->group_end();
         //     }
         // }
@@ -289,9 +289,9 @@ class M_reimbust_pu extends CI_Model
 
     public function count_all2()
     {
-        $this->db->select('tbl_deklarasi.*, tbl_data_user.name');
+        $this->db->select('tbl_deklarasi_pu.*, tbl_data_user.name');
         $this->db->from($this->table3);
-        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_deklarasi.id_pengaju', 'left');
+        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_deklarasi_pu.id_pengaju', 'left');
 
         // Tambahkan pemfilteran berdasarkan status
         // Tambahkan kondisi jika id_user login sesuai dengan app2_name
@@ -324,13 +324,13 @@ class M_reimbust_pu extends CI_Model
 
         if (!empty($_POST['tab'])) {
             if ($_POST['tab'] == 'personal') {
-                $this->db->where('tbl_deklarasi.id_pengaju', $this->session->userdata('id_user'));
+                $this->db->where('tbl_deklarasi_pu.id_pengaju', $this->session->userdata('id_user'));
             } elseif ($_POST['tab'] == 'employee') {
                 $this->db->group_start()
-                    ->where('tbl_deklarasi.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-                    ->where('tbl_deklarasi.id_pengaju !=', $this->session->userdata('id_user'))
-                    ->or_where('tbl_deklarasi.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_deklarasi.app_status = 'approved'", FALSE)
-                    ->where('tbl_deklarasi.id_pengaju !=', $this->session->userdata('id_user'))
+                    ->where('tbl_deklarasi_pu.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                    ->where('tbl_deklarasi_pu.id_pengaju !=', $this->session->userdata('id_user'))
+                    ->or_where('tbl_deklarasi_pu.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_deklarasi.app_status = 'approved'", FALSE)
+                    ->where('tbl_deklarasi_pu.id_pengaju !=', $this->session->userdata('id_user'))
                     ->group_end();
             }
         }
@@ -342,9 +342,9 @@ class M_reimbust_pu extends CI_Model
     function _get_datatables_query3()
     {
         $this->db->where('is_active', 1);
-        $this->db->select('tbl_prepayment.*, tbl_data_user.name'); // Memilih kolom dari kedua tabel
+        $this->db->select('tbl_prepayment_pu.*, tbl_data_user.name'); // Memilih kolom dari kedua tabel
         $this->db->from($this->table4);
-        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_prepayment.id_user', 'left'); // JOIN dengan tabel tbl_user
+        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_prepayment_pu.id_user', 'left'); // JOIN dengan tabel tbl_user
 
         $i = 0;
 
@@ -359,13 +359,13 @@ class M_reimbust_pu extends CI_Model
                     if ($item == 'name') {
                         $this->db->like('tbl_data_user.' . $item, $_POST['search']['value']);
                     } else {
-                        $this->db->like('tbl_prepayment.' . $item, $_POST['search']['value']);
+                        $this->db->like('tbl_prepayment_pu.' . $item, $_POST['search']['value']);
                     }
                 } else {
                     if ($item == 'name') {
                         $this->db->or_like('tbl_data_user.' . $item, $_POST['search']['value']);
                     } else {
-                        $this->db->or_like('tbl_prepayment.' . $item, $_POST['search']['value']);
+                        $this->db->or_like('tbl_prepayment_pu.' . $item, $_POST['search']['value']);
                     }
                 }
 
@@ -387,7 +387,7 @@ class M_reimbust_pu extends CI_Model
                 // Conditions for 'on-process' status
                 $this->db->where('app_status', 'waiting')
                     ->where('app2_status', 'waiting')
-                    ->or_where('tbl_prepayment.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
+                    ->or_where('tbl_prepayment_pu.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
                     ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
             } elseif ($_POST['status'] == 'approved') {
                 // Conditions for 'approved' status
@@ -408,13 +408,13 @@ class M_reimbust_pu extends CI_Model
         // Tambahkan kondisi berdasarkan tab yang dipilih
         if (!empty($_POST['tab'])) {
             if ($_POST['tab'] == 'personal') {
-                $this->db->where('tbl_prepayment.id_user', $this->session->userdata('id_user'));
+                $this->db->where('tbl_prepayment_pu.id_user', $this->session->userdata('id_user'));
             } elseif ($_POST['tab'] == 'employee') {
                 $this->db->group_start()
-                    ->where('tbl_prepayment.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-                    ->where('tbl_prepayment.id_user !=', $this->session->userdata('id_user'))
-                    ->or_where('tbl_prepayment.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_prepayment.app_status = 'approved'", FALSE)
-                    ->where('tbl_prepayment.id_user !=', $this->session->userdata('id_user'))
+                    ->where('tbl_prepayment_pu.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                    ->where('tbl_prepayment_pu.id_user !=', $this->session->userdata('id_user'))
+                    ->or_where('tbl_prepayment_pu.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_prepayment.app_status = 'approved'", FALSE)
+                    ->where('tbl_prepayment_pu.id_user !=', $this->session->userdata('id_user'))
                     ->group_end();
             }
         }
@@ -446,9 +446,9 @@ class M_reimbust_pu extends CI_Model
 
     public function count_all3()
     {
-        $this->db->select('tbl_prepayment.*, tbl_data_user.name'); // Memilih kolom dari kedua tabel
+        $this->db->select('tbl_prepayment_pu.*, tbl_data_user.name'); // Memilih kolom dari kedua tabel
         $this->db->from($this->table4);
-        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_prepayment.id_user', 'left'); // JOIN dengan tabel tbl_user
+        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_prepayment_pu.id_user', 'left'); // JOIN dengan tabel tbl_user
         // Tambahkan pemfilteran berdasarkan status
         // Tambahkan pemfilteran berdasarkan status
         // Tambahkan kondisi jika id_user login sesuai dengan app2_name
@@ -461,7 +461,7 @@ class M_reimbust_pu extends CI_Model
                 // Conditions for 'on-process' status
                 $this->db->where('app_status', 'waiting')
                     ->where('app2_status', 'waiting')
-                    ->or_where('tbl_prepayment.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
+                    ->or_where('tbl_prepayment_pu.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
                     ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
             } elseif ($_POST['status'] == 'approved') {
                 // Conditions for 'approved' status
@@ -482,11 +482,11 @@ class M_reimbust_pu extends CI_Model
         // Tambahkan kondisi berdasarkan tab yang dipilih
         if (!empty($_POST['tab'])) {
             if ($_POST['tab'] == 'personal') {
-                $this->db->where('tbl_prepayment.id_user', $this->session->userdata('id_user'));
+                $this->db->where('tbl_prepayment_pu.id_user', $this->session->userdata('id_user'));
             } elseif ($_POST['tab'] == 'employee') {
                 $this->db->group_start()
-                    ->where('tbl_prepayment.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-                    ->or_where('tbl_prepayment.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                    ->where('tbl_prepayment_pu.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                    ->or_where('tbl_prepayment_pu.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
                     ->group_end();
             }
         }
