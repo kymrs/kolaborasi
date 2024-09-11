@@ -1224,7 +1224,7 @@
                                 } else {
                                     // Jika data kwitansi ada, lanjutkan dengan membuka modal
                                     modal.css("display", "block");
-                                    modalImg.attr('src', `<?= base_url() ?>/assets/backend/img/reimbust/kwitansi/${kwitansi}`);
+                                    modalImg.attr('src', `<?= base_url() ?>/assets/backend/img/reimbust/kwitansi_sw/${kwitansi}`);
                                     // captionText.text('Deskripsi gambar Anda di sini'); // Ubah dengan deskripsi gambar
                                 }
                             });

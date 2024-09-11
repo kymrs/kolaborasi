@@ -140,7 +140,7 @@
             <!-- Header -->
             <div class="header">
                 <div class="logo">
-                    <img src="<?= base_url() ?>assets/backend/img/logo-sw.png" alt="Logo">
+                    <img src="<?= base_url() ?>assets/backend/img/logo-pu.png" alt="Logo">
                 </div>
                 <div class="title">
                     <h1>FORM PELAPORAN / REIMBUST</h1>
@@ -501,7 +501,7 @@
                         if (kwitansi) {
                             // Jika data kwitansi ada, lanjutkan dengan membuka modal
                             modal.css("display", "block");
-                            modalImg.attr('src', `<?= base_url() ?>/assets/backend/img/reimbust/kwitansi/${kwitansi}`);
+                            modalImg.attr('src', `<?= base_url() ?>/assets/backend/img/reimbust/kwitansi_pu/${kwitansi}`);
                             // captionText.text('Deskripsi gambar Anda di sini'); // Ubah dengan deskripsi gambar
                         }
                     });

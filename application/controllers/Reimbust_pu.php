@@ -14,14 +14,14 @@ class Reimbust_pu extends CI_Controller
     public function index()
     {
         $data['title'] = "backend/reimbust_pu/reimbust_list_pu";
-        $data['titleview'] = "Data Reimbust";
+        $data['titleview'] = "Data Reimbust Pengenumroh";
         $name = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
         $data['approval'] = $this->db->select('COUNT(*) as total_approval')
-            ->from('tbl_reimbust')
+            ->from('tbl_reimbust_pu')
             ->where('app_name', $name)
             ->or_where('app2_name', $name)
             ->get()
@@ -46,26 +46,26 @@ class Reimbust_pu extends CI_Controller
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             if ($field->app_name == $fullname) {
-                $action = '<a href="reimbust/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                                <a class="btn btn-success btn-circle btn-sm" href="reimbust/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="reimbust_pu/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                                <a class="btn btn-success btn-circle btn-sm" href="reimbust_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app2_name == $fullname) {
-                $action = '<a href="reimbust/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
-                                <a class="btn btn-success btn-circle btn-sm" href="reimbust/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="reimbust_pu/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
+                                <a class="btn btn-success btn-circle btn-sm" href="reimbust_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif (in_array($field->status, ['rejected', 'approved'])) {
-                $action = '<a href="reimbust/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                <a class="btn btn-success btn-circle btn-sm" href="reimbust/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="reimbust_pu/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                <a class="btn btn-success btn-circle btn-sm" href="reimbust_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app_status == 'revised' || $field->app2_status == 'revised') {
-                $action = '<a href="reimbust/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                    <a href="reimbust/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
-                    <a class="btn btn-success btn-circle btn-sm" href="reimbust/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="reimbust_pu/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                    <a href="reimbust_pu/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
+                    <a class="btn btn-success btn-circle btn-sm" href="reimbust_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app_status == 'approved') {
-                $action = '<a href="reimbust/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                            <a class="btn btn-success btn-circle btn-sm" href="reimbust/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="reimbust_pu/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                            <a class="btn btn-success btn-circle btn-sm" href="reimbust_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } else {
-                $action = '<a href="reimbust/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                        <a href="reimbust/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
+                $action = '<a href="reimbust_pu/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                        <a href="reimbust_pu/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
 			            <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
-                        <a class="btn btn-success btn-circle btn-sm" href="reimbust/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                        <a class="btn btn-success btn-circle btn-sm" href="reimbust_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             }
 
             $no++;
@@ -260,11 +260,11 @@ class Reimbust_pu extends CI_Controller
             ->get()
             ->row('name');
         $data['id'] = $id;
-        $data['title_view'] = "Data Reimbust";
+        $data['title_view'] = "Data Reimbust Pengenumroh";
         $data['title'] = 'backend/reimbust_pu/reimbust_read_pu';
         $this->db->select('kwitansi');
         $this->db->where('reimbust_id', $id);
-        $data['kwitansi'] = $this->db->get('tbl_reimbust_detail')->result_array();
+        $data['kwitansi'] = $this->db->get('tbl_reimbust_detail_pu')->result_array();
         $this->load->view('backend/home', $data);
     }
 
@@ -285,7 +285,7 @@ class Reimbust_pu extends CI_Controller
         // $data['kode'] = 'B' . date('ym') . $urutan;
         $data['id'] = 0;
         $data['aksi'] = 'add';
-        $data['title_view'] = "Data Reimbust Form";
+        $data['title_view'] = "Reimbust Pengenumroh Form";
         $data['title'] = 'backend/reimbust_pu/reimbust_form_pu';
         $this->load->view('backend/home', $data);
     }
@@ -353,14 +353,14 @@ class Reimbust_pu extends CI_Controller
         $pdf->SetAutoPageBreak(true, 5); // Margin bawah 15mm
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/reimbust/kwitansi/default.jpg', 10, -3, 45, 45);
+        $pdf->Image(base_url('') . '/assets/backend/img/logo-pu.png', 10, -3, 45, 45);
 
         // Set font
         $pdf->SetFont('Arial', 'B', 14);
 
         // Teks yang ingin ditampilkan
         $text1 = 'FORM PELAPORAN / REIMBUST';
-        $text2 = 'PT. MANDIRI CIPTA SEJAHTERA';
+        $text2 = 'PENGENUMROH';
 
         // Menghitung lebar teks
         $textWidth1 = $pdf->GetStringWidth($text1);
@@ -507,8 +507,8 @@ class Reimbust_pu extends CI_Controller
             $sisaPrepayment = $jumlahPengurangan - $totalJumlah;
 
             $pdf->Cell(33, 8.5, number_format($jumlah, 0, ',', '.'), 1, 0, 'C');
-            $pdf->Cell(33, 8.5, $row['kwitansi'] ? 'Kwitansi' : '-', 1, 0, 'C');
-            $pdf->Cell(33, 8.5, $row['deklarasi'] ? 'Deklarasi' : '-', 1, 1, 'C');
+            $pdf->Cell(33, 8.5, $row['kwitansi'] ? 'Ada' : '-', 1, 0, 'C');
+            $pdf->Cell(33, 8.5, $row['deklarasi'] ? 'Ada' : '-', 1, 1, 'C');
         }
 
         // Add total and remaining prepayment
@@ -663,7 +663,7 @@ class Reimbust_pu extends CI_Controller
     {
         $data['id'] = $id;
         $data['aksi'] = 'update';
-        $data['title_view'] = "Edit Data Reimbust";
+        $data['title_view'] = "Edit Reimbust Pengenumroh";
         $data['title'] = 'backend/reimbust_pu/reimbust_form_pu';
         $this->load->view('backend/home', $data);
     }
@@ -700,7 +700,7 @@ class Reimbust_pu extends CI_Controller
             if ($deklarasiRecord) {
                 // Mengambil ID dari record yang ditemukan
                 $deklarasiId = $deklarasiRecord['id']; // Pastikan 'id' adalah nama kolom yang sesuai
-                $redirect_url = site_url('datadeklarasi/read_form/' . $deklarasiId);
+                $redirect_url = site_url('datadeklarasi_pu/read_form/' . $deklarasiId);
 
                 $response = array(
                     'status' => 'success',
@@ -803,7 +803,7 @@ class Reimbust_pu extends CI_Controller
                 $_FILES['file']['error'] = $_FILES['kwitansi']['error'][$i];
                 $_FILES['file']['size'] = $_FILES['kwitansi']['size'][$i];
 
-                $config['upload_path'] = './assets/backend/img/reimbust/kwitansi/';
+                $config['upload_path'] = './assets/backend/img/reimbust/kwitansi_pu/';
                 $config['allowed_types'] = 'jpg|png';
                 $config['max_size'] = 3072; // Batasan ukuran file dalam kilobytes (3 MB)
                 $config['encrypt_name'] = TRUE;
@@ -871,21 +871,21 @@ class Reimbust_pu extends CI_Controller
         $kwitansi_image = $this->input->post('kwitansi_image');
         $deklarasi = $this->input->post('deklarasi');
 
-        if ($this->db->update('tbl_reimbust', $data)) {
+        if ($this->db->update('tbl_reimbust_pu', $data)) {
             // 1. Hapus Baris yang Telah Dihapus
             $deletedRows = json_decode($this->input->post('deleted_rows'), true);
             if (!empty($deletedRows)) {
                 foreach ($deletedRows as $id2) {
-                    $reimbust_detail = $this->db->get_where('tbl_reimbust_detail', ['id' => $id2])->row_array();
+                    $reimbust_detail = $this->db->get_where('tbl_reimbust_detail_pu', ['id' => $id2])->row_array();
 
                     if ($reimbust_detail) {
                         $old_image = $reimbust_detail['kwitansi'];
                         if ($old_image != 'default.jpg') {
-                            @unlink(FCPATH . './assets/backend/img/reimbust/kwitansi/' . $old_image);
+                            @unlink(FCPATH . './assets/backend/img/reimbust/kwitansi_pu/' . $old_image);
                         }
 
                         $this->db->where('id', $id2);
-                        $this->db->delete('tbl_reimbust_detail');
+                        $this->db->delete('tbl_reimbust_detail_pu');
                     }
                 }
             }
@@ -907,7 +907,7 @@ class Reimbust_pu extends CI_Controller
                         return;
                     }
 
-                    $config['upload_path'] = './assets/backend/img/reimbust/kwitansi/';
+                    $config['upload_path'] = './assets/backend/img/reimbust/kwitansi_pu/';
                     $config['allowed_types'] = 'jpg|png';
                     $config['max_size'] = 3072;
                     $config['encrypt_name'] = TRUE;
@@ -917,13 +917,13 @@ class Reimbust_pu extends CI_Controller
                     if ($this->upload->do_upload('file')) {
                         $id = !empty($detail_id[$i]) ? $detail_id[$i] : NULL;
 
-                        $reimbust_detail = $this->db->get_where('tbl_reimbust_detail', ['id' => $id])->row_array();
+                        $reimbust_detail = $this->db->get_where('tbl_reimbust_detail_pu', ['id' => $id])->row_array();
 
                         if ($reimbust_detail) {
                             $old_image = $reimbust_detail['kwitansi'];
 
                             if ($old_image && $old_image != 'default.jpg') {
-                                @unlink(FCPATH . './assets/backend/img/reimbust/kwitansi/' . $old_image);
+                                @unlink(FCPATH . './assets/backend/img/reimbust/kwitansi_pu/' . $old_image);
                             }
                         }
                         $kwitansi = $this->upload->data('file_name');
@@ -946,7 +946,7 @@ class Reimbust_pu extends CI_Controller
                 );
 
                 // Replace data di tbl_reimbust_detail
-                $this->db->replace('tbl_reimbust_detail', $data2);
+                $this->db->replace('tbl_reimbust_detail_pu', $data2);
             }
         }
         echo json_encode(array("status" => TRUE));
@@ -978,7 +978,7 @@ class Reimbust_pu extends CI_Controller
 
         //UPDATE APPROVAL PERTAMA
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_reimbust', $data);
+        $this->db->update('tbl_reimbust_pu', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -1002,7 +1002,7 @@ class Reimbust_pu extends CI_Controller
 
         // UPDATE APPROVAL 2
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_reimbust', $data);
+        $this->db->update('tbl_reimbust_pu', $data);
 
         echo json_encode(array("status" => TRUE));
     }
