@@ -507,8 +507,8 @@ class Reimbust extends CI_Controller
             $sisaPrepayment = $jumlahPengurangan - $totalJumlah;
 
             $pdf->Cell(33, 8.5, number_format($jumlah, 0, ',', '.'), 1, 0, 'C');
-            $pdf->Cell(33, 8.5, $row['kwitansi'] ? 'Kwitansi' : '-', 1, 0, 'C');
-            $pdf->Cell(33, 8.5, $row['deklarasi'] ? 'Deklarasi' : '-', 1, 1, 'C');
+            $pdf->Cell(33, 8.5, $row['kwitansi'] ? 'Ada' : '-', 1, 0, 'C');
+            $pdf->Cell(33, 8.5, $row['deklarasi'] ? 'Ada' : '-', 1, 1, 'C');
         }
 
         // Add total and remaining prepayment
