@@ -341,7 +341,7 @@ class Datadeklarasi_sw extends CI_Controller
         $pdf->AddPage('P', 'Letter');
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/logo-sw.png', 14, 5, 40, 30);
+        $pdf->Image(base_url('') . '/assets/backend/img/sebelaswarna.png', 14, 5, 40, 30);
 
         // Set font for title
         // $pdf->SetFont('Arial', 'B', 14);

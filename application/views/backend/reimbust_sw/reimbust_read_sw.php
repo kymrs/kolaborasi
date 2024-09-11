@@ -140,7 +140,7 @@
             <!-- Header -->
             <div class="header">
                 <div class="logo">
-                    <img src="<?= base_url() ?>assets/backend/img/logo-sw.png" alt="Logo">
+                    <img src="<?= base_url() ?>assets/backend/img/sebelaswarna.png" alt="Logo">
                 </div>
                 <div class="title">
                     <h1>FORM PELAPORAN / REIMBUST</h1>

@@ -341,7 +341,7 @@ class Datadeklarasi_pu extends CI_Controller
         $pdf->AddPage('P', 'Letter');
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/logo-pu.png', 14, -3, 46, 46);
+        $pdf->Image(base_url('') . '/assets/backend/img/pengenumroh.png', 14, -3, 46, 46);
 
         // // Set font for title
         // $pdf->SetFont('Arial', 'B', 14);

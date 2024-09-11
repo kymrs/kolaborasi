@@ -139,7 +139,7 @@
                     <!-- Header Section -->
                     <div class="header">
                         <div class="header-field">
-                            <img src="<?= base_url('assets/backend/img/logo-pu.png') ?>" alt="" class="logo">
+                            <img src="<?= base_url('assets/backend/img/pengenumroh.png') ?>" alt="" class="logo">
                             <table>
                                 <tr>
                                     <td style="font-weight: bold;">Divisi</td>

@@ -138,7 +138,7 @@
                     <!-- Header Section -->
                     <div class="header">
                         <div class="header-field">
-                            <img src="<?= base_url('assets/backend/img/logo-sw.png') ?>" alt="" class="logo">
+                            <img src="<?= base_url('assets/backend/img/sebelaswarna.png') ?>" alt="" class="logo">
                             <table>
                                 <tr>
                                     <td style="font-weight: bold;">Divisi</td>
