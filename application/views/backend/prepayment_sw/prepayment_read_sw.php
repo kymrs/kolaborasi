@@ -136,7 +136,7 @@
                     <div class="header">
                         <img src="<?= base_url('assets/backend/img/logo-sw.png') ?>" alt="" class="logo">
                         <div class="header-field">
-                            <h1>KOLABORASI</h1>
+                            <h1>SEBELASWARNA</h1>
                             <table>
                                 <tr>
                                     <td>Divisi</td>

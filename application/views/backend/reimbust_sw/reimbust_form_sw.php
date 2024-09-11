@@ -197,7 +197,7 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="deklarasiModalLabel">Data Deklarasi</h5>
-                                        <!-- <a style="position: relative; right: 75px" class="btn btn-primary btn-sm" href="<?= base_url('datadeklarasi/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a> -->
+                                        <!-- <a style="position: relative; right: 75px" class="btn btn-primary btn-sm" href="<?= base_url('datadeklarasi_sw/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a> -->
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span style="position: relative; bottom: 5px" aria-hidden="true">&times;</span>
                                         </button>
@@ -244,7 +244,7 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="deklarasiModalLabel">Data Deklarasi</h5>
-                                        <a style="position: relative; right: 75px" class="btn btn-primary btn-sm" href="<?= base_url('datadeklarasi/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a>
+                                        <a style="position: relative; right: 75px" class="btn btn-primary btn-sm" href="<?= base_url('datadeklarasi_sw/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span style="position: relative; bottom: 5px" aria-hidden="true">&times;</span>
                                         </button>
@@ -1184,7 +1184,7 @@
                                         <div class="btn btn-primary btn-lg btn-block btn-sm openModal" data-kwitansi="${data['transaksi'][index]['kwitansi']}">Lihat Foto</div>
                                     </td>
                                     <td width="150" style="padding: 15px 10px">
-                                        <a href="<?= base_url() ?>datadeklarasi/read_form/25" class="btn btn-primary btn-lg btn-block btn-sm" 
+                                        <a href="<?= base_url() ?>datadeklarasi_sw/read_form/25" class="btn btn-primary btn-lg btn-block btn-sm" 
                                             data-id="${index + 1}"
                                             data-deklarasi="${data['transaksi'][index]['deklarasi']}"
                                             id="deklarasi-modal${index + 1}">

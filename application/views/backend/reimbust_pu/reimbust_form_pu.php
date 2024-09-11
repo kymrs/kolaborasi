@@ -7,7 +7,7 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header text-right">
-                    <a class="btn btn-secondary btn-sm" href="<?= base_url('reimbust') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+                    <a class="btn btn-secondary btn-sm" href="<?= base_url('reimbust_pu') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
                     <form id="form" enctype="multipart/form-data">
@@ -197,7 +197,7 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="deklarasiModalLabel">Data Deklarasi</h5>
-                                        <!-- <a style="position: relative; right: 75px" class="btn btn-primary btn-sm" href="<?= base_url('datadeklarasi/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a> -->
+                                        <!-- <a style="position: relative; right: 75px" class="btn btn-primary btn-sm" href="<?= base_url('datadeklarasi_pu/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a> -->
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span style="position: relative; bottom: 5px" aria-hidden="true">&times;</span>
                                         </button>
@@ -244,7 +244,7 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="deklarasiModalLabel">Data Deklarasi</h5>
-                                        <a style="position: relative; right: 75px" class="btn btn-primary btn-sm" href="<?= base_url('datadeklarasi/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a>
+                                        <a style="position: relative; right: 75px" class="btn btn-primary btn-sm" href="<?= base_url('datadeklarasi_pu/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span style="position: relative; bottom: 5px" aria-hidden="true">&times;</span>
                                         </button>
@@ -318,7 +318,7 @@
                 $("#tgl_pengajuan-error").remove(); // Menghapus label error
             }
             $.ajax({
-                url: "<?php echo site_url('reimbust/generate_kode') ?>",
+                url: "<?php echo site_url('reimbust_pu/generate_kode') ?>",
                 type: "POST",
                 data: {
                     "date": dateText
@@ -348,7 +348,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('reimbust/get_list3') ?>",
+                "url": "<?php echo site_url('reimbust_pu/get_list3') ?>",
                 "type": "POST",
                 "data": function(d) {
                     d.status = 'approved';
@@ -400,7 +400,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('reimbust/get_list2') ?>",
+                "url": "<?php echo site_url('reimbust_pu/get_list2') ?>",
                 "type": "POST"
             },
             "columnDefs": [{
@@ -489,7 +489,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('datadeklarasi/get_list') ?>",
+                "url": "<?php echo site_url('datadeklarasi_pu/get_list') ?>",
                 "type": "POST"
             },
             "columnDefs": [{
@@ -522,7 +522,7 @@
     //             $("#tgl_pengajuan-error").remove();
     //         }
     //         $.ajax({
-    //             url: "<?php echo site_url('reimbust/generate_kode') ?>",
+    //             url: "<?php echo site_url('reimbust_pu/generate_kode') ?>",
     //             type: "POST",
     //             data: {
     //                 "date": dateText
@@ -1012,7 +1012,7 @@
             $('#kode_reimbust').val(kode).prop('readonly', true).css('cursor', 'not-allowed');
             $("select option[value='']").hide();
             $.ajax({
-                url: "<?= site_url('reimbust/edit_data') ?>/" + id,
+                url: "<?= site_url('reimbust_pu/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -1184,7 +1184,7 @@
                                         <div class="btn btn-primary btn-lg btn-block btn-sm openModal" data-kwitansi="${data['transaksi'][index]['kwitansi']}">Lihat Foto</div>
                                     </td>
                                     <td width="150" style="padding: 15px 10px">
-                                        <a href="<?= base_url() ?>datadeklarasi/read_form/25" class="btn btn-primary btn-lg btn-block btn-sm" 
+                                        <a href="<?= base_url() ?>datadeklarasi_pu/read_form/25" class="btn btn-primary btn-lg btn-block btn-sm" 
                                             data-id="${index + 1}"
                                             data-deklarasi="${data['transaksi'][index]['deklarasi']}"
                                             id="deklarasi-modal${index + 1}">
@@ -1270,7 +1270,7 @@
             // $('th:last-child').remove();
 
             // $.ajax({
-            //     url: "<?php echo site_url('reimbust/read_detail/') ?>" + id,
+            //     url: "<?php echo site_url('reimbust_pu/read_detail/') ?>" + id,
             //     type: "GET",
             //     dataType: "JSON",
             //     success: function(data) {
@@ -1296,9 +1296,9 @@
 
             var url;
             if (id == 0) {
-                url = "<?php echo site_url('reimbust/add') ?>";
+                url = "<?php echo site_url('reimbust_pu/add') ?>";
             } else {
-                url = "<?php echo site_url('reimbust/update') ?>";
+                url = "<?php echo site_url('reimbust_pu/update') ?>";
             }
 
             var formData = new FormData(this);
@@ -1319,7 +1319,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then((result) => {
-                            location.href = "<?= base_url('reimbust') ?>";
+                            location.href = "<?= base_url('reimbust_pu') ?>";
                         });
                     } else {
                         // Tampilkan pesan kesalahan
