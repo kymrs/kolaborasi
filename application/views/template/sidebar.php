@@ -34,16 +34,31 @@
 
             <!-- Nav Item - Pages Collapse Menu -->
             <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="true" aria-controls="collapsePages">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePagesSW" aria-expanded="true" aria-controls="collapsePagesSW">
                     <i class="fas fa-fw fa-folder"></i>
-                    <span>Data</span>
+                    <span>Data SW</span>
                 </a>
-                <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+                <div id="collapsePagesSW" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href="<?= base_url('datadeklarasi_sw') ?>">Deklarasi</a>
-                        <a class="collapse-item" href="<?= base_url('datanotifikasi_sw') ?>">Notifikasi</a>
-                        <a class="collapse-item" href="<?= base_url('prepayment_sw') ?>">Prepayment</a>
-                        <a class="collapse-item" href="<?= base_url('reimbust_sw') ?>">Reimbust</a>
+                        <a class="collapse-item" href="<?= base_url('datadeklarasi_sw') ?>">Deklarasi SW</a>
+                        <a class="collapse-item" href="<?= base_url('datanotifikasi_sw') ?>">Notifikasi SW</a>
+                        <a class="collapse-item" href="<?= base_url('prepayment_sw') ?>">Prepayment SW</a>
+                        <a class="collapse-item" href="<?= base_url('reimbust_sw') ?>">Reimbust SW</a>
+                    </div>
+                </div>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePagesPU" aria-expanded="true" aria-controls="collapsePagesPU">
+                    <i class="fas fa-fw fa-folder"></i>
+                    <span>Data PU</span>
+                </a>
+                <div id="collapsePagesPU" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="collapse-item" href="<?= base_url('datadeklarasi_pu') ?>">Deklarasi PU</a>
+                        <a class="collapse-item" href="<?= base_url('datanotifikasi_pu') ?>">Notifikasi PU</a>
+                        <a class="collapse-item" href="<?= base_url('prepayment_pu') ?>">Prepayment PU</a>
+                        <a class="collapse-item" href="<?= base_url('reimbust_pu') ?>">Reimbust PU</a>
                     </div>
                 </div>
             </li>
