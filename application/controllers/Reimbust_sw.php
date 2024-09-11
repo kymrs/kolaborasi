@@ -14,7 +14,7 @@ class Reimbust_sw extends CI_Controller
     public function index()
     {
         $data['title'] = "backend/reimbust_sw/reimbust_list_sw";
-        $data['titleview'] = "Data Reimbust";
+        $data['titleview'] = "Data Reimbust Sebelaswarna";
         $name = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $this->session->userdata('id_user'))
@@ -260,7 +260,7 @@ class Reimbust_sw extends CI_Controller
             ->get()
             ->row('name');
         $data['id'] = $id;
-        $data['title_view'] = "Data Reimbust";
+        $data['title_view'] = "Data Reimbust Sebelaswarna";
         $data['title'] = 'backend/reimbust_sw/reimbust_read_sw';
         $this->db->select('kwitansi');
         $this->db->where('reimbust_id', $id);
@@ -285,7 +285,7 @@ class Reimbust_sw extends CI_Controller
         // $data['kode'] = 'B' . date('ym') . $urutan;
         $data['id'] = 0;
         $data['aksi'] = 'add';
-        $data['title_view'] = "Data Reimbust Form";
+        $data['title_view'] = "Reimbust Form Sebelaswarna";
         $data['title'] = 'backend/reimbust_sw/reimbust_form_sw';
         $this->load->view('backend/home', $data);
     }
@@ -353,14 +353,14 @@ class Reimbust_sw extends CI_Controller
         $pdf->SetAutoPageBreak(true, 5); // Margin bawah 15mm
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/reimbust/kwitansi/default.jpg', 10, -3, 45, 45);
+        $pdf->Image(base_url('') . '/assets/backend/img/logo-sw.png', 10, 5, 45, 30);
 
         // Set font
         $pdf->SetFont('Arial', 'B', 14);
 
         // Teks yang ingin ditampilkan
         $text1 = 'FORM PELAPORAN / REIMBUST';
-        $text2 = 'PT. MANDIRI CIPTA SEJAHTERA';
+        $text2 = 'SEBELASWARNA';
 
         // Menghitung lebar teks
         $textWidth1 = $pdf->GetStringWidth($text1);
@@ -663,7 +663,7 @@ class Reimbust_sw extends CI_Controller
     {
         $data['id'] = $id;
         $data['aksi'] = 'update';
-        $data['title_view'] = "Edit Data Reimbust";
+        $data['title_view'] = "Edit Reimbust Pengenumroh";
         $data['title'] = 'backend/reimbust_sw/reimbust_form_sw';
         $this->load->view('backend/home', $data);
     }
@@ -700,7 +700,7 @@ class Reimbust_sw extends CI_Controller
             if ($deklarasiRecord) {
                 // Mengambil ID dari record yang ditemukan
                 $deklarasiId = $deklarasiRecord['id']; // Pastikan 'id' adalah nama kolom yang sesuai
-                $redirect_url = site_url('datadeklarasi/read_form/' . $deklarasiId);
+                $redirect_url = site_url('datadeklarasi_sw/read_form/' . $deklarasiId);
 
                 $response = array(
                     'status' => 'success',
@@ -803,7 +803,7 @@ class Reimbust_sw extends CI_Controller
                 $_FILES['file']['error'] = $_FILES['kwitansi']['error'][$i];
                 $_FILES['file']['size'] = $_FILES['kwitansi']['size'][$i];
 
-                $config['upload_path'] = './assets/backend/img/reimbust/kwitansi/';
+                $config['upload_path'] = './assets/backend/img/reimbust/kwitansi_sw/';
                 $config['allowed_types'] = 'jpg|png';
                 $config['max_size'] = 3072; // Batasan ukuran file dalam kilobytes (3 MB)
                 $config['encrypt_name'] = TRUE;
@@ -881,7 +881,7 @@ class Reimbust_sw extends CI_Controller
                     if ($reimbust_detail) {
                         $old_image = $reimbust_detail['kwitansi'];
                         if ($old_image != 'default.jpg') {
-                            @unlink(FCPATH . './assets/backend/img/reimbust/kwitansi/' . $old_image);
+                            @unlink(FCPATH . './assets/backend/img/reimbust/kwitansi_sw/' . $old_image);
                         }
 
                         $this->db->where('id', $id2);
@@ -907,7 +907,7 @@ class Reimbust_sw extends CI_Controller
                         return;
                     }
 
-                    $config['upload_path'] = './assets/backend/img/reimbust/kwitansi/';
+                    $config['upload_path'] = './assets/backend/img/reimbust/kwitansi_sw/';
                     $config['allowed_types'] = 'jpg|png';
                     $config['max_size'] = 3072;
                     $config['encrypt_name'] = TRUE;
@@ -923,7 +923,7 @@ class Reimbust_sw extends CI_Controller
                             $old_image = $reimbust_detail['kwitansi'];
 
                             if ($old_image && $old_image != 'default.jpg') {
-                                @unlink(FCPATH . './assets/backend/img/reimbust/kwitansi/' . $old_image);
+                                @unlink(FCPATH . './assets/backend/img/reimbust/kwitansi_sw/' . $old_image);
                             }
                         }
                         $kwitansi = $this->upload->data('file_name');
