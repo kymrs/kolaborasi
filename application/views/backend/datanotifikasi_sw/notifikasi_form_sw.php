@@ -6,7 +6,7 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header text-right">
-                    <a class="btn btn-secondary btn-sm" href="<?= base_url('datanotifikasi') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+                    <a class="btn btn-secondary btn-sm" href="<?= base_url('datanotifikasi_sw') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
                     <form id="form">
@@ -128,7 +128,7 @@
                 $("#tgl_notifikasi-error").remove(); // Menghapus label error
             }
             $.ajax({
-                url: "<?php echo site_url('datanotifikasi/generate_kode') ?>",
+                url: "<?php echo site_url('datanotifikasi_sw/generate_kode') ?>",
                 type: "POST",
                 data: {
                     "date": dateText
@@ -158,7 +158,7 @@
             $('.aksi').text('Update');
             $("select option[value='']").hide();
             $.ajax({
-                url: "<?php echo site_url('datanotifikasi/edit_data') ?>/" + id,
+                url: "<?php echo site_url('datanotifikasi_sw/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -198,7 +198,7 @@
             e.preventDefault();
             var $form = $(this);
             if (!$form.valid()) return false;
-            var url = (id == 0) ? "<?php echo site_url('datanotifikasi/add') ?>" : "<?php echo site_url('datanotifikasi/update') ?>";
+            var url = (id == 0) ? "<?php echo site_url('datanotifikasi_sw/add') ?>" : "<?php echo site_url('datanotifikasi/update') ?>";
 
             $.ajax({
                 url: url,

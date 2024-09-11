@@ -132,7 +132,7 @@
                         <?php } elseif ($user->app2_name == $app2_name && !in_array($user->app2_status, ['approved', 'rejected'])) { ?>
                             <a class="btn btn-warning btn-sm mr-2" id="appBtn2" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
                         <?php } ?>
-                        <a class="btn btn-secondary btn-sm" href="<?= base_url('datanotifikasi') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+                        <a class="btn btn-secondary btn-sm" href="<?= base_url('datanotifikasi_sw') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                     </div>
 
                     <div class="header">
@@ -312,7 +312,7 @@
         $('#appBtn').click(function() {
             $('#app_keterangan').attr('name', 'app_keterangan');
             $('#app_status').attr('name', 'app_status');
-            $('#approvalForm').attr('action', '<?= site_url('datanotifikasi/approve') ?>');
+            $('#approvalForm').attr('action', '<?= site_url('datanotifikasi_sw/approve') ?>');
 
             if ($('#app_catatan').length === 0) {
                 $('#append_catatan').append(`<label for="app_catatan" class="col-form-label">Catatan:</label>
@@ -326,7 +326,7 @@
             $("#approvalForm").valid();
 
             $.ajax({
-                url: "<?php echo site_url('datanotifikasi/edit_data') ?>/" + id,
+                url: "<?php echo site_url('datanotifikasi_sw/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -358,7 +358,7 @@
         $('#appBtn2').click(function() {
             $('#app_keterangan').attr('name', 'app2_keterangan').attr('id', 'app2_keterangan');
             $('#app_status').attr('name', 'app2_status').attr('id', 'app2_status');
-            $('#approvalForm').attr('action', '<?= site_url('datanotifikasi/approve2') ?>');
+            $('#approvalForm').attr('action', '<?= site_url('datanotifikasi_sw/approve2') ?>');
 
             $.ajax({
                 url: "<?php echo site_url('datanotifikasi/edit_data') ?>/" + id,
@@ -399,7 +399,7 @@
 
         // Additional logic to dynamically load data into the form
         $.ajax({
-            url: "<?php echo site_url('datanotifikasi/edit_data') ?>/" + id,
+            url: "<?php echo site_url('datanotifikasi_sw/edit_data') ?>/" + id,
             type: "GET",
             dataType: "JSON",
             success: function(data) {
@@ -523,7 +523,7 @@
                                 showConfirmButton: false,
                                 timer: 1500
                             }).then((result) => {
-                                location.href = "<?= base_url('datanotifikasi') ?>";
+                                location.href = "<?= base_url('datanotifikasi_sw') ?>";
                             })
                         }
                     },

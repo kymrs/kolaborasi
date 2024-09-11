@@ -1,8 +1,9 @@
 <head>
     <?php $this->load->view('template/header'); ?>
     <style>
-        body .container {
-            font-family: Arial, Helvetica, sans-serif;
+        body .container-main {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f6f9;
             padding: 0;
             color: #333;
         }
@@ -11,90 +12,64 @@
             max-width: 800px;
             margin: 15px auto;
             padding: 25px;
-            border: 1px solid #e0e0e0;
+            border: 1px solid #e0e0 e0;
             border-radius: 10px;
             background-color: #ffffff;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
         }
 
-        /* Header */
-
+        /* header */
         .header {
-            display: flex;
-            align-items: center;
+            height: 165px;
         }
 
         .header .logo {
-            width: 130px;
-            margin-right: 10px;
+            width: 150px;
         }
 
-        .header h1 {
+        .header .title {
+            width: 100%;
+            position: relative;
+            bottom: 100px;
+        }
+
+        .header .title h1 {
+            margin-bottom: 25px;
+        }
+
+        .header .title h1,
+        .header .title h2 {
             font-size: 1.4rem;
             font-weight: bold;
-        }
-
-        .header-field tr td:nth-child(2) {
-            padding-left: 20px;
-            padding-right: 5px;
-        }
-
-        .title {
             text-align: center;
-            margin-top: 10px;
         }
 
-        .title h1 {
-            font-weight: bold;
-            font-size: 1.4rem;
-        }
-
-        /* Main field */
-        .main-field tr td:nth-child(2) {
-            padding-left: 25px;
-            padding-right: 5px;
-        }
-
-        .main-field tr td:nth-child(3) {
-            width: 100%;
-            border-bottom: 1.5px solid #444;
-        }
-
-        /* Transaction Field */
-        .transaction-field table {
+        /* Main Field */
+        .main-field table {
             width: 100%;
         }
 
-        .transaction-field table tr,
-        .transaction-field table tr th,
-        .transaction-field table tr td {
-            border: 1.5px solid #444;
+        .main-field table tr td {
             padding: 5px;
         }
 
-        .transaction-field table tr th:nth-child(1) {
-            width: 30%;
+        .main-field table tr td:nth-child(1) {
+            width: 16%;
         }
 
-        .transaction-field table tr th:nth-child(2) {
-            width: 30%;
+        .main-field table tr td:nth-child(2) {
+            width: 2%;
         }
 
-        .transaction-field table tr th:nth-child(3) {
-            width: 42%;
-        }
-
-        .transaction-field table tr th {
-            text-align: center;
-        }
-
-        .transaction-field table {
-            margin-top: 30px;
+        .main-field table tr td:nth-child(3) {
+            width: 82%;
+            border-bottom: 1.5px solid #444;
         }
 
         /* Table Approve */
         .table-approve {
             margin-top: 35px;
+            /* border: 1px solid #444; */
         }
 
         .table-approve table {
@@ -121,81 +96,63 @@
 
     <div class="row">
         <div class="col-lg-12">
-            <div class="container">
+            <div class="container-main">
                 <div class="form-container">
                     <div class="d-flex justify-content-end mb-3">
                         <?php if ($user->app_name == $app_name && $user->app2_status != 'rejected' && !in_array($user->status, ['approved'])) { ?>
                             <a class="btn btn-warning btn-sm mr-2" id="appBtn" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
-                        <?php } elseif ($user->app2_name == $app2_name && !in_array($user->status, ['rejected', 'approved'])) { ?>
+                        <?php } elseif ($user->app2_name == $app2_name && !in_array($user->app2_status, ['approved', 'rejected'])) { ?>
                             <a class="btn btn-warning btn-sm mr-2" id="appBtn2" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
                         <?php } ?>
-                        <a class="btn btn-secondary btn-sm" href="<?= base_url('prepayment') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+                        <a class="btn btn-secondary btn-sm" href="<?= base_url('datadeklarasi_sw') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                     </div>
 
                     <!-- Header Section -->
                     <div class="header">
                         <img src="<?= base_url('assets/backend/img/logo-sw.png') ?>" alt="" class="logo">
-                        <div class="header-field">
+                        <div class="title">
                             <h1>KOLABORASI</h1>
-                            <table>
-                                <tr>
-                                    <td>Divisi</td>
-                                    <td>:</td>
-                                    <td id="divisiTxt">tess</td>
-                                </tr>
-                                <tr>
-                                    <td>Prepayment</td>
-                                    <td>:</td>
-                                    <td id="prepaymentTxt">tess</td>
-                                </tr>
-                            </table>
+                            <h2>FORM DEKLARASI</h2>
                         </div>
                     </div>
-                    <div class="title">
-                        <h1>FORM PENGAJUAN PREPAYMENT</h1>
-                    </div>
+
                     <div class="main-field">
                         <table>
                             <tr>
                                 <td>Tanggal</td>
                                 <td>:</td>
-                                <td class="line" id="tanggalTxt">tess</td>
+                                <td class="line" id="tanggalTxt"></td>
                             </tr>
                             <tr>
                                 <td>Nama</td>
                                 <td>:</td>
-                                <td class="line" id="namaTxt">tess</td>
+                                <td class="line" id="namaTxt"></td>
                             </tr>
                             <tr>
                                 <td>Jabatan</td>
                                 <td>:</td>
-                                <td class="line" id="jabatanTxt">tess</td>
+                                <td class="line" id="jabatanTxt"></td>
                             </tr>
                             <tr>
-                                <td colspan="3">Dengan ini bermaksud mengajukan prepayment untuk :</td>
+                                <td colspan="3">Telah/akan melakukan pembayaran kepada :</td>
+                            </tr>
+                            <tr>
+                                <td>Nama</td>
+                                <td>:</td>
+                                <td class="line" id="nama2Txt"></td>
                             </tr>
                             <tr>
                                 <td>Tujuan</td>
                                 <td>:</td>
                                 <td class="line" id="tujuanTxt"></td>
+                            </tr>
+                            <tr>
+                                <td>Sebesar</td>
+                                <td>:</td>
+                                <td class="line" id="sebesarTxt"></td>
                                 <!-- HIDDEN INPUT -->
                                 <input type="hidden" name="hidden_id" id="hidden_id" value="<?= $id ?>">
                             </tr>
-                        </table>
-                    </div>
-
-                    <div class="transaction-field">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Rincian</th>
-                                    <th>Nominal</th>
-                                    <th>Keterangan</th>
-                                </tr>
-                            </thead>
-                            <tbody id="input-container">
-                                <!-- GENERATE ROW DETAIL PREPAYMENT -->
-                            </tbody>
                         </table>
                     </div>
 
@@ -232,8 +189,6 @@
     </div>
 </div>
 
-
-
 <!-- Modal -->
 <div class="modal fade" id="appModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -251,7 +206,7 @@
                     <div class="form-group">
                         <label for="app_status">Status <span class="text-danger">*</span></label>
                         <select id="app_status" name="app_status" class="form-control" required>
-                            <option selected disabled value="Choose status...">Choose status...</option>
+                            <option selected disabled>Choose status...</option>
                             <option value="approved">Approved</option>
                             <option value="rejected">Rejected</option>
                             <option value="revised">Revised</option>
@@ -299,13 +254,17 @@
         $('#appBtn').click(function() {
             $('#app_keterangan').attr('name', 'app_keterangan');
             $('#app_status').attr('name', 'app_status');
-            $('#approvalForm').attr('action', '<?= site_url('prepayment/approve') ?>');
+            $('#approvalForm').attr('action', '<?= site_url('datadeklarasi_sw/approve') ?>');
+
+            // Additional logic to dynamically load data into the form
             $.ajax({
-                url: "<?php echo site_url('prepayment/edit_data') ?>/" + id,
+                url: "<?php echo site_url('datadeklarasi_sw/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
-                    var nama, date, status, keterangan;
+                    // DATA APPROVAL PREPAYMENT
+                    var nama, status, Keterangan;
+
                     // Memeriksa apakah data yang mengetahui ada
                     if (data['master']['app_status'] == 'waiting') {
                         $('#app_status').val();
@@ -318,6 +277,12 @@
                         $('#app_keterangan').val(keterangan);
                         // $('#note_id').append(`<p>* ${keterangan}</p>`);
                     }
+                    if (data['master']['app_date'] == null) {
+                        date = '';
+                    }
+                    if (data['master']['app_date'] != null) {
+                        date = data['master']['app_date'];
+                    }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     alert('Error get data from ajax');
@@ -328,14 +293,18 @@
         $('#appBtn2').click(function() {
             $('#app_keterangan').attr('name', 'app2_keterangan').attr('id', 'app2_keterangan');
             $('#app_status').attr('name', 'app2_status').attr('id', 'app2_status');
-            $('#approvalForm').attr('action', '<?= site_url('prepayment/approve2') ?>');
+            $('#approvalForm').attr('action', '<?= site_url('datadeklarasi_sw/approve2') ?>');
 
+            // Additional logic to dynamically load data into the form
             $.ajax({
-                url: "<?php echo site_url('prepayment/edit_data') ?>/" + id,
+                url: "<?php echo site_url('datadeklarasi_sw/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
-                    var nama2, date2, status2, keterangan2;
+                    // DATA APPROVAL PREPAYMENT
+                    var nama2, status2, keterangan2, url;
+
+                    // Memeriksa apakah data yang menyetujui ada
                     if (data['master']['app2_status'] == 'waiting') {
                         $('#app2_status').val();
                         $('#app2_keterangan').val();
@@ -347,11 +316,18 @@
                         $('#app2_keterangan').val(keterangan2);
                         // $('#note_id').append(`<p>* ${keterangan2}</p>`);
                     }
+                    if (data['master']['app2_date'] == null) {
+                        date2 = '';
+                    }
+                    if (data['master']['app2_date'] != null) {
+                        date2 = data['master']['app2_date'];
+                    }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     alert('Error get data from ajax');
                 }
             });
+
         });
 
         // Handle the approval button click event
@@ -365,30 +341,34 @@
 
         // Additional logic to dynamically load data into the form
         $.ajax({
-            url: "<?php echo site_url('prepayment/edit_data') ?>/" + id,
+            url: "<?php echo site_url('datadeklarasi_sw/edit_data') ?>/" + id,
             type: "GET",
             dataType: "JSON",
             success: function(data) {
-                moment.locale('id')
+                moment.locale('id');
+                // Format tampilan dengan pemisah ribuan
+                formatedNumber = data['master']['sebesar'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
                 // DATA PREPAYMENT
-                $('#divisiTxt').text(data['master']['divisi']);
-                $('#prepaymentTxt').text(data['master']['prepayment']);
-                $('#tanggalTxt').text(moment(data['master']['tgl_prepayment']).format('D MMMM YYYY'));
+                $('#tanggalTxt').text(moment(data['master']['tgl_deklarasi']).format('DD MMMM YYYY'));
                 $('#namaTxt').text(data['nama']);
                 $('#jabatanTxt').text(data['master']['jabatan']);
+                $('#nama2Txt').text(data['master']['nama_dibayar']);
                 $('#tujuanTxt').text(data['master']['tujuan']);
+                $('#sebesarTxt').text(formatedNumber);
                 if ((data['master']['app_keterangan'] !== null && data['master']['app_keterangan'] !== '') ||
                     (data['master']['app2_keterangan'] !== null && data['master']['app2_keterangan'] !== '')) {
                     $('#keterangan').append(`<span>Keterangan :</span>`);
                 }
-                if (data['master']['app_keterangan'] !== null && data['master']['app_keterangan'] !== '') {
-                    $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app_keterangan']}(${data['master']['app_name']})</span>`);
+                if (data['master']['app_keterangan'] != '' && data['master']['app_keterangan'] != null) {
+                    $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app_keterangan']} (${data['master']['app_name']})</span>`);
                 }
-                if (data['master']['app2_keterangan'] !== null && data['master']['app2_keterangan'] !== '') {
-                    $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app2_keterangan']}(${data['master']['app_name']})</span>`);
+                if (data['master']['app2_keterangan'] != '' && data['master']['app2_keterangan'] != null) {
+                    $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app2_keterangan']} (${data['master']['app2_name']})</span>`);
                 }
                 // DATA APPROVAL PREPAYMENT
+                var nama, status, keterangan, nama2, status2, keterangan2, url;
 
+                // Memeriksa apakah data yang mengetahui ada
                 if (data['master']['app_date'] == null) {
                     date = '';
                 }
@@ -413,31 +393,12 @@
 
                 $('#divisiCol').html(data['master']['divisi']);
                 $('#prepaymentCol').html(data['master']['prepayment']);
-
-
-                //DATA PREPAYMENT DETAIL
-                let total = 0;
-                for (let index = 0; index < data['transaksi'].length; index++) {
-                    const row = `<tr>
-                                    <td>${data['transaksi'][index]['rincian']}</td>
-                                    <td>Rp. <span style="float: right">${data['transaksi'][index]['nominal'].replace(/\B(?=(\d{3})+(?!\d))/g, '.')}</span></td>
-                                    <td>${data['transaksi'][index]['keterangan']}</td>
-                                </tr>`;
-                    $('#input-container').append(row);
-                    total += Number(data['transaksi'][index]['nominal']);
-                }
-                const totalFormatted = total.toLocaleString('de-DE');
-                const ttl_row = `<tr>
-                                        <td colspan="3"><span style="font-weight: bold">Total : </span><span style="float: right">Rp. <span id="total">${totalFormatted}</span></span></td>
-                                    </tr>`;
-                $('#input-container').append(ttl_row);
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 alert('Error get data from ajax');
             }
         });
 
-        // APPROVE
         // APPROVE
         $("#approvalForm").validate({
             rules: {
@@ -490,7 +451,7 @@
                                 showConfirmButton: false,
                                 timer: 1500
                             }).then((result) => {
-                                location.href = "<?= base_url('prepayment') ?>";
+                                location.href = "<?= base_url('datadeklarasi_sw') ?>";
                             })
                         }
                     },
@@ -500,28 +461,5 @@
                 });
             }
         });
-
-        // Example: Load data into the form fields and tables
-        // $('#divisiCol').text('Finance');
-        // $('#prepaymentCol').text('001234');
-        // $('#tanggal').text('29 August 2024');
-        // $('#nama').text('Rakha Rizki');
-        // $('#jabatan').text('Software Developer');
-        // $('#tujuan').text('Project Development');
-
-        // Example: Append rows to the rincian table
-        // $('#input-container').append(`
-        //     <tr>
-        //         <td>Consultation Fees</td>
-        //         <td>Rp. 5,000,000</td>
-        //         <td>Consulting on project scope</td>
-        //     </tr>
-        //     <tr>
-        //         <td>Development Tools</td>
-        //         <td>Rp. 3,000,000</td>
-        //         <td>Purchase of software licenses</td>
-        //     </tr>
-        // `);
-
     });
 </script>
