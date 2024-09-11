@@ -1,19 +1,19 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Reimbust extends CI_Controller
+class Reimbust_sw extends CI_Controller
 {
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('backend/M_reimbust');
+        $this->load->model('backend/M_reimbust_sw');
         $this->M_login->getsecurity();
         date_default_timezone_set('Asia/Jakarta');
     }
 
     public function index()
     {
-        $data['title'] = "backend/reimbust/reimbust_list";
+        $data['title'] = "backend/reimbust_sw/reimbust_list_sw";
         $data['titleview'] = "Data Reimbust";
         $name = $this->db->select('name')
             ->from('tbl_data_user')
@@ -38,7 +38,7 @@ class Reimbust extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $list = $this->M_reimbust->get_datatables();
+        $list = $this->M_reimbust_sw->get_datatables();
         $data = array();
         $no = $_POST['start'];
 
@@ -46,26 +46,26 @@ class Reimbust extends CI_Controller
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             if ($field->app_name == $fullname) {
-                $action = '<a href="reimbust/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                                <a class="btn btn-success btn-circle btn-sm" href="reimbust/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="reimbust_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                                <a class="btn btn-success btn-circle btn-sm" href="reimbust_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app2_name == $fullname) {
-                $action = '<a href="reimbust/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
-                                <a class="btn btn-success btn-circle btn-sm" href="reimbust/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="reimbust_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
+                                <a class="btn btn-success btn-circle btn-sm" href="reimbust_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif (in_array($field->status, ['rejected', 'approved'])) {
-                $action = '<a href="reimbust/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                <a class="btn btn-success btn-circle btn-sm" href="reimbust/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="reimbust_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                <a class="btn btn-success btn-circle btn-sm" href="reimbust_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app_status == 'revised' || $field->app2_status == 'revised') {
-                $action = '<a href="reimbust/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                    <a href="reimbust/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
-                    <a class="btn btn-success btn-circle btn-sm" href="reimbust/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="reimbust_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                    <a href="reimbust_sw/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
+                    <a class="btn btn-success btn-circle btn-sm" href="reimbust_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app_status == 'approved') {
-                $action = '<a href="reimbust/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                            <a class="btn btn-success btn-circle btn-sm" href="reimbust/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="reimbust_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                            <a class="btn btn-success btn-circle btn-sm" href="reimbust_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } else {
-                $action = '<a href="reimbust/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                        <a href="reimbust/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
+                $action = '<a href="reimbust_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                        <a href="reimbust_sw/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
 			            <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
-                        <a class="btn btn-success btn-circle btn-sm" href="reimbust/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                        <a class="btn btn-success btn-circle btn-sm" href="reimbust_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             }
 
             $no++;
@@ -102,8 +102,8 @@ class Reimbust extends CI_Controller
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_reimbust->count_all(),
-            "recordsFiltered" => $this->M_reimbust->count_filtered(),
+            "recordsTotal" => $this->M_reimbust_sw->count_all(),
+            "recordsFiltered" => $this->M_reimbust_sw->count_filtered(),
             "data" => $data,
         );
         //output dalam format JSON
@@ -119,7 +119,7 @@ class Reimbust extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $list = $this->M_reimbust->get_datatables2();
+        $list = $this->M_reimbust_sw->get_datatables2();
         $data = array();
         $no = $_POST['start'];
 
@@ -128,26 +128,26 @@ class Reimbust extends CI_Controller
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             if ($field->app_name == $fullname) {
-                $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                                <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="datadeklarasi_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                                <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app2_name == $fullname) {
-                $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
-                                <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="datadeklarasi_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
+                                <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif (in_array($field->status, ['rejected', 'approved'])) {
-                $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="datadeklarasi_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app_status == 'revised' || $field->app2_status == 'revised') {
-                $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                    <a href="datadeklarasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
-                    <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="datadeklarasi_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                    <a href="datadeklarasi_sw/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
+                    <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app_status == 'approved') {
-                $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                            <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="datadeklarasi_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                            <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } else {
-                $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                        <a href="datadeklarasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
+                $action = '<a href="datadeklarasi_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                        <a href="datadeklarasi_sw/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
 			            <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
-                        <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                        <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             }
 
             $no++;
@@ -168,8 +168,8 @@ class Reimbust extends CI_Controller
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_reimbust->count_all2(),
-            "recordsFiltered" => $this->M_reimbust->count_filtered2(),
+            "recordsTotal" => $this->M_reimbust_sw->count_all2(),
+            "recordsFiltered" => $this->M_reimbust_sw->count_filtered2(),
             "data" => $data,
         );
         //output dalam format JSON
@@ -185,7 +185,7 @@ class Reimbust extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $list = $this->M_reimbust->get_datatables3();
+        $list = $this->M_reimbust_sw->get_datatables3();
         $data = array();
         $no = $_POST['start'];
 
@@ -237,8 +237,8 @@ class Reimbust extends CI_Controller
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_reimbust->count_all3(),
-            "recordsFiltered" => $this->M_reimbust->count_filtered3(),
+            "recordsTotal" => $this->M_reimbust_sw->count_all3(),
+            "recordsFiltered" => $this->M_reimbust_sw->count_filtered3(),
             "data" => $data,
         );
         //output dalam format JSON
@@ -248,7 +248,7 @@ class Reimbust extends CI_Controller
     function read_form($id)
     {
         $data['aksi'] = 'read';
-        $data['user'] = $this->M_reimbust->get_by_id($id);
+        $data['user'] = $this->M_reimbust_sw->get_by_id($id);
         $data['app_name'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $this->session->userdata('id_user'))
@@ -261,7 +261,7 @@ class Reimbust extends CI_Controller
             ->row('name');
         $data['id'] = $id;
         $data['title_view'] = "Data Reimbust";
-        $data['title'] = 'backend/reimbust/reimbust_read';
+        $data['title'] = 'backend/reimbust_sw/reimbust_read_sw';
         $this->db->select('kwitansi');
         $this->db->where('reimbust_id', $id);
         $data['kwitansi'] = $this->db->get('tbl_reimbust_detail')->result_array();
@@ -270,7 +270,7 @@ class Reimbust extends CI_Controller
 
     public function add_form()
     {
-        // $kode = $this->M_reimbust->max_kode()->row();
+        // $kode = $this->M_reimbust_sw->max_kode()->row();
         // if (empty($kode->kode_reimbust)) {
         //     $no_urut = 1;
         // } else {
@@ -286,7 +286,7 @@ class Reimbust extends CI_Controller
         $data['id'] = 0;
         $data['aksi'] = 'add';
         $data['title_view'] = "Data Reimbust Form";
-        $data['title'] = 'backend/reimbust/reimbust_form';
+        $data['title'] = 'backend/reimbust_sw/reimbust_form_sw';
         $this->load->view('backend/home', $data);
     }
 
@@ -295,7 +295,7 @@ class Reimbust extends CI_Controller
     // {
     //     // Ambil data berdasarkan ID
     //     $data['id'] = $id;
-    //     $data['user'] = $this->M_reimbust->get_by_id($id);
+    //     $data['user'] = $this->M_reimbust_sw->get_by_id($id);
 
     //     // Ambil nama user dari database
     //     $data['app_name'] = $this->db->select('name')
@@ -313,7 +313,7 @@ class Reimbust extends CI_Controller
     //     $this->load->library('dompdf_gen');
 
     //     // Load view sebagai string
-    //     $html = $this->load->view('backend/reimbust/reimbust_read', $data, true);
+    //     $html = $this->load->view('backend/reimbust_sw/reimbust_read_sw', $data, true);
 
     //     // Load HTML ke Dompdf
     //     $this->dompdf_gen->load_html($html);
@@ -331,8 +331,8 @@ class Reimbust extends CI_Controller
         $this->load->library('fpdf');
 
         // Load data from database based on $id
-        $data['master'] = $this->M_reimbust->get_by_id($id);
-        $data['transaksi'] = $this->M_reimbust->get_by_id_detail($id);
+        $data['master'] = $this->M_reimbust_sw->get_by_id($id);
+        $data['transaksi'] = $this->M_reimbust_sw->get_by_id_detail($id);
         $data['user'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $data['master']->id_user)
@@ -645,7 +645,7 @@ class Reimbust extends CI_Controller
     public function generate_kode()
     {
         $date = $this->input->post('date');
-        $kode = $this->M_reimbust->max_kode($date)->row();
+        $kode = $this->M_reimbust_sw->max_kode($date)->row();
         if (empty($kode->kode_reimbust)) {
             $no_urut = 1;
         } else {
@@ -664,14 +664,14 @@ class Reimbust extends CI_Controller
         $data['id'] = $id;
         $data['aksi'] = 'update';
         $data['title_view'] = "Edit Data Reimbust";
-        $data['title'] = 'backend/reimbust/reimbust_form';
+        $data['title'] = 'backend/reimbust_sw/reimbust_form_sw';
         $this->load->view('backend/home', $data);
     }
 
     function edit_data($id)
     {
-        $data['master'] = $this->M_reimbust->get_by_id($id);
-        $data['transaksi'] = $this->M_reimbust->get_by_id_detail($id);
+        $data['master'] = $this->M_reimbust_sw->get_by_id($id);
+        $data['transaksi'] = $this->M_reimbust_sw->get_by_id_detail($id);
         $data['nama'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $data['master']->id_user)
@@ -681,7 +681,7 @@ class Reimbust extends CI_Controller
 
     function read_detail($id)
     {
-        $data = $this->M_reimbust->get_by_id_detail($id);
+        $data = $this->M_reimbust_sw->get_by_id_detail($id);
         echo json_encode($data);
     }
 
@@ -725,7 +725,7 @@ class Reimbust extends CI_Controller
     {
         // INSERT KODE REIMBUST SAAT SUBMIT
         $date = $this->input->post('tgl_pengajuan');
-        $kode = $this->M_reimbust->max_kode($date)->row();
+        $kode = $this->M_reimbust_sw->max_kode($date)->row();
         if (empty($kode->kode_reimbust)) {
             $no_urut = 1;
         } else {
@@ -751,7 +751,7 @@ class Reimbust extends CI_Controller
         $id_user = $this->session->userdata('id_user');
 
         $data_user = $this->db->get_where('tbl_data_user', ['id_user' => $id_user])->row_array();
-        $approval = $this->M_reimbust->approval($this->session->userdata('id_user'));
+        $approval = $this->M_reimbust_sw->approval($this->session->userdata('id_user'));
 
         $departemen = $data_user['divisi'];
         $jabatan = $data_user['jabatan'];
@@ -789,7 +789,7 @@ class Reimbust extends CI_Controller
                 ->row('name')
         );
         // Hanya simpan ke database jika tidak ada file yang melebihi 3 MB
-        $reimbust_id = $this->M_reimbust->save($data1);
+        $reimbust_id = $this->M_reimbust_sw->save($data1);
 
         $data2 = [];
         for ($i = 1; $i <= count($pemakaian); $i++) {
@@ -832,7 +832,7 @@ class Reimbust extends CI_Controller
         }
         $this->db->update('tbl_prepayment', ['is_active' => 0], ['kode_prepayment' => $this->input->post('kode_prepayment')]);
 
-        $this->M_reimbust->save_detail($data2);
+        $this->M_reimbust_sw->save_detail($data2);
 
 
         echo json_encode(array("status" => TRUE));
@@ -954,7 +954,7 @@ class Reimbust extends CI_Controller
 
     function delete($id)
     {
-        $this->M_reimbust->delete($id);
+        $this->M_reimbust_sw->delete($id);
         echo json_encode(array("status" => TRUE));
     }
 
