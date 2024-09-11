@@ -40,11 +40,10 @@
                 </a>
                 <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href="<?= base_url('databooking') ?>">Order</a>
-                        <a class="collapse-item" href="<?= base_url('datadeklarasi') ?>">Deklarasi</a>
-                        <a class="collapse-item" href="<?= base_url('datanotifikasi') ?>">Notifikasi</a>
-                        <a class="collapse-item" href="<?= base_url('prepayment') ?>">Prepayment</a>
-                        <a class="collapse-item" href="<?= base_url('reimbust') ?>">Reimbust</a>
+                        <a class="collapse-item" href="<?= base_url('datadeklarasi_sw') ?>">Deklarasi</a>
+                        <a class="collapse-item" href="<?= base_url('datanotifikasi_sw') ?>">Notifikasi</a>
+                        <a class="collapse-item" href="<?= base_url('prepayment_sw') ?>">Prepayment</a>
+                        <a class="collapse-item" href="<?= base_url('reimbust_sw') ?>">Reimbust</a>
                     </div>
                 </div>
             </li>

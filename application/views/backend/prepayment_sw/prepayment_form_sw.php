@@ -7,7 +7,7 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header text-right">
-                    <a class="btn btn-secondary btn-sm" href="<?= base_url('prepayment') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+                    <a class="btn btn-secondary btn-sm" href="<?= base_url('prepayment_sw') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
                     <form id="form">
@@ -129,7 +129,7 @@
                 $("#tgl_prepayment-error").remove(); // Menghapus label error
             }
             $.ajax({
-                url: "<?php echo site_url('prepayment/generate_kode') ?>",
+                url: "<?php echo site_url('prepayment_sw/generate_kode') ?>",
                 type: "POST",
                 data: {
                     "date": dateText
@@ -324,7 +324,7 @@
             $('.aksi').text('Update');
             $("select option[value='']").hide();
             $.ajax({
-                url: "<?php echo site_url('prepayment/edit_data') ?>/" + id,
+                url: "<?php echo site_url('prepayment_sw/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -410,7 +410,7 @@
             $('th:last-child').remove();
 
             $.ajax({
-                url: "<?php echo site_url('prepayment/read_detail/') ?>" + id,
+                url: "<?php echo site_url('prepayment_sw/read_detail/') ?>" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -438,9 +438,9 @@
             if (!$form.valid()) return false;
             var url;
             if (id == 0) {
-                url = "<?php echo site_url('prepayment/add') ?>";
+                url = "<?php echo site_url('prepayment_sw/add') ?>";
             } else {
-                url = "<?php echo site_url('prepayment/update') ?>";
+                url = "<?php echo site_url('prepayment_sw/update') ?>";
             }
 
             $.ajax({

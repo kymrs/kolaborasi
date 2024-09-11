@@ -3,7 +3,7 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-class M_datadeklarasi extends CI_Model
+class M_datadeklarasi_sw extends CI_Model
 {
     var $id = 'id';
     var $table = 'tbl_deklarasi'; //nama tabel dari database

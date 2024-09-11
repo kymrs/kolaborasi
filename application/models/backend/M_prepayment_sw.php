@@ -3,7 +3,7 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-class M_prepayment extends CI_Model
+class M_prepayment_sw extends CI_Model
 {
     // INISIASI VARIABLE
     var $id = 'id';

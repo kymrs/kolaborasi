@@ -1,28 +1,28 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Datadeklarasi extends CI_Controller
+class Datanotifikasi_sw extends CI_Controller
 {
 
     function __construct()
     {
         parent::__construct();
-        $this->load->model('backend/M_datadeklarasi');
+        $this->load->model('backend/M_datanotifikasi_sw');
         $this->M_login->getsecurity();
         date_default_timezone_set('Asia/Jakarta');
     }
 
     public function index()
     {
-        $data['title'] = "backend/datadeklarasi/deklarasi_list";
-        $data['titleview'] = "Deklarasi";
+        $data['title'] = "backend/datanotifikasi_sw/notifikasi_list_sw";
+        $data['titleview'] = "Notifikasi";
         $name = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
         $data['approval'] = $this->db->select('COUNT(*) as total_approval')
-            ->from('tbl_deklarasi')
+            ->from('tbl_notifikasi')
             ->where('app_name', $name)
             ->or_where('app2_name', $name)
             ->get()
@@ -38,57 +38,56 @@ class Datadeklarasi extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $list = $this->M_datadeklarasi->get_datatables();
+        $status = $this->input->post('status'); // Ambil status dari permintaan POST
+        $list = $this->M_datanotifikasi_sw->get_datatables($status);
         $data = array();
         $no = $_POST['start'];
-
-        //LOOPING DATATABLES
         foreach ($list as $field) {
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             if ($field->app_name == $fullname) {
-                $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                                <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="datanotifikasi_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                                <a class="btn btn-success btn-circle btn-sm" href="datanotifikasi_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app2_name == $fullname) {
-                $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
-                                <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="datanotifikasi_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
+                                <a class="btn btn-success btn-circle btn-sm" href="datanotifikasi_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif (in_array($field->status, ['rejected', 'approved'])) {
-                $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="datanotifikasi_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                <a class="btn btn-success btn-circle btn-sm" href="datanotifikasi_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app_status == 'revised' || $field->app2_status == 'revised') {
-                $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                    <a href="datadeklarasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
-                    <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="datanotifikasi_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                    <a href="datanotifikasi_sw/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
+                    <a class="btn btn-success btn-circle btn-sm" href="datanotifikasi_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app_status == 'approved') {
-                $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                            <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="datanotifikasi_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                            <a class="btn btn-success btn-circle btn-sm" href="datanotifikasi_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } else {
-                $action = '<a href="datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                        <a href="datadeklarasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
+                $action = '<a href="datanotifikasi_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                        <a href="datanotifikasi_sw/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
 			            <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
-                        <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                        <a class="btn btn-success btn-circle btn-sm" href="datanotifikasi_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             }
+
 
             $no++;
             $row = array();
             $row[] = $no;
             $row[] = $action;
-            $row[] = strtoupper($field->kode_deklarasi);
-            $row[] = date("d M Y", strtotime($field->tgl_deklarasi));
+            $row[] = strtoupper($field->kode_notifikasi);
             $row[] = $field->name;
             $row[] = $field->jabatan;
-            $row[] = $field->nama_dibayar;
-            $row[] = $field->tujuan;
-            $row[] = 'Rp. ' . number_format($field->sebesar, 0, ',', '.');;
-            // $row[] = $field->sebesar;
+            $row[] = $field->departemen;
+            $row[] = $field->pengajuan;
+            $row[] = date("d M Y", strtotime($field->tgl_notifikasi));
+            $row[] = $field->alasan;
             $row[] = $field->status;
             $data[] = $row;
         }
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_datadeklarasi->count_all(),
-            "recordsFiltered" => $this->M_datadeklarasi->count_filtered(),
+            "recordsTotal" => $this->M_datanotifikasi_sw->count_all(),
+            "recordsFiltered" => $this->M_datanotifikasi_sw->count_filtered(),
             "data" => $data,
         );
         //output dalam format JSON
@@ -98,7 +97,7 @@ class Datadeklarasi extends CI_Controller
     function read_form($id)
     {
         $data['id'] = $id;
-        $data['user'] = $this->M_datadeklarasi->get_by_id($id);
+        $data['user'] = $this->M_datanotifikasi_sw->get_by_id($id);
         $data['app_name'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $this->session->userdata('id_user'))
@@ -109,88 +108,106 @@ class Datadeklarasi extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $data['title_view'] = "Data deklarasi";
-        $data['title'] = 'backend/datadeklarasi/deklarasi_read';
+        $sql = '
+            WITH RankedNotifikasi AS (
+                SELECT *,
+                       ROW_NUMBER() OVER (ORDER BY created_at ASC) AS row_num
+                FROM tbl_notifikasi
+                WHERE id_user = ' . $data['user']->id_user . '
+                AND YEAR(created_at) = ' . date('Y', strtotime($data['user']->created_at)) . '
+            )
+            SELECT row_num
+            FROM RankedNotifikasi
+            WHERE id = ' . $id . ';
+        ';
+        $query = $this->db->query($sql);
+        $data['ke'] = $query->row()->row_num;
+        $data['title_view'] = "Data Notifikasi";
+        $data['title'] = 'backend/datanotifikasi_sw/notifikasi_read_sw';
         $this->load->view('backend/home', $data);
+    }
+
+    // MEREGENERATE KODE PREPAYMENT
+    public function generate_kode()
+    {
+        $date = $this->input->post('date');
+        $kode = $this->M_datanotifikasi_sw->max_kode($date)->row();
+        if (empty($kode->kode_notifikasi)) {
+            $no_urut = 1;
+        } else {
+            $bln = substr($kode->kode_notifikasi, 3, 2);
+            $no_urut = substr($kode->kode_notifikasi, 5) + 1;
+        }
+        $urutan = str_pad($no_urut, 3, "0", STR_PAD_LEFT);
+        $month = substr($date, 3, 2);
+        $year = substr($date, 8, 2);
+        $data = 'n' . $year . $month . $urutan;
+        echo json_encode($data);
     }
 
     function add_form()
     {
         $data['id'] = 0;
-        $data['title_view'] = "Deklarasi Form";
-        $data['aksi'] = 'update';
-        $data['title'] = 'backend/datadeklarasi/deklarasi_form';
+        $data['title_view'] = "Notifikasi Form";
+        $data['title'] = 'backend/datanotifikasi_sw/notifikasi_form_sw';
         $this->load->view('backend/home', $data);
     }
 
     function edit_form($id)
     {
         $data['id'] = $id;
-        $data['title_view'] = "Edit Data Deklarasi";
-        $data['title'] = 'backend/datadeklarasi/deklarasi_form';
+        $data['title_view'] = "Edit Data Notifikasi";
+        $data['title'] = 'backend/datanotifikasi_sw/notifikasi_form_sw';
         $this->load->view('backend/home', $data);
     }
 
     function edit_data($id)
     {
-        $data['master'] = $this->M_datadeklarasi->get_by_id($id);
+        $data['master'] = $this->M_datanotifikasi_sw->get_by_id($id);
         $data['nama'] = $this->db->select('name')
             ->from('tbl_data_user')
-            ->where('id_user', $data['master']->id_pengaju)
+            ->where('id_user', $data['master']->id_user)
             ->get()->row('name');
-        echo json_encode($data);
-    }
-
-    // MEREGENERATE KODE DEKLARASI
-    public function generate_kode()
-    {
-        $date = $this->input->post('date');
-        $kode = $this->M_datadeklarasi->max_kode($date)->row();
-        if (empty($kode->kode_deklarasi)) {
-            $no_urut = 1;
-        } else {
-            $bln = substr($kode->kode_deklarasi, 3, 2);
-            $no_urut = substr($kode->kode_deklarasi, 5) + 1;
-        }
-        $urutan = str_pad($no_urut, 3, "0", STR_PAD_LEFT);
-        $month = substr($date, 3, 2);
-        $year = substr($date, 8, 2);
-        $data = 'd' . $year . $month . $urutan;
         echo json_encode($data);
     }
 
     public function add()
     {
         // INSERT KODE DEKLARASI
-        $date = $this->input->post('tgl_deklarasi');
-        $kode = $this->M_datadeklarasi->max_kode($date)->row();
-        if (empty($kode->kode_deklarasi)) {
+        $date = $this->input->post('tgl_notifikasi');
+        $kode = $this->M_datanotifikasi_sw->max_kode($date)->row();
+        if (empty($kode->kode_notifikasi)) {
             $no_urut = 1;
         } else {
-            $bln = substr($kode->kode_deklarasi, 3, 2);
-            $no_urut = substr($kode->kode_deklarasi, 5) + 1;
+            $bln = substr($kode->kode_notifikasi, 3, 2);
+            $no_urut = substr($kode->kode_notifikasi, 5) + 1;
         }
         $urutan = str_pad($no_urut, 3, "0", STR_PAD_LEFT);
         $month = substr($date, 3, 2);
         $year = substr($date, 8, 2);
-        $kode_deklarasi = 'D' . $year . $month . $urutan;
+        $kode_notifikasi = 'N' . $year . $month . $urutan;
 
         // MENCARI SIAPA YANG AKAN MELAKUKAN APPROVAL PERMINTAAN
-        $approval = $this->M_datadeklarasi->approval($this->session->userdata('id_user'));
+        $approval = $this->M_datanotifikasi_sw->approval($this->session->userdata('id_user'));
         $id = $this->session->userdata('id_user');
 
         $data = array(
-            'kode_deklarasi' => $kode_deklarasi,
-            'tgl_deklarasi' => date('Y-m-d', strtotime($this->input->post('tgl_deklarasi'))),
-            'id_pengaju' => $id,
+            'kode_notifikasi' => $kode_notifikasi,
+            'id_user' => $id,
             'jabatan' => $this->db->select('jabatan')
                 ->from('tbl_data_user')
                 ->where('id_user', $id)
                 ->get()
                 ->row('jabatan'),
-            'nama_dibayar' => $this->input->post('nama_dibayar'),
-            'tujuan' => $this->input->post('tujuan'),
-            'sebesar' => $this->input->post('hidden_sebesar'),
+            'departemen' => $this->db->select('divisi')
+                ->from('tbl_data_user')
+                ->where('id_user', $id)
+                ->get()
+                ->row('divisi'),
+            'pengajuan' => $this->input->post('pengajuan'),
+            'tgl_notifikasi' => date('Y-m-d', strtotime($this->input->post('tgl_notifikasi'))),
+            'waktu' => $this->input->post('waktu'),
+            'alasan' => $this->input->post('alasan'),
             'app_name' => $this->db->select('name')
                 ->from('tbl_data_user')
                 ->where('id_user', $approval->app_id)
@@ -209,17 +226,16 @@ class Datadeklarasi extends CI_Controller
             $data['app_date'] = date('Y-m-d H:i:s');
         }
 
-        $this->M_datadeklarasi->save($data);
+        $this->M_datanotifikasi_sw->save($data);
         echo json_encode(array("status" => TRUE));
     }
 
     public function update()
     {
         $data = array(
-            'tgl_deklarasi' => date('Y-m-d', strtotime($this->input->post('tgl_deklarasi'))),
-            'nama_dibayar' => $this->input->post('nama_dibayar'),
-            'tujuan' => $this->input->post('tujuan'),
-            'sebesar' => $this->input->post('hidden_sebesar'),
+            'pengajuan' => $this->input->post('pengajuan'),
+            'waktu' => $this->input->post('waktu'),
+            'alasan' => $this->input->post('alasan'),
             'app_status' => 'waiting',
             'app_date' => null,
             'app_keterangan' => null,
@@ -229,13 +245,13 @@ class Datadeklarasi extends CI_Controller
             'status' => 'on-process'
         );
         $this->db->where('id', $this->input->post('id'));
-        $this->db->update('tbl_deklarasi', $data);
+        $this->db->update('tbl_notifikasi', $data);
         echo json_encode(array("status" => TRUE));
     }
 
     function delete($id)
     {
-        $this->M_datadeklarasi->delete($id);
+        $this->M_datanotifikasi_sw->delete($id);
         echo json_encode(array("status" => TRUE));
     }
 
@@ -246,6 +262,7 @@ class Datadeklarasi extends CI_Controller
             'app_keterangan' => $this->input->post('app_keterangan'),
             'app_status' => $this->input->post('app_status'),
             'app_date' => date('Y-m-d H:i:s'),
+            'catatan' => $this->input->post('app_catatan')
         );
 
         // UPDATE STATUS DEKLARASI
@@ -259,7 +276,7 @@ class Datadeklarasi extends CI_Controller
 
         //UPDATE APPROVAL PERTAMA
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_deklarasi', $data);
+        $this->db->update('tbl_notifikasi', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -283,7 +300,7 @@ class Datadeklarasi extends CI_Controller
 
         // UPDATE APPROVAL 2
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_deklarasi', $data);
+        $this->db->update('tbl_notifikasi', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -320,24 +337,37 @@ class Datadeklarasi extends CI_Controller
         $this->load->library('fpdf');
 
         // Load data from database based on $id
-        $data['master'] = $this->M_datadeklarasi->get_by_id($id);
+        $data['master'] = $this->M_datanotifikasi_sw->get_by_id($id);
         $data['user'] = $this->db->select('name')
             ->from('tbl_data_user')
-            ->where('id_user', $data['master']->id_pengaju)
+            ->where('id_user', $data['master']->id_user)
             ->get()
             ->row('name');
         $data['app_status'] = strtoupper($data['master']->app_status);
         $data['app2_status'] = strtoupper($data['master']->app2_status);
+        $sql = '
+            WITH RankedNotifikasi AS (
+                SELECT *,
+                       ROW_NUMBER() OVER (ORDER BY created_at ASC) AS row_num
+                FROM tbl_notifikasi
+                WHERE id_user = ' . $data['master']->id_user . '
+                AND YEAR(created_at) = ' . date('Y', strtotime($data['master']->created_at)) . '
+            )
+            SELECT row_num
+            FROM RankedNotifikasi
+            WHERE id = ' . $id . ';
+        ';
+        $query = $this->db->query($sql);
+        $data['ke'] = $query->row()->row_num;
 
-        // Format tgl_prepayment to Indonesian date
-        $formattedDate = $this->formatIndonesianDate($data['master']->tgl_deklarasi);
+        $formattedDate = $this->formatIndonesianDate($data['master']->tgl_notifikasi);
         $created_at = $this->formatIndonesianDate($data['master']->created_at);
         $app_date = $this->formatIndonesianDate($data['master']->app_date);
         $app2_date = $this->formatIndonesianDate($data['master']->app2_date);
 
         // Start FPDF
         $pdf = new FPDF('P', 'mm', 'A4');
-        $pdf->SetTitle('Form Deklarasi');
+        $pdf->SetTitle('Form Notifikasi');
         $pdf->AddPage('P', 'Letter');
 
         // Logo
@@ -345,40 +375,67 @@ class Datadeklarasi extends CI_Controller
 
         // Set font for title
         $pdf->SetFont('Arial', 'B', 14);
-        $pdf->Cell(0, 25, 'PT. MANDIRI CIPTA SEJAHTERA', 0, 1, 'C');
+        $pdf->Cell(0, 28, 'PT. MANDIRI CIPTA SEJAHTERA', 0, 1, 'C');
 
         // Title of the form
-        $pdf->Ln(7);
+        $pdf->Ln(1);
         $pdf->SetFont('Arial', 'B', 14);
-        $pdf->Cell(0, 10, 'FORM DEKLARASI', 0, 1, 'C');
-        $pdf->Ln(5);
-
-        // Set font for form data
-        $pdf->SetFont('Arial', '', 12);
-        $pdf->Cell(40, 10, 'Tanggal', 0, 0);
-        $pdf->Cell(60, 10, ':' . $formattedDate, 0, 1);
-        $pdf->Cell(40, 10, 'Nama', 0, 0);
-        $pdf->Cell(60, 10, ':' . $data['user'], 0, 1);
-        $pdf->Cell(40, 10, 'Jabatan', 0, 0);
-        $pdf->Cell(60, 10, ':' . $data['master']->jabatan, 0, 1);
+        $pdf->Cell(0, 10, 'FORM NOTIFIKASI', 0, 1, 'C');
+        $pdf->Ln(3);
 
         $pdf->Ln(1);
         $pdf->SetFont('Arial', '', 12);
-        $pdf->Cell(60, 10, 'Telah/akan melakukan pembayaran kepada:', 0, 1);
+        $pdf->Cell(60, 10, 'Saya yang bertanda tangan dibawah ini:', 0, 1);
 
         // Set font for form data
         $pdf->SetFont('Arial', '', 12);
         $pdf->Cell(40, 10, 'Nama', 0, 0);
-        $pdf->Cell(60, 10, ':' . $data['master']->nama_dibayar, 0, 1);
-        $pdf->Cell(40, 10, 'Tujuan', 0, 0);
-        $pdf->Cell(60, 10, ':' . $data['master']->tujuan, 0, 1);
-        $pdf->Cell(40, 10, 'Sebesar', 0, 0);
-        $pdf->Cell(60, 10, ':' . number_format($data['master']->sebesar, 0, ',', '.'), 0, 1);
+        $pdf->Cell(60, 10, ': ' . $data['user'], 0, 1);
+        $pdf->Cell(40, 10, 'Jabatan', 0, 0);
+        $pdf->Cell(60, 10, ': ' . $data['master']->jabatan, 0, 1);
+        $pdf->Cell(40, 10, 'Mengajukan izin', 0, 0);
+        $pdf->Cell(60, 10, ': ' . $data['master']->pengajuan, 0, 1);
 
-        // Jarak kosong untuk pemisah
+        // Set font for form data
+
+        $pdf->SetFont('Arial', '', 12);
+        $pdf->Cell(40, 10, 'Tanggal', 0, 0);
+        $pdf->Cell(60, 10, ': ' . $formattedDate, 0, 1);
+        $pdf->Cell(40, 10, 'Waktu', 0, 0);
+        $pdf->Cell(60, 10, ': ' . $data['master']->waktu, 0, 1);
+        $pdf->Cell(40, 10, 'Alasan', 0, 0);
+        $pdf->Cell(60, 10, ': ' . $data['master']->alasan, 0, 1);
+
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->Cell(60, 10, 'DIISI OLEH ATASAN KARYAWAN BERSANGKUTAN:', 0, 1);
+
+        if ($data['master']->app_status == 'approved') {
+            $status = 'Diizinkan';
+        } elseif ($data['master']->app_status == 'rejected') {
+            $status = 'Tidak Disetujui';
+        } else {
+            $status = '';
+        }
+
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial', '', 12);
+        $pdf->Cell(40, 10, 'Notifikasi ini', 0, 0);
+        $pdf->Cell(60, 10, ': ' . $status, 0, 1);
+        $pdf->Cell(40, 10, 'Dengan alasan', 0, 0);
+        $pdf->Cell(60, 10, ': ' . $data['master']->catatan, 0, 1);
+
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->Cell(60, 10, 'CATATAN HUMAN CAPITAL DEPARTEMENT', 0, 1);
+
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial', '', 12);
+        $pdf->Cell(40, 10, 'Notifikasi ke', 0, 0);
+        $pdf->Cell(60, 10, ': ' . $data['ke'] . ' (' . date('Y', strtotime($data['master']->created_at)) . ')', 0, 1);
         $pdf->Ln(3);
 
-        // Set font untuk header
+        //APPROVAL
         $pdf->SetFont('Arial', 'B', 12);
 
         // Membuat header tabel
@@ -417,20 +474,17 @@ class Datadeklarasi extends CI_Controller
         $pdf->Cell(63, 8.5, $data['master']->app_name, 1, 0, 'C');
         $pdf->Cell(63, 8.5, $data['master']->app2_name, 1, 1, 'C');
 
-
         // Add keterangan
-        $pdf->Ln(5);
-        $pdf->SetFont('Arial', '', 12);
-        if (($data['master']->app_keterangan != null && $data['master']->app_keterangan != '') || ($data['master']->app2_keterangan != null && $data['master']->app2_keterangan != '')) {
-            $pdf->Cell(40, 10, 'Keterangan:', 0, 0);
-        }
-        $pdf->Ln(8);
-        if ($data['master']->app_keterangan != null && $data['master']->app_keterangan != '') {
-            $pdf->Cell(60, 10, '*' . $data['master']->app_keterangan . ' ' . '(' . $data['master']->app_name . ')', 0, 1);
-        }
-        if ($data['master']->app2_keterangan != null && $data['master']->app2_keterangan != '') {
-            $pdf->Cell(60, 10, '*' . $data['master']->app2_keterangan . ' ' . '(' . $data['master']->app2_name . ')', 0, 1);
-        }
+        // $pdf->Ln(5);
+        // $pdf->SetFont('Arial', '', 12);
+        // $pdf->Cell(40, 10, 'Keterangan:', 0, 0);
+        // $pdf->Ln(8);
+        // if ($data['master']->app_keterangan != null && $data['master']->app_keterangan != '') {
+        //     $pdf->Cell(60, 10, '*' . $data['master']->app_keterangan, 0, 1);
+        // }
+        // if ($data['master']->app2_keterangan != null && $data['master']->app2_keterangan != '') {
+        //     $pdf->Cell(60, 10, '*' . $data['master']->app2_keterangan, 0, 1);
+        // }
 
         // Output the PDF
         $pdf->Output('I', 'Deklarasi.pdf');

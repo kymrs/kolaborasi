@@ -7,7 +7,7 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                    <a class="btn btn-primary btn-sm" href="<?= base_url('datadeklarasi/add_form') ?>">
+                    <a class="btn btn-primary btn-sm" href="<?= base_url('datanotifikasi_sw/add_form') ?>">
                         <i class="fa fa-plus"></i>&nbsp;Add Data
                     </a>
                     <div class="d-flex align-items-center">
@@ -36,19 +36,19 @@
                     <!-- Added padding for spacing -->
                     <div class="table-responsive">
                         <!-- Table wrapper -->
-                        <table id="declarationTable" class="table table-bordered table-striped display nowrap w-100 mb-4">
+                        <table id="notificationTable" class="table table-bordered table-striped display nowrap w-100 mb-4">
                             <!-- Added margin-bottom -->
                             <thead>
                                 <tr>
                                     <th>No</th>
                                     <th style="width: 120px;">Action</th>
-                                    <th>Kode Deklarasi</th>
-                                    <th>Tanggal</th>
-                                    <th>Pengaju</th>
+                                    <th>Kode Notifikasi</th>
+                                    <th>Nama</th>
                                     <th>Jabatan</th>
-                                    <th>Penerima</th>
-                                    <th>Tujuan</th>
-                                    <th>Sebesar</th>
+                                    <th>Departemen</th>
+                                    <th>Pengajuan</th>
+                                    <th>Tanggal</th>
+                                    <th>Alasan</th>
                                     <th>Status</th>
                                 </tr>
                             </thead>
@@ -59,13 +59,13 @@
                                 <tr>
                                     <th>No</th>
                                     <th style="width: 120px;">Action</th>
-                                    <th>Kode Deklarasi</th>
-                                    <th>Tanggal</th>
-                                    <th>Pengaju</th>
+                                    <th>Kode Notifikasi</th>
+                                    <th>Nama</th>
                                     <th>Jabatan</th>
-                                    <th>Penerima</th>
-                                    <th>Tujuan</th>
-                                    <th>Sebesar</th>
+                                    <th>Departemen</th>
+                                    <th>Pengajuan</th>
+                                    <th>Tanggal</th>
+                                    <th>Alasan</th>
                                     <th>Status</th>
                                 </tr>
                             </tfoot>
@@ -82,15 +82,16 @@
 
 <script type="text/javascript">
     var table;
+
     $(document).ready(function() {
-        table = $('#declarationTable').DataTable({
-            "responsive": false,
+        var table = $('#notificationTable').DataTable({
+            "responsive": true,
             "scrollX": true,
             "processing": true,
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('datadeklarasi/get_list') ?>",
+                "url": "<?php echo site_url('datanotifikasi_sw/get_list') ?>",
                 "type": "POST",
                 "data": function(d) {
                     d.status = $('#appFilter').val(); // Tambahkan parameter status ke permintaan server
@@ -101,7 +102,7 @@
                 "infoFiltered": ""
             },
             "columnDefs": [{
-                    "targets": [2, 4, 6], // Adjusted indices to match the number of columns
+                    "targets": [2, 4, 6, 7, 8], // Adjusted indices to match the number of columns
                     "className": 'dt-head-nowrap'
                 },
                 {
@@ -111,79 +112,66 @@
                 {
                     "targets": [0, 1], // Indices for non-orderable columns
                     "orderable": false,
-                },
-                {
-                    "targets": [8], // Adjust this index to the column containing the numeric values you want to format
-                    "render": function(data, type, row) {
-                        return formatNumber(data);
-                    }
                 }
-            ],
+            ]
         });
-    });
 
-    // Restore filter value from localStorage
-    var savedStatus = localStorage.getItem('appFilterStatus');
-    if (savedStatus) {
-        $('#appFilter').val(savedStatus).change();
-    }
+        $('#appFilter').change(function() {
+            table.ajax.reload(); // Muat ulang data di DataTable dengan filter baru
+        });
 
-    // Save filter value to localStorage on change
-    $('#appFilter').on('change', function() {
-        localStorage.setItem('appFilterStatus', $(this).val());
-    });
+        // Event listener untuk nav tabs
+        $('.nav-tabs a').on('click', function(e) {
+            e.preventDefault();
+            $('.nav-tabs a').removeClass('active'); // Hapus kelas aktif dari semua tab
+            $(this).addClass('active'); // Tambahkan kelas aktif ke tab yang diklik
 
-    $('#appFilter').change(function() {
-        table.ajax.reload(); // Muat ulang data di DataTable dengan filter baru
-    });
+            table.ajax.reload(); // Muat ulang data di DataTable saat tab berubah
+        });
 
-    // Event listener untuk nav tabs
-    $('.nav-tabs a').on('click', function(e) {
-        e.preventDefault();
-        $('.nav-tabs a').removeClass('active'); // Hapus kelas aktif dari semua tab
-        $(this).addClass('active'); // Tambahkan kelas aktif ke tab yang diklik
-
-        table.ajax.reload(); // Muat ulang data di DataTable saat tab berubah
-    });
-
-    function delete_data(id) {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: "<?php echo site_url('datadeklarasi/delete/') ?>" + id,
-                    type: "POST",
-                    dataType: "JSON",
-                    success: function(data) {
-                        Swal.fire({
-                            position: 'center',
-                            icon: 'success',
-                            title: 'Your data has been deleted',
-                            showConfirmButton: false,
-                            timer: 1500
-                        }).then((result) => {
-                            location.href = "<?= base_url('datadeklarasi') ?>";
-                        })
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        alert('Error deleting data');
-                    }
-                });
-            }
-        })
-    };
-
-    function formatNumber(value) {
-        if (typeof value === 'number') {
-            value = value.toString();
+        // Restore filter value from localStorage
+        var savedStatus = localStorage.getItem('appFilterStatus');
+        if (savedStatus) {
+            $('#appFilter').val(savedStatus).change();
         }
-        return value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-    }
+
+        // Save filter value to localStorage on change
+        $('#appFilter').on('change', function() {
+            localStorage.setItem('appFilterStatus', $(this).val());
+        });
+
+        window.delete_data = function(id) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "<?php echo site_url('datanotifikasi_sw/delete/') ?>" + id,
+                        type: "POST",
+                        dataType: "JSON",
+                        success: function(data) {
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'success',
+                                title: 'Your data has been deleted',
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then(() => {
+                                table.ajax.reload(); // Reload the table data
+                            });
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            alert('Error deleting data');
+                        }
+                    });
+                }
+            });
+        };
+    });
 </script>
