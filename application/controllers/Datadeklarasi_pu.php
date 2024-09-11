@@ -22,7 +22,7 @@ class Datadeklarasi_pu extends CI_Controller
             ->get()
             ->row('name');
         $data['approval'] = $this->db->select('COUNT(*) as total_approval')
-            ->from('tbl_deklarasi')
+            ->from('tbl_deklarasi_pu')
             ->where('app_name', $name)
             ->or_where('app2_name', $name)
             ->get()
@@ -229,7 +229,7 @@ class Datadeklarasi_pu extends CI_Controller
             'status' => 'on-process'
         );
         $this->db->where('id', $this->input->post('id'));
-        $this->db->update('tbl_deklarasi', $data);
+        $this->db->update('tbl_deklarasi_pu', $data);
         echo json_encode(array("status" => TRUE));
     }
 
@@ -259,7 +259,7 @@ class Datadeklarasi_pu extends CI_Controller
 
         //UPDATE APPROVAL PERTAMA
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_deklarasi', $data);
+        $this->db->update('tbl_deklarasi_pu', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -283,7 +283,7 @@ class Datadeklarasi_pu extends CI_Controller
 
         // UPDATE APPROVAL 2
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_deklarasi', $data);
+        $this->db->update('tbl_deklarasi_pu', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -356,11 +356,11 @@ class Datadeklarasi_pu extends CI_Controller
         // Set font for form data
         $pdf->SetFont('Arial', '', 12);
         $pdf->Cell(40, 10, 'Tanggal', 0, 0);
-        $pdf->Cell(60, 10, ':' . $formattedDate, 0, 1);
+        $pdf->Cell(60, 10, ': ' . $formattedDate, 0, 1);
         $pdf->Cell(40, 10, 'Nama', 0, 0);
-        $pdf->Cell(60, 10, ':' . $data['user'], 0, 1);
+        $pdf->Cell(60, 10, ': ' . $data['user'], 0, 1);
         $pdf->Cell(40, 10, 'Jabatan', 0, 0);
-        $pdf->Cell(60, 10, ':' . $data['master']->jabatan, 0, 1);
+        $pdf->Cell(60, 10, ': ' . $data['master']->jabatan, 0, 1);
 
         $pdf->Ln(1);
         $pdf->SetFont('Arial', '', 12);
@@ -369,11 +369,11 @@ class Datadeklarasi_pu extends CI_Controller
         // Set font for form data
         $pdf->SetFont('Arial', '', 12);
         $pdf->Cell(40, 10, 'Nama', 0, 0);
-        $pdf->Cell(60, 10, ':' . $data['master']->nama_dibayar, 0, 1);
+        $pdf->Cell(60, 10, ': ' . $data['master']->nama_dibayar, 0, 1);
         $pdf->Cell(40, 10, 'Tujuan', 0, 0);
-        $pdf->Cell(60, 10, ':' . $data['master']->tujuan, 0, 1);
+        $pdf->Cell(60, 10, ': ' . $data['master']->tujuan, 0, 1);
         $pdf->Cell(40, 10, 'Sebesar', 0, 0);
-        $pdf->Cell(60, 10, ':' . number_format($data['master']->sebesar, 0, ',', '.'), 0, 1);
+        $pdf->Cell(60, 10, ': ' . number_format($data['master']->sebesar, 0, ',', '.'), 0, 1);
 
         // Jarak kosong untuk pemisah
         $pdf->Ln(3);

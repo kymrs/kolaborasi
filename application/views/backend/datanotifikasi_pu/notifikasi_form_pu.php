@@ -198,7 +198,7 @@
             e.preventDefault();
             var $form = $(this);
             if (!$form.valid()) return false;
-            var url = (id == 0) ? "<?php echo site_url('datanotifikasi_pu/add') ?>" : "<?php echo site_url('datanotifikasi/update') ?>";
+            var url = (id == 0) ? "<?php echo site_url('datanotifikasi_pu/add') ?>" : "<?php echo site_url('datanotifikasi_pu/update') ?>";
 
             $.ajax({
                 url: url,

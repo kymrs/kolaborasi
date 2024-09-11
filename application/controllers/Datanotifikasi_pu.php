@@ -22,7 +22,7 @@ class Datanotifikasi_pu extends CI_Controller
             ->get()
             ->row('name');
         $data['approval'] = $this->db->select('COUNT(*) as total_approval')
-            ->from('tbl_notifikasi')
+            ->from('tbl_notifikasi_pu')
             ->where('app_name', $name)
             ->or_where('app2_name', $name)
             ->get()
@@ -112,7 +112,7 @@ class Datanotifikasi_pu extends CI_Controller
             WITH RankedNotifikasi AS (
                 SELECT *,
                        ROW_NUMBER() OVER (ORDER BY created_at ASC) AS row_num
-                FROM tbl_notifikasi
+                FROM tbl_notifikasi_pu
                 WHERE id_user = ' . $data['user']->id_user . '
                 AND YEAR(created_at) = ' . date('Y', strtotime($data['user']->created_at)) . '
             )
@@ -245,7 +245,7 @@ class Datanotifikasi_pu extends CI_Controller
             'status' => 'on-process'
         );
         $this->db->where('id', $this->input->post('id'));
-        $this->db->update('tbl_notifikasi', $data);
+        $this->db->update('tbl_notifikasi_pu', $data);
         echo json_encode(array("status" => TRUE));
     }
 
@@ -276,7 +276,7 @@ class Datanotifikasi_pu extends CI_Controller
 
         //UPDATE APPROVAL PERTAMA
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_notifikasi', $data);
+        $this->db->update('tbl_notifikasi_pu', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -300,7 +300,7 @@ class Datanotifikasi_pu extends CI_Controller
 
         // UPDATE APPROVAL 2
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_notifikasi', $data);
+        $this->db->update('tbl_notifikasi_pu', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -349,7 +349,7 @@ class Datanotifikasi_pu extends CI_Controller
             WITH RankedNotifikasi AS (
                 SELECT *,
                        ROW_NUMBER() OVER (ORDER BY created_at ASC) AS row_num
-                FROM tbl_notifikasi
+                FROM tbl_notifikasi_pu
                 WHERE id_user = ' . $data['master']->id_user . '
                 AND YEAR(created_at) = ' . date('Y', strtotime($data['master']->created_at)) . '
             )

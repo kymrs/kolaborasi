@@ -8,7 +8,7 @@ class M_prepayment_pu extends CI_Model
     // INISIASI VARIABLE
     var $id = 'id';
     var $table = 'tbl_prepayment_pu';
-    var $table2 = 'tbl_prepayment_detail';
+    var $table2 = 'tbl_prepayment_detail_pu';
     var $column_order = array(null, null, 'kode_prepayment', 'name', 'divisi', 'jabatan', 'tgl_prepayment', 'prepayment', 'total_nominal', 'status');
     var $column_search = array('kode_prepayment', 'name', 'divisi', 'jabatan', 'tgl_prepayment', 'prepayment', 'total_nominal', 'status'); //field yang diizin untuk pencarian
     var $order = array('id' => 'desc');

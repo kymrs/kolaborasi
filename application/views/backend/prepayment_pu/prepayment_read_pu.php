@@ -304,7 +304,7 @@
             $('#app_status').attr('name', 'app_status');
             $('#approvalForm').attr('action', '<?= site_url('prepayment_pu/approve') ?>');
             $.ajax({
-                url: "<?php echo site_url('prepayment/edit_data') ?>/" + id,
+                url: "<?php echo site_url('prepayment_pu/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -331,7 +331,7 @@
         $('#appBtn2').click(function() {
             $('#app_keterangan').attr('name', 'app2_keterangan').attr('id', 'app2_keterangan');
             $('#app_status').attr('name', 'app2_status').attr('id', 'app2_status');
-            $('#approvalForm').attr('action', '<?= site_url('prepayment/approve2') ?>');
+            $('#approvalForm').attr('action', '<?= site_url('prepayment_pu/approve2') ?>');
 
             $.ajax({
                 url: "<?php echo site_url('prepayment_pu/edit_data') ?>/" + id,
