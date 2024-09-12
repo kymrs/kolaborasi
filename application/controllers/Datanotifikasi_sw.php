@@ -15,7 +15,7 @@ class Datanotifikasi_sw extends CI_Controller
     public function index()
     {
         $data['title'] = "backend/datanotifikasi_sw/notifikasi_list_sw";
-        $data['titleview'] = "Notifikasi Sebelaswarna";
+        $data['titleview'] = "Notifikasi";
         $name = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $this->session->userdata('id_user'))
@@ -122,7 +122,7 @@ class Datanotifikasi_sw extends CI_Controller
         ';
         $query = $this->db->query($sql);
         $data['ke'] = $query->row()->row_num;
-        $data['title_view'] = "Data Notifikasi Sebelaswarna";
+        $data['title_view'] = "Data Notifikasi";
         $data['title'] = 'backend/datanotifikasi_sw/notifikasi_read_sw';
         $this->load->view('backend/home', $data);
     }
@@ -148,7 +148,7 @@ class Datanotifikasi_sw extends CI_Controller
     function add_form()
     {
         $data['id'] = 0;
-        $data['title_view'] = "Notifikasi Sebelaswarna Form";
+        $data['title_view'] = "Notifikasi Form";
         $data['title'] = 'backend/datanotifikasi_sw/notifikasi_form_sw';
         $this->load->view('backend/home', $data);
     }
@@ -156,7 +156,7 @@ class Datanotifikasi_sw extends CI_Controller
     function edit_form($id)
     {
         $data['id'] = $id;
-        $data['title_view'] = "Edit Data Notifikasi Sebelaswarna";
+        $data['title_view'] = "Edit Data Notifikasi";
         $data['title'] = 'backend/datanotifikasi_sw/notifikasi_form_sw';
         $this->load->view('backend/home', $data);
     }

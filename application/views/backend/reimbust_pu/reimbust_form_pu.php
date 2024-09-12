@@ -901,6 +901,11 @@
                 }
             } else if (aksi == 'update') {
                 if (sifatPelaporan == 'Reimbust') {
+                    $('#sifat_pelaporan').prop('readonly', true).css({
+                        'background-color': '#EAECF4',
+                        'pointer-events': 'none',
+                        'cursor': 'not-allowed'
+                    });
                     $('#pelaporan_button').css('display', 'none');
                     $('#tgl_pengajuan').prop({
                         'disabled': false,
@@ -921,6 +926,11 @@
                         'display': 'none'
                     });
                 } else if (sifatPelaporan == 'Pelaporan') {
+                    $('#sifat_pelaporan').prop('readonly', true).css({
+                        'background-color': '#EAECF4',
+                        'pointer-events': 'none',
+                        'cursor': 'not-allowed'
+                    });
                     $('#parent_sifat_pelaporan').css('display', 'flex');
                     $('#pelaporan_button').css('display', 'inline-block');
                     $('#tgl_pengajuan').prop({

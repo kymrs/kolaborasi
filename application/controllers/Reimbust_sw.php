@@ -14,7 +14,7 @@ class Reimbust_sw extends CI_Controller
     public function index()
     {
         $data['title'] = "backend/reimbust_sw/reimbust_list_sw";
-        $data['titleview'] = "Data Reimbust Sebelaswarna";
+        $data['titleview'] = "Data Reimbust";
         $name = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $this->session->userdata('id_user'))
@@ -260,7 +260,7 @@ class Reimbust_sw extends CI_Controller
             ->get()
             ->row('name');
         $data['id'] = $id;
-        $data['title_view'] = "Data Reimbust Sebelaswarna";
+        $data['title_view'] = "Data Reimbust";
         $data['title'] = 'backend/reimbust_sw/reimbust_read_sw';
         $this->db->select('kwitansi');
         $this->db->where('reimbust_id', $id);
@@ -285,7 +285,7 @@ class Reimbust_sw extends CI_Controller
         // $data['kode'] = 'B' . date('ym') . $urutan;
         $data['id'] = 0;
         $data['aksi'] = 'add';
-        $data['title_view'] = "Reimbust Form Sebelaswarna";
+        $data['title_view'] = "Reimbust Form";
         $data['title'] = 'backend/reimbust_sw/reimbust_form_sw';
         $this->load->view('backend/home', $data);
     }
@@ -353,7 +353,7 @@ class Reimbust_sw extends CI_Controller
         $pdf->SetAutoPageBreak(true, 5); // Margin bawah 15mm
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/sebelaswarna.png', 10, 5, 45, 30);
+        $pdf->Image('https://kolaborasigroup.com/admin/assets/backend/img/sebelaswarna.png', 10, 5, 45, 30);
 
         // Set font
         $pdf->SetFont('Arial', 'B', 14);
@@ -663,7 +663,7 @@ class Reimbust_sw extends CI_Controller
     {
         $data['id'] = $id;
         $data['aksi'] = 'update';
-        $data['title_view'] = "Edit Reimbust Pengenumroh";
+        $data['title_view'] = "Edit Reimbust";
         $data['title'] = 'backend/reimbust_sw/reimbust_form_sw';
         $this->load->view('backend/home', $data);
     }

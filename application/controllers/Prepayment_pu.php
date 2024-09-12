@@ -14,7 +14,7 @@ class Prepayment_pu extends CI_Controller
     public function index()
     {
         $data['title'] = "backend/prepayment_pu/prepayment_list_pu";
-        $data['titleview'] = "Data Prepayment Pengenumroh";
+        $data['titleview'] = "Data Prepayment";
         $name = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $this->session->userdata('id_user'))
@@ -113,7 +113,7 @@ class Prepayment_pu extends CI_Controller
             ->get()
             ->row('name');
         $data['title'] = 'backend/prepayment_pu/prepayment_read_pu';
-        $data['title_view'] = 'Prepayment Pengenumroh';
+        $data['title_view'] = 'Prepayment';
         $this->load->view('backend/home', $data);
     }
 
@@ -122,7 +122,7 @@ class Prepayment_pu extends CI_Controller
     {
         $data['id'] = 0;
         $data['title'] = 'backend/prepayment_pu/prepayment_form_pu';
-        $data['title_view'] = 'Prepayment Pengenumroh Form';
+        $data['title_view'] = 'Prepayment Form';
         $this->load->view('backend/home', $data);
     }
 
@@ -149,7 +149,7 @@ class Prepayment_pu extends CI_Controller
     {
         $data['id'] = $id;
         $data['aksi'] = 'update';
-        $data['title_view'] = "Edit Data Prepayment Pengenumroh";
+        $data['title_view'] = "Edit Data Prepayment";
         $data['title'] = 'backend/prepayment_pu/prepayment_form_pu';
         $this->load->view('backend/home', $data);
     }
@@ -412,7 +412,7 @@ class Prepayment_pu extends CI_Controller
         $pdf->AddPage('P', 'Letter');
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/sebelaswarna.png', 8, -3, 40, 40);
+        $pdf->Image(base_url('') . '/assets/backend/img/pengenumroh.png', 8, -3, 40, 40);
 
         // Set posisi untuk title dan elemen lainnya (menyesuaikan jarak dari logo)
         // $pdf->SetXY(46, 5); // Geser ke kanan untuk judul

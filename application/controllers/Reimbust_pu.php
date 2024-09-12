@@ -14,7 +14,7 @@ class Reimbust_pu extends CI_Controller
     public function index()
     {
         $data['title'] = "backend/reimbust_pu/reimbust_list_pu";
-        $data['titleview'] = "Data Reimbust Pengenumroh";
+        $data['titleview'] = "Data Reimbust";
         $name = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $this->session->userdata('id_user'))
@@ -260,7 +260,7 @@ class Reimbust_pu extends CI_Controller
             ->get()
             ->row('name');
         $data['id'] = $id;
-        $data['title_view'] = "Data Reimbust Pengenumroh";
+        $data['title_view'] = "Data Reimbust";
         $data['title'] = 'backend/reimbust_pu/reimbust_read_pu';
         $this->db->select('kwitansi');
         $this->db->where('reimbust_id', $id);
@@ -285,7 +285,7 @@ class Reimbust_pu extends CI_Controller
         // $data['kode'] = 'B' . date('ym') . $urutan;
         $data['id'] = 0;
         $data['aksi'] = 'add';
-        $data['title_view'] = "Reimbust Pengenumroh Form";
+        $data['title_view'] = "Reimbust Form";
         $data['title'] = 'backend/reimbust_pu/reimbust_form_pu';
         $this->load->view('backend/home', $data);
     }

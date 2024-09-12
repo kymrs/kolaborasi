@@ -15,7 +15,7 @@ class Datanotifikasi_pu extends CI_Controller
     public function index()
     {
         $data['title'] = "backend/datanotifikasi_pu/notifikasi_list_pu";
-        $data['titleview'] = "Notifikasi Pengenumroh";
+        $data['titleview'] = "Notifikasi";
         $name = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $this->session->userdata('id_user'))
@@ -122,7 +122,7 @@ class Datanotifikasi_pu extends CI_Controller
         ';
         $query = $this->db->query($sql);
         $data['ke'] = $query->row()->row_num;
-        $data['title_view'] = "Data Notifikasi Pengenumroh";
+        $data['title_view'] = "Data Notifikasi";
         $data['title'] = 'backend/datanotifikasi_pu/notifikasi_read_pu';
         $this->load->view('backend/home', $data);
     }
@@ -156,7 +156,7 @@ class Datanotifikasi_pu extends CI_Controller
     function edit_form($id)
     {
         $data['id'] = $id;
-        $data['title_view'] = "Edit Data Notifikasi Pengenumroh";
+        $data['title_view'] = "Edit Data Notifikasi";
         $data['title'] = 'backend/datanotifikasi_pu/notifikasi_form_pu';
         $this->load->view('backend/home', $data);
     }
@@ -372,7 +372,7 @@ class Datanotifikasi_pu extends CI_Controller
         $pdf->AddPage('P', 'Letter');
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/sebelaswarna.png', 14, -3, 46, 46);
+        $pdf->Image(base_url('') . '/assets/backend/img/pengenumroh.png', 14, -3, 46, 46);
 
         // Set font for title
         // $pdf->SetFont('Arial', 'B', 14);

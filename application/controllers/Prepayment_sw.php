@@ -14,7 +14,7 @@ class Prepayment_sw extends CI_Controller
     public function index()
     {
         $data['title'] = "backend/prepayment_sw/prepayment_list_sw";
-        $data['titleview'] = "Data Prepayment Sebelaswarna";
+        $data['titleview'] = "Data Prepayment";
         $name = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $this->session->userdata('id_user'))
@@ -113,7 +113,7 @@ class Prepayment_sw extends CI_Controller
             ->get()
             ->row('name');
         $data['title'] = 'backend/prepayment_sw/prepayment_read_sw';
-        $data['title_view'] = 'Prepayment Sebelaswarna';
+        $data['title_view'] = 'Prepayment';
         $this->load->view('backend/home', $data);
     }
 
@@ -122,7 +122,7 @@ class Prepayment_sw extends CI_Controller
     {
         $data['id'] = 0;
         $data['title'] = 'backend/prepayment_sw/prepayment_form_sw';
-        $data['title_view'] = 'Prepayment Sebelaswarna Form';
+        $data['title_view'] = 'Prepayment Form';
         $this->load->view('backend/home', $data);
     }
 
@@ -149,7 +149,7 @@ class Prepayment_sw extends CI_Controller
     {
         $data['id'] = $id;
         $data['aksi'] = 'update';
-        $data['title_view'] = "Edit Data Prepayment Sebelaswarna";
+        $data['title_view'] = "Edit Data Prepayment";
         $data['title'] = 'backend/prepayment_sw/prepayment_form_sw';
         $this->load->view('backend/home', $data);
     }
