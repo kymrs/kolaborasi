@@ -517,7 +517,7 @@
                                 $('#approvalForm button[type="submit"]').prop('disabled', true);
                             } else {
                                 // Aktifkan tombol submit jika status telah dipilih
-                                $('#approvalForm button[type="submit"]').prop('disabled', false);
+                                $('#approvalForm button[type="submit"]').prop('disabled', false).css('cursor', 'pointer');
                             }
                         });
                     });
