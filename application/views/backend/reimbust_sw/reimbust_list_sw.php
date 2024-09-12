@@ -25,11 +25,11 @@
                 <!-- NAV TABS -->
                 <ul class="nav nav-tabs">
                     <li class="nav-item">
-                        <a class="nav-link active" id="personalTab" href="#" data-tab="personal">Personal</a>
+                        <a class="nav-link active" id="personalTab" href="#" data-tab="personal">User</a>
                     </li>
                     <?php if ($approval > 0) { ?>
                         <li class="nav-item">
-                            <a class="nav-link" id="employeeTab" href="#" data-tab="employee">Employee</a>
+                            <a class="nav-link" id="employeeTab" href="#" data-tab="employee">Approval</a>
                         </li>
                     <?php } ?>
                 </ul>
