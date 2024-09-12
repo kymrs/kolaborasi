@@ -8,7 +8,7 @@
  * Author:  Olivier PLATHEY                                                     *
  *******************************************************************************/
 
-class FPDF
+class fpdf
 {
 	const VERSION = '1.86';
 	protected $page;               // current page number
