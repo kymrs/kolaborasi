@@ -830,7 +830,7 @@ class Reimbust_pu extends CI_Controller
             // Update data deklarasi yang di tampilkan di modal, jika gambar di submit maka is active akan menjadi 0
             $this->db->update('tbl_deklarasi_pu', ['is_active' => 0], ['kode_deklarasi' => $deklarasi[$i]]);
         }
-        $this->db->update('tbl_prepayment', ['is_active' => 0], ['kode_prepayment' => $this->input->post('kode_prepayment')]);
+        $this->db->update('tbl_prepayment_pu', ['is_active' => 0], ['kode_prepayment' => $this->input->post('kode_prepayment')]);
 
         $this->M_reimbust_pu->save_detail($data2);
 
