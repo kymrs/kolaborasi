@@ -105,7 +105,7 @@ class M_reimbust_pu extends CI_Model
                 $this->db->group_start()
                     ->where('tbl_reimbust_pu.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
                     ->where('tbl_reimbust_pu.id_user !=', $this->session->userdata('id_user'))
-                    ->or_where('tbl_reimbust_pu.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_reimbust.app_status = 'approved'", FALSE)
+                    ->or_where('tbl_reimbust_pu.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_reimbust_pu.app_status = 'approved'", FALSE)
                     ->where('tbl_reimbust_pu.id_user !=', $this->session->userdata('id_user'))
                     ->group_end();
             }
@@ -177,7 +177,9 @@ class M_reimbust_pu extends CI_Model
             } elseif ($_POST['tab'] == 'employee') {
                 $this->db->group_start()
                     ->where('tbl_reimbust_pu.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-                    ->or_where('tbl_reimbust_pu.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                    ->where('tbl_reimbust_pu.id_user !=', $this->session->userdata('id_user'))
+                    ->or_where('tbl_reimbust_pu.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_reimbust_pu.app_status = 'approved'", FALSE)
+                    ->where('tbl_reimbust_pu.id_user !=', $this->session->userdata('id_user'))
                     ->group_end();
             }
         }
