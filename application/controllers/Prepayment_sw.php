@@ -387,7 +387,7 @@ class Prepayment_sw extends CI_Controller
     public function generate_pdf($id)
     {
         // Load FPDF library
-        $this->load->library('fpdf');
+        $this->load->library('Fpdf');
 
         // Load data from database based on $id
         $data['master'] = $this->M_prepayment_sw->get_by_id($id);
