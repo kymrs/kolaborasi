@@ -239,6 +239,7 @@ class Datanotifikasi_sw extends CI_Controller
             'app_status' => 'waiting',
             'app_date' => null,
             'app_keterangan' => null,
+            'catatan' => null,
             'app2_status' => 'waiting',
             'app2_date' => null,
             'app2_keterangan' => null,

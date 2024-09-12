@@ -70,11 +70,11 @@ class M_datanotifikasi_sw extends CI_Model
                 // Conditions for 'approved' status
                 $this->db->where('app_status', $_POST['status'])
                     ->where('app2_status', 'approved')
-                    ->or_where('app_status', $_POST['status'])
-                    ->where('app2_status', 'approved')
-                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status != "approved" AND status = "on-process")', NULL, FALSE);
+                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved")', NULL, FALSE);
             } elseif ($_POST['status'] == 'revised') {
-                $this->db->where('status', $_POST['status']);
+                $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
+                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "revised")', NULL, FALSE)
+                    ->or_where('tbl_notifikasi.id_user =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
             } elseif ($_POST['status'] == 'rejected') {
                 $this->db->where('status', $_POST['status']);
             }
@@ -143,11 +143,11 @@ class M_datanotifikasi_sw extends CI_Model
                 // Conditions for 'approved' status
                 $this->db->where('app_status', $_POST['status'])
                     ->where('app2_status', 'approved')
-                    ->or_where('app_status', $_POST['status'])
-                    ->where('app2_status', 'approved')
-                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status != "approved" AND status = "on-process")', NULL, FALSE);
+                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved")', NULL, FALSE);
             } elseif ($_POST['status'] == 'revised') {
-                $this->db->where('status', $_POST['status']);
+                $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
+                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "revised")', NULL, FALSE)
+                    ->or_where('tbl_notifikasi.id_user =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
             } elseif ($_POST['status'] == 'rejected') {
                 $this->db->where('status', $_POST['status']);
             }
@@ -155,6 +155,7 @@ class M_datanotifikasi_sw extends CI_Model
             $this->db->group_end(); // End grouping conditions
         }
 
+        // Tambahkan kondisi berdasarkan tab yang dipilih
         if (!empty($_POST['tab'])) {
             if ($_POST['tab'] == 'personal') {
                 $this->db->where('tbl_notifikasi.id_user', $this->session->userdata('id_user'));

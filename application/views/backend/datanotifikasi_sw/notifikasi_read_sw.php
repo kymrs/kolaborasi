@@ -339,6 +339,9 @@
             $("#approvalForm").validate().settings.rules[`app_catatan`] = {
                 required: true
             };
+            $("#approvalForm").validate().settings.messages[`app_catatan`] = {
+                required: 'Catatan is required'
+            };
 
             $("#approvalForm").valid();
 

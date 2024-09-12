@@ -67,11 +67,11 @@ class M_prepayment_pu extends CI_Model
                 // Conditions for 'approved' status
                 $this->db->where('app_status', $_POST['status'])
                     ->where('app2_status', 'approved')
-                    ->or_where('app_status', $_POST['status'])
-                    ->where('app2_status', 'approved')
-                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status != "approved" AND status = "on-process")', NULL, FALSE);
+                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved")', NULL, FALSE);
             } elseif ($_POST['status'] == 'revised') {
-                $this->db->where('status', $_POST['status']);
+                $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
+                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "revised")', NULL, FALSE)
+                    ->or_where('tbl_prepayment_pu.id_user =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
             } elseif ($_POST['status'] == 'rejected') {
                 $this->db->where('status', $_POST['status']);
             }
@@ -141,11 +141,11 @@ class M_prepayment_pu extends CI_Model
                 // Conditions for 'approved' status
                 $this->db->where('app_status', $_POST['status'])
                     ->where('app2_status', 'approved')
-                    ->or_where('app_status', $_POST['status'])
-                    ->where('app2_status', 'approved')
-                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status != "approved" AND status = "on-process")', NULL, FALSE);
+                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved")', NULL, FALSE);
             } elseif ($_POST['status'] == 'revised') {
-                $this->db->where('status', $_POST['status']);
+                $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
+                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "revised")', NULL, FALSE)
+                    ->or_where('tbl_prepayment_pu.id_user =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
             } elseif ($_POST['status'] == 'rejected') {
                 $this->db->where('status', $_POST['status']);
             }
@@ -160,7 +160,9 @@ class M_prepayment_pu extends CI_Model
             } elseif ($_POST['tab'] == 'employee') {
                 $this->db->group_start()
                     ->where('tbl_prepayment_pu.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-                    ->or_where('tbl_prepayment_pu.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                    ->where('tbl_prepayment_pu.id_user !=', $this->session->userdata('id_user'))
+                    ->or_where('tbl_prepayment_pu.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_prepayment_pu.app_status = 'approved'", FALSE)
+                    ->where('tbl_prepayment_pu.id_user !=', $this->session->userdata('id_user'))
                     ->group_end();
             }
         }

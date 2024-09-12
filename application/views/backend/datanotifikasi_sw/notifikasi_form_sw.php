@@ -115,8 +115,8 @@
 <script>
     $('#tgl_notifikasi').datepicker({
         dateFormat: 'dd-mm-yy',
-        // minDate: new Date(),
-        // maxDate: new Date(),
+        minDate: new Date(),
+        maxDate: new Date(),
 
         // MENGENERATE KODE NOTIFIKASI SETELAH PILIH TANGGAL
         onSelect: function(dateText) {

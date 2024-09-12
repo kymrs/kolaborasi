@@ -87,7 +87,9 @@ class M_reimbust_sw extends CI_Model
                     ->where('app2_status', 'approved')
                     ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status != "approved" AND status = "on-process")', NULL, FALSE);
             } elseif ($_POST['status'] == 'revised') {
-                $this->db->where('status', $_POST['status']);
+                $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
+                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "revised")', NULL, FALSE)
+                    ->or_where('tbl_reimbust.id_user =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
             } elseif ($_POST['status'] == 'rejected') {
                 $this->db->where('status', $_POST['status']);
             }
@@ -158,7 +160,9 @@ class M_reimbust_sw extends CI_Model
                     ->where('app2_status', 'approved')
                     ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status != "approved" AND status = "on-process")', NULL, FALSE);
             } elseif ($_POST['status'] == 'revised') {
-                $this->db->where('status', $_POST['status']);
+                $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
+                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "revised")', NULL, FALSE)
+                    ->or_where('tbl_reimbust.id_user =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
             } elseif ($_POST['status'] == 'rejected') {
                 $this->db->where('status', $_POST['status']);
             }

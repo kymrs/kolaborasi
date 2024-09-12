@@ -238,6 +238,7 @@ class Datanotifikasi_pu extends CI_Controller
             'alasan' => $this->input->post('alasan'),
             'app_status' => 'waiting',
             'app_date' => null,
+            'catatan' => null,
             'app_keterangan' => null,
             'app2_status' => 'waiting',
             'app2_date' => null,

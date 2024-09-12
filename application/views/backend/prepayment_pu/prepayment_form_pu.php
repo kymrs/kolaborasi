@@ -116,8 +116,8 @@
 <script>
     $('#tgl_prepayment').datepicker({
         dateFormat: 'dd-mm-yy',
-        // minDate: new Date(),
-        // maxDate: new Date(),
+        minDate: new Date(),
+        maxDate: new Date(),
 
         // MENGENERATE KODE PREPAYMENT SETELAH PILIH TANGGAL
         onSelect: function(dateText) {
@@ -381,6 +381,12 @@
                             };
                             $("#form").validate().settings.rules[`nominal[${index + 1}]`] = {
                                 required: true
+                            };
+                            $("#form").validate().settings.messages[`rincian[${index + 1}]`] = {
+                                required: "Rincian is required"
+                            };
+                            $("#form").validate().settings.messages[`nominal[${index + 1}]`] = {
+                                required: "Nominal is required"
                             };
                             // $("#form").validate().settings.rules[`keterangan[${index + 1}]`] = {
                             //     required: true
