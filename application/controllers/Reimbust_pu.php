@@ -353,7 +353,7 @@ class Reimbust_pu extends CI_Controller
         $pdf->SetAutoPageBreak(true, 5); // Margin bawah 15mm
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/logo-pu.png', 10, -3, 45, 45);
+        $pdf->Image(base_url('') . '/assets/backend/img/sebelaswarna.png', 10, -3, 45, 45);
 
         // Set font
         $pdf->SetFont('Arial', 'B', 14);

@@ -412,7 +412,7 @@ class Prepayment_pu extends CI_Controller
         $pdf->AddPage('P', 'Letter');
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/logo-pu.png', 8, -3, 40, 40);
+        $pdf->Image(base_url('') . '/assets/backend/img/sebelaswarna.png', 8, -3, 40, 40);
 
         // Set posisi untuk title dan elemen lainnya (menyesuaikan jarak dari logo)
         // $pdf->SetXY(46, 5); // Geser ke kanan untuk judul

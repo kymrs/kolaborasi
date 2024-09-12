@@ -150,7 +150,7 @@
                     </div>
 
                     <div class="header">
-                        <img src="<?= base_url('assets/backend/img/logo-sw.png') ?>" alt="" class="logo">
+                        <img src="<?= base_url('assets/backend/img/sebelaswarna.png') ?>" alt="" class="logo">
                         <div class="title">
                             <!-- <h1>SEBELASWARNA</h1> -->
                             <h2>FORM NOTIFIKASI</h2>

@@ -412,7 +412,7 @@ class Prepayment_sw extends CI_Controller
         $pdf->AddPage('P', 'Letter');
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/logo-sw.png', 8, 10, 40, 30);
+        $pdf->Image(base_url('') . '/assets/backend/img/sebelaswarna.png', 8, 10, 40, 30);
 
         // Set posisi untuk title dan elemen lainnya (menyesuaikan jarak dari logo)
         // $pdf->SetXY(46, 5); // Geser ke kanan untuk judul
