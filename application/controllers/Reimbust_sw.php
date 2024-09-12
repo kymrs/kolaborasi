@@ -353,7 +353,7 @@ class Reimbust_sw extends CI_Controller
         $pdf->SetAutoPageBreak(true, 5); // Margin bawah 15mm
 
         // Logo
-        $pdf->Image('https://kolaborasigroup.com/admin/assets/backend/img/sebelaswarna.png', 10, 5, 45, 30);
+        $pdf->Image(base_url('') . '/assets/backend/img/sebelaswarna.png', 10, 5, 45, 30);
 
         // Set font
         $pdf->SetFont('Arial', 'B', 14);
