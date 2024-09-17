@@ -803,7 +803,7 @@ class Reimbust_pu extends CI_Controller
                 $_FILES['file']['error'] = $_FILES['kwitansi']['error'][$i];
                 $_FILES['file']['size'] = $_FILES['kwitansi']['size'][$i];
 
-                $config['upload_path'] = './assets/backend/img/reimbust/kwitansi_pu/';
+                $config['upload_path'] = './assets/backend/document/reimbust/kwitansi_pu/';
                 $config['allowed_types'] = 'jpg|png';
                 $config['max_size'] = 3072; // Batasan ukuran file dalam kilobytes (3 MB)
                 $config['encrypt_name'] = TRUE;
@@ -881,7 +881,7 @@ class Reimbust_pu extends CI_Controller
                     if ($reimbust_detail) {
                         $old_image = $reimbust_detail['kwitansi'];
                         if ($old_image != 'default.jpg') {
-                            @unlink(FCPATH . './assets/backend/img/reimbust/kwitansi_pu/' . $old_image);
+                            @unlink(FCPATH . './assets/backend/document/reimbust/kwitansi_pu/' . $old_image);
                         }
 
                         $this->db->where('id', $id2);
@@ -907,7 +907,7 @@ class Reimbust_pu extends CI_Controller
                         return;
                     }
 
-                    $config['upload_path'] = './assets/backend/img/reimbust/kwitansi_pu/';
+                    $config['upload_path'] = './assets/backend/document/reimbust/kwitansi_pu/';
                     $config['allowed_types'] = 'jpg|png';
                     $config['max_size'] = 3072;
                     $config['encrypt_name'] = TRUE;
@@ -923,7 +923,7 @@ class Reimbust_pu extends CI_Controller
                             $old_image = $reimbust_detail['kwitansi'];
 
                             if ($old_image && $old_image != 'default.jpg') {
-                                @unlink(FCPATH . './assets/backend/img/reimbust/kwitansi_pu/' . $old_image);
+                                @unlink(FCPATH . './assets/backend/document/reimbust/kwitansi_pu/' . $old_image);
                             }
                         }
                         $kwitansi = $this->upload->data('file_name');
