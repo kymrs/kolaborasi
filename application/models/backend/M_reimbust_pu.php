@@ -552,7 +552,7 @@ class M_reimbust_pu extends CI_Model
         if ($reimbust_detail) {
             foreach ($reimbust_detail as $rd) {
                 $old_image = $rd['kwitansi'];
-                $file_path = FCPATH . './assets/backend/img/reimbust/kwitansi_pu/' . $old_image;
+                $file_path = FCPATH . './assets/backend/document/reimbust/kwitansi_pu/' . $old_image;
 
                 if (file_exists($file_path)) {
                     unlink($file_path);
