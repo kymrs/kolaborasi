@@ -7,12 +7,18 @@ class Prepayment_sw extends CI_Controller
     {
         parent::__construct();
         $this->load->model('backend/M_prepayment_sw');
+        $this->load->model('backend/M_app');
         $this->M_login->getsecurity();
         date_default_timezone_set('Asia/Jakarta');
     }
 
     public function index()
     {
+        // $akses = $this->M_app->hak_akses($this->session->userdata('level'), $this->router->fetch_class());
+        // ($akses->view_level == 'N' ? redirect('auth') : '');
+        // $data['add'] = $akses->add_level;
+
+
         $data['title'] = "backend/prepayment_sw/prepayment_list_sw";
         $data['titleview'] = "Data Prepayment";
         $name = $this->db->select('name')
@@ -40,6 +46,10 @@ class Prepayment_sw extends CI_Controller
         $list = $this->M_prepayment_sw->get_datatables();
         $data = array();
         $no = $_POST['start'];
+
+        // $akses = $this->M_app->hak_akses($this->session->userdata('level'), $this->router->fetch_class());
+        // ($akses->view_level == 'N' ? redirect('auth') : '');
+        // $data['add'] = $akses->add_level;
 
         //LOOPING DATATABLES
         foreach ($list as $field) {
@@ -359,31 +369,6 @@ class Prepayment_sw extends CI_Controller
         echo json_encode(array("status" => TRUE));
     }
 
-    function formatIndonesianDate($date)
-    {
-        $bulan = [
-            1 => 'Januari',
-            2 => 'Februari',
-            3 => 'Maret',
-            4 => 'April',
-            5 => 'Mei',
-            6 => 'Juni',
-            7 => 'Juli',
-            8 => 'Agustus',
-            9 => 'September',
-            10 => 'Oktober',
-            11 => 'November',
-            12 => 'Desember'
-        ];
-
-        $date = new DateTime($date);
-        $day = $date->format('d');
-        $month = $bulan[(int)$date->format('m')];
-        $year = $date->format('Y');
-
-        return "$day $month $year";
-    }
-
     public function generate_pdf($id)
     {
         // Load FPDF library
@@ -401,10 +386,25 @@ class Prepayment_sw extends CI_Controller
         $data['app2_status'] = strtoupper($data['master']->app2_status);
 
         // Format tgl_prepayment to Indonesian date
-        $formattedDate = $this->formatIndonesianDate($data['master']->tgl_prepayment);
-        $created_at = $this->formatIndonesianDate($data['master']->created_at);
-        $app_date = $this->formatIndonesianDate($data['master']->app_date);
-        $app2_date = $this->formatIndonesianDate($data['master']->app2_date);
+        $tanggal = $data['master']->prepayment;
+        $formatted_date = date('d F Y', strtotime($tanggal));
+        $months = [
+            'January' => 'Januari',
+            'February' => 'Februari',
+            'March' => 'Maret',
+            'April' => 'April',
+            'May' => 'Mei',
+            'June' => 'Juni',
+            'July' => 'Juli',
+            'August' => 'Agustus',
+            'September' => 'September',
+            'October' => 'Oktober',
+            'November' => 'November',
+            'December' => 'Desember'
+        ];
+        $month = date('F', strtotime($tanggal));
+        $translated_month = $months[$month];
+        $formatted_date = str_replace($month, $translated_month, $formatted_date);
 
         // Start FPDF
         $pdf = new FPDF('P', 'mm', 'A4');
@@ -413,11 +413,6 @@ class Prepayment_sw extends CI_Controller
 
         // Logo
         $pdf->Image(base_url('') . '/assets/backend/img/sebelaswarna.png', 8, 10, 40, 30);
-
-        // Set posisi untuk title dan elemen lainnya (menyesuaikan jarak dari logo)
-        // $pdf->SetXY(46, 5); // Geser ke kanan untuk judul
-        // $pdf->SetFont('Arial', 'B', 12);
-        // $pdf->Cell(0, 8, 'SEBELASWARNA', 0, 1, 'L');
 
         // Pindahkan posisi sedikit ke bawah dan tetap sejajar
         // $pdf->SetX(46); // Tetap di posisi yang sama untuk elemen lain
@@ -442,7 +437,7 @@ class Prepayment_sw extends CI_Controller
         $pdf->SetFont('Arial', '', 12);
         $pdf->Cell(30, 10, 'Tanggal', 0, 0);
         $pdf->Cell(5, 10, ':', 0, 0);
-        $pdf->Cell(50, 10, $formattedDate, 0, 1);
+        $pdf->Cell(50, 10, $formatted_date, 0, 1);
 
         $pdf->Cell(30, 10, 'Nama', 0, 0);
         $pdf->Cell(5, 10, ':', 0, 0);

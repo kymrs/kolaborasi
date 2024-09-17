@@ -306,31 +306,6 @@ class Datanotifikasi_pu extends CI_Controller
         echo json_encode(array("status" => TRUE));
     }
 
-    function formatIndonesianDate($date)
-    {
-        $bulan = [
-            1 => 'Januari',
-            2 => 'Februari',
-            3 => 'Maret',
-            4 => 'April',
-            5 => 'Mei',
-            6 => 'Juni',
-            7 => 'Juli',
-            8 => 'Agustus',
-            9 => 'September',
-            10 => 'Oktober',
-            11 => 'November',
-            12 => 'Desember'
-        ];
-
-        $date = new DateTime($date);
-        $day = $date->format('d');
-        $month = $bulan[(int)$date->format('m')];
-        $year = $date->format('Y');
-
-        return "$day $month $year";
-    }
-
     // PRINTOUT FPDF
     public function generate_pdf($id)
     {
@@ -361,10 +336,25 @@ class Datanotifikasi_pu extends CI_Controller
         $query = $this->db->query($sql);
         $data['ke'] = $query->row()->row_num;
 
-        $formattedDate = $this->formatIndonesianDate($data['master']->tgl_notifikasi);
-        $created_at = $this->formatIndonesianDate($data['master']->created_at);
-        $app_date = $this->formatIndonesianDate($data['master']->app_date);
-        $app2_date = $this->formatIndonesianDate($data['master']->app2_date);
+        $tanggal = $data['master']->tgl_notifikasi;
+        $formatted_date = date('d F Y', strtotime($tanggal));
+        $months = [
+            'January' => 'Januari',
+            'February' => 'Februari',
+            'March' => 'Maret',
+            'April' => 'April',
+            'May' => 'Mei',
+            'June' => 'Juni',
+            'July' => 'Juli',
+            'August' => 'Agustus',
+            'September' => 'September',
+            'October' => 'Oktober',
+            'November' => 'November',
+            'December' => 'Desember'
+        ];
+        $month = date('F', strtotime($tanggal));
+        $translated_month = $months[$month];
+        $formatted_date = str_replace($month, $translated_month, $formatted_date);
 
         // Start FPDF
         $pdf = new FPDF('P', 'mm', 'A4');
@@ -401,7 +391,7 @@ class Datanotifikasi_pu extends CI_Controller
 
         $pdf->SetFont('Arial', '', 12);
         $pdf->Cell(40, 10, 'Tanggal', 0, 0);
-        $pdf->Cell(60, 10, ': ' . $formattedDate, 0, 1);
+        $pdf->Cell(60, 10, ': ' . $formatted_date, 0, 1);
         $pdf->Cell(40, 10, 'Waktu', 0, 0);
         $pdf->Cell(60, 10, ': ' . $data['master']->waktu, 0, 1);
         $pdf->Cell(40, 10, 'Alasan', 0, 0);
