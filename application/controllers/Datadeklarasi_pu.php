@@ -50,7 +50,7 @@ class Datadeklarasi_pu extends CI_Controller
         $read = $akses->view_level;
         $edit = $akses->edit_level;
         $delete = $akses->delete_level;
-        $upload = $akses->upload_level;
+        $print = $akses->print_level;
 
         //LOOPING DATATABLES
         foreach ($list as $field) {
@@ -58,21 +58,21 @@ class Datadeklarasi_pu extends CI_Controller
             $action_read = ($read == 'Y') ? '<a href="datadeklarasi_pu/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
             $action_edit = ($edit == 'Y') ? '<a href="datadeklarasi_pu/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
-            $action_upload = ($upload == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" href="datadeklarasi_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
+            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="datadeklarasi_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             if ($field->app_name == $fullname) {
-                $action = $action_read . $action_upload;
+                $action = $action_read . $action_print;
             } elseif ($field->app2_name == $fullname) {
-                $action = $action_read . $action_upload;
+                $action = $action_read . $action_print;
             } elseif (in_array($field->status, ['rejected', 'approved'])) {
-                $action = $action_read . $action_upload;
+                $action = $action_read . $action_print;
             } elseif ($field->app_status == 'revised' || $field->app2_status == 'revised') {
-                $action = $action_read . $action_edit . $action_upload;
+                $action = $action_read . $action_edit . $action_print;
             } elseif ($field->app_status == 'approved') {
-                $action = $action_read . $action_upload;
+                $action = $action_read . $action_print;
             } else {
-                $action = $action_read . $action_edit . $action_delete . $action_upload;
+                $action = $action_read . $action_edit . $action_delete . $action_print;
             }
 
             $no++;
