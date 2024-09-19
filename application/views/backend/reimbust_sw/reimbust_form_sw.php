@@ -98,7 +98,7 @@
                                     <label class="col-sm-5">Jumlah Prepayment</label>
                                     <div class="col-sm-7">
                                         <input type="text" class="form-control" id="jumlah_prepayment" name="jumlah" autocomplete="off" placeholder="Jumlah Prepayment">
-                                        <input type="hidden" id="hidden_jumlah_prepayment" name="jumlah_prepayment">
+                                        <input type="text" id="hidden_jumlah_prepayment" name="jumlah_prepayment">
                                     </div>
                                 </div>
                                 <div class="form-group row" id="kode_prepayment">
@@ -834,8 +834,9 @@
                     }).css('cursor', 'pointer');
                     $('#jumlah_prepayment').prop({
                         'disabled': false,
-                        'readonly': false
-                    }).css('cursor', 'auto');
+                        'readonly': true
+                    }).css('cursor', 'not-allowed').val('0');
+                    $('#hidden_jumlah_prepayment').val('0');
                     $('#kode_prepayment').css({
                         'display': 'none'
                     });
@@ -921,7 +922,11 @@
                     // $('#jabatan').prop('readonly', false).css('cursor', 'auto');
                     $('#tujuan').prop('readonly', false).css('cursor', 'auto');
                     $('#status').prop('readonly', false).css('cursor', 'pointer');
-                    $('#jumlah_prepayment').prop('readonly', false).css('cursor', 'auto');
+                    $('#jumlah_prepayment').prop({
+                        'disabled': false,
+                        'readonly': true
+                    }).css('cursor', 'not-allowed').val('0');
+                    $('#hidden_jumlah_prepayment').val('0');
                     $('#kode_prepayment').css({
                         'display': 'none'
                     });

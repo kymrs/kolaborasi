@@ -61,28 +61,6 @@ class Prepayment_sw extends CI_Controller
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             if ($field->app_name == $fullname) {
-<<<<<<< HEAD
-                $action = '<a href="prepayment_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                                <a class="btn btn-success btn-circle btn-sm" target="_blank" href="prepayment_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
-            } elseif ($field->app2_name == $fullname) {
-                $action = '<a href="prepayment_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
-                                <a class="btn btn-success btn-circle btn-sm" target="_blank" href="prepayment_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
-            } elseif (in_array($field->status, ['rejected', 'approved'])) {
-                $action = '<a href="prepayment_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                <a class="btn btn-success btn-circle btn-sm" target="_blank" href="prepayment_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
-            } elseif ($field->app_status == 'revised' || $field->app2_status == 'revised') {
-                $action = '<a href="prepayment_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                    <a href="prepayment_sw/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
-                    <a class="btn btn-success btn-circle btn-sm" target="_blank" href="prepayment_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
-            } elseif ($field->app_status == 'approved') {
-                $action = '<a href="prepayment_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                            <a class="btn btn-success btn-circle btn-sm" target="_blank" href="prepayment_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
-            } else {
-                $action = '<a href="prepayment_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                        <a href="prepayment_sw/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
-			            <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
-                        <a class="btn btn-success btn-circle btn-sm" target="_blank" href="prepayment_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
-=======
                 $action = $action_read . $action_upload;
             } elseif ($field->app2_name == $fullname) {
                 $action = $action_read . $action_upload;
@@ -94,7 +72,6 @@ class Prepayment_sw extends CI_Controller
                 $action = $action_read . $action_upload;
             } else {
                 $action = $action_read . $action_edit . $action_delete . $action_upload;
->>>>>>> 483a29717696c7f45a676cde3f0819715fdb8472
             }
 
 
