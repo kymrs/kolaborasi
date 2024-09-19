@@ -17,13 +17,6 @@
             <!-- Divider -->
             <hr class="sidebar-divider my-0">
 
-            <!-- Nav Item - Dashboard -->
-            <li class="nav-item active">
-                <a class="nav-link" href="<?= base_url('dashboard') ?>">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Dashboard</span></a>
-            </li>
-
             <!-- Divider -->
             <hr class="sidebar-divider">
 
@@ -32,34 +25,52 @@
                 Menu
             </div>
 
-            <!-- Nav Item - Pages Collapse Menu -->
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePagesSW" aria-expanded="true" aria-controls="collapsePagesSW">
-                    <i class="fas fa-fw fa-folder"></i>
-                    <span>Data SW</span>
-                </a>
-                <div id="collapsePagesSW" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href="<?= base_url('datadeklarasi_sw') ?>">Deklarasi SW</a>
-                        <a class="collapse-item" href="<?= base_url('datanotifikasi_sw') ?>">Notifikasi SW</a>
-                        <a class="collapse-item" href="<?= base_url('prepayment_sw') ?>">Prepayment SW</a>
-                        <a class="collapse-item" href="<?= base_url('reimbust_sw') ?>">Reimbust SW</a>
-                    </div>
-                </div>
-            </li>
+            <?php
+            $idlevel  = $this->session->userdata('id_level');
+            $menu = $this->db->select('b.nama_menu,b.icon,b.link,b.id_menu');
+            $menu = $this->db->join('tbl_menu b', 'a.id_menu=b.id_menu');
+            $menu = $this->db->join('tbl_userlevel c', 'a.id_level=c.id_level');
+            $menu = $this->db->where('a.id_level', $idlevel);
+            $menu = $this->db->where('a.view_level', 'Y');
+            $menu = $this->db->where('b.is_active', 'Y');
+            $menu = $this->db->order_by('b.urutan ASC');
+            $menu = $this->db->get('tbl_akses_menu a');
+            foreach ($menu->result() as $parent) {
+                $sub = $this->db->join('tbl_submenu b', 'a.id_submenu=b.id_submenu');
+                $sub = $this->db->where('a.id_level', $idlevel);
+                $sub = $this->db->where('b.id_menu', $parent->id_menu);
+                $sub = $this->db->where('a.view_level', 'Y');
+                $sub = $this->db->where('b.is_active', 'Y');
+                $sub = $this->db->order_by('b.id_submenu', 'ASC');
+                $sub = $this->db->get('tbl_akses_submenu a');
 
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePagesPU" aria-expanded="true" aria-controls="collapsePagesPU">
-                    <i class="fas fa-fw fa-folder"></i>
-                    <span>Data PU</span>
-                </a>
-                <div id="collapsePagesPU" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href="<?= base_url('datadeklarasi_pu') ?>">Deklarasi PU</a>
-                        <a class="collapse-item" href="<?= base_url('datanotifikasi_pu') ?>">Notifikasi PU</a>
-                        <a class="collapse-item" href="<?= base_url('prepayment_pu') ?>">Prepayment PU</a>
-                        <a class="collapse-item" href="<?= base_url('reimbust_pu') ?>">Reimbust PU</a>
-                    </div>
-                </div>
-            </li>
+                if ($sub->num_rows() > 0) {
+            ?>
+                    <li class="nav-item">
+                        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#<?= $parent->nama_menu ?>" aria-expanded="true" aria-controls="collapseUtilities">
+                            <i class="<?= $parent->icon ?>"></i>
+                            <span><?= $parent->nama_menu ?></span>
+                        </a>
+                        <div id="<?= $parent->nama_menu ?>" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
+                            <div class="bg-white py-2 collapse-inner rounded">
+                                <?php foreach ($sub->result() as $child) {  ?>
+                                    <a class="collapse-item" href="<?= base_url() . $child->link ?>"><?= $child->nama_submenu ?></a>
+                                <?php } ?>
+                            </div>
+                        </div>
+                    </li>
+                <?php   } else { ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= base_url() . $parent->link ?>">
+                            <i class="<?= $parent->icon ?>"></i>
+                            <span><?= $parent->nama_menu ?></span></a>
+                    </li>
+                <?php } ?>
+            <?php } ?>
+
+            <hr class="sidebar-divider d-none d-md-block">
+
+            <div class="text-center d-none d-md-inline">
+                <button class="rounded-circle border-0" id="sidebarToggle"></button>
+            </div>
         </ul>

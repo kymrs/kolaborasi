@@ -7,16 +7,14 @@ class Prepayment_sw extends CI_Controller
     {
         parent::__construct();
         $this->load->model('backend/M_prepayment_sw');
-        $this->load->model('backend/M_app');
         $this->M_login->getsecurity();
-        date_default_timezone_set('Asia/Jakarta');
     }
 
     public function index()
     {
-        // $akses = $this->M_app->hak_akses($this->session->userdata('level'), $this->router->fetch_class());
-        // ($akses->view_level == 'N' ? redirect('auth') : '');
-        // $data['add'] = $akses->add_level;
+        $akses = $this->M_app->hak_akses($this->session->userdata('id_level'), $this->router->fetch_class());
+        ($akses->view_level == 'N' ? redirect('auth') : '');
+        $data['add'] = $akses->add_level;
 
 
         $data['title'] = "backend/prepayment_sw/prepayment_list_sw";
@@ -47,35 +45,33 @@ class Prepayment_sw extends CI_Controller
         $data = array();
         $no = $_POST['start'];
 
-        // $akses = $this->M_app->hak_akses($this->session->userdata('level'), $this->router->fetch_class());
-        // ($akses->view_level == 'N' ? redirect('auth') : '');
-        // $data['add'] = $akses->add_level;
+        $akses = $this->M_app->hak_akses($this->session->userdata('id_level'), $this->router->fetch_class());
+        $read = $akses->view_level;
+        $edit = $akses->edit_level;
+        $delete = $akses->delete_level;
+        $upload = $akses->upload_level;
 
         //LOOPING DATATABLES
         foreach ($list as $field) {
 
+            $action_read = ($read == 'Y') ? '<a href="prepayment_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
+            $action_edit = ($edit == 'Y') ? '<a href="prepayment_sw/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
+            $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
+            $action_upload = ($upload == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" href="prepayment_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
+
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             if ($field->app_name == $fullname) {
-                $action = '<a href="prepayment_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                                <a class="btn btn-success btn-circle btn-sm" href="prepayment_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = $action_read . $action_upload;
             } elseif ($field->app2_name == $fullname) {
-                $action = '<a href="prepayment_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
-                                <a class="btn btn-success btn-circle btn-sm" href="prepayment_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = $action_read . $action_upload;
             } elseif (in_array($field->status, ['rejected', 'approved'])) {
-                $action = '<a href="prepayment_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                <a class="btn btn-success btn-circle btn-sm" href="prepayment_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = $action_read . $action_upload;
             } elseif ($field->app_status == 'revised' || $field->app2_status == 'revised') {
-                $action = '<a href="prepayment_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                    <a href="prepayment_sw/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
-                    <a class="btn btn-success btn-circle btn-sm" href="prepayment_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = $action_read . $action_edit . $action_upload;
             } elseif ($field->app_status == 'approved') {
-                $action = '<a href="prepayment_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                            <a class="btn btn-success btn-circle btn-sm" href="prepayment_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = $action_read . $action_upload;
             } else {
-                $action = '<a href="prepayment_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                        <a href="prepayment_sw/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
-			            <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
-                        <a class="btn btn-success btn-circle btn-sm" href="prepayment_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = $action_read . $action_edit . $action_delete . $action_upload;
             }
 
 

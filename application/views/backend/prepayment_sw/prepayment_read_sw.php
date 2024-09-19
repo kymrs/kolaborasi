@@ -372,6 +372,7 @@
             dataType: "JSON",
             success: function(data) {
                 moment.locale('id')
+                // console.log(data);
                 // DATA PREPAYMENT
                 $('#divisiTxt').text(data['master']['divisi']);
                 $('#prepaymentTxt').text(data['master']['prepayment']);
