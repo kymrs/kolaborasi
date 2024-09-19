@@ -406,7 +406,7 @@ class Prepayment_pu extends CI_Controller
         // Start FPDF
         $pdf = new FPDF('P', 'mm', 'A4');
         $pdf->SetTitle('Form Pengajuan Prepayment');
-        $pdf->AddPage('P', 'A4');
+        $pdf->AddPage('P', 'Letter');
 
         // Logo
         $pdf->Image(base_url('') . '/assets/backend/img/pengenumroh.png', 8, -3, 40, 40);

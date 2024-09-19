@@ -55,33 +55,24 @@ class Reimbust_pu extends CI_Controller
         foreach ($list as $field) {
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
-            $action_read = ($read == 'Y') ? '<a href="datanotifikasi_pu/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
-            $action_edit = ($edit == 'Y') ? '<a href="datanotifikasi_pu/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
+            $action_read = ($read == 'Y') ? '<a href="reimbust_pu/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
+            $action_edit = ($edit == 'Y') ? '<a href="reimbust_pu/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
-            $action_upload = ($upload == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" href="datanotifikasi_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
+            $action_upload = ($upload == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" href="reimbust_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             if ($field->app_name == $fullname) {
-                $action = '<a href="reimbust_pu/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                                <a class="btn btn-success btn-circle btn-sm" href="reimbust_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = $action_read . $action_upload;
             } elseif ($field->app2_name == $fullname) {
-                $action = '<a href="reimbust_pu/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
-                                <a class="btn btn-success btn-circle btn-sm" href="reimbust_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = $action_read . $action_upload;
             } elseif (in_array($field->status, ['rejected', 'approved'])) {
-                $action = '<a href="reimbust_pu/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                <a class="btn btn-success btn-circle btn-sm" href="reimbust_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = $action_read . $action_upload;
             } elseif ($field->app_status == 'revised' || $field->app2_status == 'revised') {
-                $action = '<a href="reimbust_pu/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                    <a href="reimbust_pu/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
-                    <a class="btn btn-success btn-circle btn-sm" href="reimbust_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = $action_read . $action_edit . $action_upload;
             } elseif ($field->app_status == 'approved') {
-                $action = '<a href="reimbust_pu/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                            <a class="btn btn-success btn-circle btn-sm" href="reimbust_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = $action_read . $action_upload;
             } else {
-                $action = '<a href="reimbust_pu/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                        <a href="reimbust_pu/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
-			            <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
-                        <a class="btn btn-success btn-circle btn-sm" href="reimbust_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = $action_read . $action_edit . $action_delete . $action_upload;
             }
 
             $no++;
@@ -358,8 +349,8 @@ class Reimbust_pu extends CI_Controller
         $data['app2_status'] = strtoupper($data['master']->app2_status);
 
         // Start FPDF
-        $pdf = new FPDF('L', 'mm', 'A4');
-        $pdf->SetTitle('Form Pengajuan Reimbust');
+        $pdf = new FPDF('L', 'mm', 'Letter');
+        $pdf->SetTitle('Form Pengajuan Prepayment');
         $pdf->AddPage();
 
         // Mengatur margin kiri, atas, dan kanan
