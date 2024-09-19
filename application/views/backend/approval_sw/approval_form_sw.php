@@ -20,18 +20,18 @@
                             <div class="col-md-6">
                                 <!-- Second Set of Fields -->
                                 <div class="form-group row">
-                                    <label class="col-sm-5" for="nama_dibayar">Nama</label>
+                                    <label class="col-sm-4" for="nama_dibayar">Nama</label>
                                     <div class="col-sm-7">
                                         <select class="form-control" name="name" id="name">
                                             <option value="" selected disabled>Pilih opsi...</option>
                                             <?php foreach ($approvals as $approval) { ?>
-                                                <option value="<?= $approval->id_user ?>"><?= $approval->name ?></option>
+                                                <option value="<?= $approval->id_user ?>"><?= $approval->fullname ?></option>
                                             <?php } ?>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-sm-5" for="divisi">Divisi</label>
+                                    <label class="col-sm-4" for="divisi">Divisi</label>
                                     <div class="col-sm-7">
                                         <select class="form-control" id="divisi" name="divisi">
                                             <option value="" selected disabled>Pilih opsi...</option>
@@ -42,7 +42,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-sm-5" for="jabatan">Jabatan</label>
+                                    <label class="col-sm-4" for="jabatan">Jabatan</label>
                                     <div class="col-sm-7">
                                         <input type="text" class="form-control" id="jabatan" name="jabatan">
                                     </div>
@@ -50,23 +50,23 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group row">
-                                    <label class="col-sm-5" for="app_id">Approval Pertama</label>
+                                    <label class="col-sm-4" for="app_id">Approval Pertama</label>
                                     <div class="col-sm-7">
                                         <select class="form-control" id="app_id" name="app_id">
                                             <option value="" selected disabled>Pilih opsi...</option>
                                             <?php foreach ($approvals as $approval) { ?>
-                                                <option value="<?= $approval->id_user ?>"><?= $approval->name ?></option>
+                                                <option value="<?= $approval->id_user ?>"><?= $approval->fullname ?></option>
                                             <?php } ?>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-sm-5" for="app2_id">Approval Kedua</label>
+                                    <label class="col-sm-4" for="app2_id">Approval Kedua</label>
                                     <div class="col-sm-7">
                                         <select class="form-control" id="app2_id" name="app2_id">
                                             <option value="" selected disabled>Pilih opsi...</option>
                                             <?php foreach ($approvals as $approval) { ?>
-                                                <option value="<?= $approval->id_user ?>"><?= $approval->name ?></option>
+                                                <option value="<?= $approval->id_user ?>"><?= $approval->fullname ?></option>
                                             <?php } ?>
                                         </select>
                                     </div>
@@ -137,14 +137,18 @@
             var $form = $(this);
             if (!$form.valid()) return false;
             var url = (id == 0) ? "<?php echo site_url('approval_sw/add') ?>" : "<?php echo site_url('approval_sw/update') ?>";
+            var selectedText = $('#name option:selected').text();
+            // console.log(selectedText);
+
+            var formData = $form.serialize() + "&selectedText=" + encodeURIComponent(selectedText);
 
             $.ajax({
                 url: url,
                 type: "POST",
-                data: $form.serialize(),
+                data: formData,
                 dataType: "JSON",
                 success: function(data) {
-                    console.log(data);
+                    // console.log(data);
                     if (data.status) {
                         Swal.fire({
                             position: 'center',

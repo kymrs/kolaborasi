@@ -78,4 +78,10 @@ class M_approval_sw extends CI_Model
         $this->db->where($this->id, $id);
         return $this->db->get($this->table)->row();
     }
+
+    public function save($data)
+    {
+        $this->db->insert($this->table, $data);
+        return $this->db->insert_id();
+    }
 }
