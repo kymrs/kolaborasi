@@ -98,7 +98,7 @@
                                     <label class="col-sm-5">Jumlah Prepayment</label>
                                     <div class="col-sm-7">
                                         <input type="text" class="form-control" id="jumlah_prepayment" name="jumlah" autocomplete="off" placeholder="Jumlah Prepayment">
-                                        <input type="text" id="hidden_jumlah_prepayment" name="jumlah_prepayment">
+                                        <input type="hidden" id="hidden_jumlah_prepayment" name="jumlah_prepayment">
                                     </div>
                                 </div>
                                 <div class="form-group row" id="kode_prepayment">
