@@ -48,25 +48,25 @@ class Datadeklarasi_sw extends CI_Controller
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             if ($field->app_name == $fullname) {
                 $action = '<a href="datadeklarasi_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                                <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                                <a class="btn btn-success btn-circle btn-sm" target="_blank" href="datadeklarasi_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app2_name == $fullname) {
                 $action = '<a href="datadeklarasi_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
-                                <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                                <a class="btn btn-success btn-circle btn-sm" target="_blank" href="datadeklarasi_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif (in_array($field->status, ['rejected', 'approved'])) {
                 $action = '<a href="datadeklarasi_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                <a class="btn btn-success btn-circle btn-sm" target="_blank" href="datadeklarasi_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app_status == 'revised' || $field->app2_status == 'revised') {
                 $action = '<a href="datadeklarasi_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
                     <a href="datadeklarasi_sw/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
-                    <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                    <a class="btn btn-success btn-circle btn-sm" target="_blank" href="datadeklarasi_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app_status == 'approved') {
                 $action = '<a href="datadeklarasi_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                            <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                            <a class="btn btn-success btn-circle btn-sm" target="_blank" href="datadeklarasi_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } else {
                 $action = '<a href="datadeklarasi_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
                         <a href="datadeklarasi_sw/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
 			            <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
-                        <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                        <a class="btn btn-success btn-circle btn-sm" target="_blank" href="datadeklarasi_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             }
 
             $no++;
@@ -328,7 +328,7 @@ class Datadeklarasi_sw extends CI_Controller
         // Start FPDF
         $pdf = new FPDF('P', 'mm', 'A4');
         $pdf->SetTitle('Form Deklarasi');
-        $pdf->AddPage('P', 'Letter');
+        $pdf->AddPage('P', 'A4');
 
         // Logo
         $pdf->Image(base_url('') . '/assets/backend/img/sebelaswarna.png', 14, 5, 40, 30);

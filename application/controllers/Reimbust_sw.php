@@ -47,25 +47,25 @@ class Reimbust_sw extends CI_Controller
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             if ($field->app_name == $fullname) {
                 $action = '<a href="reimbust_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                                <a class="btn btn-success btn-circle btn-sm" href="reimbust_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                                <a class="btn btn-success btn-circle btn-sm" target="_blank" href="reimbust_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app2_name == $fullname) {
                 $action = '<a href="reimbust_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
-                                <a class="btn btn-success btn-circle btn-sm" href="reimbust_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                                <a class="btn btn-success btn-circle btn-sm" target="_blank" href="reimbust_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif (in_array($field->status, ['rejected', 'approved'])) {
                 $action = '<a href="reimbust_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                <a class="btn btn-success btn-circle btn-sm" href="reimbust_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                <a class="btn btn-success btn-circle btn-sm" target="_blank" href="reimbust_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app_status == 'revised' || $field->app2_status == 'revised') {
                 $action = '<a href="reimbust_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
                     <a href="reimbust_sw/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
-                    <a class="btn btn-success btn-circle btn-sm" href="reimbust_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                    <a class="btn btn-success btn-circle btn-sm" target="_blank" href="reimbust_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app_status == 'approved') {
                 $action = '<a href="reimbust_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                            <a class="btn btn-success btn-circle btn-sm" href="reimbust_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                            <a class="btn btn-success btn-circle btn-sm" target="_blank" href="reimbust_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } else {
                 $action = '<a href="reimbust_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
                         <a href="reimbust_sw/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
 			            <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
-                        <a class="btn btn-success btn-circle btn-sm" href="reimbust_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                        <a class="btn btn-success btn-circle btn-sm" target="_blank" href="reimbust_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             }
 
             $no++;
@@ -342,8 +342,8 @@ class Reimbust_sw extends CI_Controller
         $data['app2_status'] = strtoupper($data['master']->app2_status);
 
         // Start FPDF
-        $pdf = new FPDF('L', 'mm', 'Letter');
-        $pdf->SetTitle('Form Pengajuan Prepayment');
+        $pdf = new FPDF('L', 'mm', 'A4');
+        $pdf->SetTitle('Form Pengajuan Reimbust');
         $pdf->AddPage();
 
         // Mengatur margin kiri, atas, dan kanan
