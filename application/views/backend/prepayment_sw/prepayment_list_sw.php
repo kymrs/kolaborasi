@@ -15,10 +15,12 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                    <a class="btn btn-primary btn-sm" href="<?= base_url('prepayment_sw/add_form') ?>">
-                        <i class="fa fa-plus"></i>&nbsp;Add Data
-                    </a>
-                    <div class="d-flex align-items-center">
+                    <?php if ($add == 'Y') { ?>
+                        <a class="btn btn-primary btn-sm" href="<?= base_url('prepayment_sw/add_form') ?>">
+                            <i class="fa fa-plus"></i>&nbsp;Add Data
+                        </a>
+                    <?php } ?>
+                    <div class="d-flex align-items-right">
                         <label for="appFilter" class="mr-2 mb-0">Filter:</label>
                         <select id="appFilter" name="appFilter" class="form-control form-control-sm">
                             <!-- <option value="" selected>Show all....</option> -->
