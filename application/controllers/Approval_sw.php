@@ -8,7 +8,32 @@ class Approval_sw extends CI_Controller
         parent::__construct();
         $this->load->model('backend/M_approval_sw');
         $this->M_login->getsecurity();
+        $this->load->library('session');
         date_default_timezone_set('Asia/Jakarta');
+    }
+
+    // Reusable method to check if access is granted
+    private function check_access()
+    {
+        if (!$this->session->userdata('access_granted')) {
+            // If not, show error or redirect
+            show_error('Unauthorized access!', 403);
+
+            // Clear access after checking
+            $this->session->unset_userdata('access_granted');
+        }
+    }
+
+    // Call this when the button is clicked to set access
+    public function set_access()
+    {
+        // Set session variable when button is clicked
+        $this->session->set_userdata('access_granted', TRUE);
+
+        $link = $this->input->get('link');
+
+        // Redirect to any protected action
+        redirect('approval_sw/' . $link); // Example redirect to the first action
     }
 
     public function index()
@@ -77,12 +102,18 @@ class Approval_sw extends CI_Controller
 
     public function add_form()
     {
+        // Check if access is granted
+        $this->check_access();
+
         $data['id'] = 0;
         $data['title_view'] = "Approval Form";
         $data['aksi'] = 'save';
         $data['approvals'] = $this->db->select('id_user, fullname')->from('tbl_user')->get()->result_object();
         $data['title'] = 'backend/approval_sw/approval_form_sw';
         $this->load->view('backend/home', $data);
+
+        // Clear access after checking
+        $this->session->unset_userdata('access_granted');
     }
 
     public function add()

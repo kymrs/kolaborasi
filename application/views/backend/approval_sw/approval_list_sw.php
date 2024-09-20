@@ -8,7 +8,7 @@
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex justify-content-between align-items-center">
                     <?php if ($add == 'Y') { ?>
-                        <a class="btn btn-primary btn-sm" href="<?= base_url('approval_sw/add_form') ?>">
+                        <a class="btn btn-primary btn-sm" id="add_btn">
                             <i class="fa fa-plus"></i>&nbsp;Add Data
                         </a>
                     <?php } ?>
@@ -91,30 +91,6 @@
         });
     });
 
-    // // Restore filter value from localStorage
-    // var savedStatus = localStorage.getItem('appFilterStatus');
-    // if (savedStatus) {
-    //     $('#appFilter').val(savedStatus).change();
-    // }
-
-    // // Save filter value to localStorage on change
-    // $('#appFilter').on('change', function() {
-    //     localStorage.setItem('appFilterStatus', $(this).val());
-    // });
-
-    // $('#appFilter').change(function() {
-    //     table.ajax.reload(); // Muat ulang data di DataTable dengan filter baru
-    // });
-
-    // // Event listener untuk nav tabs
-    // $('.nav-tabs a').on('click', function(e) {
-    //     e.preventDefault();
-    //     $('.nav-tabs a').removeClass('active'); // Hapus kelas aktif dari semua tab
-    //     $(this).addClass('active'); // Tambahkan kelas aktif ke tab yang diklik
-
-    //     table.ajax.reload(); // Muat ulang data di DataTable saat tab berubah
-    // });
-
     function delete_data(id) {
         Swal.fire({
             title: 'Are you sure?',
@@ -148,4 +124,9 @@
             }
         })
     };
+
+
+    $('#add_btn').click(function(e) {
+        window.location.href = '<?= base_url('approval_sw/set_access') ?>?link=' + 'add_form';
+    });
 </script>
