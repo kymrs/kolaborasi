@@ -237,8 +237,8 @@
                             <table>
                                 <tr>
                                     <td>KARYAWAN</td>
-                                    <td>DEPT. HEAD</td>
                                     <td>HC-DEPARTMENT</td>
+                                    <td>DEPT. HEAD</td>
                                 </tr>
                                 <tr style="height: 75px">
                                     <td id="statusMelakukan"></td>

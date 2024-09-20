@@ -35,7 +35,7 @@ class Penawaran_pu extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $list = $this->M_prepayment_sw->get_datatables();
+        $list = $this->M_penawaran_pu->get_datatables();
         $data = array();
         $no = $_POST['start'];
 
@@ -56,8 +56,6 @@ class Penawaran_pu extends CI_Controller
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             $action = $action_read . $action_edit . $action_delete . $action_print;
 
-
-            $formatted_nominal = number_format($field->total_nominal, 0, ',', '.');
             $no++;
             $row = array();
             $row[] = $no;
@@ -73,8 +71,8 @@ class Penawaran_pu extends CI_Controller
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_prepayment_sw->count_all(),
-            "recordsFiltered" => $this->M_prepayment_sw->count_filtered(),
+            "recordsTotal" => $this->M_penawaran_pu->count_all(),
+            "recordsFiltered" => $this->M_penawaran_pu->count_filtered(),
             "data" => $data,
         );
         //output dalam format JSON

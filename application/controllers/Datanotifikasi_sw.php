@@ -439,9 +439,9 @@ class Datanotifikasi_sw extends CI_Controller
         $pdf->SetFont('Arial', 'B', 12);
 
         // Membuat header tabel
-        $pdf->Cell(63, 8.5, 'Yang Melakukan', 1, 0, 'C');
-        $pdf->Cell(63, 8.5, 'Mengetahui', 1, 0, 'C');
-        $pdf->Cell(63, 8.5, 'Menyetujui', 1, 1, 'C');
+        $pdf->Cell(63, 8.5, 'KARYAWAN', 1, 0, 'C');
+        $pdf->Cell(63, 8.5, 'HC DEPARTEMENT', 1, 0, 'C');
+        $pdf->Cell(63, 8.5, 'DEPT. HEAD', 1, 1, 'C');
 
         // Set font normal untuk konten tabel
         $pdf->SetFont('Arial', '', 10);

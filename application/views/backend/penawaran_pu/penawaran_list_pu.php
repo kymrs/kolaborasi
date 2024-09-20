@@ -20,28 +20,7 @@
                             <i class="fa fa-plus"></i>&nbsp;Add Data
                         </a>
                     <?php } ?>
-                    <div class="d-flex align-items-right">
-                        <label for="appFilter" class="mr-2 mb-0">Filter:</label>
-                        <select id="appFilter" name="appFilter" class="form-control form-control-sm">
-                            <!-- <option value="" selected>Show all....</option> -->
-                            <option value="on-process" selected>On-Process</option>
-                            <option value="approved">Approved</option>
-                            <option value="revised">Revised</option>
-                            <option value="rejected">Rejected</option>
-                        </select>
-                    </div>
                 </div>
-                <!-- NAV TABS -->
-                <ul class="nav nav-tabs">
-                    <li class="nav-item">
-                        <a class="nav-link active" id="personalTab" href="#" data-tab="personal">User</a>
-                    </li>
-                    <?php if ($approval > 0) { ?>
-                        <li class="nav-item">
-                            <a class="nav-link" id="employeeTab" href="#" data-tab="employee">Approval</a>
-                        </li>
-                    <?php } ?>
-                </ul>
 
                 <div class="card-body">
                     <table id="table" class="table table-bordered table-striped">
@@ -79,7 +58,7 @@
 <?php $this->load->view('template/footer'); ?>
 <?php $this->load->view('template/script'); ?>
 
-<!-- <script type="text/javascript">
+<script type="text/javascript">
     var table;
 
     // METHOD POST MENAMPILKAN DATA KE DATA TABLE
@@ -91,7 +70,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('prepayment_sw/get_list') ?>",
+                "url": "<?php echo site_url('penawaran_pu/get_list') ?>",
                 "type": "POST",
                 "data": function(d) {
                     d.status = $('#appFilter').val(); // Tambahkan parameter status ke permintaan server
@@ -102,11 +81,11 @@
             //     "infoFiltered": ""
             // },
             "columnDefs": [{
-                    "targets": [2, 6, 8],
+                    "targets": [5, 6],
                     "className": 'dt-head-nowrap'
                 },
                 {
-                    "targets": [1, 3, 4, 9],
+                    "targets": [1, 3],
                     "className": 'dt-body-nowrap'
                 }, {
                     "targets": [0, 1],
@@ -114,30 +93,6 @@
                 },
             ]
         });
-    });
-
-    // Restore filter value from localStorage
-    var savedStatus = localStorage.getItem('appFilterStatus');
-    if (savedStatus) {
-        $('#appFilter').val(savedStatus).change();
-    }
-
-    // Save filter value to localStorage on change
-    $('#appFilter').on('change', function() {
-        localStorage.setItem('appFilterStatus', $(this).val());
-    });
-
-    $('#appFilter').change(function() {
-        table.ajax.reload(); // Muat ulang data di DataTable dengan filter baru
-    });
-
-    // Event listener untuk nav tabs
-    $('.nav-tabs a').on('click', function(e) {
-        e.preventDefault();
-        $('.nav-tabs a').removeClass('active'); // Hapus kelas aktif dari semua tab
-        $(this).addClass('active'); // Tambahkan kelas aktif ke tab yang diklik
-
-        table.ajax.reload(); // Muat ulang data di DataTable saat tab berubah
     });
 
     // MENGHAPUS DATA MENGGUNAKAN METHODE POST JQUERY
@@ -153,7 +108,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: "<?php echo site_url('prepayment_sw/delete/') ?>" + id,
+                    url: "<?php echo site_url('penawaran_pu/delete/') ?>" + id,
                     type: "POST",
                     dataType: "JSON",
                     success: function(data) {
@@ -164,7 +119,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then((result) => {
-                            location.href = "<?= base_url('prepayment_sw') ?>";
+                            location.href = "<?= base_url('penawaran_pu') ?>";
                         })
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
@@ -174,4 +129,4 @@
             }
         })
     };
-</script> -->
+</script>
