@@ -60,22 +60,18 @@ class Approval_sw extends CI_Controller
         $no = $_POST['start'];
 
         $akses = $this->M_app->hak_akses($this->session->userdata('id_level'), $this->router->fetch_class());
-        $read = $akses->view_level;
         $edit = $akses->edit_level;
         $delete = $akses->delete_level;
-        $print = $akses->print_level;
 
         //LOOPING DATATABLES
         foreach ($list as $field) {
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
-            $action_read = ($read == 'Y') ? '<a href="approval_sw/read_form/' . $field->id_user . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
             $action_edit = ($edit == 'Y') ? '<a href="approval_sw/edit_form/' . $field->id_user . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id_user . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
-            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="approval_sw/generate_pdf/' . $field->id_user . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
-            $action = $action_read . $action_edit . $action_delete . $action_print;
+            $action = $action_edit . $action_delete;
 
             $no++;
             $row = array();
@@ -129,6 +125,44 @@ class Approval_sw extends CI_Controller
 
         $inserted = $this->M_approval_sw->save($data);
 
+        echo json_encode(array("status" => TRUE));
+    }
+
+    public function update($id)
+    {
+        $data = array(
+            'name' => $this->input->post('selectedText'),
+            'divisi' => $this->input->post('divisi'),
+            'jabatan' => $this->input->post('jabatan'),
+            'app_id' => $this->input->post('app_id'),
+            'app2_id' => $this->input->post('app2_id')
+        );
+
+        $this->db->update('tbl_data_user', $data, ['id_user' => $id]);
+
+        echo json_encode(array("status" => TRUE));
+    }
+
+    public function edit_form($id)
+    {
+        $data['id'] = $id;
+        $data['title_view'] = "Edit Approval Form";
+        $data['aksi'] = 'update';
+        $data['approvals'] = $this->db->select('id_user, fullname')->from('tbl_user')->get()->result_object();
+        $data['title'] = 'backend/approval_sw/approval_form_sw';
+        $this->load->view('backend/home', $data);
+    }
+
+    function edit_data($id)
+    {
+        $data['master'] = $this->db->get_where('tbl_data_user', ['id_user' => $id])->row_array();
+        $data['approvals'] = $this->db->get_where('tbl_user', ['id_user' => $id])->row_array();
+        echo json_encode($data);
+    }
+
+    function delete($id)
+    {
+        $this->db->delete('tbl_data_user', ['id_user' => $id]);
         echo json_encode(array("status" => TRUE));
     }
 }
