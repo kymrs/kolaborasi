@@ -23,4 +23,5 @@
     <link rel="stylesheet" href="<?= base_url() ?>assets/backend/plugins/sb2/vendor/datatables-responsive/css/responsive.bootstrap4.min.css">
     <link rel="stylesheet" href="<?= base_url() ?>assets/frontend/plugins/star-rating/dist/star-rating.css">
     <link rel="stylesheet" href="<?= base_url() ?>assets/backend/plugins/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 </head>

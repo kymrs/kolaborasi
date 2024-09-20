@@ -1,6 +1,5 @@
-<script src="https://unpkg.com/slim-select@latest/dist/slimselect.min.js"></script>
-<link href="https://unpkg.com/slim-select@latest/dist/slimselect.css" rel="stylesheet">
-</link>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <div class="container-fluid">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"><?= $title_view ?></h1>
@@ -20,9 +19,9 @@
                             <div class="col-md-6">
                                 <!-- Second Set of Fields -->
                                 <div class="form-group row">
-                                    <label class="col-sm-4" for="nama_dibayar">Nama</label>
+                                    <label class="col-sm-4" for="name">Nama</label>
                                     <div class="col-sm-7">
-                                        <select class="form-control" name="name" id="name">
+                                        <select class="form-control name" name="name" id="name">
                                             <option value="" selected disabled>Pilih opsi...</option>
                                             <?php foreach ($approvals as $approval) { ?>
                                                 <option value="<?= $approval->id_user ?>"><?= $approval->fullname ?></option>
@@ -55,7 +54,7 @@
                                 <div class="form-group row">
                                     <label class="col-sm-4" for="app_id">Approval Pertama</label>
                                     <div class="col-sm-7">
-                                        <select class="form-control" id="app_id" name="app_id">
+                                        <select class="form-control app_id" id="app_id" name="app_id">
                                             <option value="" selected disabled>Pilih opsi...</option>
                                             <?php foreach ($approvals as $approval) { ?>
                                                 <option value="<?= $approval->id_user ?>"><?= $approval->fullname ?></option>
@@ -66,7 +65,7 @@
                                 <div class="form-group row">
                                     <label class="col-sm-4" for="app2_id">Approval Kedua</label>
                                     <div class="col-sm-7">
-                                        <select class="form-control" id="app2_id" name="app2_id">
+                                        <select class="form-control app2_id" id="app2_id" name="app2_id">
                                             <option value="" selected disabled>Pilih opsi...</option>
                                             <?php foreach ($approvals as $approval) { ?>
                                                 <option value="<?= $approval->id_user ?>"><?= $approval->fullname ?></option>
@@ -98,6 +97,7 @@
 
 <?php $this->load->view('template/footer'); ?>
 <?php $this->load->view('template/script'); ?>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
     $(document).ready(function() {
@@ -105,7 +105,7 @@
         var aksi = $('#aksi').val();
         var kode = $('#kode').val();
 
-        var slimSelect = new SlimSelect({
+        new SlimSelect({
             select: '#name'
         })
 
@@ -136,6 +136,8 @@
                 }
             });
         }
+
+        $('#name').val(11).trigger('change');
 
         $("#form").submit(function(e) {
             e.preventDefault();
