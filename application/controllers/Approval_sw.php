@@ -100,4 +100,21 @@ class Approval_sw extends CI_Controller
 
         echo json_encode(array("status" => TRUE));
     }
+
+    public function edit_form($id)
+    {
+        $data['id'] = $id;
+        $data['title_view'] = "Edit Approval Form";
+        $data['aksi'] = 'update';
+        $data['approvals'] = $this->db->select('id_user, fullname')->from('tbl_user')->get()->result_object();
+        $data['title'] = 'backend/approval_sw/approval_form_sw';
+        $this->load->view('backend/home', $data);
+    }
+
+    function edit_data($id)
+    {
+        $data['master'] = $this->db->get_where('tbl_data_user', ['id_user' => $id])->row_array();
+        $data['approvals'] = $this->db->get_where('tbl_user', ['id_user' => $id])->row_array();
+        echo json_encode($data);
+    }
 }

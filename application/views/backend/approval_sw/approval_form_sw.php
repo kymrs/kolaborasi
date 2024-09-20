@@ -26,6 +26,9 @@
                                             <option value="" selected disabled>Pilih opsi...</option>
                                             <?php foreach ($approvals as $approval) { ?>
                                                 <option value="<?= $approval->id_user ?>"><?= $approval->fullname ?></option>
+                                                <?php if ($id != 0 && $id == $id) : ?>
+                                                    <option value="" selected id="nameSelected"></option>
+                                                <?php endif ?>
                                             <?php } ?>
                                         </select>
                                     </div>
@@ -102,7 +105,7 @@
         var aksi = $('#aksi').val();
         var kode = $('#kode').val();
 
-        new SlimSelect({
+        var slimSelect = new SlimSelect({
             select: '#name'
         })
 
@@ -124,7 +127,9 @@
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
-                    // console.log(data);
+                    console.log(data);
+                    $('#nameSelected').text(data['approvals']['fullname']);
+                    $('#jabatan').val(data['master']['divisi']);
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     alert('Error getting data from ajax');
