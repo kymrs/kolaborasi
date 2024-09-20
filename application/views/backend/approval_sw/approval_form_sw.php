@@ -25,9 +25,6 @@
                                             <option value="" selected disabled>Pilih opsi...</option>
                                             <?php foreach ($approvals as $approval) { ?>
                                                 <option value="<?= $approval->id_user ?>"><?= $approval->fullname ?></option>
-                                                <?php if ($id != 0 && $id == $id) : ?>
-                                                    <option value="" selected id="nameSelected"></option>
-                                                <?php endif ?>
                                             <?php } ?>
                                         </select>
                                     </div>
@@ -105,31 +102,27 @@
         var aksi = $('#aksi').val();
         var kode = $('#kode').val();
 
-        new SlimSelect({
-            select: '#name'
-        })
-
-        new SlimSelect({
-            select: '#app_id'
-        })
-
-        new SlimSelect({
-            select: '#app2_id'
-        })
+        $('.name').select2();
+        $('.app_id').select2();
+        $('.app2_id').select2();
 
         if (id == 0) {
             $('.aksi').text('Save');
         } else {
             $('.aksi').text('Update');
             $("select option[value='']").hide();
+            $('#name').prop('disabled', true);
             $.ajax({
                 url: "<?php echo site_url('approval_sw/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
-                    console.log(data);
-                    $('#nameSelected').text(data['approvals']['fullname']);
-                    $('#jabatan').val(data['master']['divisi']);
+                    $('#name').val(data['master']['id_user']).trigger('change');
+                    $('#divisi').val(data['master']['divisi']).trigger('change');
+                    $('#jabatan').val(data['master']['jabatan']).trigger('change');
+                    $('#app_id').val(data['master']['app_id']).trigger('change');
+                    $('#app2_id').val(data['master']['app2_id']).trigger('change');
+                    // console.log(data);
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     alert('Error getting data from ajax');
@@ -137,13 +130,11 @@
             });
         }
 
-        $('#name').val(11).trigger('change');
-
         $("#form").submit(function(e) {
             e.preventDefault();
             var $form = $(this);
             if (!$form.valid()) return false;
-            var url = (id == 0) ? "<?php echo site_url('approval_sw/add') ?>" : "<?php echo site_url('approval_sw/update') ?>";
+            var url = (id == 0) ? "<?php echo site_url('approval_sw/add') ?>" : "<?php echo site_url('approval_sw/update') ?>/" + id;
             var selectedText = $('#name option:selected').text();
             // console.log(selectedText);
 
