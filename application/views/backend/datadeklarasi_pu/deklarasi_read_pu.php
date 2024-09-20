@@ -20,13 +20,13 @@
 
         /* header */
         .header {
-            height: 165px;
+            height: 60px;
         }
 
         .header .logo {
-            width: 200px;
+            width: 140px;
             position: relative;
-            bottom: 60px;
+            bottom: 50px;
         }
 
         .header .title {

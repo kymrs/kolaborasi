@@ -26,16 +26,20 @@
         }
 
         .header .logo {
-            width: 160px;
+            width: 140px;
             position: relative;
-            right: 17px;
-            top: -50px;
+            right: -3px;
+            bottom: 80px;
             margin-bottom: -70px;
         }
 
         .header h1 {
             font-size: 1.4rem;
             font-weight: bold;
+        }
+
+        .header-field {
+            margin-top: 25px;
         }
 
         .header-field tr td:nth-child(2) {

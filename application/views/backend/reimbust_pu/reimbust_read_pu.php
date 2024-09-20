@@ -32,7 +32,9 @@
             height: 150px;
             display: flex;
             align-items: center;
-            width: 200px;
+            width: 160px;
+            position: relative;
+            left: 20px;
         }
 
         .header .logo img {
