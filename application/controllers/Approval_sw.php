@@ -77,7 +77,6 @@ class Approval_sw extends CI_Controller
             $row = array();
             $row[] = $no;
             $row[] = $action;
-            $row[] = $field->id_user;
             $row[] = $field->name;
             $row[] = $field->divisi;
             $row[] = $field->jabatan;

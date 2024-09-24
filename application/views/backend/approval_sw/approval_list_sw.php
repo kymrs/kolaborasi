@@ -23,7 +23,6 @@
                                 <tr>
                                     <th>No</th>
                                     <th style="width: 120px;">Action</th>
-                                    <th>ID</th>
                                     <th>Nama</th>
                                     <th>Divisi</th>
                                     <th>Jabatan</th>
@@ -37,7 +36,6 @@
                                 <tr>
                                     <th>No</th>
                                     <th style="width: 120px;">Action</th>
-                                    <th>ID</th>
                                     <th>Nama</th>
                                     <th>Divisi</th>
                                     <th>Jabatan</th>
@@ -76,7 +74,7 @@
                 "infoFiltered": ""
             },
             "columnDefs": [{
-                    "targets": [2, 4, 6], // Adjusted indices to match the number of columns
+                    "targets": [], // Adjusted indices to match the number of columns
                     "className": 'dt-head-nowrap'
                 },
                 {
