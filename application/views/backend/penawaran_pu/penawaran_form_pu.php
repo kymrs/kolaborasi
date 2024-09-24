@@ -299,15 +299,14 @@
 <?php $this->load->view('template/script'); ?>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-
 <script>
     var quill = new Quill('#editor', {
         theme: 'snow'
     });
 
-    var quillContent = `<p> Lalaland </p>`;
+    // var quillContent = `<p> Lalaland </p>`;
 
-    quill.clipboard.dangerouslyPasteHTML(quillContent);
+    // quill.clipboard.dangerouslyPasteHTML(quillContent);
 
     document.getElementById("form").onsubmit = function() {
         // Get HTML content from Quill editor
@@ -360,49 +359,16 @@
                 $('#durasi').append(`<span class="label-inline text-gray-600">Durasi:</span> <span class="value-inline text-gray-800">` + data['durasi'] + ` Hari</span>`);
                 $('#tempatKeberangkatan').append(`<span class="label-inline text-gray-600">Berangkat dari:</span> <span class="value-inline text-gray-800">` + data['tempat_keberangkatan'] + `</span>`);
                 $('#priceTxt').append(`Rp. ` + data['biaya'].replace(/\B(?=(\d{3})+(?!\d))/g, '.') + `,- /pax`);
-                $('#layananTermasuk').append('<h2 class="section-title">Layanan Termasuk:</h2> <p>' + data['layanan_termasuk'] +
-                    '</p>');
-                $('#layananTdkTermasuk').append('<h2 class="section-title mt-5">Layanan Tidak Termasuk:</h2> <p>' + data['layanan_tdk_termasuk'] + '</p>');
+                $('#layananTermasuk').append('<h2 class="section-title">Layanan Termasuk:</h2>' + data['layanan_termasuk']);
+                $('#layananTermasuk ol').prop('class', 'list-item');
+                $('#layananTdkTermasuk').append('<h2 class="section-title mt-5">Layanan Tidak Termasuk:</h2>' + data['layanan_tdk_termasuk']);
+                $('#layananTdkTermasuk ol').prop('class', 'list-item');
             },
             error: function(error) {
                 alert("error" + error);
             }
         });
     });
-
-
-    // $('#tgl_prepayment').datepicker({
-    //     dateFormat: 'dd-mm-yy',
-    //     minDate: new Date(),
-    //     maxDate: new Date(),
-
-    //     // MENGENERATE KODE PREPAYMENT SETELAH PILIH TANGGAL
-    //     onSelect: function(dateText) {
-    //         var id = dateText;
-    //         $('#tgl_prepayment').removeClass("is-invalid");
-
-    //         // Menghapus label error secara manual jika ada
-    //         if ($("#tgl_prepayment-error").length) {
-    //             $("#tgl_prepayment-error").remove(); // Menghapus label error
-    //         }
-    //         $.ajax({
-    //             url: "<?php echo site_url('penawaran_pu/generate_kode') ?>",
-    //             type: "POST",
-    //             data: {
-    //                 "date": dateText
-    //             },
-    //             dataType: "JSON",
-    //             success: function(data) {
-    //                 // console.log(data);
-    //                 $('#kode_prepayment').val(data.toUpperCase());
-    //                 $('#kode').val(data);
-    //             },
-    //             error: function(error) {
-    //                 alert("error" + error);
-    //             }
-    //         });
-    //     }
-    // });
 
     $(document).ready(function() {
 
@@ -436,12 +402,46 @@
                 dataType: "JSON",
                 success: function(data) {
                     moment.locale('id')
+
                     //APPEND DATA TRANSAKSI DETAIL PREPAYMENT
                     if (aksi == 'update') {
-                        $('#pelanggan').val(data['master']['pelanggan']);
-                        $('#no_pelayanan').val(data['master']['no_pelayanan']);
-                        $('#name').val(data['master']['id_produk']).trigger('change');
-                        quill.clipboard.dangerouslyPasteHTML(data['master']['catatan']);
+                        $(data['transaksi']).each(function(index) {
+                            //Nilai nominal diformat menggunakan pemisah ribuan sebelum dimasukkan ke dalam elemen input.
+                            const nominalFormatted = data['transaksi'][index]['nominal'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                            const row = `
+                        <tr id="row-${index + 1}">
+                            <td class="row-number">${index + 1}</td>
+                            <td><input type="text" class="form-control" name="rincian[${index + 1}]" value="${data['transaksi'][index]['rincian']}" />
+                                <input type="hidden" id="hidden_id${index + 1}" name="hidden_id" value="${data['master']['id']}">
+                                <input type="hidden" id="hidden_id_detail${index + 1}" name="hidden_id_detail[${index + 1}]" value="${data['transaksi'][index]['id']}">
+                            </td>
+                            <td><input type="text" class="form-control" id="nominal-${index + 1}" name="nominal[${index + 1}]" value="${nominalFormatted}" />
+                                <input type="hidden" id="hidden_nominal${index + 1}" name="hidden_nominal[${index + 1}]" value="${data['transaksi'][index]['nominal']}">
+                            </td>
+                            <td><input type="text" class="form-control" name="keterangan[${index + 1}]" value="${data['transaksi'][index]['keterangan']}" placeholder="input here...."/></td>
+                            <td><span class="btn delete-btn btn-danger" data-id="${index + 1}">Delete</span></td>
+                        </tr>
+                        `;
+                            $('#input-container').append(row);
+
+                            //VALIDASI ROW YANG TELAH DI APPEND
+                            $("#form").validate().settings.rules[`rincian[${index + 1}]`] = {
+                                required: true
+                            };
+                            $("#form").validate().settings.rules[`nominal[${index + 1}]`] = {
+                                required: true
+                            };
+                            $("#form").validate().settings.messages[`rincian[${index + 1}]`] = {
+                                required: "Rincian is required"
+                            };
+                            $("#form").validate().settings.messages[`nominal[${index + 1}]`] = {
+                                required: "Nominal is required"
+                            };
+                            // $("#form").validate().settings.rules[`keterangan[${index + 1}]`] = {
+                            //     required: true
+                            // };
+                            rowCount = index + 1;
+                        });
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
@@ -495,7 +495,7 @@
             if (id == 0) {
                 url = "<?php echo site_url('penawaran_pu/add') ?>";
             } else {
-                url = "<?php echo site_url('penawaran_pu/update/') ?>" + id;
+                url = "<?php echo site_url('penawaran_pu/update') ?>";
             }
 
             $.ajax({

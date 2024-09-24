@@ -171,5 +171,68 @@
             });
         });
 
+
+        $("#form").validate({
+            rules: {
+                name: {
+                    required: true,
+                },
+                divisi: {
+                    required: true,
+                },
+                jabatan: {
+                    required: true,
+                },
+                app_id: {
+                    required: true,
+                },
+                app2_id: {
+                    required: true,
+                }
+            },
+            messages: {
+                name: {
+                    required: "Nama is required",
+                },
+                divisi: {
+                    required: "Divisi is required",
+                },
+
+                jabatan: {
+                    required: "Jabatan is required",
+                },
+                app_id: {
+                    required: "Approval Pertama is required",
+                },
+                app2_id: {
+                    required: "Approval Kedua is required",
+                }
+            },
+            errorPlacement: function(error, element) {
+                // Cek jika elemen adalah Select2
+                if (element.hasClass('select2-hidden-accessible')) {
+                    // Jika elemen adalah Select2, masukkan error di bawah elemen Select2
+                    error.insertAfter(element.next('.select2')); // Masukkan error setelah elemen Select2
+                } else if (element.parent().hasClass('input-group')) {
+                    error.insertAfter(element.parent());
+                } else {
+                    error.insertAfter(element);
+                }
+            },
+            highlight: function(element) {
+                $(element).addClass('is-invalid'); // Tambahkan kelas untuk menandai input tidak valid
+                if ($(element).hasClass('select2-hidden-accessible')) {
+                    $(element).next('.select2').find('.select2-selection').addClass('is-invalid'); // Tandai Select2
+                }
+            },
+            unhighlight: function(element) {
+                $(element).removeClass('is-invalid'); // Hapus kelas jika input valid
+                if ($(element).hasClass('select2-hidden-accessible')) {
+                    $(element).next('.select2').find('.select2-selection').removeClass('is-invalid'); // Hapus kelas dari Select2
+                }
+            },
+            focusInvalid: false, // Disable auto-focus on the first invalid field
+        });
+
     })
 </script>

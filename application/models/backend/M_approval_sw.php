@@ -7,8 +7,8 @@ class M_approval_sw extends CI_Model
 {
     var $id = 'id';
     var $table = 'tbl_data_user'; //nama tabel dari database
-    var $column_order = array(null, null, 'id_user', 'name', 'divisi', 'jabatan', 'created_at');
-    var $column_search = array('id_user', 'name', 'divisi', 'jabatan', 'created_at'); //field yang diizin untuk pencarian 
+    var $column_order = array(null, null, 'name', 'divisi', 'jabatan', 'created_at');
+    var $column_search = array('name', 'divisi', 'jabatan', 'created_at'); //field yang diizin untuk pencarian 
     var $order = array('id_user' => 'desc'); // default order 
 
     public function __construct()
