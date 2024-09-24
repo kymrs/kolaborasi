@@ -299,8 +299,9 @@
 <?php $this->load->view('template/script'); ?>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
+
 <script>
-    const quill = new Quill('#editor', {
+    var quill = new Quill('#editor', {
         theme: 'snow'
     });
 
@@ -431,46 +432,12 @@
                 dataType: "JSON",
                 success: function(data) {
                     moment.locale('id')
-
                     //APPEND DATA TRANSAKSI DETAIL PREPAYMENT
                     if (aksi == 'update') {
-                        $(data['transaksi']).each(function(index) {
-                            //Nilai nominal diformat menggunakan pemisah ribuan sebelum dimasukkan ke dalam elemen input.
-                            const nominalFormatted = data['transaksi'][index]['nominal'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-                            const row = `
-                        <tr id="row-${index + 1}">
-                            <td class="row-number">${index + 1}</td>
-                            <td><input type="text" class="form-control" name="rincian[${index + 1}]" value="${data['transaksi'][index]['rincian']}" />
-                                <input type="hidden" id="hidden_id${index + 1}" name="hidden_id" value="${data['master']['id']}">
-                                <input type="hidden" id="hidden_id_detail${index + 1}" name="hidden_id_detail[${index + 1}]" value="${data['transaksi'][index]['id']}">
-                            </td>
-                            <td><input type="text" class="form-control" id="nominal-${index + 1}" name="nominal[${index + 1}]" value="${nominalFormatted}" />
-                                <input type="hidden" id="hidden_nominal${index + 1}" name="hidden_nominal[${index + 1}]" value="${data['transaksi'][index]['nominal']}">
-                            </td>
-                            <td><input type="text" class="form-control" name="keterangan[${index + 1}]" value="${data['transaksi'][index]['keterangan']}" placeholder="input here...."/></td>
-                            <td><span class="btn delete-btn btn-danger" data-id="${index + 1}">Delete</span></td>
-                        </tr>
-                        `;
-                            $('#input-container').append(row);
-
-                            //VALIDASI ROW YANG TELAH DI APPEND
-                            $("#form").validate().settings.rules[`rincian[${index + 1}]`] = {
-                                required: true
-                            };
-                            $("#form").validate().settings.rules[`nominal[${index + 1}]`] = {
-                                required: true
-                            };
-                            $("#form").validate().settings.messages[`rincian[${index + 1}]`] = {
-                                required: "Rincian is required"
-                            };
-                            $("#form").validate().settings.messages[`nominal[${index + 1}]`] = {
-                                required: "Nominal is required"
-                            };
-                            // $("#form").validate().settings.rules[`keterangan[${index + 1}]`] = {
-                            //     required: true
-                            // };
-                            rowCount = index + 1;
-                        });
+                        $('#pelanggan').val(data['master']['pelanggan']);
+                        $('#no_pelayanan').val(data['master']['no_pelayanan']);
+                        $('#name').val(data['master']['id_produk']).trigger('change');
+                        quill.clipboard.dangerouslyPasteHTML(data['master']['catatan']);
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
@@ -524,7 +491,7 @@
             if (id == 0) {
                 url = "<?php echo site_url('penawaran_pu/add') ?>";
             } else {
-                url = "<?php echo site_url('penawaran_pu/update') ?>";
+                url = "<?php echo site_url('penawaran_pu/update/') ?>" + id;
             }
 
             $.ajax({

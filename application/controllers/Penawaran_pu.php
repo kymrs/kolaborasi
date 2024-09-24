@@ -112,6 +112,22 @@ class Penawaran_pu extends CI_Controller
         $this->load->view('backend/home', $data);
     }
 
+    function edit_form($id)
+    {
+        $data['id'] = $id;
+        $data['aksi'] = 'update';
+        $data['title_view'] = "Edit Data Prepayment";
+        $data['title'] = 'backend/penawaran_pu/penawaran_form_pu';
+        $data['products'] = $this->db->select('id, nama')->from('tbl_produk')->get()->result_object();
+        $this->load->view('backend/home', $data);
+    }
+
+    function edit_data($id)
+    {
+        $data['master'] = $this->db->get_where('tbl_penawaran', ['id' => $id])->row_array();
+        echo json_encode($data);
+    }
+
     public function generate_kode()
     {
         $date = date('Y-m-d h:i:sa');
@@ -166,6 +182,20 @@ class Penawaran_pu extends CI_Controller
         );
 
         $this->M_penawaran_pu->save($data);
+        echo json_encode(array("status" => TRUE));
+    }
+
+    public function update($id)
+    {
+        $data = array(
+            'no_pelayanan' => $this->input->post('no_pelayanan'),
+            'pelanggan' => $this->input->post('pelanggan'),
+            'id_produk' => $this->input->post('name'),
+            'catatan' => $this->input->post('editor_content')
+        );
+
+        $this->db->update('tbl_penawaran', $data, ['id' => $id]);
+
         echo json_encode(array("status" => TRUE));
     }
 }
