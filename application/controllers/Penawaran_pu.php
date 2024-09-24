@@ -8,6 +8,7 @@ class Penawaran_pu extends CI_Controller
         parent::__construct();
         $this->load->model('backend/M_penawaran_pu');
         $this->M_login->getsecurity();
+        $this->load->library('ciqrcode');
     }
 
     public function index()
@@ -48,7 +49,7 @@ class Penawaran_pu extends CI_Controller
         //LOOPING DATATABLES
         foreach ($list as $field) {
 
-            $action_read = ($read == 'Y') ? '<a href="penawaran_pu/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
+            $action_read = ($read == 'Y') ? '<a href="penawaran_pu/read_form/' . $field->no_arsip . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
             $action_edit = ($edit == 'Y') ? '<a href="penawaran_pu/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
             $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="penawaran_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
@@ -79,6 +80,29 @@ class Penawaran_pu extends CI_Controller
         echo json_encode($output);
     }
 
+    public function read_form()
+    {
+        $kode = $this->uri->segment(3);
+        // var_dump($kode);
+        $data['penawaran'] = $this->M_penawaran_pu->getPenawaran($kode);
+
+        if ($data['penawaran'] == null) {
+            $this->load->view('backend/penawaran_pu/404');
+        } else {
+            $no_arsip = $data['penawaran']['no_arsip'];
+
+            $params['data'] = 'https://arsip.pengenumroh.com/' . $no_arsip;
+            $params['level'] = 'H';
+            $params['size'] = 10;
+            $params['savename'] = 'assets/backend/document/qrcode/qr-' . $no_arsip . '.png';
+            $this->ciqrcode->generate($params);
+
+            $data['title'] = 'backend/penawaran_pu/penawaran_read_pu';
+            $data['title_view'] = 'Prepayment';
+            $this->load->view('backend/home', $data);
+        }
+    }
+
     public function add_form()
     {
         $data['id'] = 0;
@@ -86,6 +110,22 @@ class Penawaran_pu extends CI_Controller
         $data['products'] = $this->db->select('id, nama')->from('tbl_produk')->get()->result_object();
         $data['title_view'] = 'Penawaran Form';
         $this->load->view('backend/home', $data);
+    }
+
+    function edit_form($id)
+    {
+        $data['id'] = $id;
+        $data['aksi'] = 'update';
+        $data['title_view'] = "Edit Data Prepayment";
+        $data['title'] = 'backend/penawaran_pu/penawaran_form_pu';
+        $data['products'] = $this->db->select('id, nama')->from('tbl_produk')->get()->result_object();
+        $this->load->view('backend/home', $data);
+    }
+
+    function edit_data($id)
+    {
+        $data['master'] = $this->db->get_where('tbl_penawaran', ['id' => $id])->row_array();
+        echo json_encode($data);
     }
 
     public function generate_kode()
@@ -142,6 +182,20 @@ class Penawaran_pu extends CI_Controller
         );
 
         $this->M_penawaran_pu->save($data);
+        echo json_encode(array("status" => TRUE));
+    }
+
+    public function update($id)
+    {
+        $data = array(
+            'no_pelayanan' => $this->input->post('no_pelayanan'),
+            'pelanggan' => $this->input->post('pelanggan'),
+            'id_produk' => $this->input->post('name'),
+            'catatan' => $this->input->post('editor_content')
+        );
+
+        $this->db->update('tbl_penawaran', $data, ['id' => $id]);
+
         echo json_encode(array("status" => TRUE));
     }
 }
