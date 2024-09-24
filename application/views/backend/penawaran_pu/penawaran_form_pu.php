@@ -305,6 +305,10 @@
         theme: 'snow'
     });
 
+    var quillContent = `<p> Lalaland </p>`;
+
+    quill.clipboard.dangerouslyPasteHTML(quillContent);
+
     document.getElementById("form").onsubmit = function() {
         // Get HTML content from Quill editor
         var editorContent = quill.root.innerHTML;
