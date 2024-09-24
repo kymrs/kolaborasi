@@ -160,7 +160,13 @@
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
-                    alert('Error adding / updating data');
+                    Swal.fire({
+                        position: 'center',
+                        icon: 'warning',
+                        title: 'Data approval sudah ada',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
                 }
             });
         });
