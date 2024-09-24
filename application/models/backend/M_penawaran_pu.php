@@ -83,4 +83,20 @@ class M_penawaran_pu extends CI_Model
 
         return $this->db->count_all_results();
     }
+
+    public function max_kode($date)
+    {
+        $formatted_date = date('Y', strtotime($date));
+        $this->db->select('no_pelayanan, no_arsip');
+        $where = 'id=(SELECT max(id) FROM tbl_penawaran where SUBSTRING(no_pelayanan, 17, 4) = ' . $formatted_date . ')';
+        $this->db->where($where);
+        $query = $this->db->from('tbl_penawaran')->get();
+        return $query;
+    }
+
+    public function save($data)
+    {
+        $this->db->insert($this->table, $data);
+        return $this->db->insert_id();
+    }
 }
