@@ -250,8 +250,8 @@
             <!-- Keberangkatan -->
             <div class="mb-1">
                 <span class="label-inline text-gray-600">Keberangkatan</span>
-                <!-- <span class="value-inline text-gray-800">: <?= $this->M_penawaran_pu->getTanggal($penawaran['keberangkatan']) ?></span> -->
-                <span class="value-inline text-gray-800">: 01 September 2024</span>
+                <span class="value-inline text-gray-800">: <?= $this->M_penawaran_pu->getTanggal($penawaran['keberangkatan']) ?></span>
+                <!-- <span class="value-inline text-gray-800">: 01 September 2024</span> -->
             </div>
             <!-- Durasi -->
             <div class="mb-1">
