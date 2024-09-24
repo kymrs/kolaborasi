@@ -134,7 +134,7 @@ class M_penawaran_pu extends CI_Model
 
     public function getPenawaran($kode)
     {
-        $this->db->select('a.no_pelayanan, a.no_arsip, a.tgl_berlaku, a.id_produk, a.pelanggan, a.catatan, a.created_at, b.nama_dokumen, b.penerbit, b.no_dokumen, b.tgl_dokumen, c.nama as nama_produk, c.layanan_termasuk, c.layanan_tdk_termasuk, c.keberangkatan, c.durasi, c.tempat_keberangkatan, c.catatan, c.biaya, c.created_at');
+        $this->db->select('a.no_pelayanan, a.no_arsip, a.tgl_berlaku, a.id_produk, a.pelanggan, a.catatan, a.created_at, b.nama_dokumen, b.penerbit, b.no_dokumen, b.tgl_dokumen, c.nama as nama_produk, c.layanan_termasuk, c.layanan_tdk_termasuk, c.keberangkatan, c.durasi, c.tempat_keberangkatan, c.biaya, c.created_at');
         $this->db->from('tbl_penawaran as a');
         $this->db->where('a.no_arsip', $kode);
         $this->db->join('tbl_arsip_pu as b', 'a.no_pelayanan = b.no_dokumen', 'left');
