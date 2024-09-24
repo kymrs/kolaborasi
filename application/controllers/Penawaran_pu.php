@@ -102,4 +102,70 @@ class Penawaran_pu extends CI_Controller
             $this->load->view('backend/home', $data);
         }
     }
+
+    public function add_form()
+    {
+        $data['id'] = 0;
+        $data['title'] = 'backend/penawaran_pu/penawaran_form_pu';
+        $data['products'] = $this->db->select('id, nama')->from('tbl_produk')->get()->result_object();
+        $data['title_view'] = 'Penawaran Form';
+        $this->load->view('backend/home', $data);
+    }
+
+    public function generate_kode()
+    {
+        $date = date('Y-m-d h:i:sa');
+        $kode = $this->M_penawaran_pu->max_kode($date)->row();
+        if (empty($kode->no_pelayanan)) {
+            $no_urut = 1;
+        } else {
+            $no_urut = substr($kode->no_pelayanan, 9, 3);
+        }
+        $urutan = str_pad(number_format($no_urut + 1), 3, "0", STR_PAD_LEFT);
+        $year = substr($date, 0, 4);
+        $data = 'UMROH/LA/' . $urutan . '/' . 'IX' . '/' . $year;
+        echo json_encode($data);
+    }
+
+    public function generate_layanan()
+    {
+        $layanan = $this->db->from('tbl_produk')
+            ->where('id', $this->input->post('id'))
+            ->get()
+            ->row();
+        echo json_encode($layanan);
+    }
+
+    public function add()
+    {
+        //GENERATE NOMOR PELAYANAN
+        $date = date('Y-m-d h:i:sa');
+        $kode = $this->M_penawaran_pu->max_kode($date)->row();
+        if (empty($kode->no_pelayanan)) {
+            $no_urut = 1;
+        } else {
+            $no_urut = substr($kode->no_pelayanan, 9, 3);
+            $no_urut2 = substr($kode->no_arsip, 6) + 1;
+        }
+        $urutan = str_pad(number_format($no_urut + 1), 3, "0", STR_PAD_LEFT);
+        $year = substr($date, 0, 4);
+        $no_pelayanan = 'UMROH/LA/' . $urutan . '/' . 'IX' . '/' . $year;
+
+        //GENERATE NOMOR ARSIP
+        $urutan2 = str_pad($no_urut2, 2, "0", STR_PAD_LEFT);
+        $no_arsip = 'PU' . $year . '09' . $urutan2;
+
+
+        $data = array(
+            'no_pelayanan' => $no_pelayanan,
+            'no_arsip' => $no_arsip,
+            'tgl_berlaku' => $date,
+            'id_produk' => 1,
+            'pelanggan' => $this->input->post('pelanggan'),
+            'catatan' => $this->input->post('editor_content')
+        );
+
+        $this->M_penawaran_pu->save($data);
+        echo json_encode(array("status" => TRUE));
+    }
 }
