@@ -56,7 +56,7 @@ class Penawaran_pu extends CI_Controller
             $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="penawaran_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
-            $action = $action_read . $action_edit . $action_delete;
+            $action = $action_read . $action_edit . $action_delete . $action_print;
 
             $no++;
             $row = array();
@@ -269,6 +269,8 @@ class Penawaran_pu extends CI_Controller
         $pdf->Cell(0, 10, 'NAME SURNAME', 0, 1, 'L');
         $pdf->SetFont('Arial', '', 10);
         $pdf->Cell(0, 10, 'Account Manager', 0, 1, 'L');
+
+        $pdf->AddPage();
 
         // Output the PDF
         $pdf->Output('I', 'Deklarasi.pdf');
