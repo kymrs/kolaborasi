@@ -1,5 +1,6 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
+require 'Pdf.php';
 
 class Penawaran_pu extends CI_Controller
 {
@@ -52,7 +53,7 @@ class Penawaran_pu extends CI_Controller
             $action_read = ($read == 'Y') ? '<a href="penawaran_pu/read_form/' . $field->no_arsip . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
             $action_edit = ($edit == 'Y') ? '<a href="penawaran_pu/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
-            // $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="penawaran_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
+            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="penawaran_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             $action = $action_read . $action_edit . $action_delete;
@@ -193,9 +194,83 @@ class Penawaran_pu extends CI_Controller
             'id_produk' => $this->input->post('name'),
             'catatan' => $this->input->post('editor_content')
         );
-
         $this->db->update('tbl_penawaran', $data, ['id' => $id]);
-
         echo json_encode(array("status" => TRUE));
+    }
+
+    function delete($id)
+    {
+        $this->db->delete('tbl_penawaran', ['id' => $id]);
+        echo json_encode(array("status" => TRUE));
+    }
+
+    // PRINTOUT FPDF
+    public function generate_pdf()
+    {
+        // Start FPDF
+        $pdf = new Pdf('P', 'mm', 'A4');
+        $pdf->SetTitle('Form Deklarasi');
+        $pdf->AddPage('P', 'Letter');
+
+        // Start FPDF
+        $pdf = new Pdf;
+        $pdf->AddPage();
+
+        // Mengatur posisi Y untuk menggeser seluruh konten ke bawah
+        $pdf->SetY(50); // Ganti 50 dengan jumlah yang Anda inginkan
+
+        // Pilih font untuk isi
+        $pdf->SetFont('Arial', 'B', 12);
+
+        // Margin setup
+        $left_margin = 10;
+        $pdf->SetLeftMargin($left_margin);  // Mengatur margin kiri
+
+        // Bagian TO
+        $pdf->SetXY($left_margin, $pdf->GetY());
+        $pdf->Cell(0, 10, 'TO:', 0, 1, 'L');
+
+        // Name and title (Creative Director)
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->Cell(0, 10, 'NAME SURNAME', 0, 1, 'L');
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(0, 10, 'Creative Director', 0, 1, 'L');
+
+        // Spasi antara bagian atas dan konten
+        $pdf->Ln(5);
+
+        // Konten text (justify)
+        $pdf->SetFont('Arial', '', 10);
+
+        // Mengatur lebar untuk konten agar justify bisa bekerja
+        $content_width = 190;  // Misal, lebar halaman adalah 210, jadi margin kiri 10 dan margin kanan 10
+
+        // Paragraf 1
+        $body_text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sit amet nisi sit amet nibh dignis sim elementum id suscipit leo. Sed ut condimentum diam. Sed ac nulla libero. Morbi ante ante inte rrdum luctus dictum ut, sollicitudin in mi. Donec aliquet lectus quis enim tempor ullamcorper pelle ntesque et neque posuere, gravida lacus molestie, pretium ex. Vivamus in justo ac ante lacinia pharetra.";
+        $pdf->MultiCell($content_width, 7, $body_text, 0, 'J');  // 'J' digunakan untuk rata kiri dan kanan (justify)
+
+        $pdf->Ln(5); // Spasi antara paragraf
+
+        // Paragraf 2
+        $body_text2 = "Donec ultrices lacinia arcu, eget faucibus quam rhoncus id. Sed convallis eros neque, quis effici tur erat euismod vel. Mauris consequat nunc quis tortor efficitur euismod. Curabitur posuere hendrerit semper nam dignissim sed tellus id fermentum.";
+        $pdf->MultiCell($content_width, 7, $body_text2, 0, 'J');
+
+        $pdf->Ln(5); // Spasi antara paragraf
+
+        // Paragraf 3
+        $body_text3 = "Phasellus id dui arcu nullam finibus nisl quis quam egestas blandit. Praesent eu leo justo nullam porta nisi non tempus lacinia. Quisque molestie nulla id volutpat congue.";
+        $pdf->MultiCell($content_width, 7, $body_text3, 0, 'J');
+
+        // Spasi antara konten dan signature
+        $pdf->Ln(20);
+
+        // Bagian Nama kedua dan jabatan (Account Manager)
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->Cell(0, 10, 'NAME SURNAME', 0, 1, 'L');
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(0, 10, 'Account Manager', 0, 1, 'L');
+
+        // Output the PDF
+        $pdf->Output('I', 'Deklarasi.pdf');
     }
 }
