@@ -6,6 +6,17 @@
             /* Maksimal lebar container */
         }
 
+        .editor-with-border .ql-container {
+            border: 1px solid #ccc;
+            /* Border warna abu-abu */
+            border-radius: 5px;
+            /* Membuat sudut sedikit melengkung */
+            padding: 10px;
+            /* Tambahkan padding di dalam editor */
+            min-height: 150px;
+            /* Pastikan tinggi minimum editor */
+        }
+
         .logo-custom {
             width: 550px;
             height: auto;
@@ -173,10 +184,10 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header text-right">
-                    <a class="btn btn-secondary btn-sm" href="<?= base_url('penawaran_pu') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+                    <a class="btn btn-secondary btn-sm" href="<?= base_url('penawaran_la_pu') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
-                    <form id="form" method="POST" action="<?= base_url('penawaran_pu/add') ?>">
+                    <form id="form" method="POST" action="<?= base_url('penawaran_la_pu/add') ?>">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group row">
@@ -215,43 +226,37 @@
                         <!-- GENERATE INFORMASI LAYANAN -->
                         <div class="container-custom mx-auto mt-3 flex flex-wrap justify-between">
                             <!-- Left Section: Deskripsi dan Layanan Termasuk -->
-                            <div class="w-full md:w-2/3 p-4">
+                            <div class="w-full md:w-1/2 p-4">
                                 <!-- Deskripsi -->
-                                <div class="description mb-4" id="deskripsi">
-
-                                </div>
-
-                                <!-- Layanan Termasuk -->
-                                <div id="layananTermasuk">
-
-                                </div>
+                                <h2 class="section-title">Deskripsi:</h2>
+                                <div id="deskripsi" name="deskripsi" class="editor-with-border h-20 mb-4"></div>
+                                <input type="hidden" name="editor_content" id="editor_content">
                             </div>
 
                             <!-- Right Section: Informasi Tambahan -->
-                            <div class="w-full md:w-1/3 p-4">
+                            <div class="w-full md:w-1/2 p-4">
                                 <!-- Keberangkatan -->
                                 <div class="mb-1">
-                                    <div id="keberangkatan">
-
-                                    </div>
+                                    <h2 class="section-title">Keberangkatan:</h2>
+                                    <input type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                 </div>
                                 <!-- Durasi -->
                                 <div class="mb-1">
-                                    <div id="durasi">
-
-                                    </div>
+                                    <h2 class="section-title">Durasi:</h2>
+                                    <input type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                 </div>
                                 <!-- Berangkat Dari -->
                                 <div class="mb-1">
-                                    <div id="tempatKeberangkatan">
-
-                                    </div>
+                                    <h2 class="section-title">Tempat:</h2>
+                                    <input type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                 </div>
+                            </div>
 
-                                <!-- Layanan Tidak Termasuk -->
-                                <div id="layananTdkTermasuk">
-
-                                </div>
+                            <div class="w-full md:w-1/2 p-4">
+                                <!-- Layanan Termasuk -->
+                                <h2 class="section-title">Layanan:</h2>
+                                <div id="layanan" name="layanan" class="h-40 mb-4"></div>
+                                <input type="hidden" name="editor_content" id="editor_content">
                             </div>
                         </div>
 
@@ -260,9 +265,7 @@
                             <div class="biaya-box">
                                 BIAYA
                             </div>
-                            <div class="price-text" id="priceTxt">
-
-                            </div>
+                            <input type="number" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                         </div>
 
                         <!-- Ekstra Section -->
@@ -270,9 +273,7 @@
                             <div class="ekstra-box">
                                 EKSTRA
                             </div>
-                            <div id="editor" name="editor">
-
-                            </div>
+                            <div id="extra" name="extra" class="h-40 mb-4"></div>
                             <input type="hidden" name="editor_content" id="editor_content">
                         </div>
 
@@ -300,7 +301,16 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
-    var quill = new Quill('#editor', {
+    var quill = new Quill('#deskripsi', {
+        theme: 'snow',
+        placeholder: 'Masukkan Deskripsi...'
+    });
+
+    var quill = new Quill('#layanan', {
+        theme: 'snow'
+    });
+
+    var quill = new Quill('#extra', {
         theme: 'snow'
     });
 
@@ -319,7 +329,7 @@
 
     //GENERATE NOMOR PELAYANAN
     $.ajax({
-        url: "<?php echo site_url('penawaran_pu/generate_kode') ?>",
+        url: "<?php echo site_url('penawaran_la_pu/generate_kode') ?>",
         type: "POST",
         data: {},
         dataType: "JSON",
@@ -337,7 +347,7 @@
     $('#name').change(function(e) {
         $id = $(this).val();
         $.ajax({
-            url: "<?php echo site_url('penawaran_pu/generate_layanan') ?>",
+            url: "<?php echo site_url('penawaran_la_pu/generate_layanan') ?>",
             type: "POST",
             data: {
                 id: $id
@@ -397,7 +407,7 @@
             $('.aksi').text('Update');
             $("select option[value='']").hide();
             $.ajax({
-                url: "<?php echo site_url('penawaran_pu/edit_data') ?>/" + id,
+                url: "<?php echo site_url('penawaran_la_pu/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -423,9 +433,9 @@
             if (!$form.valid()) return false;
             var url;
             if (id == 0) {
-                url = "<?php echo site_url('penawaran_pu/add') ?>";
+                url = "<?php echo site_url('penawaran_la_pu/add') ?>";
             } else {
-                url = "<?php echo site_url('penawaran_pu/update/') ?>" + id;
+                url = "<?php echo site_url('penawaran_la_pu/update/') ?>" + id;
             }
 
             $.ajax({
@@ -444,7 +454,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then((result) => {
-                            location.href = "<?= base_url('penawaran_pu') ?>";
+                            location.href = "<?= base_url('penawaran_la_pu') ?>";
                         })
                     }
                 },

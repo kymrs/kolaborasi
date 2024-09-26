@@ -763,12 +763,27 @@ class Reimbust_sw extends CI_Controller
         $departemen = $data_user['divisi'];
         $jabatan = $data_user['jabatan'];
 
+        // Flag untuk menandai apakah ada file yang lebih dari 3 MB
+        $valid = true;
+        $allowed_types = ['image/jpeg', 'image/jpg', 'image/png']; // Tipe file yang diizinkan
+
         // PERULANGAN UNTUK CEK UKURAN FILE
         for ($i = 1; $i <= count($pemakaian); $i++) {
             if (!empty($_FILES['kwitansi']['name'][$i])) {
+                // Cek tipe file
+                if (!in_array($_FILES['kwitansi']['type'][$i], $allowed_types)) {
+                    echo json_encode(array("status" => FALSE, "error" => "Tipe file tidak diizinkan untuk file ke-$i. Hanya file JPG dan PNG yang diperbolehkan."));
+                    exit();
+                    $valid = false;  // Tandai bahwa ada file yang tidak valid
+                    break; // Keluar dari perulangan jika ada file yang tidak valid
+                }
+
+                // Cek ukuran file
                 if ($_FILES['kwitansi']['size'][$i] > 3072 * 1024) { // 3 MB in KB
                     echo json_encode(array("status" => FALSE, "error" => "Ukuran file tidak boleh melebihi dari 3 MB untuk file ke-$i."));
-                    return;
+                    exit();
+                    $valid = false;  // Tandai bahwa ada file yang tidak valid
+                    break; // Keluar dari perulangan jika ada file yang terlalu besar
                 }
             }
         }
@@ -796,7 +811,9 @@ class Reimbust_sw extends CI_Controller
                 ->row('name')
         );
         // Hanya simpan ke database jika tidak ada file yang melebihi 3 MB
-        $reimbust_id = $this->M_reimbust_sw->save($data1);
+        if ($valid) {
+            $reimbust_id = $this->M_reimbust_sw->save($data1);
+        }
 
         $data2 = [];
         for ($i = 1; $i <= count($pemakaian); $i++) {
@@ -811,7 +828,7 @@ class Reimbust_sw extends CI_Controller
                 $_FILES['file']['size'] = $_FILES['kwitansi']['size'][$i];
 
                 $config['upload_path'] = './assets/backend/document/reimbust/kwitansi_sw/';
-                $config['allowed_types'] = 'jpg|png';
+                $config['allowed_types'] = 'jpeg|jpg|png';
                 $config['max_size'] = 3072; // Batasan ukuran file dalam kilobytes (3 MB)
                 $config['encrypt_name'] = TRUE;
 
@@ -915,7 +932,7 @@ class Reimbust_sw extends CI_Controller
                     }
 
                     $config['upload_path'] = './assets/backend/document/reimbust/kwitansi_sw/';
-                    $config['allowed_types'] = 'jpg|png';
+                    $config['allowed_types'] = 'jpeg|jpg|png';
                     $config['max_size'] = 3072;
                     $config['encrypt_name'] = TRUE;
 
