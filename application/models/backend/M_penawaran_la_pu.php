@@ -3,7 +3,7 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-class M_penawaran_pu extends CI_Model
+class M_penawaran_la_pu extends CI_Model
 {
     // INISIASI VARIABLE
     var $id = 'id';

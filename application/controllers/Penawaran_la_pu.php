@@ -2,12 +2,12 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 require 'Pdf.php';
 
-class Penawaran_pu extends CI_Controller
+class Penawaran_la_pu extends CI_Controller
 {
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('backend/M_penawaran_pu');
+        $this->load->model('backend/M_penawaran_la_pu');
         $this->M_login->getsecurity();
         $this->load->library('ciqrcode');
     }
@@ -19,7 +19,7 @@ class Penawaran_pu extends CI_Controller
         $data['add'] = $akses->add_level;
 
 
-        $data['title'] = "backend/penawaran_pu/penawaran_list_pu";
+        $data['title'] = "backend/penawaran_pu/penawaran_list_la_pu";
         $data['titleview'] = "Data Penawaran";
         $name = $this->db->select('name')
             ->from('tbl_data_user')
@@ -37,7 +37,7 @@ class Penawaran_pu extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $list = $this->M_penawaran_pu->get_datatables();
+        $list = $this->M_penawaran_la_pu->get_datatables();
         $data = array();
         $no = $_POST['start'];
 
@@ -50,10 +50,10 @@ class Penawaran_pu extends CI_Controller
         //LOOPING DATATABLES
         foreach ($list as $field) {
 
-            $action_read = ($read == 'Y') ? '<a href="penawaran_pu/read_form/' . $field->no_arsip . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
-            $action_edit = ($edit == 'Y') ? '<a href="penawaran_pu/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
+            $action_read = ($read == 'Y') ? '<a href="penawaran_la_pu/read_form/' . $field->no_arsip . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
+            $action_edit = ($edit == 'Y') ? '<a href="penawaran_la_pu/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
-            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="penawaran_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
+            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="penawaran_la_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             $action = $action_read . $action_edit . $action_delete . $action_print;
@@ -73,8 +73,8 @@ class Penawaran_pu extends CI_Controller
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_penawaran_pu->count_all(),
-            "recordsFiltered" => $this->M_penawaran_pu->count_filtered(),
+            "recordsTotal" => $this->M_penawaran_la_pu->count_all(),
+            "recordsFiltered" => $this->M_penawaran_la_pu->count_filtered(),
             "data" => $data,
         );
         //output dalam format JSON
@@ -85,7 +85,7 @@ class Penawaran_pu extends CI_Controller
     {
         $kode = $this->uri->segment(3);
         // var_dump($kode);
-        $data['penawaran'] = $this->M_penawaran_pu->getPenawaran($kode);
+        $data['penawaran'] = $this->M_penawaran_la_pu->getPenawaran($kode);
 
         if ($data['penawaran'] == null) {
             $this->load->view('backend/penawaran_pu/404');
@@ -107,9 +107,9 @@ class Penawaran_pu extends CI_Controller
     public function add_form()
     {
         $data['id'] = 0;
-        $data['title'] = 'backend/penawaran_pu/penawaran_form_pu';
+        $data['title'] = 'backend/penawaran_pu/penawaran_form_la_pu';
         $data['products'] = $this->db->select('id, nama')->from('tbl_produk')->get()->result_object();
-        $data['title_view'] = 'Penawaran Form';
+        $data['title_view'] = 'Land Arrangement Form';
         $this->load->view('backend/home', $data);
     }
 
@@ -118,7 +118,7 @@ class Penawaran_pu extends CI_Controller
         $data['id'] = $id;
         $data['aksi'] = 'update';
         $data['title_view'] = "Edit Data Prepayment";
-        $data['title'] = 'backend/penawaran_pu/penawaran_form_pu';
+        $data['title'] = 'backend/penawaran_pu/penawaran_la_pu';
         $data['products'] = $this->db->select('id, nama')->from('tbl_produk')->get()->result_object();
         $this->load->view('backend/home', $data);
     }
@@ -132,7 +132,7 @@ class Penawaran_pu extends CI_Controller
     public function generate_kode()
     {
         $date = date('Y-m-d h:i:sa');
-        $kode = $this->M_penawaran_pu->max_kode($date)->row();
+        $kode = $this->M_penawaran_la_pu->max_kode($date)->row();
         if (empty($kode->no_pelayanan)) {
             $no_urut = 1;
         } else {
@@ -157,7 +157,7 @@ class Penawaran_pu extends CI_Controller
     {
         //GENERATE NOMOR PELAYANAN
         $date = date('Y-m-d h:i:sa');
-        $kode = $this->M_penawaran_pu->max_kode($date)->row();
+        $kode = $this->M_penawaran_la_pu->max_kode($date)->row();
         if (empty($kode->no_pelayanan)) {
             $no_urut = 1;
         } else {
@@ -182,7 +182,7 @@ class Penawaran_pu extends CI_Controller
             'catatan' => $this->input->post('editor_content')
         );
 
-        $this->M_penawaran_pu->save($data);
+        $this->M_penawaran_la_pu->save($data);
         echo json_encode(array("status" => TRUE));
     }
 
@@ -220,7 +220,7 @@ class Penawaran_pu extends CI_Controller
         $pdf->SetY(50); // Ganti 50 dengan jumlah yang Anda inginkan
 
         // Pilih font untuk isi
-        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->SetFont('Poppins-Regular', 'B', 12);
 
         // Margin setup
         $left_margin = 10;
@@ -231,16 +231,16 @@ class Penawaran_pu extends CI_Controller
         $pdf->Cell(0, 10, 'TO:', 0, 1, 'L');
 
         // Name and title (Creative Director)
-        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->SetFont('Poppins-Regular', 'B', 12);
         $pdf->Cell(0, 10, 'NAME SURNAME', 0, 1, 'L');
-        $pdf->SetFont('Arial', '', 10);
+        $pdf->SetFont('Poppins-Regular', '', 10);
         $pdf->Cell(0, 10, 'Creative Director', 0, 1, 'L');
 
         // Spasi antara bagian atas dan konten
         $pdf->Ln(5);
 
         // Konten text (justify)
-        $pdf->SetFont('Arial', '', 10);
+        $pdf->SetFont('Poppins-Regular', '', 10);
 
         // Mengatur lebar untuk konten agar justify bisa bekerja
         $content_width = 190;  // Misal, lebar halaman adalah 210, jadi margin kiri 10 dan margin kanan 10
@@ -265,9 +265,9 @@ class Penawaran_pu extends CI_Controller
         $pdf->Ln(20);
 
         // Bagian Nama kedua dan jabatan (Account Manager)
-        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->SetFont('Poppins-Regular', 'B', 12);
         $pdf->Cell(0, 10, 'NAME SURNAME', 0, 1, 'L');
-        $pdf->SetFont('Arial', '', 10);
+        $pdf->SetFont('Poppins-Regular', '', 10);
         $pdf->Cell(0, 10, 'Account Manager', 0, 1, 'L');
 
         $pdf->AddPage();
