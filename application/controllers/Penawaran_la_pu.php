@@ -160,26 +160,45 @@ class Penawaran_la_pu extends CI_Controller
         $kode = $this->M_penawaran_la_pu->max_kode($date)->row();
         if (empty($kode->no_pelayanan)) {
             $no_urut = 1;
+            $no_urut2 = 1;
         } else {
             $no_urut = substr($kode->no_pelayanan, 9, 3);
             $no_urut2 = substr($kode->no_arsip, 6) + 1;
         }
         $urutan = str_pad(number_format($no_urut + 1), 3, "0", STR_PAD_LEFT);
         $year = substr($date, 0, 4);
+        $year2 = substr($date, 2, 2);
         $no_pelayanan = 'UMROH/LA/' . $urutan . '/' . 'IX' . '/' . $year;
 
         //GENERATE NOMOR ARSIP
         $urutan2 = str_pad($no_urut2, 2, "0", STR_PAD_LEFT);
-        $no_arsip = 'PU' . $year . '09' . $urutan2;
+        $no_arsip = 'PU' . $year2 . '09' . $urutan2;
+
+        //CONVERT TIME
+        // Ambil nilai input datetime dari form
+        $input_datetime = $this->input->post('tgl_berlaku');
+        $input2_datetime = $this->input->post('keberangkatan');
+
+        // Ubah format dari 'Y-m-dTH:i' ke 'Y-m-d H:i:s' agar sesuai dengan format MySQL
+        $formatted_datetime = date('Y-m-d H:i:s', strtotime($input_datetime));
+        $formatted2_datetime = date('Y-m-d H:i:s', strtotime($input2_datetime));
 
 
         $data = array(
             'no_pelayanan' => $no_pelayanan,
             'no_arsip' => $no_arsip,
-            'tgl_berlaku' => $date,
-            'id_produk' => 1,
             'pelanggan' => $this->input->post('pelanggan'),
-            'catatan' => $this->input->post('editor_content')
+            'alamat' => $this->input->post('alamat'),
+            'produk' => $this->input->post('produk'),
+            'deskripsi' => $this->input->post('deskripsi'),
+            'tgl_berlaku' => $formatted_datetime,
+            'keberangkatan' => $formatted2_datetime,
+            'durasi' => $this->input->post('durasi'),
+            'tempat' => $this->input->post('tempat'),
+            'biaya' => $this->input->post('biaya'),
+            'layanan_la' => $this->input->post('layanan_content'),
+            'pelanggan' => $this->input->post('pelanggan'),
+            'catatan' => $this->input->post('catatan_content')
         );
 
         $this->M_penawaran_la_pu->save($data);

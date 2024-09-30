@@ -147,15 +147,15 @@ class M_penawaran_la_pu extends CI_Model
     {
         $formatted_date = date('Y', strtotime($date));
         $this->db->select('no_pelayanan, no_arsip');
-        $where = 'id=(SELECT max(id) FROM tbl_penawaran where SUBSTRING(no_pelayanan, 17, 4) = ' . $formatted_date . ')';
+        $where = 'id=(SELECT max(id) FROM tbl_land_arrangement where SUBSTRING(no_pelayanan, 17, 4) = ' . $formatted_date . ')';
         $this->db->where($where);
-        $query = $this->db->from('tbl_penawaran')->get();
+        $query = $this->db->from('tbl_land_arrangement')->get();
         return $query;
     }
 
     public function save($data)
     {
-        $this->db->insert($this->table, $data);
+        $this->db->insert('tbl_land_arrangement', $data);
         return $this->db->insert_id();
     }
 }

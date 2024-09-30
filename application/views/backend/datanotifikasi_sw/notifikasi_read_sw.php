@@ -141,7 +141,7 @@
             <div class="container-main">
                 <div class="form-container">
                     <div class="d-flex justify-content-end mb-3">
-                        <?php if ($user->app_name == $app_name && $user->app2_status != 'rejected' && !in_array($user->status, ['approved'])) { ?>
+                        <?php if ($user->app_hc_name == $app_hc_name && $user->app2_status != 'rejected' && !in_array($user->status, ['approved'])) { ?>
                             <a class="btn btn-warning btn-sm mr-2" id="appBtn" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
                         <?php } elseif ($user->app2_name == $app2_name && !in_array($user->app2_status, ['approved', 'rejected'])) { ?>
                             <a class="btn btn-warning btn-sm mr-2" id="appBtn2" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
@@ -276,8 +276,8 @@
             <div class="modal-body">
                 <form id="approvalForm" action="">
                     <div class="form-group">
-                        <label for="app_status">Status <span class="text-danger">*</span></label>
-                        <select id="app_status" name="app_status" class="form-control" required>
+                        <label for="app_hc_status">Status <span class="text-danger">*</span></label>
+                        <select id="app_hc_status" name="app_hc_status" class="form-control" required>
                             <option selected disabled>Choose status...</option>
                             <option value="approved">Approved</option>
                             <option value="rejected">Rejected</option>
@@ -285,10 +285,10 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="app_keterangan" class="col-form-label">Keterangan:</label>
-                        <textarea class="form-control" name="app_keterangan" id="app_keterangan" placeholder="Add your comments here"></textarea>
+                        <label for="app_hc_keterangan" class="col-form-label">Keterangan:</label>
+                        <textarea class="form-control" name="app_hc_keterangan" id="app_hc_keterangan" placeholder="Add your comments here"></textarea>
                         <!-- HIDDEN INPUT -->
-                        <input type="hidden" name="app_name" id="app_name" value="<?= $this->session->userdata('fullname'); ?>">
+                        <input type="hidden" name="app_hc_name" id="app_hc_name" value="<?= $this->session->userdata('fullname'); ?>">
                         <input type="hidden" name="hidden_id" id="hidden_id" value="<?= $id ?>">
                     </div>
                     <div class="form-group" id="append_catatan">
@@ -327,8 +327,8 @@
         });
 
         $('#appBtn').click(function() {
-            $('#app_keterangan').attr('name', 'app_keterangan');
-            $('#app_status').attr('name', 'app_status');
+            $('#app_hc_keterangan').attr('name', 'app_hc_keterangan');
+            $('#app_hc_status').attr('name', 'app_hc_status');
             $('#approvalForm').attr('action', '<?= site_url('datanotifikasi_sw/approve') ?>');
 
             if ($('#app_catatan').length === 0) {
@@ -353,15 +353,15 @@
 
                     var nama, status, keterangan;
                     // Memeriksa apakah data yang mengetahui ada
-                    if (data['master']['app_status'] == 'waiting') {
-                        $('#app_status').val();
-                        $('#app_keterangan').val();
+                    if (data['master']['app_hc_status'] == 'waiting') {
+                        $('#app_hc_status').val();
+                        $('#app_hc_keterangan').val();
                     } else {
-                        nama = data['master']['app_name'];
-                        status = data['master']['app_status'];
-                        keterangan = data['master']['app_keterangan'];
-                        $('#app_status').val(status);
-                        $('#app_keterangan').val(keterangan);
+                        nama = data['master']['app_hc_name'];
+                        status = data['master']['app_hc_status'];
+                        keterangan = data['master']['app_hc_keterangan'];
+                        $('#app_hc_status').val(status);
+                        $('#app_hc_keterangan').val(keterangan);
                         // $('#note_id').append(`<p>* ${keterangan}</p>`);
                     }
                     if (data['master']['catatan'] != null || data['master']['catatan'] != '') {
@@ -376,8 +376,8 @@
         });
 
         $('#appBtn2').click(function() {
-            $('#app_keterangan').attr('name', 'app2_keterangan').attr('id', 'app2_keterangan');
-            $('#app_status').attr('name', 'app2_status').attr('id', 'app2_status');
+            $('#app_hc_keterangan').attr('name', 'app2_keterangan').attr('id', 'app2_keterangan');
+            $('#app_hc_status').attr('name', 'app2_status').attr('id', 'app2_status');
             $('#approvalForm').attr('action', '<?= site_url('datanotifikasi_sw/approve2') ?>');
 
             $.ajax({
@@ -445,27 +445,27 @@
                 }
 
                 // STATUS PERSETUJUAN
-                if (data['master']['app_status'] == 'approved') {
+                if (data['master']['app_hc_status'] == 'approved') {
                     $('#boleh').show();
                 }
-                if (data['master']['app_status'] == 'rejected') {
+                if (data['master']['app_hc_status'] == 'rejected') {
                     $('#tidakBoleh').show();
                 }
 
                 //KETERANGAN
-                if (data['master']['app_keterangan'] != null) {
-                    $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app_keterangan']}</span>`);
+                if (data['master']['app_hc_keterangan'] != null) {
+                    $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app_hc_keterangan']}</span>`);
                 }
                 if (data['master']['app2_keterangan'] != null) {
                     $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app2_keterangan']}</span>`);
                 }
 
                 //DATE APPROVAL 1
-                if (data['master']['app_date'] == null) {
+                if (data['master']['app_hc_date'] == null) {
                     date = '';
                 }
-                if (data['master']['app_date'] != null) {
-                    date = data['master']['app_date'];
+                if (data['master']['app_hc_date'] != null) {
+                    date = data['master']['app_hc_date'];
                 }
 
                 //DATE APPROVAL 2
@@ -477,10 +477,10 @@
                 }
 
                 $('#melakukan').html(`<div class="signature-text text-center">${data['nama']}</div>`);
-                $('#mengetahui').html(`<div class="signature-text text-center">${data['master']['app_name']}</div>`);
+                $('#mengetahui').html(`<div class="signature-text text-center">${data['master']['app_hc_name']}</div>`);
                 $('#menyetujui').html(`<div class="signature-text text-center">${data['master']['app2_name']}</div>`);
                 $('#statusMelakukan').html(`<div class="signature-text text-center">CREATED<br><span>${data['master']['created_at']}</span></div>`);
-                $('#statusMengetahui').html(`<div class="signature-text text-center">${data['master']['app_status'].toUpperCase()}<br><span>${date}</span></div>`);
+                $('#statusMengetahui').html(`<div class="signature-text text-center">${data['master']['app_hc_status'].toUpperCase()}<br><span>${date}</span></div>`);
                 $('#statusMenyetujui').html(`<div class="signature-text text-center">${data['master']['app2_status'].toUpperCase()}<br><span>${date2}</span></div>`);
 
                 $('#divisiCol').html(data['master']['divisi']);
@@ -494,7 +494,7 @@
         // APPROVE
         $("#approvalForm").validate({
             rules: {
-                app_status: {
+                app_hc_status: {
                     required: true,
                 },
                 app2_status: {
@@ -503,7 +503,7 @@
 
             },
             messages: {
-                app_status: {
+                app_hc_status: {
                     required: "Status is required",
                 },
                 app2_status: {

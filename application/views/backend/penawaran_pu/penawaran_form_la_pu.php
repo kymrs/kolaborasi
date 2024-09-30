@@ -203,14 +203,15 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-sm-5" for="name">Produk</label>
+                                    <label class="col-sm-5">Produk</label>
                                     <div class="col-sm-7">
-                                        <select class="form-control name" name="name" id="name">
-                                            <option value="" selected disabled>Pilih opsi...</option>
-                                            <?php foreach ($products as $product) { ?>
-                                                <option value="<?= $product->id ?>"><?= $product->nama ?></option>
-                                            <?php } ?>
-                                        </select>
+                                        <input type="text" class="form-control" id="produk" name="produk">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5">Alamat</label>
+                                    <div class="col-sm-7">
+                                        <textarea id="alamat" rows="4" name="alamat" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Write your thoughts here..."></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -229,26 +230,30 @@
                             <div class="w-full md:w-1/2 p-4">
                                 <!-- Deskripsi -->
                                 <h2 class="section-title">Deskripsi:</h2>
-                                <div id="deskripsi" name="deskripsi" class="editor-with-border h-20 mb-4"></div>
-                                <input type="hidden" name="editor_content" id="editor_content">
+                                <textarea id="deskripsi" rows="4" name="deskripsi" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Write your thoughts here..."></textarea>
                             </div>
 
                             <!-- Right Section: Informasi Tambahan -->
                             <div class="w-full md:w-1/2 p-4">
+                                <!-- tabggal berlaku -->
+                                <div class="mb-1">
+                                    <h2 class="section-title">Tanggal berlaku:</h2>
+                                    <input type="datetime-local" id="tgl_berlaku" name="tgl_berlaku" class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50">
+                                </div>
                                 <!-- Keberangkatan -->
                                 <div class="mb-1">
                                     <h2 class="section-title">Keberangkatan:</h2>
-                                    <input type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                    <input type="datetime-local" id="keberangkatan" name="keberangkatan" class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50">
                                 </div>
                                 <!-- Durasi -->
                                 <div class="mb-1">
                                     <h2 class="section-title">Durasi:</h2>
-                                    <input type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                    <input type="number" name="durasi" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                 </div>
                                 <!-- Berangkat Dari -->
                                 <div class="mb-1">
                                     <h2 class="section-title">Tempat:</h2>
-                                    <input type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                    <input type="text" name="tempat" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                 </div>
                             </div>
 
@@ -256,7 +261,7 @@
                                 <!-- Layanan Termasuk -->
                                 <h2 class="section-title">Layanan:</h2>
                                 <div id="layanan" name="layanan" class="h-40 mb-4"></div>
-                                <input type="hidden" name="editor_content" id="editor_content">
+                                <input type="hidden" name="layanan_content" id="layanan_content">
                             </div>
                         </div>
 
@@ -265,7 +270,7 @@
                             <div class="biaya-box">
                                 BIAYA
                             </div>
-                            <input type="number" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <input type="number" name="biaya" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                         </div>
 
                         <!-- Ekstra Section -->
@@ -274,7 +279,7 @@
                                 EKSTRA
                             </div>
                             <div id="extra" name="extra" class="h-40 mb-4"></div>
-                            <input type="hidden" name="editor_content" id="editor_content">
+                            <input type="hidden" name="catatan_content" id="catatan_content">
                         </div>
 
                         <!-- Hidden inputs -->
@@ -301,16 +306,23 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
-    var quill = new Quill('#deskripsi', {
-        theme: 'snow',
-        placeholder: 'Masukkan Deskripsi...'
-    });
+    // $('#tgl_berlaku').datepicker({
+    //     dateFormat: 'dd-mm-yy',
+    //     minDate: new Date(),
+    //     maxDate: new Date(),
+    // });
+
+    // $('#keberangkatan').datepicker({
+    //     dateFormat: 'dd-mm-yy',
+    //     minDate: new Date(),
+    //     maxDate: new Date(),
+    // });
 
     var quill = new Quill('#layanan', {
         theme: 'snow'
     });
 
-    var quill = new Quill('#extra', {
+    var quill2 = new Quill('#extra', {
         theme: 'snow'
     });
 
@@ -320,12 +332,12 @@
 
     document.getElementById("form").onsubmit = function() {
         // Get HTML content from Quill editor
-        var editorContent = quill.root.innerHTML;
+        var layananContent = quill.root.innerHTML;
+        var catatanContent = quill2.root.innerHTML;
         // Set it to hidden input
-        document.getElementById("editor_content").value = editorContent;
+        document.getElementById("layanan_content").value = layananContent;
+        document.getElementById("catatan_content").value = catatanContent;
     };
-
-    $('.name').select2();
 
     //GENERATE NOMOR PELAYANAN
     $.ajax({
@@ -444,7 +456,7 @@
                 data: $('#form').serialize(),
                 dataType: "JSON",
                 success: function(data) {
-                    // console.log(data);
+                    console.log(data);
                     if (data.status) //if success close modal and reload ajax table
                     {
                         Swal.fire({

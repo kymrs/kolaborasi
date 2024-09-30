@@ -103,7 +103,8 @@ class Approval_sw extends CI_Controller
         $data['id'] = 0;
         $data['title_view'] = "Approval Form";
         $data['aksi'] = 'save';
-        $data['approvals'] = $this->db->select('id_user, fullname')->from('tbl_user')->get()->result_object();
+        $data['users'] = $this->db->select('id_user, fullname')->from('tbl_user')->get()->result_object();
+        $data['approvals'] = $this->db->select('id_user, fullname')->from('tbl_user')->where('app', 'Y')->get()->result_object();
         $data['title'] = 'backend/approval_sw/approval_form_sw';
         $this->load->view('backend/home', $data);
 
@@ -119,7 +120,9 @@ class Approval_sw extends CI_Controller
             'divisi' => $this->input->post('divisi'),
             'jabatan' => $this->input->post('jabatan'),
             'app_id' => $this->input->post('app_id'),
-            'app2_id' => $this->input->post('app2_id')
+            'app2_id' => $this->input->post('app2_id'),
+            'app3_id' => $this->input->post('app3_id'),
+            'updated_at' => date('Y-m-d H:i:s')
         );
 
         $inserted = $this->M_approval_sw->save($data);
@@ -134,7 +137,8 @@ class Approval_sw extends CI_Controller
             'divisi' => $this->input->post('divisi'),
             'jabatan' => $this->input->post('jabatan'),
             'app_id' => $this->input->post('app_id'),
-            'app2_id' => $this->input->post('app2_id')
+            'app2_id' => $this->input->post('app2_id'),
+            'app3_id' => $this->input->post('app3_id')
         );
 
         $this->db->update('tbl_data_user', $data, ['id_user' => $id]);
@@ -147,7 +151,8 @@ class Approval_sw extends CI_Controller
         $data['id'] = $id;
         $data['title_view'] = "Edit Approval Form";
         $data['aksi'] = 'update';
-        $data['approvals'] = $this->db->select('id_user, fullname')->from('tbl_user')->get()->result_object();
+        $data['users'] = $this->db->select('id_user, fullname')->from('tbl_user')->get()->result_object();
+        $data['approvals'] = $this->db->select('id_user, fullname')->from('tbl_user')->where('app', 'Y')->get()->result_object();
         $data['title'] = 'backend/approval_sw/approval_form_sw';
         $this->load->view('backend/home', $data);
     }

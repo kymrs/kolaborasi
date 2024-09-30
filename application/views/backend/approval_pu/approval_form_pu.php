@@ -9,7 +9,7 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header text-right">
-                    <a class="btn btn-secondary btn-sm" href="<?= base_url('approval_sw') ?>">
+                    <a class="btn btn-secondary btn-sm" href="<?= base_url('approval_pu') ?>">
                         <i class="fas fa-chevron-left"></i>&nbsp;Back
                     </a>
                 </div>
@@ -126,10 +126,11 @@
             $("select option[value='']").hide();
             $('#name').prop('disabled', true);
             $.ajax({
-                url: "<?php echo site_url('approval_sw/edit_data') ?>/" + id,
+                url: "<?php echo site_url('approval_pu/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
+                    // console.log(data);
                     $('#name').val(data['master']['id_user']).trigger('change');
                     $('#divisi').val(data['master']['divisi']).trigger('change');
                     $('#jabatan').val(data['master']['jabatan']).trigger('change');
@@ -148,7 +149,7 @@
             e.preventDefault();
             var $form = $(this);
             if (!$form.valid()) return false;
-            var url = (id == 0) ? "<?php echo site_url('approval_sw/add') ?>" : "<?php echo site_url('approval_sw/update') ?>/" + id;
+            var url = (id == 0) ? "<?php echo site_url('approval_pu/add') ?>" : "<?php echo site_url('approval_pu/update') ?>/" + id;
             var selectedText = $('#name option:selected').text();
             // console.log(selectedText);
 
@@ -169,7 +170,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then((result) => {
-                            location.href = "<?= base_url('approval_sw') ?>";
+                            location.href = "<?= base_url('approval_pu') ?>";
                         });
                     }
                 },

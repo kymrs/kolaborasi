@@ -85,14 +85,14 @@
             <div class="modal-body">
                 <form method="POST" action="<?= base_url('deklarasi/approve') ?>">
                     <div class="form-group">
-                        <label for="app_name">Nama</label>
-                        <input type="text" class="form-control" name="app_name" id="app_name" aria-describedby="emailHelp">
+                        <label for="app_hc_name">Nama</label>
+                        <input type="text" class="form-control" name="app_hc_name" id="app_hc_name" aria-describedby="emailHelp">
                         <!-- HIDDEN INPUT -->
                         <input type="hidden" id="hidden_id" name="hidden_id" value="">
                     </div>
                     <div class="form-group">
-                        <label for="app_status">Approve</label>
-                        <select id="app_status" name="app_status" class="form-control">
+                        <label for="app_hc_status">Approve</label>
+                        <select id="app_hc_status" name="app_hc_status" class="form-control">
                             <option selected disabled>Choose...</option>
                             <option value="approved">Approved</option>
                             <option value="rejected">Rejected</option>

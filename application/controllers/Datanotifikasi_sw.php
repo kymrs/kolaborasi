@@ -27,7 +27,7 @@ class Datanotifikasi_sw extends CI_Controller
             ->row('name');
         $data['approval'] = $this->db->select('COUNT(*) as total_approval')
             ->from('tbl_notifikasi')
-            ->where('app_name', $name)
+            ->where('app_hc_name', $name)
             ->or_where('app2_name', $name)
             ->get()
             ->row('total_approval');
@@ -62,15 +62,15 @@ class Datanotifikasi_sw extends CI_Controller
             $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="datanotifikasi_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
-            if ($field->app_name == $fullname) {
+            if ($field->app_hc_name == $fullname) {
                 $action = $action_read . $action_print;
             } elseif ($field->app2_name == $fullname) {
                 $action = $action_read . $action_print;
             } elseif (in_array($field->status, ['rejected', 'approved'])) {
                 $action = $action_read . $action_print;
-            } elseif ($field->app_status == 'revised' || $field->app2_status == 'revised') {
+            } elseif ($field->app_hc_status == 'revised' || $field->app2_status == 'revised') {
                 $action = $action_read . $action_edit . $action_print;
-            } elseif ($field->app_status == 'approved') {
+            } elseif ($field->app_hc_status == 'approved') {
                 $action = $action_read . $action_print;
             } else {
                 $action = $action_read . $action_edit . $action_delete . $action_print;
@@ -106,7 +106,7 @@ class Datanotifikasi_sw extends CI_Controller
     {
         $data['id'] = $id;
         $data['user'] = $this->M_datanotifikasi_sw->get_by_id($id);
-        $data['app_name'] = $this->db->select('name')
+        $data['app_hc_name'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
@@ -216,9 +216,9 @@ class Datanotifikasi_sw extends CI_Controller
             'tgl_notifikasi' => date('Y-m-d', strtotime($this->input->post('tgl_notifikasi'))),
             'waktu' => $this->input->post('waktu'),
             'alasan' => $this->input->post('alasan'),
-            'app_name' => $this->db->select('name')
+            'app_hc_name' => $this->db->select('name')
                 ->from('tbl_data_user')
-                ->where('id_user', $approval->app_id)
+                ->where('id_user', $approval->app3_id)
                 ->get()
                 ->row('name'),
             'app2_name' => $this->db->select('name')
@@ -229,9 +229,9 @@ class Datanotifikasi_sw extends CI_Controller
         );
 
         // BILA YANG MEMBUAT PREPAYMENT DAPAT MENGAPPROVE SENDIRI
-        if ($approval->app_id == $this->session->userdata('id_user')) {
-            $data['app_status'] = 'approved';
-            $data['app_date'] = date('Y-m-d H:i:s');
+        if ($approval->app3_id == $this->session->userdata('id_user')) {
+            $data['app_hc_status'] = 'approved';
+            $data['app_hc_date'] = date('Y-m-d H:i:s');
         }
 
         $this->M_datanotifikasi_sw->save($data);
@@ -244,9 +244,9 @@ class Datanotifikasi_sw extends CI_Controller
             'pengajuan' => $this->input->post('pengajuan'),
             'waktu' => $this->input->post('waktu'),
             'alasan' => $this->input->post('alasan'),
-            'app_status' => 'waiting',
-            'app_date' => null,
-            'app_keterangan' => null,
+            'app_hc_status' => 'waiting',
+            'app_hc_date' => null,
+            'app_hc_keterangan' => null,
             'catatan' => null,
             'app2_status' => 'waiting',
             'app2_date' => null,
@@ -268,18 +268,18 @@ class Datanotifikasi_sw extends CI_Controller
     public function approve()
     {
         $data = array(
-            'app_keterangan' => $this->input->post('app_keterangan'),
-            'app_status' => $this->input->post('app_status'),
-            'app_date' => date('Y-m-d H:i:s'),
+            'app_hc_keterangan' => $this->input->post('app_hc_keterangan'),
+            'app_hc_status' => $this->input->post('app_hc_status'),
+            'app_hc_date' => date('Y-m-d H:i:s'),
             'catatan' => $this->input->post('app_catatan')
         );
 
         // UPDATE STATUS DEKLARASI
-        if ($this->input->post('app_status') === 'revised') {
+        if ($this->input->post('app_hc_status') === 'revised') {
             $data['status'] = 'revised';
-        } elseif ($this->input->post('app_status') === 'approved') {
+        } elseif ($this->input->post('app_hc_status') === 'approved') {
             $data['status'] = 'on-process';
-        } elseif ($this->input->post('app_status') === 'rejected') {
+        } elseif ($this->input->post('app_hc_status') === 'rejected') {
             $data['status'] = 'rejected';
         }
 
@@ -327,7 +327,7 @@ class Datanotifikasi_sw extends CI_Controller
             ->where('id_user', $data['master']->id_user)
             ->get()
             ->row('name');
-        $data['app_status'] = strtoupper($data['master']->app_status);
+        $data['app_hc_status'] = strtoupper($data['master']->app_hc_status);
         $data['app2_status'] = strtoupper($data['master']->app2_status);
         $sql = '
             WITH RankedNotifikasi AS (
@@ -410,9 +410,9 @@ class Datanotifikasi_sw extends CI_Controller
         $pdf->SetFont('Arial', 'B', 12);
         $pdf->Cell(60, 10, 'DIISI OLEH ATASAN KARYAWAN BERSANGKUTAN:', 0, 1);
 
-        if ($data['master']->app_status == 'approved') {
+        if ($data['master']->app_hc_status == 'approved') {
             $status = 'Diizinkan';
-        } elseif ($data['master']->app_status == 'rejected') {
+        } elseif ($data['master']->app_hc_status == 'rejected') {
             $status = 'Tidak Disetujui';
         } else {
             $status = '';
@@ -453,12 +453,12 @@ class Datanotifikasi_sw extends CI_Controller
 
         // Baris pertama (Status)
         $pdf->Cell(63, 5, 'CREATED', 'LR', 0, 'C');
-        $pdf->Cell(63, 5, strtoupper($data['master']->app_status), 0, 0, 'C');
+        $pdf->Cell(63, 5, strtoupper($data['master']->app_hc_status), 0, 0, 'C');
         $pdf->Cell(63, 5, strtoupper($data['master']->app2_status), 'LR', 1, 'C');
 
         // Baris kedua (Tanggal)
         $pdf->Cell(63, 5, $data['master']->created_at, 'LR', 0, 'C');
-        $pdf->Cell(63, 5, $data['master']->app_date, 0, 0, 'C');
+        $pdf->Cell(63, 5, $data['master']->app_hc_date, 0, 0, 'C');
         $pdf->Cell(63, 5, $data['master']->app2_date, 'LR', 1, 'C');
 
         // Baris pemisah
@@ -471,20 +471,8 @@ class Datanotifikasi_sw extends CI_Controller
 
         // Baris ketiga (Nama pengguna)
         $pdf->Cell(63, 8.5, $data['user'], 1, 0, 'C');
-        $pdf->Cell(63, 8.5, $data['master']->app_name, 1, 0, 'C');
+        $pdf->Cell(63, 8.5, $data['master']->app_hc_name, 1, 0, 'C');
         $pdf->Cell(63, 8.5, $data['master']->app2_name, 1, 1, 'C');
-
-        // Add keterangan
-        // $pdf->Ln(5);
-        // $pdf->SetFont('Arial', '', 12);
-        // $pdf->Cell(40, 10, 'Keterangan:', 0, 0);
-        // $pdf->Ln(8);
-        // if ($data['master']->app_keterangan != null && $data['master']->app_keterangan != '') {
-        //     $pdf->Cell(60, 10, '*' . $data['master']->app_keterangan, 0, 1);
-        // }
-        // if ($data['master']->app2_keterangan != null && $data['master']->app2_keterangan != '') {
-        //     $pdf->Cell(60, 10, '*' . $data['master']->app2_keterangan, 0, 1);
-        // }
 
         // Output the PDF
         $pdf->Output('I', 'Deklarasi.pdf');
