@@ -158,4 +158,61 @@ class M_penawaran_la_pu extends CI_Model
         $this->db->insert($this->table, $data);
         return $this->db->insert_id();
     }
+
+    public function insert_penawaran_detail($data)
+    {
+        // Cek apakah array $data tidak kosong
+        if (!empty($data)) {
+            // Menggunakan insert_batch untuk memasukkan banyak baris data sekaligus
+            $this->db->insert_batch('tbl_penawaran_detail', $data);
+
+            // Cek apakah ada kesalahan pada saat insert
+            if ($this->db->affected_rows() > 0) {
+                return TRUE;
+            } else {
+                log_message('error', 'Insert to tbl_penawaran_detail failed: ' . $this->db->last_query());
+                return FALSE;
+            }
+        } else {
+            log_message('error', 'Empty data array in insert_penawaran_detail');
+            return FALSE;
+        }
+    }
+
+    public function getLayananTermasuk($kode)
+    {
+        $this->db->select('a.nama_layanan, b.id_penawaran, b.id_layanan, b.nominal');
+        $this->db->from('tbl_layanan as a');
+        $this->db->join('tbl_penawaran_detail as b', 'a.id = b.id_layanan', 'left');
+        $this->db->join('tbl_penawaran as c', 'b.id_penawaran = c.id', 'left');
+        $this->db->where('b.is_active', 'Y');
+        $this->db->where('c.no_arsip', $kode);
+        // $this->db->join('tbl_produk as c', 'a.id_produk = c.id', 'left');
+        $data = $this->db->get()->result_array();
+        return $data;
+    }
+
+    public function getLayananTidakTermasuk($kode)
+    {
+        $this->db->select('a.nama_layanan, b.id_penawaran, b.id_layanan');
+        $this->db->from('tbl_layanan as a');
+        $this->db->join('tbl_penawaran_detail as b', 'a.id = b.id_layanan', 'left');
+        $this->db->join('tbl_penawaran as c', 'b.id_penawaran = c.id', 'left');
+        $this->db->where('b.is_active', 'N');
+        $this->db->where('c.no_arsip', $kode);
+        $data = $this->db->get()->result_array();
+        return $data;
+    }
+
+    // Fungsi untuk mengambil detail penawaran berdasarkan ID penawaran
+    public function get_penawaran_detail($id_penawaran)
+    {
+        $this->db->select('id_penawaran, id_layanan, nominal, is_active');
+        $this->db->from('tbl_penawaran_detail');
+        $this->db->where('id_penawaran', $id_penawaran);
+        $query = $this->db->get();
+
+        // Mengembalikan hasil dalam bentuk array objek
+        return $query->result_array();
+    }
 }

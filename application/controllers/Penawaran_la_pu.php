@@ -91,6 +91,8 @@ class Penawaran_la_pu extends CI_Controller
             $this->load->view('backend/penawaran_pu/404');
         } else {
             $no_arsip = $data['penawaran']['no_arsip'];
+            $data['layanan_termasuk'] = $this->M_penawaran_la_pu->getLayananTermasuk($kode);
+            $data['layanan_tidak_termasuk'] = $this->M_penawaran_la_pu->getLayananTidakTermasuk($kode);
 
             $params['data'] = 'https://arsip.pengenumroh.com/' . $no_arsip;
             $params['level'] = 'H';
@@ -109,6 +111,7 @@ class Penawaran_la_pu extends CI_Controller
         $data['id'] = 0;
         $data['title'] = 'backend/penawaran_pu/penawaran_form_la_pu';
         $data['products'] = $this->db->select('id, nama')->from('tbl_produk')->get()->result_object();
+        $data['layanan'] = $this->db->get('tbl_layanan')->result_array();
         $data['title_view'] = 'Land Arrangement Form';
         $this->load->view('backend/home', $data);
     }
@@ -118,14 +121,16 @@ class Penawaran_la_pu extends CI_Controller
         $data['id'] = $id;
         $data['aksi'] = 'update';
         $data['title_view'] = "Edit Data Prepayment";
-        $data['title'] = 'backend/penawaran_pu/penawaran_la_pu';
+        $data['title'] = 'backend/penawaran_pu/penawaran_form_la_pu';
         $data['products'] = $this->db->select('id, nama')->from('tbl_produk')->get()->result_object();
+        $data['layanan'] = $this->db->get('tbl_layanan')->result_array();
         $this->load->view('backend/home', $data);
     }
 
     function edit_data($id)
     {
         $data['master'] = $this->db->get_where('tbl_penawaran', ['id' => $id])->row_array();
+        $data['layanan'] = $this->M_penawaran_la_pu->get_penawaran_detail($id); // Ambil detail layanan (status, nominal)
         echo json_encode($data);
     }
 
@@ -155,11 +160,12 @@ class Penawaran_la_pu extends CI_Controller
 
     public function add()
     {
-        //GENERATE NOMOR PELAYANAN
+        // GENERATE NOMOR PELAYANAN
         $date = date('Y-m-d h:i:sa');
         $kode = $this->M_penawaran_la_pu->max_kode($date)->row();
         if (empty($kode->no_pelayanan)) {
             $no_urut = 1;
+            $no_urut2 = 1; // Inisialisasi untuk arsip jika baru
         } else {
             $no_urut = substr($kode->no_pelayanan, 9, 3);
             $no_urut2 = substr($kode->no_arsip, 6) + 1;
@@ -168,11 +174,11 @@ class Penawaran_la_pu extends CI_Controller
         $year = substr($date, 0, 4);
         $no_pelayanan = 'UMROH/LA/' . $urutan . '/' . 'IX' . '/' . $year;
 
-        //GENERATE NOMOR ARSIP
+        // GENERATE NOMOR ARSIP
         $urutan2 = str_pad($no_urut2, 2, "0", STR_PAD_LEFT);
         $no_arsip = 'PU' . $year . '09' . $urutan2;
 
-
+        // Data untuk tabel penawaran
         $data = array(
             'no_pelayanan' => $no_pelayanan,
             'no_arsip' => $no_arsip,
@@ -182,25 +188,124 @@ class Penawaran_la_pu extends CI_Controller
             'catatan' => $this->input->post('editor_content')
         );
 
-        $this->M_penawaran_la_pu->save($data);
+        // Simpan data ke tabel penawaran dan ambil ID penawaran yang baru disimpan
+        $id_penawaran = $this->M_penawaran_la_pu->save($data);
+
+        // Ambil data layanan dari input (id layanan, status, dan nominal)
+        $ids = $this->input->post('id_layanan'); // ID layanan
+        $statuses = $this->input->post('status'); // Status layanan (Y/N)
+        $nominals = preg_replace('/\D/', '', $this->input->post('nominal')); // Nominal biaya layanan
+
+        // Siapkan array untuk insert ke tabel tbl_penawaran_detail
+        $detail_data = [];
+        if (is_array($ids) && is_array($statuses) && is_array($nominals)) {
+            foreach ($ids as $key => $id_layanan) {
+                // Isi "-" jika status kosong, tetapi lewati data dengan is_active "-"
+                $is_active = isset($statuses[$key]) && !empty($statuses[$key]) ? $statuses[$key] : '-';
+                $nominal = isset($nominals[$key]) && !empty($nominals[$key]) ? $nominals[$key] : null;
+
+                // Hanya insert data yang statusnya bukan "-"
+                if ($is_active !== '-') {
+                    $detail_data[] = [
+                        'id_penawaran' => $id_penawaran, // ID penawaran yang baru disimpan
+                        'id_layanan' => $id_layanan, // ID layanan
+                        'is_active' => $is_active, // Status layanan (Y atau N)
+                        'nominal' => $nominal // Nominal biaya layanan
+                    ];
+                }
+            }
+
+            // Log atau print untuk memeriksa data yang akan diinsert
+            log_message('info', 'Detail Data to insert: ' . print_r($detail_data, TRUE));
+
+            // Simpan detail layanan ke tabel tbl_penawaran_detail
+            if (!empty($detail_data)) {
+                $this->M_penawaran_la_pu->insert_penawaran_detail($detail_data);
+            }
+        }
+        // Kirim response
         echo json_encode(array("status" => TRUE));
     }
 
     public function update($id)
     {
-        $data = array(
-            'no_pelayanan' => $this->input->post('no_pelayanan'),
-            'pelanggan' => $this->input->post('pelanggan'),
-            'id_produk' => $this->input->post('name'),
-            'catatan' => $this->input->post('editor_content')
+        // Ambil data dari form
+        $no_pelayanan = $this->input->post('no_pelayanan');
+        $pelanggan = $this->input->post('pelanggan');
+        $catatan = $this->input->post('editor_content');
+        $layanan_ids = $this->input->post('id_layanan'); // Array of layanan IDs
+        $statuses = $this->input->post('status'); // Array of layanan statuses
+        $extra_inputs = $this->input->post('nominal'); // Ambil nominal dari input
+
+        // Jika nominal berformat rupiah, bersihkan dari karakter non-digit
+        $extra_inputs = array_map(function ($input) {
+            return preg_replace('/\D/', '', $input); // Hanya ambil karakter digit
+        }, $extra_inputs);
+
+        // Debugging: Tampilkan nilai nominal
+        // var_dump($extra_inputs);
+
+        // Update data tbl_penawaran
+        $data_penawaran = array(
+            'no_pelayanan' => $no_pelayanan,
+            'pelanggan' => $pelanggan,
+            'catatan' => $catatan
         );
-        $this->db->update('tbl_penawaran', $data, ['id' => $id]);
+        $this->db->update('tbl_penawaran', $data_penawaran, ['id' => $id]);
+
+        // Pastikan semua input adalah array
+        if (!is_array($layanan_ids) || !is_array($statuses) || !is_array($extra_inputs)) {
+            echo json_encode(array("status" => FALSE, "message" => "Data tidak valid."));
+            return;
+        }
+
+        // Loop over each layanan and check whether to update, insert, or delete
+        foreach ($layanan_ids as $index => $layanan_id) {
+            $status = isset($statuses[$index]) ? $statuses[$index] : null; // Ambil status
+            $extra_input = isset($extra_inputs[$index]) ? $extra_inputs[$index] : null; // Ambil nominal
+
+            // Cek apakah layanan sudah ada di database
+            $existing_layanan = $this->db->get_where('tbl_penawaran_detail', ['id_layanan' => $layanan_id, 'id_penawaran' => $id])->row();
+
+            // Jika status kosong, hapus dari database
+            if (empty($status)) {
+                if ($existing_layanan) {
+                    $this->db->delete('tbl_penawaran_detail', ['id' => $existing_layanan->id]);
+                }
+                continue; // Lewati iterasi ini dan lanjutkan ke layanan berikutnya
+            }
+
+            // Jika layanan sudah ada, lakukan update
+            if ($existing_layanan) {
+                $data_layanan_update = array(
+                    'is_active' => $status,
+                    'nominal' => $extra_input // Pastikan nama kolom sesuai
+                );
+                $this->db->update('tbl_penawaran_detail', $data_layanan_update, ['id' => $existing_layanan->id]);
+            } else {
+                // Jika layanan tidak ada, lakukan insert
+                $data_layanan_insert = array(
+                    'id_penawaran' => $id,
+                    'id_layanan' => $layanan_id,
+                    'is_active' => $status,
+                    'nominal' => $extra_input // Pastikan nama kolom sesuai
+                );
+
+                // Debugging: Tampilkan data yang akan diinsert
+                // var_dump($data_layanan_insert);
+                $this->db->insert('tbl_penawaran_detail', $data_layanan_insert);
+            }
+        }
+
+        // Mengembalikan status berhasil
         echo json_encode(array("status" => TRUE));
     }
+
 
     function delete($id)
     {
         $this->db->delete('tbl_penawaran', ['id' => $id]);
+        $this->db->delete('tbl_penawaran_detail', ['id_penawaran' => $id]);
         echo json_encode(array("status" => TRUE));
     }
 

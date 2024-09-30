@@ -196,11 +196,11 @@
             </div>
             <div class="mb-1">
                 <span class="label-inline text-gray-600">Tanggal Dokumen</span>
-                <span class="value-inline text-gray-800">: <?= $this->M_penawaran_pu->getTanggal($penawaran['created_at']) ?></span>
+                <span class="value-inline text-gray-800">: <?= $this->M_penawaran_la_pu->getTanggal($penawaran['created_at']) ?></span>
             </div>
             <div class="mb-1">
                 <span class="label-inline text-gray-600">Berlaku s.d</span>
-                <span class="value-inline text-gray-800">: <?= $this->M_penawaran_pu->getTanggal($penawaran['tgl_berlaku']) ?></span>
+                <span class="value-inline text-gray-800">: <?= $this->M_penawaran_la_pu->getTanggal($penawaran['tgl_berlaku']) ?></span>
             </div>
             <div class="mb-1">
                 <span class="label-inline text-gray-600">Produk</span>
@@ -239,9 +239,16 @@
             <!-- Layanan Termasuk -->
             <h2 class="section-title">Layanan Termasuk:</h2>
             <ul class="list-item mb-4">
-                <li>Lorem ipsum dolor sit amet.</li>
-                <li>Lorem ipsum dolor sit amet.</li>
-                <li>Lorem ipsum dolor sit amet.</li>
+                <?php foreach ($layanan_termasuk as $data) : ?>
+                    <?php if ($data['id_layanan'] != 9) : ?>
+                        <li><?= $data['nama_layanan'] ?></li>
+                    <?php endif ?>
+                    <?php if ($data['id_layanan'] == 9) : ?>
+                        <span>
+                            <li><?= $data['nama_layanan'] ?> Rp. <?= number_format($data['nominal'], 0, ',', '.') ?></li>
+                        </span>
+                    <?php endif ?>
+                <?php endforeach ?>
             </ul>
         </div>
 
@@ -250,7 +257,7 @@
             <!-- Keberangkatan -->
             <div class="mb-1">
                 <span class="label-inline text-gray-600">Keberangkatan</span>
-                <span class="value-inline text-gray-800">: <?= $this->M_penawaran_pu->getTanggal($penawaran['keberangkatan']) ?></span>
+                <span class="value-inline text-gray-800">: <?= $this->M_penawaran_la_pu->getTanggal($penawaran['keberangkatan']) ?></span>
                 <!-- <span class="value-inline text-gray-800">: 01 September 2024</span> -->
             </div>
             <!-- Durasi -->
@@ -267,9 +274,9 @@
             <!-- Layanan Tidak Termasuk -->
             <h2 class="section-title mt-5">Layanan Tidak Termasuk :</h2>
             <ul class="list-item mb-4">
-                <li>Lorem ipsum dolor sit amet.</li>
-                <li>Lorem ipsum dolor sit amet.</li>
-                <li>Lorem ipsum dolor sit amet.</li>
+                <?php foreach ($layanan_tidak_termasuk as $data) : ?>
+                    <li><?= $data['nama_layanan'] ?></li>
+                <?php endforeach ?>
             </ul>
         </div>
     </div>
