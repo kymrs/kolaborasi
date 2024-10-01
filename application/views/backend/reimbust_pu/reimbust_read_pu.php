@@ -125,6 +125,23 @@
         .keterangan-field {
             margin-top: 20px;
         }
+
+        @media (max-width: 546px) {
+            .table-main {
+                overflow-x: scroll;
+                font-size: 75%;
+            }
+
+            .table-approve table {
+                width: 100%;
+            }
+
+            .header h1,
+            .header h2 {
+                font-size: 90%;
+                margin-right: 0;
+            }
+        }
     </style>
 </head>
 

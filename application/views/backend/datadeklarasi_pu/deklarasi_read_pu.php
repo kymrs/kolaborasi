@@ -91,6 +91,26 @@
         .keterangan-field {
             margin-top: 35px;
         }
+
+        @media (max-width: 546px) {
+
+            /* header */
+            .header {
+                height: 100px;
+            }
+
+            .header .logo {
+                width: 140px;
+                position: relative;
+                bottom: 50px;
+            }
+
+            .header .title {
+                width: 100%;
+                position: relative;
+                bottom: 30px;
+            }
+        }
     </style>
 </head>
 
