@@ -234,7 +234,7 @@ class Penawaran_la_pu extends CI_Controller
             'keberangkatan' => $formatted2_datetime,
             'durasi' => $this->input->post('durasi'),
             'tempat' => $this->input->post('tempat'),
-            'biaya' => $this->input->post('biaya'),
+            'biaya' => $this->input->post('biaya_integer'),
             'layanan_la' => $this->input->post('layanan_content'),
             'pelanggan' => $this->input->post('pelanggan'),
             'catatan' => $this->input->post('catatan_content'),
