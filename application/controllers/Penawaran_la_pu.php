@@ -112,7 +112,7 @@ class Penawaran_la_pu extends CI_Controller
     {
         $data['id'] = 0;
         $data['title'] = 'backend/penawaran_pu/penawaran_form_la_pu';
-        $data['products'] = $this->db->select('id, nama')->from('tbl_produk')->get()->result_object();
+        // $data['products'] = $this->db->select('id, nama')->from('tbl_produk')->get()->result_object();
         $data['title_view'] = 'Land Arrangement Form';
         $this->load->view('backend/home', $data);
     }
@@ -122,7 +122,7 @@ class Penawaran_la_pu extends CI_Controller
         $data['id'] = $id;
         $data['aksi'] = 'update';
         $data['title'] = 'backend/penawaran_pu/penawaran_form_la_pu';
-        $data['products'] = $this->db->select('id, nama')->from('tbl_produk')->get()->result_object();
+        // $data['products'] = $this->db->select('id, nama')->from('tbl_produk')->get()->result_object();
         $data['title_view'] = 'Edit Land Arrangement Form';
         $this->load->view('backend/home', $data);
     }
