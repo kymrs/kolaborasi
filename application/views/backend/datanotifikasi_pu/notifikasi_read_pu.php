@@ -143,7 +143,7 @@
                     <div class="d-flex justify-content-end mb-3">
                         <?php if ($user->app_hc_name == $app_hc_name && $user->app2_status != 'rejected' && !in_array($user->status, ['approved'])) { ?>
                             <a class="btn btn-warning btn-sm mr-2" id="appBtn" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
-                        <?php } elseif ($user->app2_name == $app2_name && !in_array($user->app2_status, ['approved', 'rejected'])) { ?>
+                        <?php } elseif ($user->app2_name == $app2_name && !in_array($user->app2_status, ['approved', 'rejected'])  && $user->app_status == 'approved') { ?>
                             <a class="btn btn-warning btn-sm mr-2" id="appBtn2" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
                         <?php } ?>
                         <a class="btn btn-secondary btn-sm" href="<?= base_url('datanotifikasi_pu') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>

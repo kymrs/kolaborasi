@@ -314,18 +314,24 @@
         theme: 'snow'
     });
 
+    // Custom jQuery validation method to validate Quill editor content
+    $.validator.addMethod("quillRequired", function(value, element) {
+        var quillContent = quill.getText().trim(); // Get text from Quill editor
+        return quillContent.length > 0; // Check if the editor is empty
+    }, "Deskripsi is required");
+
     // var quillContent = `<p> Lalaland </p>`;
 
     // quill.clipboard.dangerouslyPasteHTML(quillContent);
 
-    document.getElementById("form").onsubmit = function() {
-        // Get HTML content from Quill editor
-        var layananContent = quill.root.innerHTML;
-        var catatanContent = quill2.root.innerHTML;
-        // Set it to hidden input
-        document.getElementById("layanan_content").value = layananContent;
-        document.getElementById("catatan_content").value = catatanContent;
-    };
+    // document.getElementById("form").onsubmit = function() {
+    //     // Get HTML content from Quill editor
+    //     var layananContent = quill.root.innerHTML;
+    //     var catatanContent = quill2.root.innerHTML;
+    //     // Set it to hidden input
+    //     document.getElementById("layanan_content").value = layananContent;
+    //     document.getElementById("catatan_content").value = catatanContent;
+    // };
 
     //GENERATE NOMOR PELAYANAN
     $.ajax({
@@ -377,6 +383,8 @@
                     moment.locale('id')
                     //APPEND DATA TRANSAKSI DETAIL PREPAYMENT
                     if (aksi == 'update') {
+                        $biaya = formatRupiah(data['master']['biaya'], "Rp");
+
                         $('#no_pelayanan').val(data['master']['no_pelayanan']);
                         $('#pelanggan').val(data['master']['pelanggan']);
                         $('#produk').val(data['master']['produk']);
@@ -387,7 +395,7 @@
                         $('#durasi').val(data['master']['durasi']);
                         $('#tempat').val(data['master']['tempat']);
                         quill.clipboard.dangerouslyPasteHTML(data['master']['layanan_la']);
-                        $('#biaya').val(data['master']['biaya']);
+                        $('#biaya').val($biaya);
                         quill2.clipboard.dangerouslyPasteHTML(data['master']['catatan']);
                     }
                 },
@@ -476,32 +484,67 @@
 
         $("#form").validate({
             rules: {
-                tgl_prepayment: {
+                pelanggan: {
                     required: true,
                 },
-                nama: {
+                produk: {
                     required: true,
                 },
-                prepayment: {
+                alamat: {
                     required: true,
                 },
-                tujuan: {
+                deskripsi: {
                     required: true,
+                },
+                tgl_berlaku: {
+                    required: true,
+                },
+                keberangkatan: {
+                    required: true,
+                },
+                durasi: {
+                    required: true,
+                },
+                tempat: {
+                    required: true,
+                },
+                biaya: {
+                    required: true,
+                },
+                layanan_content: {
+                    quillRequired: true
                 }
             },
             messages: {
-                tgl_prepayment: {
-                    required: "Tanggal is required",
+                pelanggan: {
+                    required: "Pelanggan is required",
                 },
-                nama: {
-                    required: "Nama is required",
+                produk: {
+                    required: "Produk is required",
                 },
-
-                prepayment: {
-                    required: "Prepayment is required",
+                alamat: {
+                    required: "Alamat is required",
                 },
-                tujuan: {
-                    required: "Tujuan is required",
+                deskripsi: {
+                    required: "Deskripsi is required",
+                },
+                tgl_berlaku: {
+                    required: "Tanggal berlaku is required",
+                },
+                keberangkatan: {
+                    required: "Keberangkatan is required",
+                },
+                durasi: {
+                    required: "Durasi is required",
+                },
+                tempat: {
+                    required: "Tempat is required",
+                },
+                biaya: {
+                    required: "Biaya is required",
+                },
+                layanan_content: {
+                    required: "Layanan is required"
                 }
             },
             errorPlacement: function(error, element) {
