@@ -192,29 +192,30 @@
             <h1 class="text-3xl font-bold text-left text-gray-700 mb-4">PENAWARAN</h1>
             <div class="mb-1">
                 <span class="label-inline text-gray-600">Nomor</span>
-                <span class="value-inline text-gray-800">: <?= $penawaran['no_pelayanan'] ?></span>
+                <span class="value-inline text-gray-800">: <?= $penawaran->no_pelayanan ?></span>
+                <input type="hidden" name="hidden_id" id="hidden_id" value="<?= $id ?>">
             </div>
             <div class="mb-1">
                 <span class="label-inline text-gray-600">Tanggal Dokumen</span>
-                <span class="value-inline text-gray-800">: <?= $this->M_penawaran_pu->getTanggal($penawaran['created_at']) ?></span>
+                <span class="value-inline text-gray-800">: <?= $penawaran->created_at ?></span>
             </div>
             <div class="mb-1">
                 <span class="label-inline text-gray-600">Berlaku s.d</span>
-                <span class="value-inline text-gray-800">: <?= $this->M_penawaran_pu->getTanggal($penawaran['tgl_berlaku']) ?></span>
+                <span class="value-inline text-gray-800">: <?= $penawaran->tgl_berlaku ?></span>
             </div>
             <div class="mb-1">
                 <span class="label-inline text-gray-600">Produk</span>
-                <span class="value-inline text-gray-800">: <?= $penawaran['produk'] ?></span>
+                <span class="value-inline text-gray-800">: <?= $penawaran->produk ?></span>
             </div>
             <div class="mb-1">
                 <span class="label-inline text-gray-600">Kepada</span>
-                <span class="value-inline text-gray-800">: <?= $penawaran['pelanggan'] ?></span>
+                <span class="value-inline text-gray-800">: <?= $penawaran->pelanggan ?></span>
             </div>
         </div>
 
         <!-- Right Section: QR Code -->
         <div class="w-full md:w-1/3 p-4 text-center right-section">
-            <img src="<?= base_url() ?>assets/backend/document/qrcode/qr-<?= $penawaran['no_arsip'] ?>.png" alt="QR Code" class="mx-auto w-64 h-64">
+            <img src="<?= base_url() ?>assets/backend/document/qrcode/qr-<?= $penawaran->no_arsip ?>.png" alt="QR Code" class="mx-auto w-64 h-64">
         </div>
     </div>
 
@@ -231,25 +232,12 @@
         <div class="w-full md:w-2/3 p-4">
             <!-- Deskripsi -->
             <div class="description mb-4">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur pretium, mauris ac varius efficitur,
-                tortor mi dignissim justo, id feugiat justo eros nec metus,Lorem ipsum dolor sit amet, consectetur
-                tortor mi dignissim justo, id feugiat justo eros nec metus.
+                <?= $penawaran->deskripsi ?>
             </div>
 
             <!-- Layanan Termasuk -->
             <h2 class="section-title">Layanan Termasuk:</h2>
-            <ul class="list-item mb-4">
-                <?php foreach ($layanan_termasuk as $data) : ?>
-                    <?php if ($data['id_layanan'] != 9) : ?>
-                        <li><?= $data['nama_layanan'] ?></li>
-                    <?php endif ?>
-                    <?php if ($data['id_layanan'] == 9) : ?>
-                        <span>
-                            <li><?= $data['nama_layanan'] ?> Rp. <?= number_format(preg_replace('/\D/', '', $data['is_active']), 0, ',', '.') ?></li>
-                        </span>
-                    <?php endif ?>
-                <?php endforeach ?>
-            </ul>
+            <div id="layanan_termasuk"></div>
         </div>
 
         <!-- Right Section: Informasi Tambahan -->
@@ -257,27 +245,19 @@
             <!-- Keberangkatan -->
             <div class="mb-1">
                 <span class="label-inline text-gray-600">Keberangkatan</span>
-                <span class="value-inline text-gray-800">: <?= $this->M_penawaran_pu->getTanggal($penawaran['keberangkatan']) ?></span>
+                <span class="value-inline text-gray-800">: <?= $penawaran->keberangkatan ?></span>
                 <!-- <span class="value-inline text-gray-800">: 01 September 2024</span> -->
             </div>
             <!-- Durasi -->
             <div class="mb-1">
                 <span class="label-inline text-gray-600">Durasi</span>
-                <span class="value-inline text-gray-800">: <?= $penawaran['durasi'] ?> Hari</span>
+                <span class="value-inline text-gray-800">: <?= $penawaran->durasi ?> Hari</span>
             </div>
             <!-- Berangkat Dari -->
             <div class="mb-1">
                 <span class="label-inline text-gray-600">Berangkat dari</span>
-                <span class="value-inline text-gray-800">: <?= $penawaran['tempat'] ?></span>
+                <span class="value-inline text-gray-800">: <?= $penawaran->tempat ?></span>
             </div>
-
-            <!-- Layanan Tidak Termasuk -->
-            <h2 class="section-title mt-5">Layanan Tidak Termasuk :</h2>
-            <ul class="list-item mb-4">
-                <?php foreach ($layanan_tidak_termasuk as $data) : ?>
-                    <li><?= $data['nama_layanan'] ?></li>
-                <?php endforeach ?>
-            </ul>
         </div>
     </div>
 
@@ -287,7 +267,7 @@
             BIAYA
         </div>
         <div class="price-text">
-            Rp. <?= number_format($penawaran['biaya'], 0, ',', '.') ?>,- /pax
+            Rp. <?= number_format($penawaran->biaya, 0, ',', '.') ?>,- /pax
         </div>
     </div>
 
@@ -297,12 +277,26 @@
             EKSTRA
         </div>
         <div class="promo-text">
-            Informasi tambahan tentang layanan ekstra yang mungkin tersedia.
+            <?= $penawaran->catatan ?>
         </div>
     </div>
     <?php $this->load->view('template/footer'); ?>
     <?php $this->load->view('template/script'); ?>
 
     <script>
+        $(document).ready(function() {
+            var id = $('#hidden_id').val();
+            let url = "";
 
+            $.ajax({
+                url: `<?php echo site_url('penawaran_la_pu/edit_data') ?>/` + id,
+                type: "GET",
+                dataType: "JSON",
+                success: function(data) {
+                    console.log(data);
+                    $('#layanan_termasuk').html(data['master']['layanan_la']);
+                    $('#layanan_termasuk ol').prop('class', 'list-item')
+                }
+            });
+        });
     </script>

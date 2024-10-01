@@ -8,6 +8,7 @@ class Penawaran_la_pu extends CI_Controller
     {
         parent::__construct();
         $this->load->model('backend/M_penawaran_la_pu');
+        $this->load->helper('date');
         $this->M_login->getsecurity();
         $this->load->library('ciqrcode');
     }
@@ -91,10 +92,11 @@ class Penawaran_la_pu extends CI_Controller
         // var_dump($id);
         $data['penawaran'] = $this->M_penawaran_la_pu->getPenawaran($id);
 
+        $data['id'] = $id;
         if ($data['penawaran'] == null) {
             $this->load->view('backend/penawaran_pu/404');
         } else {
-            $no_arsip = $data['penawaran']['no_arsip'];
+            $no_arsip = $data['penawaran']->no_arsip;
 
             $params['data'] = 'https://arsip.pengenumroh.com/' . $no_arsip;
             $params['level'] = 'H';
@@ -102,8 +104,8 @@ class Penawaran_la_pu extends CI_Controller
             $params['savename'] = 'assets/backend/document/qrcode/qr-' . $no_arsip . '.png';
             $this->ciqrcode->generate($params);
 
-            $data['title'] = 'backend/penawaran_pu/penawaran_read_pu';
-            $data['title_view'] = 'Prepayment';
+            $data['title'] = 'backend/penawaran_pu/penawaran_read_la_pu';
+            $data['title_view'] = 'Land Arrangement';
             $this->load->view('backend/home', $data);
         }
     }
@@ -144,7 +146,9 @@ class Penawaran_la_pu extends CI_Controller
         }
         $urutan = str_pad(number_format($no_urut + 1), 3, "0", STR_PAD_LEFT);
         $year = substr($date, 0, 4);
-        $data = 'UMROH/LA/' . $urutan . '/' . 'IX' . '/' . $year;
+        $bulan = substr($date, 5, 2);
+        $bulan_romawi = bulan_angka_ke_romawi((int)$bulan);
+        $data = 'UMROH/LA/' . $urutan . '/' . $bulan_romawi . '/' . $year;
         echo json_encode($data);
     }
 
@@ -170,7 +174,9 @@ class Penawaran_la_pu extends CI_Controller
         $urutan = str_pad(number_format($no_urut + 1), 3, "0", STR_PAD_LEFT);
         $year = substr($date, 0, 4);
         $year2 = substr($date, 2, 2);
-        $no_pelayanan = 'UMROH/LA/' . $urutan . '/' . 'IX' . '/' . $year;
+        $bulan = substr($date, 5, 2);
+        $bulan_romawi = bulan_angka_ke_romawi((int)$bulan);
+        $no_pelayanan = 'UMROH/LA/' . $urutan . '/' . $bulan_romawi . '/' . $year;
 
         $arsip = $this->M_penawaran_la_pu->max_kode_arsip($date)->row();
         if (empty($arsip->no_arsip)) {
