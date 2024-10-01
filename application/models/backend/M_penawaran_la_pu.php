@@ -7,18 +7,15 @@ class M_penawaran_la_pu extends CI_Model
 {
     // INISIASI VARIABLE
     var $id = 'id';
-    var $table = 'tbl_penawaran';
-    var $table2 = 'tbl_produk';
-    var $column_order = array(null, null, 'no_pelayanan', 'pelanggan', 'tgl_berlaku', 'nama', 'created_at', 'catatan');
-    var $column_search = array('no_pelayanan', 'pelanggan', 'tgl_berlaku', 'nama', 'created_at', 'catatan'); //field yang diizin untuk pencarian
+    var $table = 'tbl_land_arrangement';
+    var $column_order = array(null, null, 'no_pelayanan', 'no_arsip', 'produk', 'tgl_berlaku', 'keberangkatan', 'durasi', 'tempat', 'biaya', 'pelanggan', 'created_at');
+    var $column_search = array('no_pelayanan', 'no_arsip', 'produk', 'tgl_berlaku', 'keberangkatan', 'durasi', 'tempat', 'biaya', 'pelanggan', 'created_at'); //field yang diizin untuk pencarian
     var $order = array('id' => 'desc');
 
     // UNTUK QUERY DATA TABLE
     function _get_datatables_query()
     {
-        $this->db->select('tbl_penawaran.*, tbl_produk.nama'); // Memilih kolom dari kedua tabel
         $this->db->from($this->table);
-        $this->db->join('tbl_produk', 'tbl_produk.id = tbl_penawaran.id_produk', 'left'); // JOIN dengan tabel tbl_user
 
         $i = 0;
 
@@ -30,17 +27,9 @@ class M_penawaran_la_pu extends CI_Model
                 if ($i === 0) // looping awal
                 {
                     $this->db->group_start();
-                    if ($item == 'nama') {
-                        $this->db->like('tbl_produk.' . $item, $_POST['search']['value']);
-                    } else {
-                        $this->db->like('tbl_penawaran.' . $item, $_POST['search']['value']);
-                    }
+                    $this->db->like('tbl_land_arrangement.' . $item, $_POST['search']['value']);
                 } else {
-                    if ($item == 'nama') {
-                        $this->db->or_like('tbl_produk.' . $item, $_POST['search']['value']);
-                    } else {
-                        $this->db->or_like('tbl_penawaran.' . $item, $_POST['search']['value']);
-                    }
+                    $this->db->or_like('tbl_land_arrangement.' . $item, $_POST['search']['value']);
                 }
 
                 if (count($this->column_search) - 1 == $i) {
@@ -77,9 +66,7 @@ class M_penawaran_la_pu extends CI_Model
 
     public function count_all()
     {
-        $this->db->select('tbl_penawaran.*, tbl_produk.nama'); // Memilih kolom dari kedua tabel
         $this->db->from($this->table);
-        $this->db->join('tbl_produk', 'tbl_produk.id = tbl_penawaran.id_produk', 'left'); // JOIN dengan tabel tbl_user
 
         return $this->db->count_all_results();
     }
@@ -132,24 +119,29 @@ class M_penawaran_la_pu extends CI_Model
     }
 
 
-    public function getPenawaran($kode)
+    public function getPenawaran($id)
     {
-        $this->db->select('a.no_pelayanan, a.no_arsip, a.tgl_berlaku, a.id_produk, a.pelanggan, a.catatan, a.created_at, b.nama_dokumen, b.penerbit, b.no_dokumen, b.tgl_dokumen, c.nama as nama_produk, c.layanan_termasuk, c.layanan_tdk_termasuk, c.keberangkatan, c.durasi, c.tempat_keberangkatan, c.biaya, c.created_at');
-        $this->db->from('tbl_penawaran as a');
-        $this->db->where('a.no_arsip', $kode);
-        $this->db->join('tbl_arsip_pu as b', 'a.no_pelayanan = b.no_dokumen', 'left');
-        $this->db->join('tbl_produk as c', 'a.id_produk = c.id', 'left');
-        // $this->db->where('id', $id);
-        $data = $this->db->get()->row_array();
+        $data = $this->db->from('tbl_land_arrangement')->where('id', $id)->get()->row();
         return $data;
     }
+
     public function max_kode($date)
     {
         $formatted_date = date('Y', strtotime($date));
-        $this->db->select('no_pelayanan, no_arsip');
+        $this->db->select('no_pelayanan');
         $where = 'id=(SELECT max(id) FROM tbl_land_arrangement where SUBSTRING(no_pelayanan, 17, 4) = ' . $formatted_date . ')';
         $this->db->where($where);
         $query = $this->db->from('tbl_land_arrangement')->get();
+        return $query;
+    }
+
+    public function max_kode_arsip($date)
+    {
+        $formatted_date = date('y', strtotime($date));
+        $this->db->select('no_arsip');
+        $where = 'id=(SELECT max(id) FROM tbl_arsip_pu where SUBSTRING(no_arsip, 3, 2) = ' . $formatted_date . ')';
+        $this->db->where($where);
+        $query = $this->db->from('tbl_arsip_pu')->get();
         return $query;
     }
 

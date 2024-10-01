@@ -50,7 +50,7 @@ class Penawaran_la_pu extends CI_Controller
         //LOOPING DATATABLES
         foreach ($list as $field) {
 
-            $action_read = ($read == 'Y') ? '<a href="penawaran_la_pu/read_form/' . $field->no_arsip . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
+            $action_read = ($read == 'Y') ? '<a href="penawaran_la_pu/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
             $action_edit = ($edit == 'Y') ? '<a href="penawaran_la_pu/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
             $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="penawaran_la_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
@@ -63,10 +63,15 @@ class Penawaran_la_pu extends CI_Controller
             $row[] = $no;
             $row[] = $action;
             $row[] = strtoupper($field->no_pelayanan);
-            $row[] = $field->pelanggan;
-            $row[] = $field->nama;
-            $row[] = date("d M Y", strtotime($field->created_at));
+            $row[] = strtoupper($field->no_arsip);
+            $row[] = $field->produk;
             $row[] = date("d M Y", strtotime($field->tgl_berlaku));
+            $row[] = $field->keberangkatan;
+            $row[] = $field->durasi;
+            $row[] = $field->tempat;
+            $row[] = $field->biaya;
+            $row[] = $field->pelanggan;
+            $row[] = date("d M Y", strtotime($field->created_at));
 
             $data[] = $row;
         }
@@ -81,11 +86,10 @@ class Penawaran_la_pu extends CI_Controller
         echo json_encode($output);
     }
 
-    public function read_form()
+    public function read_form($id)
     {
-        $kode = $this->uri->segment(3);
-        // var_dump($kode);
-        $data['penawaran'] = $this->M_penawaran_la_pu->getPenawaran($kode);
+        // var_dump($id);
+        $data['penawaran'] = $this->M_penawaran_la_pu->getPenawaran($id);
 
         if ($data['penawaran'] == null) {
             $this->load->view('backend/penawaran_pu/404');
@@ -117,15 +121,15 @@ class Penawaran_la_pu extends CI_Controller
     {
         $data['id'] = $id;
         $data['aksi'] = 'update';
-        $data['title_view'] = "Edit Data Prepayment";
-        $data['title'] = 'backend/penawaran_pu/penawaran_la_pu';
+        $data['title'] = 'backend/penawaran_pu/penawaran_form_la_pu';
         $data['products'] = $this->db->select('id, nama')->from('tbl_produk')->get()->result_object();
+        $data['title_view'] = 'Edit Land Arrangement Form';
         $this->load->view('backend/home', $data);
     }
 
     function edit_data($id)
     {
-        $data['master'] = $this->db->get_where('tbl_penawaran', ['id' => $id])->row_array();
+        $data['master'] = $this->db->get_where('tbl_land_arrangement', ['id' => $id])->row_array();
         echo json_encode($data);
     }
 
@@ -160,15 +164,20 @@ class Penawaran_la_pu extends CI_Controller
         $kode = $this->M_penawaran_la_pu->max_kode($date)->row();
         if (empty($kode->no_pelayanan)) {
             $no_urut = 1;
-            $no_urut2 = 1;
         } else {
             $no_urut = substr($kode->no_pelayanan, 9, 3);
-            $no_urut2 = substr($kode->no_arsip, 6) + 1;
         }
         $urutan = str_pad(number_format($no_urut + 1), 3, "0", STR_PAD_LEFT);
         $year = substr($date, 0, 4);
         $year2 = substr($date, 2, 2);
         $no_pelayanan = 'UMROH/LA/' . $urutan . '/' . 'IX' . '/' . $year;
+
+        $arsip = $this->M_penawaran_la_pu->max_kode_arsip($date)->row();
+        if (empty($arsip->no_arsip)) {
+            $no_urut2 = 1;
+        } else {
+            $no_urut2 = substr($arsip->no_arsip, 6) + 1;
+        }
 
         //GENERATE NOMOR ARSIP
         $urutan2 = str_pad($no_urut2, 2, "0", STR_PAD_LEFT);
@@ -195,7 +204,7 @@ class Penawaran_la_pu extends CI_Controller
             'keberangkatan' => $formatted2_datetime,
             'durasi' => $this->input->post('durasi'),
             'tempat' => $this->input->post('tempat'),
-            'biaya' => $this->input->post('biaya'),
+            'biaya' => $this->input->post('biaya_integer'),
             'layanan_la' => $this->input->post('layanan_content'),
             'pelanggan' => $this->input->post('pelanggan'),
             'catatan' => $this->input->post('catatan_content')
@@ -207,19 +216,37 @@ class Penawaran_la_pu extends CI_Controller
 
     public function update($id)
     {
+        //CONVERT TIME
+        // Ambil nilai input datetime dari form
+        $input_datetime = $this->input->post('tgl_berlaku');
+        $input2_datetime = $this->input->post('keberangkatan');
+
+        // Ubah format dari 'Y-m-dTH:i' ke 'Y-m-d H:i:s' agar sesuai dengan format MySQL
+        $formatted_datetime = date('Y-m-d H:i:s', strtotime($input_datetime));
+        $formatted2_datetime = date('Y-m-d H:i:s', strtotime($input2_datetime));
+
         $data = array(
-            'no_pelayanan' => $this->input->post('no_pelayanan'),
             'pelanggan' => $this->input->post('pelanggan'),
-            'id_produk' => $this->input->post('name'),
-            'catatan' => $this->input->post('editor_content')
+            'alamat' => $this->input->post('alamat'),
+            'produk' => $this->input->post('produk'),
+            'deskripsi' => $this->input->post('deskripsi'),
+            'tgl_berlaku' => $formatted_datetime,
+            'keberangkatan' => $formatted2_datetime,
+            'durasi' => $this->input->post('durasi'),
+            'tempat' => $this->input->post('tempat'),
+            'biaya' => $this->input->post('biaya'),
+            'layanan_la' => $this->input->post('layanan_content'),
+            'pelanggan' => $this->input->post('pelanggan'),
+            'catatan' => $this->input->post('catatan_content'),
+            'updated_at' => date('Y-m-d H:i:s')
         );
-        $this->db->update('tbl_penawaran', $data, ['id' => $id]);
+        $this->db->update('tbl_land_arrangement', $data, ['id' => $id]);
         echo json_encode(array("status" => TRUE));
     }
 
     function delete($id)
     {
-        $this->db->delete('tbl_penawaran', ['id' => $id]);
+        $this->db->delete('tbl_land_arrangement', ['id' => $id]);
         echo json_encode(array("status" => TRUE));
     }
 

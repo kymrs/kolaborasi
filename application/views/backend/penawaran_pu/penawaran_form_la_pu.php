@@ -248,12 +248,12 @@
                                 <!-- Durasi -->
                                 <div class="mb-1">
                                     <h2 class="section-title">Durasi:</h2>
-                                    <input type="number" name="durasi" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                    <input type="number" id="durasi" name="durasi" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                 </div>
                                 <!-- Berangkat Dari -->
                                 <div class="mb-1">
                                     <h2 class="section-title">Tempat:</h2>
-                                    <input type="text" name="tempat" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                    <input type="text" id="tempat" name="tempat" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                 </div>
                             </div>
 
@@ -270,7 +270,7 @@
                             <div class="biaya-box">
                                 BIAYA
                             </div>
-                            <input type="number" name="biaya" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <input type="text" id="biaya" name="biaya" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                         </div>
 
                         <!-- Ekstra Section -->
@@ -306,18 +306,6 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
-    // $('#tgl_berlaku').datepicker({
-    //     dateFormat: 'dd-mm-yy',
-    //     minDate: new Date(),
-    //     maxDate: new Date(),
-    // });
-
-    // $('#keberangkatan').datepicker({
-    //     dateFormat: 'dd-mm-yy',
-    //     minDate: new Date(),
-    //     maxDate: new Date(),
-    // });
-
     var quill = new Quill('#layanan', {
         theme: 'snow'
     });
@@ -353,43 +341,6 @@
         error: function(error) {
             alert("error" + error);
         }
-    });
-
-    //GENERATE DETAIL LAYANAN
-    $('#name').change(function(e) {
-        $id = $(this).val();
-        $.ajax({
-            url: "<?php echo site_url('penawaran_la_pu/generate_layanan') ?>",
-            type: "POST",
-            data: {
-                id: $id
-            },
-            dataType: "JSON",
-            success: function(data) {
-                //MENGOSONGKAN VALUE SEBELUMNYA
-                $('#deskripsi').empty();
-                $('#keberangkatan').empty();
-                $('#durasi').empty();
-                $('#tempatKeberangkatan').empty();
-                $('#priceTxt').empty();
-                $('#layananTermasuk').empty();
-                $('#layananTdkTermasuk').empty();
-                //MENGISI VALUE LAYANAN
-                moment.locale('id')
-                $('#deskripsi').append(`<h2 class="section-title">Deskripsi:</h2> <p>` + data['deskripsi'] + `</p>`);
-                $('#keberangkatan').append(`<span class="label-inline text-gray-600">Keberangkatan:</span> <span class="value-inline text-gray-800">` + moment(data['keberangkatan']).format('DD MMMM YYYY') + `</span>`);
-                $('#durasi').append(`<span class="label-inline text-gray-600">Durasi:</span> <span class="value-inline text-gray-800">` + data['durasi'] + ` Hari</span>`);
-                $('#tempatKeberangkatan').append(`<span class="label-inline text-gray-600">Berangkat dari:</span> <span class="value-inline text-gray-800">` + data['tempat_keberangkatan'] + `</span>`);
-                $('#priceTxt').append(`Rp. ` + data['biaya'].replace(/\B(?=(\d{3})+(?!\d))/g, '.') + `,- /pax`);
-                $('#layananTermasuk').append('<h2 class="section-title">Layanan Termasuk:</h2>' + data['layanan_termasuk']);
-                $('#layananTermasuk ol').prop('class', 'list-item');
-                $('#layananTdkTermasuk').append('<h2 class="section-title mt-5">Layanan Tidak Termasuk:</h2>' + data['layanan_tdk_termasuk']);
-                $('#layananTdkTermasuk ol').prop('class', 'list-item');
-            },
-            error: function(error) {
-                alert("error" + error);
-            }
-        });
     });
 
     $(document).ready(function() {
@@ -428,8 +379,16 @@
                     if (aksi == 'update') {
                         $('#no_pelayanan').val(data['master']['no_pelayanan']);
                         $('#pelanggan').val(data['master']['pelanggan']);
-                        $('#name').val(data['master']['id_produk']).trigger('change');
-                        quill.clipboard.dangerouslyPasteHTML(data['master']['catatan']);
+                        $('#produk').val(data['master']['produk']);
+                        $('#alamat').val(data['master']['alamat']);
+                        $('#deskripsi').val(data['master']['deskripsi']);
+                        $('#tgl_berlaku').val(data['master']['tgl_berlaku']);
+                        $('#keberangkatan').val(data['master']['keberangkatan']);
+                        $('#durasi').val(data['master']['durasi']);
+                        $('#tempat').val(data['master']['tempat']);
+                        quill.clipboard.dangerouslyPasteHTML(data['master']['layanan_la']);
+                        $('#biaya').val(data['master']['biaya']);
+                        quill2.clipboard.dangerouslyPasteHTML(data['master']['catatan']);
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
@@ -438,10 +397,42 @@
             });
         }
 
+        // Fungsi untuk memformat angka menjadi format mata uang dengan Rp dan titik ribuan
+        function formatRupiah(angka, prefix) {
+            var number_string = angka.replace(/[^,\d]/g, "").toString(),
+                split = number_string.split(","),
+                sisa = split[0].length % 3,
+                rupiah = split[0].substr(0, sisa),
+                ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+            if (ribuan) {
+                var separator = sisa ? "." : "";
+                rupiah += separator + ribuan.join(".");
+            }
+
+            rupiah = split[1] != undefined ? rupiah + "," + split[1] : rupiah;
+            return prefix == undefined ? rupiah : (rupiah ? "Rp " + rupiah : "");
+        }
+
+        // Event listener untuk memformat input setiap kali pengguna mengetik
+        document.getElementById("biaya").addEventListener("input", function(e) {
+            this.value = formatRupiah(this.value, "Rp");
+        });
+
+        // Fungsi untuk mengonversi input format rupiah menjadi integer
+        function getIntegerValue(rupiah) {
+            // Hapus semua karakter selain angka
+            return parseInt(rupiah.replace(/[^,\d]/g, ''));
+        }
+
         // INSERT ATAU UPDATE
         $("#form").submit(function(e) {
             e.preventDefault();
             var $form = $(this);
+            var formattedValue = document.getElementById("biaya").value;
+            var integerValue = getIntegerValue(formattedValue);
+            // console.log(integerValue); // Menampilkan nilai integer (tanpa "Rp" dan titik)
+
             if (!$form.valid()) return false;
             var url;
             if (id == 0) {
@@ -450,10 +441,17 @@
                 url = "<?php echo site_url('penawaran_la_pu/update/') ?>" + id;
             }
 
+            // Tambahkan integerValue ke dalam data form
+            var formData = $form.serializeArray(); // Mengambil semua data form sebagai array
+            formData.push({
+                name: "biaya_integer",
+                value: integerValue
+            }); // Tambahkan nilai integer
+
             $.ajax({
                 url: url,
                 type: "POST",
-                data: $('#form').serialize(),
+                data: $.param(formData), // Gunakan data form yang sudah ditambahkan nilai integer
                 dataType: "JSON",
                 success: function(data) {
                     console.log(data);
