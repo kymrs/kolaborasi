@@ -2,12 +2,12 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 require 'Pdf.php';
 
-class Penawaran_la_pu extends CI_Controller
+class Penawaran_pu extends CI_Controller
 {
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('backend/M_penawaran_la_pu');
+        $this->load->model('backend/M_penawaran_pu');
         $this->M_login->getsecurity();
         $this->load->library('ciqrcode');
     }
@@ -19,7 +19,7 @@ class Penawaran_la_pu extends CI_Controller
         $data['add'] = $akses->add_level;
 
 
-        $data['title'] = "backend/penawaran_pu/penawaran_list_la_pu";
+        $data['title'] = "backend/penawaran_pu/penawaran_list_pu";
         $data['titleview'] = "Data Penawaran";
         $name = $this->db->select('name')
             ->from('tbl_data_user')
@@ -37,7 +37,7 @@ class Penawaran_la_pu extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $list = $this->M_penawaran_la_pu->get_datatables();
+        $list = $this->M_penawaran_pu->get_datatables();
         $data = array();
         $no = $_POST['start'];
 
@@ -50,10 +50,10 @@ class Penawaran_la_pu extends CI_Controller
         //LOOPING DATATABLES
         foreach ($list as $field) {
 
-            $action_read = ($read == 'Y') ? '<a href="penawaran_la_pu/read_form/' . $field->no_arsip . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
-            $action_edit = ($edit == 'Y') ? '<a href="penawaran_la_pu/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
+            $action_read = ($read == 'Y') ? '<a href="penawaran_pu/read_form/' . $field->no_arsip . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
+            $action_edit = ($edit == 'Y') ? '<a href="penawaran_pu/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
-            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="penawaran_la_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
+            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="penawaran_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             $action = $action_read . $action_edit . $action_delete . $action_print;
@@ -63,18 +63,23 @@ class Penawaran_la_pu extends CI_Controller
             $row[] = $no;
             $row[] = $action;
             $row[] = strtoupper($field->no_pelayanan);
-            $row[] = $field->pelanggan;
-            $row[] = $field->nama;
-            $row[] = date("d M Y", strtotime($field->created_at));
+            $row[] = strtoupper($field->no_arsip);
+            $row[] = $field->produk;
             $row[] = date("d M Y", strtotime($field->tgl_berlaku));
+            $row[] = $field->keberangkatan;
+            $row[] = $field->durasi;
+            $row[] = $field->tempat;
+            $row[] = $field->biaya;
+            $row[] = $field->pelanggan;
+            $row[] = date("d M Y", strtotime($field->created_at));
 
             $data[] = $row;
         }
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_penawaran_la_pu->count_all(),
-            "recordsFiltered" => $this->M_penawaran_la_pu->count_filtered(),
+            "recordsTotal" => $this->M_penawaran_pu->count_all(),
+            "recordsFiltered" => $this->M_penawaran_pu->count_filtered(),
             "data" => $data,
         );
         //output dalam format JSON
@@ -85,14 +90,14 @@ class Penawaran_la_pu extends CI_Controller
     {
         $kode = $this->uri->segment(3);
         // var_dump($kode);
-        $data['penawaran'] = $this->M_penawaran_la_pu->getPenawaran($kode);
+        $data['penawaran'] = $this->M_penawaran_pu->getPenawaran($kode);
 
         if ($data['penawaran'] == null) {
             $this->load->view('backend/penawaran_pu/404');
         } else {
             $no_arsip = $data['penawaran']['no_arsip'];
-            $data['layanan_termasuk'] = $this->M_penawaran_la_pu->getLayananTermasuk($kode);
-            $data['layanan_tidak_termasuk'] = $this->M_penawaran_la_pu->getLayananTidakTermasuk($kode);
+            $data['layanan_termasuk'] = $this->M_penawaran_pu->getLayananTermasuk($kode);
+            $data['layanan_tidak_termasuk'] = $this->M_penawaran_pu->getLayananTidakTermasuk($kode);
 
             $params['data'] = 'https://arsip.pengenumroh.com/' . $no_arsip;
             $params['level'] = 'H';
@@ -109,10 +114,9 @@ class Penawaran_la_pu extends CI_Controller
     public function add_form()
     {
         $data['id'] = 0;
-        $data['title'] = 'backend/penawaran_pu/penawaran_form_la_pu';
-        $data['products'] = $this->db->select('id, nama')->from('tbl_produk')->get()->result_object();
+        $data['title'] = 'backend/penawaran_pu/penawaran_form_pu';
         $data['layanan'] = $this->db->get('tbl_layanan')->result_array();
-        $data['title_view'] = 'Land Arrangement Form';
+        $data['title_view'] = 'Penawaran Form';
         $this->load->view('backend/home', $data);
     }
 
@@ -121,8 +125,7 @@ class Penawaran_la_pu extends CI_Controller
         $data['id'] = $id;
         $data['aksi'] = 'update';
         $data['title_view'] = "Edit Data Prepayment";
-        $data['title'] = 'backend/penawaran_pu/penawaran_form_la_pu';
-        $data['products'] = $this->db->select('id, nama')->from('tbl_produk')->get()->result_object();
+        $data['title'] = 'backend/penawaran_pu/penawaran_form_pu';
         $data['layanan'] = $this->db->get('tbl_layanan')->result_array();
         $this->load->view('backend/home', $data);
     }
@@ -130,14 +133,14 @@ class Penawaran_la_pu extends CI_Controller
     function edit_data($id)
     {
         $data['master'] = $this->db->get_where('tbl_penawaran', ['id' => $id])->row_array();
-        $data['layanan'] = $this->M_penawaran_la_pu->get_penawaran_detail($id); // Ambil detail layanan (status, nominal)
+        $data['layanan'] = $this->M_penawaran_pu->get_penawaran_detail($id); // Ambil detail layanan (status, nominal)
         echo json_encode($data);
     }
 
     public function generate_kode()
     {
         $date = date('Y-m-d h:i:sa');
-        $kode = $this->M_penawaran_la_pu->max_kode($date)->row();
+        $kode = $this->M_penawaran_pu->max_kode($date)->row();
         if (empty($kode->no_pelayanan)) {
             $no_urut = 1;
         } else {
@@ -162,7 +165,7 @@ class Penawaran_la_pu extends CI_Controller
     {
         // GENERATE NOMOR PELAYANAN
         $date = date('Y-m-d h:i:sa');
-        $kode = $this->M_penawaran_la_pu->max_kode($date)->row();
+        $kode = $this->M_penawaran_pu->max_kode($date)->row();
         if (empty($kode->no_pelayanan)) {
             $no_urut = 1;
             $no_urut2 = 1; // Inisialisasi untuk arsip jika baru
@@ -172,24 +175,41 @@ class Penawaran_la_pu extends CI_Controller
         }
         $urutan = str_pad(number_format($no_urut + 1), 3, "0", STR_PAD_LEFT);
         $year = substr($date, 0, 4);
+        $year2 = substr($date, 2, 2);
         $no_pelayanan = 'UMROH/LA/' . $urutan . '/' . 'IX' . '/' . $year;
 
         // GENERATE NOMOR ARSIP
         $urutan2 = str_pad($no_urut2, 2, "0", STR_PAD_LEFT);
-        $no_arsip = 'PU' . $year . '09' . $urutan2;
+        $no_arsip = 'PU' . $year2 . '09' . $urutan2;
+
+        //CONVERT TIME
+        // Ambil nilai input datetime dari form
+        $input_datetime = $this->input->post('tgl_berlaku');
+        $input2_datetime = $this->input->post('keberangkatan');
+
+        // Ubah format dari 'Y-m-dTH:i' ke 'Y-m-d H:i:s' agar sesuai dengan format MySQL
+        $formatted_datetime = date('Y-m-d H:i:s', strtotime($input_datetime));
+        $formatted2_datetime = date('Y-m-d H:i:s', strtotime($input2_datetime));
 
         // Data untuk tabel penawaran
         $data = array(
             'no_pelayanan' => $no_pelayanan,
             'no_arsip' => $no_arsip,
-            'tgl_berlaku' => $date,
-            'id_produk' => 1,
             'pelanggan' => $this->input->post('pelanggan'),
-            'catatan' => $this->input->post('editor_content')
+            'alamat' => $this->input->post('alamat'),
+            'produk' => $this->input->post('produk'),
+            'deskripsi' => $this->input->post('deskripsi'),
+            'tgl_berlaku' => $formatted_datetime,
+            'keberangkatan' => $formatted2_datetime,
+            'durasi' => $this->input->post('durasi'),
+            'tempat' => $this->input->post('tempat'),
+            'biaya' => preg_replace('/\D/', '', $this->input->post('biaya')),
+            'pelanggan' => $this->input->post('pelanggan'),
+            'catatan' => $this->input->post('catatan_content')
         );
 
         // Simpan data ke tabel penawaran dan ambil ID penawaran yang baru disimpan
-        $id_penawaran = $this->M_penawaran_la_pu->save($data);
+        $id_penawaran = $this->M_penawaran_pu->save($data);
 
         // Ambil data layanan dari input (id layanan, status, dan nominal)
         $ids = $this->input->post('id_layanan'); // ID layanan
@@ -206,11 +226,15 @@ class Penawaran_la_pu extends CI_Controller
 
                 // Hanya insert data yang statusnya bukan "-"
                 if ($is_active !== '-') {
+                    // Jika id_layanan adalah 9, tambahkan nominal ke dalam is_active
+                    if ($id_layanan == 9 && $nominal !== null) {
+                        $is_active .= ' ' . $nominal; // Gabungkan is_active dengan nominal
+                    }
+
                     $detail_data[] = [
                         'id_penawaran' => $id_penawaran, // ID penawaran yang baru disimpan
                         'id_layanan' => $id_layanan, // ID layanan
-                        'is_active' => $is_active, // Status layanan (Y atau N)
-                        'nominal' => $nominal // Nominal biaya layanan
+                        'is_active' => $is_active, // Status layanan (is_active + nominal jika id_layanan = 9)
                     ];
                 }
             }
@@ -220,7 +244,7 @@ class Penawaran_la_pu extends CI_Controller
 
             // Simpan detail layanan ke tabel tbl_penawaran_detail
             if (!empty($detail_data)) {
-                $this->M_penawaran_la_pu->insert_penawaran_detail($detail_data);
+                $this->M_penawaran_pu->insert_penawaran_detail($detail_data);
             }
         }
         // Kirim response
@@ -245,13 +269,32 @@ class Penawaran_la_pu extends CI_Controller
         // Debugging: Tampilkan nilai nominal
         // var_dump($extra_inputs);
 
-        // Update data tbl_penawaran
-        $data_penawaran = array(
+        // CONVERT TIME
+        // Ambil nilai input datetime dari form
+        $input_datetime = $this->input->post('tgl_berlaku');
+        $input2_datetime = $this->input->post('keberangkatan');
+
+        // Ubah format dari 'Y-m-dTH:i' ke 'Y-m-d H:i:s' agar sesuai dengan format MySQL
+        $formatted_datetime = date('Y-m-d H:i:s', strtotime($input_datetime));
+        $formatted2_datetime = date('Y-m-d H:i:s', strtotime($input2_datetime));
+
+        // Data untuk tabel penawaran
+        $data = array(
             'no_pelayanan' => $no_pelayanan,
-            'pelanggan' => $pelanggan,
-            'catatan' => $catatan
+            'pelanggan' => $this->input->post('pelanggan'),
+            'alamat' => $this->input->post('alamat'),
+            'produk' => $this->input->post('produk'),
+            'deskripsi' => $this->input->post('deskripsi'),
+            'tgl_berlaku' => $formatted_datetime,
+            'keberangkatan' => $formatted2_datetime,
+            'durasi' => $this->input->post('durasi'),
+            'tempat' => $this->input->post('tempat'),
+            'biaya' => preg_replace('/\D/', '', $this->input->post('biaya')),
+            'catatan' => $this->input->post('catatan_content')
         );
-        $this->db->update('tbl_penawaran', $data_penawaran, ['id' => $id]);
+
+        // Update data penawaran
+        $this->db->update('tbl_penawaran', $data, ['id' => $id]);
 
         // Pastikan semua input adalah array
         if (!is_array($layanan_ids) || !is_array($statuses) || !is_array($extra_inputs)) {
@@ -277,18 +320,24 @@ class Penawaran_la_pu extends CI_Controller
 
             // Jika layanan sudah ada, lakukan update
             if ($existing_layanan) {
-                $data_layanan_update = array(
-                    'is_active' => $status,
-                    'nominal' => $extra_input // Pastikan nama kolom sesuai
-                );
+                if ($layanan_id == 9 && $status === 'N') {
+                    // Jika id_layanan 9 dan statusnya N, hapus nilai nominal
+                    $data_layanan_update = array(
+                        'is_active' => 'N' // Set is_active hanya 'N'
+                    );
+                } else {
+                    // Gabungkan nominal ke dalam is_active
+                    $data_layanan_update = array(
+                        'is_active' => $status . ' ' . $extra_input // Gabungkan status dengan nominal
+                    );
+                }
                 $this->db->update('tbl_penawaran_detail', $data_layanan_update, ['id' => $existing_layanan->id]);
             } else {
                 // Jika layanan tidak ada, lakukan insert
                 $data_layanan_insert = array(
                     'id_penawaran' => $id,
                     'id_layanan' => $layanan_id,
-                    'is_active' => $status,
-                    'nominal' => $extra_input // Pastikan nama kolom sesuai
+                    'is_active' => $status . ' ' . $extra_input // Gabungkan status dengan nominal
                 );
 
                 // Debugging: Tampilkan data yang akan diinsert
@@ -296,7 +345,6 @@ class Penawaran_la_pu extends CI_Controller
                 $this->db->insert('tbl_penawaran_detail', $data_layanan_insert);
             }
         }
-
         // Mengembalikan status berhasil
         echo json_encode(array("status" => TRUE));
     }

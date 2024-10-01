@@ -196,15 +196,15 @@
             </div>
             <div class="mb-1">
                 <span class="label-inline text-gray-600">Tanggal Dokumen</span>
-                <span class="value-inline text-gray-800">: <?= $this->M_penawaran_la_pu->getTanggal($penawaran['created_at']) ?></span>
+                <span class="value-inline text-gray-800">: <?= $this->M_penawaran_pu->getTanggal($penawaran['created_at']) ?></span>
             </div>
             <div class="mb-1">
                 <span class="label-inline text-gray-600">Berlaku s.d</span>
-                <span class="value-inline text-gray-800">: <?= $this->M_penawaran_la_pu->getTanggal($penawaran['tgl_berlaku']) ?></span>
+                <span class="value-inline text-gray-800">: <?= $this->M_penawaran_pu->getTanggal($penawaran['tgl_berlaku']) ?></span>
             </div>
             <div class="mb-1">
                 <span class="label-inline text-gray-600">Produk</span>
-                <span class="value-inline text-gray-800">: <?= $penawaran['nama_produk'] ?></span>
+                <span class="value-inline text-gray-800">: <?= $penawaran['produk'] ?></span>
             </div>
             <div class="mb-1">
                 <span class="label-inline text-gray-600">Kepada</span>
@@ -245,7 +245,7 @@
                     <?php endif ?>
                     <?php if ($data['id_layanan'] == 9) : ?>
                         <span>
-                            <li><?= $data['nama_layanan'] ?> Rp. <?= number_format($data['nominal'], 0, ',', '.') ?></li>
+                            <li><?= $data['nama_layanan'] ?> Rp. <?= number_format(preg_replace('/\D/', '', $data['is_active']), 0, ',', '.') ?></li>
                         </span>
                     <?php endif ?>
                 <?php endforeach ?>
@@ -257,7 +257,7 @@
             <!-- Keberangkatan -->
             <div class="mb-1">
                 <span class="label-inline text-gray-600">Keberangkatan</span>
-                <span class="value-inline text-gray-800">: <?= $this->M_penawaran_la_pu->getTanggal($penawaran['keberangkatan']) ?></span>
+                <span class="value-inline text-gray-800">: <?= $this->M_penawaran_pu->getTanggal($penawaran['keberangkatan']) ?></span>
                 <!-- <span class="value-inline text-gray-800">: 01 September 2024</span> -->
             </div>
             <!-- Durasi -->
@@ -268,7 +268,7 @@
             <!-- Berangkat Dari -->
             <div class="mb-1">
                 <span class="label-inline text-gray-600">Berangkat dari</span>
-                <span class="value-inline text-gray-800">: <?= $penawaran['tempat_keberangkatan'] ?></span>
+                <span class="value-inline text-gray-800">: <?= $penawaran['tempat'] ?></span>
             </div>
 
             <!-- Layanan Tidak Termasuk -->

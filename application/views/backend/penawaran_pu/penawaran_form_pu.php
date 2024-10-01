@@ -153,6 +153,10 @@
             /* Warna untuk silang */
         }
 
+        #durasi {
+            width: 50px;
+        }
+
         /* Responsive Adjustments */
         @media (max-width: 1024px) {
             .logo-custom {
@@ -246,7 +250,7 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header text-right">
-                    <a class="btn btn-secondary btn-sm" href="<?= base_url('penawaran_la_pu') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+                    <a class="btn btn-secondary btn-sm" href="<?= base_url('penawaran_pu') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
                     <form id="form">
@@ -310,12 +314,15 @@
                                 <!-- Durasi -->
                                 <div class="mb-1">
                                     <h2 class="section-title">Durasi:</h2>
-                                    <input type="number" name="durasi" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                    <div style="display: flex; align-items: center">
+                                        <input type="text" id="durasi" name="durasi" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        <h2 class="section-title" style="margin-left: 10px;">Hari</h2>
+                                    </div>
                                 </div>
                                 <!-- Berangkat Dari -->
                                 <div class="mb-1">
                                     <h2 class="section-title">Tempat:</h2>
-                                    <input type="text" name="tempat" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                    <input type="text" id="tempat" name="tempat" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                 </div>
                             </div>
 
@@ -355,7 +362,7 @@
                                                             <?= htmlspecialchars($data['nama_layanan'], ENT_QUOTES) ?>
                                                         </label>
                                                         <input type="hidden" name="status[]" id="input-<?= htmlspecialchars($data['id'], ENT_QUOTES) ?>" value="">
-                                                        <input type="text" name="nominal[]" id="extra-input-<?= htmlspecialchars($data['id'], ENT_QUOTES) ?>" class="extra-input input-biaya" style="display: none;" placeholder="Nominal">
+                                                        <input type="text" name="nominal[]" id="extra-input-<?= htmlspecialchars($data['id'], ENT_QUOTES) ?>" class="extra-input input-biaya" style="display: none;" placeholder="Nominal" required>
                                                     </div>
                                                 <?php endforeach; ?>
                                             </div>
@@ -374,7 +381,7 @@
                             <div class="biaya-box">
                                 BIAYA
                             </div>
-                            <input type="text" id="nominal" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Masukkan Biaya">
+                            <input type="text" id="biaya" name="biaya" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                         </div>
 
                         <!-- Ekstra Section -->
@@ -383,7 +390,7 @@
                                 EKSTRA
                             </div>
                             <div id="extra" name="extra" class="h-40 mb-4"></div>
-                            <input type="hidden" name="editor_content" id="editor_content">
+                            <input type="hidden" name="catatan_content" id="catatan_content">
                         </div>
 
                         <!-- Hidden inputs -->
@@ -410,22 +417,39 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
-    // var quill = new Quill('#deskripsi', {
-    //     theme: 'snow',
-    //     placeholder: 'Masukkan Deskripsi...'
+    // $('#tgl_berlaku').datepicker({
+    //     dateFormat: 'dd-mm-yy',
+    //     minDate: new Date(),
+    //     maxDate: new Date(),
+    // });
+
+    // $('#keberangkatan').datepicker({
+    //     dateFormat: 'dd-mm-yy',
+    //     minDate: new Date(),
+    //     maxDate: new Date(),
     // });
 
     // var quill = new Quill('#layanan', {
     //     theme: 'snow'
     // });
 
-    // var quill = new Quill('#extra', {
+    // var quill2 = new Quill('#extra', {
     //     theme: 'snow'
     // });
 
     // var quillContent = `<p> Lalaland </p>`;
 
     // quill.clipboard.dangerouslyPasteHTML(quillContent);
+
+    // document.getElementById("form").onsubmit = function() {
+    //     // Get HTML content from Quill editor
+    //     var layananContent = quill.root.innerHTML;
+    //     var catatanContent = quill2.root.innerHTML;
+    //     // Set it to hidden input
+    //     document.getElementById("layanan_content").value = layananContent;
+    //     document.getElementById("catatan_content").value = catatanContent;
+    // };
+
 
     // Fungsi untuk format angka menjadi Rupiah
     function formatRupiah(angka, prefix) {
@@ -445,12 +469,32 @@
         return prefix == undefined ? rupiah : (rupiah ? 'Rp ' + rupiah : '');
     }
 
-    // Event Listener untuk input
-    document.getElementById('nominal').addEventListener('input', function(e) {
-        this.value = formatRupiah(this.value, 'Rp');
+    document.getElementById('durasi').addEventListener('keydown', function(e) {
+        // Allow: backspace, delete, tab, escape, enter, and .
+        if ([46, 8, 9, 27, 13, 110, 190].indexOf(e.keyCode) !== -1 ||
+            // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+            (e.keyCode === 65 && e.ctrlKey === true) ||
+            (e.keyCode === 67 && e.ctrlKey === true) ||
+            (e.keyCode === 86 && e.ctrlKey === true) ||
+            (e.keyCode === 88 && e.ctrlKey === true) ||
+            // Allow: home, end, left, right, down, up
+            (e.keyCode >= 35 && e.keyCode <= 39)) {
+            // let it happen, don't do anything
+            return;
+        }
+        // Ensure that it is a number and stop the keypress if it's not
+        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+            e.preventDefault();
+        }
     });
 
+    // Event Listener untuk input
+    // document.getElementById('nominal').addEventListener('input', function(e) {
+    //     this.value = formatRupiah(this.value, 'Rp');
+    // });
+
     document.addEventListener('DOMContentLoaded', function() {
+        // Input biaya handling layanan
         const rupiahInputs = document.querySelectorAll('.input-biaya');
 
         // Fungsi untuk memformat angka menjadi format rupiah
@@ -472,6 +516,39 @@
 
         // Event listener untuk semua input yang hanya bisa menerima angka dan diformat ke rupiah
         rupiahInputs.forEach(function(input) {
+            input.addEventListener('input', function(e) {
+                let inputValue = e.target.value;
+
+                // Hanya izinkan angka
+                inputValue = inputValue.replace(/[^0-9]/g, '');
+
+                // Tampilkan format rupiah
+                e.target.value = formatRupiah(inputValue, 'Rp.');
+            });
+        });
+
+        // Biaya
+        const biayaInput = document.querySelectorAll('#biaya');
+
+        // Fungsi untuk memformat angka menjadi format rupiah
+        function formatRupiah(angka, prefix) {
+            let number_string = angka.replace(/[^,\d]/g, '').toString(),
+                split = number_string.split(','),
+                sisa = split[0].length % 3,
+                rupiah = split[0].substr(0, sisa),
+                ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+            if (ribuan) {
+                let separator = sisa ? '.' : '';
+                rupiah += separator + ribuan.join('.');
+            }
+
+            rupiah = split[1] !== undefined ? rupiah + ',' + split[1] : rupiah;
+            return prefix === undefined ? rupiah : (rupiah ? 'Rp. ' + rupiah : '');
+        }
+
+        // Event listener untuk semua input yang hanya bisa menerima angka dan diformat ke rupiah
+        biayaInput.forEach(function(input) {
             input.addEventListener('input', function(e) {
                 let inputValue = e.target.value;
 
@@ -547,7 +624,7 @@
 
     //GENERATE NOMOR PELAYANAN
     $.ajax({
-        url: "<?php echo site_url('penawaran_la_pu/generate_kode') ?>",
+        url: "<?php echo site_url('penawaran_pu/generate_kode') ?>",
         type: "POST",
         data: {},
         dataType: "JSON",
@@ -565,7 +642,7 @@
     $('#name').change(function(e) {
         $id = $(this).val();
         $.ajax({
-            url: "<?php echo site_url('penawaran_la_pu/generate_layanan') ?>",
+            url: "<?php echo site_url('penawaran_pu/generate_layanan') ?>",
             type: "POST",
             data: {
                 id: $id
@@ -625,14 +702,21 @@
             $('.aksi').text('Update');
             $("select option[value='']").hide();
             $.ajax({
-                url: "<?php echo site_url('penawaran_la_pu/edit_data') ?>/" + id,
+                url: "<?php echo site_url('penawaran_pu/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
                     // Set data master
                     $('#no_pelayanan').val(data['master']['no_pelayanan']);
                     $('#pelanggan').val(data['master']['pelanggan']);
-                    $('#name').val(data['master']['id_produk']).trigger('change');
+                    $('#produk').val(data['master']['produk']).trigger('change');
+                    $('#alamat').val(data['master']['alamat']).trigger('change');
+                    $('#deskripsi').val(data['master']['deskripsi']).trigger('change');
+                    $('#tgl_berlaku').val(data['master']['tgl_berlaku']).trigger('change');
+                    $('#keberangkatan').val(data['master']['keberangkatan']).trigger('change');
+                    $('#durasi').val(data['master']['durasi']).trigger('change');
+                    $('#tempat').val(data['master']['tempat']).trigger('change');
+                    $('#biaya').val(formatRupiah(data['master']['biaya'])).trigger('change');
 
                     // console.log(data['layanan']);
 
@@ -649,7 +733,7 @@
                         console.log('Icon:', icon);
 
                         // Set status layanan (Y/N)
-                        if (layanan.is_active === 'Y') {
+                        if (layanan.is_active.startsWith('Y')) {
                             // Update tampilan untuk status "checked"
                             button.classList.remove('uncheck');
                             button.classList.add('check');
@@ -660,11 +744,13 @@
                             // Tampilkan input tambahan (nominal) hanya untuk id_layanan 9
                             if (layanan.id_layanan == 9) {
                                 extraInput.style.display = 'block'; // Tampilkan input tambahan
-                                extraInput.value = formatRupiah(layanan.nominal);
+                                // Ambil nilai nominal dari is_active dan format
+                                const nominal = layanan.is_active.split(' ')[1]; // Ambil nominal setelah 'Y'
+                                extraInput.value = formatRupiah(nominal); // Format nominal
                             } else {
                                 extraInput.style.display = 'none'; // Sembunyikan jika bukan id_layanan 9
                             }
-                        } else if (layanan.is_active === 'N') {
+                        } else if (layanan.is_active.startsWith('N')) {
                             // Update tampilan untuk status "times"
                             button.classList.remove('uncheck');
                             button.classList.add('times');
@@ -686,6 +772,7 @@
                             extraInput.style.display = 'none';
                         }
                     });
+
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     alert('Error get data from ajax');
@@ -712,9 +799,9 @@
             if (!$form.valid()) return false;
             var url;
             if (id == 0) {
-                url = "<?php echo site_url('penawaran_la_pu/add') ?>";
+                url = "<?php echo site_url('penawaran_pu/add') ?>";
             } else {
-                url = "<?php echo site_url('penawaran_la_pu/update/') ?>" + id;
+                url = "<?php echo site_url('penawaran_pu/update/') ?>" + id;
             }
 
             $.ajax({
@@ -733,7 +820,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then((result) => {
-                            location.href = "<?= base_url('penawaran_la_pu') ?>";
+                            location.href = "<?= base_url('penawaran_pu') ?>";
                         })
                     }
                 },

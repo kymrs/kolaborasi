@@ -3,22 +3,19 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-class M_penawaran_la_pu extends CI_Model
+class M_penawaran_pu extends CI_Model
 {
     // INISIASI VARIABLE
     var $id = 'id';
     var $table = 'tbl_penawaran';
-    var $table2 = 'tbl_produk';
-    var $column_order = array(null, null, 'no_pelayanan', 'pelanggan', 'tgl_berlaku', 'nama', 'created_at', 'catatan');
-    var $column_search = array('no_pelayanan', 'pelanggan', 'tgl_berlaku', 'nama', 'created_at', 'catatan'); //field yang diizin untuk pencarian
+    var $column_order = array(null, null, 'no_pelayanan', 'no_arsip', 'produk', 'tgl_berlaku', 'keberangkatan', 'durasi', 'tempat', 'biaya', 'pelanggan', 'created_at');
+    var $column_search = array('no_pelayanan', 'no_arsip', 'produk', 'tgl_berlaku', 'keberangkatan', 'durasi', 'tempat', 'biaya', 'pelanggan', 'created_at'); //field yang diizin untuk pencarian
     var $order = array('id' => 'desc');
 
     // UNTUK QUERY DATA TABLE
     function _get_datatables_query()
     {
-        $this->db->select('tbl_penawaran.*, tbl_produk.nama'); // Memilih kolom dari kedua tabel
         $this->db->from($this->table);
-        $this->db->join('tbl_produk', 'tbl_produk.id = tbl_penawaran.id_produk', 'left'); // JOIN dengan tabel tbl_user
 
         $i = 0;
 
@@ -30,17 +27,9 @@ class M_penawaran_la_pu extends CI_Model
                 if ($i === 0) // looping awal
                 {
                     $this->db->group_start();
-                    if ($item == 'nama') {
-                        $this->db->like('tbl_produk.' . $item, $_POST['search']['value']);
-                    } else {
-                        $this->db->like('tbl_penawaran.' . $item, $_POST['search']['value']);
-                    }
+                    $this->db->like('tbl_penawaran.' . $item, $_POST['search']['value']);
                 } else {
-                    if ($item == 'nama') {
-                        $this->db->or_like('tbl_produk.' . $item, $_POST['search']['value']);
-                    } else {
-                        $this->db->or_like('tbl_penawaran.' . $item, $_POST['search']['value']);
-                    }
+                    $this->db->or_like('tbl_penawaran.' . $item, $_POST['search']['value']);
                 }
 
                 if (count($this->column_search) - 1 == $i) {
@@ -77,9 +66,7 @@ class M_penawaran_la_pu extends CI_Model
 
     public function count_all()
     {
-        $this->db->select('tbl_penawaran.*, tbl_produk.nama'); // Memilih kolom dari kedua tabel
         $this->db->from($this->table);
-        $this->db->join('tbl_produk', 'tbl_produk.id = tbl_penawaran.id_produk', 'left'); // JOIN dengan tabel tbl_user
 
         return $this->db->count_all_results();
     }
@@ -134,11 +121,10 @@ class M_penawaran_la_pu extends CI_Model
 
     public function getPenawaran($kode)
     {
-        $this->db->select('a.no_pelayanan, a.no_arsip, a.tgl_berlaku, a.id_produk, a.pelanggan, a.catatan, a.created_at, b.nama_dokumen, b.penerbit, b.no_dokumen, b.tgl_dokumen, c.nama as nama_produk, c.layanan_termasuk, c.layanan_tdk_termasuk, c.keberangkatan, c.durasi, c.tempat_keberangkatan, c.biaya, c.created_at');
+        $this->db->select('a.no_pelayanan, a.no_arsip, a.produk, a.deskripsi, a.tgl_berlaku, a.keberangkatan, a.durasi, a.tempat, a.biaya, a.pelanggan, a.alamat, a.catatan, a.created_at');
         $this->db->from('tbl_penawaran as a');
         $this->db->where('a.no_arsip', $kode);
         $this->db->join('tbl_arsip_pu as b', 'a.no_pelayanan = b.no_dokumen', 'left');
-        $this->db->join('tbl_produk as c', 'a.id_produk = c.id', 'left');
         // $this->db->where('id', $id);
         $data = $this->db->get()->row_array();
         return $data;
@@ -181,11 +167,11 @@ class M_penawaran_la_pu extends CI_Model
 
     public function getLayananTermasuk($kode)
     {
-        $this->db->select('a.nama_layanan, b.id_penawaran, b.id_layanan, b.nominal');
+        $this->db->select('a.nama_layanan, b.id_penawaran, b.id_layanan, b.is_active');
         $this->db->from('tbl_layanan as a');
         $this->db->join('tbl_penawaran_detail as b', 'a.id = b.id_layanan', 'left');
         $this->db->join('tbl_penawaran as c', 'b.id_penawaran = c.id', 'left');
-        $this->db->where('b.is_active', 'Y');
+        $this->db->where("(b.is_active = 'Y' OR (b.is_active LIKE 'Y%' AND LENGTH(b.is_active) > 1))");
         $this->db->where('c.no_arsip', $kode);
         // $this->db->join('tbl_produk as c', 'a.id_produk = c.id', 'left');
         $data = $this->db->get()->result_array();
@@ -194,7 +180,7 @@ class M_penawaran_la_pu extends CI_Model
 
     public function getLayananTidakTermasuk($kode)
     {
-        $this->db->select('a.nama_layanan, b.id_penawaran, b.id_layanan');
+        $this->db->select('a.nama_layanan, b.id_penawaran, b.id_layanan, b.is_active');
         $this->db->from('tbl_layanan as a');
         $this->db->join('tbl_penawaran_detail as b', 'a.id = b.id_layanan', 'left');
         $this->db->join('tbl_penawaran as c', 'b.id_penawaran = c.id', 'left');
@@ -207,7 +193,7 @@ class M_penawaran_la_pu extends CI_Model
     // Fungsi untuk mengambil detail penawaran berdasarkan ID penawaran
     public function get_penawaran_detail($id_penawaran)
     {
-        $this->db->select('id_penawaran, id_layanan, nominal, is_active');
+        $this->db->select('id_penawaran, id_layanan, is_active');
         $this->db->from('tbl_penawaran_detail');
         $this->db->where('id_penawaran', $id_penawaran);
         $query = $this->db->get();
