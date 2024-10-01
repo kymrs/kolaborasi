@@ -117,6 +117,24 @@
         .keterangan-field {
             margin-top: 35px;
         }
+
+        @media (max-width: 546px) {
+            .header .header-field img {
+                margin: 20px 0;
+            }
+
+            .main-field table tr td {
+                padding: 5px 0;
+            }
+
+            .transaction-field {
+                overflow-x: scroll;
+            }
+
+            .table-approve {
+                overflow-x: scroll;
+            }
+        }
     </style>
 </head>
 

@@ -131,6 +131,16 @@
         .table-approve table tr:nth-child(1) td:nth-child(3) {
             width: 25%;
         }
+
+        @media (max-width: 546px) {
+            body {
+                font-size: 85%;
+            }
+
+            .table-approve {
+                overflow-x: scroll;
+            }
+        }
     </style>
 </head>
 

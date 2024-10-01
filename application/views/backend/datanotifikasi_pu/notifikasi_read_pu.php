@@ -131,6 +131,33 @@
         .table-approve table tr:nth-child(1) td:nth-child(3) {
             width: 25%;
         }
+
+        @media (max-width: 546px) {
+            body {
+                font-size: 85%;
+            }
+
+            .table-approve {
+                overflow-x: scroll;
+            }
+
+            /* header */
+            .header {
+                height: 100px;
+            }
+
+            .header .logo {
+                width: 140px;
+                position: relative;
+                bottom: 50px;
+            }
+
+            .header .title {
+                width: 100%;
+                position: relative;
+                bottom: 30px;
+            }
+        }
     </style>
 </head>
 
