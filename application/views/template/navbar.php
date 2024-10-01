@@ -15,6 +15,10 @@
               <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
               Logout
             </a>
+            <a class="dropdown-item" target="_blank" href="<?= base_url() ?>assets/backend/document/tata_cara_approval.pdf">
+              <i class="fas fa-file-pdf fa-sm fa-fw mr-2 text-gray-400"></i>
+              Tatacara
+            </a>
           </div>
         </li>
       </ul>

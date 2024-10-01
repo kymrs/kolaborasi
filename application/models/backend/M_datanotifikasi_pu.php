@@ -62,19 +62,19 @@ class M_datanotifikasi_pu extends CI_Model
 
             if ($_POST['status'] == 'on-process') {
                 // Conditions for 'on-process' status
-                $this->db->where('app_status', 'waiting')
+                $this->db->where('app_hc_status', 'waiting')
                     ->where('app2_status', 'waiting')
-                    ->or_where('tbl_notifikasi_pu.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
-                    ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
+                    ->or_where('tbl_notifikasi_pu.id_user =' . $id_user_logged_in . ' AND app_hc_status = "approved" AND app2_status = "waiting"')
+                    ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_hc_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
             } elseif ($_POST['status'] == 'approved') {
                 // Conditions for 'approved' status
-                $this->db->where('app_status', $_POST['status'])
+                $this->db->where('app_hc_status', $_POST['status'])
                     ->where('app2_status', 'approved')
-                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status != "rejected")', NULL, FALSE);
+                    ->or_where('app_hc_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_hc_status = "approved" AND app2_status != "rejected")', NULL, FALSE);
             } elseif ($_POST['status'] == 'revised') {
                 $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
-                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "revised")', NULL, FALSE)
-                    ->or_where('tbl_notifikasi_pu.id_user =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
+                    ->or_where('app_hc_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_hc_status = "revised")', NULL, FALSE)
+                    ->or_where('tbl_notifikasi_pu.id_user =' . $id_user_logged_in . ' AND (app_hc_status = "revised" OR app2_status = "revised")');
             } elseif ($_POST['status'] == 'rejected') {
                 $this->db->where('status', $_POST['status']);
             }
@@ -88,9 +88,9 @@ class M_datanotifikasi_pu extends CI_Model
                 $this->db->where('tbl_notifikasi_pu.id_user', $this->session->userdata('id_user'));
             } elseif ($_POST['tab'] == 'employee') {
                 $this->db->group_start()
-                    ->where('tbl_notifikasi_pu.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                    ->where('tbl_notifikasi_pu.app_hc_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
                     ->where('tbl_notifikasi_pu.id_user !=', $this->session->userdata('id_user'))
-                    ->or_where('tbl_notifikasi_pu.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_notifikasi_pu.app_status = 'approved'", FALSE)
+                    ->or_where('tbl_notifikasi_pu.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_notifikasi_pu.app_hc_status = 'approved'", FALSE)
                     ->where('tbl_notifikasi_pu.id_user !=', $this->session->userdata('id_user'))
                     ->group_end();
             }
@@ -135,19 +135,19 @@ class M_datanotifikasi_pu extends CI_Model
 
             if ($_POST['status'] == 'on-process') {
                 // Conditions for 'on-process' status
-                $this->db->where('app_status', 'waiting')
+                $this->db->where('app_hc_status', 'waiting')
                     ->where('app2_status', 'waiting')
-                    ->or_where('tbl_notifikasi_pu.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
-                    ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
+                    ->or_where('tbl_notifikasi_pu.id_user =' . $id_user_logged_in . ' AND app_hc_status = "approved" AND app2_status = "waiting"')
+                    ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_hc_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
             } elseif ($_POST['status'] == 'approved') {
                 // Conditions for 'approved' status
-                $this->db->where('app_status', $_POST['status'])
+                $this->db->where('app_hc_status', $_POST['status'])
                     ->where('app2_status', 'approved')
-                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status != "rejected")', NULL, FALSE);
+                    ->or_where('app_hc_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_hc_status = "approved" AND app2_status != "rejected")', NULL, FALSE);
             } elseif ($_POST['status'] == 'revised') {
                 $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
-                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "revised")', NULL, FALSE)
-                    ->or_where('tbl_notifikasi_pu.id_user =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
+                    ->or_where('app_hc_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_hc_status = "revised")', NULL, FALSE)
+                    ->or_where('tbl_notifikasi_pu.id_user =' . $id_user_logged_in . ' AND (app_hc_status = "revised" OR app2_status = "revised")');
             } elseif ($_POST['status'] == 'rejected') {
                 $this->db->where('status', $_POST['status']);
             }
@@ -161,9 +161,9 @@ class M_datanotifikasi_pu extends CI_Model
                 $this->db->where('tbl_notifikasi_pu.id_user', $this->session->userdata('id_user'));
             } elseif ($_POST['tab'] == 'employee') {
                 $this->db->group_start()
-                    ->where('tbl_notifikasi_pu.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                    ->where('tbl_notifikasi_pu.app_hc_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
                     ->where('tbl_notifikasi_pu.id_user !=', $this->session->userdata('id_user'))
-                    ->or_where('tbl_notifikasi_pu.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_notifikasi_pu.app_status = 'approved'", FALSE)
+                    ->or_where('tbl_notifikasi_pu.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_notifikasi_pu.app_hc_status = 'approved'", FALSE)
                     ->where('tbl_notifikasi_pu.id_user !=', $this->session->userdata('id_user'))
                     ->group_end();
             }
@@ -191,7 +191,7 @@ class M_datanotifikasi_pu extends CI_Model
     // UNTUK QUERY MENENTUKAN SIAPA YANG MELAKUKAN APPROVAL
     public function approval($id)
     {
-        $this->db->select('app_id, app2_id');
+        $this->db->select('app3_id, app2_id');
         $this->db->from('tbl_data_user');
         $this->db->where('id_user', $id);
         $query = $this->db->get();

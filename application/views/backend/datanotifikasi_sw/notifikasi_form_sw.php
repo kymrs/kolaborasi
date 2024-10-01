@@ -85,8 +85,8 @@
             <div class="modal-body">
                 <form method="POST" action="<?= base_url('deklarasi/approve') ?>">
                     <div class="form-group">
-                        <label for="app_name">Nama</label>
-                        <input type="text" class="form-control" name="app_name" id="app_name" aria-describedby="emailHelp">
+                        <label for="app_hc_name">Nama</label>
+                        <input type="text" class="form-control" name="app_hc_name" id="app_hc_name" aria-describedby="emailHelp">
                         <!-- HIDDEN INPUT -->
                         <input type="hidden" id="hidden_id" name="hidden_id" value="">
                     </div>
