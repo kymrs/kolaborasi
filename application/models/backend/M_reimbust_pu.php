@@ -191,6 +191,8 @@ class M_reimbust_pu extends CI_Model
         $this->db->select('tbl_deklarasi_pu.*, tbl_data_user.name');
         $this->db->from($this->table3);
         $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_deklarasi_pu.id_pengaju', 'left');
+        $id_user_logged_in = $this->session->userdata('id_user'); // Mengambil id_user dari sesi pengguna yang login
+        $this->db->where('id_pengaju', $id_user_logged_in);
 
         $i = 0;
 
@@ -347,6 +349,8 @@ class M_reimbust_pu extends CI_Model
         $this->db->select('tbl_prepayment_pu.*, tbl_data_user.name'); // Memilih kolom dari kedua tabel
         $this->db->from($this->table4);
         $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_prepayment_pu.id_user', 'left'); // JOIN dengan tabel tbl_user
+        $id_user_logged_in = $this->session->userdata('id_user'); // Mengambil id_user dari sesi pengguna yang login
+        $this->db->where('tbl_prepayment_pu.id_user', $id_user_logged_in);
 
         $i = 0;
 
