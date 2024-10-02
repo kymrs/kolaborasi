@@ -91,11 +91,11 @@
             //     "infoFiltered": ""
             // },
             "columnDefs": [{
-                    "targets": [5, 6],
+                    "targets": [3, 5, 6, 11],
                     "className": 'dt-head-nowrap'
                 },
                 {
-                    "targets": [1, 3, 4],
+                    "targets": [1, 3, 4, 5, 6, 9],
                     "className": 'dt-body-nowrap'
                 }, {
                     "targets": [0, 1],

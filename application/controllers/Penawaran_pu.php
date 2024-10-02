@@ -69,7 +69,7 @@ class Penawaran_pu extends CI_Controller
             $row[] = $field->keberangkatan;
             $row[] = $field->durasi;
             $row[] = $field->tempat;
-            $row[] = $field->biaya;
+            $row[] = 'Rp. ' . number_format($field->biaya, 0, ',', '.');;
             $row[] = $field->pelanggan;
             $row[] = date("d M Y", strtotime($field->created_at));
 
