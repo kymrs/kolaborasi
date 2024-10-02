@@ -832,33 +832,56 @@
 
         $("#form").validate({
             rules: {
-                tgl_prepayment: {
+                no_pelayanan: {
                     required: true,
                 },
-                nama: {
+                pelanggan: {
                     required: true,
                 },
-                prepayment: {
+                produk: {
                     required: true,
                 },
-                tujuan: {
+                alamat: {
                     required: true,
-                }
+                },
+                deskripsi: {
+                    required: true,
+                },
+                tgl_berlaku: {
+                    required: true,
+                },
+                keberangkatan: {
+                    required: true,
+                },
+                tempat: {
+                    required: true,
+                },
             },
             messages: {
-                tgl_prepayment: {
-                    required: "Tanggal is required",
+                no_pelayanan: {
+                    required: "No Pelayanan is required",
                 },
-                nama: {
-                    required: "Nama is required",
+                pelanggan: {
+                    required: "Pelanggan is required",
                 },
-
-                prepayment: {
-                    required: "Prepayment is required",
+                produk: {
+                    required: "Produk is required",
                 },
-                tujuan: {
-                    required: "Tujuan is required",
-                }
+                alamat: {
+                    required: "Alamat is required",
+                },
+                deskripsi: {
+                    required: "Deskripsi is required",
+                },
+                tgl_berlaku: {
+                    required: "Tanggal Berlaku is required",
+                },
+                keberangkatan: {
+                    required: "Keberangkatan is required",
+                },
+                tempat: {
+                    required: "Tempat is required",
+                },
             },
             errorPlacement: function(error, element) {
                 if (element.parent().hasClass('input-group')) {

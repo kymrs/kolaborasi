@@ -67,7 +67,7 @@ class Penawaran_pu extends CI_Controller
             $row[] = $field->produk;
             $row[] = date("d M Y", strtotime($field->tgl_berlaku));
             $row[] = $field->keberangkatan;
-            $row[] = $field->durasi;
+            $row[] = $field->durasi . ' Hari';
             $row[] = $field->tempat;
             $row[] = 'Rp. ' . number_format($field->biaya, 0, ',', '.');;
             $row[] = $field->pelanggan;
