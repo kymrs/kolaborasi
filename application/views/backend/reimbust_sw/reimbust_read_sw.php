@@ -419,10 +419,9 @@
                     $('#tujuan').html(data['master']['tujuan']);
                     $('#kode_reimbust').html(data['master']['kode_prepayment'] ? data['master']['kode_prepayment'] : '-');
                     $('#jumlah_prepayment').html(data['master']['jumlah_prepayment'].replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
-                    if (data['master']['app_keterangan'] != null) {
+                    if (data['master']['app_keterangan'] != null || data['master']['app_keterangan'] != '') {
                         $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app_keterangan']} (${data['master']['app_name']})</span>`);
-                    }
-                    if (data['master']['app2_keterangan'] != null) {
+                    } else if (data['master']['app2_keterangan'] != null || data['master']['app2_keterangan'] != '') {
                         $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app2_keterangan']} (${data['master']['app2_name']})</span>`);
                     }
 

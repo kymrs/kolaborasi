@@ -314,24 +314,14 @@
         theme: 'snow'
     });
 
-    // Custom jQuery validation method to validate Quill editor content
-    $.validator.addMethod("quillRequired", function(value, element) {
-        var quillContent = quill.getText().trim(); // Get text from Quill editor
-        return quillContent.length > 0; // Check if the editor is empty
-    }, "Deskripsi is required");
-
-    // var quillContent = `<p> Lalaland </p>`;
-
-    // quill.clipboard.dangerouslyPasteHTML(quillContent);
-
-    // document.getElementById("form").onsubmit = function() {
-    //     // Get HTML content from Quill editor
-    //     var layananContent = quill.root.innerHTML;
-    //     var catatanContent = quill2.root.innerHTML;
-    //     // Set it to hidden input
-    //     document.getElementById("layanan_content").value = layananContent;
-    //     document.getElementById("catatan_content").value = catatanContent;
-    // };
+    document.getElementById("form").onsubmit = function() {
+        // Get HTML content from Quill editor
+        var layananContent = quill.root.innerHTML;
+        var catatanContent = quill2.root.innerHTML;
+        // Set it to hidden input
+        document.getElementById("layanan_content").value = layananContent;
+        document.getElementById("catatan_content").value = catatanContent;
+    };
 
     //GENERATE NOMOR PELAYANAN
     $.ajax({
@@ -440,6 +430,11 @@
             var formattedValue = document.getElementById("biaya").value;
             var integerValue = getIntegerValue(formattedValue);
             // console.log(integerValue); // Menampilkan nilai integer (tanpa "Rp" dan titik)
+            var textContent = quill.getText().trim();
+            if (textContent === '') {
+                alert('Mohon untuk mengisi layanan.');
+                e.preventDefault(); // Prevent form submission if content is empty
+            }
 
             if (!$form.valid()) return false;
             var url;
@@ -462,7 +457,6 @@
                 data: $.param(formData), // Gunakan data form yang sudah ditambahkan nilai integer
                 dataType: "JSON",
                 success: function(data) {
-                    console.log(data);
                     if (data.status) //if success close modal and reload ajax table
                     {
                         Swal.fire({

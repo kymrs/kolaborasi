@@ -292,15 +292,6 @@
             }
         }
 
-        // function checkDeleteButtonState() {
-        //     const rowCount = $('#input-container tr').length;
-        //     if (rowCount === 1) {
-        //         $('#input-container .delete-btn').prop('disabled', true); // Disable delete button if only one row
-        //     } else {
-        //         $('#input-container .delete-btn').prop('disabled', false); // Enable delete button if more than one row
-        //     }
-        // }
-
         $(document).on('click', '.delete-btn', function() {
             const id = $(this).data('id');
             deleteRow(id);
