@@ -63,7 +63,7 @@ class Reimbust_pu extends CI_Controller
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             if ($field->app_name == $fullname) {
                 $action = $action_read . $action_print;
-            } elseif ($field->app2_name == $fullname) {
+            } elseif ($field->id_user != $this->session->userdata('id_user') && $field->app2_name == $fullname) {
                 $action = $action_read . $action_print;
             } elseif (in_array($field->status, ['rejected', 'approved'])) {
                 $action = $action_read . $action_print;
