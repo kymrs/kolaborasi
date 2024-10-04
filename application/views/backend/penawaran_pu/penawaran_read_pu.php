@@ -231,9 +231,7 @@
         <div class="w-full md:w-2/3 p-4">
             <!-- Deskripsi -->
             <div class="description mb-4">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur pretium, mauris ac varius efficitur,
-                tortor mi dignissim justo, id feugiat justo eros nec metus,Lorem ipsum dolor sit amet, consectetur
-                tortor mi dignissim justo, id feugiat justo eros nec metus.
+                <?= $penawaran['deskripsi'] ?>
             </div>
 
             <!-- Layanan Termasuk -->
