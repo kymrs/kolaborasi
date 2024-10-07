@@ -670,7 +670,7 @@ class Reimbust_pu extends CI_Controller
     {
         $data['id'] = $id;
         $data['aksi'] = 'update';
-        $data['title_view'] = "Edit Reimbust Pengenumroh";
+        $data['title_view'] = "Edit Reimbust";
         $data['title'] = 'backend/reimbust_pu/reimbust_form_pu';
         $this->load->view('backend/home', $data);
     }
