@@ -88,6 +88,7 @@ class Prepayment_pu extends CI_Controller
             $row[] = date("d M Y", strtotime($field->tgl_prepayment));
             $row[] = $field->prepayment;
             $row[] = $formatted_nominal;
+            $row[] = ucwords($field->payment_status);
             // $row[] = $field->tujuan;
             $row[] = $field->status;
 
@@ -672,5 +673,13 @@ class Prepayment_pu extends CI_Controller
         //Pastikan folder ./assets/backend/img/signatures/ dapat ditulisi oleh server.
         // mkdir -p ./assets/backend/img/signatures/
         // chmod 755 ./assets/backend/img/signatures/
+    }
+
+    function payment()
+    {
+        $this->db->where('id', $this->input->post('id'));
+        $this->db->update('tbl_prepayment_pu', ['payment_status' => $this->input->post('payment_status')]);
+
+        echo json_encode(array("status" => TRUE));
     }
 }

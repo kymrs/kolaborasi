@@ -56,6 +56,7 @@
                                 <th>Tanggal Pengajuan</th>
                                 <th>Prepayment</th>
                                 <th>Total Nominal</th>
+                                <th>Status Pembayaran</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -72,6 +73,7 @@
                                 <th>Tanggal Pengajuan</th>
                                 <th>Prepayment</th>
                                 <th>Total Nominal</th>
+                                <th>Status Pembayaran</th>
                                 <th>Status</th>
                             </tr>
                         </tfoot>
@@ -108,7 +110,7 @@
             //     "infoFiltered": ""
             // },
             "columnDefs": [{
-                    "targets": [2, 6, 8],
+                    "targets": [2, 6, 8, 9],
                     "className": 'dt-head-nowrap'
                 },
                 {
