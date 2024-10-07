@@ -1051,9 +1051,13 @@
                     if (aksi == 'update') {
                         //APPEND DATA TRANSAKSI DETAIL REIMBUST
                         $(data['transaksi']).each(function(index) {
-                            //Nilai jumlah diformat menggunakan pemisah ribuan sebelum dimasukkan ke dalam elemen input.
+                            // Nilai jumlah diformat menggunakan pemisah ribuan sebelum dimasukkan ke dalam elemen input.
                             const jumlahFormatted = data['transaksi'][index]['jumlah'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
                             const tglNotaFormatted = moment(data['transaksi'][index]['tgl_nota']).format('DD-MM-YYYY');
+
+                            // Cek apakah deklarasi ada datanya
+                            const isDeklarasiFilled = data['transaksi'][index]['deklarasi'] ? true : false;
+
                             // Append Dari Form UPDATE
                             const row = `
                                 <tr id="row-${index + 1}">
@@ -1065,7 +1069,9 @@
                                         <input type="hidden" id="hidden_detail_id${index}" name="detail_id[${index + 1}]" value="${data['transaksi'][index]['id']}">
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control tgl_nota" name="tgl_nota[${index + 1}]" id="tgl_nota_${index + 1}" style="cursor: pointer" autocomplete="off" value="${tglNotaFormatted}">
+                                        <input type="text" class="form-control tgl_nota ${isDeklarasiFilled ? 'not-allowed' : ''}" name="tgl_nota[${index + 1}]" id="tgl_nota_${index + 1}" 
+                                            style="cursor: ${isDeklarasiFilled ? 'not-allowed' : 'pointer'}; pointer-events: ${isDeklarasiFilled ? 'none' : 'auto'}" 
+                                            autocomplete="off" value="${tglNotaFormatted}" ${isDeklarasiFilled ? 'readonly' : ''}>
                                     </td>
                                     <td>
                                         <input type="text" class="form-control jumlah-${index + 1}" id="jumlah-${index}" value="${jumlahFormatted}" name="jml[${index + 1}]" autocomplete="off">
@@ -1091,7 +1097,7 @@
                                     </td>
                                     <td><span class="btn delete-btn btn-danger" data-id="${index + 1}">Delete</span></td>
                                 </tr>
-                                `;
+                            `;
                             $('#input-container').append(row);
                             // Tambahkan format ke input jumlah yang baru
                             formatJumlahInput(`#jumlah-${index}`);

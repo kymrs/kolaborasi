@@ -49,6 +49,7 @@
                                 <th>Tanggal Pengajuan</th>
                                 <th>Tujuan</th>
                                 <th>Jumlah Prepayment</th>
+                                <th>Status Pembayaran</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -66,6 +67,7 @@
                                 <th>Tanggal Pengajuan</th>
                                 <th>Tujuan</th>
                                 <th>Jumlah Prepayment</th>
+                                <th>Status Pembayaran</th>
                                 <th>Status</th>
                             </tr>
                         </tfoot>
@@ -101,11 +103,11 @@
                 "infoFiltered": ""
             },
             "columnDefs": [{
-                    "targets": [2, 6, 7, 9],
+                    "targets": [2, 6, 7, 9, 10],
                     "className": 'dt-head-nowrap'
                 },
                 {
-                    "targets": [1, 3, 8, 10],
+                    "targets": [1, 3, 8, 10, 11],
                     "className": 'dt-body-nowrap'
                 }, {
                     "targets": [0, 1],
@@ -116,10 +118,10 @@
     });
 
     // Restore filter value from localStorage
-    var savedStatus = localStorage.getItem('appFilterStatus');
-    if (savedStatus) {
-        $('#appFilter').val(savedStatus).change();
-    }
+    // var savedStatus = localStorage.getItem('appFilterStatus');
+    // if (savedStatus) {
+    //     $('#appFilter').val(savedStatus).change();
+    // }
 
     // Save filter value to localStorage on change
     $('#appFilter').on('change', function() {

@@ -147,6 +147,7 @@
     <div class="container">
         <div class="d-flex justify-content-end mb-3" style="margin-right: 19px">
             <?php if ($user->app_name == $app_name && $user->app2_status != 'rejected' && !in_array($user->status, ['approved'])) { ?>
+                <a class="btn btn-success btn-sm mr-2" id="paymentBtn" data-toggle="modal" data-target="#paymentModal"><i class="fas fa-money-bill"></i>&nbsp;Payment</a>
                 <a class="btn btn-warning btn-sm mr-2" id="appBtn" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
             <?php } elseif ($user->app2_name == $app2_name && !in_array($user->app2_status, ['approved', 'rejected'])  && $user->app_status == 'approved') { ?>
                 <a class="btn btn-warning btn-sm mr-2" id="appBtn2" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
@@ -309,6 +310,43 @@
         </div>
     </div>
 
+    <!-- Modal Payment -->
+    <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                        <i class="fas fa-check-circle"></i> Payment
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="paymentForm" action="">
+                        <div class="form-group">
+                            <label for="payment_status">Status <span class="text-danger">*</span></label>
+                            <select id="payment_status" name="payment_status" class="form-control" style="cursor: pointer;" required>
+                                <option selected disabled>Choose status...</option>
+                                <option value="paid">Paid</option>
+                                <option value="unpaid">Unpaid</option>
+                            </select>
+                            <input type="hidden" id="hidden_id" value="<?php echo $id ?>" name="id">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                <i class="fas fa-times"></i> Close
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal -->
     <div id="myModal" class="kwitansi-modal">
         <span class="close">&times;</span>
@@ -391,6 +429,10 @@
                         alert('Error get data from ajax');
                     }
                 });
+            });
+
+            $('#paymentBtn').click(function() {
+                $('#paymentForm').attr('action', '<?= site_url('reimbust_sw/payment') ?>');
             });
 
             // Handle the approval button click event
@@ -534,6 +576,22 @@
                             } else {
                                 // Aktifkan tombol submit jika status telah dipilih
                                 $('#approvalForm button[type="submit"]').prop('disabled', false).css('cursor', 'pointer');
+                            }
+                        });
+                    });
+
+                    $(document).ready(function() {
+                        // Inisialisasi tombol submit dalam keadaan disabled
+                        $('#paymentForm button[type="submit"]').prop('disabled', true).css('cursor', 'not-allowed');
+
+                        // Event listener untuk elemen select
+                        $('#payment_status').change(function() {
+                            if ($(this).val() === null || $(this).val() === 'Choose status...') {
+                                // Nonaktifkan tombol submit jika tidak ada status yang dipilih
+                                $('#paymentForm button[type="submit"]').prop('disabled', true);
+                            } else {
+                                // Aktifkan tombol submit jika status telah dipilih
+                                $('#paymentForm button[type="submit"]').prop('disabled', false).css('cursor', 'pointer');
                             }
                         });
                     });
@@ -683,6 +741,37 @@
                 e.preventDefault();
                 var url = $(this).attr('action');
                 // MENGINPUT APPROVAL
+                $.ajax({
+                    url: url, // Mengambil action dari form
+                    type: "POST",
+                    data: $(this).serialize(), // Mengambil semua data dari form
+                    dataType: "JSON",
+                    success: function(data) {
+                        console.log(data);
+                        if (data.status) //if success close modal and reload ajax table
+                        {
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'success',
+                                title: 'Your data has been saved',
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then((result) => {
+                                location.href = "<?= base_url('reimbust_sw') ?>";
+                            })
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert('Error adding / update data');
+                    }
+                });
+            });
+
+            // PAYMENT
+            $('#paymentForm').submit(function(e) {
+                e.preventDefault();
+                var url = $(this).attr('action');
+                // MENGINPUT PAYMENT
                 $.ajax({
                     url: url, // Mengambil action dari form
                     type: "POST",

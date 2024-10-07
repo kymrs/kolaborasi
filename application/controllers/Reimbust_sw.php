@@ -101,7 +101,8 @@ class Reimbust_sw extends CI_Controller
             );
             $row[] = date("d", strtotime($field->tgl_pengajuan)) . " " . $bulanIndo[date("n", strtotime($field->tgl_pengajuan))] . " " . date("Y", strtotime($field->tgl_pengajuan));
             $row[] = $field->tujuan;
-            $row[] = 'Rp. ' . number_format($field->jumlah_prepayment, 0, ',', '.');;
+            $row[] = 'Rp. ' . number_format($field->jumlah_prepayment, 0, ',', '.');
+            $row[] = ucwords($field->payment_status);
             $row[] = ucwords($field->status);
 
             $data[] = $row;
@@ -1027,6 +1028,15 @@ class Reimbust_sw extends CI_Controller
         // UPDATE APPROVAL 2
         $this->db->where('id', $this->input->post('hidden_id'));
         $this->db->update('tbl_reimbust', $data);
+
+        echo json_encode(array("status" => TRUE));
+    }
+
+    function payment()
+    {
+        // UPDATE APPROVAL 2
+        $this->db->where('id', $this->input->post('id'));
+        $this->db->update('tbl_reimbust', ['payment_status' => $this->input->post('payment_status')]);
 
         echo json_encode(array("status" => TRUE));
     }
