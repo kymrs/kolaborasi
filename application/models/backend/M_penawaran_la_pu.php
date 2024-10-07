@@ -150,4 +150,10 @@ class M_penawaran_la_pu extends CI_Model
         $this->db->insert('tbl_land_arrangement', $data);
         return $this->db->insert_id();
     }
+
+    public function save_arsip($data)
+    {
+        $this->db->insert('tbl_arsip_pu', $data);
+        return $this->db->insert_id();
+    }
 }
