@@ -347,12 +347,18 @@ class Datadeklarasi_sw extends CI_Controller
 
         // Title of the form
         $pdf->Ln(25);
-        $pdf->SetFont('Arial', 'B', 14);
+
+        // Set font
+        $pdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php');
+        $pdf->AddFont('Poppins-Bold', '', 'Poppins-Bold.php');
+
+        $pdf->SetFont('Poppins-Bold', '', 14);
+
         $pdf->Cell(0, 10, 'FORM DEKLARASI', 0, 1, 'C');
         $pdf->Ln(5);
 
         // Set font for form data
-        $pdf->SetFont('Arial', '', 12);
+        $pdf->SetFont('Poppins-Regular', '', 12);
         $pdf->Cell(40, 10, 'Tanggal', 0, 0);
         $pdf->Cell(60, 10, ': ' . $formatted_date, 0, 1);
         $pdf->Cell(40, 10, 'Nama', 0, 0);
@@ -361,11 +367,11 @@ class Datadeklarasi_sw extends CI_Controller
         $pdf->Cell(60, 10, ': ' . $data['master']->jabatan, 0, 1);
 
         $pdf->Ln(1);
-        $pdf->SetFont('Arial', '', 12);
+        $pdf->SetFont('Poppins-Regular', '', 12);
         $pdf->Cell(60, 10, 'Telah/akan melakukan pembayaran kepada:', 0, 1);
 
         // Set font for form data
-        $pdf->SetFont('Arial', '', 12);
+        $pdf->SetFont('Poppins-Regular', '', 12);
         $pdf->Cell(40, 10, 'Nama', 0, 0);
         $pdf->Cell(60, 10, ': ' . $data['master']->nama_dibayar, 0, 1);
         $pdf->Cell(40, 10, 'Tujuan', 0, 0);
@@ -377,7 +383,7 @@ class Datadeklarasi_sw extends CI_Controller
         $pdf->Ln(3);
 
         // Set font untuk header
-        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->SetFont('Poppins-Bold', '', 12);
 
         // Membuat header tabel
         $pdf->Cell(63, 8.5, 'Yang Melakukan', 1, 0, 'C');
@@ -385,7 +391,7 @@ class Datadeklarasi_sw extends CI_Controller
         $pdf->Cell(63, 8.5, 'Menyetujui', 1, 1, 'C');
 
         // Set font normal untuk konten tabel
-        $pdf->SetFont('Arial', '', 10);
+        $pdf->SetFont('Poppins-Regular', '', 10);
 
         // Baris pemisah
         $pdf->Cell(63, 5, '', 'LR', 0, 'C');

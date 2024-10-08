@@ -316,7 +316,10 @@ class Reimbust_pu extends CI_Controller
         $pdf->Image(base_url('') . '/assets/backend/img/pengenumroh.png', 15, 8, 35, 22);
 
         // Set font
-        $pdf->SetFont('Arial', 'B', 14);
+        $pdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php');
+        $pdf->AddFont('Poppins-Bold', '', 'Poppins-Bold.php');
+
+        $pdf->SetFont('Poppins-Bold', '', 16);
 
         // Teks yang ingin ditampilkan
         $text1 = 'FORM PELAPORAN / REIMBUST';
@@ -344,7 +347,7 @@ class Reimbust_pu extends CI_Controller
 
         // Field Master
 
-        $pdf->SetFont('Arial', '', 10);
+        $pdf->SetFont('Poppins-Regular', '', 10);
 
         function Cell($pdf, $width, $height, $text, $align = 'L', $fill = false)
         {
@@ -411,10 +414,10 @@ class Reimbust_pu extends CI_Controller
 
         // Add table headers
         // Tambahkan "JUMLAH PREPAYMENT" dalam satu Cell
-        $pdf->SetFont('Arial', '', 9);
+        $pdf->SetFont('Poppins-Regular', '', 9);
         $pdf->Cell(193, 7, 'No. Prepayment : ' . (!empty($data['master']->kode_prepayment) ? $data['master']->kode_prepayment : '-'), 0, 1, 'R');
 
-        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->SetFont('Poppins-Bold', '', 10);
 
         $pdf->Cell(193, 8.5, 'JUMLAH PREPAYMENT', 1, 0, 'L');
         $pdf->Cell(66, 8.5, 'BUKTI PENGELUARAN', 1, 0, 'C');
@@ -428,7 +431,7 @@ class Reimbust_pu extends CI_Controller
         $pdf->Cell(33, 8.5, 'DEKLARASI', 1, 1, 'C');
 
         // Set font for table body
-        $pdf->SetFont('Arial', '', 10);
+        $pdf->SetFont('Poppins-Regular', '', 10);
 
         // Add table data
         $no = 1;
@@ -472,7 +475,7 @@ class Reimbust_pu extends CI_Controller
         }
 
         // Add total and remaining prepayment
-        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->SetFont('Poppins-Bold', '', 10);
         $pdf->Cell(259, 8.5, 'TOTAL PEMAKAIAN', 1, 0, 'L');
         $pdf->Cell(-1, 8.5, 'Rp. ' . number_format($totalJumlah, 0, ',', '.'), 0, 1, 'R');
         $pdf->Cell(259, 8.5, 'SISA PREPAYMENT', 1, 0, 'L');
@@ -480,7 +483,7 @@ class Reimbust_pu extends CI_Controller
 
         $pdf->Ln(10);
 
-        $pdf->SetFont('Arial', '', 10);
+        $pdf->SetFont('Poppins-Regular', '', 10);
         $pdf->Cell(50, 8.5, 'YANG MELAKUKAN', 1, 0, 'C');
         $pdf->Cell(50, 8.5, 'MENGETAHUI', 1, 0, 'C');
         $pdf->Cell(50, 8.5, 'MENYETUJUI', 1, 1, 'C');

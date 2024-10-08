@@ -62,10 +62,8 @@ class Datanotifikasi_pu extends CI_Controller
             $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="datanotifikasi_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
-            if ($field->app_hc_name == $fullname && $field->id_user != $this->session->userdata('id_user')) {
+            if ($field->app_hc_name == $fullname) {
                 $action = $action_read . $action_print;
-            } elseif (!in_array($field->app_hc_status, ['approved', 'rejected']) && $field->app2_status == 'approved') {
-                $action = $action_read . $action_edit . $action_print;
             } elseif ($field->id_user != $this->session->userdata('id_user') && $field->app2_name == $fullname) {
                 $action = $action_read . $action_print;
             } elseif (in_array($field->status, ['rejected', 'approved'])) {
@@ -227,15 +225,14 @@ class Datanotifikasi_pu extends CI_Controller
                 ->from('tbl_data_user')
                 ->where('id_user', $approval->app2_id)
                 ->get()
-                ->row('name'),
-            'created_at' => date('Y-m-d H:i:s')
+                ->row('name')
         );
 
         // BILA YANG MEMBUAT PREPAYMENT DAPAT MENGAPPROVE SENDIRI
-        // if ($approval->app3_id == $this->session->userdata('id_user')) {
-        //     $data['app_hc_status'] = 'approved';
-        //     $data['app_hc_date'] = date('Y-m-d H:i:s');
-        // }
+        if ($approval->app3_id == $this->session->userdata('id_user')) {
+            $data['app_hc_status'] = 'approved';
+            $data['app_hc_date'] = date('Y-m-d H:i:s');
+        }
 
         $this->M_datanotifikasi_pu->save($data);
         echo json_encode(array("status" => TRUE));
@@ -381,16 +378,20 @@ class Datanotifikasi_pu extends CI_Controller
 
         // Title of the form
         $pdf->Ln(27);
-        $pdf->SetFont('Arial', 'B', 14);
+        // Set font
+        $pdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php');
+        $pdf->AddFont('Poppins-Bold', '', 'Poppins-Bold.php');
+
+        $pdf->SetFont('Poppins-Bold', '', 14);
         $pdf->Cell(0, 10, 'FORM NOTIFIKASI', 0, 1, 'C');
         $pdf->Ln(3);
 
         $pdf->Ln(1);
-        $pdf->SetFont('Arial', '', 12);
+        $pdf->SetFont('Poppins-Regular', '', 12);
         $pdf->Cell(60, 10, 'Saya yang bertanda tangan dibawah ini:', 0, 1);
 
         // Set font for form data
-        $pdf->SetFont('Arial', '', 12);
+        $pdf->SetFont('Poppins-Regular', '', 12);
         $pdf->Cell(40, 10, 'Nama', 0, 0);
         $pdf->Cell(60, 10, ': ' . $data['user'], 0, 1);
         $pdf->Cell(40, 10, 'Jabatan', 0, 0);
@@ -400,7 +401,7 @@ class Datanotifikasi_pu extends CI_Controller
 
         // Set font for form data
 
-        $pdf->SetFont('Arial', '', 12);
+        $pdf->SetFont('Poppins-Regular', '', 12);
         $pdf->Cell(40, 10, 'Tanggal', 0, 0);
         $pdf->Cell(60, 10, ': ' . $formatted_date, 0, 1);
         $pdf->Cell(40, 10, 'Waktu', 0, 0);
@@ -409,7 +410,7 @@ class Datanotifikasi_pu extends CI_Controller
         $pdf->Cell(60, 10, ': ' . $data['master']->alasan, 0, 1);
 
         $pdf->Ln(3);
-        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->SetFont('Poppins-Bold', '', 12);
         $pdf->Cell(60, 10, 'DIISI OLEH ATASAN KARYAWAN BERSANGKUTAN:', 0, 1);
 
         if ($data['master']->app_hc_status == 'approved') {
@@ -421,24 +422,24 @@ class Datanotifikasi_pu extends CI_Controller
         }
 
         $pdf->Ln(3);
-        $pdf->SetFont('Arial', '', 12);
+        $pdf->SetFont('Poppins-Regular', '', 12);
         $pdf->Cell(40, 10, 'Notifikasi ini', 0, 0);
         $pdf->Cell(60, 10, ': ' . $status, 0, 1);
         $pdf->Cell(40, 10, 'Dengan alasan', 0, 0);
         $pdf->Cell(60, 10, ': ' . $data['master']->catatan, 0, 1);
 
         $pdf->Ln(3);
-        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->SetFont('Poppins-Bold', '', 12);
         $pdf->Cell(60, 10, 'CATATAN HUMAN CAPITAL DEPARTEMENT', 0, 1);
 
         $pdf->Ln(3);
-        $pdf->SetFont('Arial', '', 12);
+        $pdf->SetFont('Poppins-Regular', '', 12);
         $pdf->Cell(40, 10, 'Notifikasi ke', 0, 0);
         $pdf->Cell(60, 10, ': ' . $data['ke'] . ' (' . date('Y', strtotime($data['master']->created_at)) . ')', 0, 1);
         $pdf->Ln(3);
 
         //APPROVAL
-        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->SetFont('Poppins-Bold', '', 12);
 
         // Membuat header tabel
         $pdf->Cell(63, 8.5, 'Karyawan', 1, 0, 'C');
@@ -446,7 +447,7 @@ class Datanotifikasi_pu extends CI_Controller
         $pdf->Cell(63, 8.5, 'DEPT. HEAD', 1, 1, 'C');
 
         // Set font normal untuk konten tabel
-        $pdf->SetFont('Arial', '', 10);
+        $pdf->SetFont('Poppins-Regular', '', 10);
 
         // Baris pemisah
         $pdf->Cell(63, 5, '', 'LR', 0, 'C');
