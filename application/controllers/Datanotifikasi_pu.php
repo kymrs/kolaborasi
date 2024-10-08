@@ -62,7 +62,7 @@ class Datanotifikasi_pu extends CI_Controller
             $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="datanotifikasi_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
-            if ($field->app_hc_name == $fullname) {
+            if ($field->app_hc_name == $fullname && $field->id_user != $this->session->userdata('id_user')) {
                 $action = $action_read . $action_print;
             } elseif (!in_array($field->app_hc_status, ['approved', 'rejected']) && $field->app2_status == 'approved') {
                 $action = $action_read . $action_edit . $action_print;
@@ -227,14 +227,15 @@ class Datanotifikasi_pu extends CI_Controller
                 ->from('tbl_data_user')
                 ->where('id_user', $approval->app2_id)
                 ->get()
-                ->row('name')
+                ->row('name'),
+            'created_at' => date('Y-m-d H:i:s')
         );
 
         // BILA YANG MEMBUAT PREPAYMENT DAPAT MENGAPPROVE SENDIRI
-        if ($approval->app3_id == $this->session->userdata('id_user')) {
-            $data['app_hc_status'] = 'approved';
-            $data['app_hc_date'] = date('Y-m-d H:i:s');
-        }
+        // if ($approval->app3_id == $this->session->userdata('id_user')) {
+        //     $data['app_hc_status'] = 'approved';
+        //     $data['app_hc_date'] = date('Y-m-d H:i:s');
+        // }
 
         $this->M_datanotifikasi_pu->save($data);
         echo json_encode(array("status" => TRUE));

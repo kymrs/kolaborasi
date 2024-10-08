@@ -61,7 +61,7 @@ class Reimbust_pu extends CI_Controller
             $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="reimbust_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
-            if ($field->app_name == $fullname) {
+            if ($field->app_name == $fullname && $field->id_user != $this->session->userdata('id_user')) {
                 $action = $action_read . $action_print;
             } elseif ($field->id_user != $this->session->userdata('id_user') && $field->app2_name == $fullname) {
                 $action = $action_read . $action_print;
