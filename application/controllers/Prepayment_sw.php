@@ -465,31 +465,39 @@ class Prepayment_sw extends CI_Controller
         foreach ($data['transaksi'] as $row) {
             // Hitung tinggi maksimum dari baris ini berdasarkan jumlah baris dari masing-masing kolom
             $rincianLines = $pdf->GetStringWidth($row['rincian']) / 55; // 55 adalah lebar kolom rincian
-            $rincianHeight = ceil($rincianLines) * 7; // Estimasi tinggi dengan mengalikan jumlah baris dengan tinggi per baris
-            // Estimasi jumlah baris untuk kolom keterangan
-            $keteranganLines = $pdf->GetStringWidth($row['keterangan']) / 79; // 79 adalah lebar kolom keterangan
-            $keteranganHeight = ceil($keteranganLines) * 7; // Estimasi tinggi dengan mengalikan jumlah baris dengan tinggi per baris
+            $rincianHeight = ceil($rincianLines) * 7; // Estimasi tinggi kolom rincian (ubah dari 10 ke 7)
 
-            // Ambil tinggi maksimum dari ketiga kolom
-            $maxHeight = max($rincianHeight, $keteranganHeight, 7);
+            $keteranganLines = $pdf->GetStringWidth($row['keterangan']) / 79; // 79 adalah lebar kolom keterangan
+            $keteranganHeight = ceil($keteranganLines) * 7; // Estimasi tinggi kolom keterangan
+
+            // Ambil tinggi maksimum dari kedua kolom
+            $height = max($rincianHeight, $keteranganHeight, 7);
+            $height2 = max($rincianHeight, $keteranganHeight, 7);
+            if ($rincianHeight > 7) {
+                $height = 7;
+            }
+            if ($keteranganHeight > 7) {
+                $height2 = 7;
+            }
+            $maxHeight = max($rincianHeight, $keteranganHeight, 7); // Pastikan tinggi minimum 7
 
             // Kolom rincian (gunakan MultiCell untuk wrapping)
             $x = $pdf->GetX();
             $y = $pdf->GetY();
-            $pdf->MultiCell(55, 7, $row['rincian'], 1, 'C', true);
-            $pdf->SetXY($x + 55, $y);  // Kembalikan ke posisi kolom selanjutnya
+            $pdf->MultiCell(55, $height, $row['rincian'], 1, 'C', true); // Tinggi kolom rincian 7
+            $pdf->SetXY($x + 55, $y); // Pindahkan ke posisi kolom selanjutnya
 
-            // Kolom nominal (gunakan Cell)
+            // Kolom nominal (gunakan MultiCell untuk penyesuaian tinggi)
             $x = $pdf->GetX();
             $y = $pdf->GetY();
-            $pdf->MultiCell(55, $maxHeight, number_format($row['nominal'], 0, ',', '.'), 1, 'C', true);
-            $pdf->SetXY($x + 55, $y);  // Kembalikan ke posisi kolom selanjutnya
+            $pdf->MultiCell(55, $maxHeight, number_format($row['nominal'], 0, ',', '.'), 1, 'C', true); // Tinggi sesuai maxHeight
+            $pdf->SetXY($x + 55, $y); // Pindahkan ke posisi kolom selanjutnya
 
             // Kolom keterangan (gunakan MultiCell untuk wrapping)
-            $x = $pdf->GetX();  // Simpan posisi X
+            $x = $pdf->GetX();
             $y = $pdf->GetY();
-            $pdf->MultiCell(79, $maxHeight, $row['keterangan'], 1, 'C', true);
-            $pdf->SetXY($x + 79, $y);  // Pindahkan ke posisi kolom selanjutnya untuk menjaga keselarasan
+            $pdf->MultiCell(79, $height2, $row['keterangan'], 1, 'C', true); // Tinggi sesuai maxHeight
+            $pdf->SetXY($x + 79, $y); // Pindahkan ke posisi kolom selanjutnya
 
             // Pindahkan ke baris baru
             $pdf->Ln($maxHeight);
