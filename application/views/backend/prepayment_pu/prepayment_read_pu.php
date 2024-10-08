@@ -417,8 +417,19 @@
 
         $('#paymentBtn').click(function() {
             $('#paymentForm').attr('action', '<?= site_url('prepayment_pu/payment') ?>');
-        });
 
+            $.ajax({
+                url: "<?php echo site_url('prepayment_pu/edit_data') ?>/" + id,
+                type: "GET",
+                dataType: "JSON",
+                success: function(data) {
+                    $('#payment_status').val(data['master']['payment_status']);
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    alert('Error get data from ajax');
+                }
+            });
+        });
         // Handle the approval button click event
         $('#confirmApproval').click(function() {
             const id = $('#hidden_id').val();

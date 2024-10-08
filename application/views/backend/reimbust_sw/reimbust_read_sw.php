@@ -433,6 +433,18 @@
 
             $('#paymentBtn').click(function() {
                 $('#paymentForm').attr('action', '<?= site_url('reimbust_sw/payment') ?>');
+
+                $.ajax({
+                    url: "<?php echo site_url('reimbust_sw/edit_data') ?>/" + id,
+                    type: "GET",
+                    dataType: "JSON",
+                    success: function(data) {
+                        $('#payment_status').val(data['master']['payment_status']);
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert('Error get data from ajax');
+                    }
+                });
             });
 
             // Handle the approval button click event
