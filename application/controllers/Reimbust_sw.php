@@ -351,7 +351,7 @@ class Reimbust_sw extends CI_Controller
 
         // Start FPDF
         $pdf = new FPDF('L', 'mm', 'Letter');
-        $pdf->SetTitle('Form Pengajuan Prepayment');
+        $pdf->SetTitle('Form Pengajuan Reimbust');
         $pdf->AddPage();
 
         // Mengatur margin kiri, atas, dan kanan
@@ -364,7 +364,9 @@ class Reimbust_sw extends CI_Controller
         $pdf->Image(base_url('') . '/assets/backend/img/sebelaswarna.png', 10, 5, 45, 30);
 
         // Set font
-        $pdf->SetFont('Arial', 'B', 14);
+        $pdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php');
+        $pdf->SetFont('Poppins-Regular', '', 16);
+        // $pdf->SetFont('Arial', 'B', 14);
 
         // Teks yang ingin ditampilkan
         $text1 = 'FORM PELAPORAN / REIMBUST';
@@ -809,7 +811,8 @@ class Reimbust_sw extends CI_Controller
                 ->from('tbl_data_user')
                 ->where('id_user', $approval->app2_id)
                 ->get()
-                ->row('name')
+                ->row('name'),
+            'created_at' =>  date('Y-m-d H:i:s')
         );
         // Hanya simpan ke database jika tidak ada file yang melebihi 3 MB
         if ($valid) {

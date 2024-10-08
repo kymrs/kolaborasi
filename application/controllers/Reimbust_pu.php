@@ -303,7 +303,7 @@ class Reimbust_pu extends CI_Controller
 
         // Start FPDF
         $pdf = new FPDF('L', 'mm', 'Letter');
-        $pdf->SetTitle('Form Pengajuan Prepayment');
+        $pdf->SetTitle('Form Pengajuan Reimbust');
         $pdf->AddPage();
 
         // Mengatur margin kiri, atas, dan kanan
@@ -731,7 +731,7 @@ class Reimbust_pu extends CI_Controller
             'jabatan' => $jabatan,
             'departemen' => $departemen,
             'sifat_pelaporan' => $this->input->post('sifat_pelaporan'),
-            'tgl_pengajuan' => date('Y-m-d H:i:s', strtotime($this->input->post('tgl_pengajuan'))),
+            'tgl_pengajuan' => date('Y-m-d', strtotime($this->input->post('tgl_pengajuan'))),
             'tujuan' => $this->input->post('tujuan'),
             'jumlah_prepayment' => $this->input->post('jumlah_prepayment'),
             'app_name' => $this->db->select('name')
@@ -743,7 +743,8 @@ class Reimbust_pu extends CI_Controller
                 ->from('tbl_data_user')
                 ->where('id_user', $approval->app2_id)
                 ->get()
-                ->row('name')
+                ->row('name'),
+            'created_at' =>  date('Y-m-d H:i:s')
         );
         // Hanya simpan ke database jika tidak ada file yang melebihi 3 MB
         if ($valid) {
