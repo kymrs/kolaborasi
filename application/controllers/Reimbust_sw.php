@@ -336,7 +336,7 @@ class Reimbust_sw extends CI_Controller
     public function generate_pdf($id)
     {
         // Load FPDF library
-        $this->load->library('fpdf');
+        $this->load->library('Fpdf_generate');
 
         // Load data from database based on $id
         $data['master'] = $this->M_reimbust_sw->get_by_id($id);

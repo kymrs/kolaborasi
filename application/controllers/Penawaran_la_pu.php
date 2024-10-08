@@ -216,7 +216,21 @@ class Penawaran_la_pu extends CI_Controller
             'catatan' => $this->input->post('catatan_content')
         );
 
+        //DIVISI
+        $id_user = $this->session->userdata('id_user');
+        $divisi = $this->db->select('divisi')->from('tbl_data_user')->where('id_user', $id_user)->get()->row('divisi');
+
+        $data2 = array(
+            'id_user' => $id_user,
+            'nama_dokumen' => $this->input->post('produk'),
+            'penerbit' => $divisi,
+            'no_dokumen' => $no_pelayanan,
+            'tgl_dokumen' => date('Y-m-d H:i:s'),
+            'no_arsip' => $no_arsip
+        );
+
         $this->M_penawaran_la_pu->save($data);
+        $this->M_penawaran_la_pu->save_arsip($data2);
         echo json_encode(array("status" => TRUE));
     }
 

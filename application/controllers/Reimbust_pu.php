@@ -278,19 +278,6 @@ class Reimbust_pu extends CI_Controller
 
     public function add_form()
     {
-        // $kode = $this->M_reimbust_pu->max_kode()->row();
-        // if (empty($kode->kode_reimbust)) {
-        //     $no_urut = 1;
-        // } else {
-        //     $bln = substr($kode->kode_reimbust, 3, 2);
-        //     if ($bln != date('m')) {
-        //         $no_urut = 1;
-        //     } else {
-        //         $no_urut = substr($kode->kode_reimbust, 5) + 1;
-        //     }
-        // }
-        // $urutan = str_pad($no_urut, 3, "0", STR_PAD_LEFT);
-        // $data['kode'] = 'B' . date('ym') . $urutan;
         $data['id'] = 0;
         $data['aksi'] = 'add';
         $data['title_view'] = "Reimbust Form";
@@ -298,45 +285,10 @@ class Reimbust_pu extends CI_Controller
         $this->load->view('backend/home', $data);
     }
 
-    // UNTUK MENAMPILKAN FORM APPROVAL
-    // public function pdf($id)
-    // {
-    //     // Ambil data berdasarkan ID
-    //     $data['id'] = $id;
-    //     $data['user'] = $this->M_reimbust_pu->get_by_id($id);
-
-    //     // Ambil nama user dari database
-    //     $data['app_name'] = $this->db->select('name')
-    //         ->from('tbl_data_user')
-    //         ->where('id_user', $this->session->userdata('id_user'))
-    //         ->get()
-    //         ->row('name');
-    //     $data['app2_name'] = $this->db->select('name')
-    //         ->from('tbl_data_user')
-    //         ->where('id_user', $this->session->userdata('id_user'))
-    //         ->get()
-    //         ->row('name');
-
-    //     // Load library Dompdf
-    //     $this->load->library('dompdf_gen');
-
-    //     // Load view sebagai string
-    //     $html = $this->load->view('backend/reimbust_pu/reimbust_read_pu', $data, true);
-
-    //     // Load HTML ke Dompdf
-    //     $this->dompdf_gen->load_html($html);
-
-    //     // Render PDF
-    //     $this->dompdf_gen->render();
-
-    //     // Output file PDF (dapat disesuaikan untuk mendownload atau menampilkan)
-    //     $this->dompdf_gen->stream("reimbust_$id.pdf", array('Attachment' => 0)); // Attachment 0 untuk menampilkan di browser
-    // }
-
     public function generate_pdf($id)
     {
         // Load FPDF library
-        $this->load->library('fpdf');
+        $this->load->library('Fpdf_generate');
 
         // Load data from database based on $id
         $data['master'] = $this->M_reimbust_pu->get_by_id($id);
@@ -532,24 +484,6 @@ class Reimbust_pu extends CI_Controller
         $pdf->Cell(50, 8.5, 'YANG MELAKUKAN', 1, 0, 'C');
         $pdf->Cell(50, 8.5, 'MENGETAHUI', 1, 0, 'C');
         $pdf->Cell(50, 8.5, 'MENYETUJUI', 1, 1, 'C');
-
-        // Logic tanggal bahasa indonesia
-        // function tanggal_indonesia($tanggal)
-        // {
-        //     $bulanInggris = array(
-        //         'January', 'February', 'March', 'April', 'May', 'June',
-        //         'July', 'August', 'September', 'October', 'November', 'December'
-        //     );
-        //     $bulanIndonesia = array(
-        //         'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-        //         'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-        //     );
-
-        //     $bulan = date('F', strtotime($tanggal));
-        //     $tanggal_indo = date('d', strtotime($tanggal)) . ' ' . str_replace($bulanInggris, $bulanIndonesia, $bulan) . ' ' . date('Y', strtotime($tanggal));
-
-        //     return $tanggal_indo;
-        // }
 
         $pdf->Cell(50, 13.5, 'CREATED', 0, 0, 'C');
 
@@ -797,7 +731,7 @@ class Reimbust_pu extends CI_Controller
             'jabatan' => $jabatan,
             'departemen' => $departemen,
             'sifat_pelaporan' => $this->input->post('sifat_pelaporan'),
-            'tgl_pengajuan' => date('Y-m-d', strtotime($this->input->post('tgl_pengajuan'))),
+            'tgl_pengajuan' => date('Y-m-d H:i:s', strtotime($this->input->post('tgl_pengajuan'))),
             'tujuan' => $this->input->post('tujuan'),
             'jumlah_prepayment' => $this->input->post('jumlah_prepayment'),
             'app_name' => $this->db->select('name')

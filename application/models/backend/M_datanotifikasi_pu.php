@@ -65,12 +65,14 @@ class M_datanotifikasi_pu extends CI_Model
                 $this->db->where('app_hc_status', 'waiting')
                     ->where('app2_status', 'waiting')
                     ->or_where('tbl_notifikasi_pu.id_user =' . $id_user_logged_in . ' AND app_hc_status = "approved" AND app2_status = "waiting"')
-                    ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_hc_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
+                    ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_hc_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE)
+                    ->or_where('app_hc_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_hc_status = "waiting" AND app2_status = "approved" AND status != "rejected" AND status != "revised")', NULL, FALSE);
             } elseif ($_POST['status'] == 'approved') {
                 // Conditions for 'approved' status
                 $this->db->where('app_hc_status', $_POST['status'])
                     ->where('app2_status', 'approved')
-                    ->or_where('app_hc_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_hc_status = "approved" AND app2_status != "rejected")', NULL, FALSE);
+                    ->or_where('app_hc_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_hc_status = "approved" AND app2_status != "rejected")', NULL, FALSE)
+                    ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_hc_status != "approved" AND app2_status = "approved")', NULL, FALSE);
             } elseif ($_POST['status'] == 'revised') {
                 $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
                     ->or_where('app_hc_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_hc_status = "revised")', NULL, FALSE)

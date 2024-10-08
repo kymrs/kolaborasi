@@ -64,6 +64,8 @@ class Datanotifikasi_pu extends CI_Controller
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             if ($field->app_hc_name == $fullname) {
                 $action = $action_read . $action_print;
+            } elseif (!in_array($field->app_hc_status, ['approved', 'rejected']) && $field->app2_status == 'approved') {
+                $action = $action_read . $action_edit . $action_print;
             } elseif ($field->id_user != $this->session->userdata('id_user') && $field->app2_name == $fullname) {
                 $action = $action_read . $action_print;
             } elseif (in_array($field->status, ['rejected', 'approved'])) {
@@ -318,7 +320,7 @@ class Datanotifikasi_pu extends CI_Controller
     public function generate_pdf($id)
     {
         // Load FPDF library
-        $this->load->library('fpdf');
+        $this->load->library('Fpdf_generate');
 
         // Load data from database based on $id
         $data['master'] = $this->M_datanotifikasi_pu->get_by_id($id);

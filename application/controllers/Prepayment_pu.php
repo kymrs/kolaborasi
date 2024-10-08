@@ -33,6 +33,11 @@ class Prepayment_pu extends CI_Controller
         $this->load->view('backend/home', $data);
     }
 
+    public function get_pdf()
+    {
+        $this->load->view('backend/prepayment_pu/prepayment_pdf');
+    }
+
     function get_list()
     {
         // INISIAI VARIABLE YANG DIBUTUHKAN
@@ -370,7 +375,7 @@ class Prepayment_pu extends CI_Controller
     public function generate_pdf($id)
     {
         // Load FPDF library
-        $this->load->library('fpdf');
+        $this->load->library('Fpdf_generate');
 
         // Load data from database based on $id
         $data['master'] = $this->M_prepayment_pu->get_by_id($id);
@@ -405,7 +410,7 @@ class Prepayment_pu extends CI_Controller
         $formatted_date = str_replace($month, $translated_month, $formatted_date);
 
         // Start FPDF
-        $pdf = new FPDF('P', 'mm', 'A4');
+        $pdf = new Fpdf_generate('P', 'mm', 'A4');
         $pdf->SetTitle('Form Pengajuan Prepayment');
         $pdf->AddPage('P', 'Letter');
 
@@ -466,10 +471,38 @@ class Prepayment_pu extends CI_Controller
         // Table Content
         $pdf->SetFont('Arial', '', 12);
         $pdf->SetFillColor(255, 255, 255); // Row color
+
         foreach ($data['transaksi'] as $row) {
-            $pdf->Cell(55, 10, $row['rincian'], 1, 0, 'C', true);
-            $pdf->Cell(55, 10, number_format($row['nominal'], 0, ',', '.'), 1, 0, 'C', true);
-            $pdf->Cell(79, 10, $row['keterangan'], 1, 1, 'C', true);
+            // Hitung tinggi maksimum dari baris ini berdasarkan jumlah baris dari masing-masing kolom
+            $rincianLines = $pdf->GetStringWidth($row['rincian']) / 55; // 55 adalah lebar kolom rincian
+            $rincianHeight = ceil($rincianLines) * 7; // Estimasi tinggi dengan mengalikan jumlah baris dengan tinggi per baris
+            // Estimasi jumlah baris untuk kolom keterangan
+            $keteranganLines = $pdf->GetStringWidth($row['keterangan']) / 79; // 79 adalah lebar kolom keterangan
+            $keteranganHeight = ceil($keteranganLines) * 7; // Estimasi tinggi dengan mengalikan jumlah baris dengan tinggi per baris
+
+            // Ambil tinggi maksimum dari ketiga kolom
+            $maxHeight = max($rincianHeight, $keteranganHeight, 7);
+
+            // Kolom rincian (gunakan MultiCell untuk wrapping)
+            $x = $pdf->GetX();
+            $y = $pdf->GetY();
+            $pdf->MultiCell(55, 7, $row['rincian'], 1, 'C', true);
+            $pdf->SetXY($x + 55, $y);  // Kembalikan ke posisi kolom selanjutnya
+
+            // Kolom nominal (gunakan Cell)
+            $x = $pdf->GetX();
+            $y = $pdf->GetY();
+            $pdf->MultiCell(55, $maxHeight, number_format($row['nominal'], 0, ',', '.'), 1, 'C', true);
+            $pdf->SetXY($x + 55, $y);  // Kembalikan ke posisi kolom selanjutnya
+
+            // Kolom keterangan (gunakan MultiCell untuk wrapping)
+            $x = $pdf->GetX();  // Simpan posisi X
+            $y = $pdf->GetY();
+            $pdf->MultiCell(79, $maxHeight, $row['keterangan'], 1, 'C', true);
+            $pdf->SetXY($x + 79, $y);  // Pindahkan ke posisi kolom selanjutnya untuk menjaga keselarasan
+
+            // Pindahkan ke baris baru
+            $pdf->Ln($maxHeight);
         }
 
         // Table Footer
@@ -535,6 +568,9 @@ class Prepayment_pu extends CI_Controller
 
         // Output the PDF
         $pdf->Output('I', 'Prepayment.pdf');
+        // $pdfContent = $pdf->Output('S');  // Generate the PDF and get it as a string
+        // echo json_encode(base64_encode($pdfContent));  // Base64 encode and send to the client
+
     }
 
     // GENERATE PREPAYMENT MENJADI PDF MENGGUNAKAN FPDF
