@@ -66,7 +66,7 @@ class Prepayment_pu extends CI_Controller
             $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="prepayment_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
-            if ($field->app_name == $fullname) {
+            if ($field->app_name == $fullname && $field->id_user != $this->session->userdata('id_user')) {
                 $action = $action_read . $action_print;
             } elseif ($field->id_user != $this->session->userdata('id_user') && $field->app2_name == $fullname) {
                 $action = $action_read . $action_print;
@@ -231,14 +231,15 @@ class Prepayment_pu extends CI_Controller
                 ->from('tbl_data_user')
                 ->where('id_user', $approval->app2_id)
                 ->get()
-                ->row('name')
+                ->row('name'),
+            'created_at' => date('Y-m-d H:i:s')
         );
 
         // BILA YANG MEMBUAT PREPAYMENT DAPAT MENGAPPROVE SENDIRI
-        if ($approval->app_id == $this->session->userdata('id_user')) {
-            $data['app_status'] = 'approved';
-            $data['app_date'] = date('Y-m-d H:i:s');
-        }
+        // if ($approval->app_id == $this->session->userdata('id_user')) {
+        //     $data['app_status'] = 'approved';
+        //     $data['app_date'] = date('Y-m-d H:i:s');
+        // }
 
         $inserted = $this->M_prepayment_pu->save($data);
 
