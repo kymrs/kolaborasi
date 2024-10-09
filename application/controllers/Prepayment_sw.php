@@ -412,10 +412,13 @@ class Prepayment_sw extends CI_Controller
         // Logo
         $pdf->Image(base_url('') . '/assets/backend/img/sebelaswarna.png', 8, 10, 40, 30);
 
+        $pdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php');
+        $pdf->AddFont('Poppins-Bold', '', 'Poppins-Bold.php');
+
         // Pindahkan posisi sedikit ke bawah dan tetap sejajar
         // $pdf->SetX(46); // Tetap di posisi yang sama untuk elemen lain
         $pdf->Ln(27);
-        $pdf->SetFont('Arial', '', 12);
+        $pdf->SetFont('Poppins-Regular', '', 12);
         $pdf->Cell(30, 10, 'Divisi', 0, 0);
         $pdf->Cell(5, 10, ':', 0, 0);
         $pdf->Cell(50, 10, $data['master']->divisi, 0, 1);
@@ -427,12 +430,12 @@ class Prepayment_sw extends CI_Controller
         $pdf->Ln(8);
 
         // Form Title
-        $pdf->SetFont('Arial', 'B', 14);
+        $pdf->SetFont('Poppins-Bold', '', 14);
         $pdf->Cell(0, 10, 'FORM PENGAJUAN PREPAYMENT', 0, 1, 'C');
         $pdf->Ln(5);
 
         // Form Fields
-        $pdf->SetFont('Arial', '', 12);
+        $pdf->SetFont('Poppins-Regular', '', 12);
         $pdf->Cell(30, 10, 'Tanggal', 0, 0);
         $pdf->Cell(5, 10, ':', 0, 0);
         $pdf->Cell(50, 10, $formatted_date, 0, 1);
@@ -453,13 +456,13 @@ class Prepayment_sw extends CI_Controller
         $pdf->Ln(5);
 
         // Table Header
-        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->SetFont('Poppins-Bold', '', 12);
         $pdf->Cell(55, 10, 'Rincian', 1, 0, 'C');
         $pdf->Cell(55, 10, 'Nominal', 1, 0, 'C');
         $pdf->Cell(79, 10, 'Keterangan', 1, 1, 'C');
 
         // Table Content
-        $pdf->SetFont('Arial', '', 12);
+        $pdf->SetFont('Poppins-Regular', '', 12);
         $pdf->SetFillColor(255, 255, 255); // Row color
 
         foreach ($data['transaksi'] as $row) {
@@ -504,14 +507,14 @@ class Prepayment_sw extends CI_Controller
         }
 
         // Table Footer
-        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->SetFont('Poppins-Bold', '', 12);
         $pdf->Cell(55, 10, 'Total :', 1, 0, 'C');
         $pdf->SetFont('Arial', '', 12);
         $pdf->Cell(134, 10, number_format($data['master']->total_nominal, 0, ',', '.'), 1, 1, 'C');
         $pdf->Ln(10);
 
         //APPROVAL
-        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->SetFont('Poppins-Bold', '', 12);
 
         // Membuat header tabel
         $pdf->Cell(63, 8.5, 'Yang Melakukan', 1, 0, 'C');
@@ -519,7 +522,7 @@ class Prepayment_sw extends CI_Controller
         $pdf->Cell(63, 8.5, 'Menyetujui', 1, 1, 'C');
 
         // Set font normal untuk konten tabel
-        $pdf->SetFont('Arial', '', 10);
+        $pdf->SetFont('Poppins-Regular', '', 10);
 
         // Baris pemisah
         $pdf->Cell(63, 5, '', 'LR', 0, 'C');
@@ -552,7 +555,7 @@ class Prepayment_sw extends CI_Controller
 
         // Add keterangan
         $pdf->Ln(5);
-        $pdf->SetFont('Arial', '', 12);
+        $pdf->SetFont('Poppins-Regular', '', 12);
         if (($data['master']->app_keterangan != null && $data['master']->app_keterangan != '') || ($data['master']->app2_keterangan != null && $data['master']->app2_keterangan != '')) {
             $pdf->Cell(40, 10, 'Keterangan:', 0, 0);
         }
