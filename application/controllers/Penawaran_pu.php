@@ -1,6 +1,5 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
-require 'Pdf.php';
 
 class Penawaran_pu extends CI_Controller
 {
@@ -360,6 +359,8 @@ class Penawaran_pu extends CI_Controller
     // PRINTOUT FPDF
     public function generate_pdf()
     {
+        $this->load->library('Fpdf_generate');
+
         // Start FPDF
         $pdf = new Pdf('P', 'mm', 'A4');
         $pdf->SetTitle('Form Deklarasi');

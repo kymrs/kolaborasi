@@ -22,36 +22,24 @@
                         </select>
                     </div>
                 </div>
-                <!-- NAV TABS -->
-                <ul class="nav nav-tabs">
-                    <li class="nav-item">
-                        <a class="nav-link active" id="personalTab" href="#" data-tab="personal">User</a>
-                    </li>
-                    <?php if ($approval > 0) { ?>
-                        <li class="nav-item">
-                            <a class="nav-link" id="employeeTab" href="#" data-tab="employee">Approval</a>
-                        </li>
-                    <?php } ?>
-                </ul>
 
                 <div class="card-body p-4">
                     <!-- Added padding for spacing -->
                     <div class="table-responsive">
                         <!-- Table wrapper -->
-                        <table id="notificationTable" class="table table-bordered table-striped display nowrap w-100 mb-4">
+                        <table id="tandaTerimaTable" class="table table-bordered table-striped display nowrap w-100 mb-4">
                             <!-- Added margin-bottom -->
                             <thead>
                                 <tr>
                                     <th>No</th>
                                     <th style="width: 120px;">Action</th>
-                                    <th>Kode Notifikasi</th>
-                                    <th>Nama</th>
-                                    <th>Jabatan</th>
-                                    <th>Departemen</th>
-                                    <th>Pengajuan</th>
+                                    <th>Nomor</th>
                                     <th>Tanggal</th>
-                                    <th>Alasan</th>
-                                    <th>Status</th>
+                                    <th>Pengirim</th>
+                                    <th>Penerima</th>
+                                    <th>Uraian</th>
+                                    <th>Jumlah</th>
+                                    <th>Foto</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -61,14 +49,13 @@
                                 <tr>
                                     <th>No</th>
                                     <th style="width: 120px;">Action</th>
-                                    <th>Kode Notifikasi</th>
-                                    <th>Nama</th>
-                                    <th>Jabatan</th>
-                                    <th>Departemen</th>
-                                    <th>Pengajuan</th>
+                                    <th>Nomor</th>
                                     <th>Tanggal</th>
-                                    <th>Alasan</th>
-                                    <th>Status</th>
+                                    <th>Pengirim</th>
+                                    <th>Penerima</th>
+                                    <th>Uraian</th>
+                                    <th>Jumlah</th>
+                                    <th>Foto</th>
                                 </tr>
                             </tfoot>
                         </table>
@@ -86,94 +73,86 @@
     var table;
 
     $(document).ready(function() {
-        var table = $('#notificationTable').DataTable({
+        var table = $('#tandaTerimaTable').DataTable({
             "responsive": true,
             "scrollX": true,
             "processing": true,
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('datanotifikasi_sw/get_list') ?>",
-                "type": "POST",
-                "data": function(d) {
-                    d.status = $('#appFilter').val(); // Tambahkan parameter status ke permintaan server
-                    d.tab = $('.nav-tabs .nav-link.active').data('tab'); // Tambahkan parameter tab ke permintaan server
-                }
+                "url": "<?php echo site_url('tanda_terima/get_list') ?>",
+                "type": "POST"
             },
             "language": {
                 "infoFiltered": ""
             },
             "columnDefs": [{
-                    "targets": [2, 4, 6, 7, 8], // Adjusted indices to match the number of columns
+                    "targets": [], // Adjusted indices to match the number of columns
                     "className": 'dt-head-nowrap'
                 },
                 {
-                    "targets": [1],
+                    "targets": [],
                     "className": 'dt-body-nowrap'
-                },
-                {
-                    "targets": [0, 1], // Indices for non-orderable columns
-                    "orderable": false,
                 }
             ]
         });
 
-        $('#appFilter').change(function() {
-            table.ajax.reload(); // Muat ulang data di DataTable dengan filter baru
-        });
+        // $('#appFilter').change(function() {
+        //     table.ajax.reload(); // Muat ulang data di DataTable dengan filter baru
+        // });
 
         // Event listener untuk nav tabs
-        $('.nav-tabs a').on('click', function(e) {
-            e.preventDefault();
-            $('.nav-tabs a').removeClass('active'); // Hapus kelas aktif dari semua tab
-            $(this).addClass('active'); // Tambahkan kelas aktif ke tab yang diklik
+        // $('.nav-tabs a').on('click', function(e) {
+        //     e.preventDefault();
+        //     $('.nav-tabs a').removeClass('active'); // Hapus kelas aktif dari semua tab
+        //     $(this).addClass('active'); // Tambahkan kelas aktif ke tab yang diklik
 
-            table.ajax.reload(); // Muat ulang data di DataTable saat tab berubah
-        });
+        //     table.ajax.reload(); // Muat ulang data di DataTable saat tab berubah
+        // });
 
-        // Restore filter value from localStorage
-        var savedStatus = localStorage.getItem('appFilterStatus');
-        if (savedStatus) {
-            $('#appFilter').val(savedStatus).change();
-        }
+        // // Restore filter value from localStorage
+        // var savedStatus = localStorage.getItem('appFilterStatus');
+        // if (savedStatus) {
+        //     $('#appFilter').val(savedStatus).change();
+        // }
 
         // Save filter value to localStorage on change
-        $('#appFilter').on('change', function() {
-            localStorage.setItem('appFilterStatus', $(this).val());
-        });
+        // $('#appFilter').on('change', function() {
+        //     localStorage.setItem('appFilterStatus', $(this).val());
+        // });
 
-        window.delete_data = function(id) {
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, delete it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: "<?php echo site_url('datanotifikasi_sw/delete/') ?>" + id,
-                        type: "POST",
-                        dataType: "JSON",
-                        success: function(data) {
-                            Swal.fire({
-                                position: 'center',
-                                icon: 'success',
-                                title: 'Your data has been deleted',
-                                showConfirmButton: false,
-                                timer: 1500
-                            }).then(() => {
-                                table.ajax.reload(); // Reload the table data
-                            });
-                        },
-                        error: function(jqXHR, textStatus, errorThrown) {
-                            alert('Error deleting data');
-                        }
-                    });
-                }
-            });
-        };
+        // window.delete_data = function(id) {
+        //     Swal.fire({
+        //         title: 'Are you sure?',
+        //         text: "You won't be able to revert this!",
+        //         icon: 'warning',
+        //         showCancelButton: true,
+        //         confirmButtonColor: '#3085d6',
+        //         cancelButtonColor: '#d33',
+        //         confirmButtonText: 'Yes, delete it!'
+        //     }).then((result) => {
+        //         if (result.isConfirmed) {
+        //             $.ajax({
+        //                 url: "<?php echo site_url('datanotifikasi_sw/delete/') ?>" + id,
+        //                 type: "POST",
+        //                 dataType: "JSON",
+        //                 success: function(data) {
+        //                     Swal.fire({
+        //                         position: 'center',
+        //                         icon: 'success',
+        //                         title: 'Your data has been deleted',
+        //                         showConfirmButton: false,
+        //                         timer: 1500
+        //                     }).then(() => {
+        //                         table.ajax.reload(); // Reload the table data
+        //                     });
+        //                 },
+        //                 error: function(jqXHR, textStatus, errorThrown) {
+        //                     alert('Error deleting data');
+        //                 }
+        //             });
+        //         }
+        //     });
+        // };
     });
 </script>

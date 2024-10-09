@@ -3,13 +3,12 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Tanda_terima extends CI_Controller
 {
-
-    function __construct()
+    public function __construct()
     {
         parent::__construct();
         $this->load->model('backend/M_tanda_terima');
         $this->M_login->getsecurity();
-        date_default_timezone_set('Asia/Jakarta');
+        $this->load->library('ciqrcode');
     }
 
     public function index()
@@ -18,6 +17,7 @@ class Tanda_terima extends CI_Controller
         ($akses->view_level == 'N' ? redirect('auth') : '');
         $data['add'] = $akses->add_level;
 
+
         $data['title'] = "backend/tanda_terima/tanda_terima_list";
         $data['titleview'] = "Tanda Terima";
         $name = $this->db->select('name')
@@ -25,12 +25,6 @@ class Tanda_terima extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $data['approval'] = $this->db->select('COUNT(*) as total_approval')
-            ->from('tbl_notifikasi')
-            ->where('app_hc_name', $name)
-            ->or_where('app2_name', $name)
-            ->get()
-            ->row('total_approval');
         $this->load->view('backend/home', $data);
     }
 
@@ -42,8 +36,7 @@ class Tanda_terima extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $status = $this->input->post('status'); // Ambil status dari permintaan POST
-        $list = $this->M_tanda_terima->get_datatables($status);
+        $list = $this->M_tanda_terima->get_datatables();
         $data = array();
         $no = $_POST['start'];
 
@@ -53,42 +46,29 @@ class Tanda_terima extends CI_Controller
         $delete = $akses->delete_level;
         $print = $akses->print_level;
 
+        //LOOPING DATATABLES
         foreach ($list as $field) {
 
-            // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
-            $action_read = ($read == 'Y') ? '<a href="tanda_terima/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
+            $action_read = ($read == 'Y') ? '<a href="tanda_terima/read_form/' . $field->no_arsip . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
             $action_edit = ($edit == 'Y') ? '<a href="tanda_terima/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
             $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="tanda_terima/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
-            if ($field->app_hc_name == $fullname) {
-                $action = $action_read . $action_print;
-            } elseif ($field->id_user != $this->session->userdata('id_user') && $field->app2_name == $fullname) {
-                $action = $action_read . $action_print;
-            } elseif (in_array($field->status, ['rejected', 'approved'])) {
-                $action = $action_read . $action_print;
-            } elseif ($field->app_hc_status == 'revised' || $field->app2_status == 'revised') {
-                $action = $action_read . $action_edit . $action_print;
-            } elseif ($field->app_hc_status == 'approved') {
-                $action = $action_read . $action_print;
-            } else {
-                $action = $action_read . $action_edit . $action_delete . $action_print;
-            }
-
+            $action = $action_read . $action_edit . $action_delete . $action_print;
 
             $no++;
             $row = array();
             $row[] = $no;
             $row[] = $action;
-            $row[] = strtoupper($field->kode_notifikasi);
-            $row[] = $field->name;
-            $row[] = $field->jabatan;
-            $row[] = $field->departemen;
-            $row[] = $field->pengajuan;
-            $row[] = date("d M Y", strtotime($field->tgl_notifikasi));
-            $row[] = $field->alasan;
-            $row[] = $field->status;
+            $row[] = $field->nomor;
+            $row[] = $field->tanggal;
+            $row[] = $field->nama_pengirim;
+            $row[] = $field->nama_penerima;
+            $row[] = $field->barang;
+            $row[] = $field->qty;
+            $row[] = $field->foto;
+
             $data[] = $row;
         }
 
@@ -102,377 +82,344 @@ class Tanda_terima extends CI_Controller
         echo json_encode($output);
     }
 
-    function read_form($id)
+    public function read_form()
     {
-        $data['id'] = $id;
-        $data['user'] = $this->M_tanda_terima->get_by_id($id);
-        $data['app_hc_name'] = $this->db->select('name')
-            ->from('tbl_data_user')
-            ->where('id_user', $this->session->userdata('id_user'))
-            ->get()
-            ->row('name');
-        $data['app2_name'] = $this->db->select('name')
-            ->from('tbl_data_user')
-            ->where('id_user', $this->session->userdata('id_user'))
-            ->get()
-            ->row('name');
-        $sql = '
-            WITH RankedNotifikasi AS (
-                SELECT *,
-                       ROW_NUMBER() OVER (ORDER BY created_at ASC) AS row_num
-                FROM tbl_notifikasi
-                WHERE id_user = ' . $data['user']->id_user . '
-                AND YEAR(created_at) = ' . date('Y', strtotime($data['user']->created_at)) . '
-            )
-            SELECT row_num
-            FROM RankedNotifikasi
-            WHERE id = ' . $id . ';
-        ';
-        $query = $this->db->query($sql);
-        $data['ke'] = $query->row()->row_num;
-        $data['title_view'] = "Data Tanda Terima";
-        $data['title'] = 'backend/tanda_terima/tanda_terima_read';
-        $this->load->view('backend/home', $data);
-    }
+        $kode = $this->uri->segment(3);
+        // var_dump($kode);
+        $data['penawaran'] = $this->M_tanda_terima->getPenawaran($kode);
 
-    // MEREGENERATE KODE PREPAYMENT
-    public function generate_kode()
-    {
-        $date = $this->input->post('date');
-        $kode = $this->M_tanda_terima->max_kode($date)->row();
-        if (empty($kode->kode_notifikasi)) {
-            $no_urut = 1;
+        if ($data['penawaran'] == null) {
+            $this->load->view('backend/penawaran_pu/404');
         } else {
-            $bln = substr($kode->kode_notifikasi, 3, 2);
-            $no_urut = substr($kode->kode_notifikasi, 5) + 1;
+            $no_arsip = $data['penawaran']['no_arsip'];
+            $data['layanan_termasuk'] = $this->M_tanda_terima->getLayananTermasuk($kode);
+            $data['layanan_tidak_termasuk'] = $this->M_tanda_terima->getLayananTidakTermasuk($kode);
+
+            $params['data'] = 'https://arsip.pengenumroh.com/' . $no_arsip;
+            $params['level'] = 'H';
+            $params['size'] = 10;
+            $params['savename'] = 'assets/backend/document/qrcode/qr-' . $no_arsip . '.png';
+            $this->ciqrcode->generate($params);
+
+            $data['title'] = 'backend/penawaran_pu/penawaran_read_pu';
+            $data['title_view'] = 'Prepayment';
+            $this->load->view('backend/home', $data);
         }
-        $urutan = str_pad($no_urut, 3, "0", STR_PAD_LEFT);
-        $month = substr($date, 3, 2);
-        $year = substr($date, 8, 2);
-        $data = 'n' . $year . $month . $urutan;
-        echo json_encode($data);
     }
 
-    function add_form()
+    public function add_form()
     {
         $data['id'] = 0;
-        $data['title_view'] = "Tanda Terima Form";
-        $data['title'] = 'backend/tanda_terima/tanda_terima_form';
+        $data['title'] = 'backend/penawaran_pu/penawaran_form_pu';
+        $data['layanan'] = $this->db->get('tbl_layanan')->result_array();
+        $data['title_view'] = 'Penawaran Form';
         $this->load->view('backend/home', $data);
     }
 
     function edit_form($id)
     {
         $data['id'] = $id;
-        $data['title_view'] = "Edit Data Tanda Terima";
-        $data['title'] = 'backend/tanda_terima/tanda_terima_form';
+        $data['aksi'] = 'update';
+        $data['title_view'] = "Edit Data Prepayment";
+        $data['title'] = 'backend/penawaran_pu/penawaran_form_pu';
+        $data['layanan'] = $this->db->get('tbl_layanan')->result_array();
         $this->load->view('backend/home', $data);
     }
 
     function edit_data($id)
     {
-        $data['master'] = $this->M_tanda_terima->get_by_id($id);
-        $data['nama'] = $this->db->select('name')
-            ->from('tbl_data_user')
-            ->where('id_user', $data['master']->id_user)
-            ->get()->row('name');
+        $data['master'] = $this->db->get_where('tbl_penawaran', ['id' => $id])->row_array();
+        $data['layanan'] = $this->M_tanda_terima->get_penawaran_detail($id); // Ambil detail layanan (status, nominal)
         echo json_encode($data);
+    }
+
+    public function generate_kode()
+    {
+        $date = date('Y-m-d h:i:sa');
+        $kode = $this->M_tanda_terima->max_kode($date)->row();
+        if (empty($kode->no_pelayanan)) {
+            $no_urut = 1;
+        } else {
+            $no_urut = substr($kode->no_pelayanan, 9, 3);
+        }
+        $urutan = str_pad(number_format($no_urut + 1), 3, "0", STR_PAD_LEFT);
+        $year = substr($date, 0, 4);
+        $data = 'UMROH/LA/' . $urutan . '/' . 'IX' . '/' . $year;
+        echo json_encode($data);
+    }
+
+    public function generate_layanan()
+    {
+        $layanan = $this->db->from('tbl_produk')
+            ->where('id', $this->input->post('id'))
+            ->get()
+            ->row();
+        echo json_encode($layanan);
     }
 
     public function add()
     {
-        // INSERT KODE DEKLARASI
-        $date = $this->input->post('tgl_notifikasi');
+        // GENERATE NOMOR PELAYANAN
+        $date = date('Y-m-d h:i:sa');
         $kode = $this->M_tanda_terima->max_kode($date)->row();
-        if (empty($kode->kode_notifikasi)) {
+        if (empty($kode->no_pelayanan)) {
             $no_urut = 1;
+            $no_urut2 = 1; // Inisialisasi untuk arsip jika baru
         } else {
-            $bln = substr($kode->kode_notifikasi, 3, 2);
-            $no_urut = substr($kode->kode_notifikasi, 5) + 1;
+            $no_urut = substr($kode->no_pelayanan, 9, 3);
+            $no_urut2 = substr($kode->no_arsip, 6) + 1;
         }
-        $urutan = str_pad($no_urut, 3, "0", STR_PAD_LEFT);
-        $month = substr($date, 3, 2);
-        $year = substr($date, 8, 2);
-        $kode_notifikasi = 'N' . $year . $month . $urutan;
+        $urutan = str_pad(number_format($no_urut + 1), 3, "0", STR_PAD_LEFT);
+        $year = substr($date, 0, 4);
+        $year2 = substr($date, 2, 2);
+        $no_pelayanan = 'UMROH/LA/' . $urutan . '/' . 'IX' . '/' . $year;
 
-        // MENCARI SIAPA YANG AKAN MELAKUKAN APPROVAL PERMINTAAN
-        $approval = $this->M_tanda_terima->approval($this->session->userdata('id_user'));
-        $id = $this->session->userdata('id_user');
+        // GENERATE NOMOR ARSIP
+        $urutan2 = str_pad($no_urut2, 2, "0", STR_PAD_LEFT);
+        $no_arsip = 'PU' . $year2 . '09' . $urutan2;
 
+        //CONVERT TIME
+        // Ambil nilai input datetime dari form
+        $input_datetime = $this->input->post('tgl_berlaku');
+        $input2_datetime = $this->input->post('keberangkatan');
+
+        // Ubah format dari 'Y-m-dTH:i' ke 'Y-m-d H:i:s' agar sesuai dengan format MySQL
+        $formatted_datetime = date('Y-m-d H:i:s', strtotime($input_datetime));
+        $formatted2_datetime = date('Y-m-d H:i:s', strtotime($input2_datetime));
+
+        // Data untuk tabel penawaran
         $data = array(
-            'kode_notifikasi' => $kode_notifikasi,
-            'id_user' => $id,
-            'jabatan' => $this->db->select('jabatan')
-                ->from('tbl_data_user')
-                ->where('id_user', $id)
-                ->get()
-                ->row('jabatan'),
-            'departemen' => $this->db->select('divisi')
-                ->from('tbl_data_user')
-                ->where('id_user', $id)
-                ->get()
-                ->row('divisi'),
-            'pengajuan' => $this->input->post('pengajuan'),
-            'tgl_notifikasi' => date('Y-m-d', strtotime($this->input->post('tgl_notifikasi'))),
-            'waktu' => $this->input->post('waktu'),
-            'alasan' => $this->input->post('alasan'),
-            'app_hc_name' => $this->db->select('name')
-                ->from('tbl_data_user')
-                ->where('id_user', $approval->app3_id)
-                ->get()
-                ->row('name'),
-            'app2_name' => $this->db->select('name')
-                ->from('tbl_data_user')
-                ->where('id_user', $approval->app2_id)
-                ->get()
-                ->row('name')
+            'no_pelayanan' => $no_pelayanan,
+            'no_arsip' => $no_arsip,
+            'pelanggan' => $this->input->post('pelanggan'),
+            'alamat' => $this->input->post('alamat'),
+            'produk' => $this->input->post('produk'),
+            'deskripsi' => $this->input->post('deskripsi'),
+            'tgl_berlaku' => $formatted_datetime,
+            'keberangkatan' => $formatted2_datetime,
+            'durasi' => $this->input->post('durasi'),
+            'tempat' => $this->input->post('tempat'),
+            'biaya' => preg_replace('/\D/', '', $this->input->post('biaya')),
+            'pelanggan' => $this->input->post('pelanggan'),
+            'catatan' => $this->input->post('catatan_content')
         );
 
-        // BILA YANG MEMBUAT PREPAYMENT DAPAT MENGAPPROVE SENDIRI
-        if ($approval->app3_id == $this->session->userdata('id_user')) {
-            $data['app_hc_status'] = 'approved';
-            $data['app_hc_date'] = date('Y-m-d H:i:s');
-        }
+        // Simpan data ke tabel penawaran dan ambil ID penawaran yang baru disimpan
+        $id_penawaran = $this->M_tanda_terima->save($data);
 
-        $this->M_tanda_terima->save($data);
+        // Ambil data layanan dari input (id layanan, status, dan nominal)
+        $ids = $this->input->post('id_layanan'); // ID layanan
+        $statuses = $this->input->post('status'); // Status layanan (Y/N)
+        $nominals = preg_replace('/\D/', '', $this->input->post('nominal')); // Nominal biaya layanan
+
+        // Siapkan array untuk insert ke tabel tbl_penawaran_detail
+        $detail_data = [];
+        if (is_array($ids) && is_array($statuses) && is_array($nominals)) {
+            foreach ($ids as $key => $id_layanan) {
+                // Isi "-" jika status kosong, tetapi lewati data dengan is_active "-"
+                $is_active = isset($statuses[$key]) && !empty($statuses[$key]) ? $statuses[$key] : '-';
+                $nominal = isset($nominals[$key]) && !empty($nominals[$key]) ? $nominals[$key] : null;
+
+                // Hanya insert data yang statusnya bukan "-"
+                if ($is_active !== '-') {
+                    // Jika id_layanan adalah 9, tambahkan nominal ke dalam is_active
+                    if ($id_layanan == 9 && $nominal !== null) {
+                        $is_active .= ' ' . $nominal; // Gabungkan is_active dengan nominal
+                    }
+
+                    $detail_data[] = [
+                        'id_penawaran' => $id_penawaran, // ID penawaran yang baru disimpan
+                        'id_layanan' => $id_layanan, // ID layanan
+                        'is_active' => $is_active, // Status layanan (is_active + nominal jika id_layanan = 9)
+                    ];
+                }
+            }
+
+            // Log atau print untuk memeriksa data yang akan diinsert
+            log_message('info', 'Detail Data to insert: ' . print_r($detail_data, TRUE));
+
+            // Simpan detail layanan ke tabel tbl_penawaran_detail
+            if (!empty($detail_data)) {
+                $this->M_tanda_terima->insert_penawaran_detail($detail_data);
+            }
+        }
+        // Kirim response
         echo json_encode(array("status" => TRUE));
     }
 
-    public function update()
+    public function update($id)
     {
+        // Ambil data dari form
+        $no_pelayanan = $this->input->post('no_pelayanan');
+        $pelanggan = $this->input->post('pelanggan');
+        $catatan = $this->input->post('editor_content');
+        $layanan_ids = $this->input->post('id_layanan'); // Array of layanan IDs
+        $statuses = $this->input->post('status'); // Array of layanan statuses
+        $extra_inputs = $this->input->post('nominal'); // Ambil nominal dari input
+
+        // Jika nominal berformat rupiah, bersihkan dari karakter non-digit
+        $extra_inputs = array_map(function ($input) {
+            return preg_replace('/\D/', '', $input); // Hanya ambil karakter digit
+        }, $extra_inputs);
+
+        // Debugging: Tampilkan nilai nominal
+        // var_dump($extra_inputs);
+
+        // CONVERT TIME
+        // Ambil nilai input datetime dari form
+        $input_datetime = $this->input->post('tgl_berlaku');
+        $input2_datetime = $this->input->post('keberangkatan');
+
+        // Ubah format dari 'Y-m-dTH:i' ke 'Y-m-d H:i:s' agar sesuai dengan format MySQL
+        $formatted_datetime = date('Y-m-d H:i:s', strtotime($input_datetime));
+        $formatted2_datetime = date('Y-m-d H:i:s', strtotime($input2_datetime));
+
+        // Data untuk tabel penawaran
         $data = array(
-            'pengajuan' => $this->input->post('pengajuan'),
-            'waktu' => $this->input->post('waktu'),
-            'alasan' => $this->input->post('alasan'),
-            'app_hc_status' => 'waiting',
-            'app_hc_date' => null,
-            'app_hc_keterangan' => null,
-            'catatan' => null,
-            'app2_status' => 'waiting',
-            'app2_date' => null,
-            'app2_keterangan' => null,
-            'status' => 'on-process'
+            'no_pelayanan' => $no_pelayanan,
+            'pelanggan' => $this->input->post('pelanggan'),
+            'alamat' => $this->input->post('alamat'),
+            'produk' => $this->input->post('produk'),
+            'deskripsi' => $this->input->post('deskripsi'),
+            'tgl_berlaku' => $formatted_datetime,
+            'keberangkatan' => $formatted2_datetime,
+            'durasi' => $this->input->post('durasi'),
+            'tempat' => $this->input->post('tempat'),
+            'biaya' => preg_replace('/\D/', '', $this->input->post('biaya')),
+            'catatan' => $this->input->post('catatan_content')
         );
-        $this->db->where('id', $this->input->post('id'));
-        $this->db->update('tbl_notifikasi', $data);
+
+        // Update data penawaran
+        $this->db->update('tbl_penawaran', $data, ['id' => $id]);
+
+        // Pastikan semua input adalah array
+        if (!is_array($layanan_ids) || !is_array($statuses) || !is_array($extra_inputs)) {
+            echo json_encode(array("status" => FALSE, "message" => "Data tidak valid."));
+            return;
+        }
+
+        // Loop over each layanan and check whether to update, insert, or delete
+        foreach ($layanan_ids as $index => $layanan_id) {
+            $status = isset($statuses[$index]) ? $statuses[$index] : null; // Ambil status
+            $extra_input = isset($extra_inputs[$index]) ? $extra_inputs[$index] : null; // Ambil nominal
+
+            // Cek apakah layanan sudah ada di database
+            $existing_layanan = $this->db->get_where('tbl_penawaran_detail', ['id_layanan' => $layanan_id, 'id_penawaran' => $id])->row();
+
+            // Jika status kosong, hapus dari database
+            if (empty($status)) {
+                if ($existing_layanan) {
+                    $this->db->delete('tbl_penawaran_detail', ['id' => $existing_layanan->id]);
+                }
+                continue; // Lewati iterasi ini dan lanjutkan ke layanan berikutnya
+            }
+
+            // Jika layanan sudah ada, lakukan update
+            if ($existing_layanan) {
+                if ($layanan_id == 9 && $status === 'N') {
+                    // Jika id_layanan 9 dan statusnya N, hapus nilai nominal
+                    $data_layanan_update = array(
+                        'is_active' => 'N' // Set is_active hanya 'N'
+                    );
+                } else {
+                    // Gabungkan nominal ke dalam is_active
+                    $data_layanan_update = array(
+                        'is_active' => $status . ' ' . $extra_input // Gabungkan status dengan nominal
+                    );
+                }
+                $this->db->update('tbl_penawaran_detail', $data_layanan_update, ['id' => $existing_layanan->id]);
+            } else {
+                // Jika layanan tidak ada, lakukan insert
+                $data_layanan_insert = array(
+                    'id_penawaran' => $id,
+                    'id_layanan' => $layanan_id,
+                    'is_active' => $status . ' ' . $extra_input // Gabungkan status dengan nominal
+                );
+
+                // Debugging: Tampilkan data yang akan diinsert
+                // var_dump($data_layanan_insert);
+                $this->db->insert('tbl_penawaran_detail', $data_layanan_insert);
+            }
+        }
+        // Mengembalikan status berhasil
         echo json_encode(array("status" => TRUE));
     }
+
 
     function delete($id)
     {
-        $this->M_tanda_terima->delete($id);
-        echo json_encode(array("status" => TRUE));
-    }
-
-    //APPROVE DATA
-    public function approve()
-    {
-        $data = array(
-            'app_hc_keterangan' => $this->input->post('app_hc_keterangan'),
-            'app_hc_status' => $this->input->post('app_hc_status'),
-            'app_hc_date' => date('Y-m-d H:i:s'),
-            'catatan' => $this->input->post('app_catatan')
-        );
-
-        // UPDATE STATUS DEKLARASI
-        if ($this->input->post('app_hc_status') === 'revised') {
-            $data['status'] = 'revised';
-        } elseif ($this->input->post('app_hc_status') === 'approved') {
-            $data['status'] = 'on-process';
-        } elseif ($this->input->post('app_hc_status') === 'rejected') {
-            $data['status'] = 'rejected';
-        }
-
-        //UPDATE APPROVAL PERTAMA
-        $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_notifikasi', $data);
-
-        echo json_encode(array("status" => TRUE));
-    }
-
-    function approve2()
-    {
-        $data = array(
-            'app2_keterangan' => $this->input->post('app2_keterangan'),
-            'app2_status' => $this->input->post('app2_status'),
-            'app2_date' => date('Y-m-d H:i:s'),
-        );
-
-        // UPDATE STATUS DEKLARASI
-        if ($this->input->post('app2_status') === 'revised') {
-            $data['status'] = 'revised';
-        } elseif ($this->input->post('app2_status') === 'approved') {
-            $data['status'] = 'approved';
-        } elseif ($this->input->post('app2_status') === 'rejected') {
-            $data['status'] = 'rejected';
-        }
-
-        // UPDATE APPROVAL 2
-        $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_notifikasi', $data);
-
+        $this->db->delete('tbl_penawaran', ['id' => $id]);
+        $this->db->delete('tbl_penawaran_detail', ['id_penawaran' => $id]);
         echo json_encode(array("status" => TRUE));
     }
 
     // PRINTOUT FPDF
-    public function generate_pdf($id)
+    public function generate_pdf()
     {
-        // Load FPDF library
-        $this->load->library('fpdf');
-
-        // Load data from database based on $id
-        $data['master'] = $this->M_tanda_terima->get_by_id($id);
-        $data['user'] = $this->db->select('name')
-            ->from('tbl_data_user')
-            ->where('id_user', $data['master']->id_user)
-            ->get()
-            ->row('name');
-        $data['app_hc_status'] = strtoupper($data['master']->app_hc_status);
-        $data['app2_status'] = strtoupper($data['master']->app2_status);
-        $sql = '
-            WITH RankedNotifikasi AS (
-                SELECT *,
-                       ROW_NUMBER() OVER (ORDER BY created_at ASC) AS row_num
-                FROM tbl_notifikasi
-                WHERE id_user = ' . $data['master']->id_user . '
-                AND YEAR(created_at) = ' . date('Y', strtotime($data['master']->created_at)) . '
-            )
-            SELECT row_num
-            FROM RankedNotifikasi
-            WHERE id = ' . $id . ';
-        ';
-        $query = $this->db->query($sql);
-        $data['ke'] = $query->row()->row_num;
-
-        $tanggal = $data['master']->tgl_notifikasi;
-        $formatted_date = date('d F Y', strtotime($tanggal));
-        $months = [
-            'January' => 'Januari',
-            'February' => 'Februari',
-            'March' => 'Maret',
-            'April' => 'April',
-            'May' => 'Mei',
-            'June' => 'Juni',
-            'July' => 'Juli',
-            'August' => 'Agustus',
-            'September' => 'September',
-            'October' => 'Oktober',
-            'November' => 'November',
-            'December' => 'Desember'
-        ];
-        $month = date('F', strtotime($tanggal));
-        $translated_month = $months[$month];
-        $formatted_date = str_replace($month, $translated_month, $formatted_date);
-
-
         // Start FPDF
-        $pdf = new FPDF('P', 'mm', 'A4');
-        $pdf->SetTitle('Form Tanda Terima');
+        $pdf = new Pdf('P', 'mm', 'A4');
+        $pdf->SetTitle('Form Deklarasi');
         $pdf->AddPage('P', 'Letter');
 
-        // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/sebelaswarna.png', 14, 10, 40, 30);
+        // Start FPDF
+        $pdf = new Pdf;
+        $pdf->AddPage();
 
-        // Set font for title
-        // $pdf->SetFont('Arial', 'B', 14);
-        // $pdf->Cell(0, 28, 'PT. MANDIRI CIPTA SEJAHTERA', 0, 1, 'C');
+        // Mengatur posisi Y untuk menggeser seluruh konten ke bawah
+        $pdf->SetY(50); // Ganti 50 dengan jumlah yang Anda inginkan
 
-        // Title of the form
-        $pdf->Ln(27);
-        $pdf->SetFont('Arial', 'B', 14);
-        $pdf->Cell(0, 10, 'FORM NOTIFIKASI', 0, 1, 'C');
-        $pdf->Ln(3);
+        // Pilih font untuk isi
+        $pdf->SetFont('Poppins-Regular', 'B', 12);
 
-        $pdf->Ln(1);
-        $pdf->SetFont('Arial', '', 12);
-        $pdf->Cell(60, 10, 'Saya yang bertanda tangan dibawah ini:', 0, 1);
+        // Margin setup
+        $left_margin = 10;
+        $pdf->SetLeftMargin($left_margin);  // Mengatur margin kiri
 
-        // Set font for form data
-        $pdf->SetFont('Arial', '', 12);
-        $pdf->Cell(40, 10, 'Nama', 0, 0);
-        $pdf->Cell(60, 10, ': ' . $data['user'], 0, 1);
-        $pdf->Cell(40, 10, 'Jabatan', 0, 0);
-        $pdf->Cell(60, 10, ': ' . $data['master']->jabatan, 0, 1);
-        $pdf->Cell(40, 10, 'Mengajukan izin', 0, 0);
-        $pdf->Cell(60, 10, ': ' . $data['master']->pengajuan, 0, 1);
+        // Bagian TO
+        $pdf->SetXY($left_margin, $pdf->GetY());
+        $pdf->Cell(0, 10, 'TO:', 0, 1, 'L');
 
-        // Set font for form data
+        // Name and title (Creative Director)
+        $pdf->SetFont('Poppins-Regular', 'B', 12);
+        $pdf->Cell(0, 10, 'NAME SURNAME', 0, 1, 'L');
+        $pdf->SetFont('Poppins-Regular', '', 10);
+        $pdf->Cell(0, 10, 'Creative Director', 0, 1, 'L');
 
-        $pdf->SetFont('Arial', '', 12);
-        $pdf->Cell(40, 10, 'Tanggal', 0, 0);
-        $pdf->Cell(60, 10, ': ' . $formatted_date, 0, 1);
-        $pdf->Cell(40, 10, 'Waktu', 0, 0);
-        $pdf->Cell(60, 10, ': ' . $data['master']->waktu, 0, 1);
-        $pdf->Cell(40, 10, 'Alasan', 0, 0);
-        $pdf->Cell(60, 10, ': ' . $data['master']->alasan, 0, 1);
+        // Spasi antara bagian atas dan konten
+        $pdf->Ln(5);
 
-        $pdf->Ln(3);
-        $pdf->SetFont('Arial', 'B', 12);
-        $pdf->Cell(60, 10, 'DIISI OLEH ATASAN KARYAWAN BERSANGKUTAN:', 0, 1);
+        // Konten text (justify)
+        $pdf->SetFont('Poppins-Regular', '', 10);
 
-        if ($data['master']->app_hc_status == 'approved') {
-            $status = 'Diizinkan';
-        } elseif ($data['master']->app_hc_status == 'rejected') {
-            $status = 'Tidak Disetujui';
-        } else {
-            $status = '';
-        }
+        // Mengatur lebar untuk konten agar justify bisa bekerja
+        $content_width = 190;  // Misal, lebar halaman adalah 210, jadi margin kiri 10 dan margin kanan 10
 
-        $pdf->Ln(3);
-        $pdf->SetFont('Arial', '', 12);
-        $pdf->Cell(40, 10, 'Notifikasi ini', 0, 0);
-        $pdf->Cell(60, 10, ': ' . $status, 0, 1);
-        $pdf->Cell(40, 10, 'Dengan alasan', 0, 0);
-        $pdf->Cell(60, 10, ': ' . $data['master']->catatan, 0, 1);
+        // Paragraf 1
+        $body_text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sit amet nisi sit amet nibh dignis sim elementum id suscipit leo. Sed ut condimentum diam. Sed ac nulla libero. Morbi ante ante inte rrdum luctus dictum ut, sollicitudin in mi. Donec aliquet lectus quis enim tempor ullamcorper pelle ntesque et neque posuere, gravida lacus molestie, pretium ex. Vivamus in justo ac ante lacinia pharetra.";
+        $pdf->MultiCell($content_width, 7, $body_text, 0, 'J');  // 'J' digunakan untuk rata kiri dan kanan (justify)
 
-        $pdf->Ln(3);
-        $pdf->SetFont('Arial', 'B', 12);
-        $pdf->Cell(60, 10, 'CATATAN HUMAN CAPITAL DEPARTEMENT', 0, 1);
+        $pdf->Ln(5); // Spasi antara paragraf
 
-        $pdf->Ln(3);
-        $pdf->SetFont('Arial', '', 12);
-        $pdf->Cell(40, 10, 'Notifikasi ke', 0, 0);
-        $pdf->Cell(60, 10, ': ' . $data['ke'] . ' (' . date('Y', strtotime($data['master']->created_at)) . ')', 0, 1);
-        $pdf->Ln(3);
+        // Paragraf 2
+        $body_text2 = "Donec ultrices lacinia arcu, eget faucibus quam rhoncus id. Sed convallis eros neque, quis effici tur erat euismod vel. Mauris consequat nunc quis tortor efficitur euismod. Curabitur posuere hendrerit semper nam dignissim sed tellus id fermentum.";
+        $pdf->MultiCell($content_width, 7, $body_text2, 0, 'J');
 
-        //APPROVAL
-        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->Ln(5); // Spasi antara paragraf
 
-        // Membuat header tabel
-        $pdf->Cell(63, 8.5, 'KARYAWAN', 1, 0, 'C');
-        $pdf->Cell(63, 8.5, 'HC DEPARTEMENT', 1, 0, 'C');
-        $pdf->Cell(63, 8.5, 'DEPT. HEAD', 1, 1, 'C');
+        // Paragraf 3
+        $body_text3 = "Phasellus id dui arcu nullam finibus nisl quis quam egestas blandit. Praesent eu leo justo nullam porta nisi non tempus lacinia. Quisque molestie nulla id volutpat congue.";
+        $pdf->MultiCell($content_width, 7, $body_text3, 0, 'J');
 
-        // Set font normal untuk konten tabel
-        $pdf->SetFont('Arial', '', 10);
+        // Spasi antara konten dan signature
+        $pdf->Ln(20);
 
-        // Baris pemisah
-        $pdf->Cell(63, 5, '', 'LR', 0, 'C');
-        $pdf->Cell(63, 5, '', 0, 0, 'C');
-        $pdf->Cell(63, 5, '', 'LR', 1, 'C');
+        // Bagian Nama kedua dan jabatan (Account Manager)
+        $pdf->SetFont('Poppins-Regular', 'B', 12);
+        $pdf->Cell(0, 10, 'NAME SURNAME', 0, 1, 'L');
+        $pdf->SetFont('Poppins-Regular', '', 10);
+        $pdf->Cell(0, 10, 'Account Manager', 0, 1, 'L');
 
-        // Baris pertama (Status)
-        $pdf->Cell(63, 5, 'CREATED', 'LR', 0, 'C');
-        $pdf->Cell(63, 5, strtoupper($data['master']->app_hc_status), 0, 0, 'C');
-        $pdf->Cell(63, 5, strtoupper($data['master']->app2_status), 'LR', 1, 'C');
-
-        // Baris kedua (Tanggal)
-        $pdf->Cell(63, 5, $data['master']->created_at, 'LR', 0, 'C');
-        $pdf->Cell(63, 5, $data['master']->app_hc_date, 0, 0, 'C');
-        $pdf->Cell(63, 5, $data['master']->app2_date, 'LR', 1, 'C');
-
-        // Baris pemisah
-        $pdf->Cell(63, 5, '', 'LR', 0, 'C');
-        $pdf->Cell(63, 5, '', 0, 0, 'C');
-        $pdf->Cell(63, 5, '', 'LR', 1, 'C');
-
-        // Jarak kosong untuk pemisah
-        $pdf->Ln(0);
-
-        // Baris ketiga (Nama pengguna)
-        $pdf->Cell(63, 8.5, $data['user'], 1, 0, 'C');
-        $pdf->Cell(63, 8.5, $data['master']->app_hc_name, 1, 0, 'C');
-        $pdf->Cell(63, 8.5, $data['master']->app2_name, 1, 1, 'C');
+        $pdf->AddPage();
 
         // Output the PDF
         $pdf->Output('I', 'Deklarasi.pdf');

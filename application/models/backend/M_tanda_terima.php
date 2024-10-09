@@ -5,24 +5,17 @@ if (!defined('BASEPATH'))
 
 class M_tanda_terima extends CI_Model
 {
+    // INISIASI VARIABLE
     var $id = 'id';
-    var $table = 'tbl_notifikasi'; //nama tabel dari database
-    var $column_order = array(null, null, 'kode_notifikasi', 'name', 'jabatan', 'departemen', 'pengajuan', 'tgl_notifikasi', 'waktu', 'alasan', 'status', 'catatan');
-    var $column_search = array('kode_notifikasi', 'name', 'jabatan', 'departemen', 'pengajuan', 'tgl_notifikasi', 'waktu', 'alasan', 'status', 'catatan'); //field yang diizin untuk pencarian 
-    var $order = array('id' => 'desc'); // default order 
+    var $table = 'tanda_terima';
+    var $column_order = array(null, null, 'nomor', 'tanggal', 'nama_pengirim', 'nama_penerima', 'barang', 'qty', 'foto');
+    var $column_search = array('nomor', 'tanggal', 'nama_pengirim', 'nama_penerima', 'barang', 'qty', 'foto'); //field yang diizin untuk pencarian 
+    var $order = array('id' => 'desc');
 
-    public function __construct()
+    // UNTUK QUERY DATA TABLE
+    function _get_datatables_query()
     {
-        parent::__construct();
-    }
-
-    private function _get_datatables_query()
-    {
-
-        // $this->db->from($this->table);
-        $this->db->select('tbl_notifikasi.*, tbl_data_user.name');
-        $this->db->from('tbl_notifikasi');
-        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_notifikasi.id_user');
+        $this->db->from($this->table);
 
         $i = 0;
 
@@ -34,66 +27,16 @@ class M_tanda_terima extends CI_Model
                 if ($i === 0) // looping awal
                 {
                     $this->db->group_start();
-                    if ($item == 'name') {
-                        $this->db->like('tbl_data_user.' . $item, $_POST['search']['value']);
-                    } else {
-                        $this->db->like('tbl_notifikasi.' . $item, $_POST['search']['value']);
-                    }
+                    $this->db->like('tanda_terima.' . $item, $_POST['search']['value']);
                 } else {
-                    if ($item == 'name') {
-                        $this->db->or_like('tbl_data_user.' . $item, $_POST['search']['value']);
-                    } else {
-                        $this->db->or_like('tbl_notifikasi.' . $item, $_POST['search']['value']);
-                    }
+                    $this->db->or_like('tanda_terima.' . $item, $_POST['search']['value']);
                 }
 
-                if (count($this->column_search) - 1 == $i)
+                if (count($this->column_search) - 1 == $i) {
                     $this->db->group_end();
+                }
             }
             $i++;
-        }
-
-        // Tambahkan pemfilteran berdasarkan status
-        // Tambahkan kondisi jika id_user login sesuai dengan app2_name
-        $id_user_logged_in = $this->session->userdata('id_user'); // Mengambil id_user dari sesi pengguna yang login
-
-        if (!empty($_POST['status'])) {
-            $this->db->group_start(); // Start grouping conditions
-
-            if ($_POST['status'] == 'on-process') {
-                // Conditions for 'on-process' status
-                $this->db->where('app_hc_status', 'waiting')
-                    ->where('app2_status', 'waiting')
-                    ->or_where('tbl_notifikasi.id_user =' . $id_user_logged_in . ' AND app_hc_status = "approved" AND app2_status = "waiting"')
-                    ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_hc_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
-            } elseif ($_POST['status'] == 'approved') {
-                // Conditions for 'approved' status
-                $this->db->where('app_hc_status', $_POST['status'])
-                    ->where('app2_status', 'approved')
-                    ->or_where('app_hc_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_hc_status = "approved" AND app2_status != "rejected")', NULL, FALSE);
-            } elseif ($_POST['status'] == 'revised') {
-                $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
-                    ->or_where('app_hc_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_hc_status = "revised")', NULL, FALSE)
-                    ->or_where('tbl_notifikasi.id_user =' . $id_user_logged_in . ' AND (app_hc_status = "revised" OR app2_status = "revised")');
-            } elseif ($_POST['status'] == 'rejected') {
-                $this->db->where('status', $_POST['status']);
-            }
-
-            $this->db->group_end(); // End grouping conditions
-        }
-
-        // Tambahkan kondisi berdasarkan tab yang dipilih
-        if (!empty($_POST['tab'])) {
-            if ($_POST['tab'] == 'personal') {
-                $this->db->where('tbl_notifikasi.id_user', $this->session->userdata('id_user'));
-            } elseif ($_POST['tab'] == 'employee') {
-                $this->db->group_start()
-                    ->where('tbl_notifikasi.app_hc_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-                    ->where('tbl_notifikasi.id_user !=', $this->session->userdata('id_user'))
-                    ->or_where('tbl_notifikasi.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_notifikasi.app_hc_status = 'approved'", FALSE)
-                    ->where('tbl_notifikasi.id_user !=', $this->session->userdata('id_user'))
-                    ->group_end();
-            }
         }
 
         if (isset($_POST['order'])) {
@@ -104,6 +47,7 @@ class M_tanda_terima extends CI_Model
         }
     }
 
+    // UNTUK MENAMPILKAN HASIL QUERY KE DATA TABLES
     function get_datatables()
     {
         $this->_get_datatables_query();
@@ -122,81 +66,67 @@ class M_tanda_terima extends CI_Model
 
     public function count_all()
     {
-        $this->db->select('tbl_notifikasi.*, tbl_data_user.name');
-        $this->db->from('tbl_notifikasi');
-        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_notifikasi.id_user');
-
-        // Tambahkan pemfilteran berdasarkan status
-        // Tambahkan kondisi jika id_user login sesuai dengan app2_name
-        $id_user_logged_in = $this->session->userdata('id_user'); // Mengambil id_user dari sesi pengguna yang login
-
-        if (!empty($_POST['status'])) {
-            $this->db->group_start(); // Start grouping conditions
-
-            if ($_POST['status'] == 'on-process') {
-                // Conditions for 'on-process' status
-                $this->db->where('app_hc_status', 'waiting')
-                    ->where('app2_status', 'waiting')
-                    ->or_where('tbl_notifikasi.id_user =' . $id_user_logged_in . ' AND app_hc_status = "approved" AND app2_status = "waiting"')
-                    ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_hc_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
-            } elseif ($_POST['status'] == 'approved') {
-                // Conditions for 'approved' status
-                $this->db->where('app_hc_status', $_POST['status'])
-                    ->where('app2_status', 'approved')
-                    ->or_where('app_hc_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_hc_status = "approved" AND app2_status != "rejected")', NULL, FALSE);
-            } elseif ($_POST['status'] == 'revised') {
-                $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
-                    ->or_where('app_hc_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_hc_status = "revised")', NULL, FALSE)
-                    ->or_where('tbl_notifikasi.id_user =' . $id_user_logged_in . ' AND (app_hc_status = "revised" OR app2_status = "revised")');
-            } elseif ($_POST['status'] == 'rejected') {
-                $this->db->where('status', $_POST['status']);
-            }
-
-            $this->db->group_end(); // End grouping conditions
-        }
-
-        // Tambahkan kondisi berdasarkan tab yang dipilih
-        if (!empty($_POST['tab'])) {
-            if ($_POST['tab'] == 'personal') {
-                $this->db->where('tbl_notifikasi.id_user', $this->session->userdata('id_user'));
-            } elseif ($_POST['tab'] == 'employee') {
-                $this->db->group_start()
-                    ->where('tbl_notifikasi.app_hc_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-                    ->where('tbl_notifikasi.id_user !=', $this->session->userdata('id_user'))
-                    ->or_where('tbl_notifikasi.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_notifikasi.app_hc_status = 'approved'", FALSE)
-                    ->where('tbl_notifikasi.id_user !=', $this->session->userdata('id_user'))
-                    ->group_end();
-            }
-        }
+        $this->db->from($this->table);
 
         return $this->db->count_all_results();
     }
 
-    public function get_by_id($id)
+    // Fungsi untuk format tanggal dalam bahasa Indonesia
+    private function format_tanggal_indo($tanggal)
     {
-        $this->db->where($this->id, $id);
-        return $this->db->get($this->table)->row();
+        $bulan = array(
+            1 => 'Januari',
+            'Februari',
+            'Maret',
+            'April',
+            'Mei',
+            'Juni',
+            'Juli',
+            'Agustus',
+            'September',
+            'Oktober',
+            'November',
+            'Desember'
+        );
+
+        // Pisahkan tanggal menjadi array
+        $tanggal_pisah = explode('-', $tanggal);
+        $tahun = $tanggal_pisah[0];
+        $bulan_indonesia = $bulan[(int)$tanggal_pisah[1]];
+        $hari = $tanggal_pisah[2];
+
+        // Return format "tanggal bulan tahun"
+        return $hari . ' ' . $bulan_indonesia . ' ' . $tahun;
     }
 
-    public function max_kode($date)
+    // Fungsi yang memanggil format_tanggal_indo berkali-kali
+    public function getTanggal($tanggalValue)
     {
-        $formatted_date = date('ym', strtotime($date));
-        $this->db->select('kode_notifikasi');
-        $where = 'id=(SELECT max(id) FROM tbl_notifikasi where SUBSTRING(kode_notifikasi, 2, 4) = ' . $formatted_date . ')';
-        $this->db->where($where);
-        $query = $this->db->get('tbl_notifikasi');
-        return $query;
+        // Hilangkan waktu jika ada, dengan memotong hanya bagian tanggal
+        $tanggal_only = explode(' ', $tanggalValue)[0]; // Pisahkan tanggal dari waktu
+
+        // Konversi ke format "tanggal bulan tahun" bahasa Indonesia
+        $formatted_tgl = $this->format_tanggal_indo($tanggal_only);
+
+        return $formatted_tgl;
     }
 
-    // UNTUK QUERY MENENTUKAN SIAPA YANG MELAKUKAN APPROVAL
-    public function approval($id)
+    // Fungsi lain yang juga bisa memanggil format_tanggal_indo
+    public function anotherMethod($tanggalValue)
     {
-        $this->db->select('app3_id, app2_id');
-        $this->db->from('tbl_data_user');
-        $this->db->where('id_user', $id);
-        $query = $this->db->get();
-        return $query->row();
+        $formatted_tgl = $this->format_tanggal_indo($tanggalValue);
+        return $formatted_tgl;
     }
+
+    // public function max_kode($date)
+    // {
+    //     $formatted_date = date('Y', strtotime($date));
+    //     $this->db->select('no_pelayanan, no_arsip');
+    //     $where = 'id=(SELECT max(id) FROM tbl_penawaran where SUBSTRING(no_pelayanan, 17, 4) = ' . $formatted_date . ')';
+    //     $this->db->where($where);
+    //     $query = $this->db->from('tbl_penawaran')->get();
+    //     return $query;
+    // }
 
     public function save($data)
     {
@@ -204,9 +134,60 @@ class M_tanda_terima extends CI_Model
         return $this->db->insert_id();
     }
 
-    public function delete($id)
+    public function insert_penawaran_detail($data)
     {
-        $this->db->where($this->id, $id);
-        $this->db->delete($this->table);
+        // Cek apakah array $data tidak kosong
+        if (!empty($data)) {
+            // Menggunakan insert_batch untuk memasukkan banyak baris data sekaligus
+            $this->db->insert_batch('tbl_penawaran_detail', $data);
+
+            // Cek apakah ada kesalahan pada saat insert
+            if ($this->db->affected_rows() > 0) {
+                return TRUE;
+            } else {
+                log_message('error', 'Insert to tbl_penawaran_detail failed: ' . $this->db->last_query());
+                return FALSE;
+            }
+        } else {
+            log_message('error', 'Empty data array in insert_penawaran_detail');
+            return FALSE;
+        }
     }
+
+    // public function getLayananTermasuk($kode)
+    // {
+    //     $this->db->select('a.nama_layanan, b.id_penawaran, b.id_layanan, b.is_active');
+    //     $this->db->from('tbl_layanan as a');
+    //     $this->db->join('tbl_penawaran_detail as b', 'a.id = b.id_layanan', 'left');
+    //     $this->db->join('tbl_penawaran as c', 'b.id_penawaran = c.id', 'left');
+    //     $this->db->where("(b.is_active = 'Y' OR (b.is_active LIKE 'Y%' AND LENGTH(b.is_active) > 1))");
+    //     $this->db->where('c.no_arsip', $kode);
+    //     // $this->db->join('tbl_produk as c', 'a.id_produk = c.id', 'left');
+    //     $data = $this->db->get()->result_array();
+    //     return $data;
+    // }
+
+    // public function getLayananTidakTermasuk($kode)
+    // {
+    //     $this->db->select('a.nama_layanan, b.id_penawaran, b.id_layanan, b.is_active');
+    //     $this->db->from('tbl_layanan as a');
+    //     $this->db->join('tbl_penawaran_detail as b', 'a.id = b.id_layanan', 'left');
+    //     $this->db->join('tbl_penawaran as c', 'b.id_penawaran = c.id', 'left');
+    //     $this->db->where('b.is_active', 'N');
+    //     $this->db->where('c.no_arsip', $kode);
+    //     $data = $this->db->get()->result_array();
+    //     return $data;
+    // }
+
+    // Fungsi untuk mengambil detail penawaran berdasarkan ID penawaran
+    // public function get_penawaran_detail($id_penawaran)
+    // {
+    //     $this->db->select('id_penawaran, id_layanan, is_active');
+    //     $this->db->from('tbl_penawaran_detail');
+    //     $this->db->where('id_penawaran', $id_penawaran);
+    //     $query = $this->db->get();
+
+    //     // Mengembalikan hasil dalam bentuk array objek
+    //     return $query->result_array();
+    // }
 }
