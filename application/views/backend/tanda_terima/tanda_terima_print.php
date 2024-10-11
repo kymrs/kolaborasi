@@ -31,12 +31,13 @@
                 <!-- <div class="col-12">
                     <h2 class="page-header">
                         <u style='text-decoration-style: dotted;' class="float-left">Tanda Terima</u>
-                        <img class="float-right" width="45%" src="<?//= base_url('assets/icon/logo_new.png'); ?>">
+                        <img class="float-right" width="45%" src="<? //= base_url('assets/icon/logo_new.png'); 
+                                                                    ?>">
                     </h2>
                 </div> -->
                 <div style="height: 100px; line-height: 100px; text-align: center;">
                     <u style='text-decoration-style: dotted;' class="float-left">Tanda Terima</u>
-                    <img class="float-right" width="45%" src="<?= base_url('assets/icon/logo_new.png'); ?>">
+                    <img class="float-right" width="45%" src="<?= base_url('assets/backend/img/PU_NEW.png'); ?>">
                 </div>
             </div>
 
@@ -57,7 +58,8 @@
             <br />
             <!-- <div class="row">
                 <div class="col-sm-8">
-                    Kepada Yth: <?//= $title . " " . $penerima; ?>
+                    Kepada Yth: <? //= $title . " " . $penerima; 
+                                ?>
                 </div>
             </div> -->
             <br />
@@ -103,7 +105,7 @@
                     <p class="lead" style="font-size: 32px">Bukti Serah Terima:</p>
                     <img src="<?= base_url('assets/img/') . $foto ?>" height="300px">
                 </div>
-            </div><br/>
+            </div><br />
             <div class="row">
                 <div class="col-12 text-center">
                     <p class="lead font-weight-bold">PENGENUMROH.COM <br />

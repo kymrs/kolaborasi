@@ -8,14 +8,16 @@ class Tanda_terima extends CI_Controller
 	{
 		parent::__construct();
 		$this->load->model('M_login');
-		$this->load->model('M_tandaterima');
+		$this->load->model('backend/M_tandaterima');
 		$this->M_login->getsecurity();
 	}
 
 	public function index()
 	{
 		$this->M_login->getsecurity();
-		$this->load->view('tanda_terima');
+		$data['title'] = "backend/tanda_terima/tanda_terima";
+		$data['titleview'] = "Tanda Terima";
+		$this->load->view('backend/home', $data);
 	}
 
 	function get_list()
@@ -174,7 +176,7 @@ class Tanda_terima extends CI_Controller
 		$data['qty'] = $query->qty;
 		$data['keterangan'] = $query->keterangan;
 		$data['foto'] = $query->foto;
-		$this->load->view('tanda_terima_view', $data);
+		$this->load->view('/backend/tanda_terima/tanda_terima_print', $data);
 	}
 
 	function no_baru()

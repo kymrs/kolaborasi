@@ -1,7 +1,3 @@
-<?php $this->load->view("template/header"); ?>
-<?php $this->load->view("template/side_navbar"); ?>
-
-
 <!-- Begin Page Content -->
 <div class="container-fluid" id="konten">
 
@@ -127,7 +123,7 @@
                     <div class="form-group row">
                         <label for="image" class="col-sm-3 col-form-label">Image</label>
                         <div class="col-sm-9">
-                            <input type="file" class="" id="image" name="image"> <br/>
+                            <input type="file" class="" id="image" name="image"> <br />
                             <img id="img_name" height="200px">
                         </div>
                     </div>
@@ -139,220 +135,229 @@
             </form>
         </div>
         <!-- /.modal-content -->
+
+        <!-- /.modal-dialog -->
     </div>
-    <!-- /.modal-dialog -->
-</div>
-<!-- /.modal -->
+    <!-- /.modal -->
 
-<?php $this->load->view('template/footer'); ?>
+    <?php $this->load->view('template/footer'); ?>
+    <?php $this->load->view('template/script'); ?>
 
-<script type="text/javascript">
-    var table;
-    $(document).ready(function() {
-        table = $('#table').DataTable({
-            "responsive": true,
-            "processing": true,
-            "serverSide": true,
-            "order": [],
-            "ajax": {
-                "url": "<?php echo site_url('tanda_terima/get_list') ?>",
-                "type": "POST"
-            },
-            "columnDefs": [{
-                "targets": [0, 7,8],
-                "orderable": false,
-            }, ],
-        });
-
-        $("#modalform").validate({
-            rules: {
-                nomor: {
-                    required: true,
+    <script type="text/javascript">
+        var table;
+        $(document).ready(function() {
+            table = $('#table').DataTable({
+                "responsive": true,
+                "processing": true,
+                "serverSide": true,
+                "order": [],
+                "ajax": {
+                    "url": "<?php echo site_url('tanda_terima/get_list') ?>",
+                    "type": "POST"
                 },
-                tanggal: {
-                    required: true,
-                },
-                nama_pengirim: {
-                    required: true,
-                },
-                title: {
-                    required: true,
-                },
-                nama_penerima: {
-                    required: true,
-                },
-            },
-            messages: {
-                //   nomor: {
-                //     required: "Username is required",
-                //   },
-                //   tanggal: {
-                //     required: "Fullname is required",
-                //   },
-                //   password: {
-                //     required: "Password is required",
-                //   },
-                //   level: {
-                //     required: "Level is required",
-                //   },
-                //   aktif: {
-                //     required: "Aktif is required",
-                //   },
-            },
-        })
-
-        $("#modalform").submit(function(e) {
-            e.preventDefault();
-            var url;
-            var $form = $(this);
-            if (!$form.valid()) return false;
-            if (method == 'add') {
-                url = "<?php echo site_url('tanda_terima/add') ?>";
-            } else {
-                url = "<?php echo site_url('tanda_terima/update') ?>";
-            }
-
-            $.ajax({
-                url: url,
-                type: "post",
-                data: new FormData(this),
-                processData: false,
-                contentType: false,
-                cache: false,
-                async: false,
-                success: function(data) {
-                    $('#modal-default').modal('hide');
-                    Swal.fire({
-                        position: 'top-end',
-                        icon: 'success',
-                        title: 'Your data has been saved',
-                        showConfirmButton: false,
-                        timer: 1500
-                    });
-                    reload_table();
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    alert('Error adding / update data');
-                }
+                "columnDefs": [{
+                        "targets": [],
+                        "className": 'dt-head-nowrap'
+                    },
+                    {
+                        "targets": [8],
+                        "className": 'dt-body-nowrap'
+                    }, {
+                        "targets": [0, 7, 8],
+                        "orderable": false,
+                    },
+                ],
             });
-        });
-    });
 
-    function reload_table() {
-        table.ajax.reload(null, false);
-    };
+            $("#modalform").validate({
+                rules: {
+                    nomor: {
+                        required: true,
+                    },
+                    tanggal: {
+                        required: true,
+                    },
+                    nama_pengirim: {
+                        required: true,
+                    },
+                    title: {
+                        required: true,
+                    },
+                    nama_penerima: {
+                        required: true,
+                    },
+                },
+                messages: {
+                    //   nomor: {
+                    //     required: "Username is required",
+                    //   },
+                    //   tanggal: {
+                    //     required: "Fullname is required",
+                    //   },
+                    //   password: {
+                    //     required: "Password is required",
+                    //   },
+                    //   level: {
+                    //     required: "Level is required",
+                    //   },
+                    //   aktif: {
+                    //     required: "Aktif is required",
+                    //   },
+                },
+            })
 
-    function add_data() {
-        method = 'add';
-        $('#modalform')[0].reset();
-        var validator = $("#modalform").validate();
-        validator.resetForm();
-        $('#modal-default').modal('show');
-        $('.card-title').text('Data Baru');
-        $('.aksi').text('Save');
-        get_nomor();
-        $('#img_name').attr('hidden', true);
-    };
+            $("#modalform").submit(function(e) {
+                e.preventDefault();
+                var url;
+                var $form = $(this);
+                if (!$form.valid()) return false;
+                if (method == 'add') {
+                    url = "<?php echo site_url('tanda_terima/add') ?>";
+                } else {
+                    url = "<?php echo site_url('tanda_terima/update') ?>";
+                }
 
-    function edit_data(id) {
-        method = 'update';
-        $('#modalform')[0].reset();
-        var validator = $("#modalform").validate();
-        validator.resetForm();
-        $('.form-control').removeClass('error');
-        $('#modal-default').modal('show');
-        $('.card-title').text('Edit Data');
-        $('.aksi').text('Update');
-        $.ajax({
-            url: "<?php echo site_url('tanda_terima/get_id/') ?>/" + id,
-            type: "GET",
-            dataType: "JSON",
-            success: function(data) {
-                $('[name="id"]').val(data.id);
-                $('[name="nomor"]').val(data.nomor);
-                $('[name="tanggal"]').val(data.tanggal);
-                $('[name="nama_pengirim"]').val(data.nama_pengirim);
-                $('[name="title"]').val(data.title);
-                $('[name="nama_penerima"]').val(data.nama_penerima);
-                $('[name="barang"]').val(data.barang);
-                $('[name="qty"]').val(data.qty);
-                $('[name="keterangan"]').val(data.keterangan);
-                $('#img_name').attr('src', '<?= base_url("assets/img/")?>'+data.foto);
-                $('#img_name').attr('hidden', false);
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                alert('Error get data from ajax');
-            }
-        });
-    };
-
-    function delete_data(id) {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
                 $.ajax({
-                    url: "<?php echo site_url('tanda_terima/delete') ?>/" + id,
-                    type: "POST",
-                    dataType: "JSON",
+                    url: url,
+                    type: "post",
+                    data: new FormData(this),
+                    processData: false,
+                    contentType: false,
+                    cache: false,
+                    async: false,
                     success: function(data) {
+                        $('#modal-default').modal('hide');
                         Swal.fire({
                             position: 'top-end',
                             icon: 'success',
-                            title: 'Your data has been deleted',
+                            title: 'Your data has been saved',
                             showConfirmButton: false,
                             timer: 1500
                         });
                         reload_table();
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
-                        alert('Error deleting data');
+                        alert('Error adding / update data');
                     }
                 });
-            }
-        })
-    };
-
-    function get_nomor() {
-        $.ajax({
-            url: "<?php echo site_url('tanda_terima/get_no/') ?>",
-            type: "GET",
-            dataType: "JSON",
-            success: function(data) {
-                if(data === null) {
-                    kode = 'PU00001';
-                } else {
-                    no = data.nomor.substr(2-data.nomor.length);
-                    no_baru = parseInt(no) + 1;
-                    kode = 'PU'+no_baru.toString().padStart(5,'0');
-                }
-                $('[name="nomor"]').val(kode);
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                alert('Error get data from ajax');
-            }
+            });
         });
-    }
 
-    function view_data(id){
-        $('#konten').load("<?php echo site_url('tanda_terima/preview/') ?>" + id);
-    }
+        function reload_table() {
+            table.ajax.reload(null, false);
+        };
 
-    function print_data(id){
-        window.open('<?= base_url("tanda_terima/print/") ?>' + id, '_blank')
-    }
-    
-    function back(){
-        window.open('<?= base_url("tanda_terima/") ?>', '_self')
-    }
+        function add_data() {
+            method = 'add';
+            $('#modalform')[0].reset();
+            var validator = $("#modalform").validate();
+            validator.resetForm();
+            $('#modal-default').modal('show');
+            $('.card-title').text('Data Baru');
+            $('.aksi').text('Save');
+            get_nomor();
+            $('#img_name').attr('hidden', true);
+        };
 
-    function pdf(id){
-        window.open('<?= base_url("tanda_terima/pdf/") ?>' + id, '_blank')
-    }
-</script>
+        function edit_data(id) {
+            method = 'update';
+            $('#modalform')[0].reset();
+            var validator = $("#modalform").validate();
+            validator.resetForm();
+            $('.form-control').removeClass('error');
+            $('#modal-default').modal('show');
+            $('.card-title').text('Edit Data');
+            $('.aksi').text('Update');
+            $.ajax({
+                url: "<?php echo site_url('tanda_terima/get_id/') ?>/" + id,
+                type: "GET",
+                dataType: "JSON",
+                success: function(data) {
+                    $('[name="id"]').val(data.id);
+                    $('[name="nomor"]').val(data.nomor);
+                    $('[name="tanggal"]').val(data.tanggal);
+                    $('[name="nama_pengirim"]').val(data.nama_pengirim);
+                    $('[name="title"]').val(data.title);
+                    $('[name="nama_penerima"]').val(data.nama_penerima);
+                    $('[name="barang"]').val(data.barang);
+                    $('[name="qty"]').val(data.qty);
+                    $('[name="keterangan"]').val(data.keterangan);
+                    $('#img_name').attr('src', '<?= base_url("assets/img/") ?>' + data.foto);
+                    $('#img_name').attr('hidden', false);
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    alert('Error get data from ajax');
+                }
+            });
+        };
+
+        function delete_data(id) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "<?php echo site_url('tanda_terima/delete') ?>/" + id,
+                        type: "POST",
+                        dataType: "JSON",
+                        success: function(data) {
+                            Swal.fire({
+                                position: 'top-end',
+                                icon: 'success',
+                                title: 'Your data has been deleted',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                            reload_table();
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            alert('Error deleting data');
+                        }
+                    });
+                }
+            })
+        };
+
+        function get_nomor() {
+            $.ajax({
+                url: "<?php echo site_url('tanda_terima/get_no/') ?>",
+                type: "GET",
+                dataType: "JSON",
+                success: function(data) {
+                    if (data === null) {
+                        kode = 'PU00001';
+                    } else {
+                        no = data.nomor.substr(2 - data.nomor.length);
+                        no_baru = parseInt(no) + 1;
+                        kode = 'PU' + no_baru.toString().padStart(5, '0');
+                    }
+                    $('[name="nomor"]').val(kode);
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    alert('Error get data from ajax');
+                }
+            });
+        }
+
+        function view_data(id) {
+            window.open("<?php echo site_url('tanda_terima/preview/') ?>" + id, '_blank');
+        }
+
+        function print_data(id) {
+            window.open('<?= base_url("tanda_terima/print/") ?>' + id, '_blank')
+        }
+
+        function back() {
+            window.open('<?= base_url("tanda_terima/") ?>', '_self')
+        }
+
+        function pdf(id) {
+            window.open('<?= base_url("tanda_terima/pdf/") ?>' + id, '_blank')
+        }
+    </script>
