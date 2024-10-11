@@ -146,7 +146,7 @@
 <body>
     <div class="container">
         <div class="d-flex justify-content-end mb-3" style="margin-right: 19px">
-            <?php if ($user->app_name == $app_name) { ?>
+            <?php if ($user->app_name == $app_name && $user->status == 'approved') { ?>
                 <a class="btn btn-success btn-sm mr-2" id="paymentBtn" data-toggle="modal" data-target="#paymentModal"><i class="fas fa-money-bill"></i>&nbsp;Payment</a>
             <?php } ?>
             <?php if ($user->app_name == $app_name && $user->app2_status != 'rejected' && !in_array($user->status, ['approved'])) { ?>
