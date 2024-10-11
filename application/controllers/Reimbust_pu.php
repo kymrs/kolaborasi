@@ -79,6 +79,11 @@ class Reimbust_pu extends CI_Controller
             $row = array();
             $row[] = $no;
             $row[] = $action;
+            if ($field->payment_status == 'paid') {
+                $row[] = '<div class="text-center"><i class="fas fa-check" style="color: green;"></i></div>'; // Ikon checklist hijau di tengah
+            } else if ($field->payment_status == 'unpaid') {
+                $row[] = '<div class="text-center"><i class="fas fa-times" style="color: red;"></i></div>'; // Ikon unchecklist merah di tengah
+            }
             $row[] = strtoupper($field->kode_reimbust);
             $row[] = $field->name;
             $row[] = $field->jabatan;
@@ -102,7 +107,6 @@ class Reimbust_pu extends CI_Controller
             $row[] = date("d", strtotime($field->tgl_pengajuan)) . " " . $bulanIndo[date("n", strtotime($field->tgl_pengajuan))] . " " . date("Y", strtotime($field->tgl_pengajuan));
             $row[] = $field->tujuan;
             $row[] = 'Rp. ' . number_format($field->jumlah_prepayment, 0, ',', '.');;
-            $row[] = ucwords($field->payment_status);
             $row[] = ucwords($field->status);
 
             $data[] = $row;

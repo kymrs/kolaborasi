@@ -111,6 +111,11 @@ class Prepayment_pu extends CI_Controller
             $row = array();
             $row[] = $no;
             $row[] = $action;
+            if ($field->payment_status == 'paid') {
+                $row[] = '<div class="text-center"><i class="fas fa-check" style="color: green;"></i></div>'; // Ikon checklist hijau di tengah
+            } else if ($field->payment_status == 'unpaid') {
+                $row[] = '<div class="text-center"><i class="fas fa-times" style="color: red;"></i></div>'; // Ikon unchecklist merah di tengah
+            }
             $row[] = strtoupper($field->kode_prepayment);
             $row[] = $field->name;
             $row[] = strtoupper($field->divisi);
@@ -118,7 +123,6 @@ class Prepayment_pu extends CI_Controller
             $row[] = $this->tgl_indo(date("Y-m-j", strtotime($field->tgl_prepayment)));
             $row[] = $field->prepayment;
             $row[] = $formatted_nominal;
-            $row[] = ucwords($field->payment_status);
             // $row[] = $field->tujuan;
             $row[] = $field->status;
 

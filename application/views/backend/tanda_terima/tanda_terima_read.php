@@ -3,7 +3,7 @@
     <style>
         body .container-main {
             font-family: Arial, Helvetica, sans-serif;
-            background-color: #f4f6f9;
+            background-color: red;
             padding: 0;
             color: #333;
         }
