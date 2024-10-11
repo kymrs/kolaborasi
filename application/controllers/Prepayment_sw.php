@@ -98,6 +98,11 @@ class Prepayment_sw extends CI_Controller
                 $action = $action_read . $action_edit . $action_delete . $action_print;
             }
 
+            //MENENSTUKAN SATTSU PROGRESS PENGAJUAN PERMINTAAN
+            $status = $field->app_status == 'approved' && $field->app2_status == 'waiting'
+                ? $field->status . ' (' . $field->app_name . ')'
+                : $field->status;
+
 
             $formatted_nominal = number_format($field->total_nominal, 0, ',', '.');
             $no++;
@@ -117,7 +122,7 @@ class Prepayment_sw extends CI_Controller
             $row[] = $field->prepayment;
             $row[] = $formatted_nominal;
             // $row[] = $field->tujuan;
-            $row[] = $field->status;
+            $row[] = $status;
 
             $data[] = $row;
         }

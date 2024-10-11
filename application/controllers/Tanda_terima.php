@@ -37,6 +37,7 @@ class Tanda_terima extends CI_Controller
 			$row[] = $field->qty;
 			$row[] = ($field->foto != '' ? '<img src="' . site_url("assets/img/") . $field->foto  . '" height="40px" width="40px">' : '');
 			$row[] = '<a class="btn btn-info btn-xs item_edit" title="View" onclick="view_data(' . "'" . $field->id . "'" . ')"><i class="fa fa-eye"></i></a>' .
+				'&nbsp;<a class="btn btn-success btn-xs item_edit" title="Pdf" onclick="pdf(' . "'" . $field->id . "'" . ')"><i class="fa fa-file"></i></a>' .
 				'&nbsp;<a class="btn btn-warning btn-xs item_edit" title="Edit" onclick="edit_data(' . "'" . $field->id . "'" . ')"><i class="fa fa-edit"></i></a>' .
 				'&nbsp;<a class="btn btn-danger btn-xs item_edit" title="Delete" onclick="delete_data(' . "'" . $field->id . "'" . ')"><i class="fa fa-trash"></i></a>';
 
@@ -160,7 +161,7 @@ class Tanda_terima extends CI_Controller
 		$data['qty'] = $query->qty;
 		$data['keterangan'] = $query->keterangan;
 		$data['foto'] = $query->foto;
-		$this->load->view('tanda_terima_print', $data);
+		$this->load->view('/backend/tanda_terima/tanda_terima_print', $data);
 	}
 
 	function preview($id)
@@ -197,9 +198,11 @@ class Tanda_terima extends CI_Controller
 
 	function pdf($id)
 	{
-		$this->load->library('CustomFPDF');
-		$pdf = $this->customfpdf->getInstance();
-
+		$this->load->library('Fpdf_generate');
+		// $pdf = $this->customfpdf->getInstance();
+		$pdf = new Fpdf_generate('P', 'mm', 'A4');
+		// $pdf->SetTitle('Form Pengajuan Prepayment');
+		// $pdf->AddPage('P', 'Letter');
 		$query = $this->M_tandaterima->get_by_id($id);
 
 		$pdf->AliasNbPages();
@@ -214,7 +217,7 @@ class Tanda_terima extends CI_Controller
 		$pdf->SetLineWidth(0.1);
 		$pdf->SetDash(1, 1);
 		$pdf->Line(10, 23, 50, 23);
-		$pdf->SetDash();
+		$pdf->SetDash(1, 1);
 		$pdf->SetLineWidth(0.1);
 		$pdf->Line(10, 60, $pdf->GetPageWidth() - 10, 60);
 		$pdf->Line(10, 70, $pdf->GetPageWidth() - 10, 70);
@@ -232,7 +235,7 @@ class Tanda_terima extends CI_Controller
 		$pdf->Ln(10);
 		$pdf->Cell(0, 10, 'Bukti Serah Terima:', 0, 1, 'C');
 		$posisi = $pdf->GetPageWidth() / 2 - 20;
-		$pdf->Image('assets/img/' . $query->foto, $posisi, $pdf->GetY(), 40, 0);
+		// $pdf->Image('assets/img/' . $query->foto, $posisi, $pdf->GetY(), 40, 0);
 		if ($query->foto == '') {
 		} else {
 			// $pdf->Image('assets/icon/watermark.png', $posisi, 50, 40, 0);

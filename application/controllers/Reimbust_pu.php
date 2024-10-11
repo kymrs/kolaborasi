@@ -75,6 +75,11 @@ class Reimbust_pu extends CI_Controller
                 $action = $action_read . $action_edit . $action_delete . $action_print;
             }
 
+            //MENENSTUKAN SATTSU PROGRESS PENGAJUAN PERMINTAAN
+            $status = $field->app_status == 'approved' && $field->app2_status == 'waiting'
+                ? $field->status . ' (' . $field->app_name . ')'
+                : $field->status;
+
             $no++;
             $row = array();
             $row[] = $no;
@@ -107,7 +112,7 @@ class Reimbust_pu extends CI_Controller
             $row[] = date("d", strtotime($field->tgl_pengajuan)) . " " . $bulanIndo[date("n", strtotime($field->tgl_pengajuan))] . " " . date("Y", strtotime($field->tgl_pengajuan));
             $row[] = $field->tujuan;
             $row[] = 'Rp. ' . number_format($field->jumlah_prepayment, 0, ',', '.');;
-            $row[] = ucwords($field->status);
+            $row[] = ucwords($status);
 
             $data[] = $row;
         }

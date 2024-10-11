@@ -29,7 +29,7 @@
                     </li>
                     <?php if ($approval > 0) { ?>
                         <li class="nav-item">
-                            <a class="nav-link" id="employeeTab" href="#" data-tab="employee">Approval</a>
+                            <a class="nav-link" id="employeeTab" href="#" data-tab="employee">Approval (<?= $pendings ?>)</a>
                         </li>
                     <?php } ?>
                 </ul>

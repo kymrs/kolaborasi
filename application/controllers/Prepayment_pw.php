@@ -80,6 +80,11 @@ class Prepayment_pw extends CI_Controller
                 $action = $action_read . $action_edit . $action_delete . $action_print;
             }
 
+            //MENENSTUKAN SATTSU PROGRESS PENGAJUAN PERMINTAAN
+            $status = $field->app_status == 'approved' && $field->app2_status == 'waiting'
+                ? $field->status . ' (' . $field->app_name . ')'
+                : $field->status;
+
 
             $formatted_nominal = number_format($field->total_nominal, 0, ',', '.');
             $no++;
@@ -99,7 +104,7 @@ class Prepayment_pw extends CI_Controller
             $row[] = $field->prepayment;
             $row[] = $formatted_nominal;
             // $row[] = $field->tujuan;
-            $row[] = $field->status;
+            $row[] = $status;
 
             $data[] = $row;
         }
@@ -702,30 +707,30 @@ class Prepayment_pw extends CI_Controller
     // }
 
     // QUERY UNTUK INPUT TANDA TANGAN
-    function signature()
-    {
-        // Ambil data dari request
-        $img = $this->input->post('imgBase64');
+    // function signature()
+    // {
+    //     // Ambil data dari request
+    //     $img = $this->input->post('imgBase64');
 
-        // Decode base64
-        $img = str_replace('data:image/png;base64,', '', $img);
-        $img = str_replace(' ', '+', $img);
-        $data = base64_decode($img);
+    //     // Decode base64
+    //     $img = str_replace('data:image/png;base64,', '', $img);
+    //     $img = str_replace(' ', '+', $img);
+    //     $data = base64_decode($img);
 
-        // Tentukan lokasi dan nama file
-        $fileName = uniqid() . '.png';
-        $filePath = './assets/backend/img/signatures/' . $fileName;
+    //     // Tentukan lokasi dan nama file
+    //     $fileName = uniqid() . '.png';
+    //     $filePath = './assets/backend/img/signatures/' . $fileName;
 
-        // Simpan file ke server
-        if (file_pwt_contents($filePath, $data)) {
-            echo json_encode(['status' => 'success', 'fileName' => $fileName]);
-        } else {
-            echo json_encode(['status' => 'error']);
-        }
-        //Pastikan folder ./assets/backend/img/signatures/ dapat ditulisi oleh server.
-        // mkdir -p ./assets/backend/img/signatures/
-        // chmod 755 ./assets/backend/img/signatures/
-    }
+    //     // Simpan file ke server
+    //     if (file_pwt_contents($filePath, $data)) {
+    //         echo json_encode(['status' => 'success', 'fileName' => $fileName]);
+    //     } else {
+    //         echo json_encode(['status' => 'error']);
+    //     }
+    //     //Pastikan folder ./assets/backend/img/signatures/ dapat ditulisi oleh server.
+    //     // mkdir -p ./assets/backend/img/signatures/
+    //     // chmod 755 ./assets/backend/img/signatures/
+    // }
 
     function payment()
     {

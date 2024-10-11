@@ -76,6 +76,11 @@ class Datanotifikasi_pw extends CI_Controller
                 $action = $action_read . $action_edit . $action_delete . $action_print;
             }
 
+            //MENENSTUKAN SATTSU PROGRESS PENGAJUAN PERMINTAAN
+            $status = $field->app_hc_status == 'approved' && $field->app2_status == 'waiting'
+                ? $field->status . ' (' . $field->app_hc_name . ')'
+                : $field->status;
+
 
             $no++;
             $row = array();
@@ -88,7 +93,7 @@ class Datanotifikasi_pw extends CI_Controller
             $row[] = $field->pengajuan;
             $row[] = date("d M Y", strtotime($field->tgl_notifikasi));
             $row[] = $field->alasan;
-            $row[] = $field->status;
+            $row[] = $status;
             $data[] = $row;
         }
 

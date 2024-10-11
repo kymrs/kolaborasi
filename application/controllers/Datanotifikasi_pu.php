@@ -39,9 +39,22 @@ class Datanotifikasi_pu extends CI_Controller
 
     public function index()
     {
+        $fullname = $this->db->select('name')
+            ->from('tbl_data_user')
+            ->where('id_user', $this->session->userdata('id_user'))
+            ->get()
+            ->row('name');
+
         $akses = $this->M_app->hak_akses($this->session->userdata('id_level'), $this->router->fetch_class());
         ($akses->view_level == 'N' ? redirect('auth') : '');
         $data['add'] = $akses->add_level;
+
+        $this->db->where('app_hc_name', $fullname);
+        $this->db->where('app_hc_status', 'waiting');
+        $this->db->from('tbl_notifikasi_pu');
+        $data['pendings'] = $this->db->count_all_results();
+
+        // var_dump($this->db->count_all_results());
 
         $data['title'] = "backend/datanotifikasi_pu/notifikasi_list_pu";
         $data['titleview'] = "Notifikasi";
@@ -101,6 +114,11 @@ class Datanotifikasi_pu extends CI_Controller
                 $action = $action_read . $action_edit . $action_delete . $action_print;
             }
 
+            //MENENSTUKAN SATTSU PROGRESS PENGAJUAN PERMINTAAN
+            $status = $field->app_hc_status == 'approved' && $field->app2_status == 'waiting'
+                ? $field->status . ' (' . $field->app_hc_name . ')'
+                : $field->status;
+
 
             $no++;
             $row = array();
@@ -113,7 +131,7 @@ class Datanotifikasi_pu extends CI_Controller
             $row[] = $field->pengajuan;
             $row[] = $this->tgl_indo(date("Y-m-j", strtotime($field->tgl_notifikasi)));
             $row[] = $field->alasan;
-            $row[] = $field->status;
+            $row[] = $status;
             $data[] = $row;
         }
 

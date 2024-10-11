@@ -3,6 +3,112 @@ require_once(APPPATH . 'third_party/fpdf/fpdf.php');
 
 class Fpdf_generate extends FPDF
 {
+    protected $extgstates = array();
+
+    // alpha: real value from 0 (transparent) to 1 (opaque)
+    // bm:    blend mode, one of the following:
+    //          Normal, Multiply, Screen, Overlay, Darken, Lighten, ColorDodge, ColorBurn,
+    //          HardLight, SoftLight, Difference, Exclusion, Hue, Saturation, Color, Luminosity
+
+    function TextWithDirection($x, $y, $txt, $direction = 'R')
+    {
+        if ($direction == 'R')
+            $s = sprintf('BT %.2F %.2F %.2F %.2F %.2F %.2F Tm (%s) Tj ET', 1, 0, 0, 1, $x * $this->k, ($this->h - $y) * $this->k, $this->_escape($txt));
+        elseif ($direction == 'L')
+            $s = sprintf('BT %.2F %.2F %.2F %.2F %.2F %.2F Tm (%s) Tj ET', -1, 0, 0, -1, $x * $this->k, ($this->h - $y) * $this->k, $this->_escape($txt));
+        elseif ($direction == 'U')
+            $s = sprintf('BT %.2F %.2F %.2F %.2F %.2F %.2F Tm (%s) Tj ET', 0, 1, -1, 0, $x * $this->k, ($this->h - $y) * $this->k, $this->_escape($txt));
+        elseif ($direction == 'D')
+            $s = sprintf('BT %.2F %.2F %.2F %.2F %.2F %.2F Tm (%s) Tj ET', 0, -1, 1, 0, $x * $this->k, ($this->h - $y) * $this->k, $this->_escape($txt));
+        else
+            $s = sprintf('BT %.2F %.2F Td (%s) Tj ET', $x * $this->k, ($this->h - $y) * $this->k, $this->_escape($txt));
+        if ($this->ColorFlag)
+            $s = 'q ' . $this->TextColor . ' ' . $s . ' Q';
+        $this->_out($s);
+    }
+
+    function TextWithRotation($x, $y, $txt, $txt_angle, $font_angle = 0)
+    {
+        $font_angle += 90 + $txt_angle;
+        $txt_angle *= M_PI / 180;
+        $font_angle *= M_PI / 180;
+
+        $txt_dx = cos($txt_angle);
+        $txt_dy = sin($txt_angle);
+        $font_dx = cos($font_angle);
+        $font_dy = sin($font_angle);
+
+        $s = sprintf('BT %.2F %.2F %.2F %.2F %.2F %.2F Tm (%s) Tj ET', $txt_dx, $txt_dy, $font_dx, $font_dy, $x * $this->k, ($this->h - $y) * $this->k, $this->_escape($txt));
+        if ($this->ColorFlag)
+            $s = 'q ' . $this->TextColor . ' ' . $s . ' Q';
+        $this->_out($s);
+    }
+
+    function SetAlpha($alpha, $bm = 'Normal')
+    {
+        // set alpha for stroking (CA) and non-stroking (ca) operations
+        $gs = $this->AddExtGState(array('ca' => $alpha, 'CA' => $alpha, 'BM' => '/' . $bm));
+        $this->SetExtGState($gs);
+    }
+
+    function AddExtGState($parms)
+    {
+        $n = count($this->extgstates) + 1;
+        $this->extgstates[$n]['parms'] = $parms;
+        return $n;
+    }
+
+    function SetExtGState($gs)
+    {
+        $this->_out(sprintf('/GS%d gs', $gs));
+    }
+
+    function _enddoc()
+    {
+        if (!empty($this->extgstates) && $this->PDFVersion < '1.4')
+            $this->PDFVersion = '1.4';
+        parent::_enddoc();
+    }
+
+    function _putextgstates()
+    {
+        for ($i = 1; $i <= count($this->extgstates); $i++) {
+            $this->_newobj();
+            $this->extgstates[$i]['n'] = $this->n;
+            $this->_put('<</Type /ExtGState');
+            $parms = $this->extgstates[$i]['parms'];
+            $this->_put(sprintf('/ca %.3F', $parms['ca']));
+            $this->_put(sprintf('/CA %.3F', $parms['CA']));
+            $this->_put('/BM ' . $parms['BM']);
+            $this->_put('>>');
+            $this->_put('endobj');
+        }
+    }
+
+    function _putresourcedict()
+    {
+        parent::_putresourcedict();
+        $this->_put('/ExtGState <<');
+        foreach ($this->extgstates as $k => $extgstate)
+            $this->_put('/GS' . $k . ' ' . $extgstate['n'] . ' 0 R');
+        $this->_put('>>');
+    }
+
+    function _putresources()
+    {
+        $this->_putextgstates();
+        parent::_putresources();
+    }
+
+    function SetDash($black = null, $white = null)
+    {
+        if ($black !== null)
+            $s = sprintf('[%.3F %.3F] 0 d', $black * $this->k, $white * $this->k);
+        else
+            $s = '[] 0 d';
+        $this->_out($s);
+    }
+
     function WordWrap(&$text, $maxwidth)
     {
         $text = trim($text);
