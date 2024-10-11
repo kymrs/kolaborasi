@@ -8,7 +8,7 @@
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex justify-content-between align-items-center">
                     <?php if ($add == 'Y') { ?>
-                        <a class="btn btn-primary btn-sm" id="add_btn">
+                        <a class="btn btn-primary btn-sm" id="add_btn" href="<?= base_url('approval/add_form') ?>">
                             <i class="fa fa-plus"></i>&nbsp;Add Data
                         </a>
                     <?php } ?>
@@ -63,7 +63,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('approval_pu/get_list') ?>",
+                "url": "<?php echo site_url('approval/get_list') ?>",
                 "type": "POST",
                 // "data": function(d) {
                 //     d.status = $('#appFilter').val(); // Tambahkan parameter status ke permintaan server
@@ -101,7 +101,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: "<?php echo site_url('approval_pu/delete/') ?>" + id,
+                    url: "<?php echo site_url('approval/delete/') ?>" + id,
                     type: "POST",
                     dataType: "JSON",
                     success: function(data) {
@@ -112,7 +112,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then((result) => {
-                            location.href = "<?= base_url('approval_pu') ?>";
+                            location.href = "<?= base_url('approval') ?>";
                         })
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
@@ -124,7 +124,7 @@
     };
 
 
-    $('#add_btn').click(function(e) {
-        window.location.href = '<?= base_url('approval_pu/set_access') ?>?link=' + 'add_form';
-    });
+    // $('#add_btn').click(function(e) {
+    //     window.location.href = '<?= base_url('approval/set_access') ?>?link=' + 'add_form';
+    // });
 </script>

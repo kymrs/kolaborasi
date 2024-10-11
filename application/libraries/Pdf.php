@@ -1,7 +1,5 @@
 <?php
-defined('BASEPATH') or exit('No direct script access allowed');
-
-require('C:\xampp\htdocs\sw\application\libraries\Fpdf.php');
+require_once(APPPATH . 'third_party/fpdf/fpdf.php');
 
 class Pdf extends FPDF
 {

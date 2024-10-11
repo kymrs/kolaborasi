@@ -114,7 +114,7 @@
                     "className": 'dt-head-nowrap'
                 },
                 {
-                    "targets": [1, 3, 4, 9],
+                    "targets": [1, 3, 4, 9, 10],
                     "className": 'dt-body-nowrap'
                 }, {
                     "targets": [0, 1],

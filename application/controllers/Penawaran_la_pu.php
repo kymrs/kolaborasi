@@ -1,6 +1,5 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
-require 'Pdf.php';
 
 class Penawaran_la_pu extends CI_Controller
 {
@@ -273,20 +272,25 @@ class Penawaran_la_pu extends CI_Controller
     // PRINTOUT FPDF
     public function generate_pdf()
     {
-        // Start FPDF
-        $pdf = new Pdf('P', 'mm', 'A4');
-        $pdf->SetTitle('Form Deklarasi');
-        $pdf->AddPage('P', 'Letter');
+        $this->load->library('Pdf');
+
+        // // Start FPDF
+        // $pdf = new Fpdf_generate('P', 'mm', 'A4');
+        // $pdf->SetTitle('Form Deklarasi');
+        // $pdf->AddPage('P', 'Letter');
 
         // Start FPDF
-        $pdf = new Pdf;
+        $pdf = new Pdf();
         $pdf->AddPage();
+
+        $pdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php');
+        $pdf->AddFont('Poppins-Bold', '', 'Poppins-Bold.php');
 
         // Mengatur posisi Y untuk menggeser seluruh konten ke bawah
         $pdf->SetY(50); // Ganti 50 dengan jumlah yang Anda inginkan
 
         // Pilih font untuk isi
-        $pdf->SetFont('Poppins-Regular', 'B', 12);
+        $pdf->SetFont('Poppins-Regular', '', 12);
 
         // Margin setup
         $left_margin = 10;
@@ -297,7 +301,7 @@ class Penawaran_la_pu extends CI_Controller
         $pdf->Cell(0, 10, 'TO:', 0, 1, 'L');
 
         // Name and title (Creative Director)
-        $pdf->SetFont('Poppins-Regular', 'B', 12);
+        $pdf->SetFont('Poppins-Regular', '', 12);
         $pdf->Cell(0, 10, 'NAME SURNAME', 0, 1, 'L');
         $pdf->SetFont('Poppins-Regular', '', 10);
         $pdf->Cell(0, 10, 'Creative Director', 0, 1, 'L');
@@ -331,7 +335,7 @@ class Penawaran_la_pu extends CI_Controller
         $pdf->Ln(20);
 
         // Bagian Nama kedua dan jabatan (Account Manager)
-        $pdf->SetFont('Poppins-Regular', 'B', 12);
+        $pdf->SetFont('Poppins-Regular', '', 12);
         $pdf->Cell(0, 10, 'NAME SURNAME', 0, 1, 'L');
         $pdf->SetFont('Poppins-Regular', '', 10);
         $pdf->Cell(0, 10, 'Account Manager', 0, 1, 'L');

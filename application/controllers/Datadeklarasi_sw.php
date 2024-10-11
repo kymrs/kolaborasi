@@ -12,6 +12,31 @@ class Datadeklarasi_sw extends CI_Controller
         date_default_timezone_set('Asia/Jakarta');
     }
 
+    function tgl_indo($tanggal)
+    {
+        $bulan = array(
+            1 =>   'Januari',
+            'Februari',
+            'Maret',
+            'April',
+            'Mei',
+            'Juni',
+            'Juli',
+            'Agustus',
+            'September',
+            'Oktober',
+            'November',
+            'Desember'
+        );
+        $pecahkan = explode('-', $tanggal);
+
+        // variabel pecahkan 0 = tanggal
+        // variabel pecahkan 1 = bulan
+        // variabel pecahkan 2 = tahun
+
+        return $pecahkan[2] . ' ' . $bulan[(int)$pecahkan[1]] . ' ' . $pecahkan[0];
+    }
+
     public function index()
     {
         $akses = $this->M_app->hak_akses($this->session->userdata('id_level'), $this->router->fetch_class());
@@ -81,7 +106,7 @@ class Datadeklarasi_sw extends CI_Controller
             $row[] = $no;
             $row[] = $action;
             $row[] = strtoupper($field->kode_deklarasi);
-            $row[] = date("d M Y", strtotime($field->tgl_deklarasi));
+            $row[] = $this->tgl_indo(date("Y-m-j", strtotime($field->tgl_deklarasi)));
             $row[] = $field->name;
             $row[] = $field->jabatan;
             $row[] = $field->nama_dibayar;

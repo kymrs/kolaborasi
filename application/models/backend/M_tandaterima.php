@@ -3,23 +3,26 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-class M_approval_pu extends CI_Model
+class M_tandaterima extends CI_Model
 {
-    var $id = 'id';
-    var $table = 'tbl_data_user'; //nama tabel dari database
-    var $column_order = array(null, null, 'name', 'divisi', 'jabatan', 'created_at');
-    var $column_search = array('name', 'divisi', 'jabatan', 'created_at'); //field yang diizin untuk pencarian 
-    var $order = array('id_user' => 'desc'); // default order 
+    var $table = 'tanda_terima'; //nama tabel dari database
+    var $column_order = array(null, 'nomor', 'tanggal', 'nama_pengirim', 'nama_penerima', 'barang', 'qty', null, null); //field yang ada di table user
+    var $column_search = array('nomor', 'tanggal', 'nama_pengirim', 'nama_penerima', 'barang', 'qty'); //field yang diizin untuk pencarian 
+    var $order = array('id' => 'asc'); // default order 
 
-    public function __construct()
+    function __construct()
     {
         parent::__construct();
+    }
+
+    function jml_data()
+    {
+        return $this->db->get("tanda_terima");
     }
 
     private function _get_datatables_query()
     {
 
-        // $this->db->from($this->table);
         $this->db->from($this->table);
 
         $i = 0;
@@ -73,10 +76,18 @@ class M_approval_pu extends CI_Model
         return $this->db->count_all_results();
     }
 
+    public function delete_id($id)
+    {
+        $this->db->where('id', $id);
+        $this->db->delete($this->table);
+    }
+
     public function get_by_id($id)
     {
-        $this->db->where($this->id, $id);
-        return $this->db->get($this->table)->row();
+        $this->db->from($this->table);
+        $this->db->where('id', $id);
+        $query = $this->db->get();
+        return $query->row();
     }
 
     public function save($data)

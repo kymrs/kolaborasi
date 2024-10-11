@@ -12,6 +12,31 @@ class Datanotifikasi_sw extends CI_Controller
         date_default_timezone_set('Asia/Jakarta');
     }
 
+    function tgl_indo($tanggal)
+    {
+        $bulan = array(
+            1 =>   'Januari',
+            'Februari',
+            'Maret',
+            'April',
+            'Mei',
+            'Juni',
+            'Juli',
+            'Agustus',
+            'September',
+            'Oktober',
+            'November',
+            'Desember'
+        );
+        $pecahkan = explode('-', $tanggal);
+
+        // variabel pecahkan 0 = tanggal
+        // variabel pecahkan 1 = bulan
+        // variabel pecahkan 2 = tahun
+
+        return $pecahkan[2] . ' ' . $bulan[(int)$pecahkan[1]] . ' ' . $pecahkan[0];
+    }
+
     public function index()
     {
         $akses = $this->M_app->hak_akses($this->session->userdata('id_level'), $this->router->fetch_class());
@@ -86,7 +111,7 @@ class Datanotifikasi_sw extends CI_Controller
             $row[] = $field->jabatan;
             $row[] = $field->departemen;
             $row[] = $field->pengajuan;
-            $row[] = date("d M Y", strtotime($field->tgl_notifikasi));
+            $row[] = $this->tgl_indo(date("Y-m-j", strtotime($field->tgl_notifikasi)));
             $row[] = $field->alasan;
             $row[] = $field->status;
             $data[] = $row;

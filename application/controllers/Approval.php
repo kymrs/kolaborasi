@@ -1,40 +1,40 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Approval_pu extends CI_Controller
+class Approval extends CI_Controller
 {
     function __construct()
     {
         parent::__construct();
-        $this->load->model('backend/M_approval_pu');
+        $this->load->model('backend/M_approval');
         $this->M_login->getsecurity();
         $this->load->library('session');
         date_default_timezone_set('Asia/Jakarta');
     }
 
     // Reusable method to check if access is granted
-    private function check_access()
-    {
-        if (!$this->session->userdata('access_granted')) {
-            // If not, show error or redirect
-            show_error('Unauthorized access!', 403);
+    // private function check_access()
+    // {
+    //     if (!$this->session->userdata('access_granted')) {
+    //         // If not, show error or redirect
+    //         show_error('Unauthorized access!', 403);
 
-            // Clear access after checking
-            $this->session->unset_userdata('access_granted');
-        }
-    }
+    //         // Clear access after checking
+    //         $this->session->unset_userdata('access_granted');
+    //     }
+    // }
 
     // Call this when the button is clicked to set access
-    public function set_access()
-    {
-        // Set session variable when button is clicked
-        $this->session->set_userdata('access_granted', TRUE);
+    // public function set_access()
+    // {
+    //     // Set session variable when button is clicked
+    //     $this->session->set_userdata('access_granted', TRUE);
 
-        $link = $this->input->get('link');
+    //     $link = $this->input->get('link');
 
-        // Redirect to any protected action
-        redirect('approval_pu/' . $link); // Example redirect to the first action
-    }
+    //     // Redirect to any protected action
+    //     redirect('approval/' . $link); // Example redirect to the first action
+    // }
 
     public function index()
     {
@@ -42,7 +42,7 @@ class Approval_pu extends CI_Controller
         ($akses->view_level == 'N' ? redirect('auth') : '');
         $data['add'] = $akses->add_level;
 
-        $data['title'] = "backend/approval_pu/approval_list_pu";
+        $data['title'] = "backend/approval/approval_list";
         $data['titleview'] = "Approval";
         $this->load->view('backend/home', $data);
     }
@@ -55,7 +55,7 @@ class Approval_pu extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $list = $this->M_approval_pu->get_datatables();
+        $list = $this->M_approval->get_datatables();
         $data = array();
         $no = $_POST['start'];
 
@@ -67,7 +67,7 @@ class Approval_pu extends CI_Controller
         foreach ($list as $field) {
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
-            $action_edit = ($edit == 'Y') ? '<a href="approval_pu/edit_form/' . $field->id_user . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
+            $action_edit = ($edit == 'Y') ? '<a href="approval/edit_form/' . $field->id_user . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id_user . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
@@ -87,8 +87,8 @@ class Approval_pu extends CI_Controller
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_approval_pu->count_all(),
-            "recordsFiltered" => $this->M_approval_pu->count_filtered(),
+            "recordsTotal" => $this->M_approval->count_all(),
+            "recordsFiltered" => $this->M_approval->count_filtered(),
             "data" => $data,
         );
         //output dalam format JSON
@@ -98,14 +98,14 @@ class Approval_pu extends CI_Controller
     public function add_form()
     {
         // Check if access is granted
-        $this->check_access();
+        // $this->check_access();
 
         $data['id'] = 0;
         $data['title_view'] = "Approval Form";
         $data['aksi'] = 'save';
         $data['users'] = $this->db->select('id_user, fullname')->from('tbl_user')->get()->result_object();
         $data['approvals'] = $this->db->select('id_user, fullname')->from('tbl_user')->where('app', 'Y')->get()->result_object();
-        $data['title'] = 'backend/approval_pu/approval_form_pu';
+        $data['title'] = 'backend/approval/approval_form';
         $this->load->view('backend/home', $data);
 
         // Clear access after checking
@@ -121,10 +121,11 @@ class Approval_pu extends CI_Controller
             'jabatan' => $this->input->post('jabatan'),
             'app_id' => $this->input->post('app_id'),
             'app2_id' => $this->input->post('app2_id'),
-            'app3_id' => $this->input->post('app3_id')
+            'app3_id' => $this->input->post('app3_id'),
+            'app4_id' => $this->input->post('app4_id')
         );
 
-        $inserted = $this->M_approval_pu->save($data);
+        $this->M_approval->save($data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -138,6 +139,7 @@ class Approval_pu extends CI_Controller
             'app_id' => $this->input->post('app_id'),
             'app2_id' => $this->input->post('app2_id'),
             'app3_id' => $this->input->post('app3_id'),
+            'app4_id' => $this->input->post('app4_id'),
             'updated_at' => date('Y-m-d H:i:s')
         );
 
@@ -153,7 +155,7 @@ class Approval_pu extends CI_Controller
         $data['aksi'] = 'update';
         $data['users'] = $this->db->select('id_user, fullname')->from('tbl_user')->get()->result_object();
         $data['approvals'] = $this->db->select('id_user, fullname')->from('tbl_user')->where('app', 'Y')->get()->result_object();
-        $data['title'] = 'backend/approval_pu/approval_form_pu';
+        $data['title'] = 'backend/approval/approval_form';
         $this->load->view('backend/home', $data);
     }
 

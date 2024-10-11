@@ -14,22 +14,53 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="card shadow mb-4">
-                <div class="card-header py-3 d-flex justify-content-between align-items-center">
-
+                <div class="card-header py-3 d-flex justify-content-start align-items-center">
+                    <div class="d-flex align-items-center mr-3 w-25">
+                        <label for="tgl_awal" class="mr-2 mb-0" style="width: 200px;">Tanggal Awal:</label>
+                        <div class="input-group date">
+                            <input type="text" class="form-control" name="tgl_awal" id="tgl_awal" placeholder="DD-MM-YYYY" autocomplete="off" readonly />
+                            <div class="input-group-append">
+                                <div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center mr-3 w-25">
+                        <label for="tgl_akhir" class="mr-2 mb-0" style="width: 200px;">Tanggal Akhir:</label>
+                        <div class="input-group date">
+                            <input type="text" class="form-control" name="tgl_akhir" id="tgl_akhir" placeholder="DD-MM-YYYY" autocomplete="off" readonly />
+                            <div class="input-group-append">
+                                <div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex align-item-center">
+                        <button class="btn btn-primary" id="tgl_btn" type="button">DONE</button>
+                    </div>
                 </div>
+
+                <!-- NAV TABS -->
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="pelaporanTab" href="#" data-tab="pelaporan">Pelaporan</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="reimbustTab" href="#" data-tab="reimbust">Reimbust</a>
+                    </li>
+                </ul>
 
                 <div class="card-body">
                     <table id="table" class="table table-bordered table-striped">
                         <thead>
                             <tr>
                                 <th>No</th>
+                                <th>Tanggal</th>
+                                <th>Nama</th>
                                 <th>Keterangan</th>
-                                <th>Tanggal Awal</th>
-                                <th>Tanggal Akhir</th>
-                                <th>Saldo Awal</th>
-                                <th>Debit</th>
-                                <th>Kredit</th>
-                                <th>Saldo Akhir</th>
+                                <th>Kode Prepayment</th>
+                                <th>Kode Reimbust</th>
+                                <!-- <th>Saldo Awal</th> -->
+                                <th>Pengeluaran</th>
+                                <!-- <th>Saldo Akhir</th> -->
                             </tr>
                         </thead>
                         <tbody>
@@ -37,16 +68,22 @@
                         <tfoot>
                             <tr>
                                 <th>No</th>
+                                <th>Tanggal</th>
+                                <th>Nama</th>
                                 <th>Keterangan</th>
-                                <th>Tanggal Awal</th>
-                                <th>Tanggal Akhir</th>
-                                <th>Saldo Awal</th>
-                                <th>Debit</th>
-                                <th>Kredit</th>
-                                <th>Saldo Akhir</th>
+                                <th>Kode Prepayment</th>
+                                <th>Kode Reimbust</th>
+                                <!-- <th>Saldo Awal</th> -->
+                                <th>Pengeluaran</th>
+                                <!-- <th>Saldo Akhir</th> -->
                             </tr>
                         </tfoot>
                     </table>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        This is some text within a card body.
+                    </div>
                 </div>
             </div>
         </div>
@@ -61,6 +98,20 @@
 
     // METHOD POST MENAMPILKAN DATA KE DATA TABLE
     $(document).ready(function() {
+
+        $('#tgl_awal').datepicker({
+            dateFormat: 'dd-mm-yy'
+        });
+
+        $('#tgl_akhir').datepicker({
+            dateFormat: 'dd-mm-yy'
+        });
+
+        function formatTanggal(dateStr) {
+            const [day, month, year] = dateStr.split("-");
+            return `${year}-${month}-${day}`;
+        }
+
         table = $('#table').DataTable({
             "responsive": false,
             "scrollX": true,
@@ -68,10 +119,20 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('prepayment_pu/get_list') ?>",
+                "url": "<?php echo site_url('rekapitulasi/get_list') ?>",
                 "type": "POST",
                 "data": function(d) {
-                    d.status = $('#appFilter').val(); // Tambahkan parameter status ke permintaan server
+                    let tgl_awal = $('#tgl_awal').val();
+                    let tgl_akhir = $('#tgl_akhir').val();
+
+                    // Konversi format tanggal jika diperlukan
+                    if (tgl_awal && tgl_akhir) {
+                        tgl_awal = formatTanggal(tgl_awal);
+                        tgl_akhir = formatTanggal(tgl_akhir);
+                    }
+
+                    d.awal = tgl_awal;
+                    d.akhir = tgl_akhir;
                     d.tab = $('.nav-tabs .nav-link.active').data('tab'); // Tambahkan parameter tab ke permintaan server
                 }
             },
@@ -79,18 +140,24 @@
             //     "infoFiltered": ""
             // },
             "columnDefs": [{
-                    "targets": [2, 6, 8],
+                    "targets": [3, 4, 5],
                     "className": 'dt-head-nowrap'
                 },
                 {
-                    "targets": [1, 3, 4, 9],
+                    "targets": [1, 5, 6],
                     "className": 'dt-body-nowrap'
                 }, {
-                    "targets": [0, 1],
+                    "targets": [0],
                     "orderable": false,
                 },
             ]
         });
+    });
+
+    // Event listener untuk nav tabs
+    $('#tgl_btn').on('click', function(e) {
+        e.preventDefault();
+        table.ajax.reload(); // Muat ulang data di DataTable saat tab berubah
     });
 
     // Event listener untuk nav tabs

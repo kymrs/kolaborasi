@@ -5,92 +5,109 @@ if (!defined('BASEPATH'))
 
 class M_rekapitulasi extends CI_Model
 {
-    // INISIASI VARIABLE
     var $id = 'id';
-    var $table = 'tbl_prepayment_pu';
-    var $table2 = 'tbl_reimbust_pu';
-    var $column_order = array(null, null, 'kode_prepayment', 'name', 'divisi', 'jabatan', 'tgl_prepayment', 'prepayment', 'total_nominal', 'status');
-    var $column_search = array('kode_prepayment', 'name', 'divisi', 'jabatan', 'tgl_prepayment', 'prepayment', 'total_nominal', 'status'); //field yang diizin untuk pencarian
-    var $order = array('id' => 'desc');
+    var $table = 'tbl_reimbust_pu';
+    var $table2 = 'tbl_reimbust_detail_pu';
+    var $table3 = 'tbl_prepayment_pu';
+    // Kolom yang bisa diurutkan (ORDER BY) berdasarkan query UNION
+    var $column_order = array(null, 'tgl_pengajuan', 'name', 'tujuan', 'kode_reimbust', 'kode_prepayment', 'total_nominal');
 
-    // UNTUK QUERY DATA TABLE
+    // Kolom yang bisa dicari (SEARCH)
+    var $column_search = array('tgl_pengajuan', 'name', 'tujuan', 'kode_reimbust', 'kode_prepayment');
+    // var $order = array('tbl_reimbust_pu.tgl_pengajuan' => 'ASC');
+
     function _get_datatables_query()
     {
-        $this->db->select('tbl_prepayment_pu.*, tbl_data_user.name'); // Memilih kolom dari kedua tabel
-        $this->db->from($this->table);
-        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_prepayment_pu.id_user', 'left'); // JOIN dengan tabel tbl_user
-
-        $i = 0;
-
-        foreach ($this->column_search as $item) // looping awal
-        {
-            if ($_POST['search']['value']) // jika datatable mengirimkan pencarian dengan metode POST
-            {
-
-                if ($i === 0) // looping awal
-                {
-                    $this->db->group_start();
-                    if ($item == 'name') {
-                        $this->db->like('tbl_data_user.' . $item, $_POST['search']['value']);
-                    } else {
-                        $this->db->like('tbl_prepayment_pu.' . $item, $_POST['search']['value']);
-                    }
-                } else {
-                    if ($item == 'name') {
-                        $this->db->or_like('tbl_data_user.' . $item, $_POST['search']['value']);
-                    } else {
-                        $this->db->or_like('tbl_prepayment_pu.' . $item, $_POST['search']['value']);
-                    }
-                }
-
-                if (count($this->column_search) - 1 == $i) {
-                    $this->db->group_end();
-                }
-            }
-            $i++;
-        }
-
-        // Tambahkan pemfilteran berdasarkan status
-        // Tambahkan kondisi jika id_user login sesuai dengan app2_name
-        $id_user_logged_in = $this->session->userdata('id_user'); // Mengambil id_user dari sesi pengguna yang login
-
-        if (!empty($_POST['status'])) {
-            $this->db->group_start(); // Start grouping conditions
-
-            if ($_POST['status'] == 'on-process') {
-                // Conditions for 'on-process' status
-                $this->db->where('app_status', 'waiting')
-                    ->where('app2_status', 'waiting')
-                    ->or_where('tbl_prepayment_pu.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
-                    ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
-            } elseif ($_POST['status'] == 'approved') {
-                // Conditions for 'approved' status
-                $this->db->where('app_status', $_POST['status'])
-                    ->where('app2_status', 'approved')
-                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status != "rejected")', NULL, FALSE);
-            } elseif ($_POST['status'] == 'revised') {
-                $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
-                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "revised")', NULL, FALSE)
-                    ->or_where('tbl_prepayment_pu.id_user =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
-            } elseif ($_POST['status'] == 'rejected') {
-                $this->db->where('status', $_POST['status']);
-            }
-
-            $this->db->group_end(); // End grouping conditions
-        }
-
         // Tambahkan kondisi berdasarkan tab yang dipilih
         if (!empty($_POST['tab'])) {
-            if ($_POST['tab'] == 'personal') {
-                $this->db->where('tbl_prepayment_pu.id_user', $this->session->userdata('id_user'));
-            } elseif ($_POST['tab'] == 'employee') {
-                $this->db->group_start()
-                    ->where('tbl_prepayment_pu.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-                    ->where('tbl_prepayment_pu.id_user !=', $this->session->userdata('id_user'))
-                    ->or_where('tbl_prepayment_pu.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_prepayment_pu.app_status = 'approved'", FALSE)
-                    ->where('tbl_prepayment_pu.id_user !=', $this->session->userdata('id_user'))
-                    ->group_end();
+            if ($_POST['tab'] == 'pelaporan') {
+                //PELAPORAN TABS
+                $this->db->select('tbl_reimbust_pu.id, 
+                   tbl_prepayment_pu.id as prepayment_id, 
+                   tbl_reimbust_pu.kode_reimbust, 
+                   tbl_data_user.name, 
+                   tbl_prepayment_pu.tujuan, 
+                   tbl_reimbust_pu.tgl_pengajuan, 
+                   tbl_prepayment_pu.tgl_prepayment, 
+                   tbl_prepayment_pu.kode_prepayment, 
+                   tbl_prepayment_pu.total_nominal, 
+                   SUM(tbl_reimbust_detail_pu.jumlah) AS total_jumlah_detail');
+                $this->db->from('tbl_prepayment_pu');
+                $this->db->join('tbl_reimbust_pu', 'tbl_reimbust_pu.kode_prepayment = tbl_prepayment_pu.kode_prepayment', 'left');
+                $this->db->join('tbl_reimbust_detail_pu', 'tbl_reimbust_pu.id = tbl_reimbust_detail_pu.reimbust_id', 'left');
+                $this->db->join('tbl_data_user', 'tbl_prepayment_pu.id_user = tbl_data_user.id_user', 'left');
+
+                // Filter berdasarkan range tanggal
+                if (!empty($_POST['awal']) && !empty($_POST['akhir'])) {
+                    $tgl_awal = date('Y-m-d', strtotime($_POST['awal']));
+                    $tgl_akhir = date('Y-m-d', strtotime($_POST['akhir']));
+
+                    // Filter berdasarkan range tanggal
+                    $this->db->group_start(); // Memulai grup kondisi
+                    $this->db->where('tbl_reimbust_pu.tgl_pengajuan >=', $tgl_awal);
+                    $this->db->or_where('tbl_prepayment_pu.tgl_prepayment >=', $tgl_awal);
+                    $this->db->group_end(); // Menutup grup kondisi
+
+                    $this->db->group_start(); // Memulai grup kondisi
+                    $this->db->where('tbl_reimbust_pu.tgl_pengajuan <=', $tgl_akhir);
+                    $this->db->or_where('tbl_prepayment_pu.tgl_prepayment <=', $tgl_akhir);
+                    $this->db->group_end(); // Menutup grup kondisi
+                }
+
+                $this->db->group_by(array('tbl_prepayment_pu.id', 'tbl_prepayment_pu.kode_prepayment', 'tbl_prepayment_pu.tgl_prepayment'));
+            } elseif ($_POST['tab'] == 'reimbust') {
+                //TABS REINBUST
+                $this->db->select('tbl_reimbust_pu.id, tbl_reimbust_pu.tgl_pengajuan, tbl_data_user.name, tbl_reimbust_pu.tujuan, tbl_reimbust_pu.kode_reimbust, tbl_reimbust_pu.kode_prepayment, SUM(tbl_reimbust_detail_pu.jumlah) AS total_jumlah_detail');
+                $this->db->from('tbl_reimbust_pu');
+                $this->db->join('tbl_reimbust_detail_pu', 'tbl_reimbust_pu.id = tbl_reimbust_detail_pu.reimbust_id');
+                $this->db->join('tbl_data_user', 'tbl_reimbust_pu.id_user = tbl_data_user.id_user');
+                $this->db->where('tbl_reimbust_pu.kode_prepayment', '');
+                // Filter berdasarkan range tanggal
+                if (!empty($_POST['awal']) && !empty($_POST['akhir'])) {
+                    $tgl_awal = date('Y-m-d', strtotime($_POST['awal']));
+                    $tgl_akhir = date('Y-m-d', strtotime($_POST['akhir']));
+
+                    // Filter berdasarkan range tanggal
+                    $this->db->where('tbl_reimbust_pu.tgl_pengajuan >=', $tgl_awal);
+                    $this->db->where('tbl_reimbust_pu.tgl_pengajuan <=', $tgl_akhir);
+                }
+                $this->db->group_by('tbl_reimbust_pu.id, tbl_reimbust_pu.kode_reimbust, tbl_reimbust_pu.tgl_pengajuan');
             }
+        }
+
+        // Query pertama (LEFT JOIN dengan tbl_prepayment_pu dan tbl_reimbust_pu, dengan kondisi kode_reimbust IS NULL)
+        // $this->db->select('tbl_prepayment_pu.id, tbl_prepayment_pu.kode_prepayment, tbl_prepayment_pu.tgl_prepayment, tbl_prepayment_pu.total_nominal');
+        // $this->db->from('tbl_prepayment_pu');
+        // $this->db->join('tbl_reimbust_pu', 'tbl_prepayment_pu.kode_prepayment = tbl_reimbust_pu.kode_prepayment', 'left');
+        // $this->db->where('tbl_reimbust_pu.kode_reimbust IS NULL', null, false);
+        // $query1 = $this->db->get_compiled_select(); // Compile query pertama
+
+        // // // Query kedua (JOIN tbl_reimbust_pu dan tbl_reimbust_detail_pu)
+        // $this->db->select('tbl_reimbust_pu.id, tbl_reimbust_pu.kode_reimbust, tbl_reimbust_pu.tgl_pengajuan, SUM(tbl_reimbust_detail_pu.jumlah) AS total_jumlah_detail');
+        // $this->db->from('tbl_reimbust_pu');
+        // $this->db->join('tbl_reimbust_detail_pu', 'tbl_reimbust_pu.id = tbl_reimbust_detail_pu.reimbust_id');
+        // $this->db->group_by('tbl_reimbust_pu.id');
+        // $query2 = $this->db->get_compiled_select(); // Compile query kedua
+
+        // Menggabungkan kedua query dengan UNION
+        // $union_query = "($query1 UNION $query2) as unionTable";
+
+        // Menggunakan query gabungan untuk SELECT di DataTables
+        // $this->db->query("($query1 UNION $query2) as unionTable");
+
+        $i = 0;
+        foreach ($this->column_search as $item) {
+            if ($_POST['search']['value']) {
+                if ($i === 0) {
+                    $this->db->group_start();
+                    $this->db->like($item, $_POST['search']['value']);
+                } else {
+                    $this->db->or_like($item, $_POST['search']['value']);
+                }
+                if (count($this->column_search) - 1 == $i)
+                    $this->db->group_end();
+            }
+            $i++;
         }
 
         if (isset($_POST['order'])) {
@@ -101,7 +118,6 @@ class M_rekapitulasi extends CI_Model
         }
     }
 
-    // UNTUK MENAMPILKAN HASIL QUERY KE DATA TABLES
     function get_datatables()
     {
         $this->_get_datatables_query();
@@ -120,66 +136,64 @@ class M_rekapitulasi extends CI_Model
 
     public function count_all()
     {
-        $this->db->select('tbl_prepayment_pu.*, tbl_data_user.name'); // Memilih kolom dari kedua tabel
-        $this->db->from($this->table);
-        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_prepayment_pu.id_user', 'left'); // JOIN dengan tabel tbl_user
-        // Tambahkan pemfilteran berdasarkan status
-        // Tambahkan pemfilteran berdasarkan status
-        // Tambahkan kondisi jika id_user login sesuai dengan app2_name
-        $id_user_logged_in = $this->session->userdata('id_user'); // Mengambil id_user dari sesi pengguna yang login
-
-        if (!empty($_POST['status'])) {
-            $this->db->group_start(); // Start grouping conditions
-
-            if ($_POST['status'] == 'on-process') {
-                // Conditions for 'on-process' status
-                $this->db->where('app_status', 'waiting')
-                    ->where('app2_status', 'waiting')
-                    ->or_where('tbl_prepayment_pu.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
-                    ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
-            } elseif ($_POST['status'] == 'approved') {
-                // Conditions for 'approved' status
-                $this->db->where('app_status', $_POST['status'])
-                    ->where('app2_status', 'approved')
-                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status != "rejected")', NULL, FALSE);
-            } elseif ($_POST['status'] == 'revised') {
-                $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
-                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "revised")', NULL, FALSE)
-                    ->or_where('tbl_prepayment_pu.id_user =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
-            } elseif ($_POST['status'] == 'rejected') {
-                $this->db->where('status', $_POST['status']);
-            }
-
-            $this->db->group_end(); // End grouping conditions
-        }
-
-        // Tambahkan kondisi berdasarkan tab yang dipilih
         if (!empty($_POST['tab'])) {
-            if ($_POST['tab'] == 'personal') {
-                $this->db->where('tbl_prepayment_pu.id_user', $this->session->userdata('id_user'));
-            } elseif ($_POST['tab'] == 'employee') {
-                $this->db->group_start()
-                    ->where('tbl_prepayment_pu.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-                    ->where('tbl_prepayment_pu.id_user !=', $this->session->userdata('id_user'))
-                    ->or_where('tbl_prepayment_pu.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_prepayment_pu.app_status = 'approved'", FALSE)
-                    ->where('tbl_prepayment_pu.id_user !=', $this->session->userdata('id_user'))
-                    ->group_end();
+            if ($_POST['tab'] == 'pelaporan') {
+                //PELAPORAN TABS
+                $this->db->select('tbl_reimbust_pu.id, 
+                                    tbl_reimbust_pu.kode_reimbust, 
+                                    tbl_data_user.name, 
+                                    tbl_reimbust_pu.tujuan, 
+                                    tbl_reimbust_pu.tgl_pengajuan, 
+                                    tbl_prepayment_pu.tgl_prepayment, 
+                                    tbl_reimbust_pu.kode_prepayment, 
+                                    tbl_reimbust_pu.jumlah_prepayment, 
+                                    SUM(tbl_reimbust_detail_pu.jumlah) AS total_jumlah_detail');
+                $this->db->from('tbl_reimbust_pu');
+                $this->db->join('tbl_reimbust_detail_pu', 'tbl_reimbust_pu.id = tbl_reimbust_detail_pu.reimbust_id');
+                $this->db->join('tbl_data_user', 'tbl_reimbust_pu.id_user = tbl_data_user.id_user');
+                $this->db->join('tbl_prepayment_pu', 'tbl_reimbust_pu.kode_prepayment = tbl_prepayment_pu.kode_prepayment', 'left');
+
+                // Filter berdasarkan range tanggal
+                if (!empty($_POST['awal']) && !empty($_POST['akhir'])) {
+                    $tgl_awal = date('Y-m-d', strtotime($_POST['awal']));
+                    $tgl_akhir = date('Y-m-d', strtotime($_POST['akhir']));
+
+                    // Filter berdasarkan range tanggal
+                    $this->db->where('tbl_reimbust_pu.tgl_pengajuan >=', $tgl_awal);
+                    $this->db->where('tbl_reimbust_pu.tgl_pengajuan <=', $tgl_akhir);
+                }
+
+                $this->db->group_by(array('tbl_reimbust_pu.id', 'tbl_reimbust_pu.kode_prepayment', 'tbl_reimbust_pu.jumlah_prepayment'));
+            } elseif ($_POST['tab'] == 'reimbust') {
+                //TABS REINBUST
+                $this->db->select('tbl_reimbust_pu.id', 'tbl_reimbust_pu.tgl_pengajuan', 'tbl_reimbust_pu.tujuan', 'tbl_reimbust_pu.kode_reimbust', 'tbl_reimbust_pu.kode_prepayment', 'SUM(tbl_reimbust_detail_pu.jumlah) AS total_jumlah_detail');
+                $this->db->from('tbl_reimbust_pu');
+                $this->db->join('tbl_reimbust_detail_pu', 'tbl_reimbust_pu.id = tbl_reimbust_detail_pu.reimbust_id');
+                $this->db->where('tbl_reimbust_pu.kode_prepayment', '');
+                // Filter berdasarkan range tanggal
+                if (!empty($_POST['awal']) && !empty($_POST['akhir'])) {
+                    $tgl_awal = date('Y-m-d', strtotime($_POST['awal']));
+                    $tgl_akhir = date('Y-m-d', strtotime($_POST['akhir']));
+
+                    // Filter berdasarkan range tanggal
+                    $this->db->where('tbl_reimbust_pu.tgl_pengajuan >=', $tgl_awal);
+                    $this->db->where('tbl_reimbust_pu.tgl_pengajuan <=', $tgl_akhir);
+                }
+                $this->db->group_by(array('tbl_reimbust_pu.id', 'tbl_reimbust_pu.kode_reimbust', 'tbl_reimbust_pu.tgl_pengajuan'));
             }
         }
         return $this->db->count_all_results();
     }
 
-    // GET BY ID TABLE PREPAYMENT MASTER
     public function get_by_id($id)
     {
         $this->db->where($this->id, $id);
         return $this->db->get($this->table)->row();
     }
 
-    // GET BY ID TABLE DETAIL PREPAYMENT TRANSAKSI
     public function get_by_id_detail($id)
     {
-        $this->db->where('prepayment_id', $id);
+        $this->db->where('reimbust_id', $id);
         return $this->db->get($this->table2)->result_array();
     }
 }

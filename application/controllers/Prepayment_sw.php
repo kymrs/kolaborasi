@@ -10,6 +10,31 @@ class Prepayment_sw extends CI_Controller
         $this->M_login->getsecurity();
     }
 
+    function tgl_indo($tanggal)
+    {
+        $bulan = array(
+            1 =>   'Januari',
+            'Februari',
+            'Maret',
+            'April',
+            'Mei',
+            'Juni',
+            'Juli',
+            'Agustus',
+            'September',
+            'Oktober',
+            'November',
+            'Desember'
+        );
+        $pecahkan = explode('-', $tanggal);
+
+        // variabel pecahkan 0 = tanggal
+        // variabel pecahkan 1 = bulan
+        // variabel pecahkan 2 = tahun
+
+        return $pecahkan[2] . ' ' . $bulan[(int)$pecahkan[1]] . ' ' . $pecahkan[0];
+    }
+
     public function index()
     {
         $akses = $this->M_app->hak_akses($this->session->userdata('id_level'), $this->router->fetch_class());
@@ -84,7 +109,7 @@ class Prepayment_sw extends CI_Controller
             $row[] = $field->name;
             $row[] = strtoupper($field->divisi);
             $row[] = strtoupper($field->jabatan);
-            $row[] = date("d M Y", strtotime($field->tgl_prepayment));
+            $row[] = $this->tgl_indo(date("Y-m-j", strtotime($field->tgl_prepayment)));
             $row[] = $field->prepayment;
             $row[] = $formatted_nominal;
             $row[] = ucwords($field->payment_status);

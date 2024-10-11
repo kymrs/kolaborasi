@@ -9,7 +9,7 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header text-right">
-                    <a class="btn btn-secondary btn-sm" href="<?= base_url('approval_pu') ?>">
+                    <a class="btn btn-secondary btn-sm" href="<?= base_url('approval') ?>">
                         <i class="fas fa-chevron-left"></i>&nbsp;Back
                     </a>
                 </div>
@@ -82,6 +82,17 @@
                                         </select>
                                     </div>
                                 </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4" for="app4_id">Approval Captain</label>
+                                    <div class="col-sm-7">
+                                        <select class="form-control app4_id" id="app4_id" name="app4_id">
+                                            <option value="" selected disabled>Pilih opsi...</option>
+                                            <?php foreach ($approvals as $approval) { ?>
+                                                <option value="<?= $approval->id_user ?>"><?= $approval->fullname ?></option>
+                                            <?php } ?>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -118,6 +129,7 @@
         $('.app_id').select2();
         $('.app2_id').select2();
         $('.app3_id').select2();
+        $('.app4_id').select2();
 
         if (id == 0) {
             $('.aksi').text('Save');
@@ -126,7 +138,7 @@
             $("select option[value='']").hide();
             $('#name').prop('disabled', true);
             $.ajax({
-                url: "<?php echo site_url('approval_pu/edit_data') ?>/" + id,
+                url: "<?php echo site_url('approval/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -137,6 +149,7 @@
                     $('#app_id').val(data['master']['app_id']).trigger('change');
                     $('#app2_id').val(data['master']['app2_id']).trigger('change');
                     $('#app3_id').val(data['master']['app3_id']).trigger('change');
+                    $('#app4_id').val(data['master']['app4_id']).trigger('change');
                     // console.log(data);
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
@@ -149,7 +162,7 @@
             e.preventDefault();
             var $form = $(this);
             if (!$form.valid()) return false;
-            var url = (id == 0) ? "<?php echo site_url('approval_pu/add') ?>" : "<?php echo site_url('approval_pu/update') ?>/" + id;
+            var url = (id == 0) ? "<?php echo site_url('approval/add') ?>" : "<?php echo site_url('approval/update') ?>/" + id;
             var selectedText = $('#name option:selected').text();
             // console.log(selectedText);
 
@@ -170,7 +183,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then((result) => {
-                            location.href = "<?= base_url('approval_pu') ?>";
+                            location.href = "<?= base_url('approval') ?>";
                         });
                     }
                 },
@@ -226,7 +239,7 @@
                     required: "Approval Kedua is required",
                 },
                 app3_id: {
-                    required: "Approval Kedua is required",
+                    required: "Approval Ketiga is required",
                 }
             },
             errorPlacement: function(error, element) {
