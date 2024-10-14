@@ -29,7 +29,7 @@
                     </li>
                     <?php if ($approval > 0) { ?>
                         <li class="nav-item">
-                            <a class="nav-link" id="employeeTab" href="#" data-tab="employee">Approval (<?= $pendings ?>)</a>
+                            <a class="nav-link" id="employeeTab" href="#" data-tab="employee">Approval</a>
                         </li>
                     <?php } ?>
                 </ul>
@@ -84,6 +84,30 @@
 
 <script type="text/javascript">
     var table;
+
+    // Set active tab on page load
+    const activeTab = sessionStorage.getItem('activeTab');
+
+    // Cek apakah tab approval ada
+    const approvalTabExists = $('#employeeTab').length > 0;
+
+    if (activeTab && (activeTab !== 'employee' || approvalTabExists)) {
+        $('.nav-tabs .nav-link').removeClass('active');
+        $(`.nav-tabs .nav-link[data-tab="${activeTab}"]`).addClass('active');
+        // You can load content for the active tab here if needed
+    } else {
+        // Default to the "User" tab if session storage is empty or approval tab doesn't exist
+        $('.nav-tabs .nav-link').removeClass('active');
+        $('#personalTab').addClass('active');
+    }
+
+    // Tab click event
+    $('.nav-tabs .nav-link').on('click', function() {
+        const tab = $(this).data('tab');
+        sessionStorage.setItem('activeTab', tab);
+        $('.nav-tabs .nav-link').removeClass('active');
+        $(this).addClass('active');
+    });
 
     $(document).ready(function() {
         var table = $('#notificationTable').DataTable({

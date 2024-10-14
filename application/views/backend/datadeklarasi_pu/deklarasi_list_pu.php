@@ -85,6 +85,31 @@
 <script type="text/javascript">
     var table;
     $(document).ready(function() {
+
+        // Set active tab on page load
+        const activeTab = sessionStorage.getItem('activeTab');
+
+        // Cek apakah tab approval ada
+        const approvalTabExists = $('#employeeTab').length > 0;
+
+        if (activeTab && (activeTab !== 'employee' || approvalTabExists)) {
+            $('.nav-tabs .nav-link').removeClass('active');
+            $(`.nav-tabs .nav-link[data-tab="${activeTab}"]`).addClass('active');
+            // You can load content for the active tab here if needed
+        } else {
+            // Default to the "User" tab if session storage is empty or approval tab doesn't exist
+            $('.nav-tabs .nav-link').removeClass('active');
+            $('#personalTab').addClass('active');
+        }
+
+        // Tab click event
+        $('.nav-tabs .nav-link').on('click', function() {
+            const tab = $(this).data('tab');
+            sessionStorage.setItem('activeTab', tab);
+            $('.nav-tabs .nav-link').removeClass('active');
+            $(this).addClass('active');
+        });
+
         table = $('#declarationTable').DataTable({
             "responsive": false,
             "scrollX": true,

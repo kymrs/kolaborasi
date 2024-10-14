@@ -24,7 +24,8 @@
     <div class="center">
         <div class="container">
             <div class="image">
-                <img src="<?= base_url() ?>assets/backend/img/kolaborasi1.png" alt="Logo Kolaborasi" class="logo">
+                <!-- <img src="<?= base_url() ?>assets/backend/img/kolaborasi1.png" alt="Logo Kolaborasi" class="logo"> -->
+                <h1>LOGIN</h1>
             </div>
             <div class="text-center">
                 <?= $this->session->flashdata('message'); ?>

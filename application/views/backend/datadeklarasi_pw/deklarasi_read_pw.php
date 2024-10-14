@@ -126,7 +126,7 @@
                         <?php } elseif ($user->app2_name == $app2_name && !in_array($user->app2_status, ['approved', 'rejected']) && $user->app_status == 'approved') { ?>
                             <a class="btn btn-warning btn-sm mr-2" id="appBtn2" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
                         <?php } ?>
-                        <a class="btn btn-secondary btn-sm" href="<?= base_url('datadeklarasi_pw') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+                        <a class="btn btn-secondary btn-sm" onclick="history.back()"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                     </div>
 
                     <!-- Header Section -->
@@ -473,7 +473,7 @@
                                 showConfirmButton: false,
                                 timer: 1500
                             }).then((result) => {
-                                location.href = "<?= base_url('datadeklarasi_pw') ?>";
+                                window.history.back(); // Kembali ke halaman sebelumnya
                             })
                         }
                     },
