@@ -85,20 +85,7 @@ class Customer extends CI_Controller
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
             $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="prepayment_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
-            // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
-            if ($field->app_name == $fullname && $field->id_user != $this->session->userdata('id_user')) {
-                $action = $action_read . $action_print;
-            } elseif ($field->id_user != $this->session->userdata('id_user') && $field->app2_name == $fullname) {
-                $action = $action_read . $action_print;
-            } elseif (in_array($field->status, ['rejected', 'approved'])) {
-                $action = $action_read . $action_print;
-            } elseif ($field->app_status == 'revised' || $field->app2_status == 'revised') {
-                $action = $action_read . $action_edit . $action_print;
-            } elseif ($field->app_status == 'approved') {
-                $action = $action_read . $action_print;
-            } else {
-                $action = $action_read . $action_edit . $action_delete . $action_print;
-            }
+            $action = $action_read . $action_edit . $action_delete .  $action_print;
 
 
             $no++;
