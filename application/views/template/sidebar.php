@@ -54,7 +54,9 @@
                         <div id="<?= $parent->nama_menu ?>" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
                             <div class="bg-white py-2 collapse-inner rounded">
                                 <?php foreach ($sub->result() as $child) {  ?>
-                                    <a class="collapse-item" href="<?= base_url() . $child->link ?>"><?= $child->nama_submenu ?><span class="fa fa-solid fa-bell" style="width: 15px; height: 15px; border-radius: 15px; color: red; font-size: 10px; display: inline-block; text-align: center; position: relative; bottom: 7px"></span></a>
+                                    <a class="collapse-item" href="<?= base_url() . $child->link ?>"><?= $child->nama_submenu ?>
+                                        <!-- <span class="fa fa-solid fa-bell" style="width: 15px; height: 15px; border-radius: 15px; color: red; font-size: 10px; display: inline-block; text-align: center; position: relative; bottom: 7px"></span> -->
+                                    </a>
                                 <?php } ?>
                             </div>
                         </div>
