@@ -15,19 +15,19 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex justify-content-start align-items-center">
-                    <div class="d-flex align-items-center mr-3 w-25">
-                        <label for="tgl_awal" class="mr-2 mb-0" style="width: 200px;">Tanggal Awal:</label>
+                    <div class="d-flex align-items-center mr-3 w-30">
+                        <label for="tgl_awal" class="mr-2 mb-0" style="width: 170px;">Tanggal Awal:</label>
                         <div class="input-group date">
-                            <input type="text" class="form-control" name="tgl_awal" id="tgl_awal" placeholder="DD-MM-YYYY" autocomplete="off" readonly />
+                            <input type="text" class="form-control" name="tgl_awal" id="tgl_awal" style="width: 70px;" placeholder="DD-MM-YYYY" autocomplete="off" readonly />
                             <div class="input-group-append">
                                 <div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
                             </div>
                         </div>
                     </div>
-                    <div class="d-flex align-items-center mr-3 w-25">
-                        <label for="tgl_akhir" class="mr-2 mb-0" style="width: 200px;">Tanggal Akhir:</label>
+                    <div class="d-flex align-items-center mr-3 w-30">
+                        <label for="tgl_akhir" class="mr-2 mb-0" style="width: 180px;">Tanggal Akhir:</label>
                         <div class="input-group date">
-                            <input type="text" class="form-control" name="tgl_akhir" id="tgl_akhir" placeholder="DD-MM-YYYY" autocomplete="off" readonly />
+                            <input type="text" class="form-control" name="tgl_akhir" id="tgl_akhir" style="width: 70px;" placeholder="DD-MM-YYYY" autocomplete="off" readonly />
                             <div class="input-group-append">
                                 <div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
                             </div>
@@ -35,6 +35,14 @@
                     </div>
                     <div class="d-flex align-item-center">
                         <button class="btn btn-primary" id="tgl_btn" type="button">DONE</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div>
+                            Jumlah dari <strong id="labelPengeluaran"></strong> adalah <strong id="totalPengeluaran"></strong>
+                        </div>
                     </div>
                 </div>
 
@@ -50,33 +58,13 @@
 
                 <div class="card-body">
                     <table id="table" class="table table-bordered table-striped">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Tanggal</th>
-                                <th>Nama</th>
-                                <th>Keterangan</th>
-                                <th>Kode Prepayment</th>
-                                <th>Kode Reimbust</th>
-                                <!-- <th>Saldo Awal</th> -->
-                                <th>Pengeluaran</th>
-                                <!-- <th>Saldo Akhir</th> -->
-                            </tr>
+                        <thead id="table-header">
+                            <!-- GENERATE THEAD -->
                         </thead>
                         <tbody>
                         </tbody>
-                        <tfoot>
-                            <tr>
-                                <th>No</th>
-                                <th>Tanggal</th>
-                                <th>Nama</th>
-                                <th>Keterangan</th>
-                                <th>Kode Prepayment</th>
-                                <th>Kode Reimbust</th>
-                                <!-- <th>Saldo Awal</th> -->
-                                <th>Pengeluaran</th>
-                                <!-- <th>Saldo Akhir</th> -->
-                            </tr>
+                        <tfoot id="table-footer">
+                            <!-- GENERATE TFOOTER -->
                         </tfoot>
                     </table>
                 </div>
@@ -99,6 +87,9 @@
     // METHOD POST MENAMPILKAN DATA KE DATA TABLE
     $(document).ready(function() {
 
+        var activeTab = $('.nav-link.active').data('tab');
+        $('#labelPengeluaran').text(activeTab.charAt(0).toUpperCase() + activeTab.slice(1));
+
         $('#tgl_awal').datepicker({
             dateFormat: 'dd-mm-yy'
         });
@@ -111,6 +102,84 @@
             const [day, month, year] = dateStr.split("-");
             return `${year}-${month}-${day}`;
         }
+
+        // Function to update the table header based on the active tab
+        function updateTableHeader(tab) {
+            var tableHeader = $('#table-header');
+            var tableFooter = $('#table-footer');
+
+            // Clear the current table header
+            tableHeader.empty();
+
+            // Define headers for each tab
+            if (tab === 'pelaporan') {
+                tableHeader.append(`
+                <tr>
+                    <th>No</th>
+                    <th>Tanggal</th>
+                    <th>Nama</th>
+                    <th>Keterangan</th>
+                    <th>Kode Prepayment</th>
+                    <th>Kode Reimbust</th>
+                    <th>Pengeluaran</th>
+                </tr>
+            `);
+                tableFooter.append(`
+                <tr>
+                    <th>No</th>
+                    <th>Tanggal</th>
+                    <th>Nama</th>
+                    <th>Keterangan</th>
+                    <th>Kode Prepayment</th>
+                    <th>Kode Reimbust</th>
+                    <th>Pengeluaran</th>
+                </tr>
+            `);
+            } else if (tab === 'reimbust') {
+                tableHeader.append(`
+                <tr>
+                    <th>No</th>
+                    <th>Tanggal</th>
+                    <th>Nama</th>
+                    <th>Keterangan</th>
+                    <th>Kode Prepayment</th>
+                    <th>Kode Reimbust</th>
+                    <th>Pengeluaran</th>
+                </tr>
+            `);
+                tableFooter.append(`
+                <tr>
+                    <th>No</th>
+                    <th>Tanggal</th>
+                    <th>Nama</th>
+                    <th>Keterangan</th>
+                    <th>Kode Prepayment</th>
+                    <th>Kode Reimbust</th>
+                    <th>Pengeluaran</th>
+                </tr>
+            `);
+            }
+        }
+
+        // Event listener untuk nav tabs
+        $('.nav-tabs a').on('click', function(e) {
+            e.preventDefault();
+            $('.nav-tabs a').removeClass('active'); // Hapus kelas aktif dari semua tab
+            $(this).addClass('active'); // Tambahkan kelas aktif ke tab yang diklik
+
+            // Get the active tab
+            var activeTab = $(this).data('tab');
+            $('#labelPengeluaran').text(activeTab.charAt(0).toUpperCase() + activeTab.slice(1));
+
+            // Update the table header based on the active tab
+            updateTableHeader(activeTab);
+
+            // Reload DataTables to reflect the new header
+            table.ajax.reload();
+        });
+
+        // Initialize the table for the first time (pelaporan tab is active by default)
+        updateTableHeader('pelaporan');
 
         table = $('#table').DataTable({
             "responsive": false,
@@ -150,7 +219,27 @@
                     "targets": [0],
                     "orderable": false,
                 },
-            ]
+            ],
+            "drawCallback": function(settings) {
+                // Fungsi untuk menghitung total pengeluaran
+                var totalPengeluaran = 0;
+
+                // Loop melalui semua baris yang ditampilkan
+                $('#table tbody tr').each(function() {
+                    var data = table.row(this).data();
+
+                    // Hilangkan "Rp." dan titik dari string
+                    var cleanedValue = data[6].replace(/Rp\.|\./g, '').trim();
+
+                    var pengeluaran = parseInt(cleanedValue) || 0; // Ambil nilai kolom pengeluaran, default ke 0 jika NaN
+                    totalPengeluaran += pengeluaran;
+                    // console.log(data[6]);
+                    // console.log(totalPengeluaran);
+                });
+
+                // Masukkan nilai total pengeluaran ke input field
+                $('#totalPengeluaran').text('Rp. ' + totalPengeluaran.toLocaleString('id-ID')); // Format dengan pemisah ribuan
+            }
         });
     });
 
