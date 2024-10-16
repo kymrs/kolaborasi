@@ -4,6 +4,25 @@
         padding: 5px;
         border-radius: 4px;
     }
+
+    .tgl-header {
+        display: flex;
+    }
+
+    .tgl-awal-text,
+    .tgl-akhir-text {
+        width: 180px;
+    }
+
+    @media (max-width: 1000px) {
+        .tgl-header {
+            display: inline-block;
+        }
+
+        .tgl-akhir {
+            margin: 1rem 0;
+        }
+    }
 </style>
 
 <div class="container-fluid">
@@ -14,9 +33,9 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="card shadow mb-4">
-                <div class="card-header py-3 d-flex justify-content-start align-items-center">
-                    <div class="d-flex align-items-center mr-3 w-30">
-                        <label for="tgl_awal" class="mr-2 mb-0" style="width: 170px;">Tanggal Awal:</label>
+                <div class="card-header py-3 justify-content-start align-items-center tgl-header">
+                    <div class="d-flex align-items-center mr-3 w-30 tgl-awal">
+                        <label for="tgl_awal" class="mr-2 mb-0 tgl-awal-text">Tanggal Awal:</label>
                         <div class="input-group date">
                             <input type="text" class="form-control" name="tgl_awal" id="tgl_awal" style="width: 70px;" placeholder="DD-MM-YYYY" autocomplete="off" readonly />
                             <div class="input-group-append">
@@ -24,8 +43,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="d-flex align-items-center mr-3 w-30">
-                        <label for="tgl_akhir" class="mr-2 mb-0" style="width: 180px;">Tanggal Akhir:</label>
+                    <div class="d-flex align-items-center mr-3 w-30 tgl-akhir">
+                        <label for="tgl_akhir" class="mr-2 mb-0 tgl-akhir-text">Tanggal Akhir:</label>
                         <div class="input-group date">
                             <input type="text" class="form-control" name="tgl_akhir" id="tgl_akhir" style="width: 70px;" placeholder="DD-MM-YYYY" autocomplete="off" readonly />
                             <div class="input-group-append">
