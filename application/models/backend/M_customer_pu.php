@@ -16,6 +16,7 @@ class M_customer_pu extends CI_Model
     function _get_datatables_query()
     {
         $this->db->from($this->table);
+        $this->db->order_by('group_id', 'DESC');
 
         $i = 0;
 

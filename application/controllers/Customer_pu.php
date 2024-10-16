@@ -89,7 +89,6 @@ class Customer_pu extends CI_Controller
 
             $action = $action_read . $action_edit . $action_delete .  $action_print;
 
-
             $no++;
             $row = array();
             $row[] = $no;
