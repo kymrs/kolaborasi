@@ -4,13 +4,12 @@
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Tanda Terima</h1>
-        <a class="d-sm-inline-block btn btn-sm btn-primary shadow-sm" data-toggle="modal" data-target="#modal-default" onclick="add_data()"><i class="fas fa-plus fa-sm text-white-50"></i> Tambah Data</a>
     </div>
 
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Data Tanda Terima</h6>
+            <a class="d-sm-inline-block btn btn-sm btn-primary shadow-sm" data-toggle="modal" data-target="#modal-default" onclick="add_data()"><i class="fas fa-plus fa-sm text-white-50"></i> Add Data</a>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -18,6 +17,7 @@
                     <thead>
                         <tr>
                             <th>#</th>
+                            <th>Action</th>
                             <th>Nomor</th>
                             <th>Tanggal</th>
                             <th>Pengirim</th>
@@ -25,12 +25,12 @@
                             <th>Uraian</th>
                             <th>Jumlah</th>
                             <th>Foto</th>
-                            <th>Action</th>
                         </tr>
                     </thead>
                     <tfoot>
                         <tr>
                             <th>#</th>
+                            <th>Action</th>
                             <th>Nomor</th>
                             <th>Tanggal</th>
                             <th>Pengirim</th>
@@ -38,7 +38,6 @@
                             <th>Uraian</th>
                             <th>Jumlah</th>
                             <th>Foto</th>
-                            <th>Action</th>
                         </tr>
                     </tfoot>
                     <tbody>
@@ -58,7 +57,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <form id="modalform">
-                <div class="modal-header bg-gradient-info text-gray-100">
+                <div class="modal-header bg-primary text-gray-100">
                     <h5 class="card-title">Data</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -160,7 +159,7 @@
                         "className": 'dt-head-nowrap'
                     },
                     {
-                        "targets": [8],
+                        "targets": [1, 3, 4, 5, 6],
                         "className": 'dt-body-nowrap'
                     }, {
                         "targets": [0, 7, 8],
@@ -228,7 +227,7 @@
                     success: function(data) {
                         $('#modal-default').modal('hide');
                         Swal.fire({
-                            position: 'top-end',
+                            position: 'center',
                             icon: 'success',
                             title: 'Your data has been saved',
                             showConfirmButton: false,

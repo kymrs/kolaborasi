@@ -31,6 +31,10 @@ class Tanda_terima extends CI_Controller
 			$no++;
 			$row = array();
 			$row[] = $no;
+			$row[] = '<a class="btn btn-info btn-circle btn-sm" title="Read" onclick="view_data(' . "'" . $field->id . "'" . ')"><i class="fa fa-eye"></i></a>' .
+				'&nbsp;<a class="btn btn-warning btn-circle btn-sm" title="Edit" onclick="edit_data(' . "'" . $field->id . "'" . ')"><i class="fa fa-edit"></i></a>' .
+				'&nbsp;<a class="btn btn-danger btn-circle btn-sm" title="Delete" onclick="delete_data(' . "'" . $field->id . "'" . ')"><i class="fa fa-trash"></i></a>' .
+				'&nbsp;<a class="btn btn-success btn-circle btn-sm" title="Print" onclick="pdf(' . "'" . $field->id . "'" . ')"><i class="fa fa-file-pdf"></i></a>';
 			$row[] = $field->nomor;
 			$row[] = $field->tanggal;
 			$row[] = $field->nama_pengirim;
@@ -38,10 +42,6 @@ class Tanda_terima extends CI_Controller
 			$row[] = $field->barang;
 			$row[] = $field->qty;
 			$row[] = ($field->foto != '' ? '<img src="' . site_url("assets/img/") . $field->foto  . '" height="40px" width="40px">' : '');
-			$row[] = '<a class="btn btn-info btn-xs item_edit" title="View" onclick="view_data(' . "'" . $field->id . "'" . ')"><i class="fa fa-eye"></i></a>' .
-				'&nbsp;<a class="btn btn-success btn-xs item_edit" title="Pdf" onclick="pdf(' . "'" . $field->id . "'" . ')"><i class="fa fa-file"></i></a>' .
-				'&nbsp;<a class="btn btn-warning btn-xs item_edit" title="Edit" onclick="edit_data(' . "'" . $field->id . "'" . ')"><i class="fa fa-edit"></i></a>' .
-				'&nbsp;<a class="btn btn-danger btn-xs item_edit" title="Delete" onclick="delete_data(' . "'" . $field->id . "'" . ')"><i class="fa fa-trash"></i></a>';
 
 			$data[] = $row;
 		}
@@ -70,7 +70,7 @@ class Tanda_terima extends CI_Controller
 
 	function add()
 	{
-		$config['upload_path'] = "./assets/img";
+		$config['upload_path'] = "./assets/backend/document/tanda_terima";
 		$config['allowed_types'] = 'gif|jpg|png';
 		$this->load->library('upload', $config); //call library upload 
 		if ($this->upload->do_upload("image")) { //upload file
