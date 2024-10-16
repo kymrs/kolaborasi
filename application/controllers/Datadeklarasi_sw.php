@@ -8,6 +8,7 @@ class Datadeklarasi_sw extends CI_Controller
     {
         parent::__construct();
         $this->load->model('backend/M_datadeklarasi_sw');
+        $this->load->model('backend/M_notifikasi');
         $this->M_login->getsecurity();
         date_default_timezone_set('Asia/Jakarta');
     }
@@ -39,6 +40,7 @@ class Datadeklarasi_sw extends CI_Controller
 
     public function index()
     {
+        $data['notif'] = $this->M_notifikasi->pending_notification();
         $akses = $this->M_app->hak_akses($this->session->userdata('id_level'), $this->router->fetch_class());
         ($akses->view_level == 'N' ? redirect('auth') : '');
         $data['add'] = $akses->add_level;
@@ -134,6 +136,7 @@ class Datadeklarasi_sw extends CI_Controller
 
     function read_form($id)
     {
+        $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = $id;
         $data['user'] = $this->M_datadeklarasi_sw->get_by_id($id);
         $data['app_name'] = $this->db->select('name')
@@ -153,6 +156,7 @@ class Datadeklarasi_sw extends CI_Controller
 
     function add_form()
     {
+        $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = 0;
         $data['title_view'] = "Deklarasi Form";
         $data['aksi'] = 'update';
@@ -162,6 +166,7 @@ class Datadeklarasi_sw extends CI_Controller
 
     function edit_form($id)
     {
+        $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = $id;
         $data['title_view'] = "Edit Data Deklarasi";
         $data['title'] = 'backend/datadeklarasi_sw/deklarasi_form_sw';

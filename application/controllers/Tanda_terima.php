@@ -9,11 +9,13 @@ class Tanda_terima extends CI_Controller
 		parent::__construct();
 		$this->load->model('M_login');
 		$this->load->model('backend/M_tandaterima');
+		$this->load->model('backend/M_notifikasi');
 		$this->M_login->getsecurity();
 	}
 
 	public function index()
 	{
+		$data['notif'] = $this->M_notifikasi->pending_notification();
 		$this->M_login->getsecurity();
 		$data['title'] = "backend/tanda_terima/tanda_terima";
 		$data['titleview'] = "Tanda Terima";

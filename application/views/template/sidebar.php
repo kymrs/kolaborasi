@@ -54,9 +54,11 @@
                         <div id="<?= $parent->nama_menu ?>" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
                             <div class="bg-white py-2 collapse-inner rounded">
                                 <?php foreach ($sub->result() as $child) {  ?>
-                                    <a class="collapse-item" href="<?= base_url() . $child->link ?>"><?= $child->nama_submenu ?>
-                                        <!-- <span class="fa fa-solid fa-bell" style="width: 15px; height: 15px; border-radius: 15px; color: red; font-size: 10px; display: inline-block; text-align: center; position: relative; bottom: 7px"></span> -->
-                                    </a>
+                                    <?php if ($notif['notif_pending'][$child->link] > 0) { ?>
+                                        <a class="collapse-item" href="<?= base_url() . $child->link ?>"><?= $child->nama_submenu ?> <span style="width: 17px; height: 17px; border-radius: 15px; background-color: red; color: white; font-size: 10px; display: inline-block; text-align: center; position: relative; bottom: 2px; line-height: 17px"><?= $notif['notif_pending'][$child->link] ?></span></a>
+                                    <?php } else { ?>
+                                        <a class="collapse-item" href="<?= base_url() . $child->link ?>"><?= $child->nama_submenu ?></a>
+                                    <?php } ?>
                                 <?php } ?>
                             </div>
                         </div>

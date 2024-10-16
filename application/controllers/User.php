@@ -9,11 +9,13 @@ class User extends CI_Controller
 		parent::__construct();
 		$this->load->model('backend/M_user');
 		$this->load->model('backend/M_level');
+		$this->load->model('backend/M_notifikasi');
 		$this->M_login->getsecurity();
 	}
 
 	function index()
 	{
+		$data['notif'] = $this->M_notifikasi->pending_notification();
 		$akses = $this->M_app->hak_akses($this->session->userdata('id_level'), $this->router->fetch_class());
 		($akses->view_level == 'N' ? redirect('auth') : '');
 		$data['add'] = $akses->add_level;

@@ -7,6 +7,7 @@ class Prepayment_pw extends CI_Controller
     {
         parent::__construct();
         $this->load->model('backend/M_prepayment_pw');
+        $this->load->model('backend/M_notifikasi');
         $this->M_login->getsecurity();
         date_default_timezone_set('Asia/Jakarta');
     }
@@ -16,6 +17,8 @@ class Prepayment_pw extends CI_Controller
         $akses = $this->M_app->hak_akses($this->session->userdata('id_level'), $this->router->fetch_class());
         ($akses->view_level == 'N' ? redirect('auth') : '');
         $data['add'] = $akses->add_level;
+
+        $data['notif'] = $this->M_notifikasi->pending_notification();
 
         $data['title'] = "backend/prepayment_pw/prepayment_list_pw";
         $data['titleview'] = "Data Prepayment";
@@ -122,6 +125,7 @@ class Prepayment_pw extends CI_Controller
     // UNTUK MENAMPILKAN FORM READ
     public function read_form($id)
     {
+        $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = $id;
         $data['user'] = $this->M_prepayment_pw->get_by_id($id);
         $data['app_name'] = $this->db->select('name')
@@ -142,6 +146,7 @@ class Prepayment_pw extends CI_Controller
     // UNTUK MENAMPILKAN FORM ADD
     public function add_form()
     {
+        $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = 0;
         $data['title'] = 'backend/prepayment_pw/prepayment_form_pw';
         $data['title_view'] = 'Prepayment Form';
@@ -169,6 +174,7 @@ class Prepayment_pw extends CI_Controller
     // UNTUK MENAMPILKAN FORM EDIT
     function edit_form($id)
     {
+        $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = $id;
         $data['aksi'] = 'update';
         $data['title_view'] = "Edit Data Prepayment";

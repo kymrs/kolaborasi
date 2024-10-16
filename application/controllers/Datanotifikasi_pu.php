@@ -8,6 +8,7 @@ class Datanotifikasi_pu extends CI_Controller
     {
         parent::__construct();
         $this->load->model('backend/M_datanotifikasi_pu');
+        $this->load->model('backend/M_notifikasi');
         $this->M_login->getsecurity();
         date_default_timezone_set('Asia/Jakarta');
     }
@@ -39,6 +40,7 @@ class Datanotifikasi_pu extends CI_Controller
 
     public function index()
     {
+        $data['notif'] = $this->M_notifikasi->pending_notification();
         $fullname = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $this->session->userdata('id_user'))
@@ -147,6 +149,7 @@ class Datanotifikasi_pu extends CI_Controller
 
     function read_form($id)
     {
+        $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = $id;
         $data['user'] = $this->M_datanotifikasi_pu->get_by_id($id);
         $data['app_hc_name'] = $this->db->select('name')
@@ -198,6 +201,7 @@ class Datanotifikasi_pu extends CI_Controller
 
     function add_form()
     {
+        $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = 0;
         $data['title_view'] = "Notifikasi Form";
         $data['title'] = 'backend/datanotifikasi_pu/notifikasi_form_pu';
@@ -206,6 +210,7 @@ class Datanotifikasi_pu extends CI_Controller
 
     function edit_form($id)
     {
+        $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = $id;
         $data['title_view'] = "Edit Data Notifikasi";
         $data['title'] = 'backend/datanotifikasi_pu/notifikasi_form_pu';

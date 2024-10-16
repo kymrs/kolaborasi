@@ -7,12 +7,14 @@ class Penawaran_pu extends CI_Controller
     {
         parent::__construct();
         $this->load->model('backend/M_penawaran_pu');
+        $this->load->model('backend/M_notifikasi');
         $this->M_login->getsecurity();
         $this->load->library('ciqrcode');
     }
 
     public function index()
     {
+        $data['notif'] = $this->M_notifikasi->pending_notification();
         $akses = $this->M_app->hak_akses($this->session->userdata('id_level'), $this->router->fetch_class());
         ($akses->view_level == 'N' ? redirect('auth') : '');
         $data['add'] = $akses->add_level;
@@ -87,6 +89,7 @@ class Penawaran_pu extends CI_Controller
 
     public function read_form()
     {
+        $data['notif'] = $this->M_notifikasi->pending_notification();
         $kode = $this->uri->segment(3);
         // var_dump($kode);
         $data['penawaran'] = $this->M_penawaran_pu->getPenawaran($kode);
@@ -112,6 +115,7 @@ class Penawaran_pu extends CI_Controller
 
     public function add_form()
     {
+        $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = 0;
         $data['title'] = 'backend/penawaran_pu/penawaran_form_pu';
         $data['layanan'] = $this->db->get('tbl_layanan')->result_array();
@@ -121,6 +125,7 @@ class Penawaran_pu extends CI_Controller
 
     function edit_form($id)
     {
+        $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = $id;
         $data['aksi'] = 'update';
         $data['title_view'] = "Edit Data Prepayment";

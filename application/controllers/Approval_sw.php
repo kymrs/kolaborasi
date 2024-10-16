@@ -7,6 +7,7 @@ class Approval_sw extends CI_Controller
     {
         parent::__construct();
         $this->load->model('backend/M_approval_sw');
+        $this->load->model('backend/M_notifikasi');
         $this->M_login->getsecurity();
         $this->load->library('session');
         date_default_timezone_set('Asia/Jakarta');
@@ -41,6 +42,8 @@ class Approval_sw extends CI_Controller
         $akses = $this->M_app->hak_akses($this->session->userdata('id_level'), $this->router->fetch_class());
         ($akses->view_level == 'N' ? redirect('auth') : '');
         $data['add'] = $akses->add_level;
+
+        $data['notif'] = $this->M_notifikasi->pending_notification();
 
         $data['title'] = "backend/approval_sw/approval_list_sw";
         $data['titleview'] = "Approval";
@@ -99,7 +102,7 @@ class Approval_sw extends CI_Controller
     {
         // Check if access is granted
         $this->check_access();
-
+        $this->load->model('backend/M_notifikasi');
         $data['id'] = 0;
         $data['title_view'] = "Approval Form";
         $data['aksi'] = 'save';
@@ -149,6 +152,7 @@ class Approval_sw extends CI_Controller
     public function edit_form($id)
     {
         $data['id'] = $id;
+        $this->load->model('backend/M_notifikasi');
         $data['title_view'] = "Edit Approval Form";
         $data['aksi'] = 'update';
         $data['users'] = $this->db->select('id_user, fullname')->from('tbl_user')->get()->result_object();

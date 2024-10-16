@@ -7,12 +7,14 @@ class Reimbust_pw extends CI_Controller
     {
         parent::__construct();
         $this->load->model('backend/M_reimbust_pw');
+        $this->load->model('backend/M_notifikasi');
         $this->M_login->getsecurity();
         date_default_timezone_set('Asia/Jakarta');
     }
 
     public function index()
     {
+        $data['notif'] = $this->M_notifikasi->pending_notification();
         $akses = $this->M_app->hak_akses($this->session->userdata('id_level'), $this->router->fetch_class());
         ($akses->view_level == 'N' ? redirect('auth') : '');
         $data['add'] = $akses->add_level;
@@ -263,6 +265,7 @@ class Reimbust_pw extends CI_Controller
 
     function read_form($id)
     {
+        $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['aksi'] = 'read';
         $data['user'] = $this->M_reimbust_pw->get_by_id($id);
         $data['app_name'] = $this->db->select('name')
@@ -286,6 +289,7 @@ class Reimbust_pw extends CI_Controller
 
     public function add_form()
     {
+        $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = 0;
         $data['aksi'] = 'add';
         $data['title_view'] = "Reimbust Form";

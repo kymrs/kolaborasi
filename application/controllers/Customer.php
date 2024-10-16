@@ -7,6 +7,7 @@ class Customer extends CI_Controller
     {
         parent::__construct();
         $this->load->model('backend/M_customer');
+        $this->load->model('backend/M_notifikasi');
         $this->M_login->getsecurity();
         date_default_timezone_set('Asia/Jakarta');
     }
@@ -44,6 +45,7 @@ class Customer extends CI_Controller
 
         $data['title'] = "backend/customer/customer_list";
         $data['titleview'] = "Data Customer";
+        $this->load->model('backend/M_notifikasi');
         // $name = $this->db->select('name')
         //     ->from('tbl_data_user')
         //     ->where('id_user', $this->session->userdata('id_user'))

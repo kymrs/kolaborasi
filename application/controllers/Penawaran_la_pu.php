@@ -7,6 +7,7 @@ class Penawaran_la_pu extends CI_Controller
     {
         parent::__construct();
         $this->load->model('backend/M_penawaran_la_pu');
+        $this->load->model('backend/M_notifikasi');
         $this->load->helper('date');
         $this->M_login->getsecurity();
         $this->load->library('ciqrcode');
@@ -14,10 +15,12 @@ class Penawaran_la_pu extends CI_Controller
 
     public function index()
     {
+        $data['notif'] = $this->M_notifikasi->pending_notification();
         $akses = $this->M_app->hak_akses($this->session->userdata('id_level'), $this->router->fetch_class());
         ($akses->view_level == 'N' ? redirect('auth') : '');
         $data['add'] = $akses->add_level;
 
+        $this->load->model('backend/M_notifikasi');
 
         $data['title'] = "backend/penawaran_pu/penawaran_list_la_pu";
         $data['titleview'] = "Data Penawaran";
@@ -88,8 +91,11 @@ class Penawaran_la_pu extends CI_Controller
 
     public function read_form($id)
     {
+        $data['notif'] = $this->M_notifikasi->pending_notification();
         // var_dump($id);
         $data['penawaran'] = $this->M_penawaran_la_pu->getPenawaran($id);
+
+        $this->load->model('backend/M_notifikasi');
 
         $data['id'] = $id;
         if ($data['penawaran'] == null) {
@@ -111,6 +117,8 @@ class Penawaran_la_pu extends CI_Controller
 
     public function add_form()
     {
+        $this->load->model('backend/M_notifikasi');
+        $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = 0;
         $data['title'] = 'backend/penawaran_pu/penawaran_form_la_pu';
         // $data['products'] = $this->db->select('id, nama')->from('tbl_produk')->get()->result_object();
@@ -120,6 +128,8 @@ class Penawaran_la_pu extends CI_Controller
 
     function edit_form($id)
     {
+        $this->load->model('backend/M_notifikasi');
+        $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = $id;
         $data['aksi'] = 'update';
         $data['title'] = 'backend/penawaran_pu/penawaran_form_la_pu';
