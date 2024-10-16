@@ -8,7 +8,7 @@
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex justify-content-between align-items-center">
                     <?php if ($add == 'Y') { ?>
-                        <a class="btn btn-primary btn-sm" id="add_btn" href="<?= base_url('customer/add_form') ?>">
+                        <a class="btn btn-primary btn-sm" id="add_btn" href="<?= base_url('customer_pu/add_form') ?>">
                             <i class="fa fa-plus"></i>&nbsp;Add Data
                         </a>
                     <?php } ?>
@@ -23,10 +23,11 @@
                                 <tr>
                                     <th>No</th>
                                     <th style="width: 120px;">Action</th>
-                                    <th>Kode</th>
+                                    <th>Group ID</th>
+                                    <th>Customer ID</th>
                                     <th>Nama</th>
-                                    <th>Contact Number</th>
-                                    <th>Tanggal Berangkat</th>
+                                    <th>No Telp</th>
+                                    <th>Keberangkatan</th>
                                     <th>Travel</th>
                                 </tr>
                             </thead>
@@ -37,10 +38,11 @@
                                 <tr>
                                     <th>No</th>
                                     <th style="width: 120px;">Action</th>
-                                    <th>Kode</th>
+                                    <th>Group ID</th>
+                                    <th>Customer ID</th>
                                     <th>Nama</th>
-                                    <th>Contact Number</th>
-                                    <th>Tanggal Berangkat</th>
+                                    <th>No Telp</th>
+                                    <th>Keberangkatan</th>
                                     <th>Travel</th>
                                 </tr>
                             </tfoot>
@@ -65,7 +67,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('customer/get_list') ?>",
+                "url": "<?php echo site_url('customer_pu/get_list') ?>",
                 "type": "POST",
                 // "data": function(d) {
                 //     d.status = $('#appFilter').val(); // Tambahkan parameter status ke permintaan server
@@ -103,7 +105,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: "<?php echo site_url('customer/delete/') ?>" + id,
+                    url: "<?php echo site_url('customer_pu/delete/') ?>" + id,
                     type: "POST",
                     dataType: "JSON",
                     success: function(data) {
@@ -114,7 +116,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then((result) => {
-                            location.href = "<?= base_url('customer') ?>";
+                            location.href = "<?= base_url('customer_pu') ?>";
                         })
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
@@ -127,6 +129,6 @@
 
 
     // $('#add_btn').click(function(e) {
-    //     window.location.href = '<?= base_url('customer/set_access') ?>?link=' + 'add_form';
+    //     window.location.href = '<?= base_url('customer_pu/set_access') ?>?link=' + 'add_form';
     // });
 </script>
