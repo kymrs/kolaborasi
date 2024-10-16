@@ -104,6 +104,7 @@ class Approval_sw extends CI_Controller
         $this->check_access();
         $this->load->model('backend/M_notifikasi');
         $data['id'] = 0;
+        $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['title_view'] = "Approval Form";
         $data['aksi'] = 'save';
         $data['users'] = $this->db->select('id_user, fullname')->from('tbl_user')->get()->result_object();
@@ -153,6 +154,7 @@ class Approval_sw extends CI_Controller
     {
         $data['id'] = $id;
         $this->load->model('backend/M_notifikasi');
+        $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['title_view'] = "Edit Approval Form";
         $data['aksi'] = 'update';
         $data['users'] = $this->db->select('id_user, fullname')->from('tbl_user')->get()->result_object();

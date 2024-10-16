@@ -27,7 +27,7 @@ class M_notifikasi extends CI_Model
             'penawaran_pu' => '',
             'rekapitulasi' => '',
             'tanda_terima' => '',
-            'customer' => '',
+            'customer_pu' => '',
             'menu' => '',
             'submenu' => '',
             'user' => '',
