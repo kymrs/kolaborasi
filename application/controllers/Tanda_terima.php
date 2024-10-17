@@ -209,21 +209,24 @@ class Tanda_terima extends CI_Controller
 
 		$pdf->AliasNbPages();
 		$pdf->AddPage();
+		// Logo
+		$pdf->Image(base_url('') . '/assets/backend/img/pengenumroh.png', 11.5, 3, 35, 22);
+		$pdf->Ln(16);
 		$pdf->SetTitle('Tanda Terima ' . $query->nomor);
 		$pdf->SetFont('Courier', '', 12);
 		$pdf->Cell(140, 10, 'Pengirim: ' . $query->nama_pengirim, 0, 0);
-		$pdf->Cell(50, 10, date('d/m/Y', strtotime($query->tanggal)), 0, 1, 'R');
+		$pdf->Cell(47, 10, date('d/m/Y', strtotime($query->tanggal)), 0, 1, 'R');
 		$pdf->Cell(140, 10, 'Kepada Yth: ' . $query->title . ' ' . $query->nama_penerima, 0, 0);
 		$pdf->Cell(50, 10, 'No: ' . $query->nomor, 0, 1, 'R');
 		$pdf->Ln(10);
 		$pdf->SetLineWidth(0.1);
 		$pdf->SetDash(1, 1);
-		$pdf->Line(10, 23, 50, 23);
+		// $pdf->Line(10, 23, 50, 23);
 		$pdf->SetDash(1, 1);
 		$pdf->SetLineWidth(0.1);
-		$pdf->Line(10, 60, $pdf->GetPageWidth() - 10, 60);
-		$pdf->Line(10, 70, $pdf->GetPageWidth() - 10, 70);
-		$pdf->Line(10, 80, $pdf->GetPageWidth() - 10, 80);
+		$pdf->Line(10, 66, $pdf->GetPageWidth() - 10, 66);
+		$pdf->Line(10, 76, $pdf->GetPageWidth() - 10, 76);
+		$pdf->Line(10, 86, $pdf->GetPageWidth() - 10, 86);
 		$pdf->SetFont('Courier', 'B', 12);
 		$pdf->Cell(140, 10, 'Uraian', 0, 0, 'L');
 		$pdf->Cell(50, 10, 'Jumlah', 0, 1, 'L');
