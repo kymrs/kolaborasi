@@ -286,7 +286,7 @@ class Customer_pu extends CI_Controller
         header('Cache-Control: max-age=0');
 
         // Simpan file ke output
-        $writer->save('php://output');
+        $writer->save('php://output');;
         exit;
     }
 }
