@@ -8,8 +8,8 @@ class M_customer_pu extends CI_Model
     // INISIASI VARIABLE
     var $id = 'id';
     var $table = 'tbl_customer_pu';
-    var $column_order = array(null, null, 'group_id', 'customer_id', 'nama', 'no_hp', 'tgl_berangkat', 'travel_id');
-    var $column_search = array('group_id', 'customer_id', 'nama', 'no_hp', 'tgl_berangkat', 'travel_id'); //field yang diizin untuk pencarian
+    var $column_order = array(null, null, 'group_id', 'customer_id', 'nama', 'no_hp', 'tgl_berangkat', 'travel');
+    var $column_search = array('group_id', 'customer_id', 'nama', 'no_hp', 'tgl_berangkat', 'travel'); //field yang diizin untuk pencarian
     var $order = array('id' => 'desc');
 
     // UNTUK QUERY DATA TABLE
@@ -127,9 +127,10 @@ class M_customer_pu extends CI_Model
         $this->db->delete($this->table);
     }
 
-    public function getTravel($id)
+    public function get_data_customer()
     {
-        $query = "SELECT a.travel FROM tbl_travel_pu as a JOIN tbl_customer_pu as b ON a.id = $id";
-        return $this->db->query($query)->row_array();
+        $this->db->select('group_id, customer_id, nama, no_hp, tgl_berangkat, travel');
+        $this->db->from('tbl_customer_pu');
+        return $this->db->get()->result();
     }
 }

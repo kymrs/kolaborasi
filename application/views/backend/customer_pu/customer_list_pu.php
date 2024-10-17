@@ -12,6 +12,9 @@
                             <i class="fa fa-plus"></i>&nbsp;Add Data
                         </a>
                     <?php } ?>
+                    <a class="btn btn-success btn-sm" id="btn-export-excel">
+                        <i class="fa fa-file-excel" style="margin-right: 6px"></i>Export to Excel
+                    </a>
                 </div>
                 <div class="card-body p-4">
                     <!-- Added padding for spacing -->
@@ -127,6 +130,10 @@
         })
     };
 
+    $('#btn-export-excel').click(function() {
+        // Arahkan ke URL controller untuk export Excel
+        window.location.href = "<?= site_url('customer_pu/export_excel'); ?>";
+    });
 
     // $('#add_btn').click(function(e) {
     //     window.location.href = '<?= base_url('customer_pu/set_access') ?>?link=' + 'add_form';

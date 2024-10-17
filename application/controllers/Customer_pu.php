@@ -1,6 +1,9 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 class Customer_pu extends CI_Controller
 {
     public function __construct()
@@ -98,8 +101,7 @@ class Customer_pu extends CI_Controller
             $row[] = $field->nama;
             $row[] = $field->no_hp;
             $row[] = $this->tgl_indo(date("Y-m-j", strtotime($field->tgl_berangkat)));
-            $travel = $this->M_customer_pu->getTravel($field->travel_id);
-            $row[] = $travel['travel'];
+            $row[] = $field->travel;
             // $row[] = $field->tujuan;
 
             $data[] = $row;
@@ -119,8 +121,8 @@ class Customer_pu extends CI_Controller
     {
         $data['id'] = $id;
         $data['user'] = $this->M_customer_pu->get_by_id($id);
-        $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['aksi'] = 'read';
+        $data['notif'] = $this->M_notifikasi->pending_notification();
         // $data['app_name'] = $this->db->select('name')
         //     ->from('tbl_data_user')
         //     ->where('id_user', $this->session->userdata('id_user'))
@@ -143,8 +145,8 @@ class Customer_pu extends CI_Controller
     {
         $data['id'] = 0;
         $data['title_view'] = "Customer Form";
-        $data['aksi'] = 'update';
         $data['notif'] = $this->M_notifikasi->pending_notification();
+        $data['aksi'] = 'update';
         $data['title'] = 'backend/customer_pu/customer_form_pu';
         $data['travel'] = $this->db->get('tbl_travel_pu')->result_array();
         $query = "SELECT DISTINCT group_id FROM tbl_customer_pu ORDER BY group_id DESC";
@@ -203,7 +205,7 @@ class Customer_pu extends CI_Controller
             'tgl_berangkat' => date('Y-m-d', strtotime($this->input->post('tgl_berangkat'))),
             'nama' => $this->input->post('nama'),
             'no_hp' => $this->input->post('no_hp'),
-            'travel_id' => $this->input->post('travel_id')
+            'travel' => $this->input->post('travel')
         );
 
         // Simpan data ke database
@@ -227,14 +229,13 @@ class Customer_pu extends CI_Controller
         return 'G001';
     }
 
-
     public function update()
     {
         $data = array(
             'tgl_berangkat' => date('Y-m-d', strtotime($this->input->post('tgl_berangkat'))),
             'nama' => $this->input->post('nama'),
             'no_hp' => $this->input->post('no_hp'),
-            'travel_id' => $this->input->post('travel_id')
+            'travel' => $this->input->post('travel')
         );
         $this->db->where('id', $this->input->post('id'));
         $this->db->update('tbl_customer_pu', $data);
@@ -245,5 +246,47 @@ class Customer_pu extends CI_Controller
     {
         $this->M_customer_pu->delete($id);
         echo json_encode(array("status" => TRUE));
+    }
+
+    public function export_excel()
+    {
+        // Ambil data dari model
+        $customerData = $this->M_customer_pu->get_data_customer();
+
+        // Inisialisasi Spreadsheet
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Set judul kolom
+        $sheet->setCellValue('A1', 'Group ID');
+        $sheet->setCellValue('B1', 'Customer ID');
+        $sheet->setCellValue('C1', 'Nama');
+        $sheet->setCellValue('D1', 'No HP');
+        $sheet->setCellValue('E1', 'Tanggal Berangkat');
+        $sheet->setCellValue('F1', 'Travel');
+
+        // Isi data dari database mulai dari baris ke-2
+        $row = 2;
+        foreach ($customerData as $data) {
+            $sheet->setCellValue('A' . $row, $data->group_id);
+            $sheet->setCellValue('B' . $row, $data->customer_id);
+            $sheet->setCellValue('C' . $row, $data->nama);
+            $sheet->setCellValue('D' . $row, $data->no_hp);
+            $sheet->setCellValue('E' . $row, date('Y-m-d', strtotime($data->tgl_berangkat)));
+            $sheet->setCellValue('F' . $row, $data->travel);
+            $row++;
+        }
+
+        // Buat writer untuk export ke Excel
+        $writer = new Xlsx($spreadsheet);
+
+        // Set header untuk download file Excel
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="Data Customer.xlsx"');
+        header('Cache-Control: max-age=0');
+
+        // Simpan file ke output
+        $writer->save('php://output');
+        exit;
     }
 }
