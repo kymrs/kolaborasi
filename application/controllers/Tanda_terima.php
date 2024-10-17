@@ -41,7 +41,7 @@ class Tanda_terima extends CI_Controller
 			$row[] = $field->nama_penerima;
 			$row[] = $field->barang;
 			$row[] = $field->qty;
-			$row[] = ($field->foto != '' ? '<img src="' . site_url("assets/img/") . $field->foto  . '" height="40px" width="40px">' : '');
+			$row[] = ($field->foto != '' ? '<img src="' . site_url("assets/backe") . $field->foto  . '" height="40px" width="40px">' : '');
 
 			$data[] = $row;
 		}

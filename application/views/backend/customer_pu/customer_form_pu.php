@@ -62,12 +62,12 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-sm-5" for="travel_id">Travel</label>
+                                    <label class="col-sm-5" for="travel">Travel</label>
                                     <div class="col-sm-7">
-                                        <select class="form-control" id="travel_id" name="travel_id" style="cursor: pointer;">
+                                        <select class="form-control" id="travel" name="travel" style="cursor: pointer;">
                                             <option value="" hidden>Pilih Travel</option>
                                             <?php foreach ($travel as $data) : ?>
-                                                <option value="<?= $data['id'] ?>"><?= $data['travel'] ?></option>
+                                                <option value="<?= $data['travel'] ?>"><?= $data['travel'] ?></option>
                                             <?php endforeach ?>
                                         </select>
                                     </div>
@@ -152,7 +152,7 @@
                     $('#tgl_berangkat').val(moment(data['master'].tgl_berangkat).format('DD-MM-YYYY'));
                     $('#nama').val(data['master'].nama);
                     $('#no_hp').val(data['master'].no_hp);
-                    $('#travel_id').val(data['master'].travel_id);
+                    $('#travel').val(data['master'].travel);
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     alert('Error get data from ajax');
@@ -166,7 +166,7 @@
             $('#tgl_berangkat').prop('disabled', true);
             $('#nama').prop('readonly', true);
             $('#no_hp').prop('readonly', true);
-            $('#travel_id').prop('disabled', true);
+            $('#travel').prop('disabled', true);
         }
 
         $("#form").submit(function(e) {
@@ -219,7 +219,7 @@
                 no_hp: {
                     required: true,
                 },
-                travel_id: {
+                travel: {
                     required: true,
                 },
             },
@@ -236,7 +236,7 @@
                 no_hp: {
                     required: "Contact Number is required",
                 },
-                travel_id: {
+                travel: {
                     required: "Travel is required",
                 },
             },
