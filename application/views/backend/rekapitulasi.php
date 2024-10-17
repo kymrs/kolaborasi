@@ -62,6 +62,9 @@
                         <div>
                             Jumlah dari <strong id="labelPengeluaran"></strong> adalah <strong id="totalPengeluaran"></strong>
                         </div>
+                        <div>
+                            Jumlah dari <strong>total keseluruhan pengeluaran</strong> adalah <strong id="total"></strong>
+                        </div>
                     </div>
                 </div>
 
@@ -87,11 +90,6 @@
                         </tfoot>
                     </table>
                 </div>
-                <div class="card">
-                    <div class="card-body">
-                        This is some text within a card body.
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -109,12 +107,24 @@
         var activeTab = $('.nav-link.active').data('tab');
         $('#labelPengeluaran').text(activeTab.charAt(0).toUpperCase() + activeTab.slice(1));
 
+        // Inisialisasi Datepicker untuk Tanggal Awal
         $('#tgl_awal').datepicker({
-            dateFormat: 'dd-mm-yy'
+            dateFormat: 'dd-mm-yy',
+            onSelect: function(selectedDate) {
+                // Mengatur minimal tanggal yang diperbolehkan untuk tgl_akhir
+                var minDate = $('#tgl_awal').datepicker('getDate');
+                $('#tgl_akhir').datepicker('option', 'minDate', minDate);
+            }
         });
 
+        // Inisialisasi Datepicker untuk Tanggal Akhir
         $('#tgl_akhir').datepicker({
-            dateFormat: 'dd-mm-yy'
+            dateFormat: 'dd-mm-yy',
+            onSelect: function(selectedDate) {
+                // Mengatur maksimal tanggal yang diperbolehkan untuk tgl_awal
+                var maxDate = $('#tgl_akhir').datepicker('getDate');
+                $('#tgl_awal').datepicker('option', 'maxDate', maxDate);
+            }
         });
 
         function formatTanggal(dateStr) {
@@ -224,9 +234,6 @@
                     d.tab = $('.nav-tabs .nav-link.active').data('tab'); // Tambahkan parameter tab ke permintaan server
                 }
             },
-            // "language": {
-            //     "infoFiltered": ""
-            // },
             "columnDefs": [{
                     "targets": [3, 4, 5],
                     "className": 'dt-head-nowrap'
@@ -258,6 +265,24 @@
 
                 // Masukkan nilai total pengeluaran ke input field
                 $('#totalPengeluaran').text('Rp. ' + totalPengeluaran.toLocaleString('id-ID')); // Format dengan pemisah ribuan
+
+                $.ajax({
+                    "url": "<?php echo site_url('rekapitulasi/get_total') ?>",
+                    "type": "POST",
+                    "data": {
+                        "awal": $('#tgl_awal').val(),
+                        "akhir": $('#tgl_akhir').val(),
+                        "tab": $('.nav-tabs .nav-link.active').data('tab')
+                    },
+                    success: function(response) {
+                        // console.log('Success logging data to second URL' + response);
+                        $total = response;
+                        $('#total').text('Rp. ' + parseInt($total).toLocaleString('id-ID'));
+                    },
+                    error: function(error) {
+                        console.log('Error logging data to second URL');
+                    }
+                });
             }
         });
     });

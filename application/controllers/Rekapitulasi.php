@@ -44,6 +44,7 @@ class Rekapitulasi extends CI_Controller
         $akses = $this->M_app->hak_akses($this->session->userdata('id_level'), $this->router->fetch_class());
         ($akses->view_level == 'N' ? redirect('auth') : '');
         $data['add'] = $akses->add_level;
+        $data['total'] = $this->M_rekapitulasi->get_total_pengeluaran();
 
         $data['title'] = "backend/rekapitulasi";
         $data['titleview'] = "Data Rekapitulasi";
@@ -86,6 +87,14 @@ class Rekapitulasi extends CI_Controller
             "recordsFiltered" => $this->M_rekapitulasi->count_filtered(),
             "data" => $data,
         );
+        //output dalam format JSON
+        echo json_encode($output);
+    }
+
+    function get_total()
+    {
+        $output = $this->M_rekapitulasi->get_total_pengeluaran();
+
         //output dalam format JSON
         echo json_encode($output);
     }
