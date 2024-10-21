@@ -14,6 +14,10 @@
         width: 180px;
     }
 
+    .export-excel {
+        margin-left: 1rem;
+    }
+
     @media (max-width: 1000px) {
         .tgl-header {
             display: inline-block;
@@ -21,6 +25,11 @@
 
         .tgl-akhir {
             margin: 1rem 0;
+        }
+
+        .export-excel {
+            margin-left: 0;
+            margin-top: 1rem;
         }
     }
 </style>
@@ -55,7 +64,7 @@
                     <div class="d-flex align-item-center">
                         <button class="btn btn-primary" id="tgl_btn" type="button">DONE</button>
                     </div>
-                    <div class="d-flex align-item-center">
+                    <div class="d-flex align-item-center export-excel">
                         <a class="btn btn-success btn-sm" id="btn-export-excel">
                             <i class="fa fa-file-excel" style="margin-right: 6px"></i>Export to Excel
                         </a>
