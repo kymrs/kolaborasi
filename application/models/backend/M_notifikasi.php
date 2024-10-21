@@ -23,6 +23,7 @@ class M_notifikasi extends CI_Model
             'datanotifikasi_pu' => $this->db->select('id')->from('tbl_notifikasi_pu')->where('app_hc_name', $app)->where('app_hc_status', 'waiting')->or_where('app2_name', $app)->where('app2_status', 'waiting')->get()->num_rows(),
             'datanotifikasi_pw' => $this->db->select('id')->from('tbl_notifikasi_pw')->where('app_hc_name', $app)->where('app_hc_status', 'waiting')->or_where('app2_name', $app)->where('app2_status', 'waiting')->get()->num_rows(),
             'approval_sw' => '',
+            'approval' => '',
             'penawaran_la_pu' => '',
             'penawaran_pu' => '',
             'rekapitulasi' => '',

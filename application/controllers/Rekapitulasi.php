@@ -2,6 +2,9 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 setlocale(LC_ALL, 'id_ID');
 
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 class Rekapitulasi extends CI_Controller
 {
     public function __construct()
@@ -97,5 +100,47 @@ class Rekapitulasi extends CI_Controller
 
         //output dalam format JSON
         echo json_encode($output);
+    }
+
+    public function export_excel()
+    {
+        // Ambil data dari model
+        $customerData = $this->M_customer_pu->get_data_customer();
+
+        // Inisialisasi Spreadsheet
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Set judul kolom
+        $sheet->setCellValue('A1', 'Group ID');
+        $sheet->setCellValue('B1', 'Customer ID');
+        $sheet->setCellValue('C1', 'Nama');
+        $sheet->setCellValue('D1', 'No HP');
+        $sheet->setCellValue('E1', 'Tanggal Berangkat');
+        $sheet->setCellValue('F1', 'Travel');
+
+        // Isi data dari database mulai dari baris ke-2
+        $row = 2;
+        foreach ($customerData as $data) {
+            $sheet->setCellValue('A' . $row, $data->group_id);
+            $sheet->setCellValue('B' . $row, $data->customer_id);
+            $sheet->setCellValue('C' . $row, $data->nama);
+            $sheet->setCellValue('D' . $row, $data->no_hp);
+            $sheet->setCellValue('E' . $row, date('Y-m-d', strtotime($data->tgl_berangkat)));
+            $sheet->setCellValue('F' . $row, $data->travel);
+            $row++;
+        }
+
+        // Buat writer untuk export ke Excel
+        $writer = new Xlsx($spreadsheet);
+
+        // Set header untuk download file Excel
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="Data Customer.xlsx"');
+        header('Cache-Control: max-age=0');
+
+        // Simpan file ke output
+        $writer->save('php://output');;
+        exit;
     }
 }

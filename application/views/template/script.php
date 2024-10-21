@@ -23,3 +23,36 @@
 <!-- ChartJS -->
 <script src="<?= base_url() ?>assets/backend/plugins/chartjs/chart.js"></script>
 <script src="<?= base_url() ?>assets/backend/plugins/chartjs/chartjs-plugin-datalabels.min.js"></script>
+<script>
+    // Jalankan polling notifikasi
+    checkNotifications();
+
+    function checkNotifications() {
+        $.ajax({
+            url: "<?= base_url('notifikasi/get_pending_notifications') ?>",
+            type: "GET",
+            dataType: "json",
+            success: function(data) {
+                console.log(data);
+                // Update elemen notifikasi dengan data baru
+                $.each(data.notif_pending, function(key, value) {
+                    if (value > 0) {
+                        // Jika ada notifikasi baru, tampilkan jumlah notifikasi
+                        $('#' + key + '-notif').text(value).show();
+                    } else {
+                        // Sembunyikan notifikasi jika tidak ada
+                        $('#' + key + '-notif').hide();
+                    }
+                });
+
+                // // Panggil fungsi lagi setelah sukses
+                // checkNotifications();
+                setTimeout(checkNotifications, 300000);
+            },
+            error: function() {
+                // Jika gagal, tunggu beberapa detik sebelum mencoba lagi
+                setTimeout(checkNotifications, 5000);
+            }
+        });
+    }
+</script>

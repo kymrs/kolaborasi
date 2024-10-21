@@ -11,6 +11,13 @@ class Dashboard extends CI_Controller
 		$this->load->model('backend/M_notifikasi');
 	}
 
+	public function get_pending_notifications()
+	{
+		// $this->load->model('M_notifikasi');
+		$notifications = $this->M_notifikasi->pending_notification();
+		echo json_encode($notifications);
+	}
+
 	public function index()
 	{
 		$data['title'] = "backend/dashboard";

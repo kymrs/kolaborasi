@@ -225,7 +225,7 @@
                     required: "Approval Kedua is required",
                 },
                 app3_id: {
-                    required: "Approval Kedua is required",
+                    required: "Approval Ketiga is required",
                 }
             },
             errorPlacement: function(error, element) {

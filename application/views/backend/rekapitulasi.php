@@ -55,6 +55,11 @@
                     <div class="d-flex align-item-center">
                         <button class="btn btn-primary" id="tgl_btn" type="button">DONE</button>
                     </div>
+                    <div class="d-flex align-item-center">
+                        <a class="btn btn-success btn-sm" id="btn-export-excel">
+                            <i class="fa fa-file-excel" style="margin-right: 6px"></i>Export to Excel
+                        </a>
+                    </div>
                 </div>
 
                 <div class="card">
@@ -336,4 +341,9 @@
             }
         })
     };
+
+    $('#btn-export-excel').click(function() {
+        // Arahkan ke URL controller untuk export Excel
+        window.location.href = "<?= site_url('rekapitulasi/export_excel'); ?>";
+    });
 </script>

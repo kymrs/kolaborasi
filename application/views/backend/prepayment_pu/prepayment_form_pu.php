@@ -456,6 +456,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then((result) => {
+                            checkNotifications();
                             location.href = "<?= base_url('prepayment_pu') ?>";
                         })
                     }
