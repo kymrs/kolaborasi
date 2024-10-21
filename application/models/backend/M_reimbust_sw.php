@@ -327,8 +327,8 @@ class M_reimbust_sw extends CI_Model
         $this->db->from($this->table4);
         $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_prepayment.id_user', 'left'); // JOIN dengan tabel tbl_user
         $id_user_logged_in = $this->session->userdata('id_user'); // Mengambil id_user dari sesi pengguna yang login
-        $this->db->where('tbl_prepayment_pu.id_user', $id_user_logged_in);
-        $this->db->where('tbl_prepayment_pu.status', 'approved');
+        $this->db->where('tbl_prepayment.id_user', $id_user_logged_in);
+        $this->db->where('tbl_prepayment.status', 'approved');
 
         return $this->db->count_all_results();
     }

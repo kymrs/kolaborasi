@@ -79,7 +79,7 @@ class Customer_pu extends CI_Controller
         $read = $akses->view_level;
         $edit = $akses->edit_level;
         $delete = $akses->delete_level;
-        $print = $akses->print_level;
+        // $print = $akses->print_level;
 
         //LOOPING DATATABLES
         foreach ($list as $field) {
@@ -88,9 +88,9 @@ class Customer_pu extends CI_Controller
             $action_read = ($read == 'Y') ? '<a href="customer_pu/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
             $action_edit = ($edit == 'Y') ? '<a href="customer_pu/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
-            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="customer_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
+            // $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="customer_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
-            $action = $action_read . $action_edit . $action_delete .  $action_print;
+            $action = $action_read . $action_edit . $action_delete;
 
             $no++;
             $row = array();
