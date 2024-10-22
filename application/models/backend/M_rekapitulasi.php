@@ -308,6 +308,35 @@ class M_rekapitulasi extends CI_Model
         // Total keseluruhan dari pelaporan dan reimbust
         $total_keseluruhan = $total_prepayment + $total_pelaporan + $total_reimbust;
 
-        return $total_keseluruhan;
+        $data = array(
+            'total_prepayment' => $total_prepayment,
+            'total_pelaporan' => $total_pelaporan,
+            'total_reimbust' => $total_reimbust,
+            'total_pengeluaran' => $total_keseluruhan
+        );
+
+        return $data;
+    }
+
+    function get_data_prepayment()
+    {
+        $this->db->select('a.id, a.kode_prepayment, a.tgl_prepayment, a.prepayment, a.total_nominal');
+        $this->db->from('tbl_prepayment_pu AS a');
+        $this->db->join('tbl_reimbust_pu AS b', 'a.kode_prepayment = b.kode_prepayment', 'left');
+        $this->db->where('b.kode_prepayment IS NULL');
+
+        $query = $this->db->get(); // Simpan hasil query
+        return $query->result(); // Kembalikan hasil dalam bentuk object
+    }
+
+    function get_data_reimbust()
+    {
+        $this->db->select('a.id, a.kode_reimbust, a.tgl_pengajuan, a.sifat_pelaporan, SUM(b.jumlah) AS total_nominal');
+        $this->db->from('tbl_reimbust_pu AS a');
+        $this->db->join('tbl_reimbust_detail_pu AS b', 'a.id = b.reimbust_id', 'inner');
+        $this->db->group_by('a.id');
+
+        $query = $this->db->get();
+        return $query->result();
     }
 }

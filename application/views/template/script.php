@@ -33,7 +33,7 @@
             type: "GET",
             dataType: "json",
             success: function(data) {
-                console.log(data);
+                // console.log(data);
                 // Update elemen notifikasi dengan data baru
                 $.each(data.notif_pending, function(key, value) {
                     if (value > 0) {

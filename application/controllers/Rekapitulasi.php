@@ -73,11 +73,11 @@ class Rekapitulasi extends CI_Controller
             $no++;
             $row = array();
             $row[] = $no; // Nomor urut
-            $row[] = $tanggal; // Format tanggal
-            $row[] = $field->name; // Nama pengguna
-            $row[] = $field->tujuan; // Tujuan dari pengajuan
             $row[] = $kode_prepayment; // Kode prepayment, atau tanda "-"
             $row[] = $kode_reimbust; // Kode reimburse
+            $row[] = $field->name; // Nama pengguna
+            $row[] = $field->tujuan; // Tujuan dari pengajuan
+            $row[] = $tanggal; // Format tanggal
             $row[] = 'Rp. ' . $pengeluaran; // Format nominal
 
             // Tambahkan row ke array data
@@ -105,38 +105,50 @@ class Rekapitulasi extends CI_Controller
     public function export_excel()
     {
         // Ambil data dari model
-        $customerData = $this->M_customer_pu->get_data_customer();
+        $prepayment = $this->M_rekapitulasi->get_data_prepayment();
+        $reimbust = $this->M_rekapitulasi->get_data_reimbust();
 
         // Inisialisasi Spreadsheet
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
         // Set judul kolom
-        $sheet->setCellValue('A1', 'Group ID');
-        $sheet->setCellValue('B1', 'Customer ID');
-        $sheet->setCellValue('C1', 'Nama');
-        $sheet->setCellValue('D1', 'No HP');
-        $sheet->setCellValue('E1', 'Tanggal Berangkat');
-        $sheet->setCellValue('F1', 'Travel');
+        $sheet->setCellValue('A1', 'Kode Transaksi');
+        $sheet->setCellValue('B1', 'Jenis Transaksi');
+        $sheet->setCellValue('C1', 'Tanggal Transaksi');
+        $sheet->setCellValue('D1', 'Nominal');
+
+        // Atur Auto Size untuk setiap kolom
+        $sheet->getColumnDimension('A')->setAutoSize(true);
+        $sheet->getColumnDimension('B')->setAutoSize(true);
+        $sheet->getColumnDimension('C')->setAutoSize(true);
+        $sheet->getColumnDimension('D')->setAutoSize(true);
 
         // Isi data dari database mulai dari baris ke-2
         $row = 2;
-        foreach ($customerData as $data) {
-            $sheet->setCellValue('A' . $row, $data->group_id);
-            $sheet->setCellValue('B' . $row, $data->customer_id);
-            $sheet->setCellValue('C' . $row, $data->nama);
-            $sheet->setCellValue('D' . $row, $data->no_hp);
-            $sheet->setCellValue('E' . $row, date('Y-m-d', strtotime($data->tgl_berangkat)));
-            $sheet->setCellValue('F' . $row, $data->travel);
+        foreach ($prepayment as $data) {
+            $sheet->setCellValue('A' . $row, $data->kode_prepayment);
+            $sheet->setCellValue('B' . $row, 'Prepayment');
+            $sheet->setCellValue('C' . $row, date('Y-m-d', strtotime($data->tgl_prepayment)));
+            $sheet->setCellValue('D' . $row, $data->total_nominal);
             $row++;
         }
+
+        foreach ($reimbust as $data) {
+            $sheet->setCellValue('A' . $row, $data->kode_reimbust);
+            $sheet->setCellValue('B' . $row, $data->sifat_pelaporan);
+            $sheet->setCellValue('C' . $row, date('Y-m-d', strtotime($data->tgl_pengajuan)));
+            $sheet->setCellValue('D' . $row, $data->total_nominal);
+            $row++;
+        }
+
 
         // Buat writer untuk export ke Excel
         $writer = new Xlsx($spreadsheet);
 
         // Set header untuk download file Excel
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="Data Customer.xlsx"');
+        header('Content-Disposition: attachment;filename="Data Rekapitulasi.xlsx"');
         header('Cache-Control: max-age=0');
 
         // Simpan file ke output

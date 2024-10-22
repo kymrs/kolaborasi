@@ -158,6 +158,7 @@
     // Save filter value to localStorage on change
     $('#appFilter').on('change', function() {
         localStorage.setItem('appFilterStatus', $(this).val());
+        table.ajax.reload();
     });
 
     $('#appFilter').change(function() {

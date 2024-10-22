@@ -126,15 +126,18 @@ class Approval extends CI_Controller
             'app_id' => $this->input->post('app_id'),
             'app2_id' => $this->input->post('app2_id'),
             'app3_id' => $this->input->post('app3_id'),
-            'updated_at' => date('Y-m-d H:i:s')
         );
+
+        if (!empty($this->input->post('app4_id'))) {
+            $data['app4_id'] = $this->input->post('app4_id');
+        }
 
         $inserted = $this->M_approval->save($data);
 
         echo json_encode(array("status" => TRUE));
     }
 
-    public function update($id)
+    public function update()
     {
         $data = array(
             'name' => $this->input->post('selectedText'),
@@ -142,10 +145,15 @@ class Approval extends CI_Controller
             'jabatan' => $this->input->post('jabatan'),
             'app_id' => $this->input->post('app_id'),
             'app2_id' => $this->input->post('app2_id'),
-            'app3_id' => $this->input->post('app3_id')
+            'app3_id' => $this->input->post('app3_id'),
+            'updated_at' => date('Y-m-d H:i:s')
         );
 
-        $this->db->update('tbl_data_user', $data, ['id_user' => $id]);
+        if (!empty($this->input->post('app4_id'))) {
+            $data['app4_id'] = $this->input->post('app4_id');
+        }
+
+        $this->db->update('tbl_data_user', $data, ['id_user' => $this->input->post('id')]);
 
         echo json_encode(array("status" => TRUE));
     }

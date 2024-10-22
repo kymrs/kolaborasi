@@ -167,6 +167,7 @@
             // console.log(selectedText);
 
             var formData = $form.serialize() + "&selectedText=" + encodeURIComponent(selectedText);
+            // console.log(formData);
 
             $.ajax({
                 url: url,
@@ -195,6 +196,7 @@
                         showConfirmButton: false,
                         timer: 1500
                     })
+                    // alert('Error adding / update data');
                 }
             });
         });

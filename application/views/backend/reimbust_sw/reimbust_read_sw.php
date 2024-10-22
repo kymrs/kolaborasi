@@ -259,7 +259,7 @@
                 </table>
             </div>
             <div class="keterangan-field" id="keterangan-field" style="display: none;">
-                <span>Keterangan :</span>
+                <!-- <span>Keterangan :</span> -->
                 <div id="keterangan">
                     <!-- GENERATE KETERANGAN -->
                 </div>
@@ -475,10 +475,15 @@
                     $('#tujuan').html(data['master']['tujuan']);
                     $('#kode_reimbust').html(data['master']['kode_prepayment'] ? data['master']['kode_prepayment'] : '-');
                     $('#jumlah_prepayment').html(data['master']['jumlah_prepayment'].replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
-                    if (data['master']['app_keterangan'] != null || data['master']['app_keterangan'] != '') {
-                        $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app_keterangan']} (${data['master']['app_name']})</span>`);
-                    } else if (data['master']['app2_keterangan'] != null || data['master']['app2_keterangan'] != '') {
-                        $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app2_keterangan']} (${data['master']['app2_name']})</span>`);
+                    if ((data['master']['app_keterangan'] !== null && data['master']['app_keterangan'] !== '') ||
+                        (data['master']['app2_keterangan'] !== null && data['master']['app2_keterangan'] !== '')) {
+                        $('#keterangan').append(`<span>Keterangan :</span>`);
+                    }
+                    if (data['master']['app_keterangan'] != null && data['master']['app_keterangan'] != '') {
+                        $('#keterangan').append(`<span class="form-control-plaintext">*(${data['master']['app_name']}) ${data['master']['app_keterangan']}</span>`);
+                    }
+                    if (data['master']['app2_keterangan'] != null && data['master']['app2_keterangan'] != '') {
+                        $('#keterangan').append(`<span class="form-control-plaintext">*(${data['master']['app2_name']}) ${data['master']['app2_keterangan']}</span>`);
                     }
 
                     // DATA APPROVAL REIMBUST

@@ -458,10 +458,10 @@ class Datadeklarasi_pu extends CI_Controller
         }
         $pdf->Ln(8);
         if ($data['master']->app_keterangan != null && $data['master']->app_keterangan != '') {
-            $pdf->Cell(60, 10, '*' . $data['master']->app_keterangan . ' ' . '(' . $data['master']->app_name . ')', 0, 1);
+            $pdf->Cell(60, 10, '*' . '(' . $data['master']->app_name . ') ' . $data['master']->app_keterangan, 0, 1);
         }
         if ($data['master']->app2_keterangan != null && $data['master']->app2_keterangan != '') {
-            $pdf->Cell(60, 10, '*' . $data['master']->app2_keterangan . ' ' . '(' . $data['master']->app2_name . ')', 0, 1);
+            $pdf->Cell(60, 10, '*' . '(' . $data['master']->app2_name . ') ' . $data['master']->app2_keterangan, 0, 1);
         }
 
         // Output the PDF

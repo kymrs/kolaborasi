@@ -18,6 +18,22 @@
         margin-left: 1rem;
     }
 
+    .labelPengeluaran {
+        display: inline-block;
+        /* Agar label tetap satu baris dengan konten */
+        width: 100px;
+        /* Atur lebar yang sama untuk setiap label */
+        text-align: left;
+        /* Ratakan teks ke kanan untuk sejajar dengan tanda ':' */
+        margin-right: 5px;
+        /* Tambah sedikit jarak antara label dan konten */
+    }
+
+    .contentPengeluaran {
+        display: inline-block;
+        margin-left: 10px;
+    }
+
     @media (max-width: 1000px) {
         .tgl-header {
             display: inline-block;
@@ -65,7 +81,7 @@
                         <button class="btn btn-primary" id="tgl_btn" type="button">DONE</button>
                     </div>
                     <div class="d-flex align-item-center export-excel">
-                        <a class="btn btn-success btn-sm" id="btn-export-excel">
+                        <a class="btn btn-success" id="btn-export-excel">
                             <i class="fa fa-file-excel" style="margin-right: 6px"></i>Export to Excel
                         </a>
                     </div>
@@ -74,10 +90,16 @@
                 <div class="card">
                     <div class="card-body">
                         <div>
-                            Jumlah dari <strong id="labelPengeluaran"></strong> adalah <strong id="totalPengeluaran"></strong>
+                            <strong class="labelPengeluaran">Prepayment</strong> : <strong class="contentPengeluaran" id="totalPrepayment"></strong>
                         </div>
                         <div>
-                            Jumlah dari <strong>total keseluruhan pengeluaran</strong> adalah <strong id="total"></strong>
+                            <strong class="labelPengeluaran">Reimbust</strong> : <strong class="contentPengeluaran" id="totalReimbust"></strong>
+                        </div>
+                        <div>
+                            <strong class="labelPengeluaran">Pelaporan</strong> : <strong class="contentPengeluaran" id="totalPelaporan"></strong>
+                        </div>
+                        <div>
+                            <strong class="labelPengeluaran">Pengeluaran</strong> : <strong class="contentPengeluaran" id="total"></strong>
                         </div>
                     </div>
                 </div>
@@ -119,7 +141,7 @@
     $(document).ready(function() {
 
         var activeTab = $('.nav-link.active').data('tab');
-        $('#labelPengeluaran').text(activeTab.charAt(0).toUpperCase() + activeTab.slice(1));
+        // $('#labelPengeluaran').text(activeTab.charAt(0).toUpperCase() + activeTab.slice(1));
 
         // Inisialisasi Datepicker untuk Tanggal Awal
         $('#tgl_awal').datepicker({
@@ -146,6 +168,88 @@
             return `${year}-${month}-${day}`;
         }
 
+        function initializeDataTable() {
+            table = $('#table').DataTable({
+                "destroy": true, // Destroy the previous DataTable instance
+                "responsive": false,
+                "scrollX": true,
+                "processing": true,
+                "serverSide": true,
+                "order": [],
+                "ajax": {
+                    "url": "<?php echo site_url('rekapitulasi/get_list') ?>",
+                    "type": "POST",
+                    "data": function(d) {
+                        let tgl_awal = $('#tgl_awal').val();
+                        let tgl_akhir = $('#tgl_akhir').val();
+
+                        // Konversi format tanggal jika diperlukan
+                        if (tgl_awal && tgl_akhir) {
+                            tgl_awal = formatTanggal(tgl_awal);
+                            tgl_akhir = formatTanggal(tgl_akhir);
+                        }
+
+                        d.awal = tgl_awal;
+                        d.akhir = tgl_akhir;
+                        d.tab = $('.nav-tabs .nav-link.active').data('tab'); // Tambahkan parameter tab ke permintaan server
+                    }
+                },
+                "columnDefs": [{
+                        "targets": [1, 2],
+                        "className": 'dt-head-nowrap'
+                    },
+                    {
+                        "targets": [1, 5, 6],
+                        "className": 'dt-body-nowrap'
+                    }, {
+                        "targets": [0],
+                        "orderable": false,
+                    },
+                ],
+                "drawCallback": function(settings) {
+                    // // Fungsi untuk menghitung total pengeluaran
+                    // var totalPengeluaran = 0;
+
+                    // // Loop melalui semua baris yang ditampilkan
+                    // $('#table tbody tr').each(function() {
+                    //     var data = table.row(this).data();
+
+                    //     // Hilangkan "Rp." dan titik dari string
+                    //     var cleanedValue = data[6].replace(/Rp\.|\./g, '').trim();
+
+                    //     var pengeluaran = parseInt(cleanedValue) || 0; // Ambil nilai kolom pengeluaran, default ke 0 jika NaN
+                    //     totalPengeluaran += pengeluaran;
+                    //     // console.log(data[6]);
+                    //     // console.log(totalPengeluaran);
+                    // });
+
+                    // // Masukkan nilai total pengeluaran ke input field
+                    // $('#totalPengeluaran').text('Rp. ' + totalPengeluaran.toLocaleString('id-ID')); // Format dengan pemisah ribuan
+
+                    $.ajax({
+                        "url": "<?php echo site_url('rekapitulasi/get_total') ?>",
+                        "type": "POST",
+                        "data": {
+                            "awal": $('#tgl_awal').val(),
+                            "akhir": $('#tgl_akhir').val(),
+                            "tab": $('.nav-tabs .nav-link.active').data('tab')
+                        },
+                        success: function(response) {
+                            var total = JSON.parse(response);
+                            // console.log('Success logging data to second URL' + response);
+                            $('#totalPrepayment').text('Rp. ' + parseInt(total.total_prepayment).toLocaleString('id-ID'));
+                            $('#totalReimbust').text('Rp. ' + parseInt(total.total_reimbust).toLocaleString('id-ID'));
+                            $('#totalPelaporan').text('Rp. ' + parseInt(total.total_pelaporan).toLocaleString('id-ID'));
+                            $('#total').text('Rp. ' + parseInt(total.total_pengeluaran).toLocaleString('id-ID'));
+                        },
+                        error: function(error) {
+                            console.log('Error logging data to second URL');
+                        }
+                    });
+                }
+            });
+        }
+
         // Function to update the table header based on the active tab
         function updateTableHeader(tab) {
             var tableHeader = $('#table-header');
@@ -159,22 +263,22 @@
                 tableHeader.append(`
                 <tr>
                     <th>No</th>
-                    <th>Tanggal</th>
-                    <th>Nama</th>
-                    <th>Keterangan</th>
                     <th>Kode Prepayment</th>
                     <th>Kode Reimbust</th>
+                    <th>Nama</th>
+                    <th>Keterangan</th>
+                    <th>Tanggal</th>
                     <th>Pengeluaran</th>
                 </tr>
             `);
                 tableFooter.append(`
                 <tr>
                     <th>No</th>
-                    <th>Tanggal</th>
-                    <th>Nama</th>
-                    <th>Keterangan</th>
                     <th>Kode Prepayment</th>
                     <th>Kode Reimbust</th>
+                    <th>Nama</th>
+                    <th>Keterangan</th>
+                    <th>Tanggal</th>
                     <th>Pengeluaran</th>
                 </tr>
             `);
@@ -182,27 +286,31 @@
                 tableHeader.append(`
                 <tr>
                     <th>No</th>
-                    <th>Tanggal</th>
-                    <th>Nama</th>
-                    <th>Keterangan</th>
                     <th>Kode Prepayment</th>
                     <th>Kode Reimbust</th>
+                    <th>Nama</th>
+                    <th>Keterangan</th>
+                    <th>Tanggal</th>
                     <th>Pengeluaran</th>
                 </tr>
             `);
                 tableFooter.append(`
                 <tr>
                     <th>No</th>
-                    <th>Tanggal</th>
-                    <th>Nama</th>
-                    <th>Keterangan</th>
                     <th>Kode Prepayment</th>
                     <th>Kode Reimbust</th>
+                    <th>Nama</th>
+                    <th>Keterangan</th>
+                    <th>Tanggal</th>
                     <th>Pengeluaran</th>
                 </tr>
             `);
             }
+            initializeDataTable();
         }
+
+        // Initialize the table for the first time (pelaporan tab is active by default)
+        updateTableHeader('pelaporan');
 
         // Event listener untuk nav tabs
         $('.nav-tabs a').on('click', function(e) {
@@ -212,92 +320,13 @@
 
             // Get the active tab
             var activeTab = $(this).data('tab');
-            $('#labelPengeluaran').text(activeTab.charAt(0).toUpperCase() + activeTab.slice(1));
+            // $('#labelPengeluaran').text(activeTab.charAt(0).toUpperCase() + activeTab.slice(1));
 
             // Update the table header based on the active tab
             updateTableHeader(activeTab);
 
             // Reload DataTables to reflect the new header
             table.ajax.reload();
-        });
-
-        // Initialize the table for the first time (pelaporan tab is active by default)
-        updateTableHeader('pelaporan');
-
-        table = $('#table').DataTable({
-            "responsive": false,
-            "scrollX": true,
-            "processing": true,
-            "serverSide": true,
-            "order": [],
-            "ajax": {
-                "url": "<?php echo site_url('rekapitulasi/get_list') ?>",
-                "type": "POST",
-                "data": function(d) {
-                    let tgl_awal = $('#tgl_awal').val();
-                    let tgl_akhir = $('#tgl_akhir').val();
-
-                    // Konversi format tanggal jika diperlukan
-                    if (tgl_awal && tgl_akhir) {
-                        tgl_awal = formatTanggal(tgl_awal);
-                        tgl_akhir = formatTanggal(tgl_akhir);
-                    }
-
-                    d.awal = tgl_awal;
-                    d.akhir = tgl_akhir;
-                    d.tab = $('.nav-tabs .nav-link.active').data('tab'); // Tambahkan parameter tab ke permintaan server
-                }
-            },
-            "columnDefs": [{
-                    "targets": [3, 4, 5],
-                    "className": 'dt-head-nowrap'
-                },
-                {
-                    "targets": [1, 5, 6],
-                    "className": 'dt-body-nowrap'
-                }, {
-                    "targets": [0],
-                    "orderable": false,
-                },
-            ],
-            "drawCallback": function(settings) {
-                // Fungsi untuk menghitung total pengeluaran
-                var totalPengeluaran = 0;
-
-                // Loop melalui semua baris yang ditampilkan
-                $('#table tbody tr').each(function() {
-                    var data = table.row(this).data();
-
-                    // Hilangkan "Rp." dan titik dari string
-                    var cleanedValue = data[6].replace(/Rp\.|\./g, '').trim();
-
-                    var pengeluaran = parseInt(cleanedValue) || 0; // Ambil nilai kolom pengeluaran, default ke 0 jika NaN
-                    totalPengeluaran += pengeluaran;
-                    // console.log(data[6]);
-                    // console.log(totalPengeluaran);
-                });
-
-                // Masukkan nilai total pengeluaran ke input field
-                $('#totalPengeluaran').text('Rp. ' + totalPengeluaran.toLocaleString('id-ID')); // Format dengan pemisah ribuan
-
-                $.ajax({
-                    "url": "<?php echo site_url('rekapitulasi/get_total') ?>",
-                    "type": "POST",
-                    "data": {
-                        "awal": $('#tgl_awal').val(),
-                        "akhir": $('#tgl_akhir').val(),
-                        "tab": $('.nav-tabs .nav-link.active').data('tab')
-                    },
-                    success: function(response) {
-                        // console.log('Success logging data to second URL' + response);
-                        $total = response;
-                        $('#total').text('Rp. ' + parseInt($total).toLocaleString('id-ID'));
-                    },
-                    error: function(error) {
-                        console.log('Error logging data to second URL');
-                    }
-                });
-            }
         });
     });
 

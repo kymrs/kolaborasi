@@ -459,10 +459,10 @@
                     $('#keterangan').append(`<span>Keterangan :</span>`);
                 }
                 if (data['master']['app_keterangan'] !== null && data['master']['app_keterangan'] !== '') {
-                    $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app_keterangan']} (${data['master']['app_name']})</span>`);
+                    $('#keterangan').append(`<span class="form-control-plaintext">*(${data['master']['app_name']}) ${data['master']['app_keterangan']}</span>`);
                 }
                 if (data['master']['app2_keterangan'] !== null && data['master']['app2_keterangan'] !== '') {
-                    $('#keterangan').append(`<span class="form-control-plaintext">*${data['master']['app2_keterangan']} (${data['master']['app_name']})</span>`);
+                    $('#keterangan').append(`<span class="form-control-plaintext">*(${data['master']['app_name']}) ${data['master']['app2_keterangan']}</span>`);
                 }
                 // DATA APPROVAL PREPAYMENT
 
