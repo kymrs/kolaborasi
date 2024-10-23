@@ -87,10 +87,10 @@
     $(document).ready(function() {
 
         // Set active tab on page load
-        const activeTab = sessionStorage.getItem('activeTab');
+        var activeTab = sessionStorage.getItem('activeTab');
 
         // Cek apakah tab approval ada
-        const approvalTabExists = $('#employeeTab').length > 0;
+        var approvalTabExists = $('#employeeTab').length > 0;
         // console.log(activeTab);
 
         if (activeTab == 'employee' || approvalTabExists) {
@@ -124,15 +124,19 @@
             // console.log('laland');
         }
 
-        $('.collapse-item').on('click', function(e) {
+        $('.collapse-item-sidebar').on('click', function(e) {
             localStorage.removeItem('appFilterStatus'); // Hapus filter yang tersimpan
         })
 
         // Event listener untuk nav tabs
         $('.nav-tabs a').on('click', function(e) {
             e.preventDefault();
+            var tab = $(this).data('tab'); // Ambil data-tab dari tab yang diklik
             $('.nav-tabs a').removeClass('active'); // Hapus kelas aktif dari semua tab
             $(this).addClass('active'); // Tambahkan kelas aktif ke tab yang diklik
+
+            // Simpan tab yang aktif ke localStorage
+            localStorage.setItem('activeTab', tab);
 
             table.ajax.reload(); // Muat ulang data di DataTable saat tab berubah
         });

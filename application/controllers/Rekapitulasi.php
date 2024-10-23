@@ -66,7 +66,7 @@ class Rekapitulasi extends CI_Controller
             // Cek apakah kode tersedia, jika tidak berikan tanda "-"
             $kode_prepayment = !empty($field->kode_prepayment) ? $field->kode_prepayment : '-';
             $kode_reimbust = !empty($field->kode_reimbust) ? strtoupper($field->kode_reimbust) : '-';
-            $tanggal = !empty($field->tgl_pengajuan) ? $this->tgl_indo(date('Y-m-j', strtotime($field->tgl_pengajuan))) : $this->tgl_indo(date('Y-m-j', strtotime($field->tgl_prepayment)));
+            // $tanggal = !empty($field->tgl_pengajuan) ? $field->tgl_pengajuan : $field->tgl_prepayment;
             $pengeluaran = !empty($field->total_jumlah_detail) ? number_format($field->total_jumlah_detail, 0, ',', '.') : number_format($field->total_nominal, 0, ',', '.');
 
             // Inkrement nomor urut
@@ -77,7 +77,7 @@ class Rekapitulasi extends CI_Controller
             $row[] = $kode_reimbust; // Kode reimburse
             $row[] = $field->name; // Nama pengguna
             $row[] = $field->tujuan; // Tujuan dari pengajuan
-            $row[] = $tanggal; // Format tanggal
+            $row[] = $field->tgl_pengajuan; // Format tanggal
             $row[] = 'Rp. ' . $pengeluaran; // Format nominal
 
             // Tambahkan row ke array data
