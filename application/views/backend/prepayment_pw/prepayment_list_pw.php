@@ -117,6 +117,12 @@
             $(this).addClass('active');
         });
 
+        // Simpan nilai filter ke localStorage setiap kali berubah
+        $('#appFilter').on('change', function() {
+            localStorage.setItem('appFilterStatus', $(this).val());
+            table.ajax.reload(); // Muat ulang DataTables dengan filter baru
+        });
+
         table = $('#table').DataTable({
             "responsive": false,
             "scrollX": true,
@@ -149,21 +155,9 @@
         });
     });
 
-    // Restore filter value from localStorage
-    // var savedStatus = localStorage.getItem('appFilterStatus');
-    // if (savedStatus) {
-    //     $('#appFilter').val(savedStatus).change();
-    // }
-
-    // Save filter value to localStorage on change
-    $('#appFilter').on('change', function() {
-        localStorage.setItem('appFilterStatus', $(this).val());
-        table.ajax.reload();
-    });
-
-    $('#appFilter').change(function() {
-        table.ajax.reload(); // Muat ulang data di DataTable dengan filter baru
-    });
+    // $('#appFilter').change(function() {
+    //     table.ajax.reload(); // Muat ulang data di DataTable dengan filter baru
+    // });
 
     // Event listener untuk nav tabs
     $('.nav-tabs a').on('click', function(e) {

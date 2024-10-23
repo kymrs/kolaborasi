@@ -99,22 +99,48 @@
         // Cek apakah tab approval ada
         const approvalTabExists = $('#employeeTab').length > 0;
 
-        if (activeTab && (activeTab !== 'employee' || approvalTabExists)) {
+        if (activeTab == 'employee' || approvalTabExists) {
             $('.nav-tabs .nav-link').removeClass('active');
             $(`.nav-tabs .nav-link[data-tab="${activeTab}"]`).addClass('active');
+            console.log('labubu');
             // You can load content for the active tab here if needed
+
+            // Simpan nilai filter ke localStorage setiap kali berubah
+            $('#appFilter').on('change', function() {
+                localStorage.setItem('appFilterStatus', $(this).val());
+                table.ajax.reload(); // Muat ulang DataTables dengan filter baru
+            });
         } else {
             // Default to the "User" tab if session storage is empty or approval tab doesn't exist
             $('.nav-tabs .nav-link').removeClass('active');
             $('#personalTab').addClass('active');
+
+            // Cek apakah ada nilai filter yang tersimpan di localStorage
+            var savedFilter = localStorage.getItem('appFilterStatus');
+            if (savedFilter) {
+                $('#appFilter').val(savedFilter).change(); // Set filter dengan nilai yang tersimpan
+            }
+            // console.log(savedFilter);
+
+            $('#appFilter').change(function() {
+                localStorage.setItem('appFilterStatus', $(this).val());
+                table.ajax.reload(); // Muat ulang data di DataTable dengan filter baru
+            });
+
+            // console.log('laland');
         }
 
-        // Tab click event
-        $('.nav-tabs .nav-link').on('click', function() {
-            const tab = $(this).data('tab');
-            sessionStorage.setItem('activeTab', tab);
-            $('.nav-tabs .nav-link').removeClass('active');
-            $(this).addClass('active');
+        $('.collapse-item').on('click', function(e) {
+            localStorage.removeItem('appFilterStatus'); // Hapus filter yang tersimpan
+        })
+
+        // Event listener untuk nav tabs
+        $('.nav-tabs a').on('click', function(e) {
+            e.preventDefault();
+            $('.nav-tabs a').removeClass('active'); // Hapus kelas aktif dari semua tab
+            $(this).addClass('active'); // Tambahkan kelas aktif ke tab yang diklik
+
+            table.ajax.reload(); // Muat ulang data di DataTable saat tab berubah
         });
 
         table = $('#table').DataTable({
@@ -147,31 +173,6 @@
                 },
             ]
         });
-    });
-
-    // Restore filter value from localStorage
-    // var savedStatus = localStorage.getItem('appFilterStatus');
-    // if (savedStatus) {
-    //     $('#appFilter').val(savedStatus).change();
-    // }
-
-    // Save filter value to localStorage on change
-    $('#appFilter').on('change', function() {
-        localStorage.setItem('appFilterStatus', $(this).val());
-        table.ajax.reload();
-    });
-
-    $('#appFilter').change(function() {
-        table.ajax.reload(); // Muat ulang data di DataTable dengan filter baru
-    });
-
-    // Event listener untuk nav tabs
-    $('.nav-tabs a').on('click', function(e) {
-        e.preventDefault();
-        $('.nav-tabs a').removeClass('active'); // Hapus kelas aktif dari semua tab
-        $(this).addClass('active'); // Tambahkan kelas aktif ke tab yang diklik
-
-        table.ajax.reload(); // Muat ulang data di DataTable saat tab berubah
     });
 
     // MENGHAPUS DATA MENGGUNAKAN METHODE POST JQUERY
