@@ -803,9 +803,13 @@ class Reimbust_pw extends CI_Controller
             ];
 
             // Update data deklarasi yang di tampilkan di modal, jika gambar di submit maka is active akan menjadi 0
-            $this->db->update('tbl_deklarasi_pw', ['is_active' => 0], ['kode_deklarasi' => $deklarasi[$i]]);
+            $this->db->set('is_active', 0);
+            $this->db->where('kode_deklarasi', $deklarasi[$i]);
+            $this->db->update('tbl_deklarasi_pw');
         }
-        $this->db->update('tbl_prepayment_pw', ['is_active' => 0], ['kode_prepayment' => $this->input->post('kode_prepayment')]);
+        $this->db->set('is_active', 0);
+        $this->db->where('kode_prepayment', $this->input->post('kode_prepayment'));
+        $this->db->update('tbl_prepayment_pw');
 
         $this->M_reimbust_pw->save_detail($data2);
 

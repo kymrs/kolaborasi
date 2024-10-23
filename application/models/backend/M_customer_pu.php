@@ -8,8 +8,8 @@ class M_customer_pu extends CI_Model
     // INISIASI VARIABLE
     var $id = 'id';
     var $table = 'tbl_customer_pu';
-    var $column_order = array(null, null, 'group_id', 'customer_id', 'nama', 'no_hp', 'tgl_berangkat', 'travel');
-    var $column_search = array('group_id', 'customer_id', 'nama', 'no_hp', 'tgl_berangkat', 'travel'); //field yang diizin untuk pencarian
+    var $column_order = array(null, null, 'group_id', 'customer_id', 'title', 'nama', 'jenis_kelamin', 'no_hp', 'status', 'asal', 'produk', 'harga', 'harga_promo', 'tipe_kamar', 'promo_diskon', 'paspor', 'kartu_kuning', 'ktp', 'kk', 'buku_nikah', 'akta_lahir', 'pas_foto', 'dp', 'pembayaran_1', 'pembayaran_2', 'pelunasan', 'cashback', 'akun', 'pakaian',  'ukuran', 'kirim', 'perlengkapan', 'tgl_berangkat', 'travel');
+    var $column_search = array('group_id', 'customer_id', 'title', 'nama', 'jenis_kelamin', 'no_hp', 'status', 'asal', 'produk', 'harga', 'harga_promo', 'tipe_kamar', 'promo_diskon', 'paspor', 'kartu_kuning', 'ktp', 'kk', 'buku_nikah', 'akta_lahir', 'pas_foto', 'dp', 'pembayaran_1', 'pembayaran_2',  'pelunasan', 'cashback',  'akun', 'pakaian',  'ukuran', 'kirim', 'perlengkapan', 'tgl_berangkat', 'travel'); //field yang diizin untuk pencarian
     var $order = array('id' => 'desc');
 
     // UNTUK QUERY DATA TABLE
@@ -123,13 +123,27 @@ class M_customer_pu extends CI_Model
 
     public function delete($id)
     {
+        // Ambil data customer berdasarkan id
+        $customer = $this->db->get_where('tbl_customer_pu', ['id' => $id])->row_array();
+
+        if ($customer) {
+            $old_image = $customer['pas_foto'];
+            $file_path = FCPATH . './assets/backend/document/customer/' . $old_image;
+
+            if (file_exists($file_path)) {
+                unlink($file_path);
+            }
+        }
+
         $this->db->where($this->id, $id);
         $this->db->delete($this->table);
+
+        // echo json_encode(array("status" => TRUE));
     }
 
     public function get_data_customer()
     {
-        $this->db->select('group_id, customer_id, nama, no_hp, tgl_berangkat, travel');
+        $this->db->select('*');
         $this->db->from('tbl_customer_pu');
         return $this->db->get()->result();
     }

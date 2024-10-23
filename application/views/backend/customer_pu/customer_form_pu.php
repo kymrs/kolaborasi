@@ -45,10 +45,16 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <!-- Second Set of Fields -->
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="title">Title</label>
+                                    <div class="col-sm-7">
+                                        <select class="form-control" id="title" name="title" style="cursor: pointer;">
+                                            <option value="" hidden>Pilih Title</option>
+                                            <option value="Tn">Tn</option>
+                                            <option value="Yn">Yn</option>
+                                        </select>
+                                    </div>
+                                </div>
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="nama">Nama</label>
                                     <div class="col-sm-7">
@@ -56,9 +62,19 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
+                                    <label class="col-sm-5" for="jenis_kelamin">Jenis Kelamin</label>
+                                    <div class="col-sm-7">
+                                        <select class="form-control" id="jenis_kelamin" name="jenis_kelamin" style="cursor: pointer;">
+                                            <option value="" hidden>Pilih Jenis Kelamin</option>
+                                            <option value="Laki-laki">Laki-laki</option>
+                                            <option value="Perempuan">Perempuan</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
                                     <label class="col-sm-5" for="no_hp">No Telp</label>
                                     <div class="col-sm-7">
-                                        <input type="number" class="form-control" id="no_hp" name="no_hp">
+                                        <input type="text" class="form-control" id="no_hp" name="no_hp" required>
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -70,6 +86,180 @@
                                                 <option value="<?= $data['travel'] ?>"><?= $data['travel'] ?></option>
                                             <?php endforeach ?>
                                         </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="asal">Asal</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="asal" name="asal" required>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="produk">Produk</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="produk" name="produk" required>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="harga">Harga</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="harga" name="harga" required>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="harga_promo">Harga Promo</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="harga_promo" name="harga_promo" required>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="tipe_kamar">Tipe Kamar</label>
+                                    <div class="col-sm-7">
+                                        <select class="form-control" id="tipe_kamar" name="tipe_kamar" style="cursor: pointer;">
+                                            <option value="" hidden>Pilih Tipe Kamar</option>
+                                            <option value="Double">Double</option>
+                                            <option value="Triple">Triple</option>
+                                            <option value="Quad">Quad</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="promo_diskon">Promo Diskon</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="promo_diskon" name="promo_diskon" required>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="paspor">Paspor</label>
+                                    <div class="col-sm-7">
+                                        <img alt="foto" width="185" style="display: none" id="customer_foto">
+                                        <div class="form-group">
+                                            <input type="file" class="form-control-file" id="paspor" name="paspor">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="kartu_kuning">Kartu Kuning</label>
+                                    <div class="col-sm-7">
+                                        <img alt="foto" width="185" style="display: none" id="customer_foto">
+                                        <div class="form-group">
+                                            <input type="file" class="form-control-file" id="kartu_kuning" name="kartu_kuning">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <!-- Second Set of Fields -->
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="ktp">KTP</label>
+                                    <div class="col-sm-7">
+                                        <img alt="foto" width="185" style="display: none" id="customer_foto">
+                                        <div class="form-group">
+                                            <input type="file" class="form-control-file" id="ktp" name="ktp">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="kk">KK</label>
+                                    <div class="col-sm-7">
+                                        <img alt="foto" width="185" style="display: none" id="customer_foto">
+                                        <div class="form-group">
+                                            <input type="file" class="form-control-file" id="kk" name="kk">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="buku_nikah">Buku Nikah</label>
+                                    <div class="col-sm-7">
+                                        <img alt="foto" width="185" style="display: none" id="customer_foto">
+                                        <div class="form-group">
+                                            <input type="file" class="form-control-file" id="buku_nikah" name="buku_nikah">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="akta_lahir">Akta Lahir</label>
+                                    <div class="col-sm-7">
+                                        <img alt="foto" width="185" style="display: none" id="customer_foto">
+                                        <div class="form-group">
+                                            <input type="file" class="form-control-file" id="akta_lahir" name="akta_lahir">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row" style="margin-top: 23px; margin-bottom: 9px">
+                                    <label class="col-sm-5" for="pas_foto">Pas Foto</label>
+                                    <div class="col-sm-7">
+                                        <img alt="foto" width="185" style="display: none" id="customer_foto">
+                                        <div class="form-group">
+                                            <input type="file" class="form-control-file" id="pas_foto" name="pas_foto">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="dp">DP</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="dp" name="dp" required>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="pembayaran_1">Pembayaran 1</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="pembayaran_1" name="pembayaran_1" required>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="pembayaran_2">Pembayaran 2</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="pembayaran_2" name="pembayaran_2" required>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="pelunasan">Pelunasan</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="pelunasan" name="pelunasan" required>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="cashback">Cashback</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="cashback" name="cashback" required>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="akun">Akun</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="akun" name="akun" required>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="pakaian">Pakaian</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="pakaian" name="pakaian" required>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="ukuran">Ukuran</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="ukuran" name="ukuran" required>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="kirim">Kirim</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="kirim" name="kirim" required>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="perlengkapan">Perlengkapan</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="perlengkapan" name="perlengkapan" required>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="status">Status</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="status" name="status" required>
                                     </div>
                                 </div>
                             </div>
@@ -115,6 +305,48 @@
         }
     });
 
+    // Fungsi untuk memformat angka menjadi format Rupiah
+    function formatRupiah(angka, prefix) {
+        var number_string = angka.replace(/[^,\d]/g, '').toString(),
+            split = number_string.split(','),
+            sisa = split[0].length % 3,
+            rupiah = split[0].substr(0, sisa),
+            ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+        // Tambahkan titik jika angka menjadi ribuan
+        if (ribuan) {
+            separator = sisa ? '.' : '';
+            rupiah += separator + ribuan.join('.');
+        }
+
+        rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+        return prefix == undefined ? rupiah : (rupiah ? 'Rp. ' + rupiah : '');
+    }
+
+    // Fungsi untuk memformat input pada saat halaman di-load dan saat input berubah
+    function formatMultipleInputsToRupiah(inputIds) {
+        inputIds.forEach(function(id) {
+            var inputElement = document.getElementById(id);
+            var currentValue = inputElement.value;
+
+            // Format nilai awal saat halaman di-load
+            if (currentValue) {
+                inputElement.value = formatRupiah(currentValue, 'Rp. ');
+            }
+
+            // Event listener untuk memformat input saat pengguna mengetik
+            inputElement.addEventListener('input', function(e) {
+                inputElement.value = formatRupiah(this.value, 'Rp. ');
+            });
+        });
+    }
+
+    // Panggil fungsi saat halaman di-load
+    window.onload = function() {
+        var inputIds = ['harga', 'harga_promo', 'promo_diskon', 'dp', 'pembayaran_1', 'pembayaran_2', 'pelunasan', 'cashback'];
+        formatMultipleInputsToRupiah(inputIds);
+    }
+
     $(document).ready(function() {
         // Ketika halaman di-load, panggil customer ID dari server
         $.ajax({
@@ -144,35 +376,98 @@
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
-                    // console.log(data);
-                    moment.locale('id')
+                    moment.locale('id');
                     $('#id').val(data['master'].id);
                     $('#customer_id').val(data['master'].customer_id.toUpperCase()).attr('readonly', true);
                     $('#group_id').val(data['master'].group_id);
                     $('#tgl_berangkat').val(moment(data['master'].tgl_berangkat).format('DD-MM-YYYY'));
+                    $('#title').val(data['master'].title);
                     $('#nama').val(data['master'].nama);
                     $('#no_hp').val(data['master'].no_hp);
                     $('#travel').val(data['master'].travel);
+                    $('#jenis_kelamin').val(data['master'].jenis_kelamin);
+                    $('#asal').val(data['master'].asal);
+                    $('#produk').val(data['master'].produk);
+
+                    // Memformat harga dan nilai lainnya ke dalam format Rupiah
+                    $('#harga').val(formatRupiah(data['master'].harga, 'Rp. '));
+                    $('#harga_promo').val(formatRupiah(data['master'].harga_promo, 'Rp. '));
+                    $('#promo_diskon').val(formatRupiah(data['master'].promo_diskon, 'Rp. '));
+                    $('#dp').val(formatRupiah(data['master'].dp, 'Rp. '));
+                    $('#pembayaran_1').val(formatRupiah(data['master'].pembayaran_1, 'Rp. '));
+                    $('#pembayaran_2').val(formatRupiah(data['master'].pembayaran_2, 'Rp. '));
+                    $('#pelunasan').val(formatRupiah(data['master'].pelunasan, 'Rp. '));
+                    $('#cashback').val(formatRupiah(data['master'].cashback, 'Rp. '));
+
+                    $('#tipe_kamar').val(data['master'].tipe_kamar);
+                    $('#paspor').val(data['master'].paspor);
+                    $('#kartu_kuning').val(data['master'].kartu_kuning);
+                    $('#ktp').val(data['master'].ktp);
+                    $('#kk').val(data['master'].kk);
+                    $('#buku_nikah').val(data['master'].buku_nikah);
+                    $('#akta_lahir').val(data['master'].akta_lahir);
+                    $('#akun').val(data['master'].akun);
+                    $('#pakaian').val(data['master'].pakaian);
+                    $('#ukuran').val(data['master'].ukuran);
+                    $('#kirim').val(data['master'].kirim);
+                    $('#perlengkapan').val(data['master'].perlengkapan);
+                    $('#status').val(data['master'].status);
+
+                    // Update gambar jika ada
+                    if (data['master'].pas_foto) {
+                        $('#customer_foto').attr('src', "<?php echo base_url('assets/backend/document/customer/') ?>" + data['master'].pas_foto).css('margin-bottom', '14px');
+                        $('#customer_foto').show(); // Menampilkan gambar jika ada
+                    } else {
+                        $('#customer_foto').hide(); // Sembunyikan gambar jika tidak ada
+                    }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     alert('Error get data from ajax');
                 }
             });
+
         }
 
         if (aksi == "read") {
             $('.aksi').hide();
             $('#group_id').prop('disabled', true);
             $('#tgl_berangkat').prop('disabled', true);
+            $('#title').prop('readonly', true);
             $('#nama').prop('readonly', true);
             $('#no_hp').prop('readonly', true);
+            $('#jenis_kelamin').prop('disabled', true);
             $('#travel').prop('disabled', true);
+            $('#asal').prop('readonly', true);
+            $('#produk').prop('readonly', true);
+            $('#harga').prop('readonly', true);
+            $('#harga_promo').prop('readonly', true);
+            $('#tipe_kamar').prop('readonly', true);
+            $('#promo_diskon').prop('readonly', true);
+            $('#paspor').prop('readonly', true);
+            $('#kartu_kuning').prop('readonly', true);
+            $('#ktp').prop('readonly', true);
+            $('#kk').prop('readonly', true);
+            $('#buku_nikah').prop('readonly', true);
+            $('#dp').prop('readonly', true);
+            $('#akta_lahir').prop('readonly', true);
+            $('#pas_foto').css('display', 'none');
+            $('#pembayaran_1').prop('readonly', true);
+            $('#pembayaran_2').prop('readonly', true);
+            $('#pelunasan').prop('readonly', true);
+            $('#cashback').prop('readonly', true);
+            $('#akun').prop('readonly', true);
+            $('#pakaian').prop('readonly', true);
+            $('#ukuran').prop('readonly', true);
+            $('#kirim').prop('readonly', true);
+            $('#perlengkapan').prop('readonly', true);
+            $('#status').prop('readonly', true);
         }
 
         $("#form").submit(function(e) {
             e.preventDefault();
             var $form = $(this);
             if (!$form.valid()) return false;
+
             var url;
             if (id == 0) {
                 url = "<?php echo site_url('customer_pu/add') ?>";
@@ -180,13 +475,17 @@
                 url = "<?php echo site_url('customer_pu/update') ?>";
             }
 
+            // Gunakan FormData untuk menangani file upload
+            var formData = new FormData($form[0]); // Ambil semua data form termasuk file
+
             $.ajax({
                 url: url,
                 type: "POST",
-                data: $('#form').serialize(),
+                data: formData,
+                contentType: false, // Agar tidak mengubah tipe konten FormData
+                processData: false, // Agar data FormData tidak diproses menjadi string
                 dataType: "JSON",
                 success: function(data) {
-                    // console.log(data);
                     if (data.status) {
                         Swal.fire({
                             position: 'center',
@@ -196,11 +495,11 @@
                             timer: 1500
                         }).then((result) => {
                             location.href = "<?= base_url('customer_pu') ?>";
-                        })
+                        });
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
-                    alert('Error adding / update data');
+                    alert('Error adding / updating data');
                 }
             });
         });

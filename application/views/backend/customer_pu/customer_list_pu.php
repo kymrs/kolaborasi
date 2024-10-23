@@ -20,7 +20,7 @@
                     <!-- Added padding for spacing -->
                     <div class="table-responsive">
                         <!-- Table wrapper -->
-                        <table id="approvalTable" class="table table-bordered table-striped display nowrap w-100 mb-4">
+                        <table id="customerTable" class="table table-bordered table-striped display nowrap w-100 mb-4">
                             <!-- Added margin-bottom -->
                             <thead>
                                 <tr>
@@ -28,8 +28,34 @@
                                     <th style="width: 120px;">Action</th>
                                     <th>Group ID</th>
                                     <th>Customer ID</th>
+                                    <th>Title</th>
                                     <th>Nama</th>
+                                    <th>Jenis Kelamin</th>
                                     <th>No Telp</th>
+                                    <th>Status</th>
+                                    <th>Asal</th>
+                                    <th>Produk</th>
+                                    <th>Harga</th>
+                                    <th>Harga Promo</th>
+                                    <th>Tipe Kamar</th>
+                                    <th>Promo Diskon</th>
+                                    <th>Paspor</th>
+                                    <th>Kartu Kuning</th>
+                                    <th>KTP</th>
+                                    <th>KK</th>
+                                    <th>Buku NIkah</th>
+                                    <th>Akta Lahir</th>
+                                    <th>Pas Foto</th>
+                                    <th>DP</th>
+                                    <th>Pembayaran 1</th>
+                                    <th>Pembayaran 2</th>
+                                    <th>Pelunasan</th>
+                                    <th>Cashback</th>
+                                    <th>Akun</th>
+                                    <th>Pakaian</th>
+                                    <th>Ukuran</th>
+                                    <th>Kirim</th>
+                                    <th>Perlengkapan</th>
                                     <th>Keberangkatan</th>
                                     <th>Travel</th>
                                 </tr>
@@ -43,8 +69,34 @@
                                     <th style="width: 120px;">Action</th>
                                     <th>Group ID</th>
                                     <th>Customer ID</th>
+                                    <th>Title</th>
                                     <th>Nama</th>
+                                    <th>Jenis Kelamin</th>
                                     <th>No Telp</th>
+                                    <th>Status</th>
+                                    <th>Asal</th>
+                                    <th>Produk</th>
+                                    <th>Harga</th>
+                                    <th>Harga Promo</th>
+                                    <th>Tipe Kamar</th>
+                                    <th>Promo Diskon</th>
+                                    <th>Paspor</th>
+                                    <th>Kartu Kuning</th>
+                                    <th>KTP</th>
+                                    <th>KK</th>
+                                    <th>Buku NIkah</th>
+                                    <th>Akta Lahir</th>
+                                    <th>Pas Foto</th>
+                                    <th>DP</th>
+                                    <th>Pembayaran 1</th>
+                                    <th>Pembayaran 2</th>
+                                    <th>Pelunasan</th>
+                                    <th>Cashback</th>
+                                    <th>Akun</th>
+                                    <th>Pakaian</th>
+                                    <th>Ukuran</th>
+                                    <th>Kirim</th>
+                                    <th>Perlengkapan</th>
                                     <th>Keberangkatan</th>
                                     <th>Travel</th>
                                 </tr>
@@ -63,7 +115,7 @@
 <script type="text/javascript">
     var table;
     $(document).ready(function() {
-        table = $('#approvalTable').DataTable({
+        table = $('#customerTable').DataTable({
             "responsive": true,
             "scrollX": true,
             "processing": true,

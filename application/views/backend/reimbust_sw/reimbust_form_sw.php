@@ -440,7 +440,10 @@
                 $('#upload' + currentRowCount).css('background-color', '#EAECF4').text('Deklarasi').val('');
                 $('.kwitansi_image' + currentRowCount).val('');
                 $('#pemakaian' + currentRowCount).css('cursor', 'not-allowed').attr('placeholder', 'Deklarasi').val(data[7]);
-                $('#inputGroupFile01' + currentRowCount).val('').attr('name', '');
+
+                // Menghapus atribut required dari input file
+                $('#inputGroupFile01' + currentRowCount).removeAttr('required');
+
                 $('#tgl_nota_' + currentRowCount).css({
                     'cursor': 'not-allowed',
                     'pointer-events': 'none'
@@ -607,7 +610,7 @@
                     </td>
                     <td style="padding: 12px 12px 5px !important" id="kwitansi-upload${rowCount}">
                         <div class="custom-file">
-                            <input type="file" class="custom-file-input" name="kwitansi[${rowCount}]" id="inputGroupFile01${rowCount}" aria-describedby="inputGroupFileAddon01">
+                            <input type="file" required class="custom-file-input" name="kwitansi[${rowCount}]" id="inputGroupFile01${rowCount}" aria-describedby="inputGroupFileAddon01">
                             <label class="custom-file-label" for="inputGroupFile01" id="upload${rowCount}">Upload..</label>
                             <span class="kwitansi-label">Max Size : 3MB</span>
                         </div>
