@@ -78,7 +78,7 @@
                         </div>
                     </div>
                     <div class="d-flex align-item-center">
-                        <button class="btn btn-primary" id="tgl_btn" type="button">DONE</button>
+                        <button class="btn btn-primary" id="tgl_btn" type="button">FILTER</button>
                     </div>
                     <div class="d-flex align-item-center export-excel">
                         <a class="btn btn-success" id="btn-export-excel">
@@ -237,6 +237,7 @@
                         success: function(response) {
                             var total = JSON.parse(response);
                             // console.log('Success logging data to second URL' + response);
+                            // console.log(response);
                             $('#totalPrepayment').text('Rp. ' + parseInt(total.total_prepayment).toLocaleString('id-ID'));
                             $('#totalReimbust').text('Rp. ' + parseInt(total.total_reimbust).toLocaleString('id-ID'));
                             $('#totalPelaporan').text('Rp. ' + parseInt(total.total_pelaporan).toLocaleString('id-ID'));
