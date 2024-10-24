@@ -91,18 +91,18 @@
     // Cek apakah tab approval ada
     const approvalTabExists = $('#employeeTab').length > 0;
 
-    console.log(activeTab)
+    // console.log(activeTab)
 
     if (activeTab && (activeTab == 'employee' || approvalTabExists)) {
         $('.nav-tabs .nav-link').removeClass('active');
         $(`.nav-tabs .nav-link[data-tab="${activeTab}"]`).addClass('active');
-        console.log('labubu');
+        // console.log('labubu');
         // You can load content for the active tab here if needed
     } else {
         // Default to the "User" tab if session storage is empty or approval tab doesn't exist
         $('.nav-tabs .nav-link').removeClass('active');
         $('#personalTab').addClass('active');
-        console.log('ladada');
+        // console.log('ladada');
     }
 
     $('.collapse-item').on('click', function(e) {
@@ -115,6 +115,7 @@
         sessionStorage.setItem('activeTab', tab);
         $('.nav-tabs .nav-link').removeClass('active');
         $(this).addClass('active');
+        table.ajax.reload(); // Muat ulang data di DataTable saat tab berubah
     });
 
     // Cek apakah ada nilai filter yang tersimpan di localStorage
@@ -156,10 +157,6 @@
             ]
         });
 
-        // $('#appFilter').change(function() {
-        //     table.ajax.reload(); // Muat ulang data di DataTable dengan filter baru
-        // });
-
         // Simpan nilai filter ke localStorage setiap kali berubah
         $('#appFilter').on('change', function() {
             localStorage.setItem('appFilterStatus', $(this).val());
@@ -167,25 +164,13 @@
         });
 
         // Event listener untuk nav tabs
-        $('.nav-tabs a').on('click', function(e) {
-            e.preventDefault();
-            $('.nav-tabs a').removeClass('active'); // Hapus kelas aktif dari semua tab
-            $(this).addClass('active'); // Tambahkan kelas aktif ke tab yang diklik
+        // $('.nav-tabs a').on('click', function(e) {
+        //     e.preventDefault();
+        //     $('.nav-tabs a').removeClass('active'); // Hapus kelas aktif dari semua tab
+        //     $(this).addClass('active'); // Tambahkan kelas aktif ke tab yang diklik
 
-            table.ajax.reload(); // Muat ulang data di DataTable saat tab berubah
-        });
-
-        // Restore filter value from localStorage
-        // var savedStatus = localStorage.getItem('appFilterStatus');
-        // if (savedStatus) {
-        //     $('#appFilter').val(savedStatus).change();
-        // }
-
-        // Save filter value to localStorage on change
-        $('#appFilter').on('change', function() {
-            localStorage.setItem('appFilterStatus', $(this).val());
-            table.ajax.reload();
-        });
+        //     table.ajax.reload(); // Muat ulang data di DataTable saat tab berubah
+        // });
 
         window.delete_data = function(id) {
             Swal.fire({

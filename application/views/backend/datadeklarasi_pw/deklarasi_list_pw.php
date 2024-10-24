@@ -85,57 +85,48 @@
 <script type="text/javascript">
     var table;
 
-    // Set active tab on page load
-    const activeTab = sessionStorage.getItem('activeTab');
+    $(document).ready(function() {
 
-    // Cek apakah tab approval ada
-    const approvalTabExists = $('#employeeTab').length > 0;
+        // Set active tab on page load
+        const activeTab = sessionStorage.getItem('activeTab');
 
-    if (activeTab == 'employee' || approvalTabExists) {
-        $('.nav-tabs .nav-link').removeClass('active');
-        $(`.nav-tabs .nav-link[data-tab="${activeTab}"]`).addClass('active');
-        console.log('labubu');
-        // You can load content for the active tab here if needed
+        // Cek apakah tab approval ada
+        const approvalTabExists = $('#employeeTab').length > 0;
 
-        // Simpan nilai filter ke localStorage setiap kali berubah
-        $('#appFilter').on('change', function() {
-            localStorage.setItem('appFilterStatus', $(this).val());
-            table.ajax.reload(); // Muat ulang DataTables dengan filter baru
+        // console.log(activeTab)
+
+        if (activeTab && (activeTab == 'employee' || approvalTabExists)) {
+            $('.nav-tabs .nav-link').removeClass('active');
+            $(`.nav-tabs .nav-link[data-tab="${activeTab}"]`).addClass('active');
+            // console.log('labubu');
+            // You can load content for the active tab here if needed
+        } else {
+            // Default to the "User" tab if session storage is empty or approval tab doesn't exist
+            $('.nav-tabs .nav-link').removeClass('active');
+            $('#personalTab').addClass('active');
+            // console.log('ladada');
+        }
+
+        $('.collapse-item').on('click', function(e) {
+            localStorage.removeItem('appFilterStatus'); // Hapus filter yang tersimpan
+        })
+
+        // Tab click event
+        $('.nav-tabs .nav-link').on('click', function() {
+            const tab = $(this).data('tab');
+            sessionStorage.setItem('activeTab', tab);
+            $('.nav-tabs .nav-link').removeClass('active');
+            $(this).addClass('active');
+
+            table.ajax.reload(); // Muat ulang data di DataTable saat tab berubah
         });
-    } else {
-        // Default to the "User" tab if session storage is empty or approval tab doesn't exist
-        $('.nav-tabs .nav-link').removeClass('active');
-        $('#personalTab').addClass('active');
 
         // Cek apakah ada nilai filter yang tersimpan di localStorage
         var savedFilter = localStorage.getItem('appFilterStatus');
         if (savedFilter) {
             $('#appFilter').val(savedFilter).change(); // Set filter dengan nilai yang tersimpan
         }
-        // console.log(savedFilter);
 
-        $('#appFilter').change(function() {
-            localStorage.setItem('appFilterStatus', $(this).val());
-            table.ajax.reload(); // Muat ulang data di DataTable dengan filter baru
-        });
-
-        // console.log('laland');
-    }
-
-    $('.collapse-item').on('click', function(e) {
-        localStorage.removeItem('appFilterStatus'); // Hapus filter yang tersimpan
-    })
-
-    // Event listener untuk nav tabs
-    $('.nav-tabs a').on('click', function(e) {
-        e.preventDefault();
-        $('.nav-tabs a').removeClass('active'); // Hapus kelas aktif dari semua tab
-        $(this).addClass('active'); // Tambahkan kelas aktif ke tab yang diklik
-
-        table.ajax.reload(); // Muat ulang data di DataTable saat tab berubah
-    });
-
-    $(document).ready(function() {
         table = $('#declarationTable').DataTable({
             "responsive": false,
             "scrollX": true,
@@ -173,6 +164,22 @@
                 }
             ],
         });
+
+        // Simpan nilai filter ke localStorage setiap kali berubah
+        $('#appFilter').on('change', function() {
+            localStorage.setItem('appFilterStatus', $(this).val());
+            table.ajax.reload(); // Muat ulang DataTables dengan filter baru
+        });
+
+        // Event listener untuk nav tabs
+        // $('.nav-tabs a').on('click', function(e) {
+        //     e.preventDefault();
+        //     $('.nav-tabs a').removeClass('active'); // Hapus kelas aktif dari semua tab
+        //     $(this).addClass('active'); // Tambahkan kelas aktif ke tab yang diklik
+
+        //     table.ajax.reload(); // Muat ulang data di DataTable saat tab berubah
+        // });
+
     });
 
     function delete_data(id) {
