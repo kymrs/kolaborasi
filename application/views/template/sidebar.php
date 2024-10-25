@@ -20,7 +20,7 @@
             <!-- Divider -->
             <hr class="sidebar-divider">
 
-            <!-- Heading -->
+            <!-- Heading Menu -->
             <div class="sidebar-heading">
                 Menu
             </div>
