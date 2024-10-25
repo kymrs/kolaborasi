@@ -26,7 +26,7 @@ class M_notifikasi extends CI_Model
             'approval' => '',
             'penawaran_la_pu' => '',
             'penawaran_pu' => '',
-            'rekapitulasi' => '',
+            'rekapitulasi_pu' => '',
             'tanda_terima' => '',
             'customer_pu' => '',
             'menu' => '',

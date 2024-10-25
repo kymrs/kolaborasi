@@ -3,7 +3,7 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-class M_rekapitulasi extends CI_Model
+class M_rekapitulasi_pu extends CI_Model
 {
     var $id = 'id';
     var $table = 'tbl_reimbust_pu';
@@ -34,7 +34,11 @@ class M_rekapitulasi extends CI_Model
                 $this->db->join('tbl_reimbust_detail_pu', 'tbl_reimbust_pu.id = tbl_reimbust_detail_pu.reimbust_id', 'left');
                 $this->db->join('tbl_data_user', 'tbl_prepayment_pu.id_user = tbl_data_user.id_user', 'left');
 
+                $this->db->group_start();
                 $this->db->where('tbl_prepayment_pu.payment_status', 'paid');
+                $this->db->where('tbl_reimbust_pu.kode_prepayment IS NULL');
+                $this->db->or_where('tbl_reimbust_pu.payment_status', 'paid');
+                $this->db->group_end();
 
                 // Filter by date range
                 if (!empty($_POST['awal']) && !empty($_POST['akhir'])) {
@@ -55,6 +59,8 @@ class M_rekapitulasi extends CI_Model
                     $this->db->where('tbl_reimbust_pu.kode_prepayment IS NULL');
                     $this->db->group_end();
                 }
+
+
 
                 $this->db->group_by(array('tbl_prepayment_pu.id', 'tbl_prepayment_pu.kode_prepayment'));
             } elseif ($_POST['tab'] == 'reimbust') {
@@ -149,7 +155,11 @@ class M_rekapitulasi extends CI_Model
                 $this->db->join('tbl_reimbust_detail_pu', 'tbl_reimbust_pu.id = tbl_reimbust_detail_pu.reimbust_id', 'left');
                 $this->db->join('tbl_data_user', 'tbl_prepayment_pu.id_user = tbl_data_user.id_user', 'left');
 
+                $this->db->group_start();
                 $this->db->where('tbl_prepayment_pu.payment_status', 'paid');
+                $this->db->where('tbl_reimbust_pu.kode_prepayment IS NULL');
+                $this->db->or_where('tbl_reimbust_pu.payment_status', 'paid');
+                $this->db->group_end();
 
                 // Filter by date range
                 if (!empty($_POST['awal']) && !empty($_POST['akhir'])) {
