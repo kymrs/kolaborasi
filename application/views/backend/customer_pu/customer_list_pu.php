@@ -27,35 +27,34 @@
                                     <th>No</th>
                                     <th style="width: 120px;">Action</th>
                                     <th>Group ID</th>
-                                    <th>Customer ID</th>
-                                    <th>Title</th>
+                                    <!-- <th>Customer ID</th> -->
+                                    <!-- <th>Title</th> -->
                                     <th>Nama</th>
                                     <th>Jenis Kelamin</th>
                                     <th>No Telp</th>
-                                    <th>Status</th>
+                                    <!-- <th>Status</th> -->
                                     <th>Asal</th>
                                     <th>Produk</th>
-                                    <th>Harga</th>
-                                    <th>Harga Promo</th>
-                                    <th>Tipe Kamar</th>
-                                    <th>Promo Diskon</th>
-                                    <th>Paspor</th>
-                                    <th>Kartu Kuning</th>
-                                    <th>KTP</th>
-                                    <th>KK</th>
-                                    <th>Buku NIkah</th>
-                                    <th>Akta Lahir</th>
-                                    <th>Pas Foto</th>
-                                    <th>DP</th>
-                                    <th>Pembayaran 1</th>
-                                    <th>Pembayaran 2</th>
-                                    <th>Pelunasan</th>
-                                    <th>Cashback</th>
-                                    <th>Akun</th>
-                                    <th>Pakaian</th>
-                                    <th>Ukuran</th>
-                                    <th>Kirim</th>
-                                    <th>Perlengkapan</th>
+                                    <!-- <th>Harga</th> -->
+                                    <!-- <th>Harga Promo</th> -->
+                                    <!-- <th>Tipe Kamar</th> -->
+                                    <!-- <th>Promo Diskon</th> -->
+                                    <!-- <th>Paspor</th> -->
+                                    <!-- <th>Kartu Kuning</th> -->
+                                    <!-- <th>KTP</th> -->
+                                    <!-- <th>KK</th> -->
+                                    <!-- <th>Buku NIkah</th> -->
+                                    <!-- <th>Akta Lahir</th> -->
+                                    <!-- <th>Pas Foto</th> -->
+                                    <!-- <th>DP</th> -->
+                                    <!-- <th>Pembayaran 1</th> -->
+                                    <!-- <th>Pembayaran 2</th> -->
+                                    <!-- <th>Pelunasan</th> -->
+                                    <!-- <th>Cashback</th> -->
+                                    <!-- <th>Akun</th> -->
+                                    <!-- <th>Pakaian</th> -->
+                                    <!-- <th>Ukuran</th> -->
+                                    <!-- <th>Kirim Perlengkapan</th> -->
                                     <th>Keberangkatan</th>
                                     <th>Travel</th>
                                 </tr>
@@ -68,35 +67,34 @@
                                     <th>No</th>
                                     <th style="width: 120px;">Action</th>
                                     <th>Group ID</th>
-                                    <th>Customer ID</th>
-                                    <th>Title</th>
+                                    <!-- <th>Customer ID</th> -->
+                                    <!-- <th>Title</th> -->
                                     <th>Nama</th>
                                     <th>Jenis Kelamin</th>
                                     <th>No Telp</th>
-                                    <th>Status</th>
+                                    <!-- <th>Status</th> -->
                                     <th>Asal</th>
                                     <th>Produk</th>
-                                    <th>Harga</th>
-                                    <th>Harga Promo</th>
-                                    <th>Tipe Kamar</th>
-                                    <th>Promo Diskon</th>
-                                    <th>Paspor</th>
-                                    <th>Kartu Kuning</th>
-                                    <th>KTP</th>
-                                    <th>KK</th>
-                                    <th>Buku NIkah</th>
-                                    <th>Akta Lahir</th>
-                                    <th>Pas Foto</th>
-                                    <th>DP</th>
-                                    <th>Pembayaran 1</th>
-                                    <th>Pembayaran 2</th>
-                                    <th>Pelunasan</th>
-                                    <th>Cashback</th>
-                                    <th>Akun</th>
-                                    <th>Pakaian</th>
-                                    <th>Ukuran</th>
-                                    <th>Kirim</th>
-                                    <th>Perlengkapan</th>
+                                    <!-- <th>Harga</th> -->
+                                    <!-- <th>Harga Promo</th> -->
+                                    <!-- <th>Tipe Kamar</th> -->
+                                    <!-- <th>Promo Diskon</th> -->
+                                    <!-- <th>Paspor</th> -->
+                                    <!-- <th>Kartu Kuning</th> -->
+                                    <!-- <th>KTP</th> -->
+                                    <!-- <th>KK</th> -->
+                                    <!-- <th>Buku NIkah</th> -->
+                                    <!-- <th>Akta Lahir</th> -->
+                                    <!-- <th>Pas Foto</th> -->
+                                    <!-- <th>DP</th> -->
+                                    <!-- <th>Pembayaran 1</th> -->
+                                    <!-- <th>Pembayaran 2</th> -->
+                                    <!-- <th>Pelunasan</th> -->
+                                    <!-- <th>Cashback</th> -->
+                                    <!-- <th>Akun</th> -->
+                                    <!-- <th>Pakaian</th> -->
+                                    <!-- <th>Ukuran</th> -->
+                                    <!-- <th>Kirim Perlengkapan</th> -->
                                     <th>Keberangkatan</th>
                                     <th>Travel</th>
                                 </tr>

@@ -8,8 +8,8 @@ class M_customer_pu extends CI_Model
     // INISIASI VARIABLE
     var $id = 'id';
     var $table = 'tbl_customer_pu';
-    var $column_order = array(null, null, 'group_id', 'customer_id', 'title', 'nama', 'jenis_kelamin', 'no_hp', 'status', 'asal', 'produk', 'harga', 'harga_promo', 'tipe_kamar', 'promo_diskon', 'paspor', 'kartu_kuning', 'ktp', 'kk', 'buku_nikah', 'akta_lahir', 'pas_foto', 'dp', 'pembayaran_1', 'pembayaran_2', 'pelunasan', 'cashback', 'akun', 'pakaian',  'ukuran', 'kirim', 'perlengkapan', 'tgl_berangkat', 'travel');
-    var $column_search = array('group_id', 'customer_id', 'title', 'nama', 'jenis_kelamin', 'no_hp', 'status', 'asal', 'produk', 'harga', 'harga_promo', 'tipe_kamar', 'promo_diskon', 'paspor', 'kartu_kuning', 'ktp', 'kk', 'buku_nikah', 'akta_lahir', 'pas_foto', 'dp', 'pembayaran_1', 'pembayaran_2',  'pelunasan', 'cashback',  'akun', 'pakaian',  'ukuran', 'kirim', 'perlengkapan', 'tgl_berangkat', 'travel'); //field yang diizin untuk pencarian
+    var $column_order = array(null, null, 'group_id', 'customer_id', 'title', 'nama', 'jenis_kelamin', 'no_hp', 'status', 'asal', 'produk', 'harga', 'harga_promo', 'tipe_kamar', 'promo_diskon', 'paspor', 'kartu_kuning', 'ktp', 'kk', 'buku_nikah', 'akta_lahir', 'pas_foto', 'dp', 'pembayaran_1', 'pembayaran_2', 'pelunasan', 'cashback', 'akun', 'pakaian',  'ukuran', 'kirim_perlengkapan', 'tgl_berangkat', 'travel');
+    var $column_search = array('group_id', 'customer_id', 'title', 'nama', 'jenis_kelamin', 'no_hp', 'status', 'asal', 'produk', 'harga', 'harga_promo', 'tipe_kamar', 'promo_diskon', 'paspor', 'kartu_kuning', 'ktp', 'kk', 'buku_nikah', 'akta_lahir', 'pas_foto', 'dp', 'pembayaran_1', 'pembayaran_2',  'pelunasan', 'cashback',  'akun', 'pakaian',  'ukuran', 'kirim_perlengkapan', 'tgl_berangkat', 'travel'); //field yang diizin untuk pencarian
     var $order = array('id' => 'desc');
 
     // UNTUK QUERY DATA TABLE
@@ -128,7 +128,7 @@ class M_customer_pu extends CI_Model
 
         if ($customer) {
             $old_image = $customer['pas_foto'];
-            $file_path = FCPATH . './assets/backend/document/customer/' . $old_image;
+            $file_path = FCPATH . './assets/backend/document/customer/pas_foto' . $old_image;
 
             if (file_exists($file_path)) {
                 unlink($file_path);

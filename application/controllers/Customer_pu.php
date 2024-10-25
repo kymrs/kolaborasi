@@ -11,6 +11,7 @@ class Customer_pu extends CI_Controller
         parent::__construct();
         $this->load->model('backend/M_customer_pu');
         $this->load->model('backend/M_notifikasi');
+        $this->load->library('upload');
         $this->M_login->getsecurity();
         date_default_timezone_set('Asia/Jakarta');
     }
@@ -97,35 +98,34 @@ class Customer_pu extends CI_Controller
             $row[] = $no;
             $row[] = $action;
             $row[] = strtoupper($field->group_id);
-            $row[] = strtoupper($field->customer_id);
-            $row[] = $field->title;
+            // $row[] = strtoupper($field->customer_id);
+            // $row[] = $field->title;
             $row[] = $field->nama;
             $row[] = $field->jenis_kelamin;
             $row[] = $field->no_hp;
-            $row[] = $field->status;
+            // $row[] = $field->status;
             $row[] = $field->asal;
             $row[] = $field->produk;
-            $row[] = 'Rp. ' . number_format($field->harga, 0, ',', '.');
-            $row[] = 'Rp. ' . number_format($field->harga_promo, 0, ',', '.');
-            $row[] = $field->tipe_kamar;
-            $row[] = 'Rp. ' . number_format($field->promo_diskon, 0, ',', '.');
-            $row[] = $field->paspor;
-            $row[] = $field->kartu_kuning;
-            $row[] = $field->ktp;
-            $row[] = $field->kk;
-            $row[] = $field->buku_nikah;
-            $row[] = $field->akta_lahir;
-            $row[] = ($field->pas_foto != '' ? '<img src="' . site_url("assets/backend/document/customer/") . $field->pas_foto  . '" height="40px" width="40px">' : '');
-            $row[] = 'Rp. ' . number_format($field->dp, 0, ',', '.');
-            $row[] = 'Rp. ' . number_format($field->pembayaran_1, 0, ',', '.');
-            $row[] = 'Rp. ' . number_format($field->pembayaran_2, 0, ',', '.');
-            $row[] = 'Rp. ' . number_format($field->pelunasan, 0, ',', '.');
-            $row[] = 'Rp. ' . number_format($field->cashback, 0, ',', '.');
-            $row[] = $field->akun;
-            $row[] = $field->pakaian;
-            $row[] = $field->ukuran;
-            $row[] = $field->kirim;
-            $row[] = $field->perlengkapan;
+            // $row[] = 'Rp. ' . number_format($field->harga, 0, ',', '.');
+            // $row[] = 'Rp. ' . number_format($field->harga_promo, 0, ',', '.');
+            // $row[] = $field->tipe_kamar;
+            // $row[] = 'Rp. ' . number_format($field->promo_diskon, 0, ',', '.');
+            // $row[] = $field->paspor;
+            // $row[] = $field->kartu_kuning;
+            // $row[] = $field->ktp;
+            // $row[] = $field->kk;
+            // $row[] = $field->buku_nikah;
+            // $row[] = $field->akta_lahir;
+            // $row[] = ($field->pas_foto != '' ? '<img src="' . site_url("assets/backend/document/customer/") . $field->pas_foto  . '" height="40px" width="40px">' : '');
+            // $row[] = 'Rp. ' . number_format($field->dp, 0, ',', '.');
+            // $row[] = 'Rp. ' . number_format($field->pembayaran_1, 0, ',', '.');
+            // $row[] = 'Rp. ' . number_format($field->pembayaran_2, 0, ',', '.');
+            // $row[] = 'Rp. ' . number_format($field->pelunasan, 0, ',', '.');
+            // $row[] = 'Rp. ' . number_format($field->cashback, 0, ',', '.');
+            // $row[] = $field->akun;
+            // $row[] = $field->pakaian;
+            // $row[] = $field->ukuran;
+            // $row[] = $field->kirim_perlengkapan;
             $row[] = $this->tgl_indo(date("Y-m-j", strtotime($field->tgl_berangkat)));
             $row[] = $field->travel;
             // $row[] = $field->tujuan;
@@ -224,18 +224,44 @@ class Customer_pu extends CI_Controller
             $new_group_id = $group_id_input; // Gunakan input dari user
         }
 
-        // Fungsi untuk upload pas_foto
-        $upload = $this->do_upload('pas_foto');
+        // Inisialisasi array untuk menyimpan nama file
+        $uploaded_files = [];
 
-        // Jika gagal upload, kembalikan error
-        if (!$upload['status']) {
-            echo json_encode(array("status" => FALSE, "error" => $upload['error']));
-            return;
+        // Upload untuk masing-masing file
+        $fields = ['pas_foto', 'paspor', 'kartu_kuning', 'ktp', 'kk', 'buku_nikah', 'akta_lahir'];
+        foreach ($fields as $field) {
+            if (!empty($_FILES[$field]['name'])) {
+                // Siapkan file untuk diupload
+                $_FILES['file']['name'] = $_FILES[$field]['name'];
+                $_FILES['file']['type'] = $_FILES[$field]['type'];
+                $_FILES['file']['tmp_name'] = $_FILES[$field]['tmp_name'];
+                $_FILES['file']['error'] = $_FILES[$field]['error'];
+                $_FILES['file']['size'] = $_FILES[$field]['size'];
+
+                // Tentukan folder upload sesuai dengan field
+                $upload_path = './assets/backend/document/customer/' . $field . '/';
+                $config['upload_path'] = $upload_path;
+                $config['allowed_types'] = 'jpeg|jpg|png'; // Tipe file yang diizinkan
+                $config['max_size'] = 4000; // Maksimal ukuran file 4MB 4000(KB)
+                $config['encrypt_name'] = TRUE; // Enkripsi nama file untuk menghindari konflik
+
+                $this->upload->initialize($config);
+
+                // Proses upload
+                if ($this->upload->do_upload('file')) {
+                    $uploaded_files[$field] = $this->upload->data('file_name'); // Simpan nama file yang diupload
+                } else {
+                    echo json_encode(array("status" => FALSE, "error" => $this->upload->display_errors()));
+                    return;
+                }
+            } else {
+                $uploaded_files[$field] = ''; // Jika tidak ada file, set ke string kosong
+            }
         }
 
         // Data yang akan disimpan ke dalam database
         $data = array(
-            'customer_id' => $customer_id, // Gunakan kode yang baru di-generate dari max_kode()
+            'customer_id' => $customer_id,
             'group_id' => $new_group_id,
             'tgl_berangkat' => date('Y-m-d', strtotime($this->input->post('tgl_berangkat'))),
             'title' => $this->input->post('title'),
@@ -247,13 +273,13 @@ class Customer_pu extends CI_Controller
             'harga' => preg_replace('/\D/', '', $this->input->post('harga')),
             'harga_promo' => preg_replace('/\D/', '', $this->input->post('harga_promo')),
             'tipe_kamar' => $this->input->post('tipe_kamar'),
-            'promo_diskon' => preg_replace('/\D/', '', $this->input->post('promo_diskon')),
-            'paspor' => $this->input->post('paspor'),
-            'kartu_kuning' => $this->input->post('kartu_kuning'),
-            'ktp' => $this->input->post('ktp'),
-            'kk' => $this->input->post('kk'),
-            'buku_nikah' => $this->input->post('buku_nikah'),
-            'akta_lahir' => $this->input->post('akta_lahir'),
+            'promo_diskon' => $this->input->post('promo_diskon'),
+            'paspor' => $uploaded_files['paspor'],
+            'kartu_kuning' => $uploaded_files['kartu_kuning'],
+            'ktp' => $uploaded_files['ktp'],
+            'kk' => $uploaded_files['kk'],
+            'buku_nikah' => $uploaded_files['buku_nikah'],
+            'akta_lahir' => $uploaded_files['akta_lahir'],
             'dp' => preg_replace('/\D/', '', $this->input->post('dp')),
             'pembayaran_1' => preg_replace('/\D/', '', $this->input->post('pembayaran_1')),
             'pembayaran_2' => preg_replace('/\D/', '', $this->input->post('pembayaran_2')),
@@ -262,11 +288,10 @@ class Customer_pu extends CI_Controller
             'akun' => $this->input->post('akun'),
             'pakaian' => $this->input->post('pakaian'),
             'ukuran' => $this->input->post('ukuran'),
-            'kirim' => $this->input->post('kirim'),
-            'perlengkapan' => $this->input->post('perlengkapan'),
+            'kirim_perlengkapan' => $this->input->post('kirim_perlengkapan'),
             'travel' => $this->input->post('travel'),
             'status' => $this->input->post('status'),
-            'pas_foto' => $upload['file_name'] // Simpan nama file yang diupload
+            'pas_foto' => $uploaded_files['pas_foto']
         );
 
         // Simpan data ke database
@@ -276,25 +301,6 @@ class Customer_pu extends CI_Controller
         echo json_encode(array("status" => TRUE));
     }
 
-    // Fungsi untuk upload foto
-    private function do_upload($field_name)
-    {
-        // Konfigurasi upload
-        $config['upload_path'] = './assets/backend/document/customer'; // Tentukan folder penyimpanan
-        $config['allowed_types'] = 'jpg|jpeg|png'; // Tipe file yang diizinkan
-        $config['max_size'] = 3072; // Maksimal ukuran file 3MB (3072KB)
-        $config['file_name'] = uniqid(); // Beri nama unik pada file yang diupload
-
-        $this->load->library('upload', $config);
-
-        if (!$this->upload->do_upload($field_name)) {
-            // Jika gagal upload
-            return array('status' => FALSE, 'error' => $this->upload->display_errors());
-        } else {
-            // Jika sukses upload
-            return array('status' => TRUE, 'file_name' => $this->upload->data('file_name'));
-        }
-    }
 
     // Fungsi untuk increment group_id
     public function increment_group_id($last_group_id)
@@ -316,8 +322,43 @@ class Customer_pu extends CI_Controller
         $id = $this->input->post('id');
         $customer = $this->M_customer_pu->get_by_id($id); // Pastikan Anda sudah punya fungsi ini untuk mendapatkan data customer
 
-        // Fungsi untuk upload pas_foto
-        $upload = $this->do_upload('pas_foto');
+        // Inisialisasi array untuk menyimpan nama file yang diupload
+        $uploaded_files = [];
+
+        // Daftar field yang berhubungan dengan file
+        $fields = ['pas_foto', 'paspor', 'kartu_kuning', 'ktp', 'kk', 'buku_nikah', 'akta_lahir'];
+
+        // Proses upload file
+        foreach ($fields as $field) {
+            if (!empty($_FILES[$field]['name'])) {
+                // Siapkan konfigurasi upload
+                $config['upload_path'] = './assets/backend/document/customer/' . $field . '/';
+                $config['allowed_types'] = 'jpeg|jpg|png'; // Jenis file yang diizinkan
+                $config['max_size'] = 4000; // Maksimal 4MB
+                $config['encrypt_name'] = TRUE; // Enkripsi nama file
+
+                $this->upload->initialize($config);
+
+                // Proses upload file
+                if ($this->upload->do_upload($field)) {
+                    // Hapus file lama jika ada
+                    if (!empty($customer->$field)) {
+                        $old_file_path = './assets/backend/document/customer/' . $field . '/' . $customer->$field;
+                        if (file_exists($old_file_path)) {
+                            unlink($old_file_path); // Hapus file lama
+                        }
+                    }
+                    // Simpan nama file baru
+                    $uploaded_files[$field] = $this->upload->data('file_name');
+                } else {
+                    echo json_encode(array("status" => FALSE, "error" => $this->upload->display_errors()));
+                    return;
+                }
+            } else {
+                // Jika tidak ada file yang diupload, gunakan file lama
+                $uploaded_files[$field] = $customer->$field;
+            }
+        }
 
         // Data yang akan disimpan ke dalam database
         $data = array(
@@ -332,13 +373,13 @@ class Customer_pu extends CI_Controller
             'harga' => preg_replace('/\D/', '', $this->input->post('harga')),
             'harga_promo' => preg_replace('/\D/', '', $this->input->post('harga_promo')),
             'tipe_kamar' => $this->input->post('tipe_kamar'),
-            'promo_diskon' => preg_replace('/\D/', '', $this->input->post('promo_diskon')),
-            'paspor' => $this->input->post('paspor'),
-            'kartu_kuning' => $this->input->post('kartu_kuning'),
-            'ktp' => $this->input->post('ktp'),
-            'kk' => $this->input->post('kk'),
-            'buku_nikah' => $this->input->post('buku_nikah'),
-            'akta_lahir' => $this->input->post('akta_lahir'),
+            'promo_diskon' => $this->input->post('promo_diskon'),
+            'paspor' => $uploaded_files['paspor'],
+            'kartu_kuning' => $uploaded_files['kartu_kuning'],
+            'ktp' => $uploaded_files['ktp'],
+            'kk' => $uploaded_files['kk'],
+            'buku_nikah' => $uploaded_files['buku_nikah'],
+            'akta_lahir' => $uploaded_files['akta_lahir'],
             'dp' => preg_replace('/\D/', '', $this->input->post('dp')),
             'pembayaran_1' => preg_replace('/\D/', '', $this->input->post('pembayaran_1')),
             'pembayaran_2' => preg_replace('/\D/', '', $this->input->post('pembayaran_2')),
@@ -347,24 +388,11 @@ class Customer_pu extends CI_Controller
             'akun' => $this->input->post('akun'),
             'pakaian' => $this->input->post('pakaian'),
             'ukuran' => $this->input->post('ukuran'),
-            'kirim' => $this->input->post('kirim'),
-            'perlengkapan' => $this->input->post('perlengkapan'),
+            'kirim_perlengkapan' => $this->input->post('kirim_perlengkapan'),
             'travel' => $this->input->post('travel'),
-            'status' => $this->input->post('status')
+            'status' => $this->input->post('status'),
+            'pas_foto' => $uploaded_files['pas_foto'] // Pas_foto diambil dari array file yang diupload
         );
-
-        // Jika file baru diupload
-        if ($upload['status']) {
-            // Hapus file gambar lama jika ada
-            if ($customer->pas_foto) {
-                $old_file_path = './assets/backend/document/customer/' . $customer->pas_foto;
-                if (file_exists($old_file_path)) {
-                    unlink($old_file_path); // Menghapus file lama
-                }
-            }
-            // Simpan nama file yang baru diupload
-            $data['pas_foto'] = $upload['file_name'];
-        }
 
         // Update data ke database
         $this->db->where('id', $id);
@@ -373,11 +401,62 @@ class Customer_pu extends CI_Controller
         echo json_encode(array("status" => TRUE));
     }
 
-    function delete($id)
-    {
-        $this->M_customer_pu->delete($id);
 
+    public function delete($id)
+    {
+        // Dapatkan data customer berdasarkan ID
+        $customer = $this->M_customer_pu->get_by_id($id); // Pastikan Anda memiliki fungsi ini untuk mendapatkan data customer berdasarkan ID
+
+        // Daftar field yang berisi nama file gambar
+        $fields = ['pas_foto', 'kk', 'ktp', 'buku_nikah', 'paspor', 'akta_lahir', 'kartu_kuning'];
+
+        // Hapus setiap file gambar jika ada
+        foreach ($fields as $field) {
+            if (!empty($customer->$field)) {
+                $file_path = './assets/backend/document/customer/' . $field . '/' . $customer->$field;
+                if (file_exists($file_path)) {
+                    unlink($file_path); // Hapus file dari direktori
+                }
+            }
+        }
+
+        // Hapus data dari database
+        $this->M_customer_pu->delete($id); // Fungsi untuk menghapus data di database
+
+        // Kirim respons sukses
         echo json_encode(array("status" => TRUE));
+    }
+
+
+    public function delete_file()
+    {
+        // Dapatkan ID customer dan nama field dari request
+        $id = $this->input->post('id');
+        $field = $this->input->post('field');
+
+        // Validasi field yang diperbolehkan
+        $allowed_fields = ['pas_foto', 'ktp', 'kk', 'buku_nikah', 'paspor', 'akta_lahir', 'kartu_kuning'];
+        if (!in_array($field, $allowed_fields)) {
+            echo json_encode(['status' => FALSE, 'error' => 'Invalid field']);
+            return;
+        }
+
+        // Ambil data customer berdasarkan ID
+        $customer = $this->M_customer_pu->get_by_id($id);
+
+        // Path file yang akan dihapus
+        $file_path = './assets/backend/document/customer/' . $field . '/' . $customer->$field;
+
+        // Hapus file jika ada
+        if ($customer->$field && file_exists($file_path)) {
+            unlink($file_path);
+        }
+
+        // Update database, set field menjadi string kosong
+        $this->db->where('id', $id);
+        $this->db->update('tbl_customer_pu', [$field => '']);
+
+        echo json_encode(['status' => TRUE]);
     }
 
     public function export_excel()
@@ -418,10 +497,9 @@ class Customer_pu extends CI_Controller
         $sheet->setCellValue('Z1', 'Akun');
         $sheet->setCellValue('AA1', 'Pakaian');
         $sheet->setCellValue('AB1', 'Ukuran');
-        $sheet->setCellValue('AC1', 'Kirim');
-        $sheet->setCellValue('AD1', 'Perlengkapan');
-        $sheet->setCellValue('AF1', 'Tanggal Berangkat');
-        $sheet->setCellValue('AG1', 'Travel');
+        $sheet->setCellValue('AC1', 'Kirim Perlengkapan');
+        $sheet->setCellValue('AD1', 'Tanggal Berangkat');
+        $sheet->setCellValue('AF1', 'Travel');
 
         // Isi data dari database mulai dari baris ke-2
         $row = 2;
@@ -454,11 +532,10 @@ class Customer_pu extends CI_Controller
             $sheet->setCellValue('Z' . $row, $data->akun);
             $sheet->setCellValue('AA' . $row, $data->pakaian);
             $sheet->setCellValue('AB' . $row, $data->ukuran);
-            $sheet->setCellValue('AC' . $row, $data->kirim);
-            $sheet->setCellValue('AD' . $row, $data->perlengkapan);
-            $sheet->setCellValue('AE' . $row, $data->tgl_berangkat);
-            $sheet->setCellValue('AF' . $row, date('Y-m-d', strtotime($data->tgl_berangkat)));
-            $sheet->setCellValue('AG' . $row, $data->travel);
+            $sheet->setCellValue('AC' . $row, $data->kirim_perlengkapan);
+            $sheet->setCellValue('AD' . $row, $data->tgl_berangkat);
+            $sheet->setCellValue('AE' . $row, date('Y-m-d', strtotime($data->tgl_berangkat)));
+            $sheet->setCellValue('AF' . $row, $data->travel);
             $row++;
         }
 
