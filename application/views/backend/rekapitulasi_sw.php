@@ -178,7 +178,7 @@
                 "serverSide": true,
                 "order": [],
                 "ajax": {
-                    "url": "<?php echo site_url('rekapitulasi_pu/get_list') ?>",
+                    "url": "<?php echo site_url('rekapitulasi_sw/get_list') ?>",
                     "type": "POST",
                     "data": function(d) {
                         let tgl_awal = $('#tgl_awal').val();
@@ -228,7 +228,7 @@
                     // $('#totalPengeluaran').text('Rp. ' + totalPengeluaran.toLocaleString('id-ID')); // Format dengan pemisah ribuan
 
                     $.ajax({
-                        "url": "<?php echo site_url('rekapitulasi_pu/get_total') ?>",
+                        "url": "<?php echo site_url('rekapitulasi_sw/get_total') ?>",
                         "type": "POST",
                         "data": {
                             "awal": $('#tgl_awal').val(),
@@ -349,6 +349,6 @@
 
     $('#btn-export-excel').click(function() {
         // Arahkan ke URL controller untuk export Excel
-        window.location.href = "<?= site_url('rekapitulasi_pu/export_excel'); ?>";
+        window.location.href = "<?= site_url('rekapitulasi_sw/export_excel'); ?>";
     });
 </script>
