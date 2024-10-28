@@ -320,7 +320,7 @@ class Customer_pu extends CI_Controller
     {
         // Ambil data customer berdasarkan ID
         $id = $this->input->post('id');
-        $customer = $this->M_customer_pu->get_by_id($id); // Pastikan Anda sudah punya fungsi ini untuk mendapatkan data customer
+        $customer = $this->M_customer_pu->get_by_id($id);
 
         // Inisialisasi array untuk menyimpan nama file yang diupload
         $uploaded_files = [];

@@ -153,7 +153,7 @@
                                         <p id="pas_foto_tidak_ada" style="display: none;"></p>
                                         <div class="form-group" style="margin-bottom: 0;">
                                             <input type="file" class="form-control-file" id="pas_foto" name="pas_foto" style="border: 1px solid rgb(209,211,226); padding: 3px 5px; cursor: pointer; border-radius: 6px">
-                                            <span class="kwitansi-label">Max Size : 3MB</span>
+                                            <span class="kwitansi-label">Max Size : 3MB | jpg, png, jpeg</span>
                                         </div>
                                     </div>
                                 </div>
@@ -757,13 +757,31 @@
                 tgl_berangkat: {
                     required: true,
                 },
+                title: {
+                    required: true,
+                },
                 nama: {
+                    required: true,
+                },
+                jenis_kelamin: {
                     required: true,
                 },
                 no_hp: {
                     required: true,
                 },
                 travel: {
+                    required: true,
+                },
+                asal: {
+                    required: true,
+                },
+                produk: {
+                    required: true,
+                },
+                harga: {
+                    required: true,
+                },
+                promo_diskon: {
                     required: true,
                 },
             },
@@ -774,14 +792,32 @@
                 tgl_berangkat: {
                     required: "Tanggal Berangkat is required",
                 },
+                title: {
+                    required: "Title is required",
+                },
                 nama: {
                     required: "Nama is required",
                 },
+                jenis_kelamin: {
+                    required: "Jenis Kelamin is required",
+                },
                 no_hp: {
-                    required: "Contact Number is required",
+                    required: "No Telp is required",
                 },
                 travel: {
                     required: "Travel is required",
+                },
+                asal: {
+                    required: "Asal is required",
+                },
+                produk: {
+                    required: "Produk is required",
+                },
+                harga: {
+                    required: "Harga is required",
+                },
+                promo_diskon: {
+                    required: "Promo Diskon is required",
                 },
             },
             errorPlacement: function(error, element) {
