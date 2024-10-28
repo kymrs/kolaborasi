@@ -5,12 +5,12 @@ setlocale(LC_ALL, 'id_ID');
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-class Rekapitulasi_pu extends CI_Controller
+class Rekapitulasi_sw extends CI_Controller
 {
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('backend/M_rekapitulasi_pu');
+        $this->load->model('backend/M_rekapitulasi_sw');
         $this->load->model('backend/M_notifikasi');
         $this->M_login->getsecurity();
         date_default_timezone_set('Asia/Jakarta');
@@ -47,17 +47,17 @@ class Rekapitulasi_pu extends CI_Controller
         $akses = $this->M_app->hak_akses($this->session->userdata('id_level'), $this->router->fetch_class());
         ($akses->view_level == 'N' ? redirect('auth') : '');
         $data['add'] = $akses->add_level;
-        $data['total'] = $this->M_rekapitulasi_pu->get_total_pengeluaran();
+        $data['total'] = $this->M_rekapitulasi_sw->get_total_pengeluaran();
 
-        $data['title'] = "backend/rekapitulasi_pu";
-        $data['titleview'] = "Data Rekapitulasi PU";
+        $data['title'] = "backend/rekapitulasi_sw";
+        $data['titleview'] = "Data Rekapitulasi SW";
         $this->load->view('backend/home', $data);
     }
 
     function get_list()
     {
         // INISIAI VARIABLE YANG DIBUTUHKAN
-        $list = $this->M_rekapitulasi_pu->get_datatables();
+        $list = $this->M_rekapitulasi_sw->get_datatables();
         $data = array();
         $no = $_POST['start'];
 
@@ -86,8 +86,8 @@ class Rekapitulasi_pu extends CI_Controller
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_rekapitulasi_pu->count_all(),
-            "recordsFiltered" => $this->M_rekapitulasi_pu->count_filtered(),
+            "recordsTotal" => $this->M_rekapitulasi_sw->count_all(),
+            "recordsFiltered" => $this->M_rekapitulasi_sw->count_filtered(),
             "data" => $data,
         );
         //output dalam format JSON
@@ -96,7 +96,7 @@ class Rekapitulasi_pu extends CI_Controller
 
     function get_total()
     {
-        $output = $this->M_rekapitulasi_pu->get_total_pengeluaran();
+        $output = $this->M_rekapitulasi_sw->get_total_pengeluaran();
 
         //output dalam format JSON
         echo json_encode($output);
@@ -105,8 +105,8 @@ class Rekapitulasi_pu extends CI_Controller
     public function export_excel()
     {
         // Ambil data dari model
-        $prepayment = $this->M_rekapitulasi_pu->get_data_prepayment();
-        $reimbust = $this->M_rekapitulasi_pu->get_data_reimbust();
+        $prepayment = $this->M_rekapitulasi_sw->get_data_prepayment();
+        $reimbust = $this->M_rekapitulasi_sw->get_data_reimbust();
 
         // Inisialisasi Spreadsheet
         $spreadsheet = new Spreadsheet();

@@ -149,9 +149,8 @@
             dateFormat: 'dd-mm-yy',
             onSelect: function(selectedDate) {
                 // Mengatur minimal tanggal yang diperbolehkan untuk tgl_akhir
-                var minimumDate = $('#tgl_awal').datepicker('getDate');
-                localStorage.setItem('minDate', minimumDate.toISOString());
-                $('#tgl_akhir').datepicker('option', 'minDate', minimumDate);
+                var minDate = $('#tgl_awal').datepicker('getDate');
+                $('#tgl_akhir').datepicker('option', 'minDate', minDate);
             }
         });
 
@@ -160,9 +159,8 @@
             dateFormat: 'dd-mm-yy',
             onSelect: function(selectedDate) {
                 // Mengatur maksimal tanggal yang diperbolehkan untuk tgl_awal
-                var maximumDate = $('#tgl_akhir').datepicker('getDate');
-                localStorage.setItem('maxDate', maximumDate.toISOString());
-                $('#tgl_awal').datepicker('option', 'maxDate', maximumDate);
+                var maxDate = $('#tgl_akhir').datepicker('getDate');
+                $('#tgl_awal').datepicker('option', 'maxDate', maxDate);
             }
         });
 
@@ -180,7 +178,7 @@
                 "serverSide": true,
                 "order": [],
                 "ajax": {
-                    "url": "<?php echo site_url('rekapitulasi_pu/get_list') ?>",
+                    "url": "<?php echo site_url('rekapitulasi_sw/get_list') ?>",
                     "type": "POST",
                     "data": function(d) {
                         let tgl_awal = $('#tgl_awal').val();
@@ -230,7 +228,7 @@
                     // $('#totalPengeluaran').text('Rp. ' + totalPengeluaran.toLocaleString('id-ID')); // Format dengan pemisah ribuan
 
                     $.ajax({
-                        "url": "<?php echo site_url('rekapitulasi_pu/get_total') ?>",
+                        "url": "<?php echo site_url('rekapitulasi_sw/get_total') ?>",
                         "type": "POST",
                         "data": {
                             "awal": $('#tgl_awal').val(),
@@ -336,40 +334,6 @@
 
     // Event listener untuk nav tabs
     $('#tgl_btn').on('click', function(e) {
-        var storedMinDateString = localStorage.getItem('minDate');
-        var storedMaxDateString = localStorage.getItem('maxDate');
-
-        var minDate = new Date(storedMinDateString);
-        var maxDate = new Date(storedMaxDateString);
-
-        // Dapatkan hari, bulan, dan tahun
-        var day = String(minDate.getDate()).padStart(2, '0');
-        var day2 = String(maxDate.getDate()).padStart(2, '0');
-        var month = String(minDate.getMonth() + 1).padStart(2, '0'); // getMonth() dimulai dari 0
-        var month2 = String(maxDate.getMonth() + 1).padStart(2, '0'); // getMonth() dimulai dari 0
-        var year = minDate.getFullYear();
-        var year2 = maxDate.getFullYear();
-
-        // Gabungkan dalam format DD-MM-YYYY
-        var formattedDateMin = day + '-' + month + '-' + year;
-        var formattedDateMax = day2 + '-' + month2 + '-' + year2;
-
-        console.log();
-
-        if (formattedDateMin == $('#tgl_awal').val() && formattedDateMax == $('#tgl_akhir').val()) {
-            // Reset tanggal awal dan akhir
-            $('#tgl_awal').val('');
-            $('#tgl_akhir').val('');
-
-            // Reset batas minimal dan maksimal tanggal di datepicker
-            $('#tgl_awal').datepicker('option', 'maxDate', null); // Hapus batas maksimal
-            $('#tgl_akhir').datepicker('option', 'minDate', null); // Hapus batas minimal
-
-            // reset localstorage
-            localStorage.removeItem('minDate');
-            localStorage.removeItem('maxDate');
-        }
-
         e.preventDefault();
         table.ajax.reload(); // Muat ulang data di DataTable saat tab berubah
     });
@@ -385,6 +349,6 @@
 
     $('#btn-export-excel').click(function() {
         // Arahkan ke URL controller untuk export Excel
-        window.location.href = "<?= site_url('rekapitulasi_pu/export_excel'); ?>";
+        window.location.href = "<?= site_url('rekapitulasi_sw/export_excel'); ?>";
     });
 </script>

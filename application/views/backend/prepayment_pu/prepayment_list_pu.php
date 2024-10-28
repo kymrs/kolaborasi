@@ -116,6 +116,7 @@
 
         $('.collapse-item').on('click', function(e) {
             localStorage.removeItem('appFilterStatus'); // Hapus filter yang tersimpan
+            localStorage.removeItem('activeTab'); // Hapus filter yang tersimpan
         })
 
         // Tab click event

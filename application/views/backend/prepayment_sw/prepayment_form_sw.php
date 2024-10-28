@@ -46,9 +46,17 @@
                             <!-- SEBELAH KANAN -->
                             <div class="col-md-6">
                                 <div class="form-group row">
-                                    <label class="col-sm-5">Prepayment</label>
-                                    <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="prepayment" name="prepayment" placeholder="Prepayment for....">
+                                    <label class="col-sm-5">Event</label>
+                                    <div class="row-sm-5" style="margin-left: 14px;">
+                                        <select class="form-control event_sw" id="event" name="event">
+                                            <option value="" selected disabled>Pilih opsi...</option>
+                                            <?php foreach ($events as $event) { ?>
+                                                <option value="<?= $event->id ?>"><?= $event->event_name ?></option>
+                                            <?php } ?>
+                                        </select>
+                                        <button class="btn btn-success btn-sm" type="button" data-toggle="modal" data-target="#staticBackdrop">
+                                            <i class="fa fa-plus" aria-hidden="true"></i>
+                                        </button>
                                     </div>
                                 </div>
                                 <!-- <div class="form-group row">
@@ -110,8 +118,89 @@
     </div>
 </div>
 
+
+<!-- MODAL -->
+<div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">EVENT FORM</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="form_event" action="">
+                    <div class="col">
+                        <div class="form-group row">
+                            <label class="col-sm-2">Event</label>
+                            <input type="hidden" id="event_id" name="event_id">
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control" id="event_name" name="event_name">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="aktif" class="col-sm-2 col-form-label">Active</label>
+                            <div class="col-sm-10 form-inline row ml-1">
+                                <div class="custom-control custom-radio col-sm-2">
+                                    <input class="custom-control-input" type="radio" id="customRadio1" name="is_active" value="1">
+                                    <label for="customRadio1" class="custom-control-label">Yes</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input class="custom-control-input" type="radio" id="customRadio2" name="is_active" value="0" checked>
+                                    <label for="customRadio2" class="custom-control-label">No</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm">
+                                <button type="submit" class="btn btn-success">Submit</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- TABLE EVENT -->
+                <div class="card-body">
+                    <table id="table_event" class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>ID</th>
+                                <th>Event</th>
+                                <th>Active</th>
+                                <th>created</th>
+                                <th>updated</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>No</th>
+                                <th>ID</th>
+                                <th>Event</th>
+                                <th>Active</th>
+                                <th>created</th>
+                                <th>updated</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Understood</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <?php $this->load->view('template/footer'); ?>
 <?php $this->load->view('template/script'); ?>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
     $('#tgl_prepayment').datepicker({
@@ -148,6 +237,54 @@
     });
 
     $(document).ready(function() {
+
+        $('.event_sw').select2();
+
+        table = $('#table_event').DataTable({
+            "responsive": true,
+            "autoWidth": false,
+            // "scrollX": true,
+            "processing": true,
+            "serverSide": true,
+            "order": [],
+            "ajax": {
+                "url": "<?php echo site_url('prepayment_sw/get_list_event') ?>",
+                "type": "POST"
+            },
+            "columnDefs": [{
+                    "targets": [1], // Target the id column (index 1)
+                    "visible": false // Hide the id column
+                }, {
+                    "targets": [],
+                    "className": 'dt-head-nowrap'
+                },
+                {
+                    "targets": [2, 3],
+                    "className": 'dt-body-nowrap'
+                }, {
+                    "targets": [0],
+                    "orderable": false,
+                },
+            ]
+        });
+
+        // modal datatables on click
+        $('#table_event tbody').on('click', 'tr', function() {
+            let data = table.row(this).data();
+            // console.log(data);
+
+            $('#event_id').val(data[1]);
+            $('#event_name').val(data[2]);
+
+            if (data[3] == 'Active') {
+                $('#customRadio1').prop('checked', true);
+                $('#customRadio2').prop('checked', false);
+            } else {
+                $('#customRadio1').prop('checked', false);
+                $('#customRadio2').prop('checked', true);
+            }
+
+        });
 
         // INISIASI VARIABEL JAVASCRIPT/JQUERY
         var id = $('#id').val();
@@ -466,6 +603,40 @@
                             timer: 1500
                         }).then((result) => {
                             location.href = "<?= base_url('prepayment_sw') ?>";
+                        })
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    alert('Error adding / update data');
+                }
+            });
+        });
+
+        //INSER/UPDATE EVENT_SW
+        $("#form_event").submit(function(e) {
+            e.preventDefault();
+            var $form = $(this);
+            if (!$form.valid()) return false;
+            // console.log($form);
+            var url = "<?php echo site_url('prepayment_sw/add_event') ?>";
+
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: $('#form_event').serialize(),
+                dataType: "JSON",
+                success: function(data) {
+                    console.log(data);
+                    if (data.status) //if success close modal and reload ajax table
+                    {
+                        Swal.fire({
+                            position: 'center',
+                            icon: 'success',
+                            title: 'Your data has been saved',
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then((result) => {
+                            location.href = "<?= base_url('prepayment_sw/add_form') ?>";
                         })
                     }
                 },
