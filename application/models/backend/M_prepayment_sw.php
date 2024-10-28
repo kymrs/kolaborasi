@@ -9,16 +9,19 @@ class M_prepayment_sw extends CI_Model
     var $id = 'id';
     var $table = 'tbl_prepayment';
     var $table2 = 'tbl_prepayment_detail';
-    var $column_order = array(null, null, 'kode_prepayment', 'name', 'divisi', 'jabatan', 'tgl_prepayment', 'prepayment', 'total_nominal', 'payment_status', 'status');
-    var $column_search = array('kode_prepayment', 'name', 'divisi', 'jabatan', 'tgl_prepayment', 'prepayment', 'total_nominal', 'payment_status', 'status'); //field yang diizin untuk pencarian
+    var $column_order = array(null, null, 'kode_prepayment', 'name', 'divisi', 'jabatan', 'tgl_prepayment', 'event_name', 'total_nominal', 'payment_status', 'status');
+    var $column_order2 = array(null, 'id', 'event_name', 'is_active', 'created_at', 'updated_at');
+    var $column_search = array('kode_prepayment', 'name', 'divisi', 'jabatan', 'tgl_prepayment', 'event_name', 'total_nominal', 'payment_status', 'status'); //field yang diizin untuk pencarian
+    var $column_search2 = array('id', 'event_name', 'is_active', 'created_at', 'updated_at');
     var $order = array('id' => 'desc');
 
     // UNTUK QUERY DATA TABLE
     function _get_datatables_query()
     {
-        $this->db->select('tbl_prepayment.*, tbl_data_user.name'); // Memilih kolom dari kedua tabel
+        $this->db->select('tbl_prepayment.*, tbl_data_user.name, tbl_event_sw.event_name'); // Memilih kolom dari kedua tabel
         $this->db->from($this->table);
         $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_prepayment.id_user', 'left'); // JOIN dengan tabel tbl_user
+        $this->db->join('tbl_event_sw', 'tbl_prepayment.event = tbl_event_sw.id', 'left');
 
         $i = 0;
 
@@ -120,10 +123,11 @@ class M_prepayment_sw extends CI_Model
 
     public function count_all()
     {
-        $this->db->select('tbl_prepayment.*, tbl_data_user.name'); // Memilih kolom dari kedua tabel
+        $this->db->select('tbl_prepayment.*, tbl_data_user.name, tbl_event_sw.event_name'); // Memilih kolom dari kedua tabel
         $this->db->from($this->table);
         $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_prepayment.id_user', 'left'); // JOIN dengan tabel tbl_user
-        // Tambahkan pemfilteran berdasarkan status
+        $this->db->join('tbl_event_sw', 'tbl_prepayment.event = tbl_event_sw.id', 'left');
+
         // Tambahkan pemfilteran berdasarkan status
         // Tambahkan kondisi jika id_user login sesuai dengan app2_name
         $id_user_logged_in = $this->session->userdata('id_user'); // Mengambil id_user dari sesi pengguna yang login
@@ -230,5 +234,65 @@ class M_prepayment_sw extends CI_Model
     {
         $this->db->where('prepayment_id', $id);
         $this->db->delete($this->table2);
+    }
+
+    public function _get_datatables_query_event()
+    {
+        $this->db->select('id, event_name, is_active, created_at, updated_at')->from('tbl_event_sw');
+
+        $i = 0;
+
+        foreach ($this->column_search2 as $item) { // Pastikan ini adalah column_search2
+            if (!empty($_POST['search']['value'])) {
+                if ($i === 0) {
+                    $this->db->group_start(); // Mulai grup pencarian
+                    $this->db->like('tbl_event_sw.' . $item, $_POST['search']['value']);
+                } else {
+                    $this->db->or_like('tbl_event_sw.' . $item, $_POST['search']['value']);
+                }
+
+                if (count($this->column_search2) - 1 == $i) { // Pastikan ini adalah column_search2
+                    $this->db->group_end(); // Tutup grup pencarian setelah semua kolom
+                }
+            }
+            $i++;
+        }
+
+        // Pastikan bagian order berada di luar grup pencarian
+        if (isset($_POST['order'])) {
+            $this->db->order_by($this->column_order2[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+        } else if (isset($this->order)) {
+            $order = $this->order;
+            $this->db->order_by(key($order), $order[key($order)]);
+        }
+    }
+
+    function get_datatables_event()
+    {
+        $this->_get_datatables_query_event();
+        if (isset($_POST['length']) && $_POST['length'] != -1) {
+            $this->db->limit($_POST['length'], $_POST['start'] ?? 0);  // Tambahkan pengecekan start
+        }
+        $query = $this->db->get();
+        return $query->result();
+    }
+
+    public function count_all_event()
+    {
+        $this->db->select('id, event_name, is_active, created_at, updated_at')->from('tbl_event_sw');
+        return $this->db->count_all_results();  // Perbaikan nama fungsi
+    }
+
+    public function count_filtered_event()
+    {
+        $this->_get_datatables_query_event();  // Panggil fungsi yang benar
+        $query = $this->db->get();
+        return $query->num_rows();
+    }
+
+    public function get_events()
+    {
+        $query = $this->db->select('id, event_name')->from('tbl_event_sw')->get()->result();
+        return $query;
     }
 }

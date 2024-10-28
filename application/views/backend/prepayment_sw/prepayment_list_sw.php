@@ -51,11 +51,11 @@
                                 <th>Action</th>
                                 <th>Status Payment</th>
                                 <th>Kode Prepayment</th>
+                                <th>Event</th>
                                 <th>Nama</th>
                                 <th>Divisi</th>
                                 <th>Jabatan</th>
                                 <th>Tanggal Pengajuan</th>
-                                <th>Prepayment</th>
                                 <th>Total Nominal</th>
                                 <th>Status</th>
                             </tr>
@@ -68,11 +68,11 @@
                                 <th>Action</th>
                                 <th>Status Payment</th>
                                 <th>Kode Prepayment</th>
+                                <th>Event</th>
                                 <th>Nama</th>
                                 <th>Divisi</th>
                                 <th>Jabatan</th>
                                 <th>Tanggal Pengajuan</th>
-                                <th>Prepayment</th>
                                 <th>Total Nominal</th>
                                 <th>Status</th>
                             </tr>

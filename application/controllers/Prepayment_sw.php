@@ -60,6 +60,40 @@ class Prepayment_sw extends CI_Controller
         $this->load->view('backend/home', $data);
     }
 
+    public function get_list_event()
+    {
+        $queries = $this->M_prepayment_sw->get_datatables_event();
+        $no = $_POST['start'] ?? 0;  // Tambahkan pengecekan start
+
+        $data = array();  // Inisialisasi variabel data
+
+        foreach ($queries as $query) {
+
+            $is_active = $query->is_active == 1 ? 'Active' : 'Not Active';
+            $updated_at = isset($query->updated_at) ? $query->updated_at : '-';
+
+            $no++;
+            $row = array();
+            $row[] = $no;
+            $row[] = $query->id;
+            $row[] = $query->event_name;
+            $row[] = $is_active;
+            $row[] = $query->created_at;
+            $row[] = $updated_at;
+
+            $data[] = $row;
+        }
+
+        $output = array(
+            "draw" => $_POST['draw'] ?? 1,  // Tambahkan pengecekan draw
+            "recordsTotal" => $this->M_prepayment_sw->count_all_event(),
+            "recordsFiltered" => $this->M_prepayment_sw->count_filtered_event(),
+            "data" => $data,
+        );
+        // Output dalam format JSON
+        echo json_encode($output);
+    }
+
     function get_list()
     {
         // INISIAI VARIABLE YANG DIBUTUHKAN
@@ -118,11 +152,11 @@ class Prepayment_sw extends CI_Controller
                 $row[] = '<div class="text-center"><i class="fas fa-times" style="color: red;"></i></div>'; // Ikon unchecklist merah di tengah
             }
             $row[] = strtoupper($field->kode_prepayment);
+            $row[] = $field->event_name;
             $row[] = $field->name;
             $row[] = strtoupper($field->divisi);
             $row[] = strtoupper($field->jabatan);
             $row[] = $this->tgl_indo(date("Y-m-j", strtotime($field->tgl_prepayment)));
-            $row[] = $field->prepayment;
             $row[] = $formatted_nominal;
             // $row[] = $field->tujuan;
             $row[] = $status;
@@ -165,6 +199,7 @@ class Prepayment_sw extends CI_Controller
     public function add_form()
     {
         $data['notif'] = $this->M_notifikasi->pending_notification();
+        $data['events'] = $this->M_prepayment_sw->get_events();
         $data['id'] = 0;
         $data['title'] = 'backend/prepayment_sw/prepayment_form_sw';
         $data['title_view'] = 'Prepayment Form';
@@ -195,6 +230,7 @@ class Prepayment_sw extends CI_Controller
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = $id;
         $data['aksi'] = 'update';
+        $data['events'] = $this->M_prepayment_sw->get_events();
         $data['title_view'] = "Edit Data Prepayment";
         $data['title'] = 'backend/prepayment_sw/prepayment_form_sw';
         $this->load->view('backend/home', $data);
@@ -241,7 +277,7 @@ class Prepayment_sw extends CI_Controller
         $data = array(
             'kode_prepayment' => $kode_prepayment,
             'id_user' => $id,
-            'prepayment' => $this->input->post('prepayment'),
+            'event' => $this->input->post('event'),
             'tujuan' => $this->input->post('tujuan'),
             'tgl_prepayment' => date('Y-m-d', strtotime($this->input->post('tgl_prepayment'))),
             'total_nominal' => $this->input->post('total_nominal'),
@@ -300,7 +336,7 @@ class Prepayment_sw extends CI_Controller
     {
         $data = array(
             'kode_prepayment' => $this->input->post('kode_prepayment'),
-            'prepayment' => $this->input->post('prepayment'),
+            'event' => $this->input->post('event'),
             'tujuan' => $this->input->post('tujuan'),
             'tgl_prepayment' => date('Y-m-d', strtotime($this->input->post('tgl_prepayment'))),
             'total_nominal' => $this->input->post('total_nominal'),
@@ -346,6 +382,24 @@ class Prepayment_sw extends CI_Controller
                 $this->db->replace('tbl_prepayment_detail', $data2[$i - 1]);
             }
         }
+        echo json_encode(array("status" => TRUE));
+    }
+
+    public function add_event()
+    {
+        $data = array( // Ubah $data[] menjadi $data
+            'id' => $this->input->post('event_id'),
+            'event_name' => $this->input->post('event_name'),
+            'is_active' => $this->input->post('is_active')
+        );
+
+        if ($this->input->post('event_id') != null) {
+            $data['updated_at'] = date('Y-m-d H:i:s');
+        }
+
+        // Menggunakan db->replace untuk memasukkan atau menggantikan data
+        $this->db->replace('tbl_event_sw', $data);
+
         echo json_encode(array("status" => TRUE));
     }
 
