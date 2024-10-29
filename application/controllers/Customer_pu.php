@@ -499,7 +499,7 @@ class Customer_pu extends CI_Controller
         $sheet->setCellValue('AB1', 'Ukuran');
         $sheet->setCellValue('AC1', 'Kirim Perlengkapan');
         $sheet->setCellValue('AD1', 'Tanggal Berangkat');
-        $sheet->setCellValue('AF1', 'Travel');
+        $sheet->setCellValue('AE1', 'Travel');
 
         // Isi data dari database mulai dari baris ke-2
         $row = 2;
@@ -513,10 +513,29 @@ class Customer_pu extends CI_Controller
             $sheet->setCellValue('G' . $row, $data->status);
             $sheet->setCellValue('H' . $row, $data->asal);
             $sheet->setCellValue('I' . $row, $data->produk);
+
+            // Kolom yang memerlukan format Rupiah
             $sheet->setCellValue('J' . $row, $data->harga);
             $sheet->setCellValue('K' . $row, $data->harga_promo);
-            $sheet->setCellValue('L' . $row, $data->tipe_kamar);
             $sheet->setCellValue('M' . $row, $data->promo_diskon);
+            $sheet->setCellValue('U' . $row, $data->dp);
+            $sheet->setCellValue('V' . $row, $data->pembayaran_1);
+            $sheet->setCellValue('W' . $row, $data->pembayaran_2);
+            $sheet->setCellValue('X' . $row, $data->pelunasan);
+            $sheet->setCellValue('Y' . $row, $data->cashback);
+
+            // Tetapkan format Rupiah pada kolom yang memerlukan
+            $sheet->getStyle('J' . $row)->getNumberFormat()->setFormatCode('#,##0');
+            $sheet->getStyle('K' . $row)->getNumberFormat()->setFormatCode('#,##0');
+            $sheet->getStyle('M' . $row)->getNumberFormat()->setFormatCode('#,##0');
+            $sheet->getStyle('U' . $row)->getNumberFormat()->setFormatCode('#,##0');
+            $sheet->getStyle('V' . $row)->getNumberFormat()->setFormatCode('#,##0');
+            $sheet->getStyle('W' . $row)->getNumberFormat()->setFormatCode('#,##0');
+            $sheet->getStyle('X' . $row)->getNumberFormat()->setFormatCode('#,##0');
+            $sheet->getStyle('Y' . $row)->getNumberFormat()->setFormatCode('#,##0');
+
+            // Kolom lainnya
+            $sheet->setCellValue('L' . $row, $data->tipe_kamar);
             $sheet->setCellValue('N' . $row, $data->paspor);
             $sheet->setCellValue('O' . $row, $data->kartu_kuning);
             $sheet->setCellValue('P' . $row, $data->ktp);
@@ -524,19 +543,18 @@ class Customer_pu extends CI_Controller
             $sheet->setCellValue('R' . $row, $data->buku_nikah);
             $sheet->setCellValue('S' . $row, $data->akta_lahir);
             $sheet->setCellValue('T' . $row, $data->pas_foto);
-            $sheet->setCellValue('U' . $row, $data->dp);
-            $sheet->setCellValue('V' . $row, $data->pembayaran_1);
-            $sheet->setCellValue('W' . $row, $data->pembayaran_2);
-            $sheet->setCellValue('X' . $row, $data->pelunasan);
-            $sheet->setCellValue('Y' . $row, $data->cashback);
             $sheet->setCellValue('Z' . $row, $data->akun);
             $sheet->setCellValue('AA' . $row, $data->pakaian);
             $sheet->setCellValue('AB' . $row, $data->ukuran);
             $sheet->setCellValue('AC' . $row, $data->kirim_perlengkapan);
             $sheet->setCellValue('AD' . $row, $data->tgl_berangkat);
-            $sheet->setCellValue('AE' . $row, date('Y-m-d', strtotime($data->tgl_berangkat)));
-            $sheet->setCellValue('AF' . $row, $data->travel);
+            $sheet->setCellValue('AE' . $row, $data->travel);
             $row++;
+        }
+
+        // Autosize untuk setiap kolom dari A hingga AE setelah data diisi
+        foreach (range('A', 'AE') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
         }
 
         // Buat writer untuk export ke Excel
@@ -548,7 +566,7 @@ class Customer_pu extends CI_Controller
         header('Cache-Control: max-age=0');
 
         // Simpan file ke output
-        $writer->save('php://output');;
+        $writer->save('php://output');
         exit;
     }
 }

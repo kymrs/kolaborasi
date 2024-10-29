@@ -162,11 +162,12 @@
                                                     <th>No</th>
                                                     <th style="display: none">Action</th>
                                                     <th>Kode Prepayment</th>
+                                                    <th>Event</th>
                                                     <th>Nama</th>
                                                     <th>Divisi</th>
                                                     <th>Jabatan</th>
                                                     <th>Tanggal Pengajuan</th>
-                                                    <th>Prepayment</th>
+                                                    <th>Tujuan</th>
                                                     <th>Nominal</th>
                                                 </tr>
                                             </thead>
@@ -177,11 +178,12 @@
                                                     <th>No</th>
                                                     <th style="display: none">Action</th>
                                                     <th>Kode Prepayment</th>
+                                                    <th>Event</th>
                                                     <th>Nama</th>
                                                     <th>Divisi</th>
                                                     <th>Jabatan</th>
                                                     <th>Tanggal Pengajuan</th>
-                                                    <th>Prepayment</th>
+                                                    <th>Tujuan</th>
                                                     <th>Nominal</th>
                                                 </tr>
                                             </tfoot>
@@ -377,12 +379,12 @@
             $('#kode_prepayment_input').val(data[2]);
             // $('#nama').val(data[3]);
             $('#departemenPrepayment').val(data[4]);
-            $('#jabatan').val(data[5]);
+            // $('#jabatan').val(data[5]);
             // $('#tgl_pengajuan').val(data[6]);
-            $('#jumlah_prepayment').val(data[8]);
-            var cleanedValue = data[8].replace(/\./g, '');
+            $('#jumlah_prepayment').val(data[9]);
+            var cleanedValue = data[9].replace(/\./g, '');
             $('#hidden_jumlah_prepayment').val(cleanedValue);
-            $('#tujuan').val(data[7]);
+            $('#tujuan').val(data[8]);
 
             // Tutup modal setelah data dipilih
             $('#pelaporanModal').modal('hide');

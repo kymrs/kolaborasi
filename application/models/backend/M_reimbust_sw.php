@@ -15,14 +15,14 @@ class M_reimbust_sw extends CI_Model
 
     // Deklarasi
     var $table3 = 'tbl_deklarasi'; //nama tabel dari database
-    var $column_order2 = array(null, null, 'kode_deklarasi', 'tgl_deklarasi', 'name', 'jabatan', 'nama_dibayar', 'tujuan', 'sebesar', 'status');
+    var $column_order2 = array(null, null, 'kode_deklarasi', 'tgl_deklarasi', 'name', 'jabatan', 'nama_dibayar', 'tujuan', 'sebesar', 'status',);
     var $column_search2 = array('kode_deklarasi', 'tgl_deklarasi', 'name', 'jabatan', 'nama_dibayar', 'tujuan', 'sebesar', 'status'); //field yang diizin untuk pencarian 
     var $order2 = array('id' => 'desc'); // default order 
 
     // Prepayment
     var $table4 = 'tbl_prepayment';
-    var $column_order3 = array(null, null, 'kode_prepayment', 'name', 'divisi', 'jabatan', 'tgl_prepayment', 'prepayment', 'total_nominal', 'status');
-    var $column_search3 = array('kode_prepayment', 'name', 'divisi', 'jabatan', 'tgl_prepayment', 'prepayment', 'total_nominal', 'status'); //field yang diizin untuk pencarian
+    var $column_order3 = array(null, null, 'kode_prepayment', 'event', 'name', 'divisi', 'jabatan', 'tgl_prepayment', 'total_nominal', 'status');
+    var $column_search3 = array('kode_prepayment', 'event', 'name', 'divisi', 'jabatan', 'tgl_prepayment', 'total_nominal', 'status'); //field yang diizin untuk pencarian
     var $order3 = array('id' => 'desc');
 
     public function __construct()
