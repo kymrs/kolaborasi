@@ -104,9 +104,13 @@ class Rekapitulasi_pu extends CI_Controller
 
     public function export_excel()
     {
+        // Ambil parameter tanggal dari URL
+        $tgl_awal = $this->input->get('tgl_awal');
+        $tgl_akhir = $this->input->get('tgl_akhir');
+
         // Ambil data dari model
-        $prepayment = $this->M_rekapitulasi_pu->get_data_prepayment();
-        $reimbust = $this->M_rekapitulasi_pu->get_data_reimbust();
+        $prepayment = $this->M_rekapitulasi_pu->get_data_prepayment($tgl_awal, $tgl_akhir);
+        $reimbust = $this->M_rekapitulasi_pu->get_data_reimbust($tgl_awal, $tgl_akhir);
 
         // Inisialisasi Spreadsheet
         $spreadsheet = new Spreadsheet();

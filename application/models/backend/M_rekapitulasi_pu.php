@@ -343,7 +343,7 @@ class M_rekapitulasi_pu extends CI_Model
         return $data;
     }
 
-    function get_data_prepayment()
+    function get_data_prepayment($tgl_awal, $tgl_akhir)
     {
         $this->db->select('a.id, a.kode_prepayment, a.tgl_prepayment, a.prepayment, a.total_nominal');
         $this->db->from('tbl_prepayment_pu AS a');
@@ -351,17 +351,47 @@ class M_rekapitulasi_pu extends CI_Model
         $this->db->where('a.payment_status', 'paid');
         $this->db->where('b.kode_prepayment IS NULL');
 
+        // Filter by date range if needed
+        if (!empty($tgl_awal) && !empty($tgl_akhir)) {
+
+            $this->db->group_start();
+
+            if ($tgl_awal == $tgl_akhir) {
+                $this->db->where('a.tgl_prepayment =', $tgl_awal);
+            } else {
+                $this->db->where('a.tgl_prepayment >=', $tgl_awal);
+                $this->db->where('a.tgl_prepayment <=', $tgl_akhir);
+            }
+
+            $this->db->group_end();
+        }
+
         $query = $this->db->get(); // Simpan hasil query
         return $query->result(); // Kembalikan hasil dalam bentuk object
     }
 
-    function get_data_reimbust()
+    function get_data_reimbust($tgl_awal, $tgl_akhir)
     {
         $this->db->select('a.id, a.kode_reimbust, a.tgl_pengajuan, a.sifat_pelaporan, SUM(b.jumlah) AS total_nominal');
         $this->db->from('tbl_reimbust_pu AS a');
         $this->db->join('tbl_reimbust_detail_pu AS b', 'a.id = b.reimbust_id', 'inner');
         $this->db->where('a.payment_status', 'paid');
         $this->db->group_by('a.id');
+
+        // Filter by date range if needed
+        if (!empty($tgl_awal) && !empty($tgl_akhir)) {
+
+            $this->db->group_start();
+
+            if ($tgl_awal == $tgl_akhir) {
+                $this->db->where('a.tgl_pengajuan =', $tgl_awal);
+            } else {
+                $this->db->where('a.tgl_pengajuan >=', $tgl_awal);
+                $this->db->where('a.tgl_pengajuan <=', $tgl_akhir);
+            }
+
+            $this->db->group_end();
+        }
 
         $query = $this->db->get();
         return $query->result();
