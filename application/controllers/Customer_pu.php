@@ -547,14 +547,16 @@ class Customer_pu extends CI_Controller
             $sheet->setCellValue('AA' . $row, $data->pakaian);
             $sheet->setCellValue('AB' . $row, $data->ukuran);
             $sheet->setCellValue('AC' . $row, $data->kirim_perlengkapan);
-            $sheet->setCellValue('AD' . $row, $data->tgl_berangkat);
+
+            // Format tanggal berangkat menjadi dd/mm/yyyy
+            $sheet->setCellValue('AD' . $row, date('d/m/Y', strtotime($data->tgl_berangkat)));
             $sheet->setCellValue('AE' . $row, $data->travel);
             $row++;
         }
 
-        // Autosize untuk setiap kolom dari A hingga AE setelah data diisi
-        foreach (range('A', 'AE') as $col) {
-            $sheet->getColumnDimension($col)->setAutoSize(true);
+        // Gunakan metode calculateColumnWidths untuk otomatis mengatur lebar kolom
+        foreach ($sheet->getColumnIterator() as $column) {
+            $sheet->getColumnDimension($column->getColumnIndex())->setAutoSize(true);
         }
 
         // Buat writer untuk export ke Excel
