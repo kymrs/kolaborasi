@@ -153,7 +153,7 @@
                                         <p id="pas_foto_tidak_ada" style="display: none;"></p>
                                         <div class="form-group" style="margin-bottom: 0;">
                                             <input type="file" class="form-control-file" id="pas_foto" name="pas_foto" style="border: 1px solid rgb(209,211,226); padding: 3px 5px; cursor: pointer; border-radius: 6px">
-                                            <span class="kwitansi-label">Max Size : 3MB | jpg, png, jpeg</span>
+                                            <span class="kwitansi-label">Max Size : 3MB</span>
                                         </div>
                                     </div>
                                 </div>

@@ -8,15 +8,39 @@ class M_customer_pu extends CI_Model
     // INISIASI VARIABLE
     var $id = 'id';
     var $table = 'tbl_customer_pu';
-    var $column_order = array(null, null, 'group_id', 'customer_id', 'title', 'nama', 'jenis_kelamin', 'no_hp', 'status', 'asal', 'produk', 'harga', 'harga_promo', 'tipe_kamar', 'promo_diskon', 'paspor', 'kartu_kuning', 'ktp', 'kk', 'buku_nikah', 'akta_lahir', 'pas_foto', 'dp', 'pembayaran_1', 'pembayaran_2', 'pelunasan', 'cashback', 'akun', 'pakaian',  'ukuran', 'kirim_perlengkapan', 'tgl_berangkat', 'travel');
-    var $column_search = array('group_id', 'customer_id', 'title', 'nama', 'jenis_kelamin', 'no_hp', 'status', 'asal', 'produk', 'harga', 'harga_promo', 'tipe_kamar', 'promo_diskon', 'paspor', 'kartu_kuning', 'ktp', 'kk', 'buku_nikah', 'akta_lahir', 'pas_foto', 'dp', 'pembayaran_1', 'pembayaran_2',  'pelunasan', 'cashback',  'akun', 'pakaian',  'ukuran', 'kirim_perlengkapan', 'tgl_berangkat', 'travel'); //field yang diizin untuk pencarian
+    var $column_order = array(null, null, 'group_id', 'nama', 'jenis_kelamin', 'no_hp', 'asal', 'produk', 'tgl_berangkat', 'travel');
+    var $column_search = array('group_id', 'nama', 'jenis_kelamin', 'no_hp', 'asal', 'produk', 'tgl_berangkat', 'travel'); //field yang diizin untuk pencarian
     var $order = array('id' => 'desc');
+
+    function tgl_indo($tanggal)
+    {
+        $bulan = array(
+            1 =>   'Januari',
+            'Februari',
+            'Maret',
+            'April',
+            'Mei',
+            'Juni',
+            'Juli',
+            'Agustus',
+            'September',
+            'Oktober',
+            'November',
+            'Desember'
+        );
+        $pecahkan = explode('-', $tanggal);
+
+        // variabel pecahkan 0 = tanggal
+        // variabel pecahkan 1 = bulan
+        // variabel pecahkan 2 = tahun
+
+        return $pecahkan[2] . ' ' . $bulan[(int)$pecahkan[1]] . ' ' . $pecahkan[0];
+    }
 
     // UNTUK QUERY DATA TABLE
     function _get_datatables_query()
     {
         $this->db->from($this->table);
-        $this->db->order_by('group_id', 'DESC');
 
         $i = 0;
 
@@ -28,14 +52,13 @@ class M_customer_pu extends CI_Model
                 if ($i === 0) // looping awal
                 {
                     $this->db->group_start();
-                    $this->db->like('tbl_customer_pu.' . $item, $_POST['search']['value']);
+                    $this->db->like($item, $_POST['search']['value']);
                 } else {
-                    $this->db->or_like('tbl_customer_pu.' . $item, $_POST['search']['value']);
+                    $this->db->or_like($item, $_POST['search']['value']);
                 }
 
-                if (count($this->column_search) - 1 == $i) {
+                if (count($this->column_search) - 1 == $i)
                     $this->db->group_end();
-                }
             }
             $i++;
         }
