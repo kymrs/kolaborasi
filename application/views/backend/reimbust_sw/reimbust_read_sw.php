@@ -433,6 +433,35 @@
                 });
             });
 
+            $('#appBtn3').click(function() {
+                $('#app_keterangan').attr('name', 'app4_keterangan').attr('id', 'app4_keterangan');
+                $('#app_status').attr('name', 'app4_status').attr('id', 'app4_status');
+                $('#approvalForm').attr('action', '<?= site_url('reimbust_sw/approve3') ?>');
+
+                $.ajax({
+                    url: "<?php echo site_url('reimbust_sw/edit_data') ?>/" + id,
+                    type: "GET",
+                    dataType: "JSON",
+                    success: function(data) {
+                        var nama2, date2, status2, keterangan2;
+                        if (data['master']['app4_status'] == 'waiting') {
+                            $('#app4_status').val();
+                            $('#app4_keterangan').val();
+                        } else {
+                            nama2 = data['master']['app4_name'];
+                            status2 = data['master']['app4_status'];
+                            keterangan2 = data['master']['app4_keterangan'];
+                            $('#app4_status').val(status2);
+                            $('#app2_keterangan').val(keterangan2);
+                            // $('#note_id').append(`<p>* ${keterangan2}</p>`);
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert('Error get data from ajax');
+                    }
+                });
+            });
+
             $('#paymentBtn').click(function() {
                 $('#paymentForm').attr('action', '<?= site_url('reimbust_sw/payment') ?>');
 
@@ -476,7 +505,8 @@
                     $('#kode_reimbust').html(data['master']['kode_prepayment'] ? data['master']['kode_prepayment'] : '-');
                     $('#jumlah_prepayment').html(data['master']['jumlah_prepayment'].replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
                     if ((data['master']['app_keterangan'] !== null && data['master']['app_keterangan'] !== '') ||
-                        (data['master']['app2_keterangan'] !== null && data['master']['app2_keterangan'] !== '')) {
+                        (data['master']['app2_keterangan'] !== null && data['master']['app2_keterangan'] !== '') ||
+                        (data['master']['app4_keterangan'] !== null && data['master']['app4_keterangan'] !== '')) {
                         $('#keterangan').append(`<span>Keterangan :</span>`);
                     }
                     if (data['master']['app_keterangan'] != null && data['master']['app_keterangan'] != '') {
@@ -484,6 +514,9 @@
                     }
                     if (data['master']['app2_keterangan'] != null && data['master']['app2_keterangan'] != '') {
                         $('#keterangan').append(`<span class="form-control-plaintext">*(${data['master']['app2_name']}) ${data['master']['app2_keterangan']}</span>`);
+                    }
+                    if (data['master']['app4_keterangan'] != null && data['master']['app4_keterangan'] != '') {
+                        $('#keterangan').append(`<span class="form-control-plaintext">*(${data['master']['app4_name']}) ${data['master']['app4_keterangan']}</span>`);
                     }
 
                     // DATA APPROVAL REIMBUST

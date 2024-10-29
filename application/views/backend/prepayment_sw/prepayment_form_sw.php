@@ -54,9 +54,11 @@
                                                 <option value="<?= $event->id ?>"><?= $event->event_name ?></option>
                                             <?php } ?>
                                         </select>
-                                        <button class="btn btn-success btn-sm" type="button" data-toggle="modal" data-target="#staticBackdrop">
-                                            <i class="fa fa-plus" aria-hidden="true"></i>
-                                        </button>
+                                        <?php if (in_array($hak_akses, [1])) { ?>
+                                            <button class="btn btn-success btn-sm" type="button" data-toggle="modal" data-target="#staticBackdrop">
+                                                <i class="fa fa-plus" aria-hidden="true"></i>
+                                            </button>
+                                        <?php } ?>
                                     </div>
                                 </div>
                                 <!-- <div class="form-group row">
@@ -120,7 +122,7 @@
 
 
 <!-- MODAL -->
-<div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+<div class="modal fade" id="staticBackdrop" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -191,7 +193,6 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Understood</button>
             </div>
         </div>
     </div>

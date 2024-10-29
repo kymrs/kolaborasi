@@ -10,7 +10,7 @@ class M_notifikasi extends CI_Model
         $id = $this->session->userdata('id_user');
         $app = $this->db->select('name')->from('tbl_data_user')->where('id_user', $id)->get()->row('name');
         $data['notif_pending'] = [
-            'prepayment_sw' => $this->db->select('id')->from('tbl_prepayment')->where('app_name', $app)->where('app_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows(),
+            'prepayment_sw' => $this->db->select('id')->from('tbl_prepayment')->where('app4_name', $app)->where('app4_status', 'waiting')->or_where('app_name', $app)->where('app4_status', 'approved')->where('app_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows(),
             'prepayment_pu' => $this->db->select('id')->from('tbl_prepayment_pu')->where('app_name', $app)->where('app_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows(),
             'prepayment_pw' => $this->db->select('id')->from('tbl_prepayment_pw')->where('app_name', $app)->where('app_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows(),
             'reimbust_sw' => $this->db->select('id')->from('tbl_reimbust')->where('app_name', $app)->where('app_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows(),

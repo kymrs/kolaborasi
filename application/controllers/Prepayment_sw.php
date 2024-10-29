@@ -55,6 +55,7 @@ class Prepayment_sw extends CI_Controller
             ->from('tbl_prepayment')
             ->where('app_name', $name)
             ->or_where('app2_name', $name)
+            ->or_where('app4_name', $name)
             ->get()
             ->row('total_approval');
         $this->load->view('backend/home', $data);
@@ -125,20 +126,26 @@ class Prepayment_sw extends CI_Controller
                 $action = $action_read . $action_print;
             } elseif ($field->id_user != $this->session->userdata('id_user') && $field->app2_name == $fullname) {
                 $action = $action_read . $action_print;
+            } elseif ($field->id_user != $this->session->userdata('id_user') && $field->app4_name == $fullname) {
+                $action = $action_read . $action_print;
             } elseif (in_array($field->status, ['rejected', 'approved'])) {
                 $action = $action_read . $action_print;
-            } elseif ($field->app_status == 'revised' || $field->app2_status == 'revised') {
+            } elseif ($field->app_status == 'revised' || $field->app2_status == 'revised' || $field->app4_status == 'revised') {
                 $action = $action_read . $action_edit . $action_print;
-            } elseif ($field->app_status == 'approved') {
+            } elseif ($field->app4_status == 'approved') {
                 $action = $action_read . $action_print;
             } else {
                 $action = $action_read . $action_edit . $action_delete . $action_print;
             }
 
             //MENENSTUKAN SATTSU PROGRESS PENGAJUAN PERMINTAAN
-            $status = $field->app_status == 'approved' && $field->app2_status == 'waiting'
-                ? $field->status . ' (' . $field->app_name . ')'
-                : $field->status;
+            if ($field->app_status == 'approved' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
+                $status = $field->status . ' (' . $field->app_name . ')';
+            } elseif ($field->app4_status == 'approved' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
+                $status = $field->status . ' (' . $field->app4_name . ')';
+            } else {
+                $status = $field->status;
+            }
 
 
             $formatted_nominal = number_format($field->total_nominal, 0, ',', '.');
@@ -200,6 +207,7 @@ class Prepayment_sw extends CI_Controller
     {
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['events'] = $this->M_prepayment_sw->get_events();
+        $data['hak_akses'] = $this->session->userdata('id_level');
         $data['id'] = 0;
         $data['title'] = 'backend/prepayment_sw/prepayment_form_sw';
         $data['title_view'] = 'Prepayment Form';
@@ -229,6 +237,7 @@ class Prepayment_sw extends CI_Controller
     {
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = $id;
+        $data['hak_akses'] = $this->session->userdata('id_level');
         $data['aksi'] = 'update';
         $data['events'] = $this->M_prepayment_sw->get_events();
         $data['title_view'] = "Edit Data Prepayment";
@@ -301,6 +310,11 @@ class Prepayment_sw extends CI_Controller
                 ->where('id_user', $approval->app2_id)
                 ->get()
                 ->row('name'),
+            'app4_name' => $this->db->select('name')
+                ->from('tbl_data_user')
+                ->where('id_user', $approval->app4_id)
+                ->get()
+                ->row('name'),
             'created_at' => date('Y-m-d H:i:s')
         );
 
@@ -346,6 +360,9 @@ class Prepayment_sw extends CI_Controller
             'app2_status' => 'waiting',
             'app2_date' => null,
             'app2_keterangan' => null,
+            'app4_status' => 'waiting',
+            'app4_date' => null,
+            'app4_keterangan' => null,
             'status' => 'on-process'
         );
         $this->db->where('id', $this->input->post('id'));
@@ -412,6 +429,30 @@ class Prepayment_sw extends CI_Controller
     }
 
     //APPROVE DATA
+    public function approve3()
+    {
+        $data = array(
+            'app4_keterangan' => $this->input->post('app4_keterangan'),
+            'app4_status' => $this->input->post('app4_status'),
+            'app4_date' => date('Y-m-d H:i:s'),
+        );
+
+        // UPDATE STATUS DEKLARASI
+        if ($this->input->post('app4_status') === 'revised') {
+            $data['status'] = 'revised';
+        } elseif ($this->input->post('app4_status') === 'approved') {
+            $data['status'] = 'on-process';
+        } elseif ($this->input->post('app4_status') === 'rejected') {
+            $data['status'] = 'rejected';
+        }
+
+        //UPDATE APPROVAL PERTAMA
+        $this->db->where('id', $this->input->post('hidden_id'));
+        $this->db->update('tbl_prepayment', $data);
+
+        echo json_encode(array("status" => TRUE));
+    }
+
     public function approve()
     {
         $data = array(
@@ -477,7 +518,7 @@ class Prepayment_sw extends CI_Controller
         $data['app2_status'] = strtoupper($data['master']->app2_status);
 
         // Format tgl_prepayment to Indonesian date
-        $tanggal = $data['master']->prepayment;
+        $tanggal = $data['master']->tgl_prepayment;
         $formatted_date = date('d F Y', strtotime($tanggal));
         $months = [
             'January' => 'Januari',
@@ -517,9 +558,9 @@ class Prepayment_sw extends CI_Controller
         $pdf->Cell(50, 10, $data['master']->divisi, 0, 1);
 
         // $pdf->SetX(46); // Tetap di posisi yang sama untuk elemen lainnya
-        $pdf->Cell(30, 10, 'Prepayment', 0, 0);
+        $pdf->Cell(30, 10, 'Event', 0, 0);
         $pdf->Cell(5, 10, ':', 0, 0);
-        $pdf->Cell(50, 10, $data['master']->prepayment, 0, 1);
+        $pdf->Cell(50, 10, $data['master']->event, 0, 1);
         $pdf->Ln(8);
 
         // Form Title
@@ -611,6 +652,7 @@ class Prepayment_sw extends CI_Controller
 
         // Membuat header tabel
         $pdf->Cell(63, 8.5, 'Yang Melakukan', 1, 0, 'C');
+        $pdf->Cell(63, 8.5, 'Kapten', 1, 0, 'C');
         $pdf->Cell(63, 8.5, 'Mengetahui', 1, 0, 'C');
         $pdf->Cell(63, 8.5, 'Menyetujui', 1, 1, 'C');
 
@@ -624,11 +666,13 @@ class Prepayment_sw extends CI_Controller
 
         // Baris pertama (Status)
         $pdf->Cell(63, 5, 'CREATED', 'LR', 0, 'C');
+        $pdf->Cell(63, 5, strtoupper($data['master']->app4_status), 0, 0, 'C');
         $pdf->Cell(63, 5, strtoupper($data['master']->app_status), 0, 0, 'C');
         $pdf->Cell(63, 5, strtoupper($data['master']->app2_status), 'LR', 1, 'C');
 
         // Baris kedua (Tanggal)
         $pdf->Cell(63, 5, $data['master']->created_at, 'LR', 0, 'C');
+        $pdf->Cell(63, 5, $data['master']->app4_date, 0, 0, 'C');
         $pdf->Cell(63, 5, $data['master']->app_date, 0, 0, 'C');
         $pdf->Cell(63, 5, $data['master']->app2_date, 'LR', 1, 'C');
 
@@ -642,6 +686,7 @@ class Prepayment_sw extends CI_Controller
 
         // Baris ketiga (Nama pengguna)
         $pdf->Cell(63, 8.5, $data['user'], 1, 0, 'C');
+        $pdf->Cell(63, 8.5, $data['master']->app4_name, 1, 0, 'C');
         $pdf->Cell(63, 8.5, $data['master']->app_name, 1, 0, 'C');
         $pdf->Cell(63, 8.5, $data['master']->app2_name, 1, 1, 'C');
 

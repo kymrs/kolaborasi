@@ -902,6 +902,9 @@ class Reimbust_sw extends CI_Controller
             'app2_status' => 'waiting',
             'app2_date' => null,
             'app2_keterangan' => null,
+            'app4_status' => 'waiting',
+            'app4_date' => null,
+            'app4_keterangan' => null,
             'status' => 'on-process'
         );
 
@@ -1006,6 +1009,30 @@ class Reimbust_sw extends CI_Controller
     }
 
     //APPROVE DATA
+    public function approve3()
+    {
+        $data = array(
+            'app4_keterangan' => $this->input->post('app4_keterangan'),
+            'app4_status' => $this->input->post('app4_status'),
+            'app4_date' => date('Y-m-d H:i:s'),
+        );
+
+        // UPDATE STATUS DEKLARASI
+        if ($this->input->post('app4_status') === 'revised') {
+            $data['status'] = 'revised';
+        } elseif ($this->input->post('app4_status') === 'approved') {
+            $data['status'] = 'on-process';
+        } elseif ($this->input->post('app4_status') === 'rejected') {
+            $data['status'] = 'rejected';
+        }
+
+        //UPDATE APPROVAL PERTAMA
+        $this->db->where('id', $this->input->post('hidden_id'));
+        $this->db->update('tbl_prepayment', $data);
+
+        echo json_encode(array("status" => TRUE));
+    }
+
     public function approve()
     {
         $data = array(
