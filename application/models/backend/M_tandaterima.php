@@ -6,9 +6,9 @@ if (!defined('BASEPATH'))
 class M_Tandaterima extends CI_Model
 {
     var $table = 'tanda_terima'; //nama tabel dari database
-    var $column_order = array(null, 'nomor', 'tanggal', 'nama_pengirim', 'nama_penerima', 'barang', 'qty', null, null); //field yang ada di table user
+    var $column_order = array(null, null, 'nomor', 'tanggal', 'nama_pengirim', 'nama_penerima', 'barang', 'qty', null); //field yang ada di table user
     var $column_search = array('nomor', 'tanggal', 'nama_pengirim', 'nama_penerima', 'barang', 'qty'); //field yang diizin untuk pencarian 
-    var $order = array('id' => 'asc'); // default order 
+    var $order = array('id' => 'desc'); // default order 
 
     function __construct()
     {
@@ -24,7 +24,6 @@ class M_Tandaterima extends CI_Model
     {
 
         $this->db->from($this->table);
-        $this->db->order_by('id', 'DESC');
 
         $i = 0;
 
