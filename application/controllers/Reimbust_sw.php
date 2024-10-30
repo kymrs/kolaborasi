@@ -72,7 +72,7 @@ class Reimbust_sw extends CI_Controller
                 $action = $action_read . $action_print;
             } elseif (in_array($field->status, ['rejected', 'approved'])) {
                 $action = $action_read . $action_print;
-            } elseif ($field->app_status == 'revised' || $field->app2_status == 'revised') {
+            } elseif ($field->app_status == 'revised' || $field->app2_status == 'revised' || $field->app4_status == 'revised') {
                 $action = $action_read . $action_edit . $action_print;
             } elseif ($field->app_status == 'approved') {
                 $action = $action_read . $action_print;
