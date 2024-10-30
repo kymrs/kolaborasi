@@ -65,7 +65,7 @@ class M_rekapitulasi_pu extends CI_Model
                 $this->db->group_by(array('tbl_prepayment_pu.id', 'tbl_prepayment_pu.kode_prepayment'));
             } elseif ($_POST['tab'] == 'reimbust') {
                 // Column order for "reimbust" tab
-                $this->column_order = array(null, 'tbl_reimbust_pu.tgl_pengajuan', 'name', 'tujuan', 'tbl_reimbust_pu.kode_reimbust', 'kode_prepayment', 'total_jumlah_detail');
+                $this->column_order = array(null, 'kode_prepayment', 'tbl_reimbust_pu.kode_reimbust', 'name', 'tujuan', 'tbl_reimbust_pu.tgl_pengajuan', 'total_jumlah_detail');
                 $this->column_search = array('tbl_reimbust_pu.tgl_pengajuan', 'tbl_data_user.name', 'tbl_reimbust_pu.tujuan', 'tbl_reimbust_pu.kode_reimbust', 'tbl_reimbust_pu.kode_prepayment');
 
                 // Query for "reimbust" tab
@@ -353,14 +353,16 @@ class M_rekapitulasi_pu extends CI_Model
 
         // Filter by date range if needed
         if (!empty($tgl_awal) && !empty($tgl_akhir)) {
+            $awal = date('Y-m-d', strtotime($tgl_awal));
+            $akhir = date('Y-m-d', strtotime($tgl_akhir));
 
             $this->db->group_start();
 
             if ($tgl_awal == $tgl_akhir) {
-                $this->db->where('a.tgl_prepayment =', $tgl_awal);
+                $this->db->where('a.tgl_prepayment =', $awal);
             } else {
-                $this->db->where('a.tgl_prepayment >=', $tgl_awal);
-                $this->db->where('a.tgl_prepayment <=', $tgl_akhir);
+                $this->db->where('a.tgl_prepayment >=', $awal);
+                $this->db->where('a.tgl_prepayment <=', $akhir);
             }
 
             $this->db->group_end();
@@ -380,14 +382,16 @@ class M_rekapitulasi_pu extends CI_Model
 
         // Filter by date range if needed
         if (!empty($tgl_awal) && !empty($tgl_akhir)) {
+            $awal = date('Y-m-d', strtotime($tgl_awal));
+            $akhir = date('Y-m-d', strtotime($tgl_akhir));
 
             $this->db->group_start();
 
             if ($tgl_awal == $tgl_akhir) {
-                $this->db->where('a.tgl_pengajuan =', $tgl_awal);
+                $this->db->where('a.tgl_pengajuan =', $awal);
             } else {
-                $this->db->where('a.tgl_pengajuan >=', $tgl_awal);
-                $this->db->where('a.tgl_pengajuan <=', $tgl_akhir);
+                $this->db->where('a.tgl_pengajuan >=', $awal);
+                $this->db->where('a.tgl_pengajuan <=', $akhir);
             }
 
             $this->db->group_end();

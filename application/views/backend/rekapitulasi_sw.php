@@ -144,6 +144,15 @@
         var activeTab = $('.nav-link.active').data('tab');
         // $('#labelPengeluaran').text(activeTab.charAt(0).toUpperCase() + activeTab.slice(1));
 
+        $('#tgl_awal').on('click', function() {
+            // console.log('berhasil');
+            $('#tgl_awal').datepicker('setDate', null);
+        });
+
+        $('#tgl_akhir').on('click', function() {
+            $('#tgl_akhir').datepicker('setDate', null);
+        });
+
         // Inisialisasi Datepicker untuk Tanggal Awal
         $('#tgl_awal').datepicker({
             dateFormat: 'dd-mm-yy',
@@ -348,7 +357,11 @@
     });
 
     $('#btn-export-excel').click(function() {
-        // Arahkan ke URL controller untuk export Excel
-        window.location.href = "<?= site_url('rekapitulasi_sw/export_excel'); ?>";
+        // Ambil nilai dari datepicker
+        var tgl_awal = $('#tgl_awal').val();
+        var tgl_akhir = $('#tgl_akhir').val();
+
+        // // Arahkan ke URL controller untuk export Excel dengan parameter
+        window.location.href = "<?= site_url('rekapitulasi_sw/export_excel'); ?>?tgl_awal=" + tgl_awal + "&tgl_akhir=" + tgl_akhir;
     });
 </script>

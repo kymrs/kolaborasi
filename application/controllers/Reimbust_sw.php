@@ -553,120 +553,47 @@ class Reimbust_sw extends CI_Controller
         $pdf->Ln(10);
 
         $pdf->SetFont('Poppins-Regular', '', 10);
-        $pdf->Cell(50, 8.5, 'YANG MELAKUKAN', 1, 0, 'C');
-        $pdf->Cell(50, 8.5, 'MENGETAHUI', 1, 0, 'C');
-        $pdf->Cell(50, 8.5, 'MENYETUJUI', 1, 1, 'C');
+        // Membuat header tabel
+        $pdf->Cell(47.3, 8.5, 'Yang Melakukan', 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, 'Kapten', 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, 'Mengetahui', 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, 'Menyetujui', 1, 1, 'C');
 
-        // Logic tanggal bahasa indonesia
-        // function tanggal_indonesia($tanggal)
-        // {
-        //     $bulanInggris = array(
-        //         'January', 'February', 'March', 'April', 'May', 'June',
-        //         'July', 'August', 'September', 'October', 'November', 'December'
-        //     );
-        //     $bulanIndonesia = array(
-        //         'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-        //         'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-        //     );
+        // Set font normal untuk konten tabel
+        $pdf->SetFont('Poppins-Regular', '', 10);
 
-        //     $bulan = date('F', strtotime($tanggal));
-        //     $tanggal_indo = date('d', strtotime($tanggal)) . ' ' . str_replace($bulanInggris, $bulanIndonesia, $bulan) . ' ' . date('Y', strtotime($tanggal));
+        // Baris pemisah
+        $pdf->Cell(47.3, 5, '', 'LR', 0, 'C');
+        $pdf->Cell(47.3, 5, '', 0, 0, 'C');
+        $pdf->Cell(47.3, 5, '', 'L', 0, 'C');
+        $pdf->Cell(47.3, 5, '', 'LR', 1, 'C');
 
-        //     return $tanggal_indo;
-        // }
+        // Baris pertama (Status)
+        $pdf->Cell(47.3, 5, 'CREATED', 'LR', 0, 'C');
+        $pdf->Cell(47.3, 5, strtoupper($data['master']->app4_status), 'R', 0, 'C');
+        $pdf->Cell(47.3, 5, strtoupper($data['master']->app_status), 0, 0, 'C');
+        $pdf->Cell(47.3, 5, strtoupper($data['master']->app2_status), 'LR', 1, 'C');
 
-        $pdf->Cell(50, 13.5, 'CREATED', 0, 0, 'C');
+        // Baris kedua (Tanggal)
+        $pdf->Cell(47.3, 5, $data['master']->created_at, 'LR', 0, 'C');
+        $pdf->Cell(47.3, 5, $data['master']->app4_date, 'R', 0, 'C');
+        $pdf->Cell(47.3, 5, $data['master']->app_date, 0, 0, 'C');
+        $pdf->Cell(47.3, 5, $data['master']->app2_date, 'LR', 1, 'C');
 
-        $x = $pdf->GetX();
-        $y = $pdf->GetY();
+        // Baris pemisah
+        $pdf->Cell(47.3, 5, '', 'LR', 0, 'C');
+        $pdf->Cell(47.3, 5, '', 0, 0, 'C');
+        $pdf->Cell(47.3, 5, '', 'L', 0, 'C');
+        $pdf->Cell(47.3, 5, '', 'LR', 1, 'C');
 
-        $pdf->SetXY($x + -50, $y + 0); // Menambahkan margin horizontal dan vertikal
-        $pdf->Cell(50, 18, '', 1, 0, 'C');
+        // Jarak kosong untuk pemisah
+        $pdf->Ln(0);
 
-        // Kembali ke posisi sebelumnya untuk elemen berikutnya
-        $pdf->SetXY($x + 0, $y); // Mengatur posisi untuk elemen berikutnya jika diperlukan
-
-        // Menyimpan posisi saat ini
-        $x = $pdf->GetX();
-        $y = $pdf->GetY();
-
-        // Mengatur posisi X dan Y dengan margin tambahan untuk teks tanggal
-        $pdf->SetXY($x + -50, $y + 4.5); // Menambahkan margin horizontal dan vertikal
-
-        // Menggunakan Cell() untuk mencetak teks tanggal dengan margin
-        $pdf->Cell(50, 15, date('d-m-Y H:i:s', strtotime($data['master']->created_at)), 0, 0, 'C');
-
-        // Kembali ke posisi sebelumnya untuk elemen berikutnya
-        $pdf->SetXY($x + 0, $y); // Mengatur posisi untuk elemen berikutnya jika diperlukan
-
-        // Approval 1
-        $pdf->Cell(50, 13.5, strtoupper($data['master']->app_status), 0, 0, 'C');
-
-        $x = $pdf->GetX();
-        $y = $pdf->GetY();
-
-        $pdf->SetXY($x + -50, $y + 0); // Menambahkan margin horizontal dan vertikal
-        $pdf->Cell(50, 18, '', 1, 0, 'C');
-
-        // Kembali ke posisi sebelumnya untuk elemen berikutnya
-        $pdf->SetXY($x + 0, $y); // Mengatur posisi untuk elemen berikutnya jika diperlukan
-
-        // Menyimpan posisi saat ini
-        $x = $pdf->GetX();
-        $y = $pdf->GetY();
-
-        // Mengatur posisi X dan Y dengan margin tambahan untuk teks tanggal
-        $pdf->SetXY($x + -50, $y + 4.5); // Menambahkan margin horizontal dan vertikal
-
-        if ($data['master']->app_date == null) {
-            $date = '';
-        }
-        if ($data['master']->app_date != null) {
-            $date = date('d-m-Y H:i:s', strtotime($data['master']->app_date));
-        }
-
-        // Menggunakan Cell() untuk mencetak teks tanggal dengan margin
-        $pdf->Cell(50, 15, $date, 0, 0, 'C');
-
-        // Kembali ke posisi sebelumnya untuk elemen berikutnya
-        $pdf->SetXY($x + 0, $y); // Mengatur posisi untuk elemen berikutnya jika diperlukan
-
-        // Approval 2
-        $pdf->Cell(50, 13.5, strtoupper($data['master']->app2_status), 0, 0, 'C');
-
-        $x = $pdf->GetX();
-        $y = $pdf->GetY();
-
-        $pdf->SetXY($x + -50, $y + 0); // Menambahkan margin horizontal dan vertikal
-        $pdf->Cell(50, 18, '', 1, 0, 'C');
-
-        // Kembali ke posisi sebelumnya untuk elemen berikutnya
-        $pdf->SetXY($x + 0, $y); // Mengatur posisi untuk elemen berikutnya jika diperlukan
-
-        // Menyimpan posisi saat ini
-        $x = $pdf->GetX();
-        $y = $pdf->GetY();
-
-        // Mengatur posisi X dan Y dengan margin tambahan untuk teks tanggal
-        $pdf->SetXY($x + -50, $y + 4.5); // Menambahkan margin horizontal dan vertikal
-
-        if ($data['master']->app2_date == null) {
-            $date2 = '';
-        }
-        if ($data['master']->app2_date != null) {
-            $date2 = date('d-m-Y H:i:s', strtotime($data['master']->app2_date));
-        }
-
-        // Menggunakan Cell() untuk mencetak teks tanggal dengan margin
-        $pdf->Cell(50, 15, $date2, 0, 0, 'C');
-
-        // Kembali ke posisi sebelumnya untuk elemen berikutnya 
-        $pdf->SetXY($x + -150, $y + 18); // Mengatur posisi untuk elemen berikutnya jika diperlukan
-
-        // Menulis elemen selanjutnya dengan ukuran baris yang lebih kecil
-        $pdf->Cell(50, 8.5, $data['user'], 1, 0, 'C');
-        $pdf->Cell(50, 8.5, $data['master']->app_name, 1, 0, 'C');
-        $pdf->Cell(50, 8.5, $data['master']->app2_name, 1, 1, 'C');
+        // Baris ketiga (Nama pengguna)
+        $pdf->Cell(47.3, 8.5, $data['user'], 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, $data['master']->app4_name, 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, $data['master']->app_name, 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, $data['master']->app2_name, 1, 1, 'C');
 
 
         // Output the PDF

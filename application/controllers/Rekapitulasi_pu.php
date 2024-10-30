@@ -128,12 +128,15 @@ class Rekapitulasi_pu extends CI_Controller
         $sheet->getColumnDimension('C')->setAutoSize(true);
         $sheet->getColumnDimension('D')->setAutoSize(true);
 
+        // Tambahkan filter ke header (baris pertama)
+        $sheet->setAutoFilter('A1:D1');
+
         // Isi data dari database mulai dari baris ke-2
         $row = 2;
         foreach ($prepayment as $data) {
             $sheet->setCellValue('A' . $row, $data->kode_prepayment);
             $sheet->setCellValue('B' . $row, 'Prepayment');
-            $sheet->setCellValue('C' . $row, date('Y-m-d', strtotime($data->tgl_prepayment)));
+            $sheet->setCellValue('C' . $row, $this->tgl_indo(date("Y-m-j", strtotime($data->tgl_prepayment))));
             $sheet->setCellValue('D' . $row, $data->total_nominal);
             $row++;
         }
@@ -141,18 +144,22 @@ class Rekapitulasi_pu extends CI_Controller
         foreach ($reimbust as $data) {
             $sheet->setCellValue('A' . $row, $data->kode_reimbust);
             $sheet->setCellValue('B' . $row, $data->sifat_pelaporan);
-            $sheet->setCellValue('C' . $row, date('Y-m-d', strtotime($data->tgl_pengajuan)));
+            $sheet->setCellValue('C' . $row, $this->tgl_indo(date("Y-m-j", strtotime($data->tgl_pengajuan))));
             $sheet->setCellValue('D' . $row, $data->total_nominal);
             $row++;
         }
 
+        // Terapkan format angka untuk kolom Nominal
+        $sheet->getStyle('D2:D' . ($row - 1))
+            ->getNumberFormat()
+            ->setFormatCode('#,##0');
 
         // Buat writer untuk export ke Excel
         $writer = new Xlsx($spreadsheet);
 
         // Set header untuk download file Excel
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="Data Rekapitulasi.xlsx"');
+        header('Content-Disposition: attachment;filename="Data Rekapitulasi PU.xlsx"');
         header('Cache-Control: max-age=0');
 
         // Simpan file ke output
