@@ -181,7 +181,8 @@ class Tanda_terima extends CI_Controller
 			->where('id_user', $this->session->userdata('id_user'))
 			->get()
 			->row('name');
-		$this->load->view('/backend/tanda_terima/tanda_terima_read', $data);
+		$data['title'] = 'backend/tanda_terima/tanda_terima_read';
+		$this->load->view('backend/home', $data);
 	}
 
 	function no_baru()
