@@ -363,7 +363,7 @@
         var tgl_awal = $('#tgl_awal').val();
         var tgl_akhir = $('#tgl_akhir').val();
 
-        // Arahkan ke URL controller untuk export Excel dengan parameter
+        // // Arahkan ke URL controller untuk export Excel dengan parameter
         window.location.href = "<?= site_url('rekapitulasi_pu/export_excel'); ?>?tgl_awal=" + tgl_awal + "&tgl_akhir=" + tgl_akhir;
     });
 </script>

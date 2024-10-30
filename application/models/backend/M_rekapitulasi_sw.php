@@ -16,7 +16,7 @@ class M_rekapitulasi_sw extends CI_Model
         if (!empty($_POST['tab'])) {
             if ($_POST['tab'] == 'pelaporan') {
                 // Column order for "pelaporan" tab
-                $this->column_order = array(null, 'tgl_pengajuan', 'name', 'tujuan', 'kode_reimbust', 'kode_prepayment', 'total_nominal', 'total_jumlah_detail');
+                $this->column_order = array(null, 'kode_prepayment', 'kode_reimbust', 'name', 'tgl_pengajuan',  'tujuan',   'total_nominal', 'total_jumlah_detail');
                 $this->column_search = array('tbl_reimbust.tgl_pengajuan', 'tbl_data_user.name', 'tbl_prepayment.tujuan', 'tbl_reimbust.kode_reimbust', 'tbl_prepayment.kode_prepayment', 'tbl_prepayment.total_nominal');
 
                 // Query for "pelaporan" tab
@@ -341,25 +341,60 @@ class M_rekapitulasi_sw extends CI_Model
         return $data;
     }
 
-    function get_data_prepayment()
+    function get_data_prepayment($tgl_awal, $tgl_akhir)
     {
-        $this->db->select('a.id, a.kode_prepayment, a.tgl_prepayment, a.prepayment, a.total_nominal');
+        $this->db->select('a.id, a.kode_prepayment, a.tgl_prepayment, c.event_name, a.total_nominal');
         $this->db->from('tbl_prepayment AS a');
         $this->db->join('tbl_reimbust AS b', 'a.kode_prepayment = b.kode_prepayment', 'left');
+        $this->db->join('tbl_event_sw AS c', 'a.event = c.id', 'left');
         $this->db->where('a.payment_status', 'paid');
         $this->db->where('b.kode_prepayment IS NULL');
+
+        // Filter by date range if needed
+        if (!empty($tgl_awal) && !empty($tgl_akhir)) {
+            $awal = date('Y-m-d', strtotime($tgl_awal));
+            $akhir = date('Y-m-d', strtotime($tgl_akhir));
+
+            $this->db->group_start();
+
+            if ($tgl_awal == $tgl_akhir) {
+                $this->db->where('a.tgl_prepayment =', $awal);
+            } else {
+                $this->db->where('a.tgl_prepayment >=', $awal);
+                $this->db->where('a.tgl_prepayment <=', $akhir);
+            }
+
+            $this->db->group_end();
+        }
 
         $query = $this->db->get(); // Simpan hasil query
         return $query->result(); // Kembalikan hasil dalam bentuk object
     }
 
-    function get_data_reimbust()
+    function get_data_reimbust($tgl_awal, $tgl_akhir)
     {
         $this->db->select('a.id, a.kode_reimbust, a.tgl_pengajuan, a.sifat_pelaporan, SUM(b.jumlah) AS total_nominal');
         $this->db->from('tbl_reimbust AS a');
         $this->db->join('tbl_reimbust_detail AS b', 'a.id = b.reimbust_id', 'inner');
         $this->db->where('a.payment_status', 'paid');
         $this->db->group_by('a.id');
+
+        // Filter by date range if needed
+        if (!empty($tgl_awal) && !empty($tgl_akhir)) {
+            $awal = date('Y-m-d', strtotime($tgl_awal));
+            $akhir = date('Y-m-d', strtotime($tgl_akhir));
+
+            $this->db->group_start();
+
+            if ($tgl_awal == $tgl_akhir) {
+                $this->db->where('a.tgl_pengajuan =', $awal);
+            } else {
+                $this->db->where('a.tgl_pengajuan >=', $awal);
+                $this->db->where('a.tgl_pengajuan <=', $akhir);
+            }
+
+            $this->db->group_end();
+        }
 
         $query = $this->db->get();
         return $query->result();
