@@ -345,7 +345,7 @@
         }
 
         function view_data(id) {
-            window.open("<?php echo site_url('tanda_terima/preview/') ?>" + id, '_blank');
+            window.open("<?php echo site_url('tanda_terima/preview/') ?>" + id, '_self');
         }
 
         function print_data(id) {

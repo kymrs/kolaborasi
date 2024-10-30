@@ -170,16 +170,18 @@ class Tanda_terima extends CI_Controller
 	{
 		$query = $this->M_tandaterima->get_by_id($id);
 		$data['id'] = $id;
-		$data['pengirim'] = $query->nama_pengirim;
-		$data['title'] = $query->title;
-		$data['penerima'] = $query->nama_penerima;
-		$data['tanggal'] = date('d/m/Y', strtotime($query->tanggal));
-		$data['nomor'] = $query->nomor;
-		$data['barang'] = $query->barang;
-		$data['qty'] = $query->qty;
-		$data['keterangan'] = $query->keterangan;
-		$data['foto'] = $query->foto;
-		$this->load->view('/backend/tanda_terima/tanda_terima_print', $data);
+		$data['user'] = $this->M_tandaterima->get_by_id($id);
+		$data['app_hc_name'] = $this->db->select('name')
+			->from('tbl_data_user')
+			->where('id_user', $this->session->userdata('id_user'))
+			->get()
+			->row('name');
+		$data['app2_name'] = $this->db->select('name')
+			->from('tbl_data_user')
+			->where('id_user', $this->session->userdata('id_user'))
+			->get()
+			->row('name');
+		$this->load->view('/backend/tanda_terima/tanda_terima_read', $data);
 	}
 
 	function no_baru()
