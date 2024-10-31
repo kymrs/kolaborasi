@@ -246,11 +246,32 @@ class Tanda_terima extends CI_Controller
 		// $pdf->Image('assets/img/' . $query->foto, $posisi, $pdf->GetY(), 40, 0);
 		if ($query->foto == '') {
 		} else {
-			// $pdf->Image('assets/icon/watermark.png', $posisi, 50, 40, 0);
+			$text = 'Diterima';
+			$x = $pdf->GetPageWidth() / 2 - 35;  // Calculate x position
+			$y = 90;                             // Set y position
+			$angle = 30;                         // Rotation angle
+
+			// Set text color and transparency
 			$pdf->SetTextColor(255, 140, 0);
 			$pdf->SetAlpha(0.25);
 			$pdf->SetFont('Courier', '', 40);
-			$pdf->TextWithRotation($pdf->GetPageWidth() / 2 - 35, 90, 'Diterima', 30, -30);
+
+			// Rotate the canvas
+			$pdf->StartTransform();
+			$pdf->Rotate($angle, $x, $y);
+
+			// Draw border rectangle with the same rotation as the text
+			$pdf->SetDrawColor(255, 140, 0);      // Set border color to orange
+			$pdf->SetLineWidth(1);                // Set border thickness
+			$pdf->Rect($x - 11, $y - 28, 90, 45);  // Draw rectangle around text
+
+			// Add the rotated text
+			$pdf->Text($x, $y, $text);
+
+			// Stop canvas rotation and reset it for further content
+			$pdf->StopTransform();
+
+			// Reset text color to black for any additional content
 			$pdf->SetTextColor(0, 0, 0);
 		}
 		$pdf->Output();
