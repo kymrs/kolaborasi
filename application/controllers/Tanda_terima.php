@@ -168,19 +168,8 @@ class Tanda_terima extends CI_Controller
 
 	function preview($id)
 	{
-		$query = $this->M_tandaterima->get_by_id($id);
+		$data['data'] = $this->M_tandaterima->get_by_id($id);
 		$data['id'] = $id;
-		$data['user'] = $this->M_tandaterima->get_by_id($id);
-		$data['app_hc_name'] = $this->db->select('name')
-			->from('tbl_data_user')
-			->where('id_user', $this->session->userdata('id_user'))
-			->get()
-			->row('name');
-		$data['app2_name'] = $this->db->select('name')
-			->from('tbl_data_user')
-			->where('id_user', $this->session->userdata('id_user'))
-			->get()
-			->row('name');
 		$data['title'] = 'backend/tanda_terima/tanda_terima_read';
 		$this->load->view('backend/home', $data);
 	}

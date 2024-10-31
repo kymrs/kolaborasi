@@ -20,7 +20,6 @@
             border-radius: 10px;
             background-color: #ffffff;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-            height: 800px;
         }
 
         /* header */
@@ -35,7 +34,7 @@
         }
 
         header img {
-            width: 270px;
+            width: 285px;
         }
 
         .header-content {
@@ -67,6 +66,21 @@
             transform: rotate(-30deg);
         }
 
+        .serah-terima {
+            text-align: center;
+            color: #999;
+        }
+
+        .serah-terima h1 {
+            margin-top: 24px;
+        }
+
+        .serah-terima h1,
+        .serah-terima h2 {
+            font-size: 1.3rem;
+            color: #999;
+        }
+
         @media (max-width: 1286px) {
             .form-container {
                 width: 95%;
@@ -95,22 +109,22 @@
                         <tr>
                             <td>Pengirim</td>
                             <td>:</td>
-                            <td>Aldo Rakha</td>
+                            <td><?= $data->nama_pengirim ?></td>
                         </tr>
                         <tr>
                             <td>Kepada</td>
                             <td>:</td>
-                            <td>Tn. Yanto</td>
+                            <td><?= $data->title ?> <?= $data->nama_penerima ?></td>
                         </tr>
                     </table>
                 </div>
                 <div>
-                    <p style="text-align: right;">21/22/2024</p>
+                    <p style="text-align: right;"><?= date('d/m/Y', strtotime($data->tanggal)) ?></p>
                     <table>
                         <tr>
                             <td>No</td>
                             <td>:</td>
-                            <td>PU00001</td>
+                            <td><?= $data->nomor ?></td>
                         </tr>
                     </table>
                 </div>
@@ -129,21 +143,26 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td>Dokumen &amp; Perlengkapan Jamaah</td>
+                        <td><?= $data->barang ?></td>
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td>5 pax</td>
+                        <td><?= $data->qty ?></td>
                     </tr>
                     <tr>
                         <td colspan="4">
-                            Rincian:
-                            <br>2 Invoice Pembayaran
+                            <?= nl2br(preg_replace('/(\d+\.)/', '<br>$1', $data->keterangan)); ?>
                         </td>
                         <td></td>
                     </tr>
                 </tbody>
             </table>
+            <div class="serah-terima">
+                <p class="lead">Bukti Serah Terima:</p>
+                <img src="<?= base_url() ?>/assets/backend/document/tanda_terima/<?= $data->foto ?>" height="300px">
+                <h1>PENGENUMROH.COM</h1>
+                <h2>YOUR TRUSTED UMRAH & HAJJ MARKETPLACE</h2>
+            </div>
         </div>
     </div>
 
