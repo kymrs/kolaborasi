@@ -114,7 +114,7 @@ class Tanda_terima extends CI_Controller
 		);
 
 		if (!empty($_FILES['image']['name'])) {
-			$config['upload_path'] = "./assets/img";
+			$config['upload_path'] = "./assets/backend/document/tanda_terima";
 			$config['allowed_types'] = 'gif|jpg|png';
 			$this->load->library('upload', $config); //call library upload 
 			if ($this->upload->do_upload("image")) { //upload file
@@ -232,7 +232,7 @@ class Tanda_terima extends CI_Controller
 		$pdf->Ln(10);
 		$pdf->Cell(0, 10, 'Bukti Serah Terima:', 0, 1, 'C');
 		$posisi = $pdf->GetPageWidth() / 2 - 20;
-		// $pdf->Image('assets/img/' . $query->foto, $posisi, $pdf->GetY(), 40, 0);
+		$pdf->Image('assets/backend/document/tanda_terima/' . $query->foto, $posisi, $pdf->GetY(), 40, 0);
 		if ($query->foto == '') {
 		} else {
 			$text = 'Diterima';

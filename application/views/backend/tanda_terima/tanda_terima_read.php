@@ -92,8 +92,8 @@
 <body>
     <div class="container">
         <div class="d-flex justify-content-end mb-3" style="margin-right: 19px">
-            <a class="btn btn-danger btn-sm mr-2" id="paymentBtn" data-toggle="modal" data-target="#paymentModal"><i class="fas fa-file-pdf"></i>&nbsp;PDF</a>
-            <a class="btn btn-primary btn-sm mr-2" id="paymentBtn" data-toggle="modal" data-target="#paymentModal"><i class="fas fa-print"></i>&nbsp;Print</a>
+            <a class="btn btn-danger btn-sm mr-2" id="pdf" onclick="return pdf(<?= $data->id ?>)"><i class="fas fa-file-pdf"></i>&nbsp;PDF</a>
+            <a class="btn btn-primary btn-sm mr-2" id="print" onclick="return print_data(<?= $data->id ?>)"><i class="fas fa-print"></i>&nbsp;Print</a>
             <a class="btn btn-secondary btn-sm" onclick="history.back()"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
         </div>
         <div class="form-container">
@@ -174,6 +174,13 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> -->
 
     <script>
+        function pdf(id) {
+            window.open('<?= base_url("tanda_terima/pdf/") ?>' + id, '_blank')
+        }
+
+        function print_data(id) {
+            window.open('<?= base_url("tanda_terima/print/") ?>' + id, '_blank')
+        }
     </script>
 </body>
 
