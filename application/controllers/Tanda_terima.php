@@ -232,7 +232,22 @@ class Tanda_terima extends CI_Controller
 		$pdf->Ln(10);
 		$pdf->Cell(0, 10, 'Bukti Serah Terima:', 0, 1, 'C');
 		$posisi = $pdf->GetPageWidth() / 2 - 20;
-		$pdf->Image('assets/backend/document/tanda_terima/' . $query->foto, $posisi, $pdf->GetY(), 40, 0);
+
+		// Mendapatkan dimensi asli gambar
+		list($width, $height) = getimagesize('assets/backend/document/tanda_terima/' . $query->foto);
+
+		// Tentukan lebar dan tinggi maksimal
+		$maxWidth = 100;
+		$maxHeight = 70;
+
+		// Menghitung rasio skala untuk mempertahankan aspek rasio
+		$scale = min($maxWidth / $width, $maxHeight / $height);
+		$newWidth = $width * $scale;
+		$newHeight = $height * $scale;
+
+		// Menampilkan gambar dengan dimensi yang telah diatur
+		$pdf->Image('assets/backend/document/tanda_terima/' . $query->foto, $posisi, $pdf->GetY(), $newWidth, $newHeight);
+
 		if ($query->foto == '') {
 		} else {
 			$text = 'Diterima';
