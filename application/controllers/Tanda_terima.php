@@ -153,16 +153,9 @@ class Tanda_terima extends CI_Controller
 
 	function print($id)
 	{
-		$query = $this->M_tandaterima->get_by_id($id);
-		$data['pengirim'] = $query->nama_pengirim;
-		$data['title'] = $query->title;
-		$data['penerima'] = $query->nama_penerima;
-		$data['tanggal'] = date('d/m/Y', strtotime($query->tanggal));
-		$data['nomor'] = $query->nomor;
-		$data['barang'] = $query->barang;
-		$data['qty'] = $query->qty;
-		$data['keterangan'] = $query->keterangan;
-		$data['foto'] = $query->foto;
+		$data['data'] = $this->M_tandaterima->get_by_id($id);
+		$data['id'] = $id;
+		$data['title'] = 'backend/tanda_terima/tanda_terima_print';
 		$this->load->view('/backend/tanda_terima/tanda_terima_print', $data);
 	}
 
@@ -193,18 +186,25 @@ class Tanda_terima extends CI_Controller
 	function pdf($id)
 	{
 		$this->load->library('Fpdf_generate');
-		// $pdf = $this->customfpdf->getInstance();
 		$pdf = new Fpdf_generate('P', 'mm', 'A4');
-		// $pdf->SetTitle('Form Pengajuan Prepayment');
-		// $pdf->AddPage('P', 'Letter');
 		$query = $this->M_tandaterima->get_by_id($id);
 
-		$pdf->AliasNbPages();
-		$pdf->AddPage();
-		// Logo
-		$pdf->Image(base_url('') . '/assets/backend/img/pengenumroh.png', 11.5, 3, 35, 22);
-		$pdf->Ln(16);
+		// Title and Alias for total pages
 		$pdf->SetTitle('Tanda Terima ' . $query->nomor);
+		$pdf->AliasNbPages();
+
+		// Add Header and Footer images on each page
+		$pdf->AddPage();
+
+		// Header image
+		$pdf->Image(base_url('') . '/assets/backend/img/header.png', 10, 10, 190, 33); // Adjust position and size as needed
+
+		// Set top margin below the header image, and bottom margin above the footer
+		$pdf->SetMargins(10, 45); // Set top margin below the header image
+		$pdf->SetAutoPageBreak(true, 40); // Set bottom margin above the footer image
+
+		// Content
+		$pdf->Ln(45); // Move cursor down for main content after header image
 		$pdf->SetFont('Courier', '', 12);
 		$pdf->Cell(140, 10, 'Pengirim: ' . $query->nama_pengirim, 0, 0);
 		$pdf->Cell(47, 10, date('d/m/Y', strtotime($query->tanggal)), 0, 1, 'R');
@@ -212,13 +212,10 @@ class Tanda_terima extends CI_Controller
 		$pdf->Cell(50, 10, 'No: ' . $query->nomor, 0, 1, 'R');
 		$pdf->Ln(10);
 		$pdf->SetLineWidth(0.1);
-		$pdf->SetDash(1, 1);
-		// $pdf->Line(10, 23, 50, 23);
-		$pdf->SetDash(1, 1);
-		$pdf->SetLineWidth(0.1);
-		$pdf->Line(10, 66, $pdf->GetPageWidth() - 10, 66);
 		$pdf->Line(10, 76, $pdf->GetPageWidth() - 10, 76);
 		$pdf->Line(10, 86, $pdf->GetPageWidth() - 10, 86);
+
+		// Table Content
 		$pdf->SetFont('Courier', 'B', 12);
 		$pdf->Cell(140, 10, 'Uraian', 0, 0, 'L');
 		$pdf->Cell(50, 10, 'Jumlah', 0, 1, 'L');
@@ -226,43 +223,46 @@ class Tanda_terima extends CI_Controller
 		$pdf->Cell(140, 10, $query->barang, 0, 0, 'L');
 		$pdf->Cell(50, 10, $query->qty, 0, 1, 'L');
 		$list = explode("\n", $query->keterangan);
-		for ($i = 0; $i < count($list); $i++) {
-			$pdf->Cell(0, 10, $list[$i], 0, 1, 'L');
+		foreach ($list as $item) {
+			$pdf->Cell(0, 10, $item, 0, 1, 'L');
 		}
+
 		$pdf->Ln(10);
 		$pdf->Cell(0, 10, 'Bukti Serah Terima:', 0, 1, 'C');
+
+		// Insert image for Bukti Serah Terima, center it
 		$posisi = $pdf->GetPageWidth() / 2 - 20;
 		$pdf->Image('assets/backend/document/tanda_terima/' . $query->foto, $posisi, $pdf->GetY(), 40, 0);
-		if ($query->foto == '') {
-		} else {
-			$text = 'Diterima';
-			$x = $pdf->GetPageWidth() / 2 - 35;  // Calculate x position
-			$y = 90;                             // Set y position
-			$angle = 30;                         // Rotation angle
 
-			// Set text color and transparency
+		// Add Watermark if "foto" is not empty
+		if (!empty($query->foto)) {
+			$text = 'Diterima';
+			$x = $pdf->GetPageWidth() / 2 - 35;
+			$y = 120;
+			$angle = 30;
+
 			$pdf->SetTextColor(255, 140, 0);
 			$pdf->SetAlpha(0.25);
 			$pdf->SetFont('Courier', '', 40);
 
-			// Rotate the canvas
 			$pdf->StartTransform();
 			$pdf->Rotate($angle, $x, $y);
 
-			// Draw border rectangle with the same rotation as the text
-			$pdf->SetDrawColor(255, 140, 0);      // Set border color to orange
-			$pdf->SetLineWidth(1);                // Set border thickness
-			$pdf->Rect($x - 11, $y - 28, 90, 45);  // Draw rectangle around text
+			$pdf->SetDrawColor(255, 140, 0);
+			$pdf->SetLineWidth(1);
+			$pdf->Rect($x - 11, $y - 28, 90, 45);
 
-			// Add the rotated text
 			$pdf->Text($x, $y, $text);
-
-			// Stop canvas rotation and reset it for further content
 			$pdf->StopTransform();
 
-			// Reset text color to black for any additional content
-			$pdf->SetTextColor(0, 0, 0);
+			$pdf->SetTextColor(0, 0, 0); // Reset text color
 		}
+
+		// Footer image
+		$footerY = $pdf->GetPageHeight() - 30; // Set footer position near the bottom of the page
+		// $pdf->Image('assets/backend/img/footer.png', 10, $footerY, 190, 5); // Adjust position and size as needed
+
+		// Output PDF
 		$pdf->Output();
 	}
 }

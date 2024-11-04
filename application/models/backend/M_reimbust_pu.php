@@ -397,14 +397,12 @@ class M_reimbust_pu extends CI_Model
 
     public function delete($id)
     {
-        $this->db->where($this->id, $id);
-        $this->db->delete($this->table);
+        // Ambil data tbl_reimbust_detail berdasarkan reimbust_id
+        $detail = $this->db->get_where('tbl_reimbust_detail_pu', ['reimbust_id' => $id])->result_array();
 
-        // Ambil data tbl_reimbust_detail_pu berdasarkan reimbust_id
-        $reimbust_detail = $this->db->get_where('tbl_reimbust_detail_pu', ['reimbust_id' => $id])->result_array();
-
-        if ($reimbust_detail) {
-            foreach ($reimbust_detail as $rd) {
+        // untuk menghapus file gambar
+        if ($detail) {
+            foreach ($detail as $rd) {
                 $old_image = $rd['kwitansi'];
                 $file_path = FCPATH . './assets/backend/document/reimbust/kwitansi_pu/' . $old_image;
 
@@ -417,6 +415,29 @@ class M_reimbust_pu extends CI_Model
             }
         }
 
+        // untuk mengembalikan is_active pada deklarasi menjadi 1 / aktif
+        if ($detail) {
+            foreach ($detail as $deklarasi) {
+                $deklarasi = $deklarasi['deklarasi'];
+
+                $this->db->update('tbl_deklarasi_pu', ['is_active' => 1], ['kode_deklarasi' => $deklarasi]);
+            }
+        }
+
+        // Ambil data tbl_reimbust berdasarkan reimbust_id
+        $reimbust = $this->db->get_where('tbl_reimbust_pu', ['id' => $id])->row_array();
+
+        // ambil data prepayment pada table reimbust
+        $prepayment = $reimbust['kode_prepayment'];
+
+        // update data pada kolom is active menjadi 1 di table prepayment
+        $this->db->update('tbl_prepayment_pu', ['is_active' => 1], ['kode_prepayment' => $prepayment]);
+
+        // delete data master reimbust
+        $this->db->where($this->id, $id);
+        $this->db->delete($this->table);
+
+        // delete data detail teimbust
         $this->db->where('reimbust_id', $id);
         $this->db->delete('tbl_reimbust_detail_pu');
 

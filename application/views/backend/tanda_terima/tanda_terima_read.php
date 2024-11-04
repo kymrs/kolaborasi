@@ -53,9 +53,9 @@
         }
 
         .watermark {
-            border: 7px solid #ED4722;
+            border: 7px solid orange;
             display: inline-block;
-            color: #ED4722;
+            color: orange;
             border-radius: 15px;
             padding: 0 10px;
             opacity: 0.1;
