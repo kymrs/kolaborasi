@@ -132,6 +132,10 @@
                                 </tbody>
                             </table>
                         </div>
+                        <!-- Loading indicator -->
+                        <div id="loading" style="display: none;">
+                            <p>Loading...</p>
+                        </div>
                         <!-- PENENTUAN UPDATE ATAU ADD -->
                         <input type="hidden" name="id" id="id" value="<?= $id ?>">
                         <?php if (!empty($aksi)) { ?>
@@ -341,6 +345,7 @@
 
     // METHOD POST MENAMPILKAN DATA KE DATA TABLE
     $(document).ready(function() {
+
         var table = $('#prepayment-table').DataTable({
             "responsive": true,
             "autoWidth": false,
@@ -1328,6 +1333,11 @@
 
             var formData = new FormData(this);
 
+            // Tampilkan loading
+            $('#loading').show();
+
+            $('.aksi').prop('disabled', true);
+
             $.ajax({
                 url: url,
                 type: "POST",
@@ -1336,6 +1346,10 @@
                 processData: false,
                 dataType: "JSON",
                 success: function(data) {
+
+                    // Sembunyikan loading saat respons diterima
+                    $('#loading').hide();
+
                     if (data.status) {
                         Swal.fire({
                             position: 'center',
@@ -1347,6 +1361,9 @@
                             location.href = "<?= base_url('reimbust_pu') ?>";
                         });
                     } else {
+                        // Sembunyikan loading saat respons diterima
+                        $('#loading').hide();
+
                         // Tampilkan pesan kesalahan
                         Swal.fire({
                             icon: 'error',
@@ -1356,6 +1373,9 @@
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
+                    // Sembunyikan loading saat respons diterima
+                    $('#loading').hide();
+
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
