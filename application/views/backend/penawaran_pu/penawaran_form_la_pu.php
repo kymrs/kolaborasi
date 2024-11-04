@@ -1,20 +1,15 @@
 <head>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .container-custom {
+        /* .container-custom {
             max-width: 1000px;
-            /* Maksimal lebar container */
-        }
+        } */
 
         .editor-with-border .ql-container {
             border: 1px solid #ccc;
-            /* Border warna abu-abu */
             border-radius: 5px;
-            /* Membuat sudut sedikit melengkung */
             padding: 10px;
-            /* Tambahkan padding di dalam editor */
             min-height: 150px;
-            /* Pastikan tinggi minimum editor */
         }
 
         .logo-custom {
@@ -25,7 +20,6 @@
         .label-inline {
             display: inline-block;
             min-width: 150px;
-            /* Lebar minimum untuk label */
             font-weight: bold;
         }
 
@@ -37,17 +31,12 @@
         .biaya-box,
         .ekstra-box {
             background-color: #FC7714;
-            /* Warna oranye lebih gelap */
             color: white;
             padding: 10px;
             text-align: center;
-            /* Teks di tengah */
-            font-size: 1.00rem;
-            /* Ukuran teks */
+            font-size: 1rem;
             font-weight: bold;
-            /* Teks tebal */
             margin-bottom: 1rem;
-            /* Jarak di bawah setiap box */
         }
 
         .description {
@@ -76,7 +65,6 @@
 
         .price-text {
             font-size: 2rem;
-            /* Ukuran teks harga lebih besar */
             color: #333;
             text-align: center;
             font-weight: bold;
@@ -175,8 +163,9 @@
         }
     </style>
 </head>
+
 <div class="container-fluid">
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <div class="d-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"><?= $title_view ?></h1>
     </div>
 
@@ -188,30 +177,33 @@
                 </div>
                 <div class="card-body">
                     <form id="form" method="POST" action="<?= base_url('penawaran_la_pu/add') ?>">
-                        <div class="row">
+                        <div class="row p-3">
                             <div class="col-md-6">
-                                <div class="form-group row">
-                                    <label class="col-sm-5">No Pelayanan</label>
-                                    <div class="col-sm-7">
+                                <div class="mb-3 row">
+                                    <label class="col-sm-4">No Pelayanan</label>
+                                    <div class="col-sm-8">
                                         <input type="text" class="form-control" id="no_pelayanan" name="no_pelayanan" readonly>
                                     </div>
                                 </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-5">Kepada</label>
-                                    <div class="col-sm-7">
+                                <div class="mb-3 row">
+                                    <label class="col-sm-4">Kepada</label>
+                                    <div class="col-sm-8">
                                         <input type="text" class="form-control" id="pelanggan" name="pelanggan">
                                     </div>
                                 </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-5">Produk</label>
-                                    <div class="col-sm-7">
+                                <div class="mb-3 row">
+                                    <label class="col-sm-4">Produk</label>
+                                    <div class="col-sm-8">
                                         <input type="text" class="form-control" id="produk" name="produk">
                                     </div>
                                 </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-5">Alamat</label>
-                                    <div class="col-sm-7">
-                                        <textarea id="alamat" rows="4" name="alamat" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Write your thoughts here..."></textarea>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3 row">
+                                    <label class="col-sm-4">Alamat</label>
+                                    <div class="col-sm-8">
+                                        <textarea id="alamat" rows="4" name="alamat" class="form-control" placeholder="Write your thoughts here..."></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -224,43 +216,33 @@
                             </div>
                         </div>
 
-                        <!-- GENERATE INFORMASI LAYANAN -->
-                        <div class="container-custom mx-auto mt-3 flex flex-wrap justify-between">
-                            <!-- Left Section: Deskripsi dan Layanan Termasuk -->
-                            <div class="w-full md:w-1/2 p-4">
-                                <!-- Deskripsi -->
-                                <h2 class="section-title">Deskripsi:</h2>
-                                <textarea id="deskripsi" rows="4" name="deskripsi" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Write your thoughts here..."></textarea>
+                        <!-- Informasi Layanan -->
+                        <div class="container-custom mx-auto mt-3 row">
+                            <!-- Left Section: Deskripsi -->
+                            <div class="col-md-6 mb-3">
+                                <label class="section-title">Deskripsi:</label>
+                                <textarea id="deskripsi" rows="12" name="deskripsi" class="form-control" placeholder="Write your thoughts here..."></textarea>
                             </div>
 
                             <!-- Right Section: Informasi Tambahan -->
-                            <div class="w-full md:w-1/2 p-4">
-                                <!-- tabggal berlaku -->
-                                <div class="mb-1">
-                                    <h2 class="section-title">Tanggal berlaku:</h2>
-                                    <input type="datetime-local" id="tgl_berlaku" name="tgl_berlaku" class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50">
-                                </div>
-                                <!-- Keberangkatan -->
-                                <div class="mb-1">
-                                    <h2 class="section-title">Keberangkatan:</h2>
-                                    <input type="datetime-local" id="keberangkatan" name="keberangkatan" class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50">
-                                </div>
-                                <!-- Durasi -->
-                                <div class="mb-1">
-                                    <h2 class="section-title">Durasi:</h2>
-                                    <input type="number" id="durasi" name="durasi" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                </div>
-                                <!-- Berangkat Dari -->
-                                <div class="mb-1">
-                                    <h2 class="section-title">Tempat:</h2>
-                                    <input type="text" id="tempat" name="tempat" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="section-title">Tanggal berlaku:</label>
+                                <input type="datetime-local" id="tgl_berlaku" name="tgl_berlaku" class="form-control mb-3">
+
+                                <label class="section-title">Keberangkatan:</label>
+                                <input type="datetime-local" id="keberangkatan" name="keberangkatan" class="form-control mb-3">
+
+                                <label class="section-title">Durasi:</label>
+                                <input type="number" id="durasi" name="durasi" class="form-control w-50 mb-3">
+
+                                <label class="section-title">Tempat:</label>
+                                <input type="text" id="tempat" name="tempat" class="form-control w-50 mb-3">
                             </div>
 
-                            <div class="w-full md:w-1/2 p-4">
-                                <!-- Layanan Termasuk -->
-                                <h2 class="section-title">Layanan:</h2>
-                                <div id="layanan" name="layanan" class="h-40 mb-4"></div>
+                            <!-- Layanan Termasuk -->
+                            <div class="col-md-12 mb-3">
+                                <label class="section-title">Layanan:</label>
+                                <div id="layanan" name="layanan" class="border p-2" style="height: 200px;"></div>
                                 <input type="hidden" name="layanan_content" id="layanan_content">
                             </div>
                         </div>
@@ -270,7 +252,10 @@
                             <div class="biaya-box">
                                 BIAYA
                             </div>
-                            <input type="text" id="biaya" name="biaya" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <div class="col-md-6">
+                                <label class="section-title">Biaya:</label>
+                                <input type="text" id="biaya" name="biaya" class="form-control w-50">
+                            </div>
                         </div>
 
                         <!-- Ekstra Section -->
@@ -278,8 +263,10 @@
                             <div class="ekstra-box">
                                 EKSTRA
                             </div>
-                            <div id="extra" name="extra" class="h-40 mb-4"></div>
-                            <input type="hidden" name="catatan_content" id="catatan_content">
+                            <div class="col">
+                                <div id="extra" name="extra" class="border p-2" style="height: 150px;"></div>
+                                <input type="hidden" name="catatan_content" id="catatan_content">
+                            </div>
                         </div>
 
                         <!-- Hidden inputs -->
@@ -293,7 +280,6 @@
 
                         <!-- Submit button -->
                         <button type="submit" class="btn btn-primary btn-sm aksi"></button>
-                        <!-- END PENENTUAN UPDATE ATAU ADD -->
                     </form>
                 </div>
             </div>
