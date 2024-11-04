@@ -232,32 +232,7 @@ class Tanda_terima extends CI_Controller
 
 		// Insert image for Bukti Serah Terima, center it
 		$posisi = $pdf->GetPageWidth() / 2 - 20;
-<<<<<<< HEAD
 		$pdf->Image('assets/backend/document/tanda_terima/' . $query->foto, $posisi, $pdf->GetY(), 40, 0);
-=======
-
-		// Mendapatkan dimensi asli gambar
-		list($width, $height) = getimagesize('assets/backend/document/tanda_terima/' . $query->foto);
-
-		// Tentukan lebar dan tinggi maksimal
-		$maxWidth = 100;
-		$maxHeight = 70;
-
-		// Menghitung rasio skala untuk mempertahankan aspek rasio
-		$scale = min($maxWidth / $width, $maxHeight / $height);
-		$newWidth = $width * $scale;
-		$newHeight = $height * $scale;
-
-		// Menampilkan gambar dengan dimensi yang telah diatur
-		$pdf->Image('assets/backend/document/tanda_terima/' . $query->foto, $posisi, $pdf->GetY(), $newWidth, $newHeight);
-
-		if ($query->foto == '') {
-		} else {
-			$text = 'Diterima';
-			$x = $pdf->GetPageWidth() / 2 - 35;  // Calculate x position
-			$y = 90;                             // Set y position
-			$angle = 30;                         // Rotation angle
->>>>>>> 6e781508eebbf89917371863a3cf3d57c7ad2527
 
 		// Add Watermark if "foto" is not empty
 		if (!empty($query->foto)) {
