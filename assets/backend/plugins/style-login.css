@@ -7,8 +7,9 @@
 }
 
 body {
-    background-color: rgb(30, 112, 255);
     overflow: hidden;
+    animation: change 5s infinite;
+    background: radial-gradient(#29465b, #133148);
 }
 
 .background {
@@ -28,7 +29,7 @@ body {
 }
 
 .shape:first-child {
-    background: linear-gradient(#1845ad,
+    background: linear-gradient(#5eb54d,
             #23a2f6);
     left: -80px;
     top: -80px;
@@ -36,8 +37,8 @@ body {
 
 .shape:last-child {
     background: linear-gradient(to right,
-            #ff512f,
-            #f09819);
+            #967333,
+            #ab2858);
     right: -30px;
     bottom: -80px;
 }
@@ -53,7 +54,7 @@ body {
 .container {
     background-color: rgba(255, 255, 255, 0.13);
     width: 440px;
-    height: 500px;
+    height: 550px;
     border-radius: 10px;
     backdrop-filter: blur(10px);
     border: 2px solid rgba(255, 255, 255, 0.1);
@@ -65,7 +66,7 @@ body {
 
 .container .form {
     position: absolute;
-    top: 50%;
+    top: 54%;
     left: 50%;
     transform: translate(-50%, -50%);
     margin-top: 10px;
@@ -83,10 +84,15 @@ form * {
     width: 100%;
     text-align: center;
     position: relative;
-    bottom: 30px;
+    bottom: 138px;
     left: 10px;
     margin-top: -5px;
     margin-bottom: -33px;
+}
+
+.message {
+    position: relative;
+    bottom: 200px;
 }
 
 input {
