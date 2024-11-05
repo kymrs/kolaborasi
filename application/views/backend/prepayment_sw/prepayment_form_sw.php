@@ -152,8 +152,8 @@
                                     <input class="custom-control-input" type="radio" id="customRadio2" name="is_active" value="0" checked>
                                     <label for="customRadio2" class="custom-control-label">No</label>
                                 </div>
-                                <button style="margin-left: 195px" type="submit" class="btn btn-success">Submit</button>
-                                <button style="margin-left: 195px" type="submit" class="btn btn-danger">Delete</button>
+                                <button style="margin-left: 100px" type="submit" class="btn btn-success">Submit</button>
+                                <button style="margin-left: 20px" type="submit" class="btn btn-danger">Delete</button>
                             </div>
                         </div>
                         <div class="row">
