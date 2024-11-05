@@ -1350,6 +1350,29 @@
                     // Sembunyikan loading saat respons diterima
                     $('#loading').hide();
 
+                    if (data.status) {
+                        Swal.fire({
+                            position: 'center',
+                            icon: 'success',
+                            title: 'Your data has been saved',
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then((result) => {
+                            location.href = "<?= base_url('reimbust_sw') ?>";
+                        });
+                    } else {
+
+                        // Sembunyikan loading saat respons diterima
+                        $('#loading').hide();
+
+                        // Tampilkan pesan kesalahan
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: data.error
+                        });
+                    }
+
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
 
