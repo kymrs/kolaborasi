@@ -48,7 +48,7 @@
                                 <div class="form-group row">
                                     <label class="col-sm-5">Event</label>
                                     <div class="row-sm-10" style="margin-left: 14px; width: 51%;">
-                                        <select class="form-control event_sw" id="event" name="event" style="width: 71%;">
+                                        <select class="form-control" id="event" name="event" style="width: 71%;">
                                             <option value="" selected disabled>Pilih opsi...</option>
                                             <?php foreach ($events as $event) { ?>
                                                 <option value="<?= $event->id ?>"><?= $event->event_name ?></option>
