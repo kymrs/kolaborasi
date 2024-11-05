@@ -12,11 +12,11 @@
                 <div class="card-body">
                     <form id="form">
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-7">
                                 <div class="form-group row">
                                     <label class="col-sm-5">Tanggal Prepayment</label>
                                     <div class="col-sm-7">
-                                        <div class="input-group date">
+                                        <div class="input-group date" style="width: 80%">
                                             <input type="text" class="form-control" name="tgl_prepayment" id="tgl_prepayment" placeholder="DD-MM-YYYY" autocomplete="off" readonly>
                                             <div class="input-group-append">
                                                 <div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
@@ -27,7 +27,7 @@
                                 <div class="form-group row">
                                     <label class="col-sm-5">Kode Prepayment</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="kode_prepayment" name="kode_prepayment" readonly>
+                                        <input type="text" class="form-control" id="kode_prepayment" name="kode_prepayment" readonly style="width: 80%">
                                     </div>
                                 </div>
                                 <!-- <div class="form-group row">
@@ -44,9 +44,9 @@
                             </div>
 
                             <!-- SEBELAH KANAN -->
-                            <div class="col-md-6">
+                            <div class="col-md-5">
                                 <div class="form-group row">
-                                    <label class="col-sm-4">Event</label>
+                                    <label class="col-sm-5">Event</label>
                                     <div class="row-sm-10" style="margin-left: 14px; width: 51%;">
                                         <select class="form-control event_sw" id="event" name="event" style="width: 71%;">
                                             <option value="" selected disabled>Pilih opsi...</option>
@@ -68,7 +68,7 @@
                                     </div>
                                 </div> -->
                                 <div class="form-group row">
-                                    <label class="col-sm-4">Tujuan</label>
+                                    <label class="col-sm-5">Tujuan</label>
                                     <div class="col-sm-7">
                                         <textarea class="form-control" id="tujuan" name="tujuan" rows="2"></textarea>
                                     </div>
