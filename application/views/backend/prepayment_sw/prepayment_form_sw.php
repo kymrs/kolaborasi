@@ -153,6 +153,7 @@
                                     <label for="customRadio2" class="custom-control-label">No</label>
                                 </div>
                                 <button style="margin-left: 195px" type="submit" class="btn btn-success">Submit</button>
+                                <button style="margin-left: 195px" type="submit" class="btn btn-danger">Delete</button>
                             </div>
                         </div>
                         <div class="row">
@@ -257,7 +258,7 @@
                 "targets": [1], // Target the id column (index 1)
                 "visible": false // Hide the id column
             }, {
-                "targets": [3],
+                "targets": [],
                 "className": 'dt-body-nowrap'
             }, {
                 "targets": [0],

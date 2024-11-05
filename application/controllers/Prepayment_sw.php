@@ -428,6 +428,14 @@ class Prepayment_sw extends CI_Controller
         echo json_encode(array("status" => TRUE));
     }
 
+    // MENGHAPUS DATA
+    function delete_event($id)
+    {
+        $this->M_prepayment_sw->delete($id);
+        $this->M_prepayment_sw->delete_detail($id);
+        echo json_encode(array("status" => TRUE));
+    }
+
     //APPROVE DATA
     public function approve3()
     {
