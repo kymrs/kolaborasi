@@ -152,8 +152,13 @@
                                     <input class="custom-control-input" type="radio" id="customRadio2" name="is_active" value="0" checked>
                                     <label for="customRadio2" class="custom-control-label">No</label>
                                 </div>
+<<<<<<< HEAD
                                 <button style="margin-left: 195px" type="submit" class="btn btn-success">Submit</button>
                                 <button style="margin-left: 195px" type="submit" class="btn btn-danger">Delete</button>
+=======
+                                <button style="margin-left: 100px" type="submit" class="btn btn-success">Submit</button>
+                                <button style="margin-left: 20px" type="button" class="btn btn-danger">Delete</button>
+>>>>>>> f4165d8fdfedcd0f40813e5d1ab9c3924852c849
                             </div>
                         </div>
                         <div class="row">
