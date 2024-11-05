@@ -64,7 +64,7 @@ class Prepayment_sw extends CI_Controller
     public function get_list_event()
     {
         $queries = $this->M_prepayment_sw->get_datatables_event();
-        $no = $_POST['start'] ?? 0;  // Tambahkan pengecekan start
+        $no = $_POST['start'];  // Tambahkan pengecekan start
 
         $data = array();  // Inisialisasi variabel data
 
@@ -86,7 +86,7 @@ class Prepayment_sw extends CI_Controller
         }
 
         $output = array(
-            "draw" => $_POST['draw'] ?? 1,  // Tambahkan pengecekan draw
+            "draw" => $_POST['draw'],  // Tambahkan pengecekan draw
             "recordsTotal" => $this->M_prepayment_sw->count_all_event(),
             "recordsFiltered" => $this->M_prepayment_sw->count_filtered_event(),
             "data" => $data,

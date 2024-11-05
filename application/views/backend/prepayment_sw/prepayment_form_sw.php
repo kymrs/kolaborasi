@@ -12,12 +12,12 @@
                 <div class="card-body">
                     <form id="form">
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-6" style="padding-right: 4rem">
                                 <div class="form-group row">
                                     <label class="col-sm-5">Tanggal Prepayment</label>
                                     <div class="col-sm-7">
                                         <div class="input-group date">
-                                            <input type="text" class="form-control" name="tgl_prepayment" id="tgl_prepayment" placeholder="DD-MM-YYYY" autocomplete="off" readonly />
+                                            <input type="text" class="form-control" name="tgl_prepayment" id="tgl_prepayment" placeholder="DD-MM-YYYY" autocomplete="off" readonly>
                                             <div class="input-group-append">
                                                 <div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
                                             </div>
@@ -47,14 +47,14 @@
                             <div class="col-md-6">
                                 <div class="form-group row">
                                     <label class="col-sm-5">Event</label>
-                                    <div class="row-sm-5" style="margin-left: 14px;">
-                                        <select class="form-control event_sw" id="event" name="event">
+                                    <div class="row-sm-10" style="margin-left: 14px; width: 51%;">
+                                        <select class="form-control event_sw" id="event" name="event" style="width: 83%;">
                                             <option value="" selected disabled>Pilih opsi...</option>
                                             <?php foreach ($events as $event) { ?>
                                                 <option value="<?= $event->id ?>"><?= $event->event_name ?></option>
                                             <?php } ?>
                                         </select>
-                                        <?php if (in_array($hak_akses, [1])) { ?>
+                                        <?php if (in_array($hak_akses, [1, 2])) { ?>
                                             <button class="btn btn-success btn-sm" type="button" data-toggle="modal" data-target="#staticBackdrop">
                                                 <i class="fa fa-plus" aria-hidden="true"></i>
                                             </button>
@@ -201,7 +201,6 @@
 
 <?php $this->load->view('template/footer'); ?>
 <?php $this->load->view('template/script'); ?>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
     $('#tgl_prepayment').datepicker({
@@ -239,7 +238,9 @@
 
     $(document).ready(function() {
 
-        $('.event_sw').select2();
+        $('.event_sw').select2({
+            width: 'style' // Menggunakan lebar yang ditentukan pada elemen HTML
+        });
 
         table = $('#table_event').DataTable({
             "responsive": true,
@@ -253,20 +254,15 @@
                 "type": "POST"
             },
             "columnDefs": [{
-                    "targets": [1], // Target the id column (index 1)
-                    "visible": false // Hide the id column
-                }, {
-                    "targets": [],
-                    "className": 'dt-head-nowrap'
-                },
-                {
-                    "targets": [2, 3],
-                    "className": 'dt-body-nowrap'
-                }, {
-                    "targets": [0],
-                    "orderable": false,
-                },
-            ]
+                "targets": [1], // Target the id column (index 1)
+                "visible": false // Hide the id column
+            }, {
+                "targets": [3],
+                "className": 'dt-body-nowrap'
+            }, {
+                "targets": [0],
+                "orderable": false,
+            }, ]
         });
 
         // modal datatables on click
