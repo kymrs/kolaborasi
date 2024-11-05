@@ -46,7 +46,7 @@
                             <!-- SEBELAH KANAN -->
                             <div class="col-md-6">
                                 <div class="form-group row">
-                                    <label class="col-sm-5">Event</label>
+                                    <label class="col-sm-4">Event</label>
                                     <div class="row-sm-10" style="margin-left: 14px; width: 51%;">
                                         <select class="form-control event_sw" id="event" name="event" style="width: 71%;">
                                             <option value="" selected disabled>Pilih opsi...</option>
@@ -68,7 +68,7 @@
                                     </div>
                                 </div> -->
                                 <div class="form-group row">
-                                    <label class="col-sm-5">Tujuan</label>
+                                    <label class="col-sm-4">Tujuan</label>
                                     <div class="col-sm-7">
                                         <textarea class="form-control" id="tujuan" name="tujuan" rows="2"></textarea>
                                     </div>
@@ -80,7 +80,7 @@
                             <button type="button" class="btn btn-success btn-sm" id="add-row"><i class="fa fa-plus" aria-hidden="true"></i> Add</button>
                         </div>
                         <!-- TABLE INPUT -->
-                        <div class="mt-4" style="overflow-x: scroll;">
+                        <div class="mt-4 mb-3" style="overflow-x: scroll;">
                             <table class="table table-bordered table-hover">
                                 <thead class="thead-dark">
                                     <tr>
@@ -163,7 +163,7 @@
                 </form>
 
                 <!-- TABLE EVENT -->
-                <div class="card-body">
+                <div class="card-body" style="overflow-x: scroll;">
                     <table id="table_event" class="table table-bordered table-striped">
                         <thead>
                             <tr>
@@ -247,7 +247,6 @@
         table = $('#table_event').DataTable({
             "responsive": true,
             "autoWidth": false,
-            "scrollX": true,
             "processing": true,
             "serverSide": true,
             "order": [],
