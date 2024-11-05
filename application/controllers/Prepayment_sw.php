@@ -77,6 +77,7 @@ class Prepayment_sw extends CI_Controller
             $row = array();
             $row[] = $no;
             $row[] = $query->id;
+            $row[] = '<a onclick="delete_data(' . "'" . $query->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;';
             $row[] = $query->event_name;
             $row[] = $is_active;
             $row[] = $query->created_at;
@@ -431,8 +432,8 @@ class Prepayment_sw extends CI_Controller
     // MENGHAPUS DATA
     function delete_event($id)
     {
-        $this->M_prepayment_sw->delete($id);
-        $this->M_prepayment_sw->delete_detail($id);
+        $this->db->where('id', $id);
+        $this->db->delete('tbl_event_sw');
         echo json_encode(array("status" => TRUE));
     }
 

@@ -12,7 +12,7 @@
                 <div class="card-body">
                     <form id="form">
                         <div class="row">
-                            <div class="col-md-6" style="padding-right: 4rem">
+                            <div class="col-md-6">
                                 <div class="form-group row">
                                     <label class="col-sm-5">Tanggal Prepayment</label>
                                     <div class="col-sm-7">
@@ -80,7 +80,7 @@
                             <button type="button" class="btn btn-success btn-sm" id="add-row"><i class="fa fa-plus" aria-hidden="true"></i> Add</button>
                         </div>
                         <!-- TABLE INPUT -->
-                        <div class="mt-4">
+                        <div class="mt-4" style="overflow-x: scroll;">
                             <table class="table table-bordered table-hover">
                                 <thead class="thead-dark">
                                     <tr>
@@ -153,7 +153,6 @@
                                     <label for="customRadio2" class="custom-control-label">No</label>
                                 </div>
                                 <button style="margin-left: 100px" type="submit" class="btn btn-success">Submit</button>
-                                <button style="margin-left: 20px" type="submit" class="btn btn-danger">Delete</button>
                             </div>
                         </div>
                         <div class="row">
@@ -170,6 +169,7 @@
                             <tr>
                                 <th>No</th>
                                 <th>ID</th>
+                                <th>Delete</th>
                                 <th>Event</th>
                                 <th>Active</th>
                                 <th>created</th>
@@ -182,6 +182,7 @@
                             <tr>
                                 <th>No</th>
                                 <th>ID</th>
+                                <th>Delete</th>
                                 <th>Event</th>
                                 <th>Active</th>
                                 <th>created</th>
@@ -246,7 +247,7 @@
         table = $('#table_event').DataTable({
             "responsive": true,
             "autoWidth": false,
-            // "scrollX": true,
+            "scrollX": true,
             "processing": true,
             "serverSide": true,
             "order": [],
@@ -269,10 +270,12 @@
         // modal datatables on click
         $('#table_event tbody').on('click', 'tr', function() {
             let data = table.row(this).data();
-            // console.log(data);
+            console.log(data);
 
             $('#event_id').val(data[1]);
-            $('#event_name').val(data[2]);
+            $('#event_name').val(data[3]);
+
+            $('.delete').prop('disabled', false);
 
             if (data[3] == 'Active') {
                 $('#customRadio1').prop('checked', true);
@@ -690,6 +693,41 @@
             focusInvalid: false, // Disable auto-focus on the first invalid field
         });
 
-
     })
+
+    // MENGHAPUS DATA MENGGUNAKAN METHODE POST JQUERY
+    function delete_data(id) {
+        // console.log($id);
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: "<?php echo site_url('prepayment_sw/delete_event/') ?>" + id,
+                    type: "POST",
+                    dataType: "JSON",
+                    success: function(data) {
+                        Swal.fire({
+                            position: 'center',
+                            icon: 'success',
+                            title: 'Your data has been deleted',
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then((result) => {
+                            location.href = "<?= base_url('prepayment_sw/add_form') ?>";
+                        })
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert('Error deleting data');
+                    }
+                });
+            }
+        })
+    };
 </script>

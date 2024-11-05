@@ -10,7 +10,7 @@ class M_prepayment_sw extends CI_Model
     var $table = 'tbl_prepayment';
     var $table2 = 'tbl_prepayment_detail';
     var $column_order = array(null, null, 'payment_status', 'kode_prepayment', 'event_name', 'name', 'divisi', 'jabatan', 'tgl_prepayment', 'total_nominal', 'status');
-    var $column_order2 = array(null, 'id', 'event_name', 'is_active', 'created_at', 'updated_at');
+    var $column_order2 = array(null, null, 'id', 'event_name', 'is_active', 'created_at', 'updated_at');
     var $column_search = array('payment_status', 'kode_prepayment', 'event_name', 'name', 'divisi', 'jabatan', 'tgl_prepayment', 'total_nominal', 'status'); //field yang diizin untuk pencarian
     var $column_search2 = array('id', 'event_name', 'is_active', 'created_at', 'updated_at');
     var $order = array('id' => 'desc');
@@ -274,9 +274,8 @@ class M_prepayment_sw extends CI_Model
     function get_datatables_event()
     {
         $this->_get_datatables_query_event();
-        if (isset($_POST['length']) && $_POST['length'] != -1) {
-            $this->db->limit($_POST['length'], $_POST['start'] ?? 0);  // Tambahkan pengecekan start
-        }
+        if ($_POST['length'] != -1)
+            $this->db->limit($_POST['length'], $_POST['start']);
         $query = $this->db->get();
         return $query->result();
     }
@@ -284,6 +283,32 @@ class M_prepayment_sw extends CI_Model
     public function count_all_event()
     {
         $this->db->select('id, event_name, is_active, created_at, updated_at')->from('tbl_event_sw');
+
+        $i = 0;
+
+        foreach ($this->column_search2 as $item) { // Pastikan ini adalah column_search2
+            if (!empty($_POST['search']['value'])) {
+                if ($i === 0) {
+                    $this->db->group_start(); // Mulai grup pencarian
+                    $this->db->like('tbl_event_sw.' . $item, $_POST['search']['value']);
+                } else {
+                    $this->db->or_like('tbl_event_sw.' . $item, $_POST['search']['value']);
+                }
+
+                if (count($this->column_search2) - 1 == $i) { // Pastikan ini adalah column_search2
+                    $this->db->group_end(); // Tutup grup pencarian setelah semua kolom
+                }
+            }
+            $i++;
+        }
+
+        // Pastikan bagian order berada di luar grup pencarian
+        if (isset($_POST['order'])) {
+            $this->db->order_by($this->column_order2[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+        } else if (isset($this->order)) {
+            $order = $this->order;
+            $this->db->order_by(key($order), $order[key($order)]);
+        }
         return $this->db->count_all_results();  // Perbaikan nama fungsi
     }
 
