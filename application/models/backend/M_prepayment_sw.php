@@ -324,4 +324,10 @@ class M_prepayment_sw extends CI_Model
         $query = $this->db->select('id, event_name')->from('tbl_event_sw')->where('is_active', 1);
         return $query->get()->result();
     }
+
+    public function get_selected_event($id)
+    {
+        $query = $this->db->select('event')->from('tbl_prepayment')->where('id', $id);
+        return $query->get()->row('event');
+    }
 }
