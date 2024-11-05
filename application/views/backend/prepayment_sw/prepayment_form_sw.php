@@ -46,15 +46,19 @@
                             <!-- SEBELAH KANAN -->
                             <div class="col-md-5">
                                 <div class="form-group row">
-                                    <label class="col-sm-5">Event</label>
-                                    <div class="row-sm-10" style="margin-left: 14px; width: 51%;">
-                                        <select class="form-control event_sw" id="event" name="event" style="width: 71%;">
-                                            <option value="" selected disabled>Pilih opsi...</option>
+                                    <label class="col-sm-4">Event</label>
+                                    <div class="row-sm-10" style="margin-left: 14px; width: 60%;">
+                                        <select class="form-control event_sw" id="event" name="event" style="width: 80%;">
+                                            <option value="" <?= isset($selected) ? "" : 'selected', 'disabled ' ?>>Pilih opsi...</option>
                                             <?php foreach ($events as $event) { ?>
-                                                <option value="<?= $event->id ?>"><?= $event->event_name ?></option>
+                                                <?php if (isset($selected)) { ?>
+                                                    <option value="<?= $event->id ?>" <?= $event->id == $selected ? 'selected' : '' ?>><?= $event->event_name ?></option>
+                                                <?php } else { ?>
+                                                    <option value="<?= $event->id ?>"><?= $event->event_name ?></option>
+                                                <?php } ?>
                                             <?php } ?>
                                         </select>
-                                        <?php if (in_array($hak_akses, [1, 2])) { ?>
+                                        <?php if (in_array($hak_akses, [1])) { ?>
                                             <button class="btn btn-success btn-sm" type="button" data-toggle="modal" data-target="#staticBackdrop">
                                                 <i class="fa fa-plus" aria-hidden="true"></i>
                                             </button>
@@ -68,8 +72,8 @@
                                     </div>
                                 </div> -->
                                 <div class="form-group row">
-                                    <label class="col-sm-5">Tujuan</label>
-                                    <div class="col-sm-7">
+                                    <label class="col-sm-4">Tujuan</label>
+                                    <div class="col-sm-8">
                                         <textarea class="form-control" id="tujuan" name="tujuan" rows="2"></textarea>
                                     </div>
                                 </div>
@@ -479,6 +483,7 @@
                     // $('#divisi').val(data['master']['divisi']);
                     // $('#jabatan').val(data['master']['jabatan']);
                     $('#prepayment').val(data['master']['prepayment']);
+                    // $('#option-event').val(data['master']['event']);
                     $('#tujuan').val(data['master']['tujuan']);
                     if (data['master']['total_nominal'] == null) {
                         $('#total_nominal_view').text(total_nominal.toLocaleString());

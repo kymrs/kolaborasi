@@ -239,6 +239,7 @@ class Prepayment_sw extends CI_Controller
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = $id;
         $data['hak_akses'] = $this->session->userdata('id_level');
+        $data['selected'] = $this->M_prepayment_sw->get_selected_event($id);
         $data['aksi'] = 'update';
         $data['events'] = $this->M_prepayment_sw->get_events();
         $data['title_view'] = "Edit Data Prepayment";
