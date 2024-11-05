@@ -133,7 +133,7 @@
             </div>
             <div class="modal-body">
                 <form id="form_event" action="">
-                    <div class="col">
+                    <div class="col" style="border-bottom: 1px solid rgba(0,0,0,0.2);">
                         <div class="form-group row">
                             <label class="col-sm-2">Event</label>
                             <input type="hidden" id="event_id" name="event_id">
@@ -152,11 +152,11 @@
                                     <input class="custom-control-input" type="radio" id="customRadio2" name="is_active" value="0" checked>
                                     <label for="customRadio2" class="custom-control-label">No</label>
                                 </div>
+                                <button style="margin-left: 195px" type="submit" class="btn btn-success">Submit</button>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-sm">
-                                <button type="submit" class="btn btn-success">Submit</button>
                             </div>
                         </div>
                     </div>
