@@ -141,8 +141,10 @@ class Prepayment_sw extends CI_Controller
 
             //MENENSTUKAN SATTSU PROGRESS PENGAJUAN PERMINTAAN
             if ($field->app_status == 'approved' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
-                $status = $field->status . ' (' . $field->app_name . ')';
+                $status = $field->status . ' (' . $field->app2_name . ')';
             } elseif ($field->app4_status == 'approved' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
+                $status = $field->status . ' (' . $field->app_name . ')';
+            } elseif ($field->app4_status == 'waiting' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
                 $status = $field->status . ' (' . $field->app4_name . ')';
             } else {
                 $status = $field->status;

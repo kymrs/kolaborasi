@@ -78,9 +78,13 @@ class Reimbust_pw extends CI_Controller
             }
 
             //MENENSTUKAN SATTSU PROGRESS PENGAJUAN PERMINTAAN
-            $status = $field->app_status == 'approved' && $field->app2_status == 'waiting'
-                ? $field->status . ' (' . $field->app_name . ')'
-                : $field->status;
+            if ($field->app_status == 'approved' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
+                $status = $field->status . ' (' . $field->app2_name . ')';
+            } elseif ($field->app_status == 'waiting' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
+                $status = $field->status . ' (' . $field->app_name . ')';
+            } else {
+                $status = $field->status;
+            }
 
             $no++;
             $row = array();
