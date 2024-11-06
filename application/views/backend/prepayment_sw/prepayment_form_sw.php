@@ -46,10 +46,10 @@
                             <!-- SEBELAH KANAN -->
                             <div class="col-md-5">
                                 <div class="form-group row">
-                                    <label class="col-sm-4">Event</label>
-                                    <div class="row-sm-10" style="margin-left: 14px; width: 60%;">
-                                        <select class="form-control event_sw" id="event" name="event" style="width: 80%;">
-                                            <option value="" <?= isset($selected) ? "" : 'selected', 'disabled ' ?>>Pilih opsi...</option>
+                                    <label class="col-sm-5">Event</label>
+                                    <div class="row-sm-10" style="margin-left: 14px; width: 51%;">
+                                        <select class="form-control event_sw" id="event" name="event" style="width: 71%;">
+                                            <option value="" selected disabled>Pilih opsi...</option>
                                             <?php foreach ($events as $event) { ?>
                                                 <?php if (isset($selected)) { ?>
                                                     <option value="<?= $event->id ?>" <?= $event->id == $selected ? 'selected' : '' ?>><?= $event->event_name ?></option>
