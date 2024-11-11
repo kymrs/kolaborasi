@@ -557,7 +557,7 @@ class Reimbust_sw extends CI_Controller
         $pdf->SetFont('Poppins-Regular', '', 10);
         // Membuat header tabel
         $pdf->Cell(47.3, 8.5, 'Yang Melakukan', 1, 0, 'C');
-        $pdf->Cell(47.3, 8.5, 'Kapten', 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, 'Captain', 1, 0, 'C');
         $pdf->Cell(47.3, 8.5, 'Mengetahui', 1, 0, 'C');
         $pdf->Cell(47.3, 8.5, 'Menyetujui', 1, 1, 'C');
 

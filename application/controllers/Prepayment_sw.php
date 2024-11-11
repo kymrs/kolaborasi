@@ -251,7 +251,9 @@ class Prepayment_sw extends CI_Controller
 
     function edit_data($id)
     {
+        $event_id = $this->db->select('event')->from('tbl_prepayment')->where('id', $id)->get()->row('event');
         $data['master'] = $this->M_prepayment_sw->get_by_id($id);
+        $data['event'] = $this->db->select('event_name')->from('tbl_event_sw')->where('id', $event_id)->get()->row('event_name');
         $data['transaksi'] = $this->M_prepayment_sw->get_by_id_detail($id);
         $data['nama'] = $this->db->select('name')
             ->from('tbl_data_user')
@@ -665,7 +667,7 @@ class Prepayment_sw extends CI_Controller
 
         // Membuat header tabel
         $pdf->Cell(47.3, 8.5, 'Yang Melakukan', 1, 0, 'C');
-        $pdf->Cell(47.3, 8.5, 'Kapten', 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, 'Captain', 1, 0, 'C');
         $pdf->Cell(47.3, 8.5, 'Mengetahui', 1, 0, 'C');
         $pdf->Cell(47.3, 8.5, 'Menyetujui', 1, 1, 'C');
 

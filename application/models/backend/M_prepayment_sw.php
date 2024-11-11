@@ -171,6 +171,8 @@ class M_prepayment_sw extends CI_Model
                     ->where('tbl_prepayment.id_user !=', $this->session->userdata('id_user'))
                     ->or_where('tbl_prepayment.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_prepayment.app_status = 'approved'", FALSE)
                     ->where('tbl_prepayment.id_user !=', $this->session->userdata('id_user'))
+                    ->or_where('tbl_prepayment.app4_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                    ->where('tbl_prepayment.id_user !=', $this->session->userdata('id_user'))
                     ->group_end();
             }
         }
