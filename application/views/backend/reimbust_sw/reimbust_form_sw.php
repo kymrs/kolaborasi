@@ -105,6 +105,7 @@
                                     <label class="col-sm-5">Kode Prepayment</label>
                                     <div class="col-sm-7">
                                         <input type="text" class="form-control" readonly placeholder="Kode Prepayment" name="kode_prepayment" id="kode_prepayment_input" style="cursor: not-allowed;">
+                                        <input type="hidden" class="form-control" id="kode_prepayment_old" name="kode_prepayment_old">
                                     </div>
                                 </div>
                             </div>
@@ -448,7 +449,7 @@
                 $('#pemakaian' + currentRowCount).css('cursor', 'not-allowed').attr('placeholder', 'Deklarasi').val(data[7]);
 
                 // Menghapus atribut required dari input file
-                $('#inputGroupFile01' + currentRowCount).removeAttr('required');
+                $('#inputGroupFile01' + currentRowCount).removeAttr('required').val('');
 
                 $('#tgl_nota_' + currentRowCount).css({
                     'cursor': 'not-allowed',
@@ -921,7 +922,10 @@
                         'disabled': false,
                         'readonly': false
                     }).css('cursor', 'pointer');
-                    $('#tgl_pengajuan').css('pointer-events', 'auto');
+                    $('#tgl_pengajuan').css({
+                        'pointer-events': 'none',
+                        'background-color': '#EAECF4'
+                    });
                     // $('#nama').prop('readonly', false).css('cursor', 'auto');
                     // $('#departemen').prop('disabled', false).css({
                     //     'display': 'block',
@@ -1055,6 +1059,7 @@
                     $('#jumlah_prepayment').val(data['master']['jumlah_prepayment'].replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
                     $('#hidden_jumlah_prepayment').val(data['master']['jumlah_prepayment']);
                     $('#kode_prepayment_input').val(data['master']['kode_prepayment']);
+                    $('#kode_prepayment_old').val(data['master']['kode_prepayment']);
 
 
                     if (aksi == 'update') {
@@ -1103,6 +1108,7 @@
                                             ${data['transaksi'][index]['deklarasi'] ? data['transaksi'][index]['deklarasi'] : 'Deklarasi'}
                                         </div>
                                         <input type="hidden" class="form-control" id="deklarasi${index + 1}" placeholder="Deklarasi ${index + 1}" name="deklarasi[${index + 1}]" autocomplete="off" value="${data['transaksi'][index]['deklarasi']}">
+                                        <input type="hidden" class="form-control" id="deklarasi_old${index + 1}" placeholder="Deklarasi Old${index + 1}" name="deklarasi_old[${index + 1}]" autocomplete="off" value="${data['transaksi'][index]['deklarasi']}">
                                     </td>
                                     <td><span class="btn delete-btn btn-danger" data-id="${index + 1}">Delete</span></td>
                                 </tr>

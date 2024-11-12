@@ -838,6 +838,7 @@ class Reimbust_sw extends CI_Controller
             'kode_reimbust' => $this->input->post('kode_reimbust'),
             'tujuan' => $this->input->post('tujuan'),
             'jumlah_prepayment' => $this->input->post('jumlah_prepayment'),
+            'kode_prepayment' => $this->input->post('kode_prepayment'),
             'app_status' => 'waiting',
             'app_date' => null,
             'app_keterangan' => null,
@@ -862,6 +863,7 @@ class Reimbust_sw extends CI_Controller
         $tgl_nota = $this->input->post('tgl_nota');
         $kwitansi_image = $this->input->post('kwitansi_image');
         $deklarasi = $this->input->post('deklarasi');
+        $deklarasi_old = $this->input->post('deklarasi_old');
 
         if ($this->db->update('tbl_reimbust', $data)) {
             // 1. Hapus Baris yang Telah Dihapus
@@ -937,8 +939,19 @@ class Reimbust_sw extends CI_Controller
                     'deklarasi' => $deklarasi[$i]
                 );
 
+                // mengubah data prepayment is_active menjadi 0 pada data prepayment terbaru
+                $this->db->update('tbl_prepayment', ['is_active' => 0], ['kode_prepayment' => $this->input->post('kode_prepayment')]);
+                // mengubah data prepayment is_active menjadi 1 pada data prepayment terlama
+                $this->db->update('tbl_prepayment', ['is_active' => 1], ['kode_prepayment' => $this->input->post('kode_prepayment_old')]);
+
                 // Replace data di tbl_reimbust_detail
                 $this->db->replace('tbl_reimbust_detail', $data2);
+
+                // mengubah is_active deklarasi awal menjadi 1, dan deklarasi baru menjadi 0
+                if ($deklarasi[$i] != $deklarasi_old[$i]) {
+                    $this->db->update('tbl_deklarasi', ['is_active' => 1], ['kode_deklarasi' => $deklarasi_old[$i]]);
+                    $this->db->update('tbl_deklarasi', ['is_active' => 0], ['kode_deklarasi' => $deklarasi[$i]]);
+                }
             }
         }
         echo json_encode(array("status" => TRUE));

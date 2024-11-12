@@ -856,6 +856,7 @@ class Reimbust_pu extends CI_Controller
         $tgl_nota = $this->input->post('tgl_nota');
         $kwitansi_image = $this->input->post('kwitansi_image');
         $deklarasi = $this->input->post('deklarasi');
+        $deklarasi_old = $this->input->post('deklarasi_old');
 
         if ($this->db->update('tbl_reimbust_pu', $data)) {
             // 1. Hapus Baris yang Telah Dihapus
@@ -931,8 +932,19 @@ class Reimbust_pu extends CI_Controller
                     'deklarasi' => $deklarasi[$i]
                 );
 
+                // mengubah data prepayment is_active menjadi 0 pada data prepayment terbaru
+                $this->db->update('tbl_prepayment_pu', ['is_active' => 0], ['kode_prepayment' => $this->input->post('kode_prepayment')]);
+                // mengubah data prepayment is_active menjadi 1 pada data prepayment terlama
+                $this->db->update('tbl_prepayment_pu', ['is_active' => 1], ['kode_prepayment' => $this->input->post('kode_prepayment_old')]);
+
                 // Replace data di tbl_reimbust_detail
                 $this->db->replace('tbl_reimbust_detail_pu', $data2);
+
+                // mengubah is_active deklarasi awal menjadi 1, dan deklarasi baru menjadi 0
+                if ($deklarasi[$i] != $deklarasi_old[$i]) {
+                    $this->db->update('tbl_deklarasi_pu', ['is_active' => 1], ['kode_deklarasi' => $deklarasi_old[$i]]);
+                    $this->db->update('tbl_deklarasi_pu', ['is_active' => 0], ['kode_deklarasi' => $deklarasi[$i]]);
+                }
             }
         }
         echo json_encode(array("status" => TRUE));
