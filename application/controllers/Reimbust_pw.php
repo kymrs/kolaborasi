@@ -832,6 +832,7 @@ class Reimbust_pw extends CI_Controller
             'kode_reimbust' => $this->input->post('kode_reimbust'),
             'tujuan' => $this->input->post('tujuan'),
             'jumlah_prepayment' => $this->input->post('jumlah_prepayment'),
+            'kode_prepayment' => $this->input->post('kode_prepayment'),
             'app_status' => 'waiting',
             'app_date' => null,
             'app_keterangan' => null,
@@ -929,16 +930,23 @@ class Reimbust_pw extends CI_Controller
                     'deklarasi' => $deklarasi[$i]
                 );
 
-                // mengubah data prepayment is_active menjadi 0 pada data prepayment terbaru
-                $this->db->update('tbl_prepayment_pw', ['is_active' => 0], ['kode_prepayment' => $this->input->post('kode_prepayment')]);
-                // mengubah data prepayment is_active menjadi 1 pada data prepayment terlama
-                $this->db->update('tbl_prepayment_pw', ['is_active' => 1], ['kode_prepayment' => $this->input->post('kode_prepayment_old')]);
+                // Mengubah data prepayment is_active menjadi 0 pada data prepayment terbaru, jika kode_prepayment ada
+                $kode_prepayment = $this->input->post('kode_prepayment');
+                if (!empty($kode_prepayment)) {
+                    $this->db->update('tbl_prepayment_pw', ['is_active' => 0], ['kode_prepayment' => $kode_prepayment]);
+                }
+
+                // Mengubah data prepayment is_active menjadi 1 pada data prepayment terlama, jika kode_prepayment_old ada
+                $kode_prepayment_old = $this->input->post('kode_prepayment_old');
+                if ($kode_prepayment != $kode_prepayment_old && !empty($kode_prepayment_old)) {
+                    $this->db->update('tbl_prepayment_pw', ['is_active' => 1], ['kode_prepayment' => $kode_prepayment_old]);
+                }
 
                 // Replace data di tbl_reimbust_detail
                 $this->db->replace('tbl_reimbust_detail_pw', $data2);
 
                 // mengubah is_active deklarasi awal menjadi 1, dan deklarasi baru menjadi 0
-                if ($deklarasi[$i] != $deklarasi_old[$i]) {
+                if (isset($deklarasi[$i], $deklarasi_old[$i]) && $deklarasi[$i] != $deklarasi_old[$i]) {
                     $this->db->update('tbl_deklarasi_pw', ['is_active' => 1], ['kode_deklarasi' => $deklarasi_old[$i]]);
                     $this->db->update('tbl_deklarasi_pw', ['is_active' => 0], ['kode_deklarasi' => $deklarasi[$i]]);
                 }
