@@ -1059,6 +1059,7 @@
                     $('#jumlah_prepayment').val(data['master']['jumlah_prepayment'].replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
                     $('#hidden_jumlah_prepayment').val(data['master']['jumlah_prepayment']);
                     $('#kode_prepayment_input').val(data['master']['kode_prepayment']);
+                    $('#kode_prepayment_old').val(data['master']['kode_prepayment']);
 
 
                     if (aksi == 'update') {
