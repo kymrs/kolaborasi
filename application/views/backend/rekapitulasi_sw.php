@@ -181,7 +181,7 @@
         function initializeDataTable() {
             table = $('#table').DataTable({
                 "destroy": true, // Destroy the previous DataTable instance
-                "responsive": false,
+                "responsive": true,
                 "scrollX": true,
                 "processing": true,
                 "serverSide": true,

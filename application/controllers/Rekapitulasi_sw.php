@@ -142,7 +142,7 @@ class Rekapitulasi_sw extends CI_Controller
         }
 
         foreach ($reimbust as $data) {
-            $sheet->setCellValue('A' . $row, $data->kode_reimbust);
+            $sheet->setCellValue('A' . $row, strtoupper($data->kode_reimbust));
             $sheet->setCellValue('B' . $row, $data->sifat_pelaporan);
             $sheet->setCellValue('C' . $row, $this->tgl_indo(date("Y-m-j", strtotime($data->tgl_pengajuan))));
             $sheet->setCellValue('D' . $row, $data->total_nominal);
