@@ -14,7 +14,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group row">
-                                    <label class="col-sm-5">Tanggal Prepayment</label>
+                                    <label class="col-sm-4">Tanggal Prepayment</label>
                                     <div class="col-sm-7">
                                         <div class="input-group date">
                                             <input type="text" class="form-control" name="tgl_prepayment" id="tgl_prepayment" placeholder="DD-MM-YYYY" autocomplete="off" readonly />
@@ -25,7 +25,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-sm-5">Kode Prepayment</label>
+                                    <label class="col-sm-4">Kode Prepayment</label>
                                     <div class="col-sm-7">
                                         <input type="text" class="form-control" id="kode_prepayment" name="kode_prepayment" readonly>
                                     </div>
@@ -46,19 +46,19 @@
                             <!-- SEBELAH KANAN -->
                             <div class="col-md-6">
                                 <div class="form-group row">
-                                    <label class="col-sm-5">Prepayment</label>
+                                    <label class="col-sm-4">Prepayment</label>
                                     <div class="col-sm-7">
                                         <input type="text" class="form-control" id="prepayment" name="prepayment" placeholder="Prepayment for....">
                                     </div>
                                 </div>
                                 <!-- <div class="form-group row">
-                                    <label class="col-sm-5">Jabatan</label>
+                                    <label class="col-sm-4">Jabatan</label>
                                     <div class="col-sm-7">
                                         <input type="text" class="form-control" id="jabatan" name="jabatan" placeholder="Jabatan....">
                                     </div>
                                 </div> -->
                                 <div class="form-group row">
-                                    <label class="col-sm-5">Tujuan</label>
+                                    <label class="col-sm-4">Tujuan</label>
                                     <div class="col-sm-7">
                                         <textarea class="form-control" id="tujuan" name="tujuan" rows="2"></textarea>
                                     </div>
@@ -70,7 +70,7 @@
                             <button type="button" class="btn btn-success btn-sm" id="add-row"><i class="fa fa-plus" aria-hidden="true"></i> Add</button>
                         </div>
                         <!-- TABLE INPUT -->
-                        <div class="mt-4">
+                        <div class="mt-4 mb-3" style="overflow-x: scroll;">
                             <table class="table table-bordered table-hover">
                                 <thead class="thead-dark">
                                     <tr>

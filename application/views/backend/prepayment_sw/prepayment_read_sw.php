@@ -483,7 +483,7 @@
                 // console.log(data);
                 // DATA PREPAYMENT
                 $('#divisiTxt').text(data['master']['divisi']);
-                $('#prepaymentTxt').text(data['master']['prepayment']);
+                $('#prepaymentTxt').text(data['event']);
                 $('#tanggalTxt').text(moment(data['master']['tgl_prepayment']).format('D MMMM YYYY'));
                 $('#namaTxt').text(data['nama']);
                 $('#jabatanTxt').text(data['master']['jabatan']);

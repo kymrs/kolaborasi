@@ -94,9 +94,11 @@ class Datadeklarasi_sw extends CI_Controller
                 $action = $action_read . $action_print;
             } elseif ($field->id_pengaju != $this->session->userdata('id_user') && $field->app2_name == $fullname) {
                 $action = $action_read . $action_print;
+            } elseif ($field->id_pengaju != $this->session->userdata('id_user') && $field->app4_name == $fullname) {
+                $action = $action_read . $action_print;
             } elseif (in_array($field->status, ['rejected', 'approved'])) {
                 $action = $action_read . $action_print;
-            } elseif ($field->app_status == 'revised' || $field->app2_status == 'revised') {
+            } elseif ($field->app_status == 'revised' || $field->app2_status == 'revised' || $field->app4_status == 'revised') {
                 $action = $action_read . $action_edit . $action_print;
             } elseif ($field->app_status == 'approved') {
                 $action = $action_read . $action_print;
@@ -286,6 +288,9 @@ class Datadeklarasi_sw extends CI_Controller
             'app2_status' => 'waiting',
             'app2_date' => null,
             'app2_keterangan' => null,
+            'app4_status' => 'waiting',
+            'app4_date' => null,
+            'app4_keterangan' => null,
             'status' => 'on-process'
         );
         $this->db->where('id', $this->input->post('id'));
@@ -462,40 +467,46 @@ class Datadeklarasi_sw extends CI_Controller
         $pdf->SetFont('Poppins-Bold', '', 12);
 
         // Membuat header tabel
-        $pdf->Cell(63, 8.5, 'Yang Melakukan', 1, 0, 'C');
-        $pdf->Cell(63, 8.5, 'Mengetahui', 1, 0, 'C');
-        $pdf->Cell(63, 8.5, 'Menyetujui', 1, 1, 'C');
+        $pdf->Cell(47.3, 8.5, 'Yang Melakukan', 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, 'Captain', 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, 'Mengetahui', 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, 'Menyetujui', 1, 1, 'C');
 
         // Set font normal untuk konten tabel
         $pdf->SetFont('Poppins-Regular', '', 10);
 
         // Baris pemisah
-        $pdf->Cell(63, 5, '', 'LR', 0, 'C');
-        $pdf->Cell(63, 5, '', 0, 0, 'C');
-        $pdf->Cell(63, 5, '', 'LR', 1, 'C');
+        $pdf->Cell(47.3, 5, '', 'LR', 0, 'C');
+        $pdf->Cell(47.3, 5, '', 0, 0, 'C');
+        $pdf->Cell(47.3, 5, '', 'L', 0, 'C');
+        $pdf->Cell(47.3, 5, '', 'LR', 1, 'C');
 
         // Baris pertama (Status)
-        $pdf->Cell(63, 5, 'CREATED', 'LR', 0, 'C');
-        $pdf->Cell(63, 5, strtoupper($data['master']->app_status), 0, 0, 'C');
-        $pdf->Cell(63, 5, strtoupper($data['master']->app2_status), 'LR', 1, 'C');
+        $pdf->Cell(47.3, 5, 'CREATED', 'LR', 0, 'C');
+        $pdf->Cell(47.3, 5, strtoupper($data['master']->app4_status), 'R', 0, 'C');
+        $pdf->Cell(47.3, 5, strtoupper($data['master']->app_status), 0, 0, 'C');
+        $pdf->Cell(47.3, 5, strtoupper($data['master']->app2_status), 'LR', 1, 'C');
 
         // Baris kedua (Tanggal)
-        $pdf->Cell(63, 5, $data['master']->created_at, 'LR', 0, 'C');
-        $pdf->Cell(63, 5, $data['master']->app_date, 0, 0, 'C');
-        $pdf->Cell(63, 5, $data['master']->app2_date, 'LR', 1, 'C');
+        $pdf->Cell(47.3, 5, $data['master']->created_at, 'LR', 0, 'C');
+        $pdf->Cell(47.3, 5, $data['master']->app4_date, 'R', 0, 'C');
+        $pdf->Cell(47.3, 5, $data['master']->app_date, 0, 0, 'C');
+        $pdf->Cell(47.3, 5, $data['master']->app2_date, 'LR', 1, 'C');
 
         // Baris pemisah
-        $pdf->Cell(63, 5, '', 'LR', 0, 'C');
-        $pdf->Cell(63, 5, '', 0, 0, 'C');
-        $pdf->Cell(63, 5, '', 'LR', 1, 'C');
+        $pdf->Cell(47.3, 5, '', 'LR', 0, 'C');
+        $pdf->Cell(47.3, 5, '', 0, 0, 'C');
+        $pdf->Cell(47.3, 5, '', 'L', 0, 'C');
+        $pdf->Cell(47.3, 5, '', 'LR', 1, 'C');
 
         // Jarak kosong untuk pemisah
         $pdf->Ln(0);
 
         // Baris ketiga (Nama pengguna)
-        $pdf->Cell(63, 8.5, $data['user'], 1, 0, 'C');
-        $pdf->Cell(63, 8.5, $data['master']->app_name, 1, 0, 'C');
-        $pdf->Cell(63, 8.5, $data['master']->app2_name, 1, 1, 'C');
+        $pdf->Cell(47.3, 8.5, $data['user'], 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, $data['master']->app4_name, 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, $data['master']->app_name, 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, $data['master']->app2_name, 1, 1, 'C');
 
 
         // Add keterangan
