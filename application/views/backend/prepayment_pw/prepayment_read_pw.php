@@ -1,6 +1,8 @@
 <head>
     <?php $this->load->view('template/header'); ?>
     <style>
+        /* style prepayment */
+
         body .container {
             font-family: Arial, Helvetica, sans-serif;
             padding: 0;
