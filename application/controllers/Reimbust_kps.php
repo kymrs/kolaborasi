@@ -331,7 +331,7 @@ class Reimbust_kps extends CI_Controller
         $pdf->SetAutoPageBreak(true, 5); // Margin bawah 15mm
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/pengenumroh.png', 15, 8, 35, 22);
+        $pdf->Image(base_url('') . '/assets/backend/img/kps.png', 0, -12, 65, 60);
 
         // Set font
         $pdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php');

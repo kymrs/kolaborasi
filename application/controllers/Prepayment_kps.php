@@ -460,7 +460,7 @@ class Prepayment_kps extends CI_Controller
         $pdf->AddPage('P', 'Letter');
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/pengenumroh.png', 11.5, 3, 35, 22);
+        $pdf->Image(base_url('') . '/assets/backend/img/kps.png', -1, -15, 65, 60);
 
         $pdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php');
         $pdf->AddFont('Poppins-Bold', '', 'Poppins-Bold.php');

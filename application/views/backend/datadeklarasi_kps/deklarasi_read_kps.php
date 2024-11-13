@@ -24,15 +24,15 @@
         }
 
         .header .logo {
-            width: 240px;
+            width: 140px;
             position: relative;
-            bottom: 130px;
+            bottom: 50px;
         }
 
         .header .title {
             width: 100%;
             position: relative;
-            bottom: 210px;
+            bottom: 90px;
         }
 
         .header .title h1 {
@@ -48,6 +48,7 @@
 
         /* Main Field */
         .main-field table {
+            margin-top: 20px;
             width: 100%;
         }
 
@@ -100,7 +101,7 @@
             }
 
             .header .logo {
-                width: 140px;
+                width: 200px;
                 position: relative;
                 bottom: 50px;
             }

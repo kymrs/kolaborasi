@@ -26,11 +26,11 @@
         }
 
         .header .logo {
-            width: 140px;
+            width: 250px;
             position: relative;
-            right: -3px;
-            bottom: 80px;
-            margin-bottom: -70px;
+            right: 45px;
+            bottom: 150px;
+            margin-bottom: -210px;
         }
 
         .header h1 {
@@ -49,7 +49,8 @@
 
         .title {
             text-align: center;
-            margin-top: 10px;
+            margin-top: -20px;
+            margin-bottom: 25px;
         }
 
         .title h1 {
@@ -161,7 +162,7 @@
                     <!-- Header Section -->
                     <div class="header">
                         <div class="header-field">
-                            <img src="<?= base_url('assets/backend/img/pengenumroh.png') ?>" alt="" class="logo">
+                            <img src="<?= base_url('assets/backend/img/kps.png') ?>" alt="" class="logo">
                             <table>
                                 <tr>
                                     <td style="font-weight: bold;">Divisi</td>

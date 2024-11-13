@@ -32,9 +32,9 @@
             height: 150px;
             display: flex;
             align-items: center;
-            width: 160px;
+            width: 350px;
             position: relative;
-            left: 20px;
+            left: -45px;
         }
 
         .header .logo img {
@@ -162,7 +162,7 @@
             <!-- Header -->
             <div class="header">
                 <div class="logo">
-                    <img src="<?= base_url() ?>assets/backend/img/pengenumroh.png" alt="Logo">
+                    <img src="<?= base_url() ?>assets/backend/img/kps.png" alt="Logo">
                 </div>
                 <div class="title">
                     <h1>FORM PELAPORAN / REIMBUST</h1>
