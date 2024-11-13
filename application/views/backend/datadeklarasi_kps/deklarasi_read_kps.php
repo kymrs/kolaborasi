@@ -24,19 +24,16 @@
         }
 
         .header .logo {
-            width: 140px;
+            width: 250px;
             position: relative;
-            bottom: 50px;
+            bottom: 120px;
+            right: 40px;
         }
 
         .header .title {
             width: 100%;
             position: relative;
-            bottom: 90px;
-        }
-
-        .header .title h1 {
-            margin-bottom: 25px;
+            bottom: 210px;
         }
 
         .header .title h1,
@@ -48,6 +45,7 @@
 
         /* Main Field */
         .main-field table {
+            margin-top: 20px;
             width: 100%;
         }
 
@@ -100,7 +98,7 @@
             }
 
             .header .logo {
-                width: 140px;
+                width: 200px;
                 position: relative;
                 bottom: 50px;
             }
@@ -131,7 +129,7 @@
 
                     <!-- Header Section -->
                     <div class="header">
-                        <img src="<?= base_url('assets/backend/img/pengenumroh.png') ?>" alt="" class="logo">
+                        <img src="<?= base_url('assets/backend/img/kps.png') ?>" alt="" class="logo">
                         <div class="title">
                             <!-- <h1>SEBELASWARNA</h1> -->
                             <h2>FORM DEKLARASI</h2>

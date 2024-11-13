@@ -377,7 +377,7 @@ class Datadeklarasi_kps extends CI_Controller
         $pdf->AddPage('P', 'Letter');
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/pengenumroh.png', 15, 8, 35, 22);
+        $pdf->Image(base_url('') . '/assets/backend/img/kps.png', 0, -5, 65, 60);
 
         // Title of the form
         $pdf->Ln(25);
