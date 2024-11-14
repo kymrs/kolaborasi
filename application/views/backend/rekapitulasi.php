@@ -35,6 +35,12 @@
         margin-left: 10px;
     }
 
+    .main-filter {
+        cursor: pointer;
+        margin: 7px 0;
+        width: 150px;
+    }
+
     @media (max-width: 1000px) {
         .tgl-header {
             display: inline-block;
@@ -59,18 +65,17 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="card shadow mb-4">
+                <div class="card-header">
+                    <label for="sort" class="mr-2 mb-0">Main Filter:</label>
+                    <select id="sort" name="sort" class="form-control main-filter">
+                        <!-- <option value="" selected>Show all....</option> -->
+                        <option value="" selected>All</option>
+                        <option value="kps">KPS</option>
+                        <option value="pu">pengenumroh</option>
+                        <option value="sw">sebelaswarna</option>
+                    </select>
+                </div>
                 <div class="card-header py-3 justify-content-start align-items-center tgl-header">
-                    <div class="d-flex align-items-center mr-3 w-30">
-                        <label for="tgl_awal" class="mr-2 mb-0">Sort By:</label>
-                        <div class="input-group">
-                            <select name="sort" id="sort">
-                                <option value="" selected disabled>Pilih Opsi....</option>
-                                <option value="pu">Pengen Udang</option>
-                                <option value="sw">Suka Warkop</option>
-                                <option value="kps">Komisi Pemilihan Sarjana</option>
-                            </select>
-                        </div>
-                    </div>
                     <div class="d-flex align-items-center mr-3 w-30 tgl-awal">
                         <label for="tgl_awal" class="mr-2 mb-0 tgl-awal-text">Tanggal Awal:</label>
                         <div class="input-group date">
@@ -275,7 +280,6 @@
 
         $(document).on('change', '#sort', function() {
             selected = $('#sort').val();
-            console.log(selected);
             initializeDataTable();
         });
 
@@ -380,6 +384,14 @@
         var tgl_akhir = $('#tgl_akhir').val();
 
         // // Arahkan ke URL controller untuk export Excel dengan parameter
-        window.location.href = "<?= site_url('rekapitulasi/export_excel'); ?>?tgl_awal=" + tgl_awal + "&tgl_akhir=" + tgl_akhir;
+        if (selected == 'pu') {
+            window.location.href = "<?= site_url('rekapitulasi_pu/export_excel'); ?>?tgl_awal=" + tgl_awal + "&tgl_akhir=" + tgl_akhir;
+        } else if (selected == 'sw') {
+            window.location.href = "<?= site_url('rekapitulasi_sw/export_excel'); ?>?tgl_awal=" + tgl_awal + "&tgl_akhir=" + tgl_akhir;
+        } else if (selected == 'kps') {
+            window.location.href = "<?= site_url('rekapitulasi_kps/export_excel'); ?>?tgl_awal=" + tgl_awal + "&tgl_akhir=" + tgl_akhir;
+        } else {
+            window.location.href = "<?= site_url('rekapitulasi/export_excel'); ?>?tgl_awal=" + tgl_awal + "&tgl_akhir=" + tgl_akhir;
+        }
     });
 </script>

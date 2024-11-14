@@ -65,16 +65,6 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="card shadow mb-4">
-                <div class="card-header">
-                    <label for="appFilter" class="mr-2 mb-0">Main Filter:</label>
-                    <select id="appFilter" name="appFilter" class="form-control main-filter">
-                        <!-- <option value="" selected>Show all....</option> -->
-                        <option value="on-process" selected>All</option>
-                        <option value="approved">KPS</option>
-                        <option value="approved">pengenumroh</option>
-                        <option value="revised">sebelaswarna</option>
-                    </select>
-                </div>
                 <div class="card-header py-3 justify-content-start align-items-center tgl-header">
                     <div class="d-flex align-items-center mr-3 w-30 tgl-awal">
                         <label for="tgl_awal" class="mr-2 mb-0 tgl-awal-text">Tanggal Awal:</label>
