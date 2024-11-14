@@ -24,16 +24,19 @@
         }
 
         .header .logo {
-            width: 250px;
+            width: 140px;
             position: relative;
-            bottom: 120px;
-            right: 40px;
+            bottom: 50px;
         }
 
         .header .title {
             width: 100%;
             position: relative;
-            bottom: 210px;
+            bottom: 90px;
+        }
+
+        .header .title h1 {
+            margin-bottom: 25px;
         }
 
         .header .title h1,
