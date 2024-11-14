@@ -24,15 +24,16 @@
         }
 
         .header .logo {
-            width: 140px;
+            width: 210px;
             position: relative;
-            bottom: 50px;
+            bottom: 100px;
+            right: 34px;
         }
 
         .header .title {
             width: 100%;
             position: relative;
-            bottom: 90px;
+            bottom: 170px;
         }
 
         .header .title h1 {
