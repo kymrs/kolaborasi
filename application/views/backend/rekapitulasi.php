@@ -60,6 +60,17 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header py-3 justify-content-start align-items-center tgl-header">
+                    <div class="d-flex align-items-center mr-3 w-30">
+                        <label for="tgl_awal" class="mr-2 mb-0">Sort By:</label>
+                        <div class="input-group">
+                            <select name="sort" id="sort">
+                                <option value="" selected disabled>Pilih Opsi....</option>
+                                <option value="pu">Pengen Udang</option>
+                                <option value="sw">Suka Warkop</option>
+                                <option value="kps">Komisi Pemilihan Sarjana</option>
+                            </select>
+                        </div>
+                    </div>
                     <div class="d-flex align-items-center mr-3 w-30 tgl-awal">
                         <label for="tgl_awal" class="mr-2 mb-0 tgl-awal-text">Tanggal Awal:</label>
                         <div class="input-group date">
@@ -137,6 +148,7 @@
 
 <script type="text/javascript">
     var table;
+    var selected;
 
     // METHOD POST MENAMPILKAN DATA KE DATA TABLE
     $(document).ready(function() {
@@ -181,6 +193,23 @@
         }
 
         function initializeDataTable() {
+
+            var url;
+
+            if (selected == 'pu') {
+                url = "<?php echo site_url('rekapitulasi_pu/get_list') ?>";
+                url2 = "<?php echo site_url('rekapitulasi_pu/get_total') ?>";
+            } else if (selected == 'sw') {
+                url = "<?php echo site_url('rekapitulasi_sw/get_list') ?>";
+                url2 = "<?php echo site_url('rekapitulasi_sw/get_total') ?>";
+            } else if (selected == 'kps') {
+                url = "<?php echo site_url('rekapitulasi_kps/get_list') ?>";
+                url2 = "<?php echo site_url('rekapitulasi_kps/get_total') ?>";
+            } else {
+                url = "<?php echo site_url('rekapitulasi/get_list') ?>";
+                url2 = "<?php echo site_url('rekapitulasi/get_total') ?>";
+            }
+
             table = $('#table').DataTable({
                 "destroy": true, // Destroy the previous DataTable instance
                 "responsive": true,
@@ -189,7 +218,7 @@
                 "serverSide": true,
                 "order": [],
                 "ajax": {
-                    "url": "<?php echo site_url('rekapitulasi/get_list') ?>",
+                    "url": url,
                     "type": "POST",
                     "data": function(d) {
                         let tgl_awal = $('#tgl_awal').val();
@@ -220,7 +249,7 @@
                 ],
                 "drawCallback": function(settings) {
                     $.ajax({
-                        "url": "<?php echo site_url('rekapitulasi/get_total') ?>",
+                        "url": url2,
                         "type": "POST",
                         "data": {
                             "awal": $('#tgl_awal').val(),
@@ -243,6 +272,12 @@
                 }
             });
         }
+
+        $(document).on('change', '#sort', function() {
+            selected = $('#sort').val();
+            console.log(selected);
+            initializeDataTable();
+        });
 
         // Function to update the table header based on the active tab
         function updateTableHeader(tab) {

@@ -217,25 +217,6 @@
                     },
                 ],
                 "drawCallback": function(settings) {
-                    // // Fungsi untuk menghitung total pengeluaran
-                    // var totalPengeluaran = 0;
-
-                    // // Loop melalui semua baris yang ditampilkan
-                    // $('#table tbody tr').each(function() {
-                    //     var data = table.row(this).data();
-
-                    //     // Hilangkan "Rp." dan titik dari string
-                    //     var cleanedValue = data[6].replace(/Rp\.|\./g, '').trim();
-
-                    //     var pengeluaran = parseInt(cleanedValue) || 0; // Ambil nilai kolom pengeluaran, default ke 0 jika NaN
-                    //     totalPengeluaran += pengeluaran;
-                    //     // console.log(data[6]);
-                    //     // console.log(totalPengeluaran);
-                    // });
-
-                    // // Masukkan nilai total pengeluaran ke input field
-                    // $('#totalPengeluaran').text('Rp. ' + totalPengeluaran.toLocaleString('id-ID')); // Format dengan pemisah ribuan
-
                     $.ajax({
                         "url": "<?php echo site_url('rekapitulasi_sw/get_total') ?>",
                         "type": "POST",
