@@ -338,7 +338,7 @@ class Prepayment_kps extends CI_Controller
                 foreach ($deletedRows as $id2) {
                     // Hapus row dari database berdasarkan ID
                     $this->db->where('id', $id2);
-                    $this->db->delete('tbl_prepayment_detail_pu');
+                    $this->db->delete('tbl_prepayment_detail_kps');
                 }
             }
 
@@ -354,7 +354,7 @@ class Prepayment_kps extends CI_Controller
                     'keterangan' => $keterangan[$i]
                 );
                 // Menggunakan db->replace untuk memasukkan atau menggantikan data
-                $this->db->replace('tbl_prepayment_detail_pu', $data2[$i - 1]);
+                $this->db->replace('tbl_prepayment_detail_kps', $data2[$i - 1]);
             }
         }
         echo json_encode(array("status" => TRUE));
