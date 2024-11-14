@@ -664,7 +664,7 @@ class Reimbust_kps extends CI_Controller
             if ($deklarasiRecord) {
                 // Mengambil ID dari record yang ditemukan
                 $deklarasiId = $deklarasiRecord['id']; // Pastikan 'id' adalah nama kolom yang sesuai
-                $redirect_url = site_url('datadeklarasi_pu/read_form/' . $deklarasiId);
+                $redirect_url = site_url('datadeklarasi_kps/read_form/' . $deklarasiId);
 
                 $response = array(
                     'status' => 'success',
