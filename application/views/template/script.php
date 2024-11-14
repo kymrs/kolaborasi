@@ -53,7 +53,7 @@
             },
             error: function() {
                 // Jika gagal, tunggu beberapa detik sebelum mencoba lagi
-                setTimeout(checkNotifications, 5000);
+                setTimeout(checkNotifications, 120000);
             }
         });
     }
