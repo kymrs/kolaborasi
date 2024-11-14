@@ -1,13 +1,13 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Datanotifikasi_by_moment extends CI_Controller
+class Datanotifikasi_bmn extends CI_Controller
 {
 
     function __construct()
     {
         parent::__construct();
-        $this->load->model('backend/M_datanotifikasi_by_moment');
+        $this->load->model('backend/M_datanotifikasi_bmn');
         $this->load->model('backend/M_notifikasi');
         $this->M_login->getsecurity();
         date_default_timezone_set('Asia/Jakarta');
@@ -53,12 +53,12 @@ class Datanotifikasi_by_moment extends CI_Controller
 
         $this->db->where('app_hc_name', $fullname);
         $this->db->where('app_hc_status', 'waiting');
-        $this->db->from('tbl_notifikasi_by_moment');
+        $this->db->from('tbl_notifikasi_bmn');
         $data['pendings'] = $this->db->count_all_results();
 
         // var_dump($this->db->count_all_results());
 
-        $data['title'] = "backend/datanotifikasi_by_moment/notifikasi_list_by_moment";
+        $data['title'] = "backend/datanotifikasi_bmn/notifikasi_list_bmn";
         $data['titleview'] = "Notifikasi";
         $name = $this->db->select('name')
             ->from('tbl_data_user')
@@ -66,7 +66,7 @@ class Datanotifikasi_by_moment extends CI_Controller
             ->get()
             ->row('name');
         $data['approval'] = $this->db->select('COUNT(*) as total_approval')
-            ->from('tbl_notifikasi_by_moment')
+            ->from('tbl_notifikasi_bmn')
             ->where('app_hc_name', $name)
             ->or_where('app2_name', $name)
             ->get()
@@ -83,7 +83,7 @@ class Datanotifikasi_by_moment extends CI_Controller
             ->get()
             ->row('name');
         $status = $this->input->post('status'); // Ambil status dari permintaan POST
-        $list = $this->M_datanotifikasi_by_moment->get_datatables($status);
+        $list = $this->M_datanotifikasi_bmn->get_datatables($status);
         $data = array();
         $no = $_POST['start'];
 
@@ -96,10 +96,10 @@ class Datanotifikasi_by_moment extends CI_Controller
         foreach ($list as $field) {
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
-            $action_read = ($read == 'Y') ? '<a href="datanotifikasi_by_moment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
-            $action_edit = ($edit == 'Y') ? '<a href="datanotifikasi_by_moment/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
+            $action_read = ($read == 'Y') ? '<a href="datanotifikasi_bmn/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
+            $action_edit = ($edit == 'Y') ? '<a href="datanotifikasi_bmn/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
-            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="datanotifikasi_by_moment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
+            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="datanotifikasi_bmn/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             if ($field->app_hc_name == $fullname) {
@@ -142,8 +142,8 @@ class Datanotifikasi_by_moment extends CI_Controller
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_datanotifikasi_by_moment->count_all(),
-            "recordsFiltered" => $this->M_datanotifikasi_by_moment->count_filtered(),
+            "recordsTotal" => $this->M_datanotifikasi_bmn->count_all(),
+            "recordsFiltered" => $this->M_datanotifikasi_bmn->count_filtered(),
             "data" => $data,
         );
         //output dalam format JSON
@@ -154,7 +154,7 @@ class Datanotifikasi_by_moment extends CI_Controller
     {
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = $id;
-        $data['user'] = $this->M_datanotifikasi_by_moment->get_by_id($id);
+        $data['user'] = $this->M_datanotifikasi_bmn->get_by_id($id);
         $data['app_hc_name'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $this->session->userdata('id_user'))
@@ -169,7 +169,7 @@ class Datanotifikasi_by_moment extends CI_Controller
             WITH RankedNotifikasi AS (
                 SELECT *,
                        ROW_NUMBER() OVER (ORDER BY created_at ASC) AS row_num
-                FROM tbl_notifikasi_by_moment
+                FROM tbl_notifikasi_bmn
                 WHERE id_user = ' . $data['user']->id_user . '
                 AND YEAR(created_at) = ' . date('Y', strtotime($data['user']->created_at)) . '
             )
@@ -180,7 +180,7 @@ class Datanotifikasi_by_moment extends CI_Controller
         $query = $this->db->query($sql);
         $data['ke'] = $query->row()->row_num;
         $data['title_view'] = "Data Notifikasi";
-        $data['title'] = 'backend/datanotifikasi_by_moment/notifikasi_read_by_moment';
+        $data['title'] = 'backend/datanotifikasi_bmn/notifikasi_read_bmn';
         $this->load->view('backend/home', $data);
     }
 
@@ -188,7 +188,7 @@ class Datanotifikasi_by_moment extends CI_Controller
     public function generate_kode()
     {
         $date = $this->input->post('date');
-        $kode = $this->M_datanotifikasi_by_moment->max_kode($date)->row();
+        $kode = $this->M_datanotifikasi_bmn->max_kode($date)->row();
         if (empty($kode->kode_notifikasi)) {
             $no_urut = 1;
         } else {
@@ -207,7 +207,7 @@ class Datanotifikasi_by_moment extends CI_Controller
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = 0;
         $data['title_view'] = "Notifikasi Form";
-        $data['title'] = 'backend/datanotifikasi_by_moment/notifikasi_form_by_moment';
+        $data['title'] = 'backend/datanotifikasi_bmn/notifikasi_form_bmn';
         $this->load->view('backend/home', $data);
     }
 
@@ -216,13 +216,13 @@ class Datanotifikasi_by_moment extends CI_Controller
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = $id;
         $data['title_view'] = "Edit Data Notifikasi";
-        $data['title'] = 'backend/datanotifikasi_by_moment/notifikasi_form_by_moment';
+        $data['title'] = 'backend/datanotifikasi_bmn/notifikasi_form_bmn';
         $this->load->view('backend/home', $data);
     }
 
     function edit_data($id)
     {
-        $data['master'] = $this->M_datanotifikasi_by_moment->get_by_id($id);
+        $data['master'] = $this->M_datanotifikasi_bmn->get_by_id($id);
         $data['nama'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $data['master']->id_user)
@@ -234,7 +234,7 @@ class Datanotifikasi_by_moment extends CI_Controller
     {
         // INSERT KODE DEKLARASI
         $date = $this->input->post('tgl_notifikasi');
-        $kode = $this->M_datanotifikasi_by_moment->max_kode($date)->row();
+        $kode = $this->M_datanotifikasi_bmn->max_kode($date)->row();
         if (empty($kode->kode_notifikasi)) {
             $no_urut = 1;
         } else {
@@ -247,7 +247,7 @@ class Datanotifikasi_by_moment extends CI_Controller
         $kode_notifikasi = 'N' . $year . $month . $urutan;
 
         // MENCARI SIAPA YANG AKAN MELAKUKAN APPROVAL PERMINTAAN
-        $approval = $this->M_datanotifikasi_by_moment->approval($this->session->userdata('id_user'));
+        $approval = $this->M_datanotifikasi_bmn->approval($this->session->userdata('id_user'));
         $id = $this->session->userdata('id_user');
 
         $data = array(
@@ -285,7 +285,7 @@ class Datanotifikasi_by_moment extends CI_Controller
             $data['app_hc_date'] = date('Y-m-d H:i:s');
         }
 
-        $this->M_datanotifikasi_by_moment->save($data);
+        $this->M_datanotifikasi_bmn->save($data);
         echo json_encode(array("status" => TRUE));
     }
 
@@ -305,13 +305,13 @@ class Datanotifikasi_by_moment extends CI_Controller
             'status' => 'on-process'
         );
         $this->db->where('id', $this->input->post('id'));
-        $this->db->update('tbl_notifikasi_by_moment', $data);
+        $this->db->update('tbl_notifikasi_bmn', $data);
         echo json_encode(array("status" => TRUE));
     }
 
     function delete($id)
     {
-        $this->M_datanotifikasi_by_moment->delete($id);
+        $this->M_datanotifikasi_bmn->delete($id);
         echo json_encode(array("status" => TRUE));
     }
 
@@ -336,7 +336,7 @@ class Datanotifikasi_by_moment extends CI_Controller
 
         //UPDATE APPROVAL PERTAMA
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_notifikasi_by_moment', $data);
+        $this->db->update('tbl_notifikasi_bmn', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -360,7 +360,7 @@ class Datanotifikasi_by_moment extends CI_Controller
 
         // UPDATE APPROVAL 2
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_notifikasi_by_moment', $data);
+        $this->db->update('tbl_notifikasi_bmn', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -372,7 +372,7 @@ class Datanotifikasi_by_moment extends CI_Controller
         $this->load->library('Fpdf_generate');
 
         // Load data from database based on $id
-        $data['master'] = $this->M_datanotifikasi_by_moment->get_by_id($id);
+        $data['master'] = $this->M_datanotifikasi_bmn->get_by_id($id);
         $data['user'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $data['master']->id_user)
@@ -384,7 +384,7 @@ class Datanotifikasi_by_moment extends CI_Controller
             WITH RankedNotifikasi AS (
                 SELECT *,
                        ROW_NUMBER() OVER (ORDER BY created_at ASC) AS row_num
-                FROM tbl_notifikasi_by_moment
+                FROM tbl_notifikasi_bmn
                 WHERE id_user = ' . $data['master']->id_user . '
                 AND YEAR(created_at) = ' . date('Y', strtotime($data['master']->created_at)) . '
             )

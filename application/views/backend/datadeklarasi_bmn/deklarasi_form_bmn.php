@@ -7,7 +7,7 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header text-right">
-                    <a class="btn btn-secondary btn-sm" href="<?= base_url('datadeklarasi_by_moment') ?>">
+                    <a class="btn btn-secondary btn-sm" href="<?= base_url('datadeklarasi_bmn') ?>">
                         <i class="fas fa-chevron-left"></i>&nbsp;Back
                     </a>
                 </div>
@@ -97,7 +97,7 @@
                 $("#tgl_deklarasi-error").remove(); // Menghapus label error
             }
             $.ajax({
-                url: "<?php echo site_url('datadeklarasi_by_moment/generate_kode') ?>",
+                url: "<?php echo site_url('datadeklarasi_bmn/generate_kode') ?>",
                 type: "POST",
                 data: {
                     "date": dateText
@@ -126,7 +126,7 @@
             $('.aksi').text('Update');
             $("select option[value='']").hide();
             $.ajax({
-                url: "<?php echo site_url('datadeklarasi_by_moment/edit_data') ?>/" + id,
+                url: "<?php echo site_url('datadeklarasi_bmn/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -165,9 +165,9 @@
             if (!$form.valid()) return false;
             var url;
             if (id == 0) {
-                url = "<?php echo site_url('datadeklarasi_by_moment/add') ?>";
+                url = "<?php echo site_url('datadeklarasi_bmn/add') ?>";
             } else {
-                url = "<?php echo site_url('datadeklarasi_by_moment/update') ?>";
+                url = "<?php echo site_url('datadeklarasi_bmn/update') ?>";
             }
 
             $.ajax({
@@ -185,7 +185,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then((result) => {
-                            location.href = "<?= base_url('datadeklarasi_by_moment') ?>";
+                            location.href = "<?= base_url('datadeklarasi_bmn') ?>";
                         })
                     }
                 },

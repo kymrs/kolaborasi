@@ -20,7 +20,7 @@
 
 
     <script>
-        fetch('<?= base_url() ?>/prepayment_by_moment/generate_pdf/150').then(response => response.json())
+        fetch('<?= base_url() ?>/prepayment_bmn/generate_pdf/150').then(response => response.json())
             .then(base64Pdf => {
                 // Decode the base64-encoded PDF string
                 const pdfData = atob(base64Pdf);

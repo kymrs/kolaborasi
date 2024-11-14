@@ -7,7 +7,7 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header text-right">
-                    <a class="btn btn-secondary btn-sm" href="<?= base_url('prepayment_by_moment') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+                    <a class="btn btn-secondary btn-sm" href="<?= base_url('prepayment_bmn') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
                     <form id="form">
@@ -129,7 +129,7 @@
                 $("#tgl_prepayment-error").remove(); // Menghapus label error
             }
             $.ajax({
-                url: "<?php echo site_url('prepayment_by_moment/generate_kode') ?>",
+                url: "<?php echo site_url('prepayment_bmn/generate_kode') ?>",
                 type: "POST",
                 data: {
                     "date": dateText
@@ -315,7 +315,7 @@
             $('.aksi').text('Update');
             $("select option[value='']").hide();
             $.ajax({
-                url: "<?php echo site_url('prepayment_by_moment/edit_data') ?>/" + id,
+                url: "<?php echo site_url('prepayment_bmn/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -407,7 +407,7 @@
             $('th:last-child').remove();
 
             $.ajax({
-                url: "<?php echo site_url('prepayment_by_moment/read_detail/') ?>" + id,
+                url: "<?php echo site_url('prepayment_bmn/read_detail/') ?>" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -435,9 +435,9 @@
             if (!$form.valid()) return false;
             var url;
             if (id == 0) {
-                url = "<?php echo site_url('prepayment_by_moment/add') ?>";
+                url = "<?php echo site_url('prepayment_bmn/add') ?>";
             } else {
-                url = "<?php echo site_url('prepayment_by_moment/update') ?>";
+                url = "<?php echo site_url('prepayment_bmn/update') ?>";
             }
 
             $.ajax({
@@ -457,7 +457,7 @@
                             timer: 1500
                         }).then((result) => {
                             checkNotifications();
-                            location.href = "<?= base_url('prepayment_by_moment') ?>";
+                            location.href = "<?= base_url('prepayment_bmn') ?>";
                         })
                     }
                 },

@@ -1,12 +1,12 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Reimbust_qbg extends CI_Controller
+class Reimbust_bmn extends CI_Controller
 {
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('backend/M_reimbust_qbg');
+        $this->load->model('backend/M_reimbust_bmn');
         $this->load->model('backend/M_notifikasi');
         $this->M_login->getsecurity();
         date_default_timezone_set('Asia/Jakarta');
@@ -20,7 +20,7 @@ class Reimbust_qbg extends CI_Controller
 
         $data['notif'] = $this->M_notifikasi->pending_notification();
 
-        $data['title'] = "backend/reimbust_qbg/reimbust_list_qbg";
+        $data['title'] = "backend/reimbust_bmn/reimbust_list_bmn";
         $data['titleview'] = "Data Reimbust";
         $name = $this->db->select('name')
             ->from('tbl_data_user')
@@ -28,7 +28,7 @@ class Reimbust_qbg extends CI_Controller
             ->get()
             ->row('name');
         $data['approval'] = $this->db->select('COUNT(*) as total_approval')
-            ->from('tbl_reimbust_qbg')
+            ->from('tbl_reimbust_bmn')
             ->where('app_name', $name)
             ->or_where('app2_name', $name)
             ->get()
@@ -45,7 +45,7 @@ class Reimbust_qbg extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $list = $this->M_reimbust_qbg->get_datatables();
+        $list = $this->M_reimbust_bmn->get_datatables();
         $data = array();
         $no = $_POST['start'];
 
@@ -58,10 +58,10 @@ class Reimbust_qbg extends CI_Controller
         foreach ($list as $field) {
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
-            $action_read = ($read == 'Y') ? '<a href="reimbust_qbg/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
-            $action_edit = ($edit == 'Y') ? '<a href="reimbust_qbg/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
+            $action_read = ($read == 'Y') ? '<a href="reimbust_bmn/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
+            $action_edit = ($edit == 'Y') ? '<a href="reimbust_bmn/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
-            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="reimbust_qbg/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
+            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="reimbust_bmn/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             if ($field->app_name == $fullname && $field->id_user != $this->session->userdata('id_user')) {
@@ -126,8 +126,8 @@ class Reimbust_qbg extends CI_Controller
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_reimbust_qbg->count_all(),
-            "recordsFiltered" => $this->M_reimbust_qbg->count_filtered(),
+            "recordsTotal" => $this->M_reimbust_bmn->count_all(),
+            "recordsFiltered" => $this->M_reimbust_bmn->count_filtered(),
             "data" => $data,
         );
         //output dalam format JSON
@@ -143,7 +143,7 @@ class Reimbust_qbg extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $list = $this->M_reimbust_qbg->get_datatables2();
+        $list = $this->M_reimbust_bmn->get_datatables2();
         $data = array();
         $no = $_POST['start'];
 
@@ -192,8 +192,8 @@ class Reimbust_qbg extends CI_Controller
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_reimbust_qbg->count_all2(),
-            "recordsFiltered" => $this->M_reimbust_qbg->count_filtered2(),
+            "recordsTotal" => $this->M_reimbust_bmn->count_all2(),
+            "recordsFiltered" => $this->M_reimbust_bmn->count_filtered2(),
             "data" => $data,
         );
         //output dalam format JSON
@@ -209,7 +209,7 @@ class Reimbust_qbg extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $list = $this->M_reimbust_qbg->get_datatables3();
+        $list = $this->M_reimbust_bmn->get_datatables3();
         $data = array();
         $no = $_POST['start'];
 
@@ -261,8 +261,8 @@ class Reimbust_qbg extends CI_Controller
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_reimbust_qbg->count_all3(),
-            "recordsFiltered" => $this->M_reimbust_qbg->count_filtered3(),
+            "recordsTotal" => $this->M_reimbust_bmn->count_all3(),
+            "recordsFiltered" => $this->M_reimbust_bmn->count_filtered3(),
             "data" => $data,
         );
         //output dalam format JSON
@@ -273,7 +273,7 @@ class Reimbust_qbg extends CI_Controller
     {
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['aksi'] = 'read';
-        $data['user'] = $this->M_reimbust_qbg->get_by_id($id);
+        $data['user'] = $this->M_reimbust_bmn->get_by_id($id);
         $data['app_name'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $this->session->userdata('id_user'))
@@ -286,10 +286,10 @@ class Reimbust_qbg extends CI_Controller
             ->row('name');
         $data['id'] = $id;
         $data['title_view'] = "Data Reimbust";
-        $data['title'] = 'backend/reimbust_qbg/reimbust_read_qbg';
+        $data['title'] = 'backend/reimbust_bmn/reimbust_read_bmn';
         $this->db->select('kwitansi');
         $this->db->where('reimbust_id', $id);
-        $data['kwitansi'] = $this->db->get('tbl_reimbust_detail_qbg')->result_array();
+        $data['kwitansi'] = $this->db->get('tbl_reimbust_detail_bmn')->result_array();
         $this->load->view('backend/home', $data);
     }
 
@@ -299,7 +299,7 @@ class Reimbust_qbg extends CI_Controller
         $data['id'] = 0;
         $data['aksi'] = 'add';
         $data['title_view'] = "Reimbust Form";
-        $data['title'] = 'backend/reimbust_qbg/reimbust_form_qbg';
+        $data['title'] = 'backend/reimbust_bmn/reimbust_form_bmn';
         $this->load->view('backend/home', $data);
     }
 
@@ -309,8 +309,8 @@ class Reimbust_qbg extends CI_Controller
         $this->load->library('Fpdf_generate');
 
         // Load data from database based on $id
-        $data['master'] = $this->M_reimbust_qbg->get_by_id($id);
-        $data['transaksi'] = $this->M_reimbust_qbg->get_by_id_detail($id);
+        $data['master'] = $this->M_reimbust_bmn->get_by_id($id);
+        $data['transaksi'] = $this->M_reimbust_bmn->get_by_id_detail($id);
         $data['user'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $data['master']->id_user)
@@ -608,7 +608,7 @@ class Reimbust_qbg extends CI_Controller
     public function generate_kode()
     {
         $date = $this->input->post('date');
-        $kode = $this->M_reimbust_qbg->max_kode($date)->row();
+        $kode = $this->M_reimbust_bmn->max_kode($date)->row();
         if (empty($kode->kode_reimbust)) {
             $no_urut = 1;
         } else {
@@ -628,14 +628,14 @@ class Reimbust_qbg extends CI_Controller
         $data['id'] = $id;
         $data['aksi'] = 'update';
         $data['title_view'] = "Edit Reimbust";
-        $data['title'] = 'backend/reimbust_qbg/reimbust_form_qbg';
+        $data['title'] = 'backend/reimbust_bmn/reimbust_form_bmn';
         $this->load->view('backend/home', $data);
     }
 
     function edit_data($id)
     {
-        $data['master'] = $this->M_reimbust_qbg->get_by_id($id);
-        $data['transaksi'] = $this->M_reimbust_qbg->get_by_id_detail($id);
+        $data['master'] = $this->M_reimbust_bmn->get_by_id($id);
+        $data['transaksi'] = $this->M_reimbust_bmn->get_by_id_detail($id);
         $data['nama'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $data['master']->id_user)
@@ -645,7 +645,7 @@ class Reimbust_qbg extends CI_Controller
 
     function read_detail($id)
     {
-        $data = $this->M_reimbust_qbg->get_by_id_detail($id);
+        $data = $this->M_reimbust_bmn->get_by_id_detail($id);
         echo json_encode($data);
     }
 
@@ -655,7 +655,7 @@ class Reimbust_qbg extends CI_Controller
             $deklarasi = $this->input->post('deklarasi');
 
             // Mengambil data deklarasi dari database
-            $deklarasiRecord = $this->db->get_where('tbl_deklarasi_qbg', ['kode_deklarasi' => $deklarasi])->row_array();
+            $deklarasiRecord = $this->db->get_where('tbl_deklarasi_bmn', ['kode_deklarasi' => $deklarasi])->row_array();
 
             // Debug log
             log_message('debug', 'Deklarasi: ' . print_r($deklarasi, true));
@@ -664,7 +664,7 @@ class Reimbust_qbg extends CI_Controller
             if ($deklarasiRecord) {
                 // Mengambil ID dari record yang ditemukan
                 $deklarasiId = $deklarasiRecord['id']; // Pastikan 'id' adalah nama kolom yang sesuai
-                $redirect_url = site_url('datadeklarasi_qbg/read_form/' . $deklarasiId);
+                $redirect_url = site_url('datadeklarasi_bmn/read_form/' . $deklarasiId);
 
                 $response = array(
                     'status' => 'success',
@@ -689,7 +689,7 @@ class Reimbust_qbg extends CI_Controller
     {
         // INSERT KODE REIMBUST SAAT SUBMIT
         $date = $this->input->post('tgl_pengajuan');
-        $kode = $this->M_reimbust_qbg->max_kode($date)->row();
+        $kode = $this->M_reimbust_bmn->max_kode($date)->row();
         if (empty($kode->kode_reimbust)) {
             $no_urut = 1;
         } else {
@@ -715,7 +715,7 @@ class Reimbust_qbg extends CI_Controller
         $id_user = $this->session->userdata('id_user');
 
         $data_user = $this->db->get_where('tbl_data_user', ['id_user' => $id_user])->row_array();
-        $approval = $this->M_reimbust_qbg->approval($this->session->userdata('id_user'));
+        $approval = $this->M_reimbust_bmn->approval($this->session->userdata('id_user'));
 
         $departemen = $data_user['divisi'];
         $jabatan = $data_user['jabatan'];
@@ -770,7 +770,7 @@ class Reimbust_qbg extends CI_Controller
         );
         // Hanya simpan ke database jika tidak ada file yang melebihi 3 MB
         if ($valid) {
-            $reimbust_id = $this->M_reimbust_qbg->save($data1);
+            $reimbust_id = $this->M_reimbust_bmn->save($data1);
         }
 
         $data2 = [];
@@ -785,7 +785,7 @@ class Reimbust_qbg extends CI_Controller
                 $_FILES['file']['error'] = $_FILES['kwitansi']['error'][$i];
                 $_FILES['file']['size'] = $_FILES['kwitansi']['size'][$i];
 
-                $config['upload_path'] = './assets/backend/document/reimbust/kwitansi_qbg/';
+                $config['upload_path'] = './assets/backend/document/reimbust/kwitansi_bmn/';
                 $config['allowed_types'] = 'jpeg|jpg|png';
                 $config['max_size'] = 3072; // Batasan ukuran file dalam kilobytes (3 MB)
                 $config['encrypt_name'] = TRUE;
@@ -812,13 +812,13 @@ class Reimbust_qbg extends CI_Controller
             // Update data deklarasi yang di tampilkan di modal, jika gambar di submit maka is active akan menjadi 0
             $this->db->set('is_active', 0);
             $this->db->where('kode_deklarasi', $deklarasi[$i]);
-            $this->db->update('tbl_deklarasi_qbg');
+            $this->db->update('tbl_deklarasi_bmn');
         }
         $this->db->set('is_active', 0);
         $this->db->where('kode_prepayment', $this->input->post('kode_prepayment'));
-        $this->db->update('tbl_prepayment_qbg');
+        $this->db->update('tbl_prepayment_bmn');
 
-        $this->M_reimbust_qbg->save_detail($data2);
+        $this->M_reimbust_bmn->save_detail($data2);
 
 
         echo json_encode(array("status" => TRUE));
@@ -859,21 +859,21 @@ class Reimbust_qbg extends CI_Controller
         $deklarasi = $this->input->post('deklarasi');
         $deklarasi_old = $this->input->post('deklarasi_old');
 
-        if ($this->db->update('tbl_reimbust_qbg', $data)) {
+        if ($this->db->update('tbl_reimbust_bmn', $data)) {
             // 1. Hapus Baris yang Telah Dihapus
             $deletedRows = json_decode($this->input->post('deleted_rows'), true);
             if (!empty($deletedRows)) {
                 foreach ($deletedRows as $id2) {
-                    $reimbust_detail = $this->db->get_where('tbl_reimbust_detail_qbg', ['id' => $id2])->row_array();
+                    $reimbust_detail = $this->db->get_where('tbl_reimbust_detail_bmn', ['id' => $id2])->row_array();
 
                     if ($reimbust_detail) {
                         $old_image = $reimbust_detail['kwitansi'];
                         if ($old_image != 'default.jpg') {
-                            @unlink(FCPATH . './assets/backend/document/reimbust/kwitansi_qbg/' . $old_image);
+                            @unlink(FCPATH . './assets/backend/document/reimbust/kwitansi_bmn/' . $old_image);
                         }
 
                         $this->db->where('id', $id2);
-                        $this->db->delete('tbl_reimbust_detail_qbg');
+                        $this->db->delete('tbl_reimbust_detail_bmn');
                     }
                 }
             }
@@ -895,7 +895,7 @@ class Reimbust_qbg extends CI_Controller
                         return;
                     }
 
-                    $config['upload_path'] = './assets/backend/document/reimbust/kwitansi_qbg/';
+                    $config['upload_path'] = './assets/backend/document/reimbust/kwitansi_bmn/';
                     $config['allowed_types'] = 'jpeg|jpg|png';
                     $config['max_size'] = 3072;
                     $config['encrypt_name'] = TRUE;
@@ -905,13 +905,13 @@ class Reimbust_qbg extends CI_Controller
                     if ($this->upload->do_upload('file')) {
                         $id = !empty($detail_id[$i]) ? $detail_id[$i] : NULL;
 
-                        $reimbust_detail = $this->db->get_where('tbl_reimbust_detail_qbg', ['id' => $id])->row_array();
+                        $reimbust_detail = $this->db->get_where('tbl_reimbust_detail_bmn', ['id' => $id])->row_array();
 
                         if ($reimbust_detail) {
                             $old_image = $reimbust_detail['kwitansi'];
 
                             if ($old_image && $old_image != 'default.jpg') {
-                                @unlink(FCPATH . './assets/backend/document/reimbust/kwitansi_qbg/' . $old_image);
+                                @unlink(FCPATH . './assets/backend/document/reimbust/kwitansi_bmn/' . $old_image);
                             }
                         }
                         $kwitansi = $this->upload->data('file_name');
@@ -936,22 +936,22 @@ class Reimbust_qbg extends CI_Controller
                 // Mengubah data prepayment is_active menjadi 0 pada data prepayment terbaru, jika kode_prepayment ada
                 $kode_prepayment = $this->input->post('kode_prepayment');
                 if (!empty($kode_prepayment)) {
-                    $this->db->update('tbl_prepayment_qbg', ['is_active' => 0], ['kode_prepayment' => $kode_prepayment]);
+                    $this->db->update('tbl_prepayment_bmn', ['is_active' => 0], ['kode_prepayment' => $kode_prepayment]);
                 }
 
                 // Mengubah data prepayment is_active menjadi 1 pada data prepayment terlama, jika kode_prepayment_old ada
                 $kode_prepayment_old = $this->input->post('kode_prepayment_old');
                 if ($kode_prepayment != $kode_prepayment_old && !empty($kode_prepayment_old)) {
-                    $this->db->update('tbl_prepayment_qbg', ['is_active' => 1], ['kode_prepayment' => $kode_prepayment_old]);
+                    $this->db->update('tbl_prepayment_bmn', ['is_active' => 1], ['kode_prepayment' => $kode_prepayment_old]);
                 }
 
                 // Replace data di tbl_reimbust_detail
-                $this->db->replace('tbl_reimbust_detail_qbg', $data2);
+                $this->db->replace('tbl_reimbust_detail_bmn', $data2);
 
                 // mengubah is_active deklarasi awal menjadi 1, dan deklarasi baru menjadi 0
                 if (isset($deklarasi[$i], $deklarasi_old[$i]) && $deklarasi[$i] != $deklarasi_old[$i]) {
-                    $this->db->update('tbl_deklarasi_qbg', ['is_active' => 1], ['kode_deklarasi' => $deklarasi_old[$i]]);
-                    $this->db->update('tbl_deklarasi_qbg', ['is_active' => 0], ['kode_deklarasi' => $deklarasi[$i]]);
+                    $this->db->update('tbl_deklarasi_bmn', ['is_active' => 1], ['kode_deklarasi' => $deklarasi_old[$i]]);
+                    $this->db->update('tbl_deklarasi_bmn', ['is_active' => 0], ['kode_deklarasi' => $deklarasi[$i]]);
                 }
             }
         }
@@ -960,7 +960,7 @@ class Reimbust_qbg extends CI_Controller
 
     function delete($id)
     {
-        $this->M_reimbust_qbg->delete($id);
+        $this->M_reimbust_bmn->delete($id);
         echo json_encode(array("status" => TRUE));
     }
 
@@ -984,7 +984,7 @@ class Reimbust_qbg extends CI_Controller
 
         //UPDATE APPROVAL PERTAMA
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_reimbust_qbg', $data);
+        $this->db->update('tbl_reimbust_bmn', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -1008,7 +1008,7 @@ class Reimbust_qbg extends CI_Controller
 
         // UPDATE APPROVAL 2
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_reimbust_qbg', $data);
+        $this->db->update('tbl_reimbust_bmn', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -1016,7 +1016,7 @@ class Reimbust_qbg extends CI_Controller
     function payment()
     {
         $this->db->where('id', $this->input->post('id'));
-        $this->db->update('tbl_reimbust_qbg', ['payment_status' => $this->input->post('payment_status')]);
+        $this->db->update('tbl_reimbust_bmn', ['payment_status' => $this->input->post('payment_status')]);
 
         echo json_encode(array("status" => TRUE));
     }

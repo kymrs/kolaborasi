@@ -1,3 +1,11 @@
+<style>
+    #appFilter {
+        border: 1px solid #ccc;
+        padding: 5px;
+        border-radius: 4px;
+    }
+</style>
+
 <div class="container-fluid">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"><?= $titleview ?></h1>
@@ -8,13 +16,13 @@
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex justify-content-between align-items-center">
                     <?php if ($add == 'Y') { ?>
-                        <a class="btn btn-primary btn-sm" href="<?= base_url('reimbust_by_moment/add_form') ?>">
+                        <a class="btn btn-primary btn-sm" href="<?= base_url('prepayment_bmn/add_form') ?>">
                             <i class="fa fa-plus"></i>&nbsp;Add Data
                         </a>
                     <?php } ?>
                     <div class="d-flex align-items-center">
                         <label for="appFilter" class="mr-2 mb-0">Filter:</label>
-                        <select id="appFilter" name="appFilter" class="form-control form-control-sm" style="cursor: pointer;">
+                        <select id="appFilter" name="appFilter" class="form-control form-control-sm">
                             <!-- <option value="" selected>Show all....</option> -->
                             <option value="on-process" selected>On-Process</option>
                             <option value="approved">Approved</option>
@@ -23,7 +31,6 @@
                         </select>
                     </div>
                 </div>
-
                 <!-- NAV TABS -->
                 <ul class="nav nav-tabs">
                     <li class="nav-item">
@@ -35,6 +42,7 @@
                         </li>
                     <?php } ?>
                 </ul>
+
                 <div class="card-body">
                     <table id="table" class="table table-bordered table-striped">
                         <thead>
@@ -42,14 +50,13 @@
                                 <th>No</th>
                                 <th>Action</th>
                                 <th>Status Pembayaran</th>
-                                <th>Kode Reimbust</th>
+                                <th>Kode Prepayment</th>
                                 <th>Nama</th>
+                                <th>Divisi</th>
                                 <th>Jabatan</th>
-                                <th>Departemen</th>
-                                <th>Sifat Pelaporan</th>
                                 <th>Tanggal Pengajuan</th>
-                                <th>Tujuan</th>
-                                <th>Jumlah Prepayment</th>
+                                <th>Prepayment</th>
+                                <th>Total Nominal</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -60,14 +67,13 @@
                                 <th>No</th>
                                 <th>Action</th>
                                 <th>Status Pembayaran</th>
-                                <th>Kode Reimbust</th>
+                                <th>Kode Prepayment</th>
                                 <th>Nama</th>
+                                <th>Divisi</th>
                                 <th>Jabatan</th>
-                                <th>Departemen</th>
-                                <th>Sifat Pelaporan</th>
                                 <th>Tanggal Pengajuan</th>
-                                <th>Tujuan</th>
-                                <th>Jumlah Prepayment</th>
+                                <th>Prepayment</th>
+                                <th>Total Nominal</th>
                                 <th>Status</th>
                             </tr>
                         </tfoot>
@@ -84,7 +90,9 @@
 <script type="text/javascript">
     var table;
 
+    // METHOD POST MENAMPILKAN DATA KE DATA TABLE
     $(document).ready(function() {
+
 
         // Set active tab on page load
         const activeTab = sessionStorage.getItem('activeTab');
@@ -108,6 +116,7 @@
 
         $('.collapse-item').on('click', function(e) {
             localStorage.removeItem('appFilterStatus'); // Hapus filter yang tersimpan
+            localStorage.removeItem('activeTab'); // Hapus filter yang tersimpan
         })
 
         // Tab click event
@@ -132,28 +141,28 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('reimbust_by_moment/get_list') ?>",
+                "url": "<?php echo site_url('prepayment_bmn/get_list') ?>",
                 "type": "POST",
                 "data": function(d) {
                     d.status = $('#appFilter').val(); // Tambahkan parameter status ke permintaan server
                     d.tab = $('.nav-tabs .nav-link.active').data('tab'); // Tambahkan parameter tab ke permintaan server
                 }
             },
-            "language": {
-                "infoFiltered": ""
-            },
+            // "language": {
+            //     "infoFiltered": ""
+            // },
             "columnDefs": [{
-                    "targets": [2, 3, 7, 8, 10],
+                    "targets": [2, 3, 7, 9],
                     "className": 'dt-head-nowrap'
                 },
                 {
-                    "targets": [1, 2, 3, 4, 5, 11],
+                    "targets": [1, 3, 4, 6, 8, 9, 10],
                     "className": 'dt-body-nowrap'
                 }, {
                     "targets": [0, 1],
                     "orderable": false,
                 },
-            ],
+            ]
         });
 
         // Simpan nilai filter ke localStorage setiap kali berubah
@@ -173,6 +182,7 @@
 
     });
 
+    // MENGHAPUS DATA MENGGUNAKAN METHODE POST JQUERY
     function delete_data(id) {
         Swal.fire({
             title: 'Are you sure?',
@@ -185,41 +195,25 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: "<?php echo site_url('reimbust_by_moment/delete/') ?>" + id,
+                    url: "<?php echo site_url('prepayment_bmn/delete/') ?>" + id,
                     type: "POST",
                     dataType: "JSON",
                     success: function(data) {
-                        if (data.status) {
-                            Swal.fire({
-                                position: 'center',
-                                icon: 'success',
-                                title: 'Your data has been deleted',
-                                showConfirmButton: false,
-                                timer: 1500
-                            }).then(() => {
-                                location.href = "<?= base_url('reimbust_by_moment') ?>";
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: data.error // Menampilkan pesan kesalahan dari server
-                            });
-                        }
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
                         Swal.fire({
                             position: 'center',
                             icon: 'success',
                             title: 'Your data has been deleted',
                             showConfirmButton: false,
                             timer: 1500
-                        }).then(() => {
-                            location.href = "<?= base_url('reimbust_by_moment') ?>";
-                        });
+                        }).then((result) => {
+                            location.href = "<?= base_url('prepayment_bmn') ?>";
+                        })
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert('Error deleting data');
                     }
                 });
             }
-        });
-    }
+        })
+    };
 </script>
