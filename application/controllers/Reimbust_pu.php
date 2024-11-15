@@ -949,9 +949,11 @@ class Reimbust_pu extends CI_Controller
                 $this->db->replace('tbl_reimbust_detail_pu', $data2);
 
                 // mengubah is_active deklarasi awal menjadi 1, dan deklarasi baru menjadi 0
-                if (isset($deklarasi[$i], $deklarasi_old[$i]) && $deklarasi[$i] != $deklarasi_old[$i]) {
-                    $this->db->update('tbl_deklarasi_pu', ['is_active' => 1], ['kode_deklarasi' => $deklarasi_old[$i]]);
-                    $this->db->update('tbl_deklarasi_pu', ['is_active' => 0], ['kode_deklarasi' => $deklarasi[$i]]);
+                if ($deklarasi_old[$i]) {
+                    $this->db->update('tbl_deklarasi', ['is_active' => 1], ['kode_deklarasi' => $deklarasi_old[$i]]);
+                    $this->db->update('tbl_deklarasi', ['is_active' => 0], ['kode_deklarasi' => $deklarasi[$i]]);
+                } else {
+                    $this->db->update('tbl_deklarasi', ['is_active' => 0], ['kode_deklarasi' => $deklarasi[$i]]);
                 }
             }
         }
