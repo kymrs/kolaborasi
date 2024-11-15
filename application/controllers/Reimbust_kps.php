@@ -341,7 +341,7 @@ class Reimbust_kps extends CI_Controller
 
         // Teks yang ingin ditampilkan
         $text1 = 'FORM PELAPORAN / REIMBUST';
-        $text2 = 'PENGENUMROH';
+        $text2 = 'KPS';
 
         // Menghitung lebar teks
         $textWidth1 = $pdf->GetStringWidth($text1);

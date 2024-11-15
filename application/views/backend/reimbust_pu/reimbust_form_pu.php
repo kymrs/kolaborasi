@@ -83,17 +83,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!-- <div class="form-group row">
-                                    <label class="col-sm-5">Status</label>
-                                    <div class="col-sm-7">
-                                        <select class="form-control" name="status" id="status">
-                                            <option value="">-- Pilih --</option>
-                                            <option value="Waiting">Waiting</option>
-                                            <option value="On Proccess">On Proccess</option>
-                                            <option value="Done">Done</option>
-                                        </select>
-                                    </div>
-                                </div> -->
                                 <div class="form-group row">
                                     <label class="col-sm-5">Jumlah Prepayment</label>
                                     <div class="col-sm-7">
@@ -518,37 +507,6 @@
         });
     });
 
-    // $('#tgl_pengajuan').datepicker({
-    //     dateFormat: 'dd-mm-yy',
-    //     // minDate: new Date(),
-
-    //     // MENGENERATE KODE PREPAYMENT SETELAH PILIH TANGGAL
-    //     onSelect: function(dateText) {
-    //         var date = $('#tgl_pengajuan').val();
-    //         var id = dateText;
-    //         $('#tgl_pengajuan').removeClass('is-invalid');
-
-    //         if ($("#tgl_pengajuan-error").length) {
-    //             $("#tgl_pengajuan-error").remove();
-    //         }
-    //         $.ajax({
-    //             url: "<?php echo site_url('reimbust_pu/generate_kode') ?>",
-    //             type: "POST",
-    //             data: {
-    //                 "date": dateText
-    //             },
-    //             dataType: "JSON",
-    //             success: function(data) {
-    //                 $('#kode_reimbust').val(data.toUpperCase());
-    //                 $('#kode').val(data);
-    //             },
-    //             error: function(error) {
-    //                 alert("error" + error);
-    //             }
-    //         });
-    //     }
-    // });
-
     $(document).ready(function() {
         var id = $('#id').val();
         var aksi = $('#aksi').val();
@@ -624,7 +582,7 @@
                     </td>
                     <td width="150" style="padding: 15px 10px">
                         <div class="btn btn-primary btn-lg btn-block btn-sm" data-toggle="modal" data-target="#deklarasiModal" data-id="${rowCount}" id="deklarasi-modal${rowCount}">Deklarasi</div>
-                        <input type="hidden" class="form-control" id="deklarasi${rowCount}" placeholder="Deklarasi ${rowCount}" name="deklarasi[${rowCount}]" autocomplete="off">
+                        <input type="text" class="form-control" id="deklarasi${rowCount}" placeholder="Deklarasi ${rowCount}" name="deklarasi[${rowCount}]" autocomplete="off">
                     </td>
                     <td><span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span></td>
                 </tr>
@@ -663,16 +621,6 @@
                     }
                 });
             });
-
-            // $(document).ready(function() {
-            //     $('.custom-file-input').on('change', function() {
-            //         if ($(this).val()) {
-            //             $(`#deklarasi-modal${rowCount}`).text('tes');
-            //         } else {
-            //             $(`#deklarasi${rowCount}`).css('display', 'block');
-            //         }
-            //     });
-            // });
 
             // Inisialisasi Datepicker pada elemen dengan id 'tgl_nota'
             $(document).on('focus', '.tgl_nota', function() {
@@ -821,19 +769,6 @@
                         'readonly': false
                     }).css('cursor', 'pointer');
                     $('#tgl_pengajuan').css('pointer-events', 'auto');
-                    // $('#nama').prop({
-                    //     'disabled': false,
-                    //     'readonly': false
-                    // }).css('cursor', 'auto');
-                    // $('#departemen').prop('disabled', false).css({
-                    //     'cursor': 'pointer',
-                    //     'display': 'block'
-                    // });
-                    // $('#departemenPrepayment').prop('disabled', true).css('display', 'none');
-                    // $('#jabatan').prop({
-                    //     'disabled': false,
-                    //     'readonly': false
-                    // }).css('cursor', 'auto');
                     $('#tujuan').prop({
                         'disabled': false,
                         'readonly': false
@@ -858,25 +793,6 @@
                         'readonly': false
                     }).css('cursor', 'pointer');
                     $('#tgl_pengajuan').css('pointer-events', 'auto');
-                    // $('#nama').prop({
-                    //     'disabled': false,
-                    //     'readonly': true
-                    // }).css('cursor', 'not-allowed');
-                    // $('#departemen').prop({
-                    //     'disabled': false,
-                    //     'readonly': true
-                    // }).css('display', 'none');
-                    // $('#departemenPrepayment').prop({
-                    //     'disabled': false,
-                    //     'readonly': true
-                    // }).css({
-                    //     'display': 'block',
-                    //     'cursor': 'not-allowed'
-                    // });
-                    // $('#jabatan').prop({
-                    //     'disabled': false,
-                    //     'readonly': true
-                    // }).css('cursor', 'not-allowed');
                     $('#tujuan').prop({
                         'disabled': false,
                         'readonly': true
@@ -895,13 +811,6 @@
                 } else {
                     $('#pelaporan_button').css('display', 'none');
                     $('#parent_sifat_pelaporan').css('display', 'inline-block');
-                    // $('#nama').prop('disabled', true).css('cursor', 'not-allowed');
-                    // $('#departemen').prop('disabled', true).css({
-                    //     'cursor': 'not-allowed',
-                    //     'display': 'block'
-                    // });
-                    // $('#departemenPrepayment').prop('disabled', true).css('display', 'none');
-                    // $('#jabatan').prop('disabled', true).css('cursor', 'not-allowed');
                     $('#tgl_pengajuan').prop('disabled', true).css('cursor', 'not-allowed');
                     $('#tujuan').prop('disabled', true).css('cursor', 'not-allowed');
                     $('#status').prop('disabled', true).css('cursor', 'not-allowed');
@@ -926,13 +835,6 @@
                         'pointer-events': 'none',
                         'background-color': '#EAECF4'
                     });
-                    // $('#nama').prop('readonly', false).css('cursor', 'auto');
-                    // $('#departemen').prop('disabled', false).css({
-                    //     'display': 'block',
-                    //     'cursor': 'pointer'
-                    // });
-                    // $('#departemenPrepayment').prop('disabled', true).css('display', 'none');
-                    // $('#jabatan').prop('readonly', false).css('cursor', 'auto');
                     $('#tujuan').prop('readonly', false).css('cursor', 'auto');
                     $('#status').prop('readonly', false).css('cursor', 'pointer');
                     $('#jumlah_prepayment').prop({
@@ -956,25 +858,6 @@
                         'readonly': true
                     }).css('cursor', 'not-allowed');
                     $('#tgl_pengajuan').css('pointer-events', 'none');
-                    // $('#nama').prop({
-                    //     'disabled': false,
-                    //     'readonly': true
-                    // }).css('cursor', 'not-allowed');
-                    // $('#departemen').prop({
-                    //     'disabled': false,
-                    //     'readonly': true
-                    // }).css('display', 'none');
-                    // $('#departemenPrepayment').prop({
-                    //     'disabled': false,
-                    //     'readonly': true
-                    // }).css({
-                    //     'display': 'block',
-                    //     'cursor': 'not-allowed'
-                    // });
-                    // $('#jabatan').prop({
-                    //     'disabled': false,
-                    //     'readonly': true
-                    // }).css('cursor', 'not-allowed');
                     $('#tujuan').prop({
                         'disabled': false,
                         'readonly': true
@@ -1107,8 +990,8 @@
                                             id="deklarasi-modal${index + 1}">
                                             ${data['transaksi'][index]['deklarasi'] ? data['transaksi'][index]['deklarasi'] : 'Deklarasi'}
                                         </div>
-                                        <input type="hidden" class="form-control" id="deklarasi${index + 1}" placeholder="Deklarasi ${index + 1}" name="deklarasi[${index + 1}]" autocomplete="off" value="${data['transaksi'][index]['deklarasi']}">
-                                        <input type="hidden" class="form-control" id="deklarasi_old${index + 1}" placeholder="Deklarasi Old${index + 1}" name="deklarasi_old[${index + 1}]" autocomplete="off" value="${data['transaksi'][index]['deklarasi']}">
+                                        <input type="text" class="form-control" id="deklarasi${index + 1}" placeholder="Deklarasi ${index + 1}" name="deklarasi[${index + 1}]" autocomplete="off" value="${data['transaksi'][index]['deklarasi']}">
+                                        <input type="text" class="form-control" id="deklarasi_old${index + 1}" placeholder="Deklarasi Old${index + 1}" name="deklarasi_old[${index + 1}]" autocomplete="off" value="${data['transaksi'][index]['deklarasi']}">
                                     </td>
                                     <td><span class="btn delete-btn btn-danger" data-id="${index + 1}">Delete</span></td>
                                 </tr>
