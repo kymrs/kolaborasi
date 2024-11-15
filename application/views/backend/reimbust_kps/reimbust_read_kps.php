@@ -166,7 +166,7 @@
                 </div>
                 <div class="title">
                     <h1>FORM PELAPORAN / REIMBUST</h1>
-                    <h2>PENGENUMROH</h2>
+                    <h2>KPS</h2>
                 </div>
             </div>
 
