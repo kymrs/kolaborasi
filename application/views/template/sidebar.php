@@ -11,11 +11,12 @@
 
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
-                <div class="sidebar-brand-icon">
+                <!-- <div class="sidebar-brand-icon">
                     <img src="<?= base_url('favicon.ico') ?>" alt="kps" width="100">
 
                 </div>
-                <div class="sidebar-brand-text mx-3" style="position: relative; right: 30px; font-size: 14px">kolaborasi</div>
+                <div class="sidebar-brand-text mx-3" style="position: relative; right: 30px; font-size: 14px">kolaborasi</div> -->
+                <h1 style="font-size: 1.2rem; font-weight: bold">Dashboard</h1>
             </a>
 
             <!-- Divider -->
