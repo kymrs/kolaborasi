@@ -624,7 +624,8 @@
                     </td>
                     <td width="150" style="padding: 15px 10px">
                         <div class="btn btn-primary btn-lg btn-block btn-sm" data-toggle="modal" data-target="#deklarasiModal" data-id="${rowCount}" id="deklarasi-modal${rowCount}">Deklarasi</div>
-                        <input type="hidden" class="form-control" id="deklarasi${rowCount}" placeholder="Deklarasi ${rowCount}" name="deklarasi[${rowCount}]" autocomplete="off">
+                        <input type="text" class="form-control" id="deklarasi${rowCount}" placeholder="Deklarasi ${rowCount}" name="deklarasi[${rowCount}]" autocomplete="off">
+                        <input type="text" class="form-control deklarasi-old" id="deklarasi_old${rowCount}" placeholder="Deklarasi Old${rowCount}" name="deklarasi_old[${rowCount}]" autocomplete="off" value="">
                     </td>
                     <td><span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span></td>
                 </tr>
@@ -725,12 +726,13 @@
                 $(this).find('.row-number').text(newRowNumber);
                 $(this).find('input[name^="detail_id"]').attr('name', `detail_id[${newRowNumber}]`).attr('placeholder', `detail_id ${newRowNumber}`).val(detailIdValue);
                 $(this).find('input[name^="pemakaian"]').attr('name', `pemakaian[${newRowNumber}]`).attr('placeholder', `Pemakaian ${newRowNumber}`).val(pemakaianValue);
-                $(this).find('input[name^="tgl_nota"]').attr('name', `tgl_nota[${newRowNumber}]`).attr('placeholder', `Tanggal Nota ${newRowNumber}`).attr('id', `tgl_nota_${newRowNumber}`).val(tgl_notaValue);
+                $(this).find('input[name^="tgl_nota"]').attr('name', `tgl_nota[${newRowNumber}]`).attr('placeholder', `Tanggal Nota ${newRowNumber}`).val(tgl_notaValue);
                 $(this).find('input[name^="jml"]').attr('name', `jml[${newRowNumber}]`).attr('placeholder', `Jumlah ${newRowNumber}`).val(jmlValue);
                 $(this).find('input[name^="jumlah"]').attr('name', `jumlah[${newRowNumber}]`).attr('placeholder', `Jumlah ${newRowNumber}`).val(jumlahValue);
                 $(this).find('input[name^="kwitansi"]').attr('name', `kwitansi[${newRowNumber}]`).attr('placeholder', `Input ${newRowNumber}`).val(kwitansiValue);
                 $(this).find('#kwitansi_image').attr('name', `kwitansi_image[${newRowNumber}]`).attr('placeholder', `Input ${newRowNumber}`).val(kwitansiImageValue);
-                $(this).find('input[name^="deklarasi"]').attr('name', `deklarasi[${newRowNumber}]`).attr('placeholder', `Input ${newRowNumber}`).val(deklarasiValue);
+                $(this).find('input[name^="deklarasi"]').attr('name', `deklarasi[${newRowNumber}]`).attr('placeholder', `Deklarasi ${newRowNumber}`).val(deklarasiValue);
+                $(this).find('.deklarasi-old').attr('name', `deklarasi_old[${newRowNumber}]`).attr('placeholder', `Deklarasi Old${newRowNumber}`);
                 $(this).find('.delete-btn').attr('data-id', newRowNumber).text('Delete');
             });
             rowCount = $('#input-container tr').length; // Update rowCount to the current number of rows
@@ -1107,8 +1109,8 @@
                                             id="deklarasi-modal${index + 1}">
                                             ${data['transaksi'][index]['deklarasi'] ? data['transaksi'][index]['deklarasi'] : 'Deklarasi'}
                                         </div>
-                                        <input type="hidden" class="form-control" id="deklarasi${index + 1}" placeholder="Deklarasi ${index + 1}" name="deklarasi[${index + 1}]" autocomplete="off" value="${data['transaksi'][index]['deklarasi']}">
-                                        <input type="hidden" class="form-control" id="deklarasi_old${index + 1}" placeholder="Deklarasi Old${index + 1}" name="deklarasi_old[${index + 1}]" autocomplete="off" value="${data['transaksi'][index]['deklarasi']}">
+                                        <input type="text" class="form-control" id="deklarasi${index + 1}" placeholder="Deklarasi ${index + 1}" name="deklarasi[${index + 1}]" autocomplete="off" value="${data['transaksi'][index]['deklarasi']}">
+                                        <input type="text" class="form-control deklarasi-old" id="deklarasi_old${index + 1}" placeholder="Deklarasi Old${index + 1}" name="deklarasi_old[${index + 1}]" autocomplete="off" value="${data['transaksi'][index]['deklarasi']}">
                                     </td>
                                     <td><span class="btn delete-btn btn-danger" data-id="${index + 1}">Delete</span></td>
                                 </tr>

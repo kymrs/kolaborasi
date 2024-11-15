@@ -725,7 +725,7 @@
                 $(this).find('.row-number').text(newRowNumber);
                 $(this).find('input[name^="detail_id"]').attr('name', `detail_id[${newRowNumber}]`).attr('placeholder', `detail_id ${newRowNumber}`).val(detailIdValue);
                 $(this).find('input[name^="pemakaian"]').attr('name', `pemakaian[${newRowNumber}]`).attr('placeholder', `Pemakaian ${newRowNumber}`).val(pemakaianValue);
-                $(this).find('input[name^="tgl_nota"]').attr('name', `tgl_nota[${newRowNumber}]`).attr('placeholder', `Tanggal Nota ${newRowNumber}`).attr('id', `tgl_nota_${newRowNumber}`).val(tgl_notaValue);
+                $(this).find('input[name^="tgl_nota"]').attr('name', `tgl_nota[${newRowNumber}]`).attr('placeholder', `Tanggal Nota ${newRowNumber}`).val(tgl_notaValue);
                 $(this).find('input[name^="jml"]').attr('name', `jml[${newRowNumber}]`).attr('placeholder', `Jumlah ${newRowNumber}`).val(jmlValue);
                 $(this).find('input[name^="jumlah"]').attr('name', `jumlah[${newRowNumber}]`).attr('placeholder', `Jumlah ${newRowNumber}`).val(jumlahValue);
                 $(this).find('input[name^="kwitansi"]').attr('name', `kwitansi[${newRowNumber}]`).attr('placeholder', `Input ${newRowNumber}`).val(kwitansiValue);
