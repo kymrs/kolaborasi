@@ -583,6 +583,7 @@
                     <td width="150" style="padding: 15px 10px">
                         <div class="btn btn-primary btn-lg btn-block btn-sm" data-toggle="modal" data-target="#deklarasiModal" data-id="${rowCount}" id="deklarasi-modal${rowCount}">Deklarasi</div>
                         <input type="hidden" class="form-control" id="deklarasi${rowCount}" placeholder="Deklarasi ${rowCount}" name="deklarasi[${rowCount}]" autocomplete="off">
+                        <input type="hidden" class="form-control deklarasi-old" id="deklarasi_old${rowCount}" placeholder="Deklarasi Old${rowCount}" name="deklarasi_old[${rowCount}]" autocomplete="off" value="">
                     </td>
                     <td><span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span></td>
                 </tr>
@@ -992,7 +993,7 @@
                                             ${data['transaksi'][index]['deklarasi'] ? data['transaksi'][index]['deklarasi'] : 'Deklarasi'}
                                         </div>
                                         <input type="hidden" class="form-control" id="deklarasi${index + 1}" placeholder="Deklarasi ${index + 1}" name="deklarasi[${index + 1}]" autocomplete="off" value="${data['transaksi'][index]['deklarasi']}">
-                                        <input type="hidden" class="form-control" id="deklarasi_old${index + 1}" placeholder="Deklarasi Old${index + 1}" name="deklarasi_old[${index + 1}]" autocomplete="off" value="${data['transaksi'][index]['deklarasi']}">
+                                        <input type="hidden" class="form-control deklarasi-old" id="deklarasi_old${index + 1}" placeholder="Deklarasi Old${index + 1}" name="deklarasi_old[${index + 1}]" autocomplete="off" value="${data['transaksi'][index]['deklarasi']}">
                                     </td>
                                     <td><span class="btn delete-btn btn-danger" data-id="${index + 1}">Delete</span></td>
                                 </tr>

@@ -874,6 +874,9 @@ class Reimbust_bmn extends CI_Controller
 
                         $this->db->where('id', $id2);
                         $this->db->delete('tbl_reimbust_detail_bmn');
+
+                        $kode_deklarasi = $reimbust_detail['deklarasi'];
+                        $this->db->update('tbl_deklarasi_bmn', ['is_active' => 1], ['kode_deklarasi' => $kode_deklarasi]);
                     }
                 }
             }

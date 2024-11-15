@@ -871,6 +871,9 @@ class Reimbust_pw extends CI_Controller
 
                         $this->db->where('id', $id2);
                         $this->db->delete('tbl_reimbust_detail_pw');
+
+                        $kode_deklarasi = $reimbust_detail['deklarasi'];
+                        $this->db->update('tbl_deklarasi_pw', ['is_active' => 1], ['kode_deklarasi' => $kode_deklarasi]);
                     }
                 }
             }
