@@ -958,11 +958,7 @@ class Reimbust_sw extends CI_Controller
                 $this->db->replace('tbl_reimbust_detail', $data2);
 
                 // mengubah is_active deklarasi awal menjadi 1, dan deklarasi baru menjadi 0
-<<<<<<< HEAD
-                if (isset($deklarasi_old[$i])) {
-=======
                 if ($deklarasi_old[$i]) {
->>>>>>> 0d54952a8419d75d0a8e90360fef3b6d7a3824cb
                     $this->db->update('tbl_deklarasi', ['is_active' => 1], ['kode_deklarasi' => $deklarasi_old[$i]]);
                     $this->db->update('tbl_deklarasi', ['is_active' => 0], ['kode_deklarasi' => $deklarasi[$i]]);
                 } else {
