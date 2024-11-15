@@ -421,7 +421,7 @@ class Datanotifikasi_qbg extends CI_Controller
         $pdf->AddPage('P', 'Letter');
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/pengenumroh.png', 15, 8, 35, 22);
+        $pdf->Image(base_url('') . '/assets/backend/img/qubagift.png', 15, 8, 30, 29);
 
         // Set font for title
         // $pdf->SetFont('Arial', 'B', 14);

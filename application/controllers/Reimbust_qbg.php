@@ -331,7 +331,7 @@ class Reimbust_qbg extends CI_Controller
         $pdf->SetAutoPageBreak(true, 5); // Margin bawah 15mm
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/pengenumroh.png', 15, 8, 35, 22);
+        $pdf->Image(base_url('') . '/assets/backend/img/qubagift.png', 9, 5, 30, 29);
 
         // Set font
         $pdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php');
@@ -341,7 +341,7 @@ class Reimbust_qbg extends CI_Controller
 
         // Teks yang ingin ditampilkan
         $text1 = 'FORM PELAPORAN / REIMBUST';
-        $text2 = 'PENGENUMROH';
+        $text2 = 'QUBAGIFT';
 
         // Menghitung lebar teks
         $textWidth1 = $pdf->GetStringWidth($text1);

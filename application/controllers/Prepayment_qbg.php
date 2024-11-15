@@ -53,7 +53,7 @@ class Prepayment_qbg extends CI_Controller
             ->get()
             ->row('name');
         $data['approval'] = $this->db->select('COUNT(*) as total_approval')
-            ->from('tbl_prepayment_qbg')
+            ->from('qbg_prepayment')
             ->where('app_name', $name)
             ->or_where('app2_name', $name)
             ->get()
@@ -331,7 +331,7 @@ class Prepayment_qbg extends CI_Controller
         $rincian = $this->input->post('rincian[]');
         $nominal = $this->input->post('hidden_nominal[]');
         $keterangan = $this->input->post('keterangan[]');
-        if ($this->db->update('tbl_prepayment_qbg', $data)) {
+        if ($this->db->update('qbg_prepayment', $data)) {
             // UNTUK MENGHAPUS ROW YANG TELAH DIDELETE
             $deletedRows = json_decode($this->input->post('deleted_rows'), true);
             if (!empty($deletedRows)) {
@@ -388,7 +388,7 @@ class Prepayment_qbg extends CI_Controller
 
         //UPDATE APPROVAL PERTAMA
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_prepayment_qbg', $data);
+        $this->db->update('qbg_prepayment', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -412,7 +412,7 @@ class Prepayment_qbg extends CI_Controller
 
         // UPDATE APPROVAL 2
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_prepayment_qbg', $data);
+        $this->db->update('qbg_prepayment', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -460,7 +460,7 @@ class Prepayment_qbg extends CI_Controller
         $pdf->AddPage('P', 'Letter');
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/pengenumroh.png', 11.5, 3, 35, 22);
+        $pdf->Image(base_url('') . '/assets/backend/img/qubagift.png', 11.5, -1, 30, 29);
 
         $pdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php');
         $pdf->AddFont('Poppins-Bold', '', 'Poppins-Bold.php');
@@ -658,7 +658,7 @@ class Prepayment_qbg extends CI_Controller
     function payment()
     {
         $this->db->where('id', $this->input->post('id'));
-        $this->db->update('tbl_prepayment_qbg', ['payment_status' => $this->input->post('payment_status')]);
+        $this->db->update('qbg_prepayment', ['payment_status' => $this->input->post('payment_status')]);
 
         echo json_encode(array("status" => TRUE));
     }
