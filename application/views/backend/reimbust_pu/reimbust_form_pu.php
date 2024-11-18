@@ -1176,40 +1176,6 @@
             });
         }
 
-        // UNTUK TAMPILAN READ ONLY
-        if (aksi == "read") {
-            // $('.aksi').hide();
-            // $('#id').prop('readonly', true);
-            // $('#sifat_pelaporan').prop('disabled', true);
-            // $('#tgl_pengajuan').prop('disabled', true);
-            // $('#nama').prop('disabled', false);
-            // $('#departemen').prop('disabled', true);
-            // $('#jabatan').prop('disabled', true);
-            // $('#tujuan').prop('disabled', true);
-            // $('#status').prop('disabled', true);
-            // $('#jumlah_prepayment').prop('disabled', true);
-            // $('th:last-child').remove();
-
-            // $.ajax({
-            //     url: "<?php echo site_url('reimbust_pu/read_detail/') ?>" + id,
-            //     type: "GET",
-            //     dataType: "JSON",
-            //     success: function(data) {
-            //         $(data).each(function(index) {
-            //             //Nilai nominal diformat menggunakan pemisah ribuan sebelum dimasukkan ke dalam elemen input.
-            //             const nominalReadFormatted = data[index]['nominal'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-            //             const row = `
-            //             <tr id="row-${index}">
-            //                 <td class="row-number">${index + 1}</td>
-            //                 <td><input readonly type="text" class="form-control" name="sifat_pelaporan[${index}]" value="${data[index]['sifat_pelaporan']}"></td>
-            //             </tr>
-            //             `;
-            //             $('#input-container').append(row);
-            //         });
-            //     }
-            // });
-        }
-
         $("#form").submit(function(e) {
             e.preventDefault();
             var $form = $(this);

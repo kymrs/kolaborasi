@@ -94,6 +94,11 @@
                                 </tr>
                             </table>
                         </div>
+                        <!-- Loading indicator -->
+                        <div id="loading" style="display: none;">
+                            <p>Loading...</p>
+                        </div>
+
                         <!-- PENENTUAN UPDATE ATAU ADD -->
                         <input type="hidden" name="id" id="id" value="<?= $id ?>">
                         <?php if (!empty($aksi)) { ?>
@@ -580,6 +585,11 @@
                 url = "<?php echo site_url('prepayment_sw/update') ?>";
             }
 
+            // Tampilkan loading
+            $('#loading').show();
+
+            $('.aksi').prop('disabled', true);
+
             $.ajax({
                 url: url,
                 type: "POST",
@@ -587,6 +597,9 @@
                 dataType: "JSON",
                 success: function(data) {
                     // console.log(data);
+                    // Sembunyikan loading saat respons diterima
+                    $('#loading').hide();
+
                     if (data.status) //if success close modal and reload ajax table
                     {
                         Swal.fire({
@@ -601,7 +614,14 @@
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
-                    alert('Error adding / update data');
+                    // Sembunyikan loading saat respons diterima
+                    $('#loading').hide();
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Error adding / updating data: ' + textStatus
+                    });
                 }
             });
         });
