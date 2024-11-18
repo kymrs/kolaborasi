@@ -284,11 +284,6 @@ class Penawaran_la_pu extends CI_Controller
     {
         $this->load->library('Pdf');
 
-        // // Start FPDF
-        // $pdf = new Fpdf_generate('P', 'mm', 'A4');
-        // $pdf->SetTitle('Form Deklarasi');
-        // $pdf->AddPage('P', 'Letter');
-
         // Start FPDF
         $pdf = new Pdf();
         $pdf->AddPage();

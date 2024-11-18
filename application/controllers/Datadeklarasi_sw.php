@@ -422,10 +422,6 @@ class Datadeklarasi_sw extends CI_Controller
         // Logo
         $pdf->Image(base_url('') . '/assets/backend/img/sebelaswarna.png', 14, 5, 40, 30);
 
-        // Set font for title
-        // $pdf->SetFont('Arial', 'B', 14);
-        // $pdf->Cell(0, 25, 'SEBELASWARNA', 0, 1, 'C');
-
         // Title of the form
         $pdf->Ln(25);
 

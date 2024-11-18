@@ -429,7 +429,6 @@ class Reimbust_pw extends CI_Controller
         $jumlah_prepayment = number_format($data['master']->jumlah_prepayment, 0, ',', '.');
 
         // Add table headers
-        // Tambahkan "JUMLAH PREPAYMENT" dalam satu Cell
         $pdf->SetFont('Poppins-Regular', '', 9);
         $pdf->Cell(193, 7, 'No. Prepayment : ' . (!empty($data['master']->kode_prepayment) ? $data['master']->kode_prepayment : '-'), 0, 1, 'R');
 

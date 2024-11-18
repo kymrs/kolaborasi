@@ -300,19 +300,6 @@ class Reimbust_sw extends CI_Controller
 
     public function add_form()
     {
-        // $kode = $this->M_reimbust_sw->max_kode()->row();
-        // if (empty($kode->kode_reimbust)) {
-        //     $no_urut = 1;
-        // } else {
-        //     $bln = substr($kode->kode_reimbust, 3, 2);
-        //     if ($bln != date('m')) {
-        //         $no_urut = 1;
-        //     } else {
-        //         $no_urut = substr($kode->kode_reimbust, 5) + 1;
-        //     }
-        // }
-        // $urutan = str_pad($no_urut, 3, "0", STR_PAD_LEFT);
-        // $data['kode'] = 'B' . date('ym') . $urutan;
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = 0;
         $data['aksi'] = 'add';
@@ -320,41 +307,6 @@ class Reimbust_sw extends CI_Controller
         $data['title'] = 'backend/reimbust_sw/reimbust_form_sw';
         $this->load->view('backend/home', $data);
     }
-
-    // UNTUK MENAMPILKAN FORM APPROVAL
-    // public function pdf($id)
-    // {
-    //     // Ambil data berdasarkan ID
-    //     $data['id'] = $id;
-    //     $data['user'] = $this->M_reimbust_sw->get_by_id($id);
-
-    //     // Ambil nama user dari database
-    //     $data['app_name'] = $this->db->select('name')
-    //         ->from('tbl_data_user')
-    //         ->where('id_user', $this->session->userdata('id_user'))
-    //         ->get()
-    //         ->row('name');
-    //     $data['app2_name'] = $this->db->select('name')
-    //         ->from('tbl_data_user')
-    //         ->where('id_user', $this->session->userdata('id_user'))
-    //         ->get()
-    //         ->row('name');
-
-    //     // Load library Dompdf
-    //     $this->load->library('dompdf_gen');
-
-    //     // Load view sebagai string
-    //     $html = $this->load->view('backend/reimbust_sw/reimbust_read_sw', $data, true);
-
-    //     // Load HTML ke Dompdf
-    //     $this->dompdf_gen->load_html($html);
-
-    //     // Render PDF
-    //     $this->dompdf_gen->render();
-
-    //     // Output file PDF (dapat disesuaikan untuk mendownload atau menampilkan)
-    //     $this->dompdf_gen->stream("reimbust_$id.pdf", array('Attachment' => 0)); // Attachment 0 untuk menampilkan di browser
-    // }
 
     public function generate_pdf($id)
     {

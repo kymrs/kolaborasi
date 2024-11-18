@@ -32,7 +32,6 @@ class Auth extends CI_Controller
 				'username'		=> $auth->username,
 				'fullname'		=> $auth->fullname,
 				'id_level'		=> $auth->id_level,
-				'nama_level'	=> $auth->nama_level,
 				'image'			=> $auth->image,
 				'active'		=> $auth->is_active
 			);

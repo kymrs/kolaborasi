@@ -50,17 +50,6 @@ class Customer_pu extends CI_Controller
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['title'] = "backend/customer_pu/customer_list_pu";
         $data['titleview'] = "Data Customer";
-        // $name = $this->db->select('name')
-        //     ->from('tbl_data_user')
-        //     ->where('id_user', $this->session->userdata('id_user'))
-        //     ->get()
-        //     ->row('name');
-        // $data['approval'] = $this->db->select('COUNT(*) as total_approval')
-        //     ->from('tbl_customer')
-        //     ->where('app_name', $name)
-        //     ->or_where('app2_name', $name)
-        //     ->get()
-        //     ->row('total_approval');
         $this->load->view('backend/home', $data);
     }
 
@@ -89,7 +78,6 @@ class Customer_pu extends CI_Controller
             $action_read = ($read == 'Y') ? '<a href="customer_pu/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
             $action_edit = ($edit == 'Y') ? '<a href="customer_pu/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
-            // $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="customer_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
             $action = $action_read . $action_edit . $action_delete;
 
@@ -98,34 +86,11 @@ class Customer_pu extends CI_Controller
             $row[] = $no;
             $row[] = $action;
             $row[] = strtoupper($field->group_id);
-            // $row[] = strtoupper($field->customer_id);
-            // $row[] = $field->title;
             $row[] = $field->nama;
             $row[] = $field->jenis_kelamin;
             $row[] = $field->no_hp;
-            // $row[] = $field->status;
             $row[] = $field->asal;
             $row[] = $field->produk;
-            // $row[] = 'Rp. ' . number_format($field->harga, 0, ',', '.');
-            // $row[] = 'Rp. ' . number_format($field->harga_promo, 0, ',', '.');
-            // $row[] = $field->tipe_kamar;
-            // $row[] = 'Rp. ' . number_format($field->promo_diskon, 0, ',', '.');
-            // $row[] = $field->paspor;
-            // $row[] = $field->kartu_kuning;
-            // $row[] = $field->ktp;
-            // $row[] = $field->kk;
-            // $row[] = $field->buku_nikah;
-            // $row[] = $field->akta_lahir;
-            // $row[] = ($field->pas_foto != '' ? '<img src="' . site_url("assets/backend/document/customer/") . $field->pas_foto  . '" height="40px" width="40px">' : '');
-            // $row[] = 'Rp. ' . number_format($field->dp, 0, ',', '.');
-            // $row[] = 'Rp. ' . number_format($field->pembayaran_1, 0, ',', '.');
-            // $row[] = 'Rp. ' . number_format($field->pembayaran_2, 0, ',', '.');
-            // $row[] = 'Rp. ' . number_format($field->pelunasan, 0, ',', '.');
-            // $row[] = 'Rp. ' . number_format($field->cashback, 0, ',', '.');
-            // $row[] = $field->akun;
-            // $row[] = $field->pakaian;
-            // $row[] = $field->ukuran;
-            // $row[] = $field->kirim_perlengkapan;
             $row[] = $this->tgl_indo(date("Y-m-j", strtotime($field->tgl_berangkat)));
             $row[] = $field->travel;
             // $row[] = $field->tujuan;
@@ -149,16 +114,6 @@ class Customer_pu extends CI_Controller
         $data['user'] = $this->M_customer_pu->get_by_id($id);
         $data['aksi'] = 'read';
         $data['notif'] = $this->M_notifikasi->pending_notification();
-        // $data['app_name'] = $this->db->select('name')
-        //     ->from('tbl_data_user')
-        //     ->where('id_user', $this->session->userdata('id_user'))
-        //     ->get()
-        //     ->row('name');
-        // $data['app2_name'] = $this->db->select('name')
-        //     ->from('tbl_data_user')
-        //     ->where('id_user', $this->session->userdata('id_user'))
-        //     ->get()  
-        //     ->row('name');
         $data['title_view'] = "Data Customer";
         $data['title'] = 'backend/customer_pu/customer_form_pu';
         $data['travel'] = $this->db->get('tbl_travel_pu')->result_array();

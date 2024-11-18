@@ -249,12 +249,6 @@ class Datadeklarasi_bmn extends CI_Controller
             'created_at' => date('Y-m-d H:i:s')
         );
 
-        // BILA YANG MEMBUAT PREPAYMENT DAPAT MENGAPPROVE SENDIRI
-        // if ($approval->app_id == $this->session->userdata('id_user')) {
-        //     $data['app_status'] = 'approved';
-        //     $data['app_date'] = date('Y-m-d H:i:s');
-        // }
-
         $this->M_datadeklarasi_bmn->save($data);
         echo json_encode(array("status" => TRUE));
     }

@@ -279,12 +279,6 @@ class Prepayment_kps extends CI_Controller
             'created_at' => date('Y-m-d H:i:s')
         );
 
-        // BILA YANG MEMBUAT PREPAYMENT DAPAT MENGAPPROVE SENDIRI
-        // if ($approval->app_id == $this->session->userdata('id_user')) {
-        //     $data['app_status'] = 'approved';
-        //     $data['app_date'] = date('Y-m-d H:i:s');
-        // }
-
         $inserted = $this->M_prepayment_kps->save($data);
 
         if ($inserted) {
@@ -465,13 +459,6 @@ class Prepayment_kps extends CI_Controller
         $pdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php');
         $pdf->AddFont('Poppins-Bold', '', 'Poppins-Bold.php');
 
-        // Set posisi untuk title dan elemen lainnya (menyesuaikan jarak dari logo)
-        // $pdf->SetXY(46, 5); // Geser ke kanan untuk judul
-        // $pdf->SetFont('Arial', 'B', 12);
-        // $pdf->Cell(0, 8, 'SEBELASWARNA', 0, 1, 'L');
-
-        // Pindahkan posisi sedikit ke bawah dan tetap sejajar
-        // $pdf->SetX(46); // Tetap di posisi yang sama untuk elemen lain
         $pdf->Ln(17);
         $pdf->SetFont('Poppins-Regular', '', 12);
         $pdf->Cell(30, 10, 'Divisi', 0, 0);
@@ -624,9 +611,6 @@ class Prepayment_kps extends CI_Controller
 
         // Output the PDF
         $pdf->Output('I', 'Prepayment.pdf');
-        // $pdfContent = $pdf->Output('S');  // Generate the PDF and get it as a string
-        // echo json_encode(base64_encode($pdfContent));  // Base64 encode and send to the client
-
     }
 
     // QUERY UNTUK INPUT TANDA TANGAN
@@ -650,9 +634,6 @@ class Prepayment_kps extends CI_Controller
         } else {
             echo json_encode(['status' => 'error']);
         }
-        //Pastikan folder ./assets/backend/img/signatures/ dapat ditulisi oleh server.
-        // mkdir -p ./assets/backend/img/signatures/
-        // chmod 755 ./assets/backend/img/signatures/
     }
 
     function payment()

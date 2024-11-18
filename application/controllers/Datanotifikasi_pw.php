@@ -386,10 +386,6 @@ class Datanotifikasi_pw extends CI_Controller
         // Logo
         $pdf->Image(base_url('') . '/assets/backend/img/pengenwisata.png', 15, 8, 35, 22);
 
-        // Set font for title
-        // $pdf->SetFont('Arial', 'B', 14);
-        // $pdf->Cell(0, 28, 'PT. MANDIRI CIPTA SEJAHTERA', 0, 1, 'C');
-
         // Title of the form
         $pdf->Ln(27);
         // Set font
@@ -490,18 +486,6 @@ class Datanotifikasi_pw extends CI_Controller
         $pdf->Cell(63, 8.5, $data['user'], 1, 0, 'C');
         $pdf->Cell(63, 8.5, $data['master']->app_hc_name, 1, 0, 'C');
         $pdf->Cell(63, 8.5, $data['master']->app2_name, 1, 1, 'C');
-
-        // Add keterangan
-        // $pdf->Ln(5);
-        // $pdf->SetFont('Arial', '', 12);
-        // $pdf->Cell(40, 10, 'Keterangan:', 0, 0);
-        // $pdf->Ln(8);
-        // if ($data['master']->app_hc_keterangan != null && $data['master']->app_hc_keterangan != '') {
-        //     $pdf->Cell(60, 10, '*' . $data['master']->app_hc_keterangan, 0, 1);
-        // }
-        // if ($data['master']->app2_keterangan != null && $data['master']->app2_keterangan != '') {
-        //     $pdf->Cell(60, 10, '*' . $data['master']->app2_keterangan, 0, 1);
-        // }
 
         // Output the PDF
         $pdf->Output('I', 'Deklarasi.pdf');

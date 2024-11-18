@@ -263,12 +263,6 @@ class Datanotifikasi_sw extends CI_Controller
             'created_at' => date('Y-m-d H:i:s')
         );
 
-        // BILA YANG MEMBUAT PREPAYMENT DAPAT MENGAPPROVE SENDIRI
-        // if ($approval->app3_id == $this->session->userdata('id_user')) {
-        //     $data['app_hc_status'] = 'approved';
-        //     $data['app_hc_date'] = date('Y-m-d H:i:s');
-        // }
-
         $this->M_datanotifikasi_sw->save($data);
         echo json_encode(array("status" => TRUE));
     }
@@ -407,10 +401,6 @@ class Datanotifikasi_sw extends CI_Controller
 
         // Logo
         $pdf->Image(base_url('') . '/assets/backend/img/sebelaswarna.png', 14, 10, 40, 30);
-
-        // Set font for title
-        // $pdf->SetFont('Arial', 'B', 14);
-        // $pdf->Cell(0, 28, 'PT. MANDIRI CIPTA SEJAHTERA', 0, 1, 'C');
 
         // Title of the form
         $pdf->Ln(27);
