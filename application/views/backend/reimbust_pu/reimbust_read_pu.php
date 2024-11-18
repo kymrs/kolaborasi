@@ -819,30 +819,6 @@
                     }
                 });
             });
-
-            // Example: Load data into the form fields and tables
-            // $('#divisiCol').text('Finance');
-            // $('#prepaymentCol').text('001234');
-            // $('#tanggal').text('29 August 2024');
-            // $('#nama').text('Rakha Rizki');
-            // $('#jabatan').text('Software Developer');
-            // $('#tujuan').text('Project Development');
-
-            // Example: Append rows to the rincian table
-            // $('#input-container').append(`
-            //     <tr>
-            //         <td>Consultation Fees</td>
-            //         <td>Rp. 5,000,000</td>
-            //         <td>Consulting on project scope</td>
-            //     </tr>
-            //     <tr>
-            //         <td>Development Tools</td>
-            //         <td>Rp. 3,000,000</td>
-            //         <td>Purchase of software licenses</td>
-            //     </tr>
-            // `);
-
-            // $('#keterangan').append(`<span class="form-control-plaintext">*Berikut ini merupakan catatan keterangan prepayment.</span>`);
         });
     </script>
 </body>

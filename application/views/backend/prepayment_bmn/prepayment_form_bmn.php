@@ -30,17 +30,6 @@
                                         <input type="text" class="form-control" id="kode_prepayment" name="kode_prepayment" readonly>
                                     </div>
                                 </div>
-                                <!-- <div class="form-group row">
-                                    <label class="col-sm-5">Divisi</label>
-                                    <div class="col-sm-7">
-                                        <select class="form-control" name="divisi" id="divisi">
-                                            <option value="">-- Pilih --</option>
-                                            <option value="marketing">Marketing</option>
-                                            <option value="it">IT</option>
-                                            <option value="ga">General Affair</option>
-                                        </select>
-                                    </div>
-                                </div> -->
                             </div>
 
                             <!-- SEBELAH KANAN -->
@@ -51,12 +40,6 @@
                                         <input type="text" class="form-control" id="prepayment" name="prepayment" placeholder="Prepayment for....">
                                     </div>
                                 </div>
-                                <!-- <div class="form-group row">
-                                    <label class="col-sm-4">Jabatan</label>
-                                    <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="jabatan" name="jabatan" placeholder="Jabatan....">
-                                    </div>
-                                </div> -->
                                 <div class="form-group row">
                                     <label class="col-sm-4">Tujuan</label>
                                     <div class="col-sm-7">
@@ -91,6 +74,11 @@
                                 </tr>
                             </table>
                         </div>
+                        <!-- Loading indicator -->
+                        <div id="loading" style="display: none;">
+                            <p>Loading...</p>
+                        </div>
+
                         <!-- PENENTUAN UPDATE ATAU ADD -->
                         <input type="hidden" name="id" id="id" value="<?= $id ?>">
                         <?php if (!empty($aksi)) { ?>
@@ -440,6 +428,11 @@
                 url = "<?php echo site_url('prepayment_bmn/update') ?>";
             }
 
+            // Tampilkan loading
+            $('#loading').show();
+
+            $('.aksi').prop('disabled', true);
+
             $.ajax({
                 url: url,
                 type: "POST",
@@ -447,6 +440,9 @@
                 dataType: "JSON",
                 success: function(data) {
                     // console.log(data);
+                    // Sembunyikan loading saat respons diterima
+                    $('#loading').hide();
+
                     if (data.status) //if success close modal and reload ajax table
                     {
                         Swal.fire({
@@ -462,7 +458,14 @@
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
-                    alert('Error adding / update data');
+                    // Sembunyikan loading saat respons diterima
+                    $('#loading').hide();
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Error adding / updating data: ' + textStatus
+                    });
                 }
             });
         });
