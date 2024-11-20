@@ -339,7 +339,7 @@ class Reimbust_pw extends CI_Controller
 
         // Teks yang ingin ditampilkan
         $text1 = 'FORM PELAPORAN / REIMBUST';
-        $text2 = 'PENGENWISATA';
+        $text2 = 'SOBATWISATA';
 
         // Menghitung lebar teks
         $textWidth1 = $pdf->GetStringWidth($text1);

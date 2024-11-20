@@ -454,7 +454,7 @@ class Prepayment_bmn extends CI_Controller
         $pdf->AddPage('P', 'Letter');
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/pengenumroh.png', 11.5, 3, 35, 22);
+        $pdf->Image(base_url('') . '/assets/backend/img/by_moment_logo.jpeg', 11.5, 3, 35, 22);
 
         $pdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php');
         $pdf->AddFont('Poppins-Bold', '', 'Poppins-Bold.php');
@@ -610,31 +610,31 @@ class Prepayment_bmn extends CI_Controller
         }
 
         // Output the PDF
-        $pdf->Output('I', 'Prepayment.pdf');
+        $pdf->Output('I', 'Prepayment_by_moment.pdf');
     }
 
     // QUERY UNTUK INPUT TANDA TANGAN
-    function signature()
-    {
-        // Ambil data dari request
-        $img = $this->input->post('imgBase64');
+    // function signature()
+    // {
+    //     // Ambil data dari request
+    //     $img = $this->input->post('imgBase64');
 
-        // Decode base64
-        $img = str_replace('data:image/png;base64,', '', $img);
-        $img = str_replace(' ', '+', $img);
-        $data = base64_decode($img);
+    //     // Decode base64
+    //     $img = str_replace('data:image/png;base64,', '', $img);
+    //     $img = str_replace(' ', '+', $img);
+    //     $data = base64_decode($img);
 
-        // Tentukan lokasi dan nama file
-        $fileName = uniqid() . '.png';
-        $filePath = './assets/backend/img/signatures/' . $fileName;
+    //     // Tentukan lokasi dan nama file
+    //     $fileName = uniqid() . '.png';
+    //     $filePath = './assets/backend/img/signatures/' . $fileName;
 
-        // Simpan file ke server
-        if (file_bmnt_contents($filePath, $data)) {
-            echo json_encode(['status' => 'success', 'fileName' => $fileName]);
-        } else {
-            echo json_encode(['status' => 'error']);
-        }
-    }
+    //     // Simpan file ke server
+    //     if (file_bmnt_contents($filePath, $data)) {
+    //         echo json_encode(['status' => 'success', 'fileName' => $fileName]);
+    //     } else {
+    //         echo json_encode(['status' => 'error']);
+    //     }
+    // }
 
     function payment()
     {

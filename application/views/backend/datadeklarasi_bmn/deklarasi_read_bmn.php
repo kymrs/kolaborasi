@@ -24,7 +24,7 @@
         }
 
         .header .logo {
-            width: 140px;
+            width: 150px;
             position: relative;
             bottom: 50px;
         }
@@ -131,7 +131,7 @@
 
                     <!-- Header Section -->
                     <div class="header">
-                        <img src="<?= base_url('assets/backend/img/pengenumroh.png') ?>" alt="" class="logo">
+                        <img src="<?= base_url('assets/backend/img/by_moment_logo.jpeg') ?>" alt="" class="logo">
                         <div class="title">
                             <!-- <h1>SEBELASWARNA</h1> -->
                             <h2>FORM DEKLARASI</h2>

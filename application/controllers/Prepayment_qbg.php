@@ -610,31 +610,31 @@ class Prepayment_qbg extends CI_Controller
         }
 
         // Output the PDF
-        $pdf->Output('I', 'Prepayment.pdf');
+        $pdf->Output('I', 'Prepayment_qubagift.pdf');
     }
 
     // QUERY UNTUK INPUT TANDA TANGAN
-    function signature()
-    {
-        // Ambil data dari request
-        $img = $this->input->post('imgBase64');
+    // function signature()
+    // {
+    //     // Ambil data dari request
+    //     $img = $this->input->post('imgBase64');
 
-        // Decode base64
-        $img = str_replace('data:image/png;base64,', '', $img);
-        $img = str_replace(' ', '+', $img);
-        $data = base64_decode($img);
+    //     // Decode base64
+    //     $img = str_replace('data:image/png;base64,', '', $img);
+    //     $img = str_replace(' ', '+', $img);
+    //     $data = base64_decode($img);
 
-        // Tentukan lokasi dan nama file
-        $fileName = uniqid() . '.png';
-        $filePath = './assets/backend/img/signatures/' . $fileName;
+    //     // Tentukan lokasi dan nama file
+    //     $fileName = uniqid() . '.png';
+    //     $filePath = './assets/backend/img/signatures/' . $fileName;
 
-        // Simpan file ke server
-        if (file_qbgt_contents($filePath, $data)) {
-            echo json_encode(['status' => 'success', 'fileName' => $fileName]);
-        } else {
-            echo json_encode(['status' => 'error']);
-        }
-    }
+    //     // Simpan file ke server
+    //     if (file_qbgt_contents($filePath, $data)) {
+    //         echo json_encode(['status' => 'success', 'fileName' => $fileName]);
+    //     } else {
+    //         echo json_encode(['status' => 'error']);
+    //     }
+    // }
 
     function payment()
     {

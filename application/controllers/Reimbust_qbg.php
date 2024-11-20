@@ -601,7 +601,7 @@ class Reimbust_qbg extends CI_Controller
 
 
         // Output the PDF
-        $pdf->Output('I', 'Reimbust - ' . $data['master']->kode_reimbust . '.pdf');
+        $pdf->Output('I', 'Reimbust_qubagift - ' . $data['master']->kode_reimbust . '.pdf');
     }
 
     // MEREGENERATE KODE REIMBUST

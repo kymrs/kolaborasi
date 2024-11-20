@@ -61,7 +61,7 @@
                                 <?php foreach ($sub->result() as $child) {  ?>
                                     <a class="collapse-item" href="<?= base_url() . $child->link ?>">
                                         <?= $child->nama_submenu ?>
-                                        <span id="<?= $child->link ?>-notif" style="display:none; width: 17px; height: 17px; border-radius: 15px; background-color: red; color: white; font-size: 10px; display: inline-block; text-align: center; position: relative; bottom: 2px; line-height: 17px"></span>
+                                        <div id="<?= $child->link ?>-notif" style="display:none; width: 17px; height: 17px; border-radius: 15px; background-color: red; color: white; font-size: 10px; text-align: center; position: relative; bottom: 2px; line-height: 17px"></div>
                                     </a>
                                 <?php } ?>
                             </div>
