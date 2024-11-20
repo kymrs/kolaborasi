@@ -551,7 +551,7 @@ class Reimbust_sw extends CI_Controller
 
 
         // Output the PDF
-        $pdf->Output('I', 'Reimbust - ' . $data['master']->kode_reimbust . '.pdf');
+        $pdf->Output('I', 'Reimbust_SW - ' . $data['master']->kode_reimbust . '.pdf');
     }
 
     // MEREGENERATE KODE REIMBUST

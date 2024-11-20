@@ -469,6 +469,6 @@ class Datadeklarasi_pu extends CI_Controller
         }
 
         // Output the PDF
-        $pdf->Output('I', 'Deklarasi.pdf');
+        $pdf->Output('I', 'Deklarasi_PU.pdf');
     }
 }

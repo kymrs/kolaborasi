@@ -715,7 +715,7 @@ class Prepayment_sw extends CI_Controller
         }
 
         // Output the PDF
-        $pdf->Output('I', 'Prepayment.pdf');
+        $pdf->Output('I', 'Prepayment_SW.pdf');
     }
 
 

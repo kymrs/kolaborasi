@@ -610,7 +610,7 @@ class Prepayment_pu extends CI_Controller
         }
 
         // Output the PDF
-        $pdf->Output('I', 'Prepayment.pdf');
+        $pdf->Output('I', 'Prepayment_PU.pdf');
     }
 
     // QUERY UNTUK INPUT TANDA TANGAN
