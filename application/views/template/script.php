@@ -40,7 +40,7 @@
                 $.each(data.notif_pending, function(key, value) {
                     if (value > 0) {
                         // Jika ada notifikasi baru, tampilkan jumlah notifikasi
-                        $('#' + key + '-notif').text(value).show();
+                        $('#' + key + '-notif').text(value).css('display', 'inline-block');
                     } else {
                         // Sembunyikan notifikasi jika tidak ada
                         $('#' + key + '-notif').hide();

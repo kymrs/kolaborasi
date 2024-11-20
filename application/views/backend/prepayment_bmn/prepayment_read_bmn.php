@@ -26,7 +26,7 @@
         }
 
         .header .logo {
-            width: 140px;
+            width: 150px;
             position: relative;
             right: -3px;
             bottom: 80px;
@@ -161,7 +161,7 @@
                     <!-- Header Section -->
                     <div class="header">
                         <div class="header-field">
-                            <img src="<?= base_url('assets/backend/img/pengenumroh.png') ?>" alt="" class="logo">
+                            <img src="<?= base_url('assets/backend/img/by_moment_logo.jpeg') ?>" alt="" class="logo">
                             <table>
                                 <tr>
                                     <td style="font-weight: bold;">Divisi</td>

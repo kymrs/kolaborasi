@@ -331,7 +331,7 @@ class Reimbust_bmn extends CI_Controller
         $pdf->SetAutoPageBreak(true, 5); // Margin bawah 15mm
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/pengenumroh.png', 15, 8, 35, 22);
+        $pdf->Image(base_url('') . '/assets/backend/img/by_moment_logo.jpeg', 15, 8, 42, 26);
 
         // Set font
         $pdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php');
@@ -341,7 +341,7 @@ class Reimbust_bmn extends CI_Controller
 
         // Teks yang ingin ditampilkan
         $text1 = 'FORM PELAPORAN / REIMBUST';
-        $text2 = 'PENGENUMROH';
+        $text2 = 'BY.MOMENT';
 
         // Menghitung lebar teks
         $textWidth1 = $pdf->GetStringWidth($text1);
@@ -601,7 +601,7 @@ class Reimbust_bmn extends CI_Controller
 
 
         // Output the PDF
-        $pdf->Output('I', 'Reimbust - ' . $data['master']->kode_reimbust . '.pdf');
+        $pdf->Output('I', 'Reimbust_by_moment - ' . $data['master']->kode_reimbust . '.pdf');
     }
 
     // MEREGENERATE KODE REIMBUST

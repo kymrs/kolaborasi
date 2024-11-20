@@ -38,7 +38,7 @@
         }
 
         .header .logo img {
-            width: 100%;
+            width: 120%;
         }
 
         .header h1,
@@ -162,11 +162,11 @@
             <!-- Header -->
             <div class="header">
                 <div class="logo">
-                    <img src="<?= base_url() ?>assets/backend/img/pengenumroh.png" alt="Logo">
+                    <img src="<?= base_url() ?>assets/backend/img/by_moment_logo.jpeg" alt="Logo">
                 </div>
                 <div class="title">
                     <h1>FORM PELAPORAN / REIMBUST</h1>
-                    <h2>PENGENUMROH</h2>
+                    <h2>BY.MOMENT</h2>
                 </div>
             </div>
 

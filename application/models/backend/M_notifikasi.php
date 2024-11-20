@@ -33,22 +33,6 @@ class M_notifikasi extends CI_Model
             'datanotifikasi_pw' => $this->db->select('id')->from('tbl_notifikasi_pw')->where('app_hc_name', $app)->where('app_hc_status', 'waiting')->or_where('app2_name', $app)->where('app_hc_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows(),
             'datanotifikasi_bmn' => $this->db->select('id')->from('tbl_notifikasi_bmn')->where('app_hc_name', $app)->where('app_hc_status', 'waiting')->or_where('app2_name', $app)->where('app_hc_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows(),
             'datanotifikasi_qbg' => $this->db->select('id')->from('qbg_notifikasi')->where('app_hc_name', $app)->where('app_hc_status', 'waiting')->or_where('app2_name', $app)->where('app_hc_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows(),
-            'approval_sw' => '',
-            'approval' => '',
-            'penawaran_la_pu' => '',
-            'penawaran_pu' => '',
-            'rekapitulasi_pu' => '',
-            'rekapitulasi_sw' => '',
-            'rekapitulasi_kps' => '',
-            'rekapitulasi_bmn' => '',
-            'rekapitulasi_qbg' => '',
-            'rekapitulasi' => '',
-            'tanda_terima' => '',
-            'customer_pu' => '',
-            'menu' => '',
-            'submenu' => '',
-            'user' => '',
-            'userlevel' => ''
         ];
         return $data;
     }

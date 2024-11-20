@@ -11,12 +11,12 @@
 
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
-                <!-- <div class="sidebar-brand-icon">
-                    <img src="<?= base_url('favicon.ico') ?>" alt="kps" width="100">
+                <div class="sidebar-brand-icon">
+                    <img src="<?= base_url('assets/backend/img/kolaborasi-sidebar.png') ?>" alt="kps" width="100">
 
                 </div>
-                <div class="sidebar-brand-text mx-3" style="position: relative; right: 30px; font-size: 14px">kolaborasi</div> -->
-                <h1 style="font-size: 1.2rem; font-weight: bold">Dashboard</h1>
+                <div class="sidebar-brand-text mx-3" style="position: relative; right: 30px; color: #9AA0B1">kolaborasi</div>
+                <!-- <h1 style="font-size: 1.2rem; font-weight: bold">Dashboard</h1> -->
             </a>
 
             <!-- Divider -->
@@ -61,7 +61,7 @@
                                 <?php foreach ($sub->result() as $child) {  ?>
                                     <a class="collapse-item" href="<?= base_url() . $child->link ?>">
                                         <?= $child->nama_submenu ?>
-                                        <span id="<?= $child->link ?>-notif" style="display:none; width: 17px; height: 17px; border-radius: 15px; background-color: red; color: white; font-size: 10px; display: inline-block; text-align: center; position: relative; bottom: 2px; line-height: 17px"></span>
+                                        <div id="<?= $child->link ?>-notif" style="display:none; width: 17px; height: 17px; border-radius: 15px; background-color: red; color: white; font-size: 10px; text-align: center; position: relative; bottom: 2px; line-height: 17px"></div>
                                     </a>
                                 <?php } ?>
                             </div>
