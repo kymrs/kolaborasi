@@ -421,7 +421,7 @@ class Datanotifikasi_bmn extends CI_Controller
         $pdf->AddPage('P', 'Letter');
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/pengenumroh.png', 15, 8, 35, 22);
+        $pdf->Image(base_url('') . '/assets/backend/img/bymoment.png', 15, 8, 35, 22);
 
         // Title of the form
         $pdf->Ln(27);

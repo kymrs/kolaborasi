@@ -331,7 +331,7 @@ class Reimbust_bmn extends CI_Controller
         $pdf->SetAutoPageBreak(true, 5); // Margin bawah 15mm
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/by_moment_logo.jpeg', 15, 8, 42, 26);
+        $pdf->Image(base_url('') . '/assets/backend/img/bymoment.png', 15, 8, 42, 26);
 
         // Set font
         $pdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php');

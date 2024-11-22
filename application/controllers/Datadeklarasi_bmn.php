@@ -371,7 +371,7 @@ class Datadeklarasi_bmn extends CI_Controller
         $pdf->AddPage('P', 'Letter');
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/by_moment_logo.jpeg', 9, 12, 38, 24);
+        $pdf->Image(base_url('') . '/assets/backend/img/bymoment.png', 9, 12, 38, 24);
 
         // Title of the form
         $pdf->Ln(25);
