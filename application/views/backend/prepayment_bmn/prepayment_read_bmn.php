@@ -161,7 +161,7 @@
                     <!-- Header Section -->
                     <div class="header">
                         <div class="header-field">
-                            <img src="<?= base_url('assets/backend/img/by_moment_logo.jpeg') ?>" alt="" class="logo">
+                            <img src="<?= base_url('assets/backend/img/bymoment.png') ?>" alt="" class="logo">
                             <table>
                                 <tr>
                                     <td style="font-weight: bold;">Divisi</td>

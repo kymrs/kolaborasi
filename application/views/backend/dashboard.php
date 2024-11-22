@@ -8,16 +8,16 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-center">
                         <!-- Image inside card, properly scaled and responsive -->
-                       <img src="<?= base_url('assets/backend/img/pengenumroh.png'); ?>" class="img-fluid" alt="Logo" style="max-width: 100%; height: auto; auto; border-radius: 10px;">
+                        <img src="<?= base_url('assets/backend/img/pengenumroh.png'); ?>" class="img-fluid" alt="Logo" style="max-width: 100%; height: auto; auto; border-radius: 10px;">
                     </div>
                 </div>
             </a>
         </div>
-        
+
         <!-- Card -->
         <div class="col-xl-3 col-md-6 mb-4">
             <!-- Card with hover effect and clickable action -->
-             <a href="#" class="card shadow h-100 py-4 text-decoration-none" style="border-left: 5px solid #594093;">
+            <a href="#" class="card shadow h-100 py-4 text-decoration-none" style="border-left: 5px solid #594093;">
                 <div class="card-body">
                     <div class="d-flex justify-content-center">
                         <!-- Image inside card, properly scaled and responsive -->
@@ -30,7 +30,7 @@
         <!-- Card -->
         <div class="col-xl-3 col-md-6 mb-4">
             <!-- Card with hover effect and clickable action -->
-             <a href="#" class="card shadow h-100 py-4 text-decoration-none" style="border-left: 5px solid #3BB8EA;"> 
+            <a href="#" class="card shadow h-100 py-4 text-decoration-none" style="border-left: 5px solid #3BB8EA;">
                 <div class="card-body">
                     <div class="d-flex justify-content-center">
                         <!-- Image inside card, properly scaled and responsive -->
@@ -43,7 +43,7 @@
         <!-- Card -->
         <div class="col-xl-3 col-md-6 mb-4">
             <!-- Card with hover effect and clickable action -->
-             <a href="#" class="card shadow h-100 py-4 text-decoration-none" style="border-left: 5px solid #4B4D4A;"> 
+            <a href="#" class="card shadow h-100 py-4 text-decoration-none" style="border-left: 5px solid #4B4D4A;">
                 <div class="card-body">
                     <div class="d-flex justify-content-center">
                         <!-- Image inside card, properly scaled and responsive -->
@@ -56,7 +56,7 @@
         <!-- Card -->
         <div class="col-xl-3 col-md-6 mb-4">
             <!-- Card with hover effect and clickable action -->
-           <a href="#" class="card shadow h-100 py-4 text-decoration-none" style="border-left: 5px solid #00BE64;"> 
+            <a href="#" class="card shadow h-100 py-4 text-decoration-none" style="border-left: 5px solid #00BE64;">
                 <div class="card-body">
                     <div class="d-flex justify-content-center">
                         <!-- Image inside card, properly scaled and responsive -->
@@ -75,13 +75,17 @@
 <!-- CSS for hover effect and card transitions -->
 <style>
     .card {
-        transition: all 0.3s ease; /* Smooth transition for hover */
+        transition: all 0.3s ease;
+        /* Smooth transition for hover */
     }
 
     .card:hover {
-        transform: translateY(-5px); /* Slightly lifts the card */
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); /* Deeper shadow on hover */
-        background-color: #f8f9fa; /* Subtle background change */
+        transform: translateY(-5px);
+        /* Slightly lifts the card */
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        /* Deeper shadow on hover */
+        background-color: #f8f9fa;
+        /* Subtle background change */
     }
 
     .card-body {
@@ -92,7 +96,8 @@
     }
 
     .card img {
-        max-width: 80%; /* Image scaling */
+        max-width: 80%;
+        /* Image scaling */
         height: auto;
         border-radius: 10px;
     }

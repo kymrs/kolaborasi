@@ -454,7 +454,7 @@ class Prepayment_bmn extends CI_Controller
         $pdf->AddPage('P', 'Letter');
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/by_moment_logo.jpeg', 11.5, 3, 35, 22);
+        $pdf->Image(base_url('') . '/assets/backend/img/bymoment.png', 11.5, 3, 35, 22);
 
         $pdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php');
         $pdf->AddFont('Poppins-Bold', '', 'Poppins-Bold.php');

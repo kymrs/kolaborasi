@@ -177,7 +177,7 @@
                     </div>
 
                     <div class="header">
-                        <img src="<?= base_url('assets/backend/img/pengenumroh.png') ?>" alt="" class="logo">
+                        <img src="<?= base_url('assets/backend/img/bymoment.png') ?>" alt="" class="logo">
                         <div class="title">
                             <!-- <h1>SEBELASWARNA</h1> -->
                             <h2>FORM NOTIFIKASI</h2>

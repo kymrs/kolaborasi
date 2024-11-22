@@ -162,7 +162,7 @@
             <!-- Header -->
             <div class="header">
                 <div class="logo">
-                    <img src="<?= base_url() ?>assets/backend/img/by_moment_logo.jpeg" alt="Logo">
+                    <img src="<?= base_url() ?>assets/backend/img/bymoment.png" alt="Logo">
                 </div>
                 <div class="title">
                     <h1>FORM PELAPORAN / REIMBUST</h1>
