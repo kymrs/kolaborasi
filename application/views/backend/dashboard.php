@@ -66,6 +66,19 @@
             </a>
         </div>
 
+        <!-- Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <!-- Card with hover effect and clickable action -->
+            <a href="#" class="card shadow h-100 py-4 text-decoration-none" style="border-left: 5px solid #3770C1;">
+                <div class="card-body">
+                    <div class="d-flex justify-content-center">
+                        <!-- Image inside card, properly scaled and responsive -->
+                        <img src="<?= base_url('assets/backend/img/pengenwisata.png'); ?>" class="img-fluid" alt="Logo" style="max-width: 100%; height: auto; border-radius: 10px;">
+                    </div>
+                </div>
+            </a>
+        </div>
+
     </div>
 </div>
 
