@@ -8,7 +8,9 @@
             <div class="card shadow mb-4">
                 <?php if ($add == 'Y') { ?>
                     <div class="card-header py-3">
-                        <a class="btn btn-primary btn-sm" onclick="add_data()"><i class="fa fa-plus"></i>&nbsp;Add User</a>
+                        <a class="btn btn-primary btn-sm" href="<?= base_url('user/add_form') ?>">
+                            <i class="fa fa-plus"></i>&nbsp;Add Data
+                        </a>
                     </div>
                 <?php } ?>
                 <div class="card-body">
@@ -73,13 +75,6 @@
                         <label for="fullname" class="col-sm-2 col-form-label">Password</label>
                         <div class="col-sm-10">
                             <input type="password" class="form-control" id="password" name="password" placeholder="Password">
-                        </div>
-                    </div>
-                    <div class="form-group row" id="change">
-                        <label for="fullname" class="col-sm-2 col-form-label"></label>
-                        <div class="col-sm-10">
-                            <input type="checkbox" name="new" id="new" value="1" class="filled-in chk-col-pink">
-                            <label for="new">Change Password</label>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -234,19 +229,6 @@
             }
         });
     });
-
-    function add_data() {
-        method = 'add';
-        $('#form')[0].reset();
-        $('.form-control').removeClass('error');
-        var validator = $("#form").validate();
-        validator.resetForm();
-        $('#modal-default').modal('show');
-        $('.modal-title').text('Add User');
-        $('.aksi').text('Save');
-        $('[name="password"]').removeAttr('disabled');
-        $('#change').attr('hidden', true);
-    };
 
     function edit_data(id) {
         method = 'update';
