@@ -19,7 +19,7 @@ class User extends CI_Controller
 		$akses = $this->M_app->hak_akses($this->session->userdata('id_level'), $this->router->fetch_class());
 		($akses->view_level == 'N' ? redirect('auth') : '');
 		$data['add'] = $akses->add_level;
-		$data['title'] = "backend/user";
+		$data['title'] = "backend/user/user";
 		$data['titleview'] = "Data User";
 		$this->load->view('backend/home', $data);
 	}
@@ -54,6 +54,15 @@ class User extends CI_Controller
 		);
 		//output dalam format JSON
 		echo json_encode($output);
+	}
+
+	function add_form()
+	{
+		$data['id'] = 0;
+		$data['title_view'] = "User Form";
+		$data['aksi'] = 'add';
+		$data['title'] = 'backend/user/user_form';
+		$this->load->view('backend/home', $data);
 	}
 
 	function delete($id)
