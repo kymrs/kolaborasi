@@ -13,30 +13,6 @@ class Approval extends CI_Controller
         date_default_timezone_set('Asia/Jakarta');
     }
 
-    // // Reusable method to check if access is granted
-    // private function check_access()
-    // {
-    //     if (!$this->session->userdata('access_granted')) {
-    //         // If not, show error or redirect
-    //         show_error('Unauthorized access!', 403);
-
-    //         // Clear access after checking
-    //         $this->session->unset_userdata('access_granted');
-    //     }
-    // }
-
-    // // Call this when the button is clicked to set access
-    // public function set_access()
-    // {
-    //     // Set session variable when button is clicked
-    //     $this->session->set_userdata('access_granted', TRUE);
-
-    //     $link = $this->input->get('link');
-
-    //     // Redirect to any protected action
-    //     redirect('approval/' . $link); // Example redirect to the first action
-    // }
-
     public function index()
     {
         $akses = $this->M_app->hak_akses($this->session->userdata('id_level'), $this->router->fetch_class());

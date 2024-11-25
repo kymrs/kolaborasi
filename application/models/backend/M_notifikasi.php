@@ -17,11 +17,13 @@ class M_notifikasi extends CI_Model
     //         if ($ci->db->table_exists($table)) {
     //             $query = $ci->db->select('id')->from($table);
 
-    //             $query->where ;
+    //             $query->where_not_in('status', ['approved', 'rejected']);
 
+    //             $query->group_start();
     //             foreach ($conditions as $condition) {
     //                 $query->or_where($condition);
     //             }
+    //             $query->group_end();
     //             return $query->get()->num_rows();
     //         }
     //         return null;

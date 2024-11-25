@@ -64,12 +64,17 @@ class User extends CI_Controller
 		if (is_file($path)) {
 			unlink($path);
 		}
-		$this->M_user->delete_id($id);
-		echo json_encode(array("status" => TRUE));
+		if ($this->M_user->delete_id($id) && $this->db->delete('tbl_data_user', ['id_user' => $id])) {
+			echo json_encode(array("status" => TRUE));
+		} else {
+			# GAGAL MENHAPUS DATA USER DAN APPROVAL
+			echo json_encode(array("status" => FALSE, "error" => "user"));
+		}
 	}
 
 	function add()
 	{
+		// ADD USER
 		$config['upload_path'] = "./assets/backend/img/user/";
 		$config['allowed_types'] = 'gif|jpg|png';
 		$this->load->library('upload', $config); //call library upload 
@@ -88,12 +93,45 @@ class User extends CI_Controller
 			'id_level' => $this->input->post('level'),
 			'is_active' => $this->input->post('aktif'),
 		);
-		$this->M_user->save($data);
-		echo json_encode(array("status" => TRUE));
+
+		// ADD APPROVAL
+		if ($this->M_user->save($data)) {
+			$data = array(
+				'id_user' => $this->input->post('name'),
+				'name' => $this->input->post('selectedText'),
+				'divisi' => $this->input->post('divisi'),
+				'jabatan' => $this->input->post('jabatan'),
+				'app_id' => $this->input->post('app_id'),
+				'app2_id' => $this->input->post('app2_id'),
+			);
+
+			// MENGECEK APAKAH APP3 TERISI
+			if (!empty($this->input->post('app3_id'))) {
+				$data['app3_id'] = $this->input->post('app3_id');
+			}
+
+			// MENGECEK APAKAH APP4 TERISI
+			if (!empty($this->input->post('app4_id'))) {
+				$data['app4_id'] = $this->input->post('app4_id');
+			}
+
+			$inserted = $this->M_approval->save($data);
+
+			if ($inserted) {
+				echo json_encode(array("status" => TRUE));
+			} else {
+				// MENGEMBALIKAN ERROR INPUT APPROVAL
+				echo json_encode(array("status" => FALSE, "error" => "approval"));
+			}
+		} else {
+			// MENGEMBALIKAN ERROR INPUT USER
+			echo json_encode(array("status" => FALSE, "error" => "user"));
+		}
 	}
 
 	function update()
 	{
+		// UPDATE USER
 		$data2 = array(
 			'username' => $this->input->post('username'),
 			'fullname' => $this->input->post('fullname'),
@@ -126,8 +164,38 @@ class User extends CI_Controller
 		}
 
 		$this->db->where('id_user', $this->input->post('id'));
-		$this->db->update('tbl_user', $data);
-		echo json_encode(array("status" => TRUE));
+
+		// UPDATE APPROVAL
+		if ($this->db->update('tbl_user', $data)) {
+			$data = array(
+				'name' => $this->input->post('selectedText'),
+				'divisi' => $this->input->post('divisi'),
+				'jabatan' => $this->input->post('jabatan'),
+				'app_id' => $this->input->post('app_id'),
+				'app2_id' => $this->input->post('app2_id'),
+				'updated_at' => date('Y-m-d H:i:s')
+			);
+
+			// MENGECEK APAKAH APP3 TERISI
+			if (!empty($this->input->post('app3_id'))) {
+				$data['app3_id'] = $this->input->post('app3_id');
+			}
+
+			// MENGECEK APAKAH APP4 TERISI
+			if (!empty($this->input->post('app4_id'))) {
+				$data['app4_id'] = $this->input->post('app4_id');
+			}
+
+			if ($this->db->update('tbl_data_user', $data, ['id_user' => $this->input->post('id')])) {
+				echo json_encode(array("status" => TRUE));
+			} else {
+				# GAGAL UPDATE APPROVAL
+				echo json_encode(array("status" => FALSE, "error" => "approval"));
+			}
+		} else {
+			# GAGAL UPDATE USER
+			echo json_encode(array("status" => FALSE, "error" => "user"));
+		}
 	}
 
 	function get_id($id)
