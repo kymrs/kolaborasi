@@ -9,7 +9,7 @@
                     <a class="btn btn-secondary btn-sm" href="<?= base_url('user') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
-                    <form id="form">
+                    <form id="form" enctype="multipart/form-data">
                         <div class="row">
                             <div class="col-md-6">
 
@@ -207,7 +207,9 @@
             $.ajax({
                 url: url,
                 type: "POST",
-                data: $form.serialize(),
+                data: new FormData(this),
+                contentType: false,
+                processData: false,
                 dataType: "JSON",
                 success: function(data) {
                     console.log(data);
