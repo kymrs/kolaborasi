@@ -126,6 +126,7 @@ class User extends CI_Controller
 			'username' => $this->input->post('username'),
 			'fullname' => $this->input->post('fullname'),
 			'password' => md5($this->input->post('password')),
+			'core' => $this->input->post('core'),
 			'image' => $img,
 			'id_level' => $this->input->post('level'),
 			'is_active' => $this->input->post('aktif'),
@@ -176,15 +177,10 @@ class User extends CI_Controller
 		$data2 = array(
 			'username' => $this->input->post('username'),
 			'fullname' => $this->input->post('fullname'),
+			'core' => $this->input->post('core'),
 			'id_level' => $this->input->post('level'),
 			'is_active' => $this->input->post('aktif'),
 		);
-		// $data3 = array('password' => md5($this->input->post('password')));
-		// if ($this->input->post('password') == "") {
-		// 	$data1 = $data2;
-		// } else {
-		// 	$data1 = array_merge($data2, $data3);
-		// }
 
 		if (!empty($_FILES['image']['name'])) {
 			$config['upload_path'] = "./assets/backend/img/user/";

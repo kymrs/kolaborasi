@@ -34,17 +34,31 @@
                                         <input type="password" class="form-control" id="password" name="password" placeholder="Password">
                                     </div>
                                 </div>
+                                <div class="form-group row">
+                                    <label for="core" class="col-sm-4 col-form-label">Core</label>
+                                    <div class="col-sm-8">
+                                        <select class="form-control" id="core" name="core">
+                                            <option value="" selected disabled>No Selected</option>
+                                            <option value="all">KPS</option>
+                                            <option value="pu">Pengenumroh</option>
+                                            <option value="sw">Sebelaswarna</option>
+                                            <option value="pw">Sobat Wisata</option>
+                                            <option value="bmn">By.Momemnt</option>
+                                            <option value="qbg">Qubagift</option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group row">
-                                    <label for="image" class="col-sm-3 col-form-label">Image</label>
-                                    <div class="col-sm-9">
+                                    <label for="image" class="col-sm-4 col-form-label">Image</label>
+                                    <div class="col-sm-8">
                                         <input type="file" class="" id="image" name="image">
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="level" class="col-sm-3 col-form-label">Level</label>
-                                    <div class="col-sm-9">
+                                    <label for="level" class="col-sm-4 col-form-label">Level</label>
+                                    <div class="col-sm-8">
                                         <select class="form-control" id="level" name="level">
                                             <option value="" selected disabled>No Selected</option>
                                             <option value="1">1</option>
@@ -54,8 +68,8 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="aktif" class="col-sm-3 col-form-label">Active</label>
-                                    <div class="col-sm-9 form-inline row ml-1">
+                                    <label for="aktif" class="col-sm-4 col-form-label">Active</label>
+                                    <div class="col-sm-8 form-inline row ml-1">
                                         <div class="custom-control custom-radio col-sm-2">
                                             <input class="custom-control-input" type="radio" id="customRadio1" name="aktif" value="Y">
                                             <label for="customRadio1" class="custom-control-label">Yes</label>
@@ -106,8 +120,8 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group row">
-                                    <label class="col-sm-3" for="app2_id">Approval Kedua</label>
-                                    <div class="col-sm-9">
+                                    <label class="col-sm-4" for="app2_id">Approval Kedua</label>
+                                    <div class="col-sm-8">
                                         <select class="form-control app2_id" id="app2_id" name="app2_id">
                                             <option value="" selected disabled>Pilih opsi...</option>
                                             <?php foreach ($approvals as $approval) { ?>
@@ -117,8 +131,8 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-sm-3" for="app3_id">Approval HC</label>
-                                    <div class="col-sm-9">
+                                    <label class="col-sm-4" for="app3_id">Approval HC</label>
+                                    <div class="col-sm-8">
                                         <select class="form-control app3_id" id="app3_id" name="app3_id">
                                             <option value="" selected disabled>Pilih opsi...</option>
                                             <?php foreach ($approvals as $approval) { ?>
@@ -128,8 +142,8 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-sm-3" for="app4_id">Approval Captain</label>
-                                    <div class="col-sm-9">
+                                    <label class="col-sm-4" for="app4_id">Approval Captain</label>
+                                    <div class="col-sm-8">
                                         <select class="form-control app4_id" id="app4_id" name="app4_id">
                                             <option value="" selected disabled>Pilih opsi...</option>
                                             <?php foreach ($approvals as $approval) { ?>
@@ -180,6 +194,7 @@
                     moment.locale('id');
                     $('#hidden_id').val(data.user.id_user);
                     $('#password').prop('readonly', true);
+                    $('#core').val(data.user.core);
                     $('#username').val(data.user.username);
                     $('#fullname').val(data.user.fullname);
                     $('#password').val(data.user.password);
@@ -261,6 +276,9 @@
                     required: true
                 },
                 password: {
+                    required: true
+                },
+                core: {
                     required: true
                 },
                 level: {
