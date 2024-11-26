@@ -72,6 +72,7 @@ class M_user extends CI_Model
     {
         $this->db->where('id_user', $id);
         $this->db->delete($this->table);
+        return true;
     }
 
     public function get_by_id($id)

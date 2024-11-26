@@ -82,6 +82,12 @@ class M_approval extends CI_Model
     public function save($data)
     {
         $this->db->insert($this->table, $data);
-        return $this->db->insert_id();
+        return true;
+    }
+
+    public function delete_id($id)
+    {
+        $this->db->delete('tbl_data_user', ['id_user' => $id]);
+        return true;
     }
 }

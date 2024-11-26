@@ -12,8 +12,10 @@
                     <form id="form">
                         <div class="row">
                             <div class="col-md-6">
+
+                                <!-- FIELD USER -->
                                 <!-- First Set of Fields -->
-                                <input type="hidden" name="id" />
+                                <input type="hidden" id="hidden_id" name="hidden_id" />
                                 <div class="form-group row">
                                     <label for="username" class="col-sm-4 col-form-label">Username</label>
                                     <div class="col-sm-8">
@@ -44,7 +46,10 @@
                                     <label for="level" class="col-sm-3 col-form-label">Level</label>
                                     <div class="col-sm-9">
                                         <select class="form-control" id="level" name="level">
-                                            <option value="">No Selected</option>
+                                            <option value="" selected disabled>No Selected</option>
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
                                         </select>
                                     </div>
                                 </div>
@@ -62,10 +67,14 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- FIELD APPROVAL -->
                             <div style="width: 100%; margin: 15px 20px 30px; height: 0.9px; background-color: rgba(0,0,0,0.2); text-align: center"></div>
                             <div class="col-md-6">
                                 <!-- First Set of Fields -->
                                 <div class="form-group row">
+                                    <input type="hidden" id="id_user" name="id_user" value="">
+
                                     <label class="col-sm-4" for="divisi">Divisi</label>
                                     <div class="col-sm-8">
                                         <select class="form-control" id="divisi" name="divisi">
@@ -147,79 +156,10 @@
     </div>
 </div>
 
-<div class="modal fade" id="appModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Approval</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form method="POST" action="<?= base_url('deklarasi/approve') ?>">
-                    <div class="form-group">
-                        <label for="app_hc_name">Nama</label>
-                        <input type="text" class="form-control" name="app_hc_name" id="app_hc_name" aria-describedby="emailHelp">
-                        <!-- HIDDEN INPUT -->
-                        <input type="hidden" id="hidden_id" name="hidden_id" value="">
-                    </div>
-                    <div class="form-group">
-                        <label for="app_hc_status">Approve</label>
-                        <select id="app_hc_status" name="app_hc_status" class="form-control">
-                            <option selected disabled>Choose...</option>
-                            <option value="approved">Approved</option>
-                            <option value="rejected">Rejected</option>
-                            <option value="revised">Revised</option>
-                        </select>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Save changes</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
 <?php $this->load->view('template/footer'); ?>
 <?php $this->load->view('template/script'); ?>
 
 <script>
-    $('#tgl_notifikasi').datepicker({
-        dateFormat: 'dd-mm-yy',
-        minDate: new Date(),
-        maxDate: new Date(),
-
-        // MENGENERATE KODE NOTIFIKASI SETELAH PILIH TANGGAL
-        onSelect: function(dateText) {
-            var id = dateText;
-            $('#tgl_notifikasi').removeClass("is-invalid");
-
-            // Menghapus label error secara manual jika ada
-            if ($("#tgl_notifikasi-error").length) {
-                $("#tgl_notifikasi-error").remove(); // Menghapus label error
-            }
-            $.ajax({
-                url: "<?php echo site_url('datanotifikasi_pu/generate_kode') ?>",
-                type: "POST",
-                data: {
-                    "date": dateText
-                },
-                dataType: "JSON",
-                success: function(data) {
-                    // console.log(data);
-                    $('#kode_notifikasi').val(data.toUpperCase());
-                    $('#kode').val(data);
-                },
-                error: function(error) {
-                    alert("error" + error);
-                }
-            });
-        }
-    });
-
     $(document).ready(function() {
         var id = $('#id').val();
         var aksi = $('#aksi').val();
@@ -232,21 +172,25 @@
             $('.aksi').text('Update');
             $("select option[value='']").hide();
             $.ajax({
-                url: "<?php echo site_url('datanotifikasi_pu/edit_data') ?>/" + id,
+                url: "<?php echo site_url('user/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
                     // console.log(data);
                     moment.locale('id');
-                    $('#id').val(data['master'].id);
-                    $('#kode_notifikasi').val(data['master'].kode_notifikasi.toUpperCase()).attr('readonly', true);
-                    $('#nama').val(data['nama']);
-                    $('#jabatan').val(data['master'].jabatan);
-                    $('#departemen').val(data['master'].departemen);
-                    $('#pengajuan').val(data['master'].pengajuan);
-                    $('#tgl_notifikasi').val(moment(data['master'].tgl_notifikasi).format('DD-MM-YYYY')).attr('disabled', true); // Changed to 'DD-MM-YYYY'
-                    $('#waktu').val(data['master'].waktu);
-                    $('#alasan').val(data['master'].alasan);
+                    $('#hidden_id').val(data.user.id_user);
+                    $('#password').prop('readonly', true);
+                    $('#username').val(data.user.username);
+                    $('#fullname').val(data.user.fullname);
+                    $('#password').val(data.user.password);
+                    $('#level').val(data.user.id_level);
+                    $('#aktif').val(data.user.is_active);
+                    $('#divisi').val(data.approval.divisi);
+                    $('#jabatan').val(data.approval.jabatan);
+                    $('#app_id').val(data.approval.app_id);
+                    $('#app2_id').val(data.approval.app2_id);
+                    $('#app3_id').val(data.approval.app3_id);
+                    $('#app4_id').val(data.approval.app4_id);
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     alert('Error getting data from ajax');
@@ -254,25 +198,11 @@
             });
         }
 
-        if (aksi == "read") {
-            $('.aksi').hide();
-            $('#id').prop('readonly', true);
-            $('#nama').prop('readonly', true);
-            $('#jabatan').prop('disabled', true);
-            $('#departemen').prop('readonly', true);
-            $('#pengajuan').prop('disabled', true);
-            $('#tanggal').prop('disabled', true);
-            $('#waktu').prop('disabled', true);
-            $('#alasan').prop('readonly', true);
-            $('#status').prop('disabled', true);
-            $('#catatan').prop('readonly', true);
-        }
-
         $("#form").submit(function(e) {
             e.preventDefault();
             var $form = $(this);
             if (!$form.valid()) return false;
-            var url = (id == 0) ? "<?php echo site_url('datanotifikasi_pu/add') ?>" : "<?php echo site_url('datanotifikasi_pu/update') ?>";
+            var url = (id == 0) ? "<?php echo site_url('user/add') ?>" : "<?php echo site_url('user/update') ?>";
 
             $.ajax({
                 url: url,
@@ -289,44 +219,98 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then((result) => {
-                            location.href = "<?= base_url('datanotifikasi_pu') ?>";
+                            location.href = "<?= base_url('user') ?>";
                         });
+                    } else {
+                        if (data.error === "user") {
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'error',
+                                title: 'Failed to save user!',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        } else if (data.error === "approval") {
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'error',
+                                title: 'Failed to save approval!',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        }
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     alert('Error adding / updating data');
+                    console.error("Error Response:", jqXHR.responseText);
+                    console.error("Text Status:", textStatus);
+                    console.error("Error Thrown:", errorThrown);
                 }
             });
         });
 
         $("#form").validate({
             rules: {
-                pengajuan: {
+                username: {
                     required: true
                 },
-                tgl_notifikasi: {
+                fullname: {
                     required: true
                 },
-                waktu: {
+                password: {
                     required: true
                 },
-                alasan: {
+                level: {
                     required: true
                 },
+                aktif: {
+                    required: true
+                },
+                name: {
+                    required: true
+                },
+                divisi: {
+                    required: true
+                },
+                jabatan: {
+                    required: true
+                },
+                app_id: {
+                    required: true
+                },
+                app2_id: {
+                    required: true
+                }
             },
             messages: {
-                pengajuan: {
-                    required: "Pengajuan is required"
+                username: {
+                    required: "Username is required"
                 },
-                tgl_notifikasi: {
-                    required: "Tanggal is required"
+                fullname: {
+                    required: "Fullname is required"
                 },
-                waktu: {
-                    required: "Waktu is required"
+                password: {
+                    required: "Password is required"
                 },
-                alasan: {
-                    required: "Alasan is required"
+                level: {
+                    required: "User Level is required"
                 },
+                aktif: {
+                    required: "Active is required"
+                },
+                divisi: {
+                    required: "Divisi is required"
+                },
+                jabatan: {
+                    required: "Jabatan is required"
+                },
+                app_id: {
+                    required: "Approval 1 is required"
+                },
+                app2_id: {
+                    required: "Approval 2 is required"
+                }
             },
             errorPlacement: function(error, element) {
                 if (element.parent().hasClass('input-group')) {

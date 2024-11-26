@@ -118,6 +118,80 @@
 
 <script type="text/javascript">
     var table;
+
+    function delete_user(id_user) {
+        // console.log(id_user);
+        Swal.fire({
+            position: 'center',
+            icon: 'warning',
+            title: 'Do you want to delete this user?',
+            showConfirmButton: true,
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'No, cancel!',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Lakukan permintaan AJAX untuk menghapus data
+                $.ajax({
+                    url: "<?= base_url('user/delete/') ?>" + id_user,
+                    method: 'POST', // Sesuaikan dengan metode yang digunakan di backend
+                    success: function(response) {
+                        // console.log(response.status);
+                        // Jika berhasil, tampilkan pesan sukses
+                        if (response) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'User Deleted!',
+                                text: 'The user has been successfully deleted.',
+                                confirmButtonText: 'OK',
+                            }).then(() => {
+                                // Reload halaman untuk menyegarkan data
+                                location.reload();
+                            });
+                        } else {
+                            if (response.error === "user") {
+                                Swal.fire({
+                                    position: 'center',
+                                    icon: 'error',
+                                    title: 'Failed to delete user!',
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                            } else if (response.error === "approval") {
+                                Swal.fire({
+                                    position: 'center',
+                                    icon: 'error',
+                                    title: 'Failed to delete approval!',
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                            }
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        // Jika gagal, tampilkan pesan error
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: 'Failed to delete the user. Please try again later.',
+                            confirmButtonText: 'OK',
+                        });
+                    },
+                });
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                // Jika pengguna membatalkan aksi, tutup swal
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Cancelled',
+                    text: 'The action was cancelled.',
+                    confirmButtonText: 'OK',
+                });
+            }
+        });
+    }
+
+
+
     $(document).ready(function() {
         table = $('#table').DataTable({
             "responsive": true,
@@ -163,7 +237,7 @@
                     required: "Level is required",
                 }
             }
-        })
+        });
 
         $("#form").submit(function(e) {
             e.preventDefault();
