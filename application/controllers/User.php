@@ -179,12 +179,12 @@ class User extends CI_Controller
 			'id_level' => $this->input->post('level'),
 			'is_active' => $this->input->post('aktif'),
 		);
-		$data3 = array('password' => md5($this->input->post('password')));
-		if ($this->input->post('password') == "") {
-			$data1 = $data2;
-		} else {
-			$data1 = array_merge($data2, $data3);
-		}
+		// $data3 = array('password' => md5($this->input->post('password')));
+		// if ($this->input->post('password') == "") {
+		// 	$data1 = $data2;
+		// } else {
+		// 	$data1 = array_merge($data2, $data3);
+		// }
 
 		if (!empty($_FILES['image']['name'])) {
 			$config['upload_path'] = "./assets/backend/img/user/";
@@ -194,14 +194,14 @@ class User extends CI_Controller
 				$data = array('upload_data' => $this->upload->data()); //ambil file name yang diupload
 				$img = $data['upload_data']['file_name']; //set file name ke variable image
 			}
-			$data = array_merge($data1, array('image' => $img));
+			$data = array_merge($data2, array('image' => $img));
 			$pict = $this->M_user->get_by_id($this->input->post('id'));
 			$path = './assets/backend/img/user/' . $pict->image;
 			if (is_file($path)) {
 				unlink($path);
 			}
 		} else {
-			$data = $data1;
+			$data = $data2;
 		}
 
 		$this->db->where('id_user', $this->input->post('id'));
