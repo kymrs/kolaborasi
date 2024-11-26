@@ -8,7 +8,7 @@
         <li class="nav-item dropdown no-arrow">
           <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?= $this->session->userdata('fullname') ?></span>
-            <img class="img-profile rounded-circle" src="<?= ($this->session->userdata('image') != '' ? base_url('assets/backend/img/') . $this->session->userdata('image') : base_url('assets/backend/img/') . 'default.jpg'); ?>" class="img-circle elevation-2" alt="User Image">
+            <img class="img-profile rounded-circle" src="<?= ($this->session->userdata('image') != '' ? base_url('assets/backend/img/user/') . $this->session->userdata('image') : base_url('assets/backend/img/') . 'default.jpg'); ?>" class="img-circle elevation-2" alt="User Image">
           </a>
           <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
             <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
