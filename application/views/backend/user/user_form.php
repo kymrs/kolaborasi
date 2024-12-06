@@ -39,7 +39,8 @@
                                     <div class="col-sm-8">
                                         <select class="form-control" id="core" name="core">
                                             <option value="" selected disabled>No Selected</option>
-                                            <option value="all">KPS</option>
+                                            <option value="all">All</option>
+                                            <option value="kps">KPS</option>
                                             <option value="pu">Pengenumroh</option>
                                             <option value="sw">Sebelaswarna</option>
                                             <option value="pw">Sobat Wisata</option>
