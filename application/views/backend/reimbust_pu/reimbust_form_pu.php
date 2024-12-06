@@ -99,7 +99,15 @@
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-5">No Rekening</label>
-                                    <div class="col-sm-7">
+                                    <div class="col-sm-2">
+                                        <select name="jenis_rek" id="jenis_rek" class="form-control">
+                                            <option value="BCA">BCA</option>
+                                            <option value="MANDIRI">Mandiri</option>
+                                            <option value="BRI">BRI</option>
+                                            <option value="BSI">BSI</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-5">
                                         <input type="text" class="form-control" value="<?= $this->session->userdata('no_rek') ?? '' ?>" readonly placeholder="No Rekening" name="no_rek" id="no_rek" style="cursor: not-allowed;">
                                     </div>
                                 </div>
@@ -793,6 +801,10 @@
                     $('#kode_prepayment').css({
                         'display': 'none'
                     });
+                    $('#jenis_rek').prop({
+                        'disabled': false,
+                        'readonly': false
+                    }).css('cursor', 'auto');
                     $('#no_rek').prop({
                         'disabled': false,
                         'readonly': false
@@ -820,6 +832,14 @@
                         'disabled': false,
                         'readonly': true
                     }).css('cursor', 'not-allowed');
+                    $('#jenis_rek').prop({
+                        'disabled': false,
+                        'readonly': false
+                    }).css('cursor', 'auto');
+                    $('#no_rek').prop({
+                        'disabled': false,
+                        'readonly': false
+                    }).css('cursor', 'auto');
                 } else {
                     $('#pelaporan_button').css('display', 'none');
                     $('#parent_sifat_pelaporan').css('display', 'inline-block');
@@ -830,6 +850,7 @@
                     $('#kode_prepayment').css({
                         'display': 'none'
                     });
+                    $('#jenis_rek').prop('disabled', true).css('cursor', 'not-allowed');
                     $('#no_rek').prop('disabled', true).css('cursor', 'not-allowed');
                 }
             } else if (aksi == 'update') {

@@ -756,6 +756,7 @@ class Reimbust_pu extends CI_Controller
             'tgl_pengajuan' => date('Y-m-d', strtotime($this->input->post('tgl_pengajuan'))),
             'tujuan' => $this->input->post('tujuan'),
             'jumlah_prepayment' => $this->input->post('jumlah_prepayment'),
+            'no_rek' => $this->input->post('no_rek') . $this->input->post('jenis_rek'),
             'app_name' => $this->db->select('name')
                 ->from('tbl_data_user')
                 ->where('id_user', $approval->app_id)
