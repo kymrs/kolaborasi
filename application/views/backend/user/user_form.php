@@ -39,7 +39,8 @@
                                     <div class="col-sm-8">
                                         <select class="form-control" id="core" name="core">
                                             <option value="" selected disabled>No Selected</option>
-                                            <option value="all">KPS</option>
+                                            <option value="all">All</option>
+                                            <option value="kps">KPS</option>
                                             <option value="pu">Pengenumroh</option>
                                             <option value="sw">Sebelaswarna</option>
                                             <option value="pw">Sobat Wisata</option>
@@ -252,6 +253,22 @@
                                 position: 'center',
                                 icon: 'error',
                                 title: 'Failed to save approval!',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        } else if (data.error === "size") {
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'error',
+                                title: 'File upload size is more than 3MB!',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        } else if (data.error === "type") {
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'error',
+                                title: 'Format files is not supported!',
                                 showConfirmButton: false,
                                 timer: 1500
                             });
