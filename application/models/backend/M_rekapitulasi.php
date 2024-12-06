@@ -6,9 +6,6 @@ if (!defined('BASEPATH'))
 class M_rekapitulasi extends CI_Model
 {
     var $id = 'id';
-    var $table = 'tbl_reimbust_kps';
-    var $table2 = 'tbl_reimbust_detail_kps';
-    var $table3 = 'tbl_prepayment_kps';
 
     function _get_datatables_query()
     {
@@ -16,8 +13,8 @@ class M_rekapitulasi extends CI_Model
         if (!empty($_POST['tab'])) {
             if ($_POST['tab'] == 'pelaporan') {
                 // Column order for "pelaporan" tab
-                $this->column_order = array(null, 'kode_prepayment', 'kode_reimbust', 'name', 'tujuan', 'tgl_pengajuan', 'total_nominal', 'total_jumlah_detail');
-                $this->column_search = array('kode_prepayment', 'kode_reimbust', 'name', 'tujuan', 'tgl_pengajuan', 'total_nominal', 'total_jumlah_detail');
+                $this->column_order = array(null, 'kode_prepayment', 'kode_reimbust', 'user_name', 'tujuan', 'tgl_pengajuan', 'total_nominal', 'total_jumlah_detail', 'source_table');
+                $this->column_search = array('kode_prepayment', 'kode_reimbust', 'user_name', 'tujuan', 'tgl_pengajuan', 'total_nominal', 'total_jumlah_detail', 'source_table');
 
                 // Query for "pelaporan" tab
                 $this->db->select('*');  // Specify '*' to select all columns
@@ -34,8 +31,8 @@ class M_rekapitulasi extends CI_Model
                 }
             } elseif ($_POST['tab'] == 'reimbust') {
                 // Column order for "reimbust" tab
-                $this->column_order = array(null, 'kode_prepayment', 'kode_reimbust', 'name', 'tujuan', 'tgl_pengajuan', 'total_jumlah_detail');
-                $this->column_search = array('kode_prepayment', 'kode_reimbust', 'name', 'tujuan', 'tgl_pengajuan', 'total_jumlah_detail');
+                $this->column_order = array(null, 'kode_prepayment', 'kode_reimbust', 'user_name', 'tujuan', 'tgl_pengajuan', 'total_jumlah_detail', 'source_table');
+                $this->column_search = array('kode_prepayment', 'kode_reimbust', 'user_name', 'tujuan', 'tgl_pengajuan', 'total_jumlah_detail', 'source_table');
 
                 // Query for "reimbust" tab
                 $this->db->select('*');  // Specify '*' to select all columns
@@ -96,8 +93,8 @@ class M_rekapitulasi extends CI_Model
         if (!empty($_POST['tab'])) {
             if ($_POST['tab'] == 'pelaporan') {
                 // Column order for "pelaporan" tab
-                $this->column_order = array(null, 'kode_prepayment', 'kode_reimbust', 'name', 'tujuan', 'tgl_pengajuan', 'total_nominal', 'total_jumlah_detail');
-                $this->column_search = array('kode_prepayment', 'kode_reimbust', 'name', 'tujuan', 'tgl_pengajuan', 'total_nominal', 'total_jumlah_detail');
+                $this->column_order = array(null, 'kode_prepayment', 'kode_reimbust', 'user_name', 'tujuan', 'tgl_pengajuan', 'total_nominal', 'total_jumlah_detail', 'source_table');
+                $this->column_search = array('kode_prepayment', 'kode_reimbust', 'user_name', 'tujuan', 'tgl_pengajuan', 'total_nominal', 'total_jumlah_detail', 'source_table');
 
                 // Query for "pelaporan" tab
                 $this->db->select('*');  // Specify '*' to select all columns
@@ -114,8 +111,8 @@ class M_rekapitulasi extends CI_Model
                 }
             } elseif ($_POST['tab'] == 'reimbust') {
                 // Column order for "reimbust" tab
-                $this->column_order = array(null, 'id', 'kode_prepayment', 'kode_reimbust', 'nama', 'tujuan', 'tgl_pengajuan', 'total_jumlah_detail');
-                $this->column_search = array('id', 'kode_prepayment', 'kode_reimbust', 'nama', 'tujuan', 'tgl_pengajuan', 'total_jumlah_detail');
+                $this->column_order = array(null, 'id', 'kode_prepayment', 'kode_reimbust', 'user_name', 'tujuan', 'tgl_pengajuan', 'total_jumlah_detail', 'source_table');
+                $this->column_search = array('id', 'kode_prepayment', 'kode_reimbust', 'user_name', 'tujuan', 'tgl_pengajuan', 'total_jumlah_detail', 'source_table');
 
                 // Query for "reimbust" tab
                 $this->db->select('*');  // Specify '*' to select all columns
@@ -153,18 +150,6 @@ class M_rekapitulasi extends CI_Model
             $this->db->order_by(key($order), $order[key($order)]);
         }
         return $this->db->count_all_results();
-    }
-
-    public function get_by_id($id)
-    {
-        $this->db->where($this->id, $id);
-        return $this->db->get($this->table)->row();
-    }
-
-    public function get_by_id_detail($id)
-    {
-        $this->db->where('reimbust_id', $id);
-        return $this->db->get($this->table2)->result_array();
     }
 
     function get_total_pengeluaran()
@@ -258,7 +243,7 @@ class M_rekapitulasi extends CI_Model
 
     function get_data_prepayment($tgl_awal, $tgl_akhir)
     {
-        $this->db->select('id, kode_prepayment, tgl_pengajuan, tujuan, total_nominal');
+        $this->db->select('kode_prepayment, tgl_pengajuan, tujuan, total_nominal, source_table');
         $this->db->from('view_pelaporan');
         $this->db->where('kode_reimbust IS NULL');
 
@@ -285,7 +270,7 @@ class M_rekapitulasi extends CI_Model
 
     function get_data_pelaporan($tgl_awal, $tgl_akhir)
     {
-        $this->db->select('id, kode_reimbust, tgl_pengajuan, tujuan, total_jumlah_detail');
+        $this->db->select('kode_reimbust, tgl_pengajuan, tujuan, total_jumlah_detail, source_table');
         $this->db->from('view_pelaporan');
         $this->db->where('kode_reimbust IS NOT NULL');
 
@@ -312,7 +297,7 @@ class M_rekapitulasi extends CI_Model
 
     function get_data_reimbust($tgl_awal, $tgl_akhir)
     {
-        $this->db->select('id, kode_reimbust, tgl_pengajuan, tujuan, total_jumlah_detail');
+        $this->db->select('id, kode_reimbust, tgl_pengajuan, tujuan, total_jumlah_detail, source_table');
         $this->db->from('view_reimbust');
 
         // Filter by date range if needed

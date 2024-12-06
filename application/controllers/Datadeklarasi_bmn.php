@@ -53,7 +53,7 @@ class Datadeklarasi_bmn extends CI_Controller
             ->get()
             ->row('name');
         $data['approval'] = $this->db->select('COUNT(*) as total_approval')
-            ->from('tbl_deklarasi_bmn')
+            ->from('bmn_deklarasi')
             ->where('app_name', $name)
             ->or_where('app2_name', $name)
             ->get()
@@ -269,7 +269,7 @@ class Datadeklarasi_bmn extends CI_Controller
             'status' => 'on-process'
         );
         $this->db->where('id', $this->input->post('id'));
-        $this->db->update('tbl_deklarasi_bmn', $data);
+        $this->db->update('bmn_deklarasi', $data);
         echo json_encode(array("status" => TRUE));
     }
 
@@ -299,7 +299,7 @@ class Datadeklarasi_bmn extends CI_Controller
 
         //UPDATE APPROVAL PERTAMA
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_deklarasi_bmn', $data);
+        $this->db->update('bmn_deklarasi', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -323,7 +323,7 @@ class Datadeklarasi_bmn extends CI_Controller
 
         // UPDATE APPROVAL 2
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_deklarasi_bmn', $data);
+        $this->db->update('bmn_deklarasi', $data);
 
         echo json_encode(array("status" => TRUE));
     }

@@ -6,7 +6,7 @@ if (!defined('BASEPATH'))
 class M_datadeklarasi_bmn extends CI_Model
 {
     var $id = 'id';
-    var $table = 'tbl_deklarasi_bmn'; //nama tabel dari database
+    var $table = 'bmn_deklarasi'; //nama tabel dari database
     var $column_order = array(null, null, 'kode_deklarasi', 'tgl_deklarasi', 'name', 'jabatan', 'nama_dibayar', 'tujuan', 'sebesar', 'status');
     var $column_search = array('kode_deklarasi', 'tgl_deklarasi', 'name', 'jabatan', 'nama_dibayar', 'tujuan', 'sebesar', 'status'); //field yang diizin untuk pencarian 
     var $order = array('id' => 'desc'); // default order 
@@ -20,9 +20,9 @@ class M_datadeklarasi_bmn extends CI_Model
     {
 
         // $this->db->from($this->table);
-        $this->db->select('tbl_deklarasi_bmn.*, tbl_data_user.name');
+        $this->db->select('bmn_deklarasi.*, tbl_data_user.name');
         $this->db->from($this->table);
-        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_deklarasi_bmn.id_pengaju', 'left');
+        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = bmn_deklarasi.id_pengaju', 'left');
 
         $i = 0;
 
@@ -37,13 +37,13 @@ class M_datadeklarasi_bmn extends CI_Model
                     if ($item == 'name') {
                         $this->db->like('tbl_data_user.' . $item, $_POST['search']['value']);
                     } else {
-                        $this->db->like('tbl_deklarasi_bmn.' . $item, $_POST['search']['value']);
+                        $this->db->like('bmn_deklarasi.' . $item, $_POST['search']['value']);
                     }
                 } else {
                     if ($item == 'name') {
                         $this->db->or_like('tbl_data_user.' . $item, $_POST['search']['value']);
                     } else {
-                        $this->db->or_like('tbl_deklarasi_bmn.' . $item, $_POST['search']['value']);
+                        $this->db->or_like('bmn_deklarasi.' . $item, $_POST['search']['value']);
                     }
                 }
 
@@ -64,7 +64,7 @@ class M_datadeklarasi_bmn extends CI_Model
                 // Conditions for 'on-process' status
                 $this->db->where('app_status', 'waiting')
                     ->where('app2_status', 'waiting')
-                    ->or_where('tbl_deklarasi_bmn.id_pengaju =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
+                    ->or_where('bmn_deklarasi.id_pengaju =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
                     ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
             } elseif ($_POST['status'] == 'approved') {
                 // Conditions for 'approved' status
@@ -74,7 +74,7 @@ class M_datadeklarasi_bmn extends CI_Model
             } elseif ($_POST['status'] == 'revised') {
                 $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
                     ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "revised")', NULL, FALSE)
-                    ->or_where('tbl_deklarasi_bmn.id_pengaju =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
+                    ->or_where('bmn_deklarasi.id_pengaju =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
             } elseif ($_POST['status'] == 'rejected') {
                 $this->db->where('status', $_POST['status']);
             }
@@ -85,13 +85,13 @@ class M_datadeklarasi_bmn extends CI_Model
         // Tambahkan kondisi berdasarkan tab yang dipilih
         if (!empty($_POST['tab'])) {
             if ($_POST['tab'] == 'personal') {
-                $this->db->where('tbl_deklarasi_bmn.id_pengaju', $this->session->userdata('id_user'));
+                $this->db->where('bmn_deklarasi.id_pengaju', $this->session->userdata('id_user'));
             } elseif ($_POST['tab'] == 'employee') {
                 $this->db->group_start()
-                    ->where('tbl_deklarasi_bmn.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-                    ->where('tbl_deklarasi_bmn.id_pengaju !=', $this->session->userdata('id_user'))
-                    ->or_where('tbl_deklarasi_bmn.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_deklarasi_bmn.app_status = 'approved'", FALSE)
-                    ->where('tbl_deklarasi_bmn.id_pengaju !=', $this->session->userdata('id_user'))
+                    ->where('bmn_deklarasi.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                    ->where('bmn_deklarasi.id_pengaju !=', $this->session->userdata('id_user'))
+                    ->or_where('bmn_deklarasi.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && bmn_deklarasi.app_status = 'approved'", FALSE)
+                    ->where('bmn_deklarasi.id_pengaju !=', $this->session->userdata('id_user'))
                     ->group_end();
             }
         }
@@ -122,9 +122,9 @@ class M_datadeklarasi_bmn extends CI_Model
 
     public function count_all()
     {
-        $this->db->select('tbl_deklarasi_bmn.*, tbl_data_user.name');
+        $this->db->select('bmn_deklarasi.*, tbl_data_user.name');
         $this->db->from($this->table);
-        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_deklarasi_bmn.id_pengaju', 'left');
+        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = bmn_deklarasi.id_pengaju', 'left');
 
         // Tambahkan pemfilteran berdasarkan status
         // Tambahkan kondisi jika id_user login sesuai dengan app2_name
@@ -137,7 +137,7 @@ class M_datadeklarasi_bmn extends CI_Model
                 // Conditions for 'on-process' status
                 $this->db->where('app_status', 'waiting')
                     ->where('app2_status', 'waiting')
-                    ->or_where('tbl_deklarasi_bmn.id_pengaju =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
+                    ->or_where('bmn_deklarasi.id_pengaju =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
                     ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
             } elseif ($_POST['status'] == 'approved') {
                 // Conditions for 'approved' status
@@ -147,7 +147,7 @@ class M_datadeklarasi_bmn extends CI_Model
             } elseif ($_POST['status'] == 'revised') {
                 $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
                     ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "revised")', NULL, FALSE)
-                    ->or_where('tbl_deklarasi_bmn.id_pengaju =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
+                    ->or_where('bmn_deklarasi.id_pengaju =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
             } elseif ($_POST['status'] == 'rejected') {
                 $this->db->where('status', $_POST['status']);
             }
@@ -158,13 +158,13 @@ class M_datadeklarasi_bmn extends CI_Model
         // Tambahkan kondisi berdasarkan tab yang dipilih
         if (!empty($_POST['tab'])) {
             if ($_POST['tab'] == 'personal') {
-                $this->db->where('tbl_deklarasi_bmn.id_pengaju', $this->session->userdata('id_user'));
+                $this->db->where('bmn_deklarasi.id_pengaju', $this->session->userdata('id_user'));
             } elseif ($_POST['tab'] == 'employee') {
                 $this->db->group_start()
-                    ->where('tbl_deklarasi_bmn.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-                    ->where('tbl_deklarasi_bmn.id_pengaju !=', $this->session->userdata('id_user'))
-                    ->or_where('tbl_deklarasi_bmn.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_deklarasi_bmn.app_status = 'approved'", FALSE)
-                    ->where('tbl_deklarasi_bmn.id_pengaju !=', $this->session->userdata('id_user'))
+                    ->where('bmn_deklarasi.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                    ->where('bmn_deklarasi.id_pengaju !=', $this->session->userdata('id_user'))
+                    ->or_where('bmn_deklarasi.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && bmn_deklarasi.app_status = 'approved'", FALSE)
+                    ->where('bmn_deklarasi.id_pengaju !=', $this->session->userdata('id_user'))
                     ->group_end();
             }
         }
@@ -182,9 +182,9 @@ class M_datadeklarasi_bmn extends CI_Model
     {
         $formatted_date = date('ym', strtotime($date));
         $this->db->select('kode_deklarasi');
-        $where = 'id=(SELECT max(id) FROM tbl_deklarasi_bmn where SUBSTRING(kode_deklarasi, 2, 4) = ' . $formatted_date . ')';
+        $where = 'id=(SELECT max(id) FROM bmn_deklarasi where SUBSTRING(kode_deklarasi, 2, 4) = ' . $formatted_date . ')';
         $this->db->where($where);
-        $query = $this->db->get('tbl_deklarasi_bmn');
+        $query = $this->db->get('bmn_deklarasi');
         return $query;
     }
 

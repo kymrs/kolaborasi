@@ -4,13 +4,13 @@
         <?php $core = $this->session->userdata('core') ?>
 
         <?php
-        $statement1 = $core == "all";
-        $statement2 = $core == "kps";
-        $statement3 = $core == "pu";
-        $statement4 = $core == "sw";
-        $statement5 = $core == "pw";
-        $statement6 = $core == "bmn";
-        $statement7 = $core == "qbg";
+        $statement1 = $core == "test";
+        $statement2 = $core == "test";
+        $statement3 = $core == "test";
+        $statement4 = $core == "test";
+        $statement5 = $core == "test";
+        $statement6 = $core == "test";
+        $statement7 = $core == "test";
         ?>
 
         <!-- ALL -->

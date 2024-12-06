@@ -126,10 +126,10 @@ class User extends CI_Controller
 			'username' => $this->input->post('username'),
 			'fullname' => $this->input->post('fullname'),
 			'password' => md5($this->input->post('password')),
-			'core' => $this->input->post('core'),
 			'image' => $img,
 			'id_level' => $this->input->post('level'),
 			'is_active' => $this->input->post('aktif'),
+			'no_rek' => $this->input->post('no_rek')
 		);
 
 		// $insert = $this->M_user->save($data);
@@ -180,18 +180,35 @@ class User extends CI_Controller
 			'core' => $this->input->post('core'),
 			'id_level' => $this->input->post('level'),
 			'is_active' => $this->input->post('aktif'),
+			'no_rek' => $this->input->post('no_rek')
 		);
+		// $data3 = array('password' => md5($this->input->post('password')));
+
+		// PENGECEKAN FILE UPLOAD
+		$max_size = 3072 * 1024; // Maksimum ukuran file: 3MB
+		$allowed_types = array('image/jpg', 'image/jpeg', 'image/png');
 
 		if (!empty($_FILES['image']['name'])) {
+
+			if ($_FILES['image']['size'] > $max_size) {
+				echo json_encode(array("status" => FALSE, "error" => "size"));
+				return;
+			} elseif (!in_array($_FILES['image']['type'], $allowed_types)) {
+				echo json_encode(array("status" => FALSE, "error" => "type"));
+				return;
+			}
+
 			$config['upload_path'] = "./assets/backend/img/user/";
-			$config['allowed_types'] = 'gif|jpg|png';
+			$config['allowed_types'] = 'jpg|png|jpeg';
+			$config['max_size'] = 3000;
+			$config['encrypt_name'] = true;
 			$this->load->library('upload', $config); //call library upload 
 			if ($this->upload->do_upload("image")) { //upload file
 				$data = array('upload_data' => $this->upload->data()); //ambil file name yang diupload
 				$img = $data['upload_data']['file_name']; //set file name ke variable image
 			}
 			$data = array_merge($data2, array('image' => $img));
-			$pict = $this->M_user->get_by_id($this->input->post('id'));
+			$pict = $this->M_user->get_by_id($this->input->post('hidden_id'));
 			$path = './assets/backend/img/user/' . $pict->image;
 			if (is_file($path)) {
 				unlink($path);
@@ -200,10 +217,9 @@ class User extends CI_Controller
 			$data = $data2;
 		}
 
-		$this->db->where('id_user', $this->input->post('id'));
+		$this->db->where('id_user', $this->input->post('hidden_id'));
 
-		// UPDATE APPROVAL
-		// $data['updated_at'] = date('Y-m-d H:i:s');
+		// // UPDATE APPROVAL
 
 		if ($this->db->update('tbl_user', $data)) {
 			$data5 = array(

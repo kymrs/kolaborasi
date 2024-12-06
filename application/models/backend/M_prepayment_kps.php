@@ -7,8 +7,8 @@ class M_prepayment_kps extends CI_Model
 {
     // INISIASI VARIABLE
     var $id = 'id';
-    var $table = 'tbl_prepayment_kps';
-    var $table2 = 'tbl_prepayment_detail_kps';
+    var $table = 'kps_prepayment';
+    var $table2 = 'kps_prepayment_detail';
     var $column_order = array(null, null, 'payment_status', 'kode_prepayment', 'name', 'divisi', 'jabatan', 'tgl_prepayment', 'prepayment', 'total_nominal', 'status');
     var $column_search = array('payment_status', 'kode_prepayment', 'name', 'divisi', 'jabatan', 'tgl_prepayment', 'prepayment', 'total_nominal', 'status'); //field yang diizin untuk pencarian
     var $order = array('id' => 'desc');
@@ -16,9 +16,9 @@ class M_prepayment_kps extends CI_Model
     // UNTUK QUERY DATA TABLE
     function _get_datatables_query()
     {
-        $this->db->select('tbl_prepayment_kps.*, tbl_data_user.name'); // Memilih kolom dari kedua tabel
+        $this->db->select('kps_prepayment.*, tbl_data_user.name'); // Memilih kolom dari kedua tabel
         $this->db->from($this->table);
-        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_prepayment_kps.id_user', 'left'); // JOIN dengan tabel tbl_user
+        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = kps_prepayment.id_user', 'left'); // JOIN dengan tabel tbl_user
 
         $i = 0;
 
@@ -33,13 +33,13 @@ class M_prepayment_kps extends CI_Model
                     if ($item == 'name') {
                         $this->db->like('tbl_data_user.' . $item, $_POST['search']['value']);
                     } else {
-                        $this->db->like('tbl_prepayment_kps.' . $item, $_POST['search']['value']);
+                        $this->db->like('kps_prepayment.' . $item, $_POST['search']['value']);
                     }
                 } else {
                     if ($item == 'name') {
                         $this->db->or_like('tbl_data_user.' . $item, $_POST['search']['value']);
                     } else {
-                        $this->db->or_like('tbl_prepayment_kps.' . $item, $_POST['search']['value']);
+                        $this->db->or_like('kps_prepayment.' . $item, $_POST['search']['value']);
                     }
                 }
 
@@ -61,7 +61,7 @@ class M_prepayment_kps extends CI_Model
                 // Conditions for 'on-process' status
                 $this->db->where('app_status', 'waiting')
                     ->where('app2_status', 'waiting')
-                    ->or_where('tbl_prepayment_kps.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
+                    ->or_where('kps_prepayment.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
                     ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
             } elseif ($_POST['status'] == 'approved') {
                 // Conditions for 'approved' status
@@ -71,7 +71,7 @@ class M_prepayment_kps extends CI_Model
             } elseif ($_POST['status'] == 'revised') {
                 $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
                     ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "revised")', NULL, FALSE)
-                    ->or_where('tbl_prepayment_kps.id_user =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
+                    ->or_where('kps_prepayment.id_user =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
             } elseif ($_POST['status'] == 'rejected') {
                 $this->db->where('status', $_POST['status']);
             }
@@ -82,13 +82,13 @@ class M_prepayment_kps extends CI_Model
         // Tambahkan kondisi berdasarkan tab yang dipilih
         if (!empty($_POST['tab'])) {
             if ($_POST['tab'] == 'personal') {
-                $this->db->where('tbl_prepayment_kps.id_user', $this->session->userdata('id_user'));
+                $this->db->where('kps_prepayment.id_user', $this->session->userdata('id_user'));
             } elseif ($_POST['tab'] == 'employee') {
                 $this->db->group_start()
-                    ->where('tbl_prepayment_kps.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-                    ->where('tbl_prepayment_kps.id_user !=', $this->session->userdata('id_user'))
-                    ->or_where('tbl_prepayment_kps.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_prepayment_kps.app_status = 'approved'", FALSE)
-                    ->where('tbl_prepayment_kps.id_user !=', $this->session->userdata('id_user'))
+                    ->where('kps_prepayment.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                    ->where('kps_prepayment.id_user !=', $this->session->userdata('id_user'))
+                    ->or_where('kps_prepayment.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && kps_prepayment.app_status = 'approved'", FALSE)
+                    ->where('kps_prepayment.id_user !=', $this->session->userdata('id_user'))
                     ->group_end();
             }
         }
@@ -120,9 +120,9 @@ class M_prepayment_kps extends CI_Model
 
     public function count_all()
     {
-        $this->db->select('tbl_prepayment_kps.*, tbl_data_user.name'); // Memilih kolom dari kedua tabel
+        $this->db->select('kps_prepayment.*, tbl_data_user.name'); // Memilih kolom dari kedua tabel
         $this->db->from($this->table);
-        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_prepayment_kps.id_user', 'left'); // JOIN dengan tabel tbl_user
+        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = kps_prepayment.id_user', 'left'); // JOIN dengan tabel tbl_user
         // Tambahkan pemfilteran berdasarkan status
         // Tambahkan pemfilteran berdasarkan status
         // Tambahkan kondisi jika id_user login sesuai dengan app2_name
@@ -135,7 +135,7 @@ class M_prepayment_kps extends CI_Model
                 // Conditions for 'on-process' status
                 $this->db->where('app_status', 'waiting')
                     ->where('app2_status', 'waiting')
-                    ->or_where('tbl_prepayment_kps.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
+                    ->or_where('kps_prepayment.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
                     ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
             } elseif ($_POST['status'] == 'approved') {
                 // Conditions for 'approved' status
@@ -145,7 +145,7 @@ class M_prepayment_kps extends CI_Model
             } elseif ($_POST['status'] == 'revised') {
                 $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
                     ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "revised")', NULL, FALSE)
-                    ->or_where('tbl_prepayment_kps.id_user =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
+                    ->or_where('kps_prepayment.id_user =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
             } elseif ($_POST['status'] == 'rejected') {
                 $this->db->where('status', $_POST['status']);
             }
@@ -156,13 +156,13 @@ class M_prepayment_kps extends CI_Model
         // Tambahkan kondisi berdasarkan tab yang dipilih
         if (!empty($_POST['tab'])) {
             if ($_POST['tab'] == 'personal') {
-                $this->db->where('tbl_prepayment_kps.id_user', $this->session->userdata('id_user'));
+                $this->db->where('kps_prepayment.id_user', $this->session->userdata('id_user'));
             } elseif ($_POST['tab'] == 'employee') {
                 $this->db->group_start()
-                    ->where('tbl_prepayment_kps.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-                    ->where('tbl_prepayment_kps.id_user !=', $this->session->userdata('id_user'))
-                    ->or_where('tbl_prepayment_kps.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_prepayment_kps.app_status = 'approved'", FALSE)
-                    ->where('tbl_prepayment_kps.id_user !=', $this->session->userdata('id_user'))
+                    ->where('kps_prepayment.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                    ->where('kps_prepayment.id_user !=', $this->session->userdata('id_user'))
+                    ->or_where('kps_prepayment.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && kps_prepayment.app_status = 'approved'", FALSE)
+                    ->where('kps_prepayment.id_user !=', $this->session->userdata('id_user'))
                     ->group_end();
             }
         }
@@ -188,9 +188,9 @@ class M_prepayment_kps extends CI_Model
     {
         $formatted_date = date('ym', strtotime($date));
         $this->db->select('kode_prepayment');
-        $where = 'id=(SELECT max(id) FROM tbl_prepayment_kps where SUBSTRING(kode_prepayment, 2, 4) = ' . $formatted_date . ')';
+        $where = 'id=(SELECT max(id) FROM kps_prepayment where SUBSTRING(kode_prepayment, 2, 4) = ' . $formatted_date . ')';
         $this->db->where($where);
-        $query = $this->db->get('tbl_prepayment_kps');
+        $query = $this->db->get('kps_prepayment');
         return $query;
     }
 

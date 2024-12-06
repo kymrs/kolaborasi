@@ -296,6 +296,7 @@
                 tableHeader.append(`
                 <tr>
                     <th>No</th>
+                    <th>Core</th>
                     <th>Kode Prepayment</th>
                     <th>Kode Reimbust</th>
                     <th>Nama</th>
@@ -307,6 +308,7 @@
                 tableFooter.append(`
                 <tr>
                     <th>No</th>
+                    <th>Core</th>
                     <th>Kode Prepayment</th>
                     <th>Kode Reimbust</th>
                     <th>Nama</th>
@@ -319,6 +321,7 @@
                 tableHeader.append(`
                 <tr>
                     <th>No</th>
+                    <th>Core</th>
                     <th>Kode Prepayment</th>
                     <th>Kode Reimbust</th>
                     <th>Nama</th>
@@ -330,6 +333,7 @@
                 tableFooter.append(`
                 <tr>
                     <th>No</th>
+                    <th>Core</th>
                     <th>Kode Prepayment</th>
                     <th>Kode Reimbust</th>
                     <th>Nama</th>
