@@ -30,6 +30,21 @@
                                         <input type="text" class="form-control" id="kode_prepayment" name="kode_prepayment" readonly>
                                     </div>
                                 </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4">Kode Prepayment</label>
+                                    <div class="col-sm-7">
+                                        <div class="input-group mb-3">
+                                            <!-- <span class="input-group-text" id="inputGroup-sizing-default">Default</span> -->
+                                            <select name="jenis_rek" id="jenis_rek" class="form-group-select" id="inputGroup-sizing-default">
+                                                <option value="BCA">BCA</option>
+                                                <option value="Mandiri">Mandiri</option>
+                                                <option value="BRI">BRI</option>
+                                                <option value="Btpn">Btpn</option>
+                                            </select>
+                                            <input type="text" name="no_rek" id="no_rek" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" value="<?= $this->session->userdata('no_rek') ?? ''; ?>" readonly>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             <!-- SEBELAH KANAN -->
@@ -40,12 +55,6 @@
                                         <input type="text" class="form-control" id="prepayment" name="prepayment" placeholder="Prepayment for....">
                                     </div>
                                 </div>
-                                <!-- <div class="form-group row">
-                                    <label class="col-sm-4">Jabatan</label>
-                                    <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="jabatan" name="jabatan" placeholder="Jabatan....">
-                                    </div>
-                                </div> -->
                                 <div class="form-group row">
                                     <label class="col-sm-4">Tujuan</label>
                                     <div class="col-sm-7">
@@ -149,6 +158,18 @@
         var kode = $('#kode').val();
         let inputCount = 0;
         let deletedRows = [];
+
+        // OPSI NOMOR REKENING
+        const no_rek = $('#no_rek').val();
+        // console.log(no_rek);
+        $('#jenis_rek').on('change', function() {
+            if ($(this).val() == 'BCA') {
+                $('#no_rek').val(no_rek);
+                $('#no_rek').prop('readonly', true); // Nonaktifkan input jika jenis rekening adalah BCA
+            } else {
+                $('#no_rek').prop('readonly', false); // Aktifkan input untuk opsi lainnya
+            }
+        });
 
         // Tambahkan fungsi untuk memformat input nominal memiliki titik
         function formatJumlahInput(selector) {
