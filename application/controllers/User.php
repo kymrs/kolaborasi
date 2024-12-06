@@ -129,6 +129,7 @@ class User extends CI_Controller
 			'image' => $img,
 			'id_level' => $this->input->post('level'),
 			'is_active' => $this->input->post('aktif'),
+			'no_rek' => $this->input->post('no_rek')
 		);
 
 		// $insert = $this->M_user->save($data);
@@ -179,6 +180,7 @@ class User extends CI_Controller
 			'core' => $this->input->post('core'),
 			'id_level' => $this->input->post('level'),
 			'is_active' => $this->input->post('aktif'),
+			'no_rek' => $this->input->post('no_rek')
 		);
 		// $data3 = array('password' => md5($this->input->post('password')));
 

@@ -11,17 +11,10 @@
 
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
-<<<<<<< HEAD
                 <!-- <div class="sidebar-brand-icon">
                     <img src="<?= base_url('assets/backend/img/kolaborasi-sidebar.png') ?>" alt="kps" width="100">
 
                 </div> -->
-=======
-                <div class="sidebar-brand-icon">
-                    <!-- <img src="<?= base_url('assets/backend/img/kolaborasi-sidebar.png') ?>" alt="kps" width="100"> -->
-
-                </div>
->>>>>>> 3b4eacf5b5a341a84c9ed54f0f0080d815b04d6d
                 <!-- <div class="sidebar-brand-text mx-3" style="position: relative; right: 30px; color: #9AA0B1">kolaborasi</div> -->
                 <h1 style="font-size: 1.2rem; font-weight: bold">Dashboard</h1>
             </a>

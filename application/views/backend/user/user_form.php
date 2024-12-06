@@ -81,6 +81,15 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="form-group row">
+                                    <label for="no_rek" class="col-sm-4 col-form-label">No Rek</label>
+                                    <div class="col-sm-8">
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text" id="inputGroup-sizing-default">BCA</span>
+                                            <input type="number" name="no_rek" id="no_rek" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             <!-- FIELD APPROVAL -->
@@ -201,6 +210,7 @@
                     $('#password').val(data.user.password);
                     $('#level').val(data.user.id_level);
                     $('#aktif').val(data.user.is_active);
+                    $('#no_rek').val(data.user.no_rek);
                     $('#divisi').val(data.approval.divisi);
                     $('#jabatan').val(data.approval.jabatan);
                     $('#app_id').val(data.approval.app_id);
@@ -318,6 +328,11 @@
                 },
                 app2_id: {
                     required: true
+                },
+                no_rek: { // Tambahkan aturan untuk no_rek
+                    required: true,
+                    minlength: 10,
+                    digits: true // Memastikan input hanya angka
                 }
             },
             messages: {
@@ -347,6 +362,11 @@
                 },
                 app2_id: {
                     required: "Approval 2 is required"
+                },
+                no_rek: { // Tambahkan pesan untuk no_rek
+                    required: "Nomor rekening harus diisi",
+                    minlength: "Nomor rekening harus minimal 10 digit",
+                    digits: "Nomor rekening hanya boleh berisi angka"
                 }
             },
             errorPlacement: function(error, element) {
