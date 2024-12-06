@@ -97,6 +97,12 @@
                                         <input type="hidden" class="form-control" id="kode_prepayment_old" name="kode_prepayment_old">
                                     </div>
                                 </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5">No Rekening</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" value="<?= $this->session->userdata('no_rek') ?? '' ?>" readonly placeholder="No Rekening" name="no_rek" id="no_rek" style="cursor: not-allowed;">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <!-- BUTTON TAMBAH FORM -->
@@ -787,6 +793,10 @@
                     $('#kode_prepayment').css({
                         'display': 'none'
                     });
+                    $('#no_rek').prop({
+                        'disabled': false,
+                        'readonly': false
+                    }).css('cursor', 'auto');
                 } else if (sifatPelaporan == 'Pelaporan') {
                     $('#pelaporan_button').css('display', 'inline-block');
                     $('#parent_sifat_pelaporan').css('display', 'flex');
@@ -820,6 +830,7 @@
                     $('#kode_prepayment').css({
                         'display': 'none'
                     });
+                    $('#no_rek').prop('disabled', true).css('cursor', 'not-allowed');
                 }
             } else if (aksi == 'update') {
                 if (sifatPelaporan == 'Reimbust') {

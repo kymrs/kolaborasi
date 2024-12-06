@@ -329,7 +329,10 @@
                 <div class="modal-body">
                     <form id="paymentForm" action="">
                         <div class="form-group">
-                            <label for="payment_status">Status <span class="text-danger">*</span></label>
+                            <div style="display: flex; justify-content: space-between">
+                                <label for="payment_status">Status <span class="text-danger">*</span></label>
+                                <label>No Rekening : <span id="no_rek" style="font-weight: bold;"></span></label>
+                            </div>
                             <select id="payment_status" name="payment_status" class="form-control" style="cursor: pointer;" required>
                                 <option selected disabled>Choose status...</option>
                                 <option value="paid">Paid</option>
