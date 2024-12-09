@@ -99,7 +99,7 @@
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-5">No Rekening</label>
-                                    <div class="col-sm-2">
+                                    <div class="col-sm-3">
                                         <select name="jenis_rek" id="jenis_rek" class="form-control" style="cursor: pointer;">
                                             <option value="BCA">BCA</option>
                                             <option value="MANDIRI">Mandiri</option>
@@ -107,7 +107,7 @@
                                             <option value="BSI">BSI</option>
                                         </select>
                                     </div>
-                                    <div class="col-sm-5">
+                                    <div class="col-sm-4">
                                         <input type="text" class="form-control" value="<?= $this->session->userdata('no_rek') ?? '' ?>" readonly placeholder="No Rekening" name="no_rek" id="no_rek">
                                     </div>
                                 </div>
@@ -361,8 +361,8 @@
         // Menghapus semua karakter selain angka
         let value = this.value.replace(/[^0-9]/g, '');
         // Membatasi panjang angka maksimal 14 digit
-        if (value.length > 14) {
-            value = value.slice(0, 14);
+        if (value.length > 20) {
+            value = value.slice(0, 20);
         }
         this.value = value;
     });

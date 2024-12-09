@@ -752,6 +752,8 @@ class Reimbust_pw extends CI_Controller
             'tgl_pengajuan' => date('Y-m-d', strtotime($this->input->post('tgl_pengajuan'))),
             'tujuan' => $this->input->post('tujuan'),
             'jumlah_prepayment' => $this->input->post('jumlah_prepayment'),
+            'jenis_rek' => $this->input->post('jenis_rek'),
+            'no_rek' => $this->input->post('no_rek'),
             'app_name' => $this->db->select('name')
                 ->from('tbl_data_user')
                 ->where('id_user', $approval->app_id)
@@ -831,6 +833,8 @@ class Reimbust_pw extends CI_Controller
             'kode_reimbust' => $this->input->post('kode_reimbust'),
             'tujuan' => $this->input->post('tujuan'),
             'jumlah_prepayment' => $this->input->post('jumlah_prepayment'),
+            'jenis_rek' => $this->input->post('jenis_rek'),
+            'no_rek' => $this->input->post('no_rek'),
             'kode_prepayment' => $this->input->post('kode_prepayment'),
             'app_status' => 'waiting',
             'app_date' => null,

@@ -490,8 +490,8 @@
                     $('#tujuan').html(data['master']['tujuan']);
                     $('#kode_reimbust').html(data['master']['kode_prepayment'] ? data['master']['kode_prepayment'] : '-');
                     $('#jumlah_prepayment').html(data['master']['jumlah_prepayment'].replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
-                    $('#jenis_rek').html(data['master']['jenis_rek']);
-                    $('#no_rek').html(data['master']['no_rek']);
+                    $('#jenis_rek').html(data['master']['jenis_rek'] ? data['master']['jenis_rek'] : '-');
+                    $('#no_rek').html(data['master']['no_rek'] ? data['master']['no_rek'] : '-');
                     if ((data['master']['app_keterangan'] !== null && data['master']['app_keterangan'] !== '') ||
                         (data['master']['app2_keterangan'] !== null && data['master']['app2_keterangan'] !== '')) {
                         $('#keterangan').append(`<span>Keterangan :</span>`);

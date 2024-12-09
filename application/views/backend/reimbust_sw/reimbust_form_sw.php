@@ -108,6 +108,20 @@
                                         <input type="hidden" class="form-control" id="kode_prepayment_old" name="kode_prepayment_old">
                                     </div>
                                 </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5">No Rekening</label>
+                                    <div class="col-sm-3">
+                                        <select name="jenis_rek" id="jenis_rek" class="form-control" style="cursor: pointer;">
+                                            <option value="BCA">BCA</option>
+                                            <option value="MANDIRI">Mandiri</option>
+                                            <option value="BRI">BRI</option>
+                                            <option value="BSI">BSI</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <input type="text" class="form-control" value="<?= $this->session->userdata('no_rek') ?? '' ?>" readonly placeholder="No Rekening" name="no_rek" id="no_rek">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <!-- BUTTON TAMBAH FORM -->
@@ -341,6 +355,29 @@
                 }
             });
         }
+    });
+
+    // OPSI NOMOR REKENING
+    const no_rek = $('#no_rek').val();
+    // console.log(no_rek);
+    $('#jenis_rek').on('change', function() {
+        if ($(this).val() == 'BCA') {
+            $('#no_rek').val(no_rek);
+            $('#no_rek').prop('readonly', true); // Nonaktifkan input jika jenis rekening adalah BCA
+        } else {
+            $('#no_rek').val('');
+            $('#no_rek').prop('readonly', false); // Aktifkan input untuk opsi lainnya
+        }
+    });
+
+    document.getElementById('no_rek').addEventListener('input', function(e) {
+        // Menghapus semua karakter selain angka
+        let value = this.value.replace(/[^0-9]/g, '');
+        // Membatasi panjang angka maksimal 14 digit
+        if (value.length > 20) {
+            value = value.slice(0, 20);
+        }
+        this.value = value;
     });
 
     // Data table prepayment
