@@ -30,6 +30,21 @@
                                         <input type="text" class="form-control" id="kode_prepayment" name="kode_prepayment" readonly style="width: 80%">
                                     </div>
                                 </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4">No Rek</label>
+                                    <div class="col-sm-7">
+                                        <div class="input-group mb-3">
+                                            <!-- <span class="input-group-text" id="inputGroup-sizing-default">Default</span> -->
+                                            <select name="jenis_rek" id="jenis_rek" class="form-group-select" id="inputGroup-sizing-default">
+                                                <option value="BCA">BCA</option>
+                                                <option value="Mandiri">Mandiri</option>
+                                                <option value="BRI">BRI</option>
+                                                <option value="Btpn">Btpn</option>
+                                            </select>
+                                            <input type="text" name="no_rek" id="no_rek" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" value="<?= $this->session->userdata('no_rek') ?? ''; ?>" readonly>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             <!-- SEBELAH KANAN -->
@@ -54,12 +69,6 @@
                                         <?php } ?>
                                     </div>
                                 </div>
-                                <!-- <div class="form-group row">
-                                    <label class="col-sm-5">Jabatan</label>
-                                    <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="jabatan" name="jabatan" placeholder="Jabatan....">
-                                    </div>
-                                </div> -->
                                 <div class="form-group row">
                                     <label class="col-sm-4">Tujuan</label>
                                     <div class="col-sm-8">
@@ -237,6 +246,19 @@
     });
 
     $(document).ready(function() {
+
+        // OPSI NOMOR REKENING
+        const no_rek = $('#no_rek').val();
+        // console.log(no_rek);
+        $('#jenis_rek').on('change', function() {
+            if ($(this).val() == 'BCA') {
+                $('#no_rek').val(no_rek);
+                $('#no_rek').prop('readonly', true); // Nonaktifkan input jika jenis rekening adalah BCA
+            } else {
+                $('#no_rek').val('');
+                $('#no_rek').prop('readonly', false); // Aktifkan input untuk opsi lainnya
+            }
+        });
 
         $('.event_sw').select2({
             width: 'style' // Menggunakan lebar yang ditentukan pada elemen HTML
@@ -474,8 +496,9 @@
                     $('#kode_prepayment').val(data['master']['kode_prepayment'].toUpperCase()).attr('readonly', true);
                     $('#tgl_prepayment').val(moment(data['master']['tgl_prepayment']).format('DD-MM-YYYY'));
                     $('#nama').val(data['master']['nama']);
-                    // $('#divisi').val(data['master']['divisi']);
-                    // $('#jabatan').val(data['master']['jabatan']);
+                    $('#no_rek').val(data['master']['no_rek']);
+                    $('#no_rek').prop('readonly', false);
+                    $('#jenis_rek').val(data['master']['jenis_rek']);
                     $('#prepayment').val(data['master']['prepayment']);
                     // $('#option-event').val(data['master']['event']);
                     $('#tujuan').val(data['master']['tujuan']);
@@ -673,6 +696,11 @@
                 },
                 tujuan: {
                     required: true,
+                },
+                no_rek: { // Tambahkan aturan untuk no_rek
+                    required: true,
+                    minlength: 10,
+                    digits: true // Memastikan input hanya angka
                 }
             },
             messages: {
@@ -688,6 +716,11 @@
                 },
                 tujuan: {
                     required: "Tujuan is required",
+                },
+                no_rek: { // Tambahkan pesan untuk no_rek
+                    required: "Nomor rekening harus diisi",
+                    minlength: "Nomor rekening harus minimal 10 digit",
+                    digits: "Nomor rekening hanya boleh berisi angka"
                 }
             },
             errorPlacement: function(error, element) {

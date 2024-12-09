@@ -318,6 +318,10 @@
             <div class="modal-body">
                 <form id="paymentForm" action="">
                     <div class="form-group">
+                        <label style="font-size: 107%;"><span style="font-weight: bold">No Rekening</span> <span style="margin-left: 20px;">:</span> <span id="no_rek"></span></label> <br>
+                        <label style="font-size: 107%;"><span style="font-weight: bold">Jenis Rekening</span> <span style="margin-left: 5px;">:</span> <span id="jenis_rek"></span></label>
+                    </div>
+                    <div class="form-group">
                         <label for="payment_status">Status <span class="text-danger">*</span></label>
                         <select id="payment_status" name="payment_status" class="form-control" style="cursor: pointer;" required>
                             <option selected disabled>Choose status...</option>
@@ -425,6 +429,9 @@
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
+                    console.log(data);
+                    $('#no_rek').text(data['master']['no_rek']);
+                    $('#jenis_rek').text(data['master']['jenis_rek']);
                     $('#payment_status').val(data['master']['payment_status']);
                 },
                 error: function(jqXHR, textStatus, errorThrown) {

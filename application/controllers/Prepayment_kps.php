@@ -256,6 +256,8 @@ class Prepayment_kps extends CI_Controller
             'tujuan' => $this->input->post('tujuan'),
             'tgl_prepayment' => date('Y-m-d', strtotime($this->input->post('tgl_prepayment'))),
             'total_nominal' => $this->input->post('total_nominal'),
+            'no_rek' => $this->input->post('no_rek'),
+            'jenis_rek' =>  $this->input->post('jenis_rek'),
             'divisi' => $this->db->select('divisi')
                 ->from('tbl_data_user')
                 ->where('id_user', $id)
@@ -309,6 +311,8 @@ class Prepayment_kps extends CI_Controller
             'tujuan' => $this->input->post('tujuan'),
             'tgl_prepayment' => date('Y-m-d', strtotime($this->input->post('tgl_prepayment'))),
             'total_nominal' => $this->input->post('total_nominal'),
+            'no_rek' => $this->input->post('no_rek'),
+            'jenis_rek' =>  $this->input->post('jenis_rek'),
             'app_status' => 'waiting',
             'app_date' => null,
             'app_keterangan' => null,

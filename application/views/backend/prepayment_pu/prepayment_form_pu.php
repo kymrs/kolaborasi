@@ -31,7 +31,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-sm-4">Kode Prepayment</label>
+                                    <label class="col-sm-4">No Rek</label>
                                     <div class="col-sm-7">
                                         <div class="input-group mb-3">
                                             <!-- <span class="input-group-text" id="inputGroup-sizing-default">Default</span> -->
@@ -167,8 +167,17 @@
                 $('#no_rek').val(no_rek);
                 $('#no_rek').prop('readonly', true); // Nonaktifkan input jika jenis rekening adalah BCA
             } else {
+                $('#no_rek').val('');
                 $('#no_rek').prop('readonly', false); // Aktifkan input untuk opsi lainnya
             }
+        });
+
+        document.getElementById('no_rek').addEventListener('input', function(e) {
+            let value = this.value.replace(/[^0-9]/g, '');
+            if (value.length > 14) {
+                value = value.slice(0, 10);
+            }
+            this.value = value;
         });
 
         // Tambahkan fungsi untuk memformat input nominal memiliki titik
@@ -345,8 +354,9 @@
                     $('#kode_prepayment').val(data['master']['kode_prepayment'].toUpperCase()).attr('readonly', true);
                     $('#tgl_prepayment').val(moment(data['master']['tgl_prepayment']).format('DD-MM-YYYY'));
                     $('#nama').val(data['master']['nama']);
-                    // $('#divisi').val(data['master']['divisi']);
-                    // $('#jabatan').val(data['master']['jabatan']);
+                    $('#no_rek').val(data['master']['no_rek']);
+                    $('#no_rek').prop('readonly', false);
+                    $('#jenis_rek').val(data['master']['jenis_rek']);
                     $('#prepayment').val(data['master']['prepayment']);
                     $('#tujuan').val(data['master']['tujuan']);
                     if (data['master']['total_nominal'] == null) {
@@ -510,6 +520,11 @@
                 },
                 tujuan: {
                     required: true,
+                },
+                no_rek: { // Tambahkan aturan untuk no_rek
+                    required: true,
+                    minlength: 10,
+                    digits: true // Memastikan input hanya angka
                 }
             },
             messages: {
@@ -525,6 +540,11 @@
                 },
                 tujuan: {
                     required: "Tujuan is required",
+                },
+                no_rek: { // Tambahkan pesan untuk no_rek
+                    required: "Nomor rekening harus diisi",
+                    minlength: "Nomor rekening harus minimal 10 digit",
+                    digits: "Nomor rekening hanya boleh berisi angka"
                 }
             },
             errorPlacement: function(error, element) {
