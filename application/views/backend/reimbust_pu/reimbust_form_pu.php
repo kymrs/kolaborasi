@@ -100,7 +100,7 @@
                                 <div class="form-group row">
                                     <label class="col-sm-5">No Rekening</label>
                                     <div class="col-sm-2">
-                                        <select name="jenis_rek" id="jenis_rek" class="form-control">
+                                        <select name="jenis_rek" id="jenis_rek" class="form-control" style="cursor: pointer;">
                                             <option value="BCA">BCA</option>
                                             <option value="MANDIRI">Mandiri</option>
                                             <option value="BRI">BRI</option>
@@ -108,7 +108,7 @@
                                         </select>
                                     </div>
                                     <div class="col-sm-5">
-                                        <input type="text" class="form-control" value="<?= $this->session->userdata('no_rek') ?? '' ?>" readonly placeholder="No Rekening" name="no_rek" id="no_rek" style="cursor: not-allowed;">
+                                        <input type="text" class="form-control" value="<?= $this->session->userdata('no_rek') ?? '' ?>" readonly placeholder="No Rekening" name="no_rek" id="no_rek">
                                     </div>
                                 </div>
                             </div>
@@ -342,6 +342,29 @@
                 }
             });
         }
+    });
+
+    // OPSI NOMOR REKENING
+    const no_rek = $('#no_rek').val();
+    // console.log(no_rek);
+    $('#jenis_rek').on('change', function() {
+        if ($(this).val() == 'BCA') {
+            $('#no_rek').val(no_rek);
+            $('#no_rek').prop('readonly', true); // Nonaktifkan input jika jenis rekening adalah BCA
+        } else {
+            $('#no_rek').val('');
+            $('#no_rek').prop('readonly', false); // Aktifkan input untuk opsi lainnya
+        }
+    });
+
+    document.getElementById('no_rek').addEventListener('input', function(e) {
+        // Menghapus semua karakter selain angka
+        let value = this.value.replace(/[^0-9]/g, '');
+        // Membatasi panjang angka maksimal 14 digit
+        if (value.length > 14) {
+            value = value.slice(0, 14);
+        }
+        this.value = value;
     });
 
     // Data table prepayment
@@ -801,14 +824,6 @@
                     $('#kode_prepayment').css({
                         'display': 'none'
                     });
-                    $('#jenis_rek').prop({
-                        'disabled': false,
-                        'readonly': false
-                    }).css('cursor', 'auto');
-                    $('#no_rek').prop({
-                        'disabled': false,
-                        'readonly': false
-                    }).css('cursor', 'auto');
                 } else if (sifatPelaporan == 'Pelaporan') {
                     $('#pelaporan_button').css('display', 'inline-block');
                     $('#parent_sifat_pelaporan').css('display', 'flex');
@@ -832,14 +847,6 @@
                         'disabled': false,
                         'readonly': true
                     }).css('cursor', 'not-allowed');
-                    $('#jenis_rek').prop({
-                        'disabled': false,
-                        'readonly': false
-                    }).css('cursor', 'auto');
-                    $('#no_rek').prop({
-                        'disabled': false,
-                        'readonly': false
-                    }).css('cursor', 'auto');
                 } else {
                     $('#pelaporan_button').css('display', 'none');
                     $('#parent_sifat_pelaporan').css('display', 'inline-block');
@@ -850,8 +857,6 @@
                     $('#kode_prepayment').css({
                         'display': 'none'
                     });
-                    $('#jenis_rek').prop('disabled', true).css('cursor', 'not-allowed');
-                    $('#no_rek').prop('disabled', true).css('cursor', 'not-allowed');
                 }
             } else if (aksi == 'update') {
                 if (sifatPelaporan == 'Reimbust') {
@@ -974,6 +979,8 @@
                     $('#tujuan').val(data['master']['tujuan']);
                     $('#status').val(data['master']['status']);
                     $('#jumlah_prepayment').val(data['master']['jumlah_prepayment'].replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
+                    $('#jenis_rek').val(data['master']['jenis_rek']);
+                    $('#no_rek').val(data['master']['no_rek']);
                     $('#hidden_jumlah_prepayment').val(data['master']['jumlah_prepayment']);
                     $('#kode_prepayment_input').val(data['master']['kode_prepayment']);
                     $('#kode_prepayment_old').val(data['master']['kode_prepayment']);

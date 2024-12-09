@@ -113,6 +113,12 @@
             transition: 300ms;
         }
 
+        .rekening-info {
+            position: relative;
+            bottom: 20px;
+            right: 30px;
+        }
+
         .kwitansi:hover {
             scale: 0.95;
         }
@@ -329,9 +335,12 @@
                 <div class="modal-body">
                     <form id="paymentForm" action="">
                         <div class="form-group">
+                            <label style="font-size: 107%;"><span style="font-weight: bold">No Rekening</span> <span style="margin-left: 20px;">:</span> <span id="no_rek"></span></label> <br>
+                            <label style="font-size: 107%;"><span style="font-weight: bold">Jenis Rekening</span> <span style="margin-left: 5px;">:</span> <span id="jenis_rek"></span></label>
+                        </div>
+                        <div class="form-group">
                             <div style="display: flex; justify-content: space-between">
                                 <label for="payment_status">Status <span class="text-danger">*</span></label>
-                                <label>No Rekening : <span id="no_rek" style="font-weight: bold;"></span></label>
                             </div>
                             <select id="payment_status" name="payment_status" class="form-control" style="cursor: pointer;" required>
                                 <option selected disabled>Choose status...</option>
@@ -481,6 +490,8 @@
                     $('#tujuan').html(data['master']['tujuan']);
                     $('#kode_reimbust').html(data['master']['kode_prepayment'] ? data['master']['kode_prepayment'] : '-');
                     $('#jumlah_prepayment').html(data['master']['jumlah_prepayment'].replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
+                    $('#jenis_rek').html(data['master']['jenis_rek']);
+                    $('#no_rek').html(data['master']['no_rek']);
                     if ((data['master']['app_keterangan'] !== null && data['master']['app_keterangan'] !== '') ||
                         (data['master']['app2_keterangan'] !== null && data['master']['app2_keterangan'] !== '')) {
                         $('#keterangan').append(`<span>Keterangan :</span>`);
