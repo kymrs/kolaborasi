@@ -332,4 +332,10 @@ class M_prepayment_sw extends CI_Model
         $query = $this->db->select('event')->from('tbl_prepayment')->where('id', $id);
         return $query->get()->row('event');
     }
+
+    // OPSI REKENING
+    public function options()
+    {
+        return $this->db->distinct()->select('no_rek')->from('tbl_prepayment')->get();
+    }
 }

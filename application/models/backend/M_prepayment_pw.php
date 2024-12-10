@@ -231,4 +231,10 @@ class M_prepayment_pw extends CI_Model
         $this->db->where('prepayment_id', $id);
         $this->db->delete($this->table2);
     }
+
+    // OPSI REKENING
+    public function options()
+    {
+        return $this->db->distinct()->select('no_rek')->from('swi_prepayment')->get();
+    }
 }

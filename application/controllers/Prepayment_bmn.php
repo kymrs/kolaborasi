@@ -178,6 +178,7 @@ class Prepayment_bmn extends CI_Controller
         $data['id'] = 0;
         $data['title'] = 'backend/prepayment_bmn/prepayment_form_bmn';
         $data['title_view'] = 'Prepayment Form';
+        $data['rek_options'] = $this->M_prepayment_bmn->options()->result_array();
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $this->load->view('backend/home', $data);
     }
@@ -207,6 +208,7 @@ class Prepayment_bmn extends CI_Controller
         $data['id'] = $id;
         $data['aksi'] = 'update';
         $data['title_view'] = "Edit Data Prepayment";
+        $data['rek_options'] = $this->M_prepayment_bmn->options()->result_array();
         $data['title'] = 'backend/prepayment_bmn/prepayment_form_bmn';
         $this->load->view('backend/home', $data);
     }
@@ -249,6 +251,13 @@ class Prepayment_bmn extends CI_Controller
         $approval = $this->M_prepayment_bmn->approval($this->session->userdata('id_user'));
         $id = $this->session->userdata('id_user');
 
+        // CHECK APAKAH MENGINPUT YANG SUDAH ADA ATAU YANG BARU (REKENING)
+        if (!empty($_POST['nama_rek'])) {
+            $no_rek = $this->input->post('nama_rek') . " " . $this->input->post('nama_bank') . "-" . $this->input->post('nomor_rekening');
+        } else {
+            $no_rek = $this->input->post('rekening');
+        }
+
         $data = array(
             'kode_prepayment' => $kode_prepayment,
             'id_user' => $id,
@@ -256,8 +265,7 @@ class Prepayment_bmn extends CI_Controller
             'tujuan' => $this->input->post('tujuan'),
             'tgl_prepayment' => date('Y-m-d', strtotime($this->input->post('tgl_prepayment'))),
             'total_nominal' => $this->input->post('total_nominal'),
-            'no_rek' => $this->input->post('no_rek'),
-            'jenis_rek' =>  $this->input->post('jenis_rek'),
+            'no_rek' => $no_rek,
             'divisi' => $this->db->select('divisi')
                 ->from('tbl_data_user')
                 ->where('id_user', $id)
@@ -305,14 +313,20 @@ class Prepayment_bmn extends CI_Controller
     // UPDATE DATA
     public function update()
     {
+        // CHECK APAKAH MENGINPUT YANG SUDAH ADA ATAU YANG BARU (REKENING)
+        if (!empty($_POST['nama_rek'])) {
+            $no_rek = $this->input->post('nama_rek') . " " . $this->input->post('nama_bank') . "-" . $this->input->post('nomor_rekening');
+        } else {
+            $no_rek = $this->input->post('rekening');
+        }
+
         $data = array(
             'kode_prepayment' => $this->input->post('kode_prepayment'),
             'prepayment' => $this->input->post('prepayment'),
             'tujuan' => $this->input->post('tujuan'),
             'tgl_prepayment' => date('Y-m-d', strtotime($this->input->post('tgl_prepayment'))),
             'total_nominal' => $this->input->post('total_nominal'),
-            'no_rek' => $this->input->post('no_rek'),
-            'jenis_rek' =>  $this->input->post('jenis_rek'),
+            'no_rek' => $no_rek,
             'app_status' => 'waiting',
             'app_date' => null,
             'app_keterangan' => null,
