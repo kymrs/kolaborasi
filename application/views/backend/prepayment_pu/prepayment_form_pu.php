@@ -37,9 +37,11 @@
                                             <div class="form-check form-check-inline">
                                                 <input class="form-check-input" type="radio" name="radioNoLabel" id="exist" value="" aria-label="..." checked>
                                             </div>
-                                            <select class="js-example-basic-single" name="rekening" style="width: 88%" name="state">
+                                            <select class="js-example-basic-single" id="rekening" name="rekening" style="width: 88%">
                                                 <option value="Pilih rekening tujuan" selected disabled>Pilih rekening tujuan</option>
-                                                <option value="Aldo Mandiri-1244211252">Aldo Mandiri-1244211252</option>
+                                                <?php foreach ($rek_options as $option) { ?>
+                                                    <option value="<?= $option['no_rek'] ?>"><?= $option['no_rek'] ?></option>
+                                                <?php } ?>
                                             </select>
                                         </div>
                                         <div class="input-group mb-2">
@@ -365,9 +367,7 @@
                     $('#kode_prepayment').val(data['master']['kode_prepayment'].toUpperCase()).attr('readonly', true);
                     $('#tgl_prepayment').val(moment(data['master']['tgl_prepayment']).format('DD-MM-YYYY'));
                     $('#nama').val(data['master']['nama']);
-                    // $('#no_rek').val(data['master']['no_rek']);
-                    // $('#no_rek').prop('readonly', false);
-                    // $('#jenis_rek').val(data['master']['jenis_rek']);
+                    $('#rekening').val(data['master']['no_rek']).trigger('change');
                     $('#prepayment').val(data['master']['prepayment']);
                     $('#tujuan').val(data['master']['tujuan']);
                     if (data['master']['total_nominal'] == null) {
@@ -534,6 +534,7 @@
                 },
                 nama_rek: {
                     required: true,
+                    maxlength: 22,
                 },
                 nama_bank: {
                     required: true,
@@ -558,6 +559,7 @@
                 },
                 nama_rek: {
                     required: "*Nama rekening perlu diisi",
+                    maxlength: "*Nama rekening tidak boleh lebih dari 22 digit",
                 },
                 nama_bank: {
                     required: "*Nama Bank perlu diisi",
