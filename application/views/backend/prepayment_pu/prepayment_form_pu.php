@@ -14,7 +14,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group row">
-                                    <label class="col-sm-4">Tanggal Prepayment</label>
+                                    <label class="col-sm-4 col-form-label">Tanggal Prepayment</label>
                                     <div class="col-sm-7">
                                         <div class="input-group date">
                                             <input type="text" class="form-control" name="tgl_prepayment" id="tgl_prepayment" placeholder="DD-MM-YYYY" autocomplete="off" readonly />
@@ -25,23 +25,32 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-sm-4">Kode Prepayment</label>
+                                    <label class="col-sm-4 col-form-label">Kode Prepayment</label>
                                     <div class="col-sm-7">
                                         <input type="text" class="form-control" id="kode_prepayment" name="kode_prepayment" readonly>
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-sm-4">No Rek</label>
-                                    <div class="col-sm-7">
+                                    <label class="col-sm-4 col-form-label">No Rek</label>
+                                    <div class="col-sm-9">
                                         <div class="input-group mb-3">
-                                            <!-- <span class="input-group-text" id="inputGroup-sizing-default">Default</span> -->
-                                            <select name="jenis_rek" id="jenis_rek" class="form-group-select" id="inputGroup-sizing-default">
-                                                <option value="BCA">BCA</option>
-                                                <option value="Mandiri">Mandiri</option>
-                                                <option value="BRI">BRI</option>
-                                                <option value="Btpn">Btpn</option>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="radioNoLabel" id="exist" value="" aria-label="..." checked>
+                                            </div>
+                                            <select class="js-example-basic-single" name="rekening" style="width: 88%" name="state">
+                                                <option value="Pilih rekening tujuan" selected disabled>Pilih rekening tujuan</option>
+                                                <option value="Aldo Mandiri-1244211252">Aldo Mandiri-1244211252</option>
                                             </select>
-                                            <input type="text" name="no_rek" id="no_rek" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" value="<?= $this->session->userdata('no_rek') ?? ''; ?>" readonly>
+                                        </div>
+                                        <div class="input-group mb-2">
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="radioNoLabel" id="new" value="" aria-label="...">
+                                            </div>
+                                            <input type="text" class="form-control col-sm-4" id="nama_rek" name="nama_rek" placeholder="Nama Pengaju">&nbsp;
+                                            <span class="py-2">-</span>&nbsp;
+                                            <input type="text" class="form-control col-sm-4" id="nama_bank" name="nama_bank" placeholder="Nama Bank">&nbsp;
+                                            <span class="py-2">-</span>&nbsp;
+                                            <input type="text" class="form-control col-sm-7" id="nomor_rekening" name="nomor_rekening" placeholder="Nomor Rekening">
                                         </div>
                                     </div>
                                 </div>
@@ -50,13 +59,13 @@
                             <!-- SEBELAH KANAN -->
                             <div class="col-md-6">
                                 <div class="form-group row">
-                                    <label class="col-sm-4">Prepayment</label>
+                                    <label class="col-sm-4 col-form-label">Prepayment</label>
                                     <div class="col-sm-7">
                                         <input type="text" class="form-control" id="prepayment" name="prepayment" placeholder="Prepayment for....">
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-sm-4">Tujuan</label>
+                                    <label class="col-sm-4 col-form-label">Tujuan</label>
                                     <div class="col-sm-7">
                                         <textarea class="form-control" id="tujuan" name="tujuan" rows="2"></textarea>
                                     </div>
@@ -159,20 +168,22 @@
         let inputCount = 0;
         let deletedRows = [];
 
-        // OPSI NOMOR REKENING
-        const no_rek = $('#no_rek').val();
-        // console.log(no_rek);
-        $('#jenis_rek').on('change', function() {
-            if ($(this).val() == 'BCA') {
-                $('#no_rek').val(no_rek);
-                $('#no_rek').prop('readonly', true); // Nonaktifkan input jika jenis rekening adalah BCA
-            } else {
-                $('#no_rek').val('');
-                $('#no_rek').prop('readonly', false); // Aktifkan input untuk opsi lainnya
-            }
-        });
+        $('.js-example-basic-single').select2();
 
-        document.getElementById('no_rek').addEventListener('input', function(e) {
+        // Fungsi untuk mengatur enabled/disabled elemen berdasarkan radio button yang dipilih
+        function toggleInputs() {
+            const isExistChecked = $('#exist').is(':checked');
+            $('select.js-example-basic-single').prop('disabled', !isExistChecked);
+            $('.input-group.mb-2 input[type="text"]').prop('disabled', isExistChecked);
+        }
+
+        // Panggil fungsi saat halaman dimuat
+        toggleInputs();
+
+        // Panggil fungsi saat radio button berubah
+        $('input[name="radioNoLabel"]').change(toggleInputs);
+
+        document.getElementById('nomor_rekening').addEventListener('input', function(e) {
             let value = this.value.replace(/[^0-9]/g, '');
             if (value.length > 14) {
                 value = value.slice(0, 10);
@@ -354,9 +365,9 @@
                     $('#kode_prepayment').val(data['master']['kode_prepayment'].toUpperCase()).attr('readonly', true);
                     $('#tgl_prepayment').val(moment(data['master']['tgl_prepayment']).format('DD-MM-YYYY'));
                     $('#nama').val(data['master']['nama']);
-                    $('#no_rek').val(data['master']['no_rek']);
-                    $('#no_rek').prop('readonly', false);
-                    $('#jenis_rek').val(data['master']['jenis_rek']);
+                    // $('#no_rek').val(data['master']['no_rek']);
+                    // $('#no_rek').prop('readonly', false);
+                    // $('#jenis_rek').val(data['master']['jenis_rek']);
                     $('#prepayment').val(data['master']['prepayment']);
                     $('#tujuan').val(data['master']['tujuan']);
                     if (data['master']['total_nominal'] == null) {
@@ -476,7 +487,7 @@
                 data: $('#form').serialize(),
                 dataType: "JSON",
                 success: function(data) {
-                    // console.log(data);
+                    console.log(data);
                     // Sembunyikan loading saat respons diterima
                     $('#loading').hide();
 
@@ -521,11 +532,15 @@
                 tujuan: {
                     required: true,
                 },
-                no_rek: { // Tambahkan aturan untuk no_rek
+                nama_rek: {
                     required: true,
-                    minlength: 10,
-                    digits: true // Memastikan input hanya angka
-                }
+                },
+                nama_bank: {
+                    required: true,
+                },
+                nomor_rekening: {
+                    required: true,
+                },
             },
             messages: {
                 tgl_prepayment: {
@@ -541,11 +556,15 @@
                 tujuan: {
                     required: "Tujuan is required",
                 },
-                no_rek: { // Tambahkan pesan untuk no_rek
-                    required: "Nomor rekening harus diisi",
-                    minlength: "Nomor rekening harus minimal 10 digit",
-                    digits: "Nomor rekening hanya boleh berisi angka"
-                }
+                nama_rek: {
+                    required: "*Nama rekening perlu diisi",
+                },
+                nama_bank: {
+                    required: "*Nama Bank perlu diisi",
+                },
+                nomor_rekening: {
+                    required: "*Nomor rekening perlu diisi",
+                },
             },
             errorPlacement: function(error, element) {
                 if (element.parent().hasClass('input-group')) {

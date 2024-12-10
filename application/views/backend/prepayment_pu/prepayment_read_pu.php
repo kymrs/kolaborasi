@@ -430,8 +430,8 @@
                 dataType: "JSON",
                 success: function(data) {
                     console.log(data);
-                    $('#no_rek').text(data['master']['no_rek']);
-                    $('#jenis_rek').text(data['master']['jenis_rek']);
+                    $('#jenis_rek').html(data['master']['jenis_rek'] ? data['master']['jenis_rek'] : '-');
+                    $('#no_rek').html(data['master']['no_rek'] ? data['master']['no_rek'] : '-');
                     $('#payment_status').val(data['master']['payment_status']);
                 },
                 error: function(jqXHR, textStatus, errorThrown) {

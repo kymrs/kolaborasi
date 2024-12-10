@@ -249,6 +249,17 @@ class Prepayment_pu extends CI_Controller
         $approval = $this->M_prepayment_pu->approval($this->session->userdata('id_user'));
         $id = $this->session->userdata('id_user');
 
+        // CHECK APAKAH MENGINPUT YANG SUDAH ADA ATAU YANG BARU (REKENING)
+        if (!empty($_POST['nama_rek'])) {
+            $nama_rek = $this->input->post('nama_rek');
+            $no_rek = $this->input->post('nama_bank') . "-" . $this->input->post('nomor_rekening');
+        } else {
+            $pangkas = explode('', $this->input->post('rekening'));
+            $nama_rek = $pangkas[0];
+            $sisa = isset($parts[1]) ? $parts[1] : '';
+            $no_rek = $sisa;
+        }
+
         $data = array(
             'kode_prepayment' => $kode_prepayment,
             'id_user' => $id,
@@ -256,8 +267,6 @@ class Prepayment_pu extends CI_Controller
             'tujuan' => $this->input->post('tujuan'),
             'tgl_prepayment' => date('Y-m-d', strtotime($this->input->post('tgl_prepayment'))),
             'total_nominal' => $this->input->post('total_nominal'),
-            'no_rek' => $this->input->post('no_rek'),
-            'jenis_rek' =>  $this->input->post('jenis_rek'),
             'divisi' => $this->db->select('divisi')
                 ->from('tbl_data_user')
                 ->where('id_user', $id)
@@ -299,7 +308,7 @@ class Prepayment_pu extends CI_Controller
             }
             $this->M_prepayment_pu->save_detail($data2);
         }
-        echo json_encode(array("status" => TRUE));
+        echo json_encode($no_rek);
     }
 
     // UPDATE DATA
