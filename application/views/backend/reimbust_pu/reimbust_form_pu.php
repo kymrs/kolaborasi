@@ -1,3 +1,49 @@
+<style>
+    #rekening {
+        width: 100%;
+    }
+
+    /* Mengubah gaya dropdown */
+    .select2-container--default .select2-selection--single {
+        background-color: #fff;
+        border: 1px solid #D1D3E2;
+        border-radius: 4px;
+        font-size: 14px;
+        padding: 5px;
+        height: 38px;
+        line-height: 38px;
+    }
+
+    /* Mengubah warna teks dalam opsi dropdown */
+    .select2-container--default .select2-results__option {
+        color: #777;
+    }
+
+    /* Mengubah posisi ikon panah */
+    .select2-selection__arrow {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(20%);
+    }
+
+    @media (min-width: 768px) {
+
+        .tujuan-field,
+        .jml-pre-field,
+        .kode-pre-field {
+            margin-left: 15px;
+        }
+    }
+
+    @media (max-width: 768px) {
+
+        .table-transaksi {
+            overflow-x: scroll;
+        }
+    }
+</style>
+
 <div class="container-fluid">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"><?= $title_view ?></h1>
@@ -14,8 +60,8 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group row">
-                                    <label class="col-sm-5">Sifat Pelaporan</label>
-                                    <div class="col-sm-7" style="justify-content: space-between; align-items: center" id="parent_sifat_pelaporan">
+                                    <label class="col-sm-4">Sifat Pelaporan</label>
+                                    <div class="col-sm-8" style="justify-content: space-between; align-items: center" id="parent_sifat_pelaporan">
                                         <select class="form-control" id="sifat_pelaporan" name="sifat_pelaporan" style="display: inline-block">
                                             <option value="">-- Pilih --</option>
                                             <option value="Reimbust">Reimbust</option>
@@ -31,8 +77,8 @@
                                     </div>
                                 </div> -->
                                 <div class="form-group row">
-                                    <label class="col-sm-5">Tanggal Pengajuan</label>
-                                    <div class="col-sm-7">
+                                    <label class="col-sm-4">Tanggal Pengajuan</label>
+                                    <div class="col-sm-8">
                                         <div class="input-group date">
                                             <input type="text" class="form-control" name="tgl_pengajuan" id="tgl_pengajuan" placeholder="DD-MM-YYYY" autocomplete="off">
                                             <div class="input-group-append">
@@ -42,9 +88,33 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-sm-5">Kode Reimbust</label>
-                                    <div class="col-sm-7">
+                                    <label class="col-sm-4">Kode Reimbust</label>
+                                    <div class="col-sm-8">
                                         <input type="text" class="form-control" id="kode_reimbust" name="kode_reimbust" placeholder="Kode Reimbust">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label">No Rekening</label>
+                                    <div class="col-sm-8">
+                                        <div class="input-group mb-3">
+                                            <div class="form-check form-check-inline" style="margin-bottom: 5px;">
+                                                <input class="form-check-input" type="radio" name="radioNoLabel" id="exist" value="" aria-label="..." checked><label for="exist" style="margin-right: 14px; margin-top: 8px; cursor: pointer">Rekening terdaftar</label>
+                                                <input class="form-check-input" type="radio" name="radioNoLabel" id="new" value="" aria-label="..."><label for="new" style="margin-top: 8px; cursor: pointer">Rekening baru</label>
+                                            </div>
+                                            <select class="js-example-basic-single" id="rekening" name="rekening">
+                                                <option value="Pilih rekening tujuan" selected disabled>Pilih rekening tujuan</option>
+                                                <?php foreach ($rek_options as $option) { ?>
+                                                    <option value="<?= $option['no_rek'] ?>"><?= $option['no_rek'] ?></option>
+                                                <?php } ?>
+                                            </select>
+                                        </div>
+                                        <div class="input-group mb-2">
+                                            <input type="text" class="form-control col-sm-4" id="nama_rek" name="nama_rek" placeholder="Nama Pengaju">&nbsp;
+                                            <span class="py-2">-</span>&nbsp;
+                                            <input type="text" class="form-control col-sm-3" id="nama_bank" name="nama_bank" placeholder="Nama Bank">&nbsp;
+                                            <span class="py-2">-</span>&nbsp;
+                                            <input type="text" class="form-control col-sm-7" id="nomor_rekening" name="nomor_rekening" placeholder="Nomor Rekening">
+                                        </div>
                                     </div>
                                 </div>
                                 <!-- <div class="form-group row">
@@ -66,7 +136,6 @@
                                 </div> -->
                                 <input type="hidden" class="form-control" id="departemenPrepayment" name="departemen" autocomplete="off" placeholder="Departemen">
                             </div>
-
                             <!-- SEBELAH KANAN -->
                             <div class="col-md-6">
                                 <!-- <div class="form-group row">
@@ -75,40 +144,26 @@
                                         </div>
                                     </div> -->
                                 <input type="hidden" class="form-control" id="jabatan" name="jabatan" autocomplete="off" placeholder="Jabatan">
-                                <div class="form-group row">
-                                    <label class="col-sm-5">Tujuan</label>
-                                    <div class="col-sm-7">
+                                <div class="form-group row tujuan-field">
+                                    <label class="col-sm-4">Tujuan</label>
+                                    <div class="col-sm-8">
                                         <div class="form-floating">
                                             <textarea class="form-control" placeholder="Tujuan" id="tujuan" name="tujuan"></textarea>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-5">Jumlah Prepayment</label>
-                                    <div class="col-sm-7">
+                                <div class="form-group row jml-pre-field">
+                                    <label class="col-sm-4">Jumlah Prepayment</label>
+                                    <div class="col-sm-8">
                                         <input type="text" class="form-control" id="jumlah_prepayment" name="jumlah" autocomplete="off" placeholder="Jumlah Prepayment">
                                         <input type="hidden" id="hidden_jumlah_prepayment" name="jumlah_prepayment">
                                     </div>
                                 </div>
-                                <div class="form-group row" id="kode_prepayment">
-                                    <label class="col-sm-5">Kode Prepayment</label>
-                                    <div class="col-sm-7">
+                                <div class="form-group row kode-pre-field" id="kode_prepayment">
+                                    <label class="col-sm-4">Kode Prepayment</label>
+                                    <div class="col-sm-8">
                                         <input type="text" class="form-control" readonly placeholder="Kode Prepayment" name="kode_prepayment" id="kode_prepayment_input" style="cursor: not-allowed;">
                                         <input type="hidden" class="form-control" id="kode_prepayment_old" name="kode_prepayment_old">
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-5">No Rekening</label>
-                                    <div class="col-sm-3">
-                                        <select name="jenis_rek" id="jenis_rek" class="form-control" style="cursor: pointer;">
-                                            <option value="BCA">BCA</option>
-                                            <option value="MANDIRI">Mandiri</option>
-                                            <option value="BRI">BRI</option>
-                                            <option value="BSI">BSI</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <input type="text" class="form-control" value="<?= $this->session->userdata('no_rek') ?? '' ?>" readonly placeholder="No Rekening" name="no_rek" id="no_rek">
                                     </div>
                                 </div>
                             </div>
@@ -118,7 +173,7 @@
                             <button type="button" class="btn btn-success btn-sm" id="add-row"><i class="fa fa-plus" aria-hidden="true"></i> Add</button>
                         </div>
                         <!-- TABLE INPUT -->
-                        <div class="mt-2">
+                        <div class="mt-2 table-transaksi">
                             <table class="table">
                                 <thead>
                                     <tr>
@@ -344,28 +399,20 @@
         }
     });
 
-    // OPSI NOMOR REKENING
-    const no_rek = $('#no_rek').val();
-    // console.log(no_rek);
-    $('#jenis_rek').on('change', function() {
-        if ($(this).val() == 'BCA') {
-            $('#no_rek').val(no_rek);
-            $('#no_rek').prop('readonly', true); // Nonaktifkan input jika jenis rekening adalah BCA
-        } else {
-            $('#no_rek').val('');
-            $('#no_rek').prop('readonly', false); // Aktifkan input untuk opsi lainnya
-        }
-    });
+    $('.js-example-basic-single').select2();
 
-    document.getElementById('no_rek').addEventListener('input', function(e) {
-        // Menghapus semua karakter selain angka
-        let value = this.value.replace(/[^0-9]/g, '');
-        // Membatasi panjang angka maksimal 14 digit
-        if (value.length > 20) {
-            value = value.slice(0, 20);
-        }
-        this.value = value;
-    });
+    // Fungsi untuk mengatur enabled/disabled elemen berdasarkan radio button yang dipilih
+    function toggleInputs() {
+        const isExistChecked = $('#exist').is(':checked');
+        $('select.js-example-basic-single').prop('disabled', !isExistChecked);
+        $('.input-group.mb-2 input[type="text"]').prop('disabled', isExistChecked);
+    }
+
+    // Panggil fungsi saat halaman dimuat
+    toggleInputs();
+
+    // Panggil fungsi saat radio button berubah
+    $('input[name="radioNoLabel"]').change(toggleInputs);
 
     // Data table prepayment
     var table;
@@ -979,8 +1026,7 @@
                     $('#tujuan').val(data['master']['tujuan']);
                     $('#status').val(data['master']['status']);
                     $('#jumlah_prepayment').val(data['master']['jumlah_prepayment'].replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
-                    $('#jenis_rek').val(data['master']['jenis_rek']);
-                    $('#no_rek').val(data['master']['no_rek']);
+                    $('#rekening').val(data['master']['no_rek']).trigger('change');
                     $('#hidden_jumlah_prepayment').val(data['master']['jumlah_prepayment']);
                     $('#kode_prepayment_input').val(data['master']['kode_prepayment']);
                     $('#kode_prepayment_old').val(data['master']['kode_prepayment']);
@@ -1308,6 +1354,16 @@
                 jumlah: {
                     required: true,
                 },
+                nama_rek: {
+                    required: true,
+                    maxlength: 22,
+                },
+                nama_bank: {
+                    required: true,
+                },
+                nomor_rekening: {
+                    required: true,
+                },
             },
             messages: {
                 // nama: {
@@ -1333,6 +1389,16 @@
                 },
                 jumlah: {
                     required: "Jumlah Prepayment is required",
+                },
+                nama_rek: {
+                    required: "*Nama rekening perlu diisi",
+                    maxlength: "*Nama rekening tidak boleh lebih dari 22 digit",
+                },
+                nama_bank: {
+                    required: "*Nama Bank perlu diisi",
+                },
+                nomor_rekening: {
+                    required: "*Nomor rekening perlu diisi",
                 },
             },
             errorPlacement: function(error, element) {
