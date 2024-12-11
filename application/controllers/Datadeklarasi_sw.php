@@ -53,7 +53,7 @@ class Datadeklarasi_sw extends CI_Controller
             ->get()
             ->row('name');
         $data['approval'] = $this->db->select('COUNT(*) as total_approval')
-            ->from('tbl_deklarasi')
+            ->from('swa_deklarasi')
             ->where('app_name', $name)
             ->or_where('app2_name', $name)
             ->or_where('app4_name', $name)
@@ -294,7 +294,7 @@ class Datadeklarasi_sw extends CI_Controller
             'status' => 'on-process'
         );
         $this->db->where('id', $this->input->post('id'));
-        $this->db->update('tbl_deklarasi', $data);
+        $this->db->update('swa_deklarasi', $data);
         echo json_encode(array("status" => TRUE));
     }
 
@@ -324,7 +324,7 @@ class Datadeklarasi_sw extends CI_Controller
 
         //UPDATE APPROVAL PERTAMA
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_deklarasi', $data);
+        $this->db->update('swa_deklarasi', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -348,7 +348,7 @@ class Datadeklarasi_sw extends CI_Controller
 
         //UPDATE APPROVAL PERTAMA
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_deklarasi', $data);
+        $this->db->update('swa_deklarasi', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -372,7 +372,7 @@ class Datadeklarasi_sw extends CI_Controller
 
         // UPDATE APPROVAL 2
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_deklarasi', $data);
+        $this->db->update('swa_deklarasi', $data);
 
         echo json_encode(array("status" => TRUE));
     }
