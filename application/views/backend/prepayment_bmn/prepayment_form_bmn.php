@@ -1,3 +1,86 @@
+<style>
+    .btn-special {
+        transform: translateY(-6px);
+        /* background: hsl(134deg 61% 41%); */
+        border: none;
+        border-radius: 12px;
+        padding: 0;
+        cursor: pointer;
+    }
+
+    .front {
+        will-change: transform;
+        transition: transform 250ms;
+        display: block;
+        padding: 8px 20px;
+        border-radius: 12px;
+        font-size: 12px;
+        /* background-color: green; */
+        color: white;
+        transform: translateY(-4px);
+    }
+
+    .front-add {
+        background-color: #10b53c;
+    }
+
+    .front-aksi {
+        background-color: #0075FF;
+    }
+
+
+    .btn-special:focus:not(:focus-visible) {
+        outline: none;
+    }
+
+    .btn-special:active .front {
+        transform: translateY(-2px);
+    }
+
+    #rekening {
+        width: 100%;
+    }
+
+    /* Mengubah gaya dropdown */
+    .select2-container--default .select2-selection--single {
+        background-color: #fff;
+        border: 1px solid #D1D3E2;
+        border-radius: 4px;
+        font-size: 14px;
+        padding: 5px;
+        height: 38px;
+        line-height: 38px;
+    }
+
+    /* Mengubah warna teks dalam opsi dropdown */
+    .select2-container--default .select2-results__option {
+        color: #777;
+    }
+
+    /* Mengubah posisi ikon panah */
+    .select2-selection__arrow {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(20%);
+    }
+
+    @media (min-width: 768px) {
+
+        .tujuan-field,
+        .prepayment-field {
+            margin-left: 15px;
+        }
+    }
+
+    @media (max-width: 768px) {
+
+        .table-transaksi {
+            overflow-x: scroll;
+        }
+    }
+</style>
+
 <div class="container-fluid">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"><?= $title_view ?></h1>
@@ -14,8 +97,8 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group row">
-                                    <label class="col-sm-4">Tanggal Prepayment</label>
-                                    <div class="col-sm-7">
+                                    <label class="col-sm-4 col-form-label">Tanggal Prepayment</label>
+                                    <div class="col-sm-8">
                                         <div class="input-group date">
                                             <input type="text" class="form-control" name="tgl_prepayment" id="tgl_prepayment" placeholder="DD-MM-YYYY" autocomplete="off" readonly />
                                             <div class="input-group-append">
@@ -25,19 +108,20 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-sm-4">Kode Prepayment</label>
-                                    <div class="col-sm-7">
+                                    <label class="col-sm-4 col-form-label">Kode Prepayment</label>
+                                    <div class="col-sm-8">
                                         <input type="text" class="form-control" id="kode_prepayment" name="kode_prepayment" readonly>
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-sm-4 col-form-label">No Rek</label>
-                                    <div class="col-sm-9">
+                                    <label class="col-sm-4 col-form-label">No Rekening</label>
+                                    <div class="col-sm-8">
                                         <div class="input-group mb-3">
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="radioNoLabel" id="exist" value="" aria-label="..." checked>
+                                            <div class="form-check form-check-inline" style="margin-bottom: 5px;">
+                                                <input class="form-check-input" type="radio" name="radioNoLabel" id="exist" value="" aria-label="..." checked><label for="exist" style="margin-right: 14px; margin-top: 8px; cursor: pointer">Rekening terdaftar</label>
+                                                <input class="form-check-input" type="radio" name="radioNoLabel" id="new" value="" aria-label="..."><label for="new" style="margin-top: 8px; cursor: pointer">Rekening baru</label>
                                             </div>
-                                            <select class="js-example-basic-single" id="rekening" name="rekening" style="width: 88%">
+                                            <select class="js-example-basic-single" id="rekening" name="rekening">
                                                 <option value="Pilih rekening tujuan" selected disabled>Pilih rekening tujuan</option>
                                                 <?php foreach ($rek_options as $option) { ?>
                                                     <option value="<?= $option['no_rek'] ?>"><?= $option['no_rek'] ?></option>
@@ -45,14 +129,11 @@
                                             </select>
                                         </div>
                                         <div class="input-group mb-2">
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="radioNoLabel" id="new" value="" aria-label="...">
-                                            </div>
-                                            <input type="text" class="form-control col-sm-4" id="nama_rek" name="nama_rek" placeholder="Nama Pengaju">&nbsp;
+                                            <input type="text" class="form-control col-sm-4" style="font-size: 13px;" id="nama_rek" name="nama_rek" placeholder="Nama Pengaju">&nbsp;
                                             <span class="py-2">-</span>&nbsp;
-                                            <input type="text" class="form-control col-sm-4" id="nama_bank" name="nama_bank" placeholder="Nama Bank">&nbsp;
+                                            <input type="text" class="form-control col-sm-3" style="font-size: 13px;" id="nama_bank" name="nama_bank" placeholder="Nama Bank">&nbsp;
                                             <span class="py-2">-</span>&nbsp;
-                                            <input type="text" class="form-control col-sm-7" id="nomor_rekening" name="nomor_rekening" placeholder="Nomor Rekening">
+                                            <input type="text" class="form-control col-sm-7" style="font-size: 13px;" id="nomor_rekening" name="nomor_rekening" placeholder="No Rekening">
                                         </div>
                                     </div>
                                 </div>
@@ -61,13 +142,13 @@
                             <!-- SEBELAH KANAN -->
                             <div class="col-md-6">
                                 <div class="form-group row">
-                                    <label class="col-sm-4">Prepayment</label>
+                                    <label class="col-sm-4 col-form-label prepayment-field">Prepayment</label>
                                     <div class="col-sm-7">
                                         <input type="text" class="form-control" id="prepayment" name="prepayment" placeholder="Prepayment for....">
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-sm-4">Tujuan</label>
+                                    <label class="col-sm-4 col-form-label tujuan-field">Tujuan</label>
                                     <div class="col-sm-7">
                                         <textarea class="form-control" id="tujuan" name="tujuan" rows="2"></textarea>
                                     </div>
@@ -76,7 +157,7 @@
                         </div>
                         <!-- BUTTON TAMBAH FORM -->
                         <div class="mt-3">
-                            <button type="button" class="btn btn-success btn-sm" id="add-row"><i class="fa fa-plus" aria-hidden="true"></i> Add</button>
+                            <button type="button" class="btn-special btn-success btn-sm" id="add-row" style="background-color: green;"><span class="front front-add"><i class="fa fa-plus" aria-hidden="true"></i> Add</span></button>
                         </div>
                         <!-- TABLE INPUT -->
                         <div class="mt-4 mb-3" style="overflow-x: scroll;">
@@ -112,9 +193,9 @@
                         <?php } ?>
                         <?php if ($id == 0) { ?>
                             <input type="hidden" name="kode" id="kode" value="">
-                            <button type="submit" class="btn btn-primary btn-sm aksi" disabled></button>
+                            <button type="submit" class="btn-special btn-sm aksi" style="background-color: #1f558f;" disabled></button>
                         <?php } else { ?>
-                            <button type="submit" class="btn btn-primary btn-sm aksi"></button>
+                            <button type="submit" class="btn-special btn-sm aksi" style="background-color: #1f558f;"></button>
                         <?php } ?>
                         <!-- END PENENTUAN UPDATE ATAU ADD -->
                     </form>
@@ -347,9 +428,9 @@
 
         // MENGISI FORM UPDATE
         if (id == 0) {
-            $('.aksi').text('Save');
+            $('.aksi').append('<span class="front front-aksi">Save</span>');
         } else {
-            $('.aksi').text('Update');
+            $('.aksi').append('<span class="front front-aksi">Update</span>');
             $("select option[value='']").hide();
             $.ajax({
                 url: "<?php echo site_url('prepayment_bmn/edit_data') ?>/" + id,

@@ -52,7 +52,7 @@ class Prepayment_sw extends CI_Controller
             ->get()
             ->row('name');
         $data['approval'] = $this->db->select('COUNT(*) as total_approval')
-            ->from('tbl_prepayment')
+            ->from('sw_prepayment')
             ->where('app_name', $name)
             ->or_where('app2_name', $name)
             ->or_where('app4_name', $name)
@@ -253,9 +253,9 @@ class Prepayment_sw extends CI_Controller
 
     function edit_data($id)
     {
-        $event_id = $this->db->select('event')->from('tbl_prepayment')->where('id', $id)->get()->row('event');
+        $event_id = $this->db->select('event')->from('sw_prepayment')->where('id', $id)->get()->row('event');
         $data['master'] = $this->M_prepayment_sw->get_by_id($id);
-        $data['event'] = $this->db->select('event_name')->from('tbl_event_sw')->where('id', $event_id)->get()->row('event_name');
+        $data['event'] = $this->db->select('event_name')->from('sw_event')->where('id', $event_id)->get()->row('event_name');
         $data['transaksi'] = $this->M_prepayment_sw->get_by_id_detail($id);
         $data['nama'] = $this->db->select('name')
             ->from('tbl_data_user')
@@ -391,14 +391,14 @@ class Prepayment_sw extends CI_Controller
         $rincian = $this->input->post('rincian[]');
         $nominal = $this->input->post('hidden_nominal[]');
         $keterangan = $this->input->post('keterangan[]');
-        if ($this->db->update('tbl_prepayment', $data)) {
+        if ($this->db->update('sw_prepayment', $data)) {
             // UNTUK MENGHAPUS ROW YANG TELAH DIDELETE
             $deletedRows = json_decode($this->input->post('deleted_rows'), true);
             if (!empty($deletedRows)) {
                 foreach ($deletedRows as $id2) {
                     // Hapus row dari database berdasarkan ID
                     $this->db->where('id', $id2);
-                    $this->db->delete('tbl_prepayment_detail');
+                    $this->db->delete('sw_prepayment_detail');
                 }
             }
 
@@ -414,7 +414,7 @@ class Prepayment_sw extends CI_Controller
                     'keterangan' => $keterangan[$i]
                 );
                 // Menggunakan db->replace untuk memasukkan atau menggantikan data
-                $this->db->replace('tbl_prepayment_detail', $data2[$i - 1]);
+                $this->db->replace('sw_prepayment_detail', $data2[$i - 1]);
             }
         }
         echo json_encode(array("status" => TRUE));
@@ -433,7 +433,7 @@ class Prepayment_sw extends CI_Controller
         }
 
         // Menggunakan db->replace untuk memasukkan atau menggantikan data
-        $this->db->replace('tbl_event_sw', $data);
+        $this->db->replace('sw_event', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -450,7 +450,7 @@ class Prepayment_sw extends CI_Controller
     function delete_event($id)
     {
         $this->db->where('id', $id);
-        $this->db->delete('tbl_event_sw');
+        $this->db->delete('sw_event');
         echo json_encode(array("status" => TRUE));
     }
 
@@ -474,7 +474,7 @@ class Prepayment_sw extends CI_Controller
 
         //UPDATE APPROVAL PERTAMA
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_prepayment', $data);
+        $this->db->update('sw_prepayment', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -498,7 +498,7 @@ class Prepayment_sw extends CI_Controller
 
         //UPDATE APPROVAL PERTAMA
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_prepayment', $data);
+        $this->db->update('sw_prepayment', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -522,7 +522,7 @@ class Prepayment_sw extends CI_Controller
 
         // UPDATE APPROVAL 2
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_prepayment', $data);
+        $this->db->update('sw_prepayment', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -540,7 +540,7 @@ class Prepayment_sw extends CI_Controller
             ->where('id_user', $data['master']->id_user)
             ->get()
             ->row('name');
-        $data['event_name'] = $this->db->select('event_name')->from('tbl_event_sw')->where('id', $data['master']->event)->get()->row('event_name');
+        $data['event_name'] = $this->db->select('event_name')->from('sw_event')->where('id', $data['master']->event)->get()->row('event_name');
         $data['app_status'] = strtoupper($data['master']->app_status);
         $data['app2_status'] = strtoupper($data['master']->app2_status);
 
@@ -763,7 +763,7 @@ class Prepayment_sw extends CI_Controller
     function payment()
     {
         $this->db->where('id', $this->input->post('id'));
-        $this->db->update('tbl_prepayment', ['payment_status' => $this->input->post('payment_status')]);
+        $this->db->update('sw_prepayment', ['payment_status' => $this->input->post('payment_status')]);
 
         echo json_encode(array("status" => TRUE));
     }
