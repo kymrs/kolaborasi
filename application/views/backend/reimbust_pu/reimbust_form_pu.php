@@ -27,6 +27,69 @@
         transform: translateY(20%);
     }
 
+    .table-transaksi {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .table-transaksi td {
+        border: 1px solid rgba(26, 32, 53, 0.1);
+    }
+
+    .table-transaksi tbody tr {
+        transition: 200ms;
+    }
+
+    .table-transaksi tbody tr:hover {
+        background-color: rgba(234, 236, 244, 0.5);
+    }
+
+    .header-table-transaksi {
+        background-color: rgb(36, 44, 73);
+        color: white;
+    }
+
+    .header-table-transaksi th {
+        border: 1px solid rgb(255, 255, 255, 0.2);
+        font-weight: 400;
+        text-align: center;
+    }
+
+    .btn-style {
+        background-color: rgb(36, 44, 73);
+        color: white;
+        border: none;
+        padding: 7px 23px;
+        font-size: 12px;
+        border-radius: 5px;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.15), -4px 4px 6px rgba(0, 0, 0, 0.15), 4px 4px 6px rgba(0, 0, 0, 0.15);
+        /* Bayangan bawah dan kiri-kanan */
+        cursor: pointer;
+        transition: all 0.055s ease;
+        margin-bottom: 5px;
+        position: relative;
+        bottom: 2px;
+    }
+
+    .btn-style:hover {
+        scale: 1.020;
+    }
+
+    .btn-style:active {
+        transform: translateY(2px);
+        box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1), -2px 2px 6px rgba(0, 0, 0, 0.1), 2px 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-delete {
+        background-color: #DC0808;
+        position: relative;
+        top: 1px;
+    }
+
+    .btn-search-prepayment {
+        position: relative;
+        top: 2px;
+    }
+
     @media (min-width: 768px) {
 
         .tujuan-field,
@@ -40,6 +103,7 @@
 
         .table-transaksi {
             overflow-x: scroll;
+            margin-bottom: 20px;
         }
     }
 </style>
@@ -53,7 +117,7 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header text-right">
-                    <a class="btn btn-secondary btn-sm" href="<?= base_url('reimbust_pu') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+                    <a class="btn btn-primary btn-sm btn-style" href="<?= base_url('reimbust_pu') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
                     <form id="form" enctype="multipart/form-data">
@@ -67,7 +131,7 @@
                                             <option value="Reimbust">Reimbust</option>
                                             <option value="Pelaporan">Pelaporan</option>
                                         </select>
-                                        <div class="btn btn-primary btn-small" data-toggle="modal" data-target="#pelaporanModal" id="pelaporan_button" style="margin-left: 7px;"><i class="fas fa-solid fa-search"></i></div>
+                                        <div class="btn btn-primary btn-small btn-style btn-search-prepayment" data-toggle="modal" data-target="#pelaporanModal" id="pelaporan_button" style="margin-left: 7px;"><i class="fas fa-solid fa-search"></i></div>
                                     </div>
                                 </div>
                                 <!-- <div class="form-group row" >
@@ -113,7 +177,7 @@
                                             <span class="py-2">-</span>&nbsp;
                                             <input type="text" class="form-control col-sm-3" id="nama_bank" name="nama_bank" placeholder="Nama Bank">&nbsp;
                                             <span class="py-2">-</span>&nbsp;
-                                            <input type="text" class="form-control col-sm-7" id="nomor_rekening" name="nomor_rekening" placeholder="Nomor Rekening">
+                                            <input type="text" class="form-control col-sm-7" id="nomor_rekening" name="nomor_rekening" placeholder="No Rekening">
                                         </div>
                                     </div>
                                 </div>
@@ -170,12 +234,12 @@
                         </div>
                         <!-- BUTTON TAMBAH FORM -->
                         <div class="mt-3">
-                            <button type="button" class="btn btn-success btn-sm" id="add-row"><i class="fa fa-plus" aria-hidden="true"></i> Add</button>
+                            <button type="button" class="btn-style" id="add-row"><i class="fa fa-plus" aria-hidden="true"></i> Add</button>
                         </div>
                         <!-- TABLE INPUT -->
                         <div class="mt-2 table-transaksi">
                             <table class="table">
-                                <thead>
+                                <thead class="header-table-transaksi">
                                     <tr>
                                         <th scope="col">No</th>
                                         <th scope="col">Pemakaian</th>
@@ -202,9 +266,9 @@
                         <?php } ?>
                         <?php if ($id == 0) { ?>
                             <input type="hidden" name="kode" id="kode" value="">
-                            <button type="submit" class="btn btn-primary btn-sm aksi" disabled style="cursor: not-allowed"></button>
+                            <button type="submit" class="btn btn-primary btn-sm aksi btn-style" disabled style="cursor: not-allowed"></button>
                         <?php } else { ?>
-                            <button type="submit" class="btn btn-primary btn-sm aksi"></button>
+                            <button type="submit" class="btn btn-primary btn-sm aksi btn-style"></button>
                         <?php } ?>
                         <!-- END PENENTUAN UPDATE ATAU ADD -->
 
@@ -399,6 +463,7 @@
         }
     });
 
+    // Select 2 No Rekening
     $('.js-example-basic-single').select2();
 
     // Fungsi untuk mengatur enabled/disabled elemen berdasarkan radio button yang dipilih
@@ -665,11 +730,11 @@
                         </div>
                     </td>
                     <td width="150" style="padding: 15px 10px">
-                        <div class="btn btn-primary btn-lg btn-block btn-sm" data-toggle="modal" data-target="#deklarasiModal" data-id="${rowCount}" id="deklarasi-modal${rowCount}">Deklarasi</div>
+                        <div class="btn btn-primary btn-lg btn-block btn-sm btn-style" data-toggle="modal" data-target="#deklarasiModal" data-id="${rowCount}" id="deklarasi-modal${rowCount}">Deklarasi</div>
                         <input type="hidden" class="form-control" id="deklarasi${rowCount}" placeholder="Deklarasi ${rowCount}" name="deklarasi[${rowCount}]" autocomplete="off">
                         <input type="hidden" class="form-control deklarasi-old" id="deklarasi_old${rowCount}" placeholder="Deklarasi Old${rowCount}" name="deklarasi_old[${rowCount}]" autocomplete="off" value="">
                     </td>
-                    <td><span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span></td>
+                    <td><span class="btn delete-btn btn-danger btn-style btn-delete" data-id="${rowCount}">Delete</span></td>
                 </tr>
                 `;
             $('#input-container').append(row);

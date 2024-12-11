@@ -298,6 +298,7 @@ class Reimbust_bmn extends CI_Controller
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = 0;
         $data['aksi'] = 'add';
+        $data['rek_options'] = $this->M_reimbust_bmn->options()->result_array();
         $data['title_view'] = "Reimbust Form";
         $data['title'] = 'backend/reimbust_bmn/reimbust_form_bmn';
         $this->load->view('backend/home', $data);
@@ -628,6 +629,7 @@ class Reimbust_bmn extends CI_Controller
         $data['id'] = $id;
         $data['aksi'] = 'update';
         $data['title_view'] = "Edit Reimbust";
+        $data['rek_options'] = $this->M_reimbust_bmn->options()->result_array();
         $data['title'] = 'backend/reimbust_bmn/reimbust_form_bmn';
         $this->load->view('backend/home', $data);
     }
@@ -704,6 +706,13 @@ class Reimbust_bmn extends CI_Controller
         // Load library upload
         $this->load->library('upload');
 
+        // CHECK APAKAH MENGINPUT YANG SUDAH ADA ATAU YANG BARU (REKENING)
+        if (!empty($_POST['nama_rek'])) {
+            $no_rek = $this->input->post('nama_rek') . " " . $this->input->post('nama_bank') . "-" . $this->input->post('nomor_rekening');
+        } else {
+            $no_rek = $this->input->post('rekening');
+        }
+
         // INISIASI VARIABEL INPUT DETAIL REIMBUST
         $pemakaian = $this->input->post('pemakaian');
         $tgl_nota = $this->input->post('tgl_nota');
@@ -756,8 +765,7 @@ class Reimbust_bmn extends CI_Controller
             'tgl_pengajuan' => date('Y-m-d', strtotime($this->input->post('tgl_pengajuan'))),
             'tujuan' => $this->input->post('tujuan'),
             'jumlah_prepayment' => $this->input->post('jumlah_prepayment'),
-            'jenis_rek' => $this->input->post('jenis_rek'),
-            'no_rek' => $this->input->post('no_rek'),
+            'no_rek' => $no_rek,
             'app_name' => $this->db->select('name')
                 ->from('tbl_data_user')
                 ->where('id_user', $approval->app_id)
@@ -831,14 +839,20 @@ class Reimbust_bmn extends CI_Controller
     {
         $this->load->library('upload');
 
+        // CHECK APAKAH MENGINPUT YANG SUDAH ADA ATAU YANG BARU (REKENING)
+        if (!empty($_POST['nama_rek'])) {
+            $no_rek = $this->input->post('nama_rek') . " " . $this->input->post('nama_bank') . "-" . $this->input->post('nomor_rekening');
+        } else {
+            $no_rek = $this->input->post('rekening');
+        }
+
         $data = array(
             'sifat_pelaporan' => $this->input->post('sifat_pelaporan'),
             'tgl_pengajuan' => date('Y-m-d', strtotime($this->input->post('tgl_pengajuan'))),
             'kode_reimbust' => $this->input->post('kode_reimbust'),
             'tujuan' => $this->input->post('tujuan'),
             'jumlah_prepayment' => $this->input->post('jumlah_prepayment'),
-            'jenis_rek' => $this->input->post('jenis_rek'),
-            'no_rek' => $this->input->post('no_rek'),
+            'no_rek' => $no_rek,
             'kode_prepayment' => $this->input->post('kode_prepayment'),
             'app_status' => 'waiting',
             'app_date' => null,

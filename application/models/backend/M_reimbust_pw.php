@@ -443,4 +443,10 @@ class M_reimbust_pw extends CI_Model
 
         echo json_encode(array("status" => TRUE));
     }
+
+    // OPSI REKENING
+    public function options()
+    {
+        return $this->db->distinct()->select('no_rek')->from('swi_reimbust')->get();
+    }
 }

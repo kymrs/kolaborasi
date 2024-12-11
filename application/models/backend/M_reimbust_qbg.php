@@ -443,4 +443,10 @@ class M_reimbust_qbg extends CI_Model
 
         echo json_encode(array("status" => TRUE));
     }
+
+    // OPSI REKENING
+    public function options()
+    {
+        return $this->db->distinct()->select('no_rek')->from('qbg_reimbust')->get();
+    }
 }
