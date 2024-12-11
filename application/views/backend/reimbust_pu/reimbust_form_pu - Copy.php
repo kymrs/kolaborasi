@@ -27,69 +27,6 @@
         transform: translateY(20%);
     }
 
-    .table-transaksi {
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-    }
-
-    .table-transaksi td {
-        border: 1px solid rgba(26, 32, 53, 0.1);
-    }
-
-    .table-transaksi tbody tr {
-        transition: 200ms;
-    }
-
-    .table-transaksi tbody tr:hover {
-        background-color: rgba(234, 236, 244, 0.5);
-    }
-
-    .header-table-transaksi {
-        background-color: rgb(36, 44, 73);
-        color: white;
-    }
-
-    .header-table-transaksi th {
-        border: 1px solid rgb(255, 255, 255, 0.2);
-        font-weight: 400;
-        text-align: center;
-    }
-
-    .btn-style {
-        background-color: rgb(36, 44, 73);
-        color: white;
-        border: none;
-        padding: 7px 23px;
-        font-size: 12px;
-        border-radius: 5px;
-        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.15), -4px 4px 6px rgba(0, 0, 0, 0.15), 4px 4px 6px rgba(0, 0, 0, 0.15);
-        /* Bayangan bawah dan kiri-kanan */
-        cursor: pointer;
-        transition: all 0.055s ease;
-        margin-bottom: 5px;
-        position: relative;
-        bottom: 2px;
-    }
-
-    .btn-style:hover {
-        scale: 1.020;
-    }
-
-    .btn-style:active {
-        transform: translateY(2px);
-        box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1), -2px 2px 6px rgba(0, 0, 0, 0.1), 2px 2px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .btn-delete {
-        background-color: #DC0808;
-        position: relative;
-        top: 1px;
-    }
-
-    .btn-search-prepayment {
-        position: relative;
-        top: 2px;
-    }
-
     @media (min-width: 768px) {
 
         .tujuan-field,
@@ -103,7 +40,6 @@
 
         .table-transaksi {
             overflow-x: scroll;
-            margin-bottom: 20px;
         }
     }
 </style>
@@ -117,7 +53,7 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header text-right">
-                    <a class="btn btn-primary btn-sm btn-style" href="<?= base_url('reimbust_pw') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+                    <a class="btn btn-secondary btn-sm" href="<?= base_url('reimbust_pu') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
                     <form id="form" enctype="multipart/form-data">
@@ -131,7 +67,7 @@
                                             <option value="Reimbust">Reimbust</option>
                                             <option value="Pelaporan">Pelaporan</option>
                                         </select>
-                                        <div class="btn btn-primary btn-small btn-style btn-search-prepayment" data-toggle="modal" data-target="#pelaporanModal" id="pelaporan_button" style="margin-left: 7px;"><i class="fas fa-solid fa-search"></i></div>
+                                        <div class="btn btn-primary btn-small" data-toggle="modal" data-target="#pelaporanModal" id="pelaporan_button" style="margin-left: 7px;"><i class="fas fa-solid fa-search"></i></div>
                                     </div>
                                 </div>
                                 <!-- <div class="form-group row" >
@@ -177,7 +113,7 @@
                                             <span class="py-2">-</span>&nbsp;
                                             <input type="text" class="form-control col-sm-3" id="nama_bank" name="nama_bank" placeholder="Nama Bank">&nbsp;
                                             <span class="py-2">-</span>&nbsp;
-                                            <input type="text" class="form-control col-sm-7" id="nomor_rekening" name="nomor_rekening" placeholder="No Rekening">
+                                            <input type="text" class="form-control col-sm-7" id="nomor_rekening" name="nomor_rekening" placeholder="Nomor Rekening">
                                         </div>
                                     </div>
                                 </div>
@@ -234,12 +170,12 @@
                         </div>
                         <!-- BUTTON TAMBAH FORM -->
                         <div class="mt-3">
-                            <button type="button" class="btn-style" id="add-row"><i class="fa fa-plus" aria-hidden="true"></i> Add</button>
+                            <button type="button" class="btn btn-success btn-sm" id="add-row"><i class="fa fa-plus" aria-hidden="true"></i> Add</button>
                         </div>
                         <!-- TABLE INPUT -->
                         <div class="mt-2 table-transaksi">
                             <table class="table">
-                                <thead class="header-table-transaksi">
+                                <thead>
                                     <tr>
                                         <th scope="col">No</th>
                                         <th scope="col">Pemakaian</th>
@@ -266,9 +202,9 @@
                         <?php } ?>
                         <?php if ($id == 0) { ?>
                             <input type="hidden" name="kode" id="kode" value="">
-                            <button type="submit" class="btn btn-primary btn-sm aksi btn-style" disabled style="cursor: not-allowed"></button>
+                            <button type="submit" class="btn btn-primary btn-sm aksi" disabled style="cursor: not-allowed"></button>
                         <?php } else { ?>
-                            <button type="submit" class="btn btn-primary btn-sm aksi btn-style"></button>
+                            <button type="submit" class="btn btn-primary btn-sm aksi"></button>
                         <?php } ?>
                         <!-- END PENENTUAN UPDATE ATAU ADD -->
 
@@ -324,7 +260,7 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="deklarasiModalLabel">Data Deklarasi</h5>
-                                        <!-- <a style="position: relative; right: 75px" class="btn btn-primary btn-sm" href="<?= base_url('datadeklarasi_pw/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a> -->
+                                        <!-- <a style="position: relative; right: 75px" class="btn btn-primary btn-sm" href="<?= base_url('datadeklarasi_pu/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a> -->
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span style="position: relative; bottom: 5px" aria-hidden="true">&times;</span>
                                         </button>
@@ -371,7 +307,7 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="deklarasiModalLabel">Data Deklarasi</h5>
-                                        <a style="position: relative; right: 75px" class="btn btn-primary btn-sm" href="<?= base_url('datadeklarasi_pw/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a>
+                                        <a style="position: relative; right: 75px" class="btn btn-primary btn-sm" href="<?= base_url('datadeklarasi_pu/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span style="position: relative; bottom: 5px" aria-hidden="true">&times;</span>
                                         </button>
@@ -445,7 +381,7 @@
                 $("#tgl_pengajuan-error").remove(); // Menghapus label error
             }
             $.ajax({
-                url: "<?php echo site_url('reimbust_pw/generate_kode') ?>",
+                url: "<?php echo site_url('reimbust_pu/generate_kode') ?>",
                 type: "POST",
                 data: {
                     "date": dateText
@@ -463,7 +399,6 @@
         }
     });
 
-    // Select 2 No Rekening
     $('.js-example-basic-single').select2();
 
     // Fungsi untuk mengatur enabled/disabled elemen berdasarkan radio button yang dipilih
@@ -484,6 +419,7 @@
 
     // METHOD POST MENAMPILKAN DATA KE DATA TABLE
     $(document).ready(function() {
+
         var table = $('#prepayment-table').DataTable({
             "responsive": true,
             "autoWidth": false,
@@ -491,7 +427,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('reimbust_pw/get_list3') ?>",
+                "url": "<?php echo site_url('reimbust_pu/get_list3') ?>",
                 "type": "POST",
                 "data": function(d) {
                     d.status = 'approved';
@@ -543,7 +479,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('reimbust_pw/get_list2') ?>",
+                "url": "<?php echo site_url('reimbust_pu/get_list2') ?>",
                 "type": "POST"
             },
             "columnDefs": [{
@@ -587,7 +523,6 @@
 
                 // Menghapus atribut required dari input file
                 $('#inputGroupFile01' + currentRowCount).removeAttr('required').val('');
-
 
                 $('#tgl_nota_' + currentRowCount).css({
                     'cursor': 'not-allowed',
@@ -637,7 +572,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('datadeklarasi_pw/get_list') ?>",
+                "url": "<?php echo site_url('datadeklarasi_pu/get_list') ?>",
                 "type": "POST"
             },
             "columnDefs": [{
@@ -655,37 +590,6 @@
             ]
         });
     });
-
-    // $('#tgl_pengajuan').datepicker({
-    //     dateFormat: 'dd-mm-yy',
-    //     // minDate: new Date(),
-
-    //     // MENGENERATE KODE PREPAYMENT SETELAH PILIH TANGGAL
-    //     onSelect: function(dateText) {
-    //         var date = $('#tgl_pengajuan').val();
-    //         var id = dateText;
-    //         $('#tgl_pengajuan').removeClass('is-invalid');
-
-    //         if ($("#tgl_pengajuan-error").length) {
-    //             $("#tgl_pengajuan-error").remove();
-    //         }
-    //         $.ajax({
-    //             url: "<?php echo site_url('reimbust_pw/generate_kode') ?>",
-    //             type: "POST",
-    //             data: {
-    //                 "date": dateText
-    //             },
-    //             dataType: "JSON",
-    //             success: function(data) {
-    //                 $('#kode_reimbust').val(data.toUpperCase());
-    //                 $('#kode').val(data);
-    //             },
-    //             error: function(error) {
-    //                 alert("error" + error);
-    //             }
-    //         });
-    //     }
-    // });
 
     $(document).ready(function() {
         var id = $('#id').val();
@@ -761,11 +665,11 @@
                         </div>
                     </td>
                     <td width="150" style="padding: 15px 10px">
-                        <div class="btn btn-primary btn-lg btn-block btn-sm btn-style" data-toggle="modal" data-target="#deklarasiModal" data-id="${rowCount}" id="deklarasi-modal${rowCount}">Deklarasi</div>
+                        <div class="btn btn-primary btn-lg btn-block btn-sm" data-toggle="modal" data-target="#deklarasiModal" data-id="${rowCount}" id="deklarasi-modal${rowCount}">Deklarasi</div>
                         <input type="hidden" class="form-control" id="deklarasi${rowCount}" placeholder="Deklarasi ${rowCount}" name="deklarasi[${rowCount}]" autocomplete="off">
                         <input type="hidden" class="form-control deklarasi-old" id="deklarasi_old${rowCount}" placeholder="Deklarasi Old${rowCount}" name="deklarasi_old[${rowCount}]" autocomplete="off" value="">
                     </td>
-                    <td><span class="btn delete-btn btn-danger btn-style btn-delete" data-id="${rowCount}">Delete</span></td>
+                    <td><span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span></td>
                 </tr>
                 `;
             $('#input-container').append(row);
@@ -802,16 +706,6 @@
                     }
                 });
             });
-
-            // $(document).ready(function() {
-            //     $('.custom-file-input').on('change', function() {
-            //         if ($(this).val()) {
-            //             $(`#deklarasi-modal${rowCount}`).text('tes');
-            //         } else {
-            //             $(`#deklarasi${rowCount}`).css('display', 'block');
-            //         }
-            //     });
-            // });
 
             // Inisialisasi Datepicker pada elemen dengan id 'tgl_nota'
             $(document).on('focus', '.tgl_nota', function() {
@@ -961,19 +855,6 @@
                         'readonly': false
                     }).css('cursor', 'pointer');
                     $('#tgl_pengajuan').css('pointer-events', 'auto');
-                    // $('#nama').prop({
-                    //     'disabled': false,
-                    //     'readonly': false
-                    // }).css('cursor', 'auto');
-                    // $('#departemen').prop('disabled', false).css({
-                    //     'cursor': 'pointer',
-                    //     'display': 'block'
-                    // });
-                    // $('#departemenPrepayment').prop('disabled', true).css('display', 'none');
-                    // $('#jabatan').prop({
-                    //     'disabled': false,
-                    //     'readonly': false
-                    // }).css('cursor', 'auto');
                     $('#tujuan').prop({
                         'disabled': false,
                         'readonly': false
@@ -998,25 +879,6 @@
                         'readonly': false
                     }).css('cursor', 'pointer');
                     $('#tgl_pengajuan').css('pointer-events', 'auto');
-                    // $('#nama').prop({
-                    //     'disabled': false,
-                    //     'readonly': true
-                    // }).css('cursor', 'not-allowed');
-                    // $('#departemen').prop({
-                    //     'disabled': false,
-                    //     'readonly': true
-                    // }).css('display', 'none');
-                    // $('#departemenPrepayment').prop({
-                    //     'disabled': false,
-                    //     'readonly': true
-                    // }).css({
-                    //     'display': 'block',
-                    //     'cursor': 'not-allowed'
-                    // });
-                    // $('#jabatan').prop({
-                    //     'disabled': false,
-                    //     'readonly': true
-                    // }).css('cursor', 'not-allowed');
                     $('#tujuan').prop({
                         'disabled': false,
                         'readonly': true
@@ -1035,13 +897,6 @@
                 } else {
                     $('#pelaporan_button').css('display', 'none');
                     $('#parent_sifat_pelaporan').css('display', 'inline-block');
-                    // $('#nama').prop('disabled', true).css('cursor', 'not-allowed');
-                    // $('#departemen').prop('disabled', true).css({
-                    //     'cursor': 'not-allowed',
-                    //     'display': 'block'
-                    // });
-                    // $('#departemenPrepayment').prop('disabled', true).css('display', 'none');
-                    // $('#jabatan').prop('disabled', true).css('cursor', 'not-allowed');
                     $('#tgl_pengajuan').prop('disabled', true).css('cursor', 'not-allowed');
                     $('#tujuan').prop('disabled', true).css('cursor', 'not-allowed');
                     $('#status').prop('disabled', true).css('cursor', 'not-allowed');
@@ -1066,13 +921,6 @@
                         'pointer-events': 'none',
                         'background-color': '#EAECF4'
                     });
-                    // $('#nama').prop('readonly', false).css('cursor', 'auto');
-                    // $('#departemen').prop('disabled', false).css({
-                    //     'display': 'block',
-                    //     'cursor': 'pointer'
-                    // });
-                    // $('#departemenPrepayment').prop('disabled', true).css('display', 'none');
-                    // $('#jabatan').prop('readonly', false).css('cursor', 'auto');
                     $('#tujuan').prop('readonly', false).css('cursor', 'auto');
                     $('#status').prop('readonly', false).css('cursor', 'pointer');
                     $('#jumlah_prepayment').prop({
@@ -1096,25 +944,6 @@
                         'readonly': true
                     }).css('cursor', 'not-allowed');
                     $('#tgl_pengajuan').css('pointer-events', 'none');
-                    // $('#nama').prop({
-                    //     'disabled': false,
-                    //     'readonly': true
-                    // }).css('cursor', 'not-allowed');
-                    // $('#departemen').prop({
-                    //     'disabled': false,
-                    //     'readonly': true
-                    // }).css('display', 'none');
-                    // $('#departemenPrepayment').prop({
-                    //     'disabled': false,
-                    //     'readonly': true
-                    // }).css({
-                    //     'display': 'block',
-                    //     'cursor': 'not-allowed'
-                    // });
-                    // $('#jabatan').prop({
-                    //     'disabled': false,
-                    //     'readonly': true
-                    // }).css('cursor', 'not-allowed');
                     $('#tujuan').prop({
                         'disabled': false,
                         'readonly': true
@@ -1180,7 +1009,7 @@
             $('#kode_reimbust').val(kode).prop('readonly', true).css('cursor', 'not-allowed');
             $("select option[value='']").hide();
             $.ajax({
-                url: "<?= site_url('reimbust_pw/edit_data') ?>/" + id,
+                url: "<?= site_url('reimbust_pu/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -1361,7 +1190,7 @@
                                         <div class="btn btn-primary btn-lg btn-block btn-sm openModal" data-kwitansi="${data['transaksi'][index]['kwitansi']}">Lihat Foto</div>
                                     </td>
                                     <td width="150" style="padding: 15px 10px">
-                                        <a href="<?= base_url() ?>datadeklarasi_pw/read_form/25" class="btn btn-primary btn-lg btn-block btn-sm" 
+                                        <a href="<?= base_url() ?>datadeklarasi_pu/read_form/25" class="btn btn-primary btn-lg btn-block btn-sm" 
                                             data-id="${index + 1}"
                                             data-deklarasi="${data['transaksi'][index]['deklarasi']}"
                                             id="deklarasi-modal${index + 1}">
@@ -1432,40 +1261,6 @@
             });
         }
 
-        // UNTUK TAMPILAN READ ONLY
-        if (aksi == "read") {
-            // $('.aksi').hide();
-            // $('#id').prop('readonly', true);
-            // $('#sifat_pelaporan').prop('disabled', true);
-            // $('#tgl_pengajuan').prop('disabled', true);
-            // $('#nama').prop('disabled', false);
-            // $('#departemen').prop('disabled', true);
-            // $('#jabatan').prop('disabled', true);
-            // $('#tujuan').prop('disabled', true);
-            // $('#status').prop('disabled', true);
-            // $('#jumlah_prepayment').prop('disabled', true);
-            // $('th:last-child').remove();
-
-            // $.ajax({
-            //     url: "<?php echo site_url('reimbust_pw/read_detail/') ?>" + id,
-            //     type: "GET",
-            //     dataType: "JSON",
-            //     success: function(data) {
-            //         $(data).each(function(index) {
-            //             //Nilai nominal diformat menggunakan pemisah ribuan sebelum dimasukkan ke dalam elemen input.
-            //             const nominalReadFormatted = data[index]['nominal'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-            //             const row = `
-            //             <tr id="row-${index}">
-            //                 <td class="row-number">${index + 1}</td>
-            //                 <td><input readonly type="text" class="form-control" name="sifat_pelaporan[${index}]" value="${data[index]['sifat_pelaporan']}"></td>
-            //             </tr>
-            //             `;
-            //             $('#input-container').append(row);
-            //         });
-            //     }
-            // });
-        }
-
         $("#form").submit(function(e) {
             e.preventDefault();
             var $form = $(this);
@@ -1473,9 +1268,9 @@
 
             var url;
             if (id == 0) {
-                url = "<?php echo site_url('reimbust_pw/add') ?>";
+                url = "<?php echo site_url('reimbust_pu/add') ?>";
             } else {
-                url = "<?php echo site_url('reimbust_pw/update') ?>";
+                url = "<?php echo site_url('reimbust_pu/update') ?>";
             }
 
             var formData = new FormData(this);
@@ -1505,10 +1300,9 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then((result) => {
-                            location.href = "<?= base_url('reimbust_pw') ?>";
+                            location.href = "<?= base_url('reimbust_pu') ?>";
                         });
                     } else {
-
                         // Sembunyikan loading saat respons diterima
                         $('#loading').hide();
 
@@ -1521,7 +1315,6 @@
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
-
                     // Sembunyikan loading saat respons diterima
                     $('#loading').hide();
 

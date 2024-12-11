@@ -443,4 +443,10 @@ class M_reimbust_bmn extends CI_Model
 
         echo json_encode(array("status" => TRUE));
     }
+
+    // OPSI REKENING
+    public function options()
+    {
+        return $this->db->distinct()->select('no_rek')->from('bmn_reimbust')->get();
+    }
 }
