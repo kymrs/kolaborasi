@@ -479,6 +479,14 @@
     // Panggil fungsi saat radio button berubah
     $('input[name="radioNoLabel"]').change(toggleInputs);
 
+    document.getElementById('nomor_rekening').addEventListener('input', function(e) {
+        let value = this.value.replace(/[^0-9]/g, '');
+        if (value.length > 14) {
+            value = value.slice(0, 10);
+        }
+        this.value = value;
+    });
+
     // Data table prepayment
     var table;
 
