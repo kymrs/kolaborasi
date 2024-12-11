@@ -550,7 +550,6 @@
                 nama: {
                     required: "Nama is required",
                 },
-
                 prepayment: {
                     required: "Prepayment is required",
                 },
