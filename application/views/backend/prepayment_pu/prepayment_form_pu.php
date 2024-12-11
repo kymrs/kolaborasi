@@ -41,6 +41,10 @@
         width: 100%;
     }
 
+    .rekening-text {
+        margin-bottom: -2px;
+    }
+
     /* Mengubah gaya dropdown */
     .select2-container--default .select2-selection--single {
         background-color: #fff;
@@ -117,6 +121,7 @@
                                     <label class="col-sm-4 col-form-label">No Rekening</label>
                                     <div class="col-sm-8">
                                         <div class="input-group mb-3">
+                                            <!-- RADIO BUTTON UNTUK PEMILIHAN INPUTAN REKENING -->
                                             <div class="form-check form-check-inline" style="margin-bottom: 5px;">
                                                 <input class="form-check-input" type="radio" name="radioNoLabel" id="exist" value="" aria-label="..." checked><label for="exist" style="margin-right: 14px; margin-top: 8px; cursor: pointer">Rekening terdaftar</label>
                                                 <input class="form-check-input" type="radio" name="radioNoLabel" id="new" value="" aria-label="..."><label for="new" style="margin-top: 8px; cursor: pointer">Rekening baru</label>
@@ -127,13 +132,13 @@
                                                     <option value="<?= $option['no_rek'] ?>"><?= $option['no_rek'] ?></option>
                                                 <?php } ?>
                                             </select>
-                                        </div>
-                                        <div class="input-group mb-2">
-                                            <input type="text" class="form-control col-sm-4" style="font-size: 13px;" id="nama_rek" name="nama_rek" placeholder="Nama Pengaju">&nbsp;
-                                            <span class="py-2">-</span>&nbsp;
-                                            <input type="text" class="form-control col-sm-3" style="font-size: 13px;" id="nama_bank" name="nama_bank" placeholder="Nama Bank">&nbsp;
-                                            <span class="py-2">-</span>&nbsp;
-                                            <input type="text" class="form-control col-sm-7" style="font-size: 13px;" id="nomor_rekening" name="nomor_rekening" placeholder="No Rekening">
+                                            <div class="input-group rekening-text">
+                                                <input type="text" class="form-control col-sm-4" style="font-size: 13px;" id="nama_rek" name="nama_rek" placeholder="Nama Pengaju">&nbsp;
+                                                <span class="py-2">-</span>&nbsp;
+                                                <input type="text" class="form-control col-sm-3" style="font-size: 13px;" id="nama_bank" name="nama_bank" placeholder="Nama Bank">&nbsp;
+                                                <span class="py-2">-</span>&nbsp;
+                                                <input type="text" class="form-control col-sm-7" style="font-size: 13px;" id="nomor_rekening" name="nomor_rekening" placeholder="No Rekening">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -256,8 +261,17 @@
         // Fungsi untuk mengatur enabled/disabled elemen berdasarkan radio button yang dipilih
         function toggleInputs() {
             const isExistChecked = $('#exist').is(':checked');
-            $('select.js-example-basic-single').prop('disabled', !isExistChecked);
-            $('.input-group.mb-2 input[type="text"]').prop('disabled', isExistChecked);
+
+            // Atur visibility dropdown dan input fields
+            if (isExistChecked) {
+                $('#rekening').prop('disabled', false).show(); // Aktifkan dan tampilkan elemen asli
+                $('#rekening').next('.select2-container').show(); // Tampilkan elemen Select2
+                $('.input-group.rekening-text input[type="text"]').prop('disabled', true).parent().hide(); // Sembunyikan input fields
+            } else {
+                $('#rekening').prop('disabled', true).hide(); // Nonaktifkan dan sembunyikan elemen asli
+                $('#rekening').next('.select2-container').hide(); // Sembunyikan elemen Select2
+                $('.input-group.rekening-text input[type="text"]').prop('disabled', false).parent().show(); // Tampilkan input fields
+            }
         }
 
         // Panggil fungsi saat halaman dimuat
@@ -266,6 +280,7 @@
         // Panggil fungsi saat radio button berubah
         $('input[name="radioNoLabel"]').change(toggleInputs);
 
+        // AGAR INPUT FIELD HANYA BISA NOMOR
         document.getElementById('nomor_rekening').addEventListener('input', function(e) {
             let value = this.value.replace(/[^0-9]/g, '');
             if (value.length > 14) {

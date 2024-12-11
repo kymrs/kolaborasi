@@ -3,6 +3,10 @@
         width: 100%;
     }
 
+    .rekening-text {
+        margin-bottom: -2px;
+    }
+
     /* Mengubah gaya dropdown */
     .select2-container--default .select2-selection--single {
         background-color: #fff;
@@ -134,12 +138,6 @@
                                         <div class="btn btn-primary btn-small btn-style btn-search-prepayment" data-toggle="modal" data-target="#pelaporanModal" id="pelaporan_button" style="margin-left: 7px;"><i class="fas fa-solid fa-search"></i></div>
                                     </div>
                                 </div>
-                                <!-- <div class="form-group row" >
-                                    <label class="col-sm-5"></label>
-                                    <div class="col-sm-7">
-                                        <div class="btn btn-primary btn-small" data-toggle="modal" data-target="#pelaporanModal">Pelaporan</div>
-                                    </div>
-                                </div> -->
                                 <div class="form-group row">
                                     <label class="col-sm-4">Tanggal Pengajuan</label>
                                     <div class="col-sm-8">
@@ -171,42 +169,20 @@
                                                     <option value="<?= $option['no_rek'] ?>"><?= $option['no_rek'] ?></option>
                                                 <?php } ?>
                                             </select>
-                                        </div>
-                                        <div class="input-group mb-2">
-                                            <input type="text" class="form-control col-sm-4" id="nama_rek" name="nama_rek" placeholder="Nama Pengaju">&nbsp;
-                                            <span class="py-2">-</span>&nbsp;
-                                            <input type="text" class="form-control col-sm-3" id="nama_bank" name="nama_bank" placeholder="Nama Bank">&nbsp;
-                                            <span class="py-2">-</span>&nbsp;
-                                            <input type="text" class="form-control col-sm-7" id="nomor_rekening" name="nomor_rekening" placeholder="No Rekening">
+                                            <div class="input-group rekening-text">
+                                                <input type="text" class="form-control col-sm-4" style="font-size: 13px;" id="nama_rek" name="nama_rek" placeholder="Nama Pengaju">&nbsp;
+                                                <span class="py-2">-</span>&nbsp;
+                                                <input type="text" class="form-control col-sm-3" style="font-size: 13px;" id="nama_bank" name="nama_bank" placeholder="Nama Bank">&nbsp;
+                                                <span class="py-2">-</span>&nbsp;
+                                                <input type="text" class="form-control col-sm-7" style="font-size: 13px;" id="nomor_rekening" name="nomor_rekening" placeholder="No Rekening">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <!-- <div class="form-group row">
-                                    <label class="col-sm-5">Nama</label>
-                                    <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="nama" name="nama" autocomplete="off" placeholder="Nama" value="">
-                                    </div>
-                                </div> -->
-                                <!-- <div class="form-group row">
-                                    <label class="col-sm-5">Departemen</label>
-                                    <div class="col-sm-7">
-                                        <select class="form-control" name="departemen" id="departemen">
-                                            <option value="">-- Pilih --</option>
-                                            <option value="Marketing">Marketing</option>
-                                            <option value="IT">IT</option>
-                                            <option value="General Affair">General Affair</option>
-                                        </select>
-                                    </div>
-                                </div> -->
                                 <input type="hidden" class="form-control" id="departemenPrepayment" name="departemen" autocomplete="off" placeholder="Departemen">
                             </div>
                             <!-- SEBELAH KANAN -->
                             <div class="col-md-6">
-                                <!-- <div class="form-group row">
-                                    <label class="col-sm-5">Jabatan</label>
-                                    <div class="col-sm-7">
-                                        </div>
-                                    </div> -->
                                 <input type="hidden" class="form-control" id="jabatan" name="jabatan" autocomplete="off" placeholder="Jabatan">
                                 <div class="form-group row tujuan-field">
                                     <label class="col-sm-4">Tujuan</label>
@@ -469,8 +445,16 @@
     // Fungsi untuk mengatur enabled/disabled elemen berdasarkan radio button yang dipilih
     function toggleInputs() {
         const isExistChecked = $('#exist').is(':checked');
-        $('select.js-example-basic-single').prop('disabled', !isExistChecked);
-        $('.input-group.mb-2 input[type="text"]').prop('disabled', isExistChecked);
+
+        if (isExistChecked) {
+            $('#rekening').prop('disabled', false).show();
+            $('#rekening').next('.select2-container').show();
+            $('.input-group.rekening-text input[type="text"]').prop('disabled', true).parent().hide();
+        } else {
+            $('#rekening').prop('disabled', true).hide();
+            $('#rekening').next('.select2-container').hide();
+            $('.input-group.rekening-text input[type="text"]').prop('disabled', false).parent().show();
+        }
     }
 
     // Panggil fungsi saat halaman dimuat

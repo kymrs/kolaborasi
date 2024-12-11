@@ -253,7 +253,7 @@ class Prepayment_kps extends CI_Controller
 
         // CHECK APAKAH MENGINPUT YANG SUDAH ADA ATAU YANG BARU (REKENING)
         if (!empty($_POST['nama_rek'])) {
-            $no_rek = $this->input->post('nama_rek') . " " . $this->input->post('nama_bank') . "-" . $this->input->post('nomor_rekening');
+            $no_rek = $this->input->post('nama_rek') . "-" . $this->input->post('nama_bank') . "-" . $this->input->post('nomor_rekening');
         } else {
             $no_rek = $this->input->post('rekening');
         }
@@ -315,7 +315,7 @@ class Prepayment_kps extends CI_Controller
     {
         // CHECK APAKAH MENGINPUT YANG SUDAH ADA ATAU YANG BARU (REKENING)
         if (!empty($_POST['nama_rek'])) {
-            $no_rek = $this->input->post('nama_rek') . " " . $this->input->post('nama_bank') . "-" . $this->input->post('nomor_rekening');
+            $no_rek = $this->input->post('nama_rek') . "-" . $this->input->post('nama_bank') . "-" . $this->input->post('nomor_rekening');
         } else {
             $no_rek = $this->input->post('rekening');
         }

@@ -41,6 +41,10 @@
         width: 100%;
     }
 
+    .rekening-text {
+        margin-bottom: -2px;
+    }
+
     /* Mengubah gaya dropdown */
     .select2-container--default .select2-selection--single {
         background-color: #fff;
@@ -127,13 +131,13 @@
                                                     <option value="<?= $option['no_rek'] ?>"><?= $option['no_rek'] ?></option>
                                                 <?php } ?>
                                             </select>
-                                        </div>
-                                        <div class="input-group mb-2">
-                                            <input type="text" class="form-control col-sm-4" id="nama_rek" name="nama_rek" placeholder="Nama Pengaju">&nbsp;
-                                            <span class="py-2">-</span>&nbsp;
-                                            <input type="text" class="form-control col-sm-3" id="nama_bank" name="nama_bank" placeholder="Nama Bank">&nbsp;
-                                            <span class="py-2">-</span>&nbsp;
-                                            <input type="text" class="form-control col-sm-7" id="nomor_rekening" name="nomor_rekening" placeholder="Nomor Rekening">
+                                            <div class="input-group rekening-text">
+                                                <input type="text" class="form-control col-sm-4" style="font-size: 13px;" id="nama_rek" name="nama_rek" placeholder="Nama Pengaju">&nbsp;
+                                                <span class="py-2">-</span>&nbsp;
+                                                <input type="text" class="form-control col-sm-3" style="font-size: 13px;" id="nama_bank" name="nama_bank" placeholder="Nama Bank">&nbsp;
+                                                <span class="py-2">-</span>&nbsp;
+                                                <input type="text" class="form-control col-sm-7" style="font-size: 13px;" id="nomor_rekening" name="nomor_rekening" placeholder="Nomor Rekening">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -344,8 +348,17 @@
         // Fungsi untuk mengatur enabled/disabled elemen berdasarkan radio button yang dipilih
         function toggleInputs() {
             const isExistChecked = $('#exist').is(':checked');
-            $('select.js-example-basic-single').prop('disabled', !isExistChecked);
-            $('.input-group.mb-2 input[type="text"]').prop('disabled', isExistChecked);
+
+            // Atur visibility dropdown dan input fields
+            if (isExistChecked) {
+                $('#rekening').prop('disabled', false).show(); // Aktifkan dan tampilkan elemen asli
+                $('#rekening').next('.select2-container').show(); // Tampilkan elemen Select2
+                $('.input-group.rekening-text input[type="text"]').prop('disabled', true).parent().hide(); // Sembunyikan input fields
+            } else {
+                $('#rekening').prop('disabled', true).hide(); // Nonaktifkan dan sembunyikan elemen asli
+                $('#rekening').next('.select2-container').hide(); // Sembunyikan elemen Select2
+                $('.input-group.rekening-text input[type="text"]').prop('disabled', false).parent().show(); // Tampilkan input fields
+            }
         }
 
         // Panggil fungsi saat halaman dimuat
