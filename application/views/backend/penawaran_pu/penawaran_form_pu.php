@@ -1,5 +1,7 @@
 <head>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
     <style>
         .container-custom {
             max-width: 1000px;
@@ -93,16 +95,25 @@
 
         /* modal */
         .modal-layanan {
-            background-color: #FC7714;
-            padding: 7px 12px;
-            border-radius: 5px;
+            background-color: rgb(36, 44, 73);
             color: white;
-            transition: 300ms;
+            border: none;
+            padding: 8px 23px;
+            font-size: 14px;
+            border-radius: 5px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.15), -4px 4px 6px rgba(0, 0, 0, 0.15), 4px 4px 6px rgba(0, 0, 0, 0.15);
+            /* Bayangan bawah dan kiri-kanan */
+            cursor: pointer;
+            transition: all 0.055s ease;
         }
 
         .modal-layanan:hover {
-            background-color: #FC7714;
-            scale: 0.965;
+            scale: 1.020;
+        }
+
+        .modal-layanan:active {
+            transform: translateY(2px);
+            box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1), -2px 2px 6px rgba(0, 0, 0, 0.1), 2px 2px 6px rgba(0, 0, 0, 0.1);
         }
 
         #layananModal .modal-body .layanan {
@@ -155,6 +166,14 @@
 
         #durasi {
             width: 50px;
+        }
+
+        .input-date-style {
+            width: 100%;
+            border: 1.5px solid rgb(209, 211, 226);
+            border-radius: 5px;
+            height: 40px;
+            padding: 0 15px;
         }
 
         /* Responsive Adjustments */
@@ -250,7 +269,7 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header text-right">
-                    <a class="btn btn-secondary btn-sm" href="<?= base_url('penawaran_pu') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+                    <a class="btn btn-secondary btn-sm" style="background-color: rgb(36, 44, 73);" href="<?= base_url('penawaran_pu') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
                     <form id="form">
@@ -265,132 +284,113 @@
                                 <div class="form-group row">
                                     <label class="col-sm-5">Kepada</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="pelanggan" name="pelanggan">
+                                        <input type="text" class="form-control" id="pelanggan" name="pelanggan" placeholder="Kepada">
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-5">Produk</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="produk" name="produk">
+                                        <input type="text" class="form-control" id="produk" name="produk" placeholder="Produk">
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-5">Alamat</label>
                                     <div class="col-sm-7">
-                                        <textarea id="alamat" rows="4" name="alamat" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Write your thoughts here..."></textarea>
+                                        <textarea id="alamat" rows="4" name="alamat" class="form-control" placeholder="Alamat"></textarea>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5">Deskripsi</label>
+                                    <div class="col-sm-7">
+                                        <textarea id="deskripsi" rows="4" name="deskripsi" class="form-control" placeholder="Deskripsi"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                    <label class="col-sm-4">Tanggal Berlaku</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" placeholder="Tanggal Berlaku" id="custom-datetime" class="input-date-style" placeholder="Pilih tanggal dan waktu" name="tgl_berlaku">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4">Keberangkatan</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" placeholder="Keberangkatan" id="custom-datetime" class="input-date-style" placeholder="Pilih tanggal dan waktu" name="keberangkatan">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4">Durasi</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" id="durasi" name="durasi" class="form-control" style="display: inline;"><span style="position: relative; bottom: 2px; left: 5px">Hari</span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4">Tempat</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" id="tempat" name="tempat" placeholder="Tempat" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4">Layanan</label>
+                                    <div class="col-sm-8">
+                                        <button type="button" class="modal-layanan" data-toggle="modal" data-target="#layananModal">
+                                            Pilih Layanan
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4">Biaya</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" id="biaya" name="biaya" placeholder="Biaya" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4">Extra</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" id="extra" name="catatan_content" placeholder="Extra" class="form-control">
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Orange Box Section (Layanan) -->
-                        <div class="container-custom mx-auto mt-3">
-                            <div class="orange-box">
-                                LAYANAN
-                            </div>
-                        </div>
 
-                        <!-- GENERATE INFORMASI LAYANAN -->
-                        <div class="container-custom mx-auto mt-3 flex flex-wrap justify-between">
-                            <!-- Left Section: Deskripsi dan Layanan Termasuk -->
-                            <div class="w-full md:w-1/2 p-4">
-                                <!-- Deskripsi -->
-                                <h2 class="section-title">Deskripsi:</h2>
-                                <textarea id="deskripsi" rows="4" name="deskripsi" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Write your thoughts here..."></textarea>
-                            </div>
-
-                            <!-- Right Section: Informasi Tambahan -->
-                            <div class="w-full md:w-1/2 p-4">
-                                <!-- tabggal berlaku -->
-                                <div class="mb-1">
-                                    <h2 class="section-title">Tanggal berlaku:</h2>
-                                    <input type="datetime-local" id="tgl_berlaku" name="tgl_berlaku" class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50">
-                                </div>
-                                <!-- Keberangkatan -->
-                                <div class="mb-1">
-                                    <h2 class="section-title">Keberangkatan:</h2>
-                                    <input type="datetime-local" id="keberangkatan" name="keberangkatan" class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50">
-                                </div>
-                                <!-- Durasi -->
-                                <div class="mb-1">
-                                    <h2 class="section-title">Durasi:</h2>
-                                    <div style="display: flex; align-items: center">
-                                        <input type="text" id="durasi" name="durasi" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                        <h2 class="section-title" style="margin-left: 10px;">Hari</h2>
+                        <!-- Modal -->
+                        <div class="modal fade" id="layananModal" tabindex="-1" aria-labelledby="layananModal" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="layananModal">Layanan</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
                                     </div>
-                                </div>
-                                <!-- Berangkat Dari -->
-                                <div class="mb-1">
-                                    <h2 class="section-title">Tempat:</h2>
-                                    <input type="text" id="tempat" name="tempat" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                </div>
-                            </div>
-
-                            <div class="w-full md:w-1/2 p-4">
-                                <!-- Layanan Termasuk -->
-                                <h2 class="section-title">Layanan:</h2>
-                                <!-- <div id="layanan" name="layanan" class="h-40 mb-4"></div>
-                                <input type="hidden" name="editor_content" id="editor_content"> -->
-
-                                <button type="button" class="modal-layanan" data-toggle="modal" data-target="#layananModal">
-                                    Pilih Layanan
-                                </button>
-                                <!-- Modal -->
-                                <div class="modal fade" id="layananModal" tabindex="-1" aria-labelledby="layananModal" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="layananModal">Layanan</h5>
-                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <div style="text-align: center;">
-                                                    <i class="fa fa-check" style="color: green; margin: 0 7px 0 15px"></i>Termasuk
-                                                    <i class="fa fa-times" style="color: red; margin: 0 7px 0 15px"></i>Tidak Termasuk
-                                                    <i class="fa fa-square" style="color: gray; margin: 0 7px 0 15px"></i>Tidak Ditampilkan
-                                                    <hr style="margin-top: 10px;">
-                                                </div>
-                                                <?php foreach ($layanan as $data) : ?>
-                                                    <div class="layanan">
-                                                        <input type="hidden" name="id_layanan[]" value="<?= htmlspecialchars($data['id'], ENT_QUOTES) ?>">
-                                                        <button type="button" id="button-<?= htmlspecialchars($data['id'], ENT_QUOTES) ?>" class="uncheck checklistButton">
-                                                            <i class="fa fa-square"></i>
-                                                        </button>
-                                                        <label for="button-<?= htmlspecialchars($data['id'], ENT_QUOTES) ?>">
-                                                            <?= htmlspecialchars($data['nama_layanan'], ENT_QUOTES) ?>
-                                                        </label>
-                                                        <input type="hidden" name="status[]" id="input-<?= htmlspecialchars($data['id'], ENT_QUOTES) ?>" value="">
-                                                        <input type="text" name="nominal[]" id="extra-input-<?= htmlspecialchars($data['id'], ENT_QUOTES) ?>" class="extra-input input-biaya" style="display: none;" placeholder="Nominal" required>
-                                                    </div>
-                                                <?php endforeach; ?>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-primary" data-dismiss="modal">Simpan</button>
-                                            </div>
+                                    <div class="modal-body">
+                                        <div style="text-align: center;">
+                                            <i class="fa fa-check" style="color: green; margin: 0 7px 0 15px"></i>Termasuk
+                                            <i class="fa fa-times" style="color: red; margin: 0 7px 0 15px"></i>Tidak Termasuk
+                                            <i class="fa fa-square" style="color: gray; margin: 0 7px 0 15px"></i>Tidak Ditampilkan
+                                            <hr style="margin-top: 10px;">
                                         </div>
+                                        <?php foreach ($layanan as $data) : ?>
+                                            <div class="layanan">
+                                                <input type="hidden" name="id_layanan[]" value="<?= htmlspecialchars($data['id'], ENT_QUOTES) ?>">
+                                                <button type="button" id="button-<?= htmlspecialchars($data['id'], ENT_QUOTES) ?>" class="uncheck checklistButton">
+                                                    <i class="fa fa-square"></i>
+                                                </button>
+                                                <label for="button-<?= htmlspecialchars($data['id'], ENT_QUOTES) ?>">
+                                                    <?= htmlspecialchars($data['nama_layanan'], ENT_QUOTES) ?>
+                                                </label>
+                                                <input type="hidden" name="status[]" id="input-<?= htmlspecialchars($data['id'], ENT_QUOTES) ?>" value="">
+                                                <input type="text" name="nominal[]" id="extra-input-<?= htmlspecialchars($data['id'], ENT_QUOTES) ?>" class="extra-input input-biaya" style="display: none;" placeholder="Nominal" required>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-primary" data-dismiss="modal">Simpan</button>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-
-
-                        <!-- Biaya Section -->
-                        <div class="container-custom mx-auto mt-3">
-                            <div class="biaya-box">
-                                BIAYA
-                            </div>
-                            <input type="text" id="biaya" name="biaya" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                        </div>
-
-                        <!-- Ekstra Section -->
-                        <div class="container-custom mx-auto mt-5 mb-3">
-                            <div class="ekstra-box">
-                                EKSTRA
-                            </div>
-                            <div id="extra" name="extra" class="h-40 mb-4"></div>
-                            <input type="hidden" name="catatan_content" id="catatan_content">
                         </div>
 
                         <!-- Hidden inputs -->
@@ -415,8 +415,15 @@
 <?php $this->load->view('template/footer'); ?>
 <?php $this->load->view('template/script'); ?>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
 
 <script>
+    flatpickr("#custom-datetime", {
+        enableTime: true,
+        dateFormat: "Y-m-d H:i", // Format yang bisa diketik langsung
+    });
+
     // $('#tgl_berlaku').datepicker({
     //     dateFormat: 'dd-mm-yy',
     //     minDate: new Date(),
