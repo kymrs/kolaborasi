@@ -91,11 +91,9 @@ class Penawaran_la_pu extends CI_Controller
 
     public function read_form($id)
     {
-        $data['notif'] = $this->M_notifikasi->pending_notification();
+        // $data['notif'] = $this->M_notifikasi->pending_notification();
         // var_dump($id);
         $data['penawaran'] = $this->M_penawaran_la_pu->getPenawaran($id);
-
-        $this->load->model('backend/M_notifikasi');
 
         $data['id'] = $id;
         if ($data['penawaran'] == null) {
@@ -120,7 +118,7 @@ class Penawaran_la_pu extends CI_Controller
         $this->load->model('backend/M_notifikasi');
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = 0;
-        $data['title'] = 'backend/penawaran_pu/penawaran_form_la_pu';
+        $data['title'] = 'backend/penawaran_pu/penawaran_form_la_pu_2';
         // $data['products'] = $this->db->select('id, nama')->from('tbl_produk')->get()->result_object();
         $data['title_view'] = 'Land Arrangement Form';
         $this->load->view('backend/home', $data);
@@ -132,7 +130,7 @@ class Penawaran_la_pu extends CI_Controller
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = $id;
         $data['aksi'] = 'update';
-        $data['title'] = 'backend/penawaran_pu/penawaran_form_la_pu';
+        $data['title'] = 'backend/penawaran_pu/penawaran_form_la_pu_2';
         // $data['products'] = $this->db->select('id, nama')->from('tbl_produk')->get()->result_object();
         $data['title_view'] = 'Edit Land Arrangement Form';
         $this->load->view('backend/home', $data);

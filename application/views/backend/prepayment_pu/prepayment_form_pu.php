@@ -127,7 +127,7 @@
                                                 <input class="form-check-input" type="radio" name="radioNoLabel" id="new" value="" aria-label="..."><label for="new" style="margin-top: 8px; cursor: pointer">Rekening baru</label>
                                             </div>
                                             <select class="js-example-basic-single" id="rekening" name="rekening">
-                                                <option value="Pilih rekening tujuan" selected disabled>Pilih rekening tujuan</option>
+                                                <option value="" selected disabled>Pilih rekening tujuan</option>
                                                 <?php foreach ($rek_options as $option) { ?>
                                                     <option value="<?= $option['no_rek'] ?>"><?= $option['no_rek'] ?></option>
                                                 <?php } ?>
@@ -463,7 +463,11 @@
                     $('#kode_prepayment').val(data['master']['kode_prepayment'].toUpperCase()).attr('readonly', true);
                     $('#tgl_prepayment').val(moment(data['master']['tgl_prepayment']).format('DD-MM-YYYY'));
                     $('#nama').val(data['master']['nama']);
-                    $('#rekening').val(data['master']['no_rek']).trigger('change');
+                    if (data['master']['no_rek'] == '') {
+                        $('#rekening').val().trigger('change');
+                    } else {
+                        $('#rekening').val(data['master']['no_rek']).trigger('change');
+                    }
                     $('#prepayment').val(data['master']['prepayment']);
                     $('#tujuan').val(data['master']['tujuan']);
                     if (data['master']['total_nominal'] == null) {
