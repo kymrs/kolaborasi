@@ -8,8 +8,8 @@ class M_penawaran_pu extends CI_Model
     // INISIASI VARIABLE
     var $id = 'id';
     var $table = 'tbl_penawaran';
-    var $column_order = array(null, null, 'no_pelayanan', 'no_arsip', 'produk', 'tgl_berlaku', 'keberangkatan', 'durasi', 'tempat', 'biaya', 'pelanggan', 'created_at');
-    var $column_search = array('no_pelayanan', 'no_arsip', 'produk', 'tgl_berlaku', 'keberangkatan', 'durasi', 'tempat', 'biaya', 'pelanggan', 'created_at'); //field yang diizin untuk pencarian
+    var $column_order = array(null, null, 'no_pelayanan', 'no_arsip', 'pelanggan', 'tgl_keberangkatan', 'durasi', 'created_at', 'tgl_berlaku');
+    var $column_search = array('no_pelayanan', 'no_arsip', 'pelanggan', 'tgl_keberangkatan', 'durasi', 'created_at', 'tgl_berlaku'); //field yang diizin untuk pencarian
     var $order = array('id' => 'desc');
 
     // UNTUK QUERY DATA TABLE
@@ -121,7 +121,7 @@ class M_penawaran_pu extends CI_Model
 
     public function getPenawaran($kode)
     {
-        $this->db->select('a.no_pelayanan, a.no_arsip, a.produk, a.deskripsi, a.tgl_berlaku, a.keberangkatan, a.durasi, a.tempat, a.biaya, a.pelanggan, a.alamat, a.catatan, a.created_at');
+        $this->db->select('no_pelayanan, a.no_arsip, tgl_berlaku, produk, title, pelanggan, deskripsi, tgl_keberangkatan, durasi, berangkat_dari, pkt_quad, pkt_triple, pkt_double, created_at');
         $this->db->from('tbl_penawaran as a');
         $this->db->where('a.no_arsip', $kode);
         $this->db->join('tbl_arsip_pu as b', 'a.no_pelayanan = b.no_dokumen', 'left');
@@ -171,7 +171,7 @@ class M_penawaran_pu extends CI_Model
         $this->db->from('tbl_layanan as a');
         $this->db->join('tbl_penawaran_detail as b', 'a.id = b.id_layanan', 'left');
         $this->db->join('tbl_penawaran as c', 'b.id_penawaran = c.id', 'left');
-        $this->db->where("(b.is_active = 'Y' OR (b.is_active LIKE 'Y%' AND LENGTH(b.is_active) > 1))");
+        $this->db->where('b.is_active', 'Y');
         $this->db->where('c.no_arsip', $kode);
         // $this->db->join('tbl_produk as c', 'a.id_produk = c.id', 'left');
         $data = $this->db->get()->result_array();
@@ -184,7 +184,7 @@ class M_penawaran_pu extends CI_Model
         $this->db->from('tbl_layanan as a');
         $this->db->join('tbl_penawaran_detail as b', 'a.id = b.id_layanan', 'left');
         $this->db->join('tbl_penawaran as c', 'b.id_penawaran = c.id', 'left');
-        $this->db->where('b.is_active', 'N');
+        $this->db->where("(b.is_active = 'N' OR (b.is_active LIKE 'N%' AND LENGTH(b.is_active) > 1))");
         $this->db->where('c.no_arsip', $kode);
         $data = $this->db->get()->result_array();
         return $data;

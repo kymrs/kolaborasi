@@ -65,15 +65,11 @@ class Penawaran_pu extends CI_Controller
             $row[] = $action;
             $row[] = strtoupper($field->no_pelayanan);
             $row[] = strtoupper($field->no_arsip);
-            $row[] = $field->produk;
-            $row[] = date("d M Y", strtotime($field->tgl_berlaku));
-            $row[] = $field->keberangkatan;
-            $row[] = $field->durasi . ' Hari';
-            $row[] = $field->tempat;
-            $row[] = 'Rp. ' . number_format($field->biaya, 0, ',', '.');;
             $row[] = $field->pelanggan;
-            $row[] = date("d M Y", strtotime($field->created_at));
-
+            $row[] = $field->tgl_keberangkatan;
+            $row[] = $field->durasi . ' Hari';
+            $row[] = $this->M_penawaran_pu->getTanggal($field->created_at);
+            $row[] = $this->M_penawaran_pu->getTanggal($field->tgl_berlaku);
             $data[] = $row;
         }
 
@@ -118,6 +114,7 @@ class Penawaran_pu extends CI_Controller
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = 0;
         $data['title'] = 'backend/penawaran_pu/penawaran_form_pu';
+        $this->db->order_by('nama_layanan', 'ASC');
         $data['layanan'] = $this->db->get('tbl_layanan')->result_array();
         $data['title_view'] = 'Penawaran Form';
         $this->load->view('backend/home', $data);

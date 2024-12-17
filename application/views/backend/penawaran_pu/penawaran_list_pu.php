@@ -30,14 +30,11 @@
                                 <th>Action</th>
                                 <th>Kode Pelayanan</th>
                                 <th>No Arsip</th>
-                                <th>Produk</th>
-                                <th>Tanggal Berlaku</th>
+                                <th>Pelanggan</th>
                                 <th>Keberangkatan</th>
                                 <th>Durasi</th>
-                                <th>Tempat</th>
-                                <th>Biaya</th>
-                                <th>Pelanggan</th>
                                 <th>Tanggal Dokumen</th>
+                                <th>Tanggal Berlaku</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -48,14 +45,11 @@
                                 <th>Action</th>
                                 <th>Kode Pelayanan</th>
                                 <th>No Arsip</th>
-                                <th>Produk</th>
-                                <th>Tanggal Berlaku</th>
+                                <th>Pelanggan</th>
                                 <th>Keberangkatan</th>
                                 <th>Durasi</th>
-                                <th>Tempat</th>
-                                <th>Biaya</th>
-                                <th>Pelanggan</th>
                                 <th>Tanggal Dokumen</th>
+                                <th>Tanggal Berlaku</th>
                             </tr>
                         </tfoot>
                     </table>
@@ -91,11 +85,11 @@
             //     "infoFiltered": ""
             // },
             "columnDefs": [{
-                    "targets": [3, 5, 6, 11],
+                    "targets": [3, 7, 8],
                     "className": 'dt-head-nowrap'
                 },
                 {
-                    "targets": [1, 3, 4, 5, 6, 9],
+                    "targets": [1, 4],
                     "className": 'dt-body-nowrap'
                 }, {
                     "targets": [0, 1],

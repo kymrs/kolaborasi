@@ -294,9 +294,15 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-sm-5">Alamat</label>
+                                    <label class="col-sm-5">Tanggal Berlaku</label>
                                     <div class="col-sm-7">
-                                        <textarea id="alamat" rows="4" name="alamat" class="form-control" placeholder="Alamat"></textarea>
+                                        <input type="text" placeholder="Tanggal Berlaku" class="input-date-style form-control" name="tgl_berlaku" id="tgl_berlaku" autocomplete="off" style="cursor: pointer;">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5">Tanggal Keberangkatan</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" placeholder="Tanggal Keberangkatan" class="input-date-style form-control" name="keberangkatan" id="keberangkatan" autocomplete="off" style="cursor: pointer;">
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -308,27 +314,15 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group row">
-                                    <label class="col-sm-4">Tanggal Berlaku</label>
-                                    <div class="col-sm-8">
-                                        <input type="text" placeholder="Tanggal Berlaku" id="custom-datetime" class="input-date-style" placeholder="Pilih tanggal dan waktu" name="tgl_berlaku">
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-4">Keberangkatan</label>
-                                    <div class="col-sm-8">
-                                        <input type="text" placeholder="Keberangkatan" id="custom-datetime" class="input-date-style" placeholder="Pilih tanggal dan waktu" name="keberangkatan">
-                                    </div>
-                                </div>
-                                <div class="form-group row">
                                     <label class="col-sm-4">Durasi</label>
                                     <div class="col-sm-8">
                                         <input type="text" id="durasi" name="durasi" class="form-control" style="display: inline;"><span style="position: relative; bottom: 2px; left: 5px">Hari</span>
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-sm-4">Tempat</label>
+                                    <label class="col-sm-4">Berangkat Dari</label>
                                     <div class="col-sm-8">
-                                        <input type="text" id="tempat" name="tempat" placeholder="Tempat" class="form-control">
+                                        <input type="text" id="tempat" name="tempat" placeholder="Berangkat Dari" class="form-control">
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -340,15 +334,21 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-sm-4">Biaya</label>
+                                    <label class="col-sm-4">Paket Quad</label>
                                     <div class="col-sm-8">
-                                        <input type="text" id="biaya" name="biaya" placeholder="Biaya" class="form-control">
+                                        <input type="text" id="pkt_quad" name="pkt_quad" placeholder="Paket Quad" class="form-control">
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-sm-4">Extra</label>
+                                    <label class="col-sm-4">Paket Triple</label>
                                     <div class="col-sm-8">
-                                        <input type="text" id="extra" name="catatan_content" placeholder="Extra" class="form-control">
+                                        <input type="text" id="pkt_triple" name="pkt_triple" placeholder="Paket Triple" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4">Paket Double</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" id="pkt_double" name="pkt_double" placeholder="Paket Double" class="form-control">
                                     </div>
                                 </div>
                             </div>
@@ -415,14 +415,59 @@
 <?php $this->load->view('template/footer'); ?>
 <?php $this->load->view('template/script'); ?>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 
 
 <script>
-    flatpickr("#custom-datetime", {
-        enableTime: true,
-        dateFormat: "Y-m-d H:i", // Format yang bisa diketik langsung
+    $(document).ready(function() {
+        $("#tgl_berlaku").datepicker({
+            dateFormat: "yy-mm-dd", // Format tanggal: Tahun-Bulan-Hari
+            changeMonth: true,
+            changeYear: true
+        });
     });
+
+    $(document).ready(function() {
+        $("#keberangkatan").datepicker({
+            dateFormat: "yy-mm-dd", // Format tanggal: Tahun-Bulan-Hari
+            changeMonth: true,
+            changeYear: true
+        });
+    });
+
+    // Fungsi untuk memformat angka ke dalam format Rupiah
+    function formatRupiah(angka) {
+        let numberString = angka.replace(/[^,\d]/g, '').toString();
+        let split = numberString.split(',');
+        let sisa = split[0].length % 3;
+        let rupiah = split[0].substr(0, sisa);
+        let ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+        if (ribuan) {
+            let separator = sisa ? '.' : '';
+            rupiah += separator + ribuan.join('.');
+        }
+
+        rupiah = split[1] !== undefined ? rupiah + ',' + split[1] : rupiah;
+        return rupiah ? 'Rp ' + rupiah : '';
+    }
+
+    // Fungsi untuk mencegah input selain angka dan memformat otomatis
+    function handleInput(event) {
+        let input = event.target;
+        let value = input.value;
+
+        // Membersihkan input selain angka
+        value = value.replace(/[^\d]/g, '');
+
+        // Format ke dalam Rupiah
+        input.value = formatRupiah(value);
+    }
+
+    // Menambahkan event listener ke semua input
+    document.getElementById('pkt_quad').addEventListener('input', handleInput);
+    document.getElementById('pkt_triple').addEventListener('input', handleInput);
+    document.getElementById('pkt_double').addEventListener('input', handleInput);
 
     // $('#tgl_berlaku').datepicker({
     //     dateFormat: 'dd-mm-yy',
@@ -501,72 +546,6 @@
     // });
 
     document.addEventListener('DOMContentLoaded', function() {
-        // Input biaya handling layanan
-        const rupiahInputs = document.querySelectorAll('.input-biaya');
-
-        // Fungsi untuk memformat angka menjadi format rupiah
-        function formatRupiah(angka, prefix) {
-            let number_string = angka.replace(/[^,\d]/g, '').toString(),
-                split = number_string.split(','),
-                sisa = split[0].length % 3,
-                rupiah = split[0].substr(0, sisa),
-                ribuan = split[0].substr(sisa).match(/\d{3}/gi);
-
-            if (ribuan) {
-                let separator = sisa ? '.' : '';
-                rupiah += separator + ribuan.join('.');
-            }
-
-            rupiah = split[1] !== undefined ? rupiah + ',' + split[1] : rupiah;
-            return prefix === undefined ? rupiah : (rupiah ? 'Rp. ' + rupiah : '');
-        }
-
-        // Event listener untuk semua input yang hanya bisa menerima angka dan diformat ke rupiah
-        rupiahInputs.forEach(function(input) {
-            input.addEventListener('input', function(e) {
-                let inputValue = e.target.value;
-
-                // Hanya izinkan angka
-                inputValue = inputValue.replace(/[^0-9]/g, '');
-
-                // Tampilkan format rupiah
-                e.target.value = formatRupiah(inputValue, 'Rp.');
-            });
-        });
-
-        // Biaya
-        const biayaInput = document.querySelectorAll('#biaya');
-
-        // Fungsi untuk memformat angka menjadi format rupiah
-        function formatRupiah(angka, prefix) {
-            let number_string = angka.replace(/[^,\d]/g, '').toString(),
-                split = number_string.split(','),
-                sisa = split[0].length % 3,
-                rupiah = split[0].substr(0, sisa),
-                ribuan = split[0].substr(sisa).match(/\d{3}/gi);
-
-            if (ribuan) {
-                let separator = sisa ? '.' : '';
-                rupiah += separator + ribuan.join('.');
-            }
-
-            rupiah = split[1] !== undefined ? rupiah + ',' + split[1] : rupiah;
-            return prefix === undefined ? rupiah : (rupiah ? 'Rp. ' + rupiah : '');
-        }
-
-        // Event listener untuk semua input yang hanya bisa menerima angka dan diformat ke rupiah
-        biayaInput.forEach(function(input) {
-            input.addEventListener('input', function(e) {
-                let inputValue = e.target.value;
-
-                // Hanya izinkan angka
-                inputValue = inputValue.replace(/[^0-9]/g, '');
-
-                // Tampilkan format rupiah
-                e.target.value = formatRupiah(inputValue, 'Rp.');
-            });
-        });
-
         // Mengambil semua tombol yang memiliki class 'checklistButton'
         const buttons = document.querySelectorAll('.checklistButton');
 
@@ -586,10 +565,11 @@
                     icon.classList.add('fa-check');
                     inputField.value = 'Y'; // Set input value to 'Y'
 
-                    // Jika tombol dengan id "button-9" diklik, tampilkan input tambahan
+                    // Jika tombol dengan id "button-9" diklik, sembunyikan input tambahan
                     if (button.id === 'button-9') {
-                        extraInput.style.display = 'block'; // Tampilkan input tambahan
+                        extraInput.style.display = 'none'; // Sembunyikan input tambahan
                     }
+
 
                 } else if (currentState === 'check') {
                     button.classList.remove('check');
@@ -598,9 +578,9 @@
                     icon.classList.add('fa-times');
                     inputField.value = 'N'; // Set input value to 'N'
 
-                    // Jika tombol dengan id "button-9" diklik, sembunyikan input tambahan
+                    // Jika tombol dengan id "button-9" diklik, tampilkan input tambahan
                     if (button.id === 'button-9') {
-                        extraInput.style.display = 'none'; // Sembunyikan input tambahan
+                        extraInput.style.display = 'block'; // Tampilkan input tambahan
                     }
 
                 } else if (currentState === 'times') {
@@ -734,11 +714,6 @@
                         const extraInput = document.getElementById('extra-input-' + layanan.id_layanan);
                         const icon = button.querySelector('i');
 
-                        // Debugging: Pastikan elemen yang diambil benar
-                        console.log('Layanan:', layanan);
-                        console.log('Button:', button);
-                        console.log('Icon:', icon);
-
                         // Set status layanan (Y/N)
                         if (layanan.is_active.startsWith('Y')) {
                             // Update tampilan untuk status "checked"
@@ -747,6 +722,18 @@
                             icon.classList.remove('fa-square');
                             icon.classList.add('fa-check');
                             inputField.value = 'Y'; // Set input value to 'Y'
+
+                            // Sembunyikan input tambahan (nominal)
+                            if (layanan.id_layanan === 9) {
+                                extraInput.style.display = 'none'; // Sembunyikan jika id_layanan 9
+                            }
+                        } else if (layanan.is_active.startsWith('N')) {
+                            // Update tampilan untuk status "times"
+                            button.classList.remove('uncheck');
+                            button.classList.add('times');
+                            icon.classList.remove('fa-square');
+                            icon.classList.add('fa-times');
+                            inputField.value = 'N'; // Set input value to 'N'
 
                             // Tampilkan input tambahan (nominal) hanya untuk id_layanan 9
                             if (layanan.id_layanan == 9) {
@@ -757,18 +744,7 @@
                             } else {
                                 extraInput.style.display = 'none'; // Sembunyikan jika bukan id_layanan 9
                             }
-                        } else if (layanan.is_active.startsWith('N')) {
-                            // Update tampilan untuk status "times"
-                            button.classList.remove('uncheck');
-                            button.classList.add('times');
-                            icon.classList.remove('fa-square');
-                            icon.classList.add('fa-times');
-                            inputField.value = 'N'; // Set input value to 'N'
 
-                            // Sembunyikan input tambahan (nominal)
-                            if (layanan.id_layanan === 9) {
-                                extraInput.style.display = 'none'; // Sembunyikan jika id_layanan 9
-                            }
                         } else {
                             // Update tampilan untuk status "uncheck" (default)
                             button.classList.add('uncheck');

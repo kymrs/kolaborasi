@@ -20,7 +20,7 @@ class M_reimbust_sw extends CI_Model
     var $order2 = array('id' => 'desc'); // default order 
 
     // Prepayment
-    var $table4 = 'swa_prepayment';
+    var $table4 = 'tbl_prepayment';
     var $column_order3 = array(null, null, 'kode_prepayment', 'event', 'name', 'divisi', 'jabatan', 'tgl_prepayment', 'total_nominal', 'status');
     var $column_search3 = array('kode_prepayment', 'event', 'name', 'divisi', 'jabatan', 'tgl_prepayment', 'total_nominal', 'status'); //field yang diizin untuk pencarian
     var $order3 = array('id' => 'desc');
@@ -264,11 +264,11 @@ class M_reimbust_sw extends CI_Model
     function _get_datatables_query3()
     {
         $this->db->where('is_active', 1);
-        $this->db->select('swa_prepayment.*, tbl_data_user.name'); // Memilih kolom dari kedua tabel
+        $this->db->select('tbl_prepayment.*, tbl_data_user.name'); // Memilih kolom dari kedua tabel
         $this->db->from($this->table4);
-        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = swa_prepayment.id_user', 'left'); // JOIN dengan tabel tbl_user
+        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_prepayment.id_user', 'left'); // JOIN dengan tabel tbl_user
         $id_user_logged_in = $this->session->userdata('id_user'); // Mengambil id_user dari sesi pengguna yang login
-        $this->db->where('swa_prepayment.id_user', $id_user_logged_in);
+        $this->db->where('tbl_prepayment.id_user', $id_user_logged_in);
 
         $i = 0;
 
@@ -283,13 +283,13 @@ class M_reimbust_sw extends CI_Model
                     if ($item == 'name') {
                         $this->db->like('tbl_data_user.' . $item, $_POST['search']['value']);
                     } else {
-                        $this->db->like('swa_prepayment.' . $item, $_POST['search']['value']);
+                        $this->db->like('tbl_prepayment.' . $item, $_POST['search']['value']);
                     }
                 } else {
                     if ($item == 'name') {
                         $this->db->or_like('tbl_data_user.' . $item, $_POST['search']['value']);
                     } else {
-                        $this->db->or_like('swa_prepayment.' . $item, $_POST['search']['value']);
+                        $this->db->or_like('tbl_prepayment.' . $item, $_POST['search']['value']);
                     }
                 }
 
@@ -327,12 +327,12 @@ class M_reimbust_sw extends CI_Model
 
     public function count_all3()
     {
-        $this->db->select('swa_prepayment.*, tbl_data_user.name'); // Memilih kolom dari kedua tabel
+        $this->db->select('tbl_prepayment.*, tbl_data_user.name'); // Memilih kolom dari kedua tabel
         $this->db->from($this->table4);
-        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = swa_prepayment.id_user', 'left'); // JOIN dengan tabel tbl_user
+        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_prepayment.id_user', 'left'); // JOIN dengan tabel tbl_user
         $id_user_logged_in = $this->session->userdata('id_user'); // Mengambil id_user dari sesi pengguna yang login
-        $this->db->where('swa_prepayment.id_user', $id_user_logged_in);
-        $this->db->where('swa_prepayment.status', 'approved');
+        $this->db->where('tbl_prepayment.id_user', $id_user_logged_in);
+        $this->db->where('tbl_prepayment.status', 'approved');
 
         return $this->db->count_all_results();
     }
@@ -419,7 +419,7 @@ class M_reimbust_sw extends CI_Model
         $prepayment = $reimbust['kode_prepayment'];
 
         // update data pada kolom is active menjadi 1 di table prepayment
-        $this->db->update('swa_prepayment', ['is_active' => 1], ['kode_prepayment' => $prepayment]);
+        $this->db->update('tbl_prepayment', ['is_active' => 1], ['kode_prepayment' => $prepayment]);
 
         // delete data master reimbust
         $this->db->where($this->id, $id);
