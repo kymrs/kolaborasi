@@ -330,7 +330,7 @@ class Reimbust_pw extends CI_Controller
         $pdf->SetAutoPageBreak(true, 5); // Margin bawah 15mm
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/pengenwisata.png', 15, 8, 35, 22);
+        $pdf->Image(base_url('') . '/assets/backend/img/sobatwisata.png', 15, -3, 58, 45);
 
         // Set font
         $pdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php');

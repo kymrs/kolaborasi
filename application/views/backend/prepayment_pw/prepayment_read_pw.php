@@ -28,11 +28,11 @@
         }
 
         .header .logo {
-            width: 140px;
+            width: 180px;
             position: relative;
-            right: -3px;
+            right: 20px;
             bottom: 80px;
-            margin-bottom: -70px;
+            margin-bottom: -120px;
         }
 
         .header h1 {
@@ -163,7 +163,7 @@
                     <!-- Header Section -->
                     <div class="header">
                         <div class="header-field">
-                            <img src="<?= base_url('assets/backend/img/pengenwisata.png') ?>" alt="" class="logo">
+                            <img src="<?= base_url('assets/backend/img/sobatwisata.png') ?>" alt="" class="logo">
                             <table>
                                 <tr>
                                     <td style="font-weight: bold;">Divisi</td>

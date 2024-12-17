@@ -447,7 +447,7 @@ class Prepayment_pw extends CI_Controller
         $pdf->AddPage('P', 'Letter');
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/pengenwisata.png', 11.5, 3, 35, 22);
+        $pdf->Image(base_url('') . '/assets/backend/img/sobatwisata.png', 4, -4, 58, 45);
 
         $pdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php');
         $pdf->AddFont('Poppins-Bold', '', 'Poppins-Bold.php');

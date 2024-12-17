@@ -32,7 +32,7 @@
             height: 150px;
             display: flex;
             align-items: center;
-            width: 160px;
+            width: 250px;
             position: relative;
             left: 20px;
         }
@@ -162,7 +162,7 @@
             <!-- Header -->
             <div class="header">
                 <div class="logo">
-                    <img src="<?= base_url() ?>assets/backend/img/pengenwisata.png" alt="Logo">
+                    <img src="<?= base_url() ?>assets/backend/img/sobatwisata.png" alt="Logo">
                 </div>
                 <div class="title">
                     <h1>FORM PELAPORAN / REIMBUST</h1>
