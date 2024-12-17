@@ -91,11 +91,9 @@ class Penawaran_la_pu extends CI_Controller
 
     public function read_form($id)
     {
-        $data['notif'] = $this->M_notifikasi->pending_notification();
+        // $data['notif'] = $this->M_notifikasi->pending_notification();
         // var_dump($id);
         $data['penawaran'] = $this->M_penawaran_la_pu->getPenawaran($id);
-
-        $this->load->model('backend/M_notifikasi');
 
         $data['id'] = $id;
         if ($data['penawaran'] == null) {
@@ -120,7 +118,7 @@ class Penawaran_la_pu extends CI_Controller
         $this->load->model('backend/M_notifikasi');
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = 0;
-        $data['title'] = 'backend/penawaran_pu/penawaran_form_la_pu';
+        $data['title'] = 'backend/penawaran_pu/penawaran_form_la_pu_2';
         // $data['products'] = $this->db->select('id, nama')->from('tbl_produk')->get()->result_object();
         $data['title_view'] = 'Land Arrangement Form';
         $this->load->view('backend/home', $data);
@@ -132,7 +130,7 @@ class Penawaran_la_pu extends CI_Controller
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = $id;
         $data['aksi'] = 'update';
-        $data['title'] = 'backend/penawaran_pu/penawaran_form_la_pu';
+        $data['title'] = 'backend/penawaran_pu/penawaran_form_la_pu_2';
         // $data['products'] = $this->db->select('id, nama')->from('tbl_produk')->get()->result_object();
         $data['title_view'] = 'Edit Land Arrangement Form';
         $this->load->view('backend/home', $data);
@@ -292,10 +290,10 @@ class Penawaran_la_pu extends CI_Controller
         $pdf->AddFont('Poppins-Bold', '', 'Poppins-Bold.php');
 
         // Mengatur posisi Y untuk menggeser seluruh konten ke bawah
-        $pdf->SetY(50); // Ganti 50 dengan jumlah yang Anda inginkan
+        $pdf->SetY(35); // Ganti 50 dengan jumlah yang Anda inginkan
 
         // Pilih font untuk isi
-        $pdf->SetFont('Poppins-Regular', '', 12);
+        $pdf->SetFont('Poppins-Bold', '', 24);
 
         // Margin setup
         $left_margin = 10;
@@ -303,49 +301,270 @@ class Penawaran_la_pu extends CI_Controller
 
         // Bagian TO
         $pdf->SetXY($left_margin, $pdf->GetY());
-        $pdf->Cell(0, 10, 'TO:', 0, 1, 'L');
+        $pdf->Cell(0, 10, 'PENAWARAN', 0, 1, 'L');
 
         // Name and title (Creative Director)
-        $pdf->SetFont('Poppins-Regular', '', 12);
-        $pdf->Cell(0, 10, 'NAME SURNAME', 0, 1, 'L');
-        $pdf->SetFont('Poppins-Regular', '', 10);
-        $pdf->Cell(0, 10, 'Creative Director', 0, 1, 'L');
+        $pdf->SetFont('Poppins-Regular', '', 9);
+        $pdf->Cell(38, 5, 'No', 0, 0,);
+        $pdf->cell(5, 5, ':', 0, 0);
+        $pdf->Cell(50, 5, 'UMROH/9H/008/XI/2024', 0, 1);
+
+        $pdf->Cell(38, 5, 'Tanggal Dokumen', 0, 0);
+        $pdf->Cell(5, 5, ':', 0, 0);
+        $pdf->Cell(50, 5, '19/11/2024 ', 0, 1);
+
+        $pdf->Cell(38, 5, 'Berlaku s.d.', 0, 0);
+        $pdf->Cell(5, 5, ':', 0, 0);
+        $pdf->Cell(50, 5, '25/11/2024', 0, 1);
+
+        $pdf->Cell(38, 5, 'Produk', 0, 0);
+        $pdf->Cell(5, 5, ':', 0, 0);
+        $pdf->Cell(50, 5, 'Umroh 9 Hari Private', 0, 1);
+
+        $pdf->Cell(38, 5, 'Kepada', 0, 0);
+        $pdf->Cell(5, 5, ':', 0, 0);
+        $pdf->Cell(50, 5, 'Ny. Diah Nirawan', 0, 1);
+
+        // QRCODE
+        // Define QR Code parameters
+        $params['data'] = 'https://example.com'; // Data to encode in QR
+        $params['level'] = 'H'; // QR Code error correction level
+        $params['size'] = 5; // Size of QR Code
+        $qr_image_path = 'assets/qrcode.png'; // Path to save QR Code image
+        $params['savename'] = FCPATH . $qr_image_path;
+
+        // Generate QR Code
+        $this->ciqrcode->generate($params);
+
+        // Add QR Code image
+        if (file_exists($qr_image_path)) { // Check if the file exists
+            $pdf->Image($qr_image_path, 140, 37, 32, 32); // Position (X,Y), Width, Height
+
+            // Delete the QR Code file after using it
+            unlink($qr_image_path);
+        } else {
+            $pdf->Text(10, 30, 'QR Code image not found.');
+        }
+
+        $pdf->Ln(5); // SPASI
+
+        // HEADER LAYANAN
+        $pdf->SetFont('Poppins-Regular', '', 11);
+        $pdf->SetFillColor(252, 118, 19);
+        $pdf->SetTextColor(255, 255, 255);
+        $pdf->Cell(0, 10, 'LAYANAN', 0, 1, 'L', true);
+        $pdf->SetTextColor(0, 0, 0);
+
 
         // Spasi antara bagian atas dan konten
         $pdf->Ln(5);
 
         // Konten text (justify)
-        $pdf->SetFont('Poppins-Regular', '', 10);
+        $pdf->SetFont('Poppins-Regular', '', 9);
+
+        // HEADER DESKRIPSI
+        $pdf->Cell(100, 5, 'Deskripsi :', 0, 0);
+        $right_column_x = 120;
+
+        // Keberangkatan
+        $pdf->SetX($right_column_x); // Pindahkan posisi ke kolom kanan
+        $pdf->Cell(26, 5, 'Keberangkatan', 0, 0);
+        $pdf->cell(2, 5, ':', 0, 0);
+        $pdf->Cell(50, 5, '25 Januari 2025', 0, 1);
+        // Durasi
+        $pdf->SetX($right_column_x); // Pindahkan posisi ke kolom kanan
+        $pdf->Cell(26, 5, 'Durasi', 0, 0);
+        $pdf->cell(2, 5, ':', 0, 0);
+        $pdf->Cell(50, 5, '9 Hari', 0, 1);
+        // Berangkat dari
+        $pdf->SetX($right_column_x); // Pindahkan posisi ke kolom kanan
+        $pdf->Cell(26, 5, 'Berangkat Dari', 0, 0);
+        $pdf->cell(2, 5, ':', 0, 0);
+        $pdf->Cell(50, 5, 'Jakarta', 0, 1);
 
         // Mengatur lebar untuk konten agar justify bisa bekerja
-        $content_width = 190;  // Misal, lebar halaman adalah 210, jadi margin kiri 10 dan margin kanan 10
+        $content_width = 100;  // Misal, lebar halaman adalah 210, jadi margin kiri 10 dan margin kanan 10
 
-        // Paragraf 1
-        $body_text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sit amet nisi sit amet nibh dignis sim elementum id suscipit leo. Sed ut condimentum diam. Sed ac nulla libero. Morbi ante ante inte rrdum luctus dictum ut, sollicitudin in mi. Donec aliquet lectus quis enim tempor ullamcorper pelle ntesque et neque posuere, gravida lacus molestie, pretium ex. Vivamus in justo ac ante lacinia pharetra.";
-        $pdf->MultiCell($content_width, 7, $body_text, 0, 'J');  // 'J' digunakan untuk rata kiri dan kanan (justify)
-
-        $pdf->Ln(5); // Spasi antara paragraf
-
-        // Paragraf 2
-        $body_text2 = "Donec ultrices lacinia arcu, eget faucibus quam rhoncus id. Sed convallis eros neque, quis effici tur erat euismod vel. Mauris consequat nunc quis tortor efficitur euismod. Curabitur posuere hendrerit semper nam dignissim sed tellus id fermentum.";
-        $pdf->MultiCell($content_width, 7, $body_text2, 0, 'J');
+        // KONTEN DESKRIPSI
+        $body_text = "Umroh 9 hari private, Insya Allah dibimbing oleh Ustadz Ahlus Sunnah wal Jama'ah.  Semua tata cara Ibadah Insya Allah sesuai dengan Al-Qur'an dan As-Sunnah.";
+        $pdf->Sety(95);
+        $pdf->MultiCell($content_width, 4, $body_text, 0, 'J');  // 'J' digunakan untuk rata kiri dan kanan (justify)
 
         $pdf->Ln(5); // Spasi antara paragraf
 
-        // Paragraf 3
-        $body_text3 = "Phasellus id dui arcu nullam finibus nisl quis quam egestas blandit. Praesent eu leo justo nullam porta nisi non tempus lacinia. Quisque molestie nulla id volutpat congue.";
-        $pdf->MultiCell($content_width, 7, $body_text3, 0, 'J');
+        // HEADER LAYANAN TERMASUK
+        $pdf->SetFont('Poppins-Regular', '', 9);
+        $pdf->Cell(100, 5, 'Layanan Termasuk :', 0, 0);
+
+        // HEADER LAYANAN TIDAK TERMASUK
+        $pdf->SetX($right_column_x); // Pindahkan posisi ke kolom kanan
+        $pdf->Cell(80, 5, 'Layanan Tidak Termasuk :', 0, 1);
+
+        // KONTEN LAYANAN TIDAK TERMASUK
+        $pdf->SetX($right_column_x);
+        $body_text3 = "1. Pembuatan Paspor
+2. Vaksin Meningitis
+3. Akomodasi Dari Daerah ke Bandara
+4. Pengeluaran Pribadi
+5. Kelebihan Bagasi Kebutuhan Pribadi
+Lainnya";
+        $pdf->MultiCell(80, 4, $body_text3, 0, 'J');
+
+        $pdf->Ln(10); // Spasi antara paragraf
+
+        // KONTEN HOTEL DAN PENERBANGAN
+        $pdf->SetFont('Poppins-Regular', '', 9);
+        $pdf->SetX(100); // Pindahkan posisi ke kolom kanan
+        $pdf->Cell(25, 5, 'Hotel Makkah', 0, 0,);
+        $pdf->SetFont('ZapfDingbats');
+        $stars = '';
+        for ($i = 0; $i < 5; $i++) {
+            $stars .= chr(73);
+        }
+        $pdf->cell(15, 5, $stars, 0, 0);
+        $pdf->SetFont('Poppins-Regular', '', 9);
+        $pdf->cell(3, 5, ':', 0, 0);
+        $pdf->Cell(40, 5, 'Sofwah Orchid', 0, 1);
+
+        $pdf->SetX(100); // Pindahkan posisi ke kolom kanan
+        $pdf->Cell(25, 5, 'Hotel Madinah', 0, 0);
+        $pdf->SetFont('ZapfDingbats');
+        $stars2 = '';
+        for ($i = 0; $i < 5; $i++) {
+            $stars2 .= chr(73);
+        }
+        $pdf->cell(15, 5, $stars2, 0, 0);
+        $pdf->SetFont('Poppins-Regular', '', 9);
+        $pdf->Cell(3, 5, ':', 0, 0);
+        $pdf->Cell(40, 5, 'Taiba Front', 0, 1);
+
+        $pdf->SetX(100); // Pindahkan posisi ke kolom kanan
+        $pdf->Cell(40, 5, 'Keberangkatan', 0, 0);
+        $pdf->Cell(3, 5, ':', 0, 0);
+        $pdf->Cell(40, 5, 'Direct Saudia Airlines SV817', 0, 1);
+
+        $pdf->SetX(100); // Pindahkan posisi ke kolom kanan
+        $pdf->Cell(40, 5, 'Kepulangan', 0, 0);
+        $pdf->Cell(3, 5, ':', 0, 0);
+        $pdf->Cell(40, 5, 'Direct Saudia Airlines SV826', 0, 1);
+
+        // KONTEN LAYANAN TERMASUK
+        $pdf->Sety(117);
+        $body_text2 = "1. Visa Umroh
+2. Tiket Pesawat Internasional PP
+3. Akomodasi Sesuai Paket
+4. Makan 3x Sehari
+5. Ziarah Makkah & Madinah
+6. Muthowwif
+7. Pembimbing Ibadah
+8. Zamzam 5 Liter
+9. Tahallul Halq
+10. Albaik Chicken
+11. Perlengkapan
+12. Manasik & Lounge
+13. City Tour Makkah & Madinah
+14.Museum
+15. Kereta Cepat";
+        $pdf->MultiCell(86, 4, $body_text2, 0, 'J');
 
         // Spasi antara konten dan signature
-        $pdf->Ln(20);
+        $pdf->Ln(6);
 
-        // Bagian Nama kedua dan jabatan (Account Manager)
-        $pdf->SetFont('Poppins-Regular', '', 12);
-        $pdf->Cell(0, 10, 'NAME SURNAME', 0, 1, 'L');
-        $pdf->SetFont('Poppins-Regular', '', 10);
-        $pdf->Cell(0, 10, 'Account Manager', 0, 1, 'L');
+        // HEADER HARGA PAKET
+        $pdf->SetFont('Poppins-Regular', '', 11);
+        $pdf->SetFillColor(252, 118, 19);
+        $pdf->SetTextColor(255, 255, 255);
+        $pdf->Cell(0, 10, 'HARGA PAKET', 0, 1, 'L', true);
+        $pdf->SetTextColor(0, 0, 0);
 
+        // Spasi antara konten dan signature
+        $pdf->Ln(2);
+
+        // QUAD
+        $pdf->SetFont('Poppins-Bold', '', 15);
+        $pdf->Cell(20, 5, 'QUAD', 0, 0,);
+        $pdf->cell(5, 5, ':', 0, 0);
+        $pdf->Cell(50, 5, 'Rp. 38.900.000', 0, 1);
+
+        // Spasi antara konten dan signature
+        $pdf->Ln(1);
+
+        // TRIPLE
+        $pdf->Cell(20, 5, 'TRIPLE', 0, 0);
+        $pdf->Cell(5, 5, ':', 0, 0);
+        $pdf->Cell(50, 5, 'Rp. 40.900.000', 0, 1);
+
+        // Spasi antara konten dan signature
+        $pdf->Ln(1);
+
+        // DOUBLE
+        $pdf->Cell(20, 5, 'DOUBLE', 0, 0);
+        $pdf->Cell(5, 5, ':', 0, 0);
+        $pdf->Cell(50, 5, 'Rp. 42.900.000', 0, 1);
+
+        // Spasi antara konten dan signature
+        $pdf->Ln(2);
+
+        // HEADER LAYANAN PASTI
+        $pdf->SetFont('Poppins-Regular', '', 11);
+        $pdf->SetFillColor(252, 118, 19);
+        $pdf->SetTextColor(255, 255, 255);
+        $pdf->Cell(0, 10, 'LAYANAN PASTI', 0, 1, 'L', true);
+        $pdf->SetTextColor(0, 0, 0);
+
+        // Spasi antara konten dan signature
+        $pdf->Ln(1);
+
+        $body_text4 = "1. Konsultasi Gratis
+2. Gratis Bantuan Pembuatan Paspor
+3. Gratis Antar Dokumen & Perlengkapan
+4. Gratis Pendampingan Manasik";
+        $pdf->MultiCell(84, 4, $body_text4, 0, 'J');
+
+        $pdf->Sety(225);
+        $pdf->SetX(96); // Pindahkan posisi ke kolom kanan
+        $body_text5 = "5. Gratis Handling Keberangkatan
+6. Gratis Handling Kepulangan
+7. Jaminan Pasti Berangkat
+8. Garansi 100% Uang Kembali Apabila Travel Gagal
+Memberangkatkan";
+        $pdf->MultiCell(84, 4, $body_text5, 0, 'J');
+
+        // PAGE RUNDOWN
         $pdf->AddPage();
+
+        // Table Header
+        $pdf->Sety(38);
+        $pdf->SetFont('Poppins-Bold', '', 10);
+        $pdf->Cell(32, 5, 'Hari', 1, 0, 'C');
+        $pdf->Cell(32, 5, 'Tanggal', 1, 0, 'C');
+        $pdf->Cell(127, 5, 'Kegiatan', 1, 1, 'C');
+
+        // TABLE CONTENT
+        $pdf->SetFont('Poppins-Regular', '', 10);
+
+        $content_text = "• Jamaah berkumpul di SAHID Hotel Bandara Soekarno - Hatta pukul 04.00 WIB
+• Sholat subuh berjamaah
+• Sarapan dan Final Briefing dan Nasehat Safar oleh pembimbing
+• Keberangkatan menuju Bandara Soekarno-Hatta pukul 08.00 WIB
+• Jamaah berangkat menuju Jeddah menggunakan pesawat Saudia Airline SV817, beberapa jam
+sebelum landing di jeddah jamaah akan di ingatkan untuk mengganti pakaian Ihram, kemudian
+berniat Ihram.
+• InsyaAllah jamaah akan landing di Jeddah pukul 16.00 WSA, Setelah pemeriksaan keimigrasian
+dan pengambilan bagasi jamaah akan melanjutkan perjalanan menuju Makkah untuk check in
+oleh Muthowwif dan istirahat sejenak kemudian dilanjutkan untuk melakukan ibadah Umrah.
+• Setelah melakukan Ibadah Umrah jamaah akan menuju ke Hotel Untuk Beristirahat.";
+
+        // Hitung jumlah baris teks
+        $lines = $pdf->NbLines(127, $content_text);
+
+        // Hitung tinggi total
+        $height2 = $lines * 5;
+
+        $pdf->Cell(32, $height2, 'Kesatu', 1, 0, 'L');
+        $pdf->Cell(32, $height2, '25/01/2025', 1, 0, 'C');
+
+        $pdf->MultiCell(127, 5, $content_text, 1, 'L');
 
         // Output the PDF
         $pdf->Output('I', 'Deklarasi.pdf');

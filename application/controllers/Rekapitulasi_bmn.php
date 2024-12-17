@@ -50,7 +50,7 @@ class Rekapitulasi_bmn extends CI_Controller
         $data['total'] = $this->M_rekapitulasi_bmn->get_total_pengeluaran();
 
         $data['title'] = "backend/rekapitulasi_bmn";
-        $data['titleview'] = "Data Rekapitulasi by.moment";
+        $data['titleview'] = "Data Rekapitulasi By.moment";
         $this->load->view('backend/home', $data);
     }
 

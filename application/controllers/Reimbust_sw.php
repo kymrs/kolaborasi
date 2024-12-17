@@ -251,7 +251,7 @@ class Reimbust_sw extends CI_Controller
             $row[] = $no;
             $row[] = $action;
             $row[] = strtoupper($field->kode_prepayment);
-            $query = $this->db->get_where('tbl_event', ['id' => $field->event])->row_array();
+            $query = $this->db->get_where('swa_event', ['id' => $field->event])->row_array();
             $row[] = $query['event_name'];
             $row[] = $field->name;
             $row[] = strtoupper($field->divisi);

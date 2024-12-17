@@ -5,12 +5,12 @@ setlocale(LC_ALL, 'id_ID');
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-class Rekapitulasi_qbg extends CI_Controller
+class rekapitulasi_pw extends CI_Controller
 {
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('backend/M_rekapitulasi_qbg');
+        $this->load->model('backend/M_rekapitulasi_pw');
         $this->load->model('backend/M_notifikasi');
         $this->M_login->getsecurity();
         date_default_timezone_set('Asia/Jakarta');
@@ -47,17 +47,17 @@ class Rekapitulasi_qbg extends CI_Controller
         $akses = $this->M_app->hak_akses($this->session->userdata('id_level'), $this->router->fetch_class());
         ($akses->view_level == 'N' ? redirect('auth') : '');
         $data['add'] = $akses->add_level;
-        $data['total'] = $this->M_rekapitulasi_qbg->get_total_pengeluaran();
+        $data['total'] = $this->M_rekapitulasi_pw->get_total_pengeluaran();
 
-        $data['title'] = "backend/rekapitulasi_qbg";
-        $data['titleview'] = "Data Rekapitulasi Qubah Gift";
+        $data['title'] = "backend/rekapitulasi_pw";
+        $data['titleview'] = "Data Rekapitulasi Sobat Wisata";
         $this->load->view('backend/home', $data);
     }
 
     function get_list()
     {
         // INISIAI VARIABLE YANG DIBUTUHKAN
-        $list = $this->M_rekapitulasi_qbg->get_datatables();
+        $list = $this->M_rekapitulasi_pw->get_datatables();
         $data = array();
         $no = $_POST['start'];
 
@@ -73,6 +73,7 @@ class Rekapitulasi_qbg extends CI_Controller
             $no++;
             $row = array();
             $row[] = $no; // Nomor urut
+            $row[] = 'swi';
             $row[] = $kode_prepayment; // Kode prepayment, atau tanda "-"
             $row[] = $kode_reimbust; // Kode reimburse
             $row[] = $field->name; // Nama pengguna
@@ -86,8 +87,8 @@ class Rekapitulasi_qbg extends CI_Controller
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_rekapitulasi_qbg->count_all(),
-            "recordsFiltered" => $this->M_rekapitulasi_qbg->count_filtered(),
+            "recordsTotal" => $this->M_rekapitulasi_pw->count_all(),
+            "recordsFiltered" => $this->M_rekapitulasi_pw->count_filtered(),
             "data" => $data,
         );
         //output dalam format JSON
@@ -96,7 +97,7 @@ class Rekapitulasi_qbg extends CI_Controller
 
     function get_total()
     {
-        $output = $this->M_rekapitulasi_qbg->get_total_pengeluaran();
+        $output = $this->M_rekapitulasi_pw->get_total_pengeluaran();
 
         //output dalam format JSON
         echo json_encode($output);
@@ -109,43 +110,47 @@ class Rekapitulasi_qbg extends CI_Controller
         $tgl_akhir = $this->input->get('tgl_akhir');
 
         // Ambil data dari model
-        $prepayment = $this->M_rekapitulasi_qbg->get_data_prepayment($tgl_awal, $tgl_akhir);
-        $reimbust = $this->M_rekapitulasi_qbg->get_data_reimbust($tgl_awal, $tgl_akhir);
+        $prepayment = $this->M_rekapitulasi_pw->get_data_prepayment($tgl_awal, $tgl_akhir);
+        $reimbust = $this->M_rekapitulasi_pw->get_data_reimbust($tgl_awal, $tgl_akhir);
 
         // Inisialisasi Spreadsheet
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
         // Set judul kolom
-        $sheet->setCellValue('A1', 'Kode Transaksi');
-        $sheet->setCellValue('B1', 'Jenis Transaksi');
-        $sheet->setCellValue('C1', 'Tanggal Transaksi');
-        $sheet->setCellValue('D1', 'Nominal');
+        $sheet->setCellValue('A1', 'Core');
+        $sheet->setCellValue('B1', 'Kode Transaksi');
+        $sheet->setCellValue('C1', 'Jenis Transaksi');
+        $sheet->setCellValue('D1', 'Tanggal Transaksi');
+        $sheet->setCellValue('E1', 'Nominal');
 
         // Atur Auto Size untuk setiap kolom
         $sheet->getColumnDimension('A')->setAutoSize(true);
         $sheet->getColumnDimension('B')->setAutoSize(true);
         $sheet->getColumnDimension('C')->setAutoSize(true);
         $sheet->getColumnDimension('D')->setAutoSize(true);
+        $sheet->getColumnDimension('E')->setAutoSize(true);
 
         // Tambahkan filter ke header (baris pertama)
-        $sheet->setAutoFilter('A1:D1');
+        $sheet->setAutoFilter('A1:E1');
 
         // Isi data dari database mulai dari baris ke-2
         $row = 2;
         foreach ($prepayment as $data) {
-            $sheet->setCellValue('A' . $row, $data->kode_prepayment);
-            $sheet->setCellValue('B' . $row, 'Prepayment');
-            $sheet->setCellValue('C' . $row, $this->tgl_indo(date("Y-m-j", strtotime($data->tgl_prepayment))));
-            $sheet->setCellValue('D' . $row, $data->total_nominal);
+            $sheet->setCellValue('A' . $row, 'pu');
+            $sheet->setCellValue('B' . $row, $data->kode_prepayment);
+            $sheet->setCellValue('C' . $row, 'Prepayment');
+            $sheet->setCellValue('D' . $row, $this->tgl_indo(date("Y-m-j", strtotime($data->tgl_prepayment))));
+            $sheet->setCellValue('E' . $row, $data->total_nominal);
             $row++;
         }
 
         foreach ($reimbust as $data) {
-            $sheet->setCellValue('A' . $row, strtoupper($data->kode_reimbust));
-            $sheet->setCellValue('B' . $row, $data->sifat_pelaporan);
-            $sheet->setCellValue('C' . $row, $this->tgl_indo(date("Y-m-j", strtotime($data->tgl_pengajuan))));
-            $sheet->setCellValue('D' . $row, $data->total_nominal);
+            $sheet->setCellValue('A' . $row, 'pu');
+            $sheet->setCellValue('B' . $row, strtoupper($data->kode_reimbust));
+            $sheet->setCellValue('C' . $row, $data->sifat_pelaporan);
+            $sheet->setCellValue('D' . $row, $this->tgl_indo(date("Y-m-j", strtotime($data->tgl_pengajuan))));
+            $sheet->setCellValue('E' . $row, $data->total_nominal);
             $row++;
         }
 
@@ -159,7 +164,7 @@ class Rekapitulasi_qbg extends CI_Controller
 
         // Set header untuk download file Excel
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="Data Rekapitulasi Qubah Gift.xlsx"');
+        header('Content-Disposition: attachment;filename="Data Rekapitulasi Sobat Wisata.xlsx"');
         header('Cache-Control: max-age=0');
 
         // Simpan file ke output

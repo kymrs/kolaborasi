@@ -28,11 +28,11 @@
         }
 
         .header .logo {
-            width: 140px;
+            width: 180px;
             position: relative;
-            right: -3px;
+            right: 20px;
             bottom: 80px;
-            margin-bottom: -70px;
+            margin-bottom: -120px;
         }
 
         .header h1 {
@@ -163,7 +163,7 @@
                     <!-- Header Section -->
                     <div class="header">
                         <div class="header-field">
-                            <img src="<?= base_url('assets/backend/img/pengenwisata.png') ?>" alt="" class="logo">
+                            <img src="<?= base_url('assets/backend/img/sobatwisata.png') ?>" alt="" class="logo">
                             <table>
                                 <tr>
                                     <td style="font-weight: bold;">Divisi</td>
@@ -321,7 +321,7 @@
                 <form id="paymentForm" action="">
                     <div class="form-group">
                         <label style="font-size: 107%;"><span style="font-weight: bold">No Rekening</span> <span style="margin-left: 20px;">:</span> <span id="no_rek"></span></label> <br>
-                        <label style="font-size: 107%;"><span style="font-weight: bold">Jenis Rekening</span> <span style="margin-left: 5px;">:</span> <span id="jenis_rek"></span></label>
+                        <!-- <label style="font-size: 107%;"><span style="font-weight: bold">Jenis Rekening</span> <span style="margin-left: 5px;">:</span> <span id="jenis_rek"></span></label> -->
                     </div>
                     <div class="form-group">
                         <label for="payment_status">Status <span class="text-danger">*</span></label>
@@ -431,7 +431,7 @@
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
-                    $('#jenis_rek').html(data['master']['jenis_rek'] ? data['master']['jenis_rek'] : '-');
+                    // $('#jenis_rek').html(data['master']['jenis_rek'] ? data['master']['jenis_rek'] : '-');
                     $('#no_rek').html(data['master']['no_rek'] ? data['master']['no_rek'] : '-');
                     $('#payment_status').val(data['master']['payment_status']);
                 },

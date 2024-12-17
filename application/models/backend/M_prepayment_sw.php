@@ -18,10 +18,10 @@ class M_prepayment_sw extends CI_Model
     // UNTUK QUERY DATA TABLE
     function _get_datatables_query()
     {
-        $this->db->select('tbl_prepayment.*, tbl_data_user.name, tbl_event.event_name'); // Memilih kolom dari kedua tabel
+        $this->db->select('swa_prepayment.*, tbl_data_user.name, swa_event.event_name'); // Memilih kolom dari kedua tabel
         $this->db->from($this->table);
-        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_prepayment.id_user', 'left'); // JOIN dengan tabel tbl_user
-        $this->db->join('tbl_event', 'tbl_prepayment.event = tbl_event.id', 'left');
+        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = swa_prepayment.id_user', 'left'); // JOIN dengan tabel tbl_user
+        $this->db->join('swa_event', 'swa_prepayment.event = swa_event.id', 'left');
 
         $i = 0;
 
@@ -127,10 +127,10 @@ class M_prepayment_sw extends CI_Model
 
     public function count_all()
     {
-        $this->db->select('tbl_prepayment.*, tbl_data_user.name, tbl_event.event_name'); // Memilih kolom dari kedua tabel
+        $this->db->select('swa_prepayment.*, tbl_data_user.name, swa_event.event_name'); // Memilih kolom dari kedua tabel
         $this->db->from($this->table);
-        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_prepayment.id_user', 'left'); // JOIN dengan tabel tbl_user
-        $this->db->join('tbl_event', 'tbl_prepayment.event = tbl_event.id', 'left');
+        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = swa_prepayment.id_user', 'left'); // JOIN dengan tabel tbl_user
+        $this->db->join('swa_event', 'swa_prepayment.event = swa_event.id', 'left');
 
         // Tambahkan pemfilteran berdasarkan status
         // Tambahkan kondisi jika id_user login sesuai dengan app2_name
@@ -244,7 +244,7 @@ class M_prepayment_sw extends CI_Model
 
     public function _get_datatables_query_event()
     {
-        $this->db->select('id, event_name, is_active, created_at, updated_at')->from('tbl_event');
+        $this->db->select('id, event_name, is_active, created_at, updated_at')->from('swa_event');
 
         $i = 0;
 
@@ -252,9 +252,9 @@ class M_prepayment_sw extends CI_Model
             if (!empty($_POST['search']['value'])) {
                 if ($i === 0) {
                     $this->db->group_start(); // Mulai grup pencarian
-                    $this->db->like('tbl_event.' . $item, $_POST['search']['value']);
+                    $this->db->like('swa_event.' . $item, $_POST['search']['value']);
                 } else {
-                    $this->db->or_like('tbl_event.' . $item, $_POST['search']['value']);
+                    $this->db->or_like('swa_event.' . $item, $_POST['search']['value']);
                 }
 
                 if (count($this->column_search2) - 1 == $i) { // Pastikan ini adalah column_search2
@@ -284,7 +284,7 @@ class M_prepayment_sw extends CI_Model
 
     public function count_all_event()
     {
-        $this->db->select('id, event_name, is_active, created_at, updated_at')->from('tbl_event');
+        $this->db->select('id, event_name, is_active, created_at, updated_at')->from('swa_event');
 
         $i = 0;
 
@@ -292,9 +292,9 @@ class M_prepayment_sw extends CI_Model
             if (!empty($_POST['search']['value'])) {
                 if ($i === 0) {
                     $this->db->group_start(); // Mulai grup pencarian
-                    $this->db->like('tbl_event.' . $item, $_POST['search']['value']);
+                    $this->db->like('swa_event.' . $item, $_POST['search']['value']);
                 } else {
-                    $this->db->or_like('tbl_event.' . $item, $_POST['search']['value']);
+                    $this->db->or_like('swa_event.' . $item, $_POST['search']['value']);
                 }
 
                 if (count($this->column_search2) - 1 == $i) { // Pastikan ini adalah column_search2
@@ -323,7 +323,7 @@ class M_prepayment_sw extends CI_Model
 
     public function get_events()
     {
-        $query = $this->db->select('id, event_name')->from('tbl_event')->where('is_active', 1);
+        $query = $this->db->select('id, event_name')->from('swa_event')->where('is_active', 1);
         return $query->get()->result();
     }
 
