@@ -168,16 +168,13 @@
                         <th>Tanggal</th>
                         <th>Kegiatan</th>
                     </tr>
-                    <tr>
-                        <td>Kesatu</td>
-                        <td>25/01/2025</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>Kesatu</td>
-                        <td>25/01/2025</td>
-                        <td></td>
-                    </tr>
+                    <?php foreach ($rundowns as $rundown) { ?>
+                        <tr>
+                            <td><?= $rundown->hari ?></td>
+                            <td><?= $rundown->tanggal ?></td>
+                            <td style="text-align: left;"><?= $rundown->kegiatan ?></td>
+                        </tr>
+                    <?php } ?>
                 </table>
             </main>
             <div class="footer-logo">

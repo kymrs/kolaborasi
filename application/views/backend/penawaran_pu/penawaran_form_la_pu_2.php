@@ -120,18 +120,20 @@
                         <div class="container-custom mx-auto mt-2 mb-4 row">
                             <!-- Layanan Termasuk -->
                             <div class="col-md-12 mb-3">
-                                <label class="section-title">Layanan Termasuk:</label>
-                                <div id="layanan_termasuk" name="layanan_termasuk" class="border p-2" style="height: 200px;"></div>
-                                <input type="hidden" name="layanan_content" id="layanan_content">
+                                <label class="form-label">Layanan Termasuk:</label>
+                                <textarea name="layanan_content" id="layanan_content" cols="5" rows="5" class="form-control"></textarea>
+                                <!-- <div id="layanan_termasuk" name="layanan_termasuk" class="border p-2" style="height: 200px;"></div>
+                                <input type="hidden" name="layanan_content" id="layanan_content"> -->
                             </div>
                         </div>
 
                         <div class="container-custom mx-auto mt-2 mb-4 row">
                             <!-- Layanan Tidak Termasuk -->
                             <div class="col-md-12 mb-3">
-                                <label class="section-title">Layanan Tidak Termasuk:</label>
-                                <div id="layanan_tidak_termasuk" name="layanan_tidak_termasuk" class="border p-2" style="height: 200px;"></div>
-                                <input type="hidden" name="layanan_content2" id="layanan_content2">
+                                <label class="form-label">Layanan Tidak Termasuk:</label>
+                                <textarea name="layanan_content2" id="layanan_content2" cols="5" rows="5" class="form-control"></textarea>
+                                <!-- <div id="layanan_tidak_termasuk" name="layanan_tidak_termasuk" class="border p-2" style="height: 200px;"></div>
+                                <input type="hidden" name="layanan_content2" id="layanan_content2"> -->
                             </div>
                         </div>
 
@@ -247,21 +249,21 @@
         ['clean']
     ];
 
-    const quill = new Quill('#layanan_termasuk', {
-        modules: {
-            toolbar: toolbarOptions
-        },
-        placeholder: 'Field layanan',
-        theme: 'snow',
-    });
+    // const quill = new Quill('#layanan_termasuk', {
+    //     modules: {
+    //         toolbar: toolbarOptions
+    //     },
+    //     placeholder: 'Field layanan',
+    //     theme: 'snow',
+    // });
 
-    const quill2 = new Quill('#layanan_tidak_termasuk', {
-        modules: {
-            toolbar: toolbarOptions
-        },
-        placeholder: 'Field layanan',
-        theme: 'snow',
-    });
+    // const quill2 = new Quill('#layanan_tidak_termasuk', {
+    //     modules: {
+    //         toolbar: toolbarOptions
+    //     },
+    //     placeholder: 'Field layanan',
+    //     theme: 'snow',
+    // });
 
     const quill3 = new Quill('#extra', {
         modules: {
@@ -273,12 +275,12 @@
 
     document.getElementById("form").onsubmit = function() {
         // Get HTML content from Quill editor
-        var layananContent = quill.root.innerHTML;
-        var layananContent2 = quill2.root.innerHTML;
+        // var layananContent = quill.root.innerHTML;
+        // var layananContent2 = quill2.root.innerHTML;
         var catatanContent = quill3.root.innerHTML;
         // Set it to hidden input
-        document.getElementById("layanan_content").value = layananContent;
-        document.getElementById("layanan_content2").value = layananContent2;
+        // document.getElementById("layanan_content").value = layananContent;
+        // document.getElementById("layanan_content2").value = layananContent2;
         document.getElementById("catatan_content").value = catatanContent;
     };
 
@@ -389,14 +391,14 @@
             var formattedValue = document.getElementById("biaya").value;
             var integerValue = getIntegerValue(formattedValue);
             // console.log(integerValue); // Menampilkan nilai integer (tanpa "Rp" dan titik)
-            var textContent = quill.getText().trim();
-            if (textContent === '') {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Layanan Masih Kosong',
-                    text: 'Mohon Untuk Mengisi Layanan'
-                });
-            }
+            // var textContent = quill.getText().trim();
+            // if (textContent === '') {
+            //     Swal.fire({
+            //         icon: 'warning',
+            //         title: 'Layanan Masih Kosong',
+            //         text: 'Mohon Untuk Mengisi Layanan'
+            //     });
+            // }
 
             if (!$form.valid()) return false;
             var url;
@@ -467,9 +469,6 @@
                 },
                 biaya: {
                     required: true,
-                },
-                layanan_content: {
-                    quillRequired: true
                 }
             },
             messages: {
@@ -499,9 +498,6 @@
                 },
                 biaya: {
                     required: "Biaya is required",
-                },
-                layanan_content: {
-                    required: "Layanan is required"
                 }
             },
             errorPlacement: function(error, element) {
@@ -524,6 +520,25 @@
 
         function addRow() {
             rowCount++;
+            //         const row = `
+            //     <tr id="row-${rowCount}">
+            //         <td class="row-number">${rowCount}</td>
+            //         <td>
+            //             <input type="text" class="form-control" name="hari[${rowCount}]" placeholder="Input here..." />
+            //         </td>
+            //         <td>
+            //             <input type="date" class="form-control" id="tanggal-${rowCount}" name="tanggal[${rowCount}]" placeholder="Input here..." />
+            //             <input type="hidden" id="hidden_nominal${rowCount}" name="hidden_nominal[${rowCount}]" value="">
+            //         </td>
+            //         <td>
+            //             <div id="kegiatan-${rowCount}" class="border p-2" style="height: 200px;"></div>
+            //             <input type="text" name="hidden_kegiatan[${rowCount}]" id="hidden_kegiatan[${rowCount}]" value="">
+            //         </td>
+            //         <td>
+            //             <span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span>
+            //         </td>
+            //     </tr>
+            // `;
             const row = `
         <tr id="row-${rowCount}">
             <td class="row-number">${rowCount}</td>
@@ -535,8 +550,7 @@
                 <input type="hidden" id="hidden_nominal${rowCount}" name="hidden_nominal[${rowCount}]" value="">
             </td>
             <td>
-                <div id="kegiatan-${rowCount}" class="border p-2" style="height: 200px;"></div>
-                <input type="text" name="hidden_kegiatan[${rowCount}]" id="hidden_kegiatan[${rowCount}]" value="">
+                <textarea name="kegiatan[${rowCount}]" id="kegiatan[${rowCount}]" cols="10" rows="5" class="form-control"></textarea>
             </td>
             <td>
                 <span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span>
@@ -547,15 +561,15 @@
             // Append row to container
             $('#input-container').append(row);
 
-            // Initialize Quill editor
-            const quillKegiatan = new Quill(`#kegiatan-${rowCount}`, {
-                theme: 'snow'
-            });
+            // // Initialize Quill editor
+            // const quillKegiatan = new Quill(`#kegiatan-${rowCount}`, {
+            //     theme: 'snow'
+            // });
 
-            // Sync Quill content with hidden input
-            quillKegiatan.on('text-change', function() {
-                document.getElementById(`hidden_kegiatan[${rowCount}]`).value = quillKegiatan.root.innerHTML;
-            });
+            // // Sync Quill content with hidden input
+            // quillKegiatan.on('text-change', function() {
+            //     document.getElementById(`hidden_kegiatan[${rowCount}]`).value = quillKegiatan.root.innerHTML;
+            // });
 
             updateSubmitButtonState();
 
@@ -566,9 +580,9 @@
             $("#form").validate().settings.rules[`tanggal[${rowCount}]`] = {
                 required: true
             };
-            $("#form").validate().settings.rules[`hidden_kegiatan[${rowCount}]`] = {
-                required: true
-            };
+            // $("#form").validate().settings.rules[`hidden_kegiatan[${rowCount}]`] = {
+            //     required: true
+            // };
         }
 
         // Delete row function
@@ -586,9 +600,9 @@
                 $(this).find('.row-number').text(newRowNumber);
                 $(this).find('input[name^="hari"]').attr('name', `hari[${newRowNumber}]`);
                 $(this).find('input[name^="tanggal"]').attr('name', `tanggal[${newRowNumber}]`).attr('id', `tanggal-${newRowNumber}`);
-                $(this).find('input[name^="hidden_nominal"]').attr('name', `hidden_nominal[${newRowNumber}]`).attr('id', `hidden_nominal${newRowNumber}`);
-                $(this).find('div[id^="kegiatan"]').attr('id', `kegiatan-${newRowNumber}`);
-                $(this).find('input[name^="hidden_kegiatan"]').attr('name', `hidden_kegiatan[${newRowNumber}]`).attr('id', `hidden_kegiatan[${newRowNumber}]`);
+                $(this).find('textarea[name^="kegiatan"]').attr('name', `kegiatan[${newRowNumber}]`).attr('id', `kegiatan-${newRowNumber}`);
+                // $(this).find('div[id^="kegiatan"]').attr('id', `kegiatan-${newRowNumber}`);
+                // $(this).find('input[name^="hidden_kegiatan"]').attr('name', `hidden_kegiatan[${newRowNumber}]`).attr('id', `hidden_kegiatan[${newRowNumber}]`);
                 $(this).find('.delete-btn').attr('data-id', newRowNumber);
             });
             rowCount = $('#input-container tr').length;

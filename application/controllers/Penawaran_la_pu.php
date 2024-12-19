@@ -91,8 +91,6 @@ class Penawaran_la_pu extends CI_Controller
 
     public function read_form($id)
     {
-        // $data['notif'] = $this->M_notifikasi->pending_notification();
-        // var_dump($id);
         $data['penawaran'] = $this->M_penawaran_la_pu->getPenawaran($id);
 
         $data['id'] = $id;
@@ -109,6 +107,7 @@ class Penawaran_la_pu extends CI_Controller
 
             $data['title'] = 'backend/penawaran_pu/penawaran_read_la_pu_2';
             $data['title_view'] = 'Land Arrangement';
+            $data['rundowns'] = $this->M_penawaran_la_pu->get_rundown($data['penawaran']->no_pelayanan);
             $this->load->view('backend/home', $data);
         }
     }
@@ -147,7 +146,7 @@ class Penawaran_la_pu extends CI_Controller
         $date = date('Y-m-d h:i:sa');
         $kode = $this->M_penawaran_la_pu->max_kode($date)->row();
         if (empty($kode->no_pelayanan)) {
-            $no_urut = 1;
+            $no_urut = 0;
         } else {
             $no_urut = substr($kode->no_pelayanan, 9, 3);
         }
@@ -174,7 +173,7 @@ class Penawaran_la_pu extends CI_Controller
         $date = date('Y-m-d h:i:sa');
         $kode = $this->M_penawaran_la_pu->max_kode($date)->row();
         if (empty($kode->no_pelayanan)) {
-            $no_urut = 1;
+            $no_urut = 0;
         } else {
             $no_urut = substr($kode->no_pelayanan, 9, 3);
         }
@@ -205,32 +204,32 @@ class Penawaran_la_pu extends CI_Controller
         $formatted_datetime = date('Y-m-d', strtotime($input_datetime));
         $formatted2_datetime = date('Y-m-d', strtotime($input2_datetime));
 
-        // $data = array(
-        //     'no_pelayanan' => $no_pelayanan,
-        //     'no_arsip' => $no_arsip,
-        //     'pelanggan' => $this->input->post('pelanggan'),
-        //     'produk' => $this->input->post('produk'),
-        //     'deskripsi' => $this->input->post('deskripsi'),
-        //     'tgl_berlaku' => $formatted_datetime,
-        //     'tgl_keberangkatan' => $formatted2_datetime,
-        //     'durasi' => $this->input->post('durasi'),
-        //     'berangkat_dari' => $this->input->post('berangkat_dari'),
-        //     'biaya' => $this->input->post('biaya_integer'),
-        //     'layanan_trmsk' => $this->input->post('layanan_content'),
-        //     'layanan_tdk_trmsk' => $this->input->post('layanan_content2'),
-        //     'catatan' => $this->input->post('catatan_content')
-        // );
+        $data = array(
+            'no_pelayanan' => $no_pelayanan,
+            'no_arsip' => $no_arsip,
+            'pelanggan' => $this->input->post('pelanggan'),
+            'produk' => $this->input->post('produk'),
+            'deskripsi' => $this->input->post('deskripsi'),
+            'tgl_berlaku' => $formatted_datetime,
+            'tgl_keberangkatan' => $formatted2_datetime,
+            'durasi' => $this->input->post('durasi'),
+            'berangkat_dari' => $this->input->post('berangkat_dari'),
+            'biaya' => $this->input->post('biaya_integer'),
+            'layanan_trmsk' => $this->input->post('layanan_content'),
+            'layanan_tdk_trmsk' => $this->input->post('layanan_content2'),
+            'catatan' => $this->input->post('catatan_content')
+        );
 
-        // $this->M_penawaran_la_pu->save($data);
+        $this->M_penawaran_la_pu->save($data);
 
         // INISIASI INPUT KE RUNDOWN
         $hari = $this->input->post('hari[]');
         $tanggal = $this->input->post('tanggal[]');
-        $kegiatan = $this->input->post('hidden_kegiatan[]');
+        $kegiatan = $this->input->post('kegiatan[]');
         // PERULANGAN INPUT RUNDOWN
         for ($i = 1; $i <= count($_POST['hari']); $i++) {
             $data2[] = array(
-                'no_pelayanan' => 'UMROH',
+                'no_pelayanan' => $no_pelayanan,
                 'hari' => $hari[$i],
                 'tanggal' => $tanggal[$i],
                 'kegiatan' => $kegiatan[$i]
@@ -239,21 +238,21 @@ class Penawaran_la_pu extends CI_Controller
         $this->M_penawaran_la_pu->save_rundown($data2);
 
         //DIVISI
-        // $id_user = $this->session->userdata('id_user');
-        // $divisi = $this->db->select('divisi')->from('tbl_data_user')->where('id_user', $id_user)->get()->row('divisi');
+        $id_user = $this->session->userdata('id_user');
+        $divisi = $this->db->select('divisi')->from('tbl_data_user')->where('id_user', $id_user)->get()->row('divisi');
 
-        // $data3 = array(
-        //     'id_user' => $id_user,
-        //     'nama_dokumen' => $this->input->post('produk'),
-        //     'penerbit' => $divisi,
-        //     'no_dokumen' => $no_pelayanan,
-        //     'tgl_dokumen' => date('Y-m-d H:i:s'),
-        //     'no_arsip' => $no_arsip
-        // );
+        $data3 = array(
+            'id_user' => $id_user,
+            'nama_dokumen' => $this->input->post('produk'),
+            'penerbit' => $divisi,
+            'no_dokumen' => $no_pelayanan,
+            'tgl_dokumen' => date('Y-m-d H:i:s'),
+            'no_arsip' => $no_arsip
+        );
 
-        // $this->M_penawaran_la_pu->save_arsip($data3);
-        echo json_encode($data2);
-        // echo json_encode(array("status" => TRUE));
+        $this->M_penawaran_la_pu->save_arsip($data3);
+        // echo json_encode($data2);
+        echo json_encode(array("status" => TRUE));
     }
 
     public function update($id)
@@ -293,12 +292,18 @@ class Penawaran_la_pu extends CI_Controller
     }
 
     // PRINTOUT FPDF
-    public function generate_pdf()
+    public function generate_pdf($id)
     {
-        $this->load->library('Pdf');
+        // $this->load->library('fpdf_html');
+        $this->load->library('pdf');
+
+        // INISIAI VARIABLE
+        $penawaran = $this->M_penawaran_la_pu->getPenawaran($id);
+        $rundowns = $this->M_penawaran_la_pu->get_rundown($penawaran->no_pelayanan);
 
         // Start FPDF
-        $pdf = new Pdf();
+        // $pdf = new Fpdf_html();
+        $pdf = new pdf();
         $pdf->AddPage();
 
         $pdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php');
@@ -322,23 +327,23 @@ class Penawaran_la_pu extends CI_Controller
         $pdf->SetFont('Poppins-Regular', '', 9);
         $pdf->Cell(38, 5, 'No', 0, 0,);
         $pdf->cell(5, 5, ':', 0, 0);
-        $pdf->Cell(50, 5, 'UMROH/9H/008/XI/2024', 0, 1);
+        $pdf->Cell(50, 5, $penawaran->no_pelayanan, 0, 1);
 
         $pdf->Cell(38, 5, 'Tanggal Dokumen', 0, 0);
         $pdf->Cell(5, 5, ':', 0, 0);
-        $pdf->Cell(50, 5, '19/11/2024 ', 0, 1);
+        $pdf->Cell(50, 5, $penawaran->created_at, 0, 1);
 
         $pdf->Cell(38, 5, 'Berlaku s.d.', 0, 0);
         $pdf->Cell(5, 5, ':', 0, 0);
-        $pdf->Cell(50, 5, '25/11/2024', 0, 1);
+        $pdf->Cell(50, 5, $penawaran->tgl_berlaku, 0, 1);
 
         $pdf->Cell(38, 5, 'Produk', 0, 0);
         $pdf->Cell(5, 5, ':', 0, 0);
-        $pdf->Cell(50, 5, 'Umroh 9 Hari Private', 0, 1);
+        $pdf->Cell(50, 5, $penawaran->produk, 0, 1);
 
         $pdf->Cell(38, 5, 'Kepada', 0, 0);
         $pdf->Cell(5, 5, ':', 0, 0);
-        $pdf->Cell(50, 5, 'Ny. Diah Nirawan', 0, 1);
+        $pdf->Cell(50, 5, $penawaran->pelanggan, 0, 1);
 
         // QRCODE
         // Define QR Code parameters
@@ -385,17 +390,17 @@ class Penawaran_la_pu extends CI_Controller
         $pdf->SetX($right_column_x); // Pindahkan posisi ke kolom kanan
         $pdf->Cell(26, 5, 'Keberangkatan', 0, 0);
         $pdf->cell(2, 5, ':', 0, 0);
-        $pdf->Cell(50, 5, '25 Januari 2025', 0, 1);
+        $pdf->Cell(50, 5, $penawaran->tgl_keberangkatan, 0, 1);
         // Durasi
         $pdf->SetX($right_column_x); // Pindahkan posisi ke kolom kanan
         $pdf->Cell(26, 5, 'Durasi', 0, 0);
         $pdf->cell(2, 5, ':', 0, 0);
-        $pdf->Cell(50, 5, '9 Hari', 0, 1);
+        $pdf->Cell(50, 5, $penawaran->durasi, 0, 1);
         // Berangkat dari
         $pdf->SetX($right_column_x); // Pindahkan posisi ke kolom kanan
         $pdf->Cell(26, 5, 'Berangkat Dari', 0, 0);
         $pdf->cell(2, 5, ':', 0, 0);
-        $pdf->Cell(50, 5, 'Jakarta', 0, 1);
+        $pdf->Cell(50, 5, $penawaran->berangkat_dari, 0, 1);
 
         $keberangkatanY = $pdf->GetY();
 
@@ -403,7 +408,7 @@ class Penawaran_la_pu extends CI_Controller
         $content_width = 100;  // Misal, lebar halaman adalah 210, jadi margin kiri 10 dan margin kanan 10
 
         // KONTEN DESKRIPSI
-        $body_text = "Umroh 9 hari private, Insya Allah dibimbing oleh Ustadz Ahlus Sunnah wal Jama'ah. Semua tata cara Ibadah Insya Allah sesuai dengan Al-Qur'an dan As-Sunnah.";
+        $body_text = $penawaran->deskripsi;
         $pdf->Sety(91);
         $pdf->MultiCell($content_width, 4, $body_text, 0, 'J');  // 'J' digunakan untuk rata kiri dan kanan (justify)
 
@@ -431,12 +436,9 @@ class Penawaran_la_pu extends CI_Controller
 
         // KONTEN LAYANAN TIDAK TERMASUK
         $pdf->SetX($right_column_x);
-        $body_text3 = "1. Pembuatan Paspor
-2. Vaksin Meningitis
-3. Akomodasi Dari Daerah ke Bandara
-4. Pengeluaran Pribadi
-5. Kelebihan Bagasi Kebutuhan Pribadi
-Lainnya";
+        $body_text3 = $penawaran->layanan_tdk_trmsk;
+        // $body_text3 = html_entity_decode($body_text3);
+        // $pdf->WriteHTML($body_text3);
         $pdf->MultiCell(80, 4, $body_text3, 0, 'J');
 
         $pdf->Ln(10); // Spasi antara paragraf
@@ -482,21 +484,7 @@ Lainnya";
 
         // KONTEN LAYANAN TERMASUK
         $pdf->Sety($trmskY + 5);
-        $body_text2 = "1. Visa Umroh
-2. Tiket Pesawat Internasional PP
-3. Akomodasi Sesuai Paket
-4. Makan 3x Sehari
-5. Ziarah Makkah & Madinah
-6. Muthowwif
-7. Pembimbing Ibadah
-8. Zamzam 5 Liter
-9. Tahallul Halq
-10. Albaik Chicken
-11. Perlengkapan
-12. Manasik & Lounge
-13. City Tour Makkah & Madinah
-14.Museum
-15. Kereta Cepat";
+        $body_text2 = $penawaran->layanan_trmsk;
         $pdf->MultiCell(86, 4, $body_text2, 0, 'J');
 
         // Dapatkan posisi Y setelah konten terakhir
@@ -522,27 +510,27 @@ Lainnya";
         // Spasi antara konten dan signature
         $pdf->Ln(2);
 
-        // QUAD
+        // BIAYA
         $pdf->SetFont('Poppins-Bold', '', 15);
-        $pdf->Cell(20, 5, 'QUAD', 0, 0,);
+        $pdf->Cell(20, 5, 'BIAYA', 0, 0,);
         $pdf->cell(5, 5, ':', 0, 0);
-        $pdf->Cell(50, 5, 'Rp. 38.900.000', 0, 1);
+        $pdf->Cell(50, 5, 'Rp. ' . number_format($penawaran->biaya, 0, ',', '.'), 0, 1);
 
-        // Spasi antara konten dan signature
-        $pdf->Ln(1);
+        // // Spasi antara konten dan signature
+        // $pdf->Ln(1);
 
-        // TRIPLE
-        $pdf->Cell(20, 5, 'TRIPLE', 0, 0);
-        $pdf->Cell(5, 5, ':', 0, 0);
-        $pdf->Cell(50, 5, 'Rp. 40.900.000', 0, 1);
+        // // TRIPLE
+        // $pdf->Cell(20, 5, 'TRIPLE', 0, 0);
+        // $pdf->Cell(5, 5, ':', 0, 0);
+        // $pdf->Cell(50, 5, 'Rp. 40.900.000', 0, 1);
 
-        // Spasi antara konten dan signature
-        $pdf->Ln(1);
+        // // Spasi antara konten dan signature
+        // $pdf->Ln(1);
 
-        // DOUBLE
-        $pdf->Cell(20, 5, 'DOUBLE', 0, 0);
-        $pdf->Cell(5, 5, ':', 0, 0);
-        $pdf->Cell(50, 5, 'Rp. 42.900.000', 0, 1);
+        // // DOUBLE
+        // $pdf->Cell(20, 5, 'DOUBLE', 0, 0);
+        // $pdf->Cell(5, 5, ':', 0, 0);
+        // $pdf->Cell(50, 5, 'Rp. 42.900.000', 0, 1);
 
         // Spasi antara konten dan signature
         $pdf->Ln(2);
@@ -587,28 +575,20 @@ Memberangkatkan";
         // TABLE CONTENT
         $pdf->SetFont('Poppins-Regular', '', 10);
 
-        $content_text = "• Jamaah berkumpul di SAHID Hotel Bandara Soekarno - Hatta pukul 04.00 WIB
-• Sholat subuh berjamaah
-• Sarapan dan Final Briefing dan Nasehat Safar oleh pembimbing
-• Keberangkatan menuju Bandara Soekarno-Hatta pukul 08.00 WIB
-• Jamaah berangkat menuju Jeddah menggunakan pesawat Saudia Airline SV817, beberapa jam
-sebelum landing di jeddah jamaah akan di ingatkan untuk mengganti pakaian Ihram, kemudian
-berniat Ihram.
-• InsyaAllah jamaah akan landing di Jeddah pukul 16.00 WSA, Setelah pemeriksaan keimigrasian
-dan pengambilan bagasi jamaah akan melanjutkan perjalanan menuju Makkah untuk check in
-oleh Muthowwif dan istirahat sejenak kemudian dilanjutkan untuk melakukan ibadah Umrah.
-• Setelah melakukan Ibadah Umrah jamaah akan menuju ke Hotel Untuk Beristirahat.";
+        foreach ($rundowns as $rundown) {
+            $content_text = $rundown->kegiatan;
 
-        // Hitung jumlah baris teks
-        $lines = $pdf->NbLines(127, $content_text);
+            // Hitung jumlah baris teks
+            $lines = $pdf->NbLines(127, $content_text);
 
-        // Hitung tinggi total
-        $height2 = $lines * 5;
+            // Hitung tinggi total
+            $height2 = $lines * 5;
 
-        $pdf->Cell(32, $height2, 'Kesatu', 1, 0, 'L');
-        $pdf->Cell(32, $height2, '25/01/2025', 1, 0, 'C');
+            $pdf->Cell(32, $height2, $rundown->hari, 1, 0, 'L');
+            $pdf->Cell(32, $height2, $rundown->tanggal, 1, 0, 'C');
 
-        $pdf->MultiCell(127, 5, $content_text, 1, 'L');
+            $pdf->MultiCell(127, 5, $content_text, 1, 'L');
+        }
 
         // Output the PDF
         $pdf->Output('I', 'Deklarasi.pdf');
