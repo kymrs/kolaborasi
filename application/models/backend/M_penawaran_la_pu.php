@@ -151,6 +151,12 @@ class M_penawaran_la_pu extends CI_Model
         return $this->db->insert_id();
     }
 
+    public function save_rundown($data)
+    {
+        $this->db->insert('tbl_rundown', $data);
+        return $this->db->insert_id();
+    }
+
     public function save_arsip($data)
     {
         $this->db->insert('tbl_arsip_pu', $data);

@@ -69,9 +69,9 @@ class Penawaran_la_pu extends CI_Controller
             $row[] = strtoupper($field->no_arsip);
             $row[] = $field->produk;
             $row[] = date("d M Y", strtotime($field->tgl_berlaku));
-            $row[] = $field->keberangkatan;
+            $row[] = $field->tgl_keberangkatan;
             $row[] = $field->durasi;
-            $row[] = $field->tempat;
+            $row[] = $field->berangkat_dari;
             $row[] = $field->biaya;
             $row[] = $field->pelanggan;
             $row[] = date("d M Y", strtotime($field->created_at));
@@ -107,7 +107,7 @@ class Penawaran_la_pu extends CI_Controller
             $params['savename'] = 'assets/backend/document/qrcode/qr-' . $no_arsip . '.png';
             $this->ciqrcode->generate($params);
 
-            $data['title'] = 'backend/penawaran_pu/penawaran_read_la_pu';
+            $data['title'] = 'backend/penawaran_pu/penawaran_read_la_pu_2';
             $data['title_view'] = 'Land Arrangement';
             $this->load->view('backend/home', $data);
         }
@@ -202,43 +202,58 @@ class Penawaran_la_pu extends CI_Controller
         $input2_datetime = $this->input->post('keberangkatan');
 
         // Ubah format dari 'Y-m-dTH:i' ke 'Y-m-d H:i:s' agar sesuai dengan format MySQL
-        $formatted_datetime = date('Y-m-d H:i:s', strtotime($input_datetime));
-        $formatted2_datetime = date('Y-m-d H:i:s', strtotime($input2_datetime));
+        $formatted_datetime = date('Y-m-d', strtotime($input_datetime));
+        $formatted2_datetime = date('Y-m-d', strtotime($input2_datetime));
 
+        // $data = array(
+        //     'no_pelayanan' => $no_pelayanan,
+        //     'no_arsip' => $no_arsip,
+        //     'pelanggan' => $this->input->post('pelanggan'),
+        //     'produk' => $this->input->post('produk'),
+        //     'deskripsi' => $this->input->post('deskripsi'),
+        //     'tgl_berlaku' => $formatted_datetime,
+        //     'tgl_keberangkatan' => $formatted2_datetime,
+        //     'durasi' => $this->input->post('durasi'),
+        //     'berangkat_dari' => $this->input->post('berangkat_dari'),
+        //     'biaya' => $this->input->post('biaya_integer'),
+        //     'layanan_trmsk' => $this->input->post('layanan_content'),
+        //     'layanan_tdk_trmsk' => $this->input->post('layanan_content2'),
+        //     'catatan' => $this->input->post('catatan_content')
+        // );
 
-        $data = array(
-            'no_pelayanan' => $no_pelayanan,
-            'no_arsip' => $no_arsip,
-            'pelanggan' => $this->input->post('pelanggan'),
-            'alamat' => $this->input->post('alamat'),
-            'produk' => $this->input->post('produk'),
-            'deskripsi' => $this->input->post('deskripsi'),
-            'tgl_berlaku' => $formatted_datetime,
-            'keberangkatan' => $formatted2_datetime,
-            'durasi' => $this->input->post('durasi'),
-            'tempat' => $this->input->post('tempat'),
-            'biaya' => $this->input->post('biaya_integer'),
-            'layanan_la' => $this->input->post('layanan_content'),
-            'pelanggan' => $this->input->post('pelanggan'),
-            'catatan' => $this->input->post('catatan_content')
-        );
+        // $this->M_penawaran_la_pu->save($data);
+
+        // INISIASI INPUT KE RUNDOWN
+        $hari = $this->input->post('hari[]');
+        $tanggal = $this->input->post('tanggal[]');
+        $kegiatan = $this->input->post('hidden_kegiatan[]');
+        // PERULANGAN INPUT RUNDOWN
+        for ($i = 1; $i <= count($_POST['hari']); $i++) {
+            $data2[] = array(
+                'no_pelayanan' => 'UMROH',
+                'hari' => $hari[$i],
+                'tanggal' => $tanggal[$i],
+                'kegiatan' => $kegiatan[$i]
+            );
+        }
+        $this->M_penawaran_la_pu->save_rundown($data2);
 
         //DIVISI
-        $id_user = $this->session->userdata('id_user');
-        $divisi = $this->db->select('divisi')->from('tbl_data_user')->where('id_user', $id_user)->get()->row('divisi');
+        // $id_user = $this->session->userdata('id_user');
+        // $divisi = $this->db->select('divisi')->from('tbl_data_user')->where('id_user', $id_user)->get()->row('divisi');
 
-        $data2 = array(
-            'id_user' => $id_user,
-            'nama_dokumen' => $this->input->post('produk'),
-            'penerbit' => $divisi,
-            'no_dokumen' => $no_pelayanan,
-            'tgl_dokumen' => date('Y-m-d H:i:s'),
-            'no_arsip' => $no_arsip
-        );
+        // $data3 = array(
+        //     'id_user' => $id_user,
+        //     'nama_dokumen' => $this->input->post('produk'),
+        //     'penerbit' => $divisi,
+        //     'no_dokumen' => $no_pelayanan,
+        //     'tgl_dokumen' => date('Y-m-d H:i:s'),
+        //     'no_arsip' => $no_arsip
+        // );
 
-        $this->M_penawaran_la_pu->save($data);
-        $this->M_penawaran_la_pu->save_arsip($data2);
-        echo json_encode(array("status" => TRUE));
+        // $this->M_penawaran_la_pu->save_arsip($data3);
+        echo json_encode($data2);
+        // echo json_encode(array("status" => TRUE));
     }
 
     public function update($id)
@@ -357,7 +372,7 @@ class Penawaran_la_pu extends CI_Controller
 
 
         // Spasi antara bagian atas dan konten
-        $pdf->Ln(5);
+        $pdf->Ln(2);
 
         // Konten text (justify)
         $pdf->SetFont('Poppins-Regular', '', 9);
@@ -382,19 +397,33 @@ class Penawaran_la_pu extends CI_Controller
         $pdf->cell(2, 5, ':', 0, 0);
         $pdf->Cell(50, 5, 'Jakarta', 0, 1);
 
+        $keberangkatanY = $pdf->GetY();
+
         // Mengatur lebar untuk konten agar justify bisa bekerja
         $content_width = 100;  // Misal, lebar halaman adalah 210, jadi margin kiri 10 dan margin kanan 10
 
         // KONTEN DESKRIPSI
-        $body_text = "Umroh 9 hari private, Insya Allah dibimbing oleh Ustadz Ahlus Sunnah wal Jama'ah.  Semua tata cara Ibadah Insya Allah sesuai dengan Al-Qur'an dan As-Sunnah.";
-        $pdf->Sety(95);
+        $body_text = "Umroh 9 hari private, Insya Allah dibimbing oleh Ustadz Ahlus Sunnah wal Jama'ah. Semua tata cara Ibadah Insya Allah sesuai dengan Al-Qur'an dan As-Sunnah.";
+        $pdf->Sety(91);
         $pdf->MultiCell($content_width, 4, $body_text, 0, 'J');  // 'J' digunakan untuk rata kiri dan kanan (justify)
 
-        $pdf->Ln(5); // Spasi antara paragraf
+        $deskripsiY = $pdf->GetY();
+
+        // Kondisi penggunaan Y
+        if ($deskripsiY > $keberangkatanY) {
+            $useY = $deskripsiY;
+        } else {
+            $useY = $keberangkatanY;
+        }
+
+
+        $pdf->Sety($useY + 5);
 
         // HEADER LAYANAN TERMASUK
         $pdf->SetFont('Poppins-Regular', '', 9);
         $pdf->Cell(100, 5, 'Layanan Termasuk :', 0, 0);
+
+        $trmskY = $pdf->GetY();
 
         // HEADER LAYANAN TIDAK TERMASUK
         $pdf->SetX($right_column_x); // Pindahkan posisi ke kolom kanan
@@ -448,8 +477,11 @@ Lainnya";
         $pdf->Cell(3, 5, ':', 0, 0);
         $pdf->Cell(40, 5, 'Direct Saudia Airlines SV826', 0, 1);
 
+        // Dapatkan posisi Y setelah konten terakhir
+        $tidak_termasukY = $pdf->GetY();
+
         // KONTEN LAYANAN TERMASUK
-        $pdf->Sety(117);
+        $pdf->Sety($trmskY + 5);
         $body_text2 = "1. Visa Umroh
 2. Tiket Pesawat Internasional PP
 3. Akomodasi Sesuai Paket
@@ -467,8 +499,18 @@ Lainnya";
 15. Kereta Cepat";
         $pdf->MultiCell(86, 4, $body_text2, 0, 'J');
 
-        // Spasi antara konten dan signature
-        $pdf->Ln(6);
+        // Dapatkan posisi Y setelah konten terakhir
+        $termasukY = $pdf->GetY();
+
+        // Kondisi penggunaan setY yang sesuai
+        if ($tidak_termasukY > $termasukY) {
+            $useY2 = $tidak_termasukY;
+        } else {
+            $useY2 = $termasukY;
+        }
+
+        // Set posisi header "HARGA PAKET"
+        $pdf->SetY($useY2 + 5);
 
         // HEADER HARGA PAKET
         $pdf->SetFont('Poppins-Regular', '', 11);
@@ -515,13 +557,15 @@ Lainnya";
         // Spasi antara konten dan signature
         $pdf->Ln(1);
 
+        $layananPastiY = $pdf->GetY();
+
         $body_text4 = "1. Konsultasi Gratis
 2. Gratis Bantuan Pembuatan Paspor
 3. Gratis Antar Dokumen & Perlengkapan
 4. Gratis Pendampingan Manasik";
         $pdf->MultiCell(84, 4, $body_text4, 0, 'J');
 
-        $pdf->Sety(225);
+        $pdf->Sety($layananPastiY);
         $pdf->SetX(96); // Pindahkan posisi ke kolom kanan
         $body_text5 = "5. Gratis Handling Keberangkatan
 6. Gratis Handling Kepulangan
