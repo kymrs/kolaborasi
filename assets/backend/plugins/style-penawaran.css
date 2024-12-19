@@ -143,12 +143,11 @@ main {
 .layanan-list {
     margin-top: 10px;
     display: flex;
+
 }
 
 .layanan-list .left-side {
-    /* background-color: red; */
     width: 50%;
-    min-height: 400px;
 }
 
 .layanan-list .left-side p {
@@ -158,26 +157,27 @@ main {
 .layanan-list .left-side ol {
     padding: 0;
     margin-left: 25px;
+    max-width: 100%;
 }
 
 .layanan-list .right-side {
-    margin-left: 83px;
-    max-height: 220px;
-    width: 50%;
+    margin-left: 20px;
+    width: 70%;
+}
+
+.layanan-list .right-side p {
+    margin-left: 95px;
+
 }
 
 .layanan-list .right-side ol {
     padding: 0;
-    margin-left: 17px;
+    margin-left: 110px;
 }
 
 /* Extra Content */
 .extra-content {
-    width: 450px;
-    height: 150px;
-    margin-top: -190px;
-    float: right;
-    /* top: 0; */
+    margin-bottom: 20px;
 }
 
 .extra-content table tr {
@@ -221,7 +221,7 @@ main {
 /* Harga Paket */
 .harga-paket {
     width: 100%;
-    margin-top: -20px;
+    margin-top: -10px;
 }
 
 .harga-paket .header {
@@ -377,15 +377,6 @@ main {
         left: -11.5px;
     }
 
-    .layanan-list .left-side {
-        min-height: 360px;
-    }
-
-    .extra-content {
-        margin-right: -40px;
-        margin-top: -160px;
-    }
-
     .extra-content table tr td:nth-child(3) {
         position: relative;
         bottom: 3.5px;
@@ -414,13 +405,12 @@ main {
         left: -1.5px;
     }
 
-    .layanan-list .left-side {
-        min-height: 330px;
+    .layanan-list .right-side {
+        width: 100%;
     }
 
     .extra-content {
-        margin-right: -100px;
-        margin-top: -150px;
+        /* margin-right: -100px; */
     }
 
     .extra-content table tr td:nth-child(1) {
@@ -447,17 +437,8 @@ main {
         left: 2px;
     }
 
-    .layanan-list .left-side {
-        min-height: 290px;
-    }
-
     .harga-paket table tr td {
         font-size: 0.9rem;
-    }
-
-    .extra-content {
-        margin-right: -140px;
-        margin-top: -140px;
     }
 
     .extra-content table tr {
@@ -563,6 +544,14 @@ main {
         margin: 0;
     }
 
+    .layanan-list .right-side p {
+        margin-left: 52px;
+    }
+
+    .layanan-list .right-side ol {
+        margin-left: 70px;
+    }
+
     .layanan-list .left-side p,
     .layanan-list .right-side p {
         margin-bottom: 2px;
@@ -573,15 +562,8 @@ main {
         right: 10px;
     }
 
-    .layanan-list .left-side {
-        min-height: 230px;
-    }
-
     .extra-content {
-        margin-right: -285px;
-        margin-top: -100px;
         font-size: 85%;
-        height: 100px;
     }
 
     .extra-content table tr {
@@ -598,10 +580,6 @@ main {
 
     .extra-content table tr td:nth-child(3) {
         bottom: 6.5px;
-    }
-
-    .extra-content table tr td:nth-child(3) {
-        max-width: 60px;
     }
 
     .extra-content table tr:nth-child(1) i.fa-star {

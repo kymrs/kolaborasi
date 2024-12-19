@@ -8,6 +8,7 @@ class Penawaran_pu extends CI_Controller
         parent::__construct();
         $this->load->model('backend/M_penawaran_pu');
         $this->load->model('backend/M_notifikasi');
+        $this->load->helper('date');
         $this->M_login->getsecurity();
         $this->load->library('ciqrcode');
     }
@@ -96,6 +97,7 @@ class Penawaran_pu extends CI_Controller
             $no_arsip = $data['penawaran']['no_arsip'];
             $data['layanan_termasuk'] = $this->M_penawaran_pu->getLayananTermasuk($kode);
             $data['layanan_tidak_termasuk'] = $this->M_penawaran_pu->getLayananTidakTermasuk($kode);
+            $data['hotel'] = $this->M_penawaran_pu->getHotel($kode);
 
             $params['data'] = 'https://arsip.pengenumroh.com/' . $no_arsip;
             $params['level'] = 'H';
@@ -116,6 +118,7 @@ class Penawaran_pu extends CI_Controller
         $data['title'] = 'backend/penawaran_pu/penawaran_form_pu';
         $this->db->order_by('nama_layanan', 'ASC');
         $data['layanan'] = $this->db->get('tbl_layanan')->result_array();
+        $data['hotel'] = $this->db->get('tbl_hotel_pu')->result_array();
         $data['title_view'] = 'Penawaran Form';
         $this->load->view('backend/home', $data);
     }
@@ -140,16 +143,18 @@ class Penawaran_pu extends CI_Controller
 
     public function generate_kode()
     {
-        $date = date('Y-m-d h:i:sa');
+        $date = date('Y-m-d');
         $kode = $this->M_penawaran_pu->max_kode($date)->row();
         if (empty($kode->no_pelayanan)) {
-            $no_urut = 1;
+            $no_urut = 0;
         } else {
-            $no_urut = substr($kode->no_pelayanan, 9, 3);
+            $no_urut = substr($kode->no_pelayanan, 6, 3);
         }
         $urutan = str_pad(number_format($no_urut + 1), 3, "0", STR_PAD_LEFT);
         $year = substr($date, 0, 4);
-        $data = 'UMROH/LA/' . $urutan . '/' . 'IX' . '/' . $year;
+        $bulan = substr($date, 5, 2);
+        $bulan_romawi = bulan_angka_ke_romawi((int)$bulan);
+        $data = 'UMROH/' . $urutan . '/' . $bulan_romawi . '/' . $year;
         echo json_encode($data);
     }
 
@@ -164,60 +169,69 @@ class Penawaran_pu extends CI_Controller
 
     public function add()
     {
-        // GENERATE NOMOR PELAYANAN
-        $date = date('Y-m-d h:i:sa');
+        $date = date('Y-m-d');
+        // GENERATE NO PELAYANAN
         $kode = $this->M_penawaran_pu->max_kode($date)->row();
         if (empty($kode->no_pelayanan)) {
-            $no_urut = 1;
-            $no_urut2 = 1; // Inisialisasi untuk arsip jika baru
+            $no_urut = 0;
         } else {
-            $no_urut = substr($kode->no_pelayanan, 9, 3);
-            $no_urut2 = substr($kode->no_arsip, 6) + 1;
+            $no_urut = substr($kode->no_pelayanan, 6, 3);
         }
         $urutan = str_pad(number_format($no_urut + 1), 3, "0", STR_PAD_LEFT);
         $year = substr($date, 0, 4);
-        $year2 = substr($date, 2, 2);
-        $no_pelayanan = 'UMROH/LA/' . $urutan . '/' . 'IX' . '/' . $year;
+        $bulan = substr($date, 5, 2);
+        $bulan_romawi = bulan_angka_ke_romawi((int)$bulan);
+        $no_pelayanan = 'UMROH/' . $urutan . '/' . $bulan_romawi . '/' . $year;
 
         // GENERATE NOMOR ARSIP
-        $urutan2 = str_pad($no_urut2, 2, "0", STR_PAD_LEFT);
-        $no_arsip = 'PU' . $year2 . '09' . $urutan2;
+        $date2 = date('y-m-d');
+        $kode2 = $this->M_penawaran_pu->max_kode_arsip($date2)->row();
+        if (empty($kode2->no_arsip)) {
+            $no_urut2 = 0;
+        } else {
+            $no_urut2 = substr($kode2->no_arsip, 6, 2);
+        }
+        $urutan2 = str_pad(number_format($no_urut2 + 1), 2, "0", STR_PAD_LEFT);
+        $year2 = substr($date2, 0, 2);
+        $bulan2 = substr($date2, 3, 2);
+        $no_arsip = 'PU' . $year2 . $bulan2 . $urutan2;
 
         //CONVERT TIME
         // Ambil nilai input datetime dari form
         $input_datetime = $this->input->post('tgl_berlaku');
-        $input2_datetime = $this->input->post('keberangkatan');
+        $input2_datetime = $this->input->post('tgl_keberangkatan');
 
-        // Ubah format dari 'Y-m-dTH:i' ke 'Y-m-d H:i:s' agar sesuai dengan format MySQL
-        $formatted_datetime = date('Y-m-d H:i:s', strtotime($input_datetime));
-        $formatted2_datetime = date('Y-m-d H:i:s', strtotime($input2_datetime));
+        // Ubah format dari 'Y-m-dTH:i' ke 'Y-m-d' agar sesuai dengan format MySQL
+        $formatted_datetime = date('Y-m-d', strtotime($input_datetime));
+        $formatted2_datetime = date('Y-m-d', strtotime($input2_datetime));
 
         // Data untuk tabel penawaran
         $data = array(
             'no_pelayanan' => $no_pelayanan,
             'no_arsip' => $no_arsip,
-            'pelanggan' => $this->input->post('pelanggan'),
-            'alamat' => $this->input->post('alamat'),
+            'pelanggan' => $this->input->post('title') . ' ' . $this->input->post('pelanggan'),
             'produk' => $this->input->post('produk'),
             'deskripsi' => $this->input->post('deskripsi'),
             'tgl_berlaku' => $formatted_datetime,
-            'keberangkatan' => $formatted2_datetime,
+            'tgl_keberangkatan' => $formatted2_datetime,
             'durasi' => $this->input->post('durasi'),
-            'tempat' => $this->input->post('tempat'),
-            'biaya' => preg_replace('/\D/', '', $this->input->post('biaya')),
-            'pelanggan' => $this->input->post('pelanggan'),
-            'catatan' => $this->input->post('catatan_content')
+            'berangkat_dari' => $this->input->post('berangkat_dari'),
+            'pkt_quad' => preg_replace('/\D/', '', $this->input->post('pkt_quad')),
+            'pkt_triple' => preg_replace('/\D/', '', $this->input->post('pkt_triple')),
+            'pkt_double' => preg_replace('/\D/', '', $this->input->post('pkt_double')),
+            'keberangkatan' => $this->input->post('keberangkatan'),
+            'kepulangan' => $this->input->post('kepulangan')
         );
 
         // Simpan data ke tabel penawaran dan ambil ID penawaran yang baru disimpan
         $id_penawaran = $this->M_penawaran_pu->save($data);
 
-        // Ambil data layanan dari input (id layanan, status, dan nominal)
+        // // Ambil data layanan dari input (id layanan, status, dan nominal)
         $ids = $this->input->post('id_layanan'); // ID layanan
         $statuses = $this->input->post('status'); // Status layanan (Y/N)
         $nominals = preg_replace('/\D/', '', $this->input->post('nominal')); // Nominal biaya layanan
 
-        // Siapkan array untuk insert ke tabel tbl_penawaran_detail
+        // Siapkan array untuk insert ke tabel tbl_penawaran_detail_lyn
         $detail_data = [];
         if (is_array($ids) && is_array($statuses) && is_array($nominals)) {
             foreach ($ids as $key => $id_layanan) {
@@ -243,9 +257,47 @@ class Penawaran_pu extends CI_Controller
             // Log atau print untuk memeriksa data yang akan diinsert
             log_message('info', 'Detail Data to insert: ' . print_r($detail_data, TRUE));
 
-            // Simpan detail layanan ke tabel tbl_penawaran_detail
+            // Simpan detail layanan ke tabel tbl_penawaran_detail_lyn
             if (!empty($detail_data)) {
                 $this->M_penawaran_pu->insert_penawaran_detail($detail_data);
+            }
+
+            // Proses save data hotel
+
+            // Ambil data yang dikirimkan
+            $id_hotel = $this->input->post('id_hotel'); // Array ID hotel
+            $status2 = $this->input->post('status2');   // Array status hotel
+
+            // Validasi sederhana untuk memastikan data ada
+            if (!empty($id_hotel) && is_array($id_hotel) && !empty($status2) && is_array($status2)) {
+                // Gabungkan ID hotel dan status2 menjadi satu array
+                $hotel_data = [];
+                foreach ($id_hotel as $index => $id) {
+                    // Pastikan status2 memiliki nilai sebelum menambahkannya ke array
+                    if (!empty($status2[$index])) {
+                        $hotel_data[] = [
+                            'id_penawaran' => $id_penawaran, // ID penawaran yang baru disimpan
+                            'id_hotel' => $id,
+                            'is_active' => $status2[$index], // Nilai status2
+                        ];
+                    }
+                }
+
+                // Hanya insert jika ada data yang valid
+                if (!empty($hotel_data)) {
+                    $result = $this->M_penawaran_pu->insert_penawaran_detail2($hotel_data);
+
+                    // Berikan respons berdasarkan hasil simpan
+                    if ($result) {
+                        $this->session->set_flashdata('success', 'Data hotel berhasil disimpan.');
+                    } else {
+                        $this->session->set_flashdata('error', 'Gagal menyimpan data hotel.');
+                    }
+                } else {
+                    $this->session->set_flashdata('error', 'Tidak ada data hotel yang valid untuk disimpan.');
+                }
+            } else {
+                $this->session->set_flashdata('error', 'Data hotel tidak valid.');
             }
         }
         // Kirim response
@@ -309,12 +361,12 @@ class Penawaran_pu extends CI_Controller
             $extra_input = isset($extra_inputs[$index]) ? $extra_inputs[$index] : null; // Ambil nominal
 
             // Cek apakah layanan sudah ada di database
-            $existing_layanan = $this->db->get_where('tbl_penawaran_detail', ['id_layanan' => $layanan_id, 'id_penawaran' => $id])->row();
+            $existing_layanan = $this->db->get_where('tbl_penawaran_detail_lyn', ['id_layanan' => $layanan_id, 'id_penawaran' => $id])->row();
 
             // Jika status kosong, hapus dari database
             if (empty($status)) {
                 if ($existing_layanan) {
-                    $this->db->delete('tbl_penawaran_detail', ['id' => $existing_layanan->id]);
+                    $this->db->delete('tbl_penawaran_detail_lyn', ['id' => $existing_layanan->id]);
                 }
                 continue; // Lewati iterasi ini dan lanjutkan ke layanan berikutnya
             }
@@ -332,7 +384,7 @@ class Penawaran_pu extends CI_Controller
                         'is_active' => $status . ' ' . $extra_input // Gabungkan status dengan nominal
                     );
                 }
-                $this->db->update('tbl_penawaran_detail', $data_layanan_update, ['id' => $existing_layanan->id]);
+                $this->db->update('tbl_penawaran_detail_lyn', $data_layanan_update, ['id' => $existing_layanan->id]);
             } else {
                 // Jika layanan tidak ada, lakukan insert
                 $data_layanan_insert = array(
@@ -343,7 +395,7 @@ class Penawaran_pu extends CI_Controller
 
                 // Debugging: Tampilkan data yang akan diinsert
                 // var_dump($data_layanan_insert);
-                $this->db->insert('tbl_penawaran_detail', $data_layanan_insert);
+                $this->db->insert('tbl_penawaran_detail_lyn', $data_layanan_insert);
             }
         }
         // Mengembalikan status berhasil
@@ -354,7 +406,7 @@ class Penawaran_pu extends CI_Controller
     function delete($id)
     {
         $this->db->delete('tbl_penawaran', ['id' => $id]);
-        $this->db->delete('tbl_penawaran_detail', ['id_penawaran' => $id]);
+        $this->db->delete('tbl_penawaran_detail_lyn', ['id_penawaran' => $id]);
         echo json_encode(array("status" => TRUE));
     }
 

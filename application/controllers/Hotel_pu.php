@@ -41,7 +41,7 @@ class Hotel_pu extends CI_Controller
         foreach ($list as $field) {
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
-            $action_edit = ($edit == 'Y') ? '<a href="hotel_pu/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
+            $action_edit = ($edit == 'Y') ? '<a class="btn btn-warning btn-circle btn-sm" title="Edit" onclick="edit_data(' . "'" . $field->id . "'" . ')"><i class="fa fa-edit"></i></a>&nbsp;' : '';
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
 
             $action = $action_edit . $action_delete;
@@ -51,7 +51,19 @@ class Hotel_pu extends CI_Controller
             $row[] = $no;
             $row[] = $action;
             $row[] = $field->nama_hotel;
-            $row[] = $field->rating;
+            $rating_star = '';
+            if ($field->rating == 1) {
+                $rating_star .= '<i class="fas fa-star"></i>';
+            } else if ($field->rating == 2) {
+                $rating_star .= '<i class="fas fa-star"></i><i class="fas fa-star"></i>';
+            } else if ($field->rating == 3) {
+                $rating_star .= '<i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>';
+            } else if ($field->rating == 4) {
+                $rating_star .= '<i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>';
+            } else if ($field->rating == 5) {
+                $rating_star .= '<i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>';
+            }
+            $row[] = $rating_star;
             $row[] = $field->kota;
             $row[] = $field->negara;
             $row[] = $field->created_at;
@@ -92,10 +104,19 @@ class Hotel_pu extends CI_Controller
         $this->load->view('backend/home', $data);
     }
 
+    function get_id($id)
+    {
+        $data = $this->M_hotel_pu->get_by_id($id);
+        echo json_encode($data);
+    }
+
     public function add()
     {
         $data = array(
-            ''
+            'nama_hotel' => $this->input->post('nama_hotel'),
+            'kota' => $this->input->post('kota'),
+            'negara' => $this->input->post('negara'),
+            'rating' => $this->input->post('rating')
         );
 
         $this->M_hotel_pu->save($data);
@@ -105,7 +126,10 @@ class Hotel_pu extends CI_Controller
     public function update()
     {
         $data = array(
-            ''
+            'nama_hotel' => $this->input->post('nama_hotel'),
+            'kota' => $this->input->post('kota'),
+            'negara' => $this->input->post('negara'),
+            'rating' => $this->input->post('rating')
         );
         $this->db->where('id', $this->input->post('id'));
         $this->db->update('tbl_Hotel_pu', $data);
