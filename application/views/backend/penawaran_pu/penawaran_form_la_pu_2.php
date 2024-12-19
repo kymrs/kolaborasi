@@ -22,6 +22,10 @@
             transform: translateY(-4px);
         }
 
+        .front-add {
+            background-color: #10b53c;
+        }
+
         .front-aksi {
             background-color: #0075FF;
         }
@@ -65,12 +69,6 @@
                                     </div>
                                 </div>
                                 <div class="mb-3 row">
-                                    <label class="col-sm-4">Alamat</label>
-                                    <div class="col-sm-8">
-                                        <textarea id="alamat" rows="4" name="alamat" class="form-control"></textarea>
-                                    </div>
-                                </div>
-                                <div class="mb-3 row">
                                     <label class="col-sm-4">Produk</label>
                                     <div class="col-sm-8">
                                         <input type="text" class="form-control" id="produk" name="produk">
@@ -79,16 +77,13 @@
                                 <div class="mb-3 row">
                                     <label class="col-sm-4">Tanggal berlaku:</label>
                                     <div class="col-sm-8">
-                                        <input type="datetime-local" id="tgl_berlaku" name="tgl_berlaku" class="form-control mb-3">
+                                        <input type="date" id="tgl_berlaku" name="tgl_berlaku" class="form-control">
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="col-md-6">
                                 <div class="mb-3 row">
                                     <label class="col-sm-4">Keberangkatan:</label>
                                     <div class="col-sm-8">
-                                        <input type="datetime-local" id="keberangkatan" name="keberangkatan" class="form-control">
+                                        <input type="date" id="tgl_keberangkatan" name="tgl_keberangkatan" class="form-control">
                                     </div>
                                 </div>
                                 <div class="mb-3 row">
@@ -97,10 +92,13 @@
                                         <input type="number" id="durasi" name="durasi" class="form-control w-50">
                                     </div>
                                 </div>
+                            </div>
+
+                            <div class="col-md-6">
                                 <div class="mb-3 row">
-                                    <label class="col-sm-4">Tempat:</label>
+                                    <label class="col-sm-4">Berangkat Dari:</label>
                                     <div class="col-sm-8">
-                                        <input type="text" id="tempat" name="tempat" class="form-control w-50">
+                                        <input type="text" id="berangkat_dari" name="berangkat_dari" class="form-control w-50">
                                     </div>
                                 </div>
                                 <div class="mb-3 row">
@@ -122,9 +120,18 @@
                         <div class="container-custom mx-auto mt-2 mb-4 row">
                             <!-- Layanan Termasuk -->
                             <div class="col-md-12 mb-3">
-                                <label class="section-title">Layanan:</label>
-                                <div id="layanan" name="layanan" class="border p-2" style="height: 200px;"></div>
+                                <label class="section-title">Layanan Termasuk:</label>
+                                <div id="layanan_termasuk" name="layanan_termasuk" class="border p-2" style="height: 200px;"></div>
                                 <input type="hidden" name="layanan_content" id="layanan_content">
+                            </div>
+                        </div>
+
+                        <div class="container-custom mx-auto mt-2 mb-4 row">
+                            <!-- Layanan Tidak Termasuk -->
+                            <div class="col-md-12 mb-3">
+                                <label class="section-title">Layanan Tidak Termasuk:</label>
+                                <div id="layanan_tidak_termasuk" name="layanan_tidak_termasuk" class="border p-2" style="height: 200px;"></div>
+                                <input type="hidden" name="layanan_content2" id="layanan_content2">
                             </div>
                         </div>
 
@@ -135,6 +142,28 @@
                                 <div id="extra" name="extra" class="border p-2" style="height: 150px;"></div>
                                 <input type="hidden" name="catatan_content" id="catatan_content">
                             </div>
+                        </div>
+
+                        <!-- BUTTON TAMBAH FORM -->
+                        <div class="mt-3">
+                            <button type="button" class="btn-special btn-success btn-sm" id="add-row" style="background-color: green;"><span class="front front-add"><i class="fa fa-plus" aria-hidden="true"></i> Add</span></button>
+                        </div>
+                        <!-- Rundown Kegiatan -->
+                        <div class="mt-2 mb-3" style="overflow-x: scroll;">
+                            <table class="table table-bordered">
+                                <thead class="thead-dark">
+                                    <tr>
+                                        <th scope="col" style="width: 20px;" class="text-center">No</th>
+                                        <th scope="col" style="width: 80px;" class="text-center">Hari</th>
+                                        <th scope="col" style="width: 80px;" class="text-center">Tanggal</th>
+                                        <th scope="col" style="width: 330px;" class="text-center">Kegiatan</th>
+                                        <th scope="col" style="width: 80px;" class="text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="input-container">
+                                    <!-- CONTAINER INPUTAN -->
+                                </tbody>
+                            </table>
                         </div>
 
                         <!-- Hidden inputs -->
@@ -218,7 +247,7 @@
         ['clean']
     ];
 
-    const quill = new Quill('#layanan', {
+    const quill = new Quill('#layanan_termasuk', {
         modules: {
             toolbar: toolbarOptions
         },
@@ -226,7 +255,15 @@
         theme: 'snow',
     });
 
-    const quill2 = new Quill('#extra', {
+    const quill2 = new Quill('#layanan_tidak_termasuk', {
+        modules: {
+            toolbar: toolbarOptions
+        },
+        placeholder: 'Field layanan',
+        theme: 'snow',
+    });
+
+    const quill3 = new Quill('#extra', {
         modules: {
             toolbar: toolbarOptions
         },
@@ -237,9 +274,11 @@
     document.getElementById("form").onsubmit = function() {
         // Get HTML content from Quill editor
         var layananContent = quill.root.innerHTML;
-        var catatanContent = quill2.root.innerHTML;
+        var layananContent2 = quill2.root.innerHTML;
+        var catatanContent = quill3.root.innerHTML;
         // Set it to hidden input
         document.getElementById("layanan_content").value = layananContent;
+        document.getElementById("layanan_content2").value = layananContent2;
         document.getElementById("catatan_content").value = catatanContent;
     };
 
@@ -380,6 +419,7 @@
                 data: $.param(formData), // Gunakan data form yang sudah ditambahkan nilai integer
                 dataType: "JSON",
                 success: function(data) {
+                    console.log(data);
                     if (data.status) //if success close modal and reload ajax table
                     {
                         Swal.fire({
@@ -478,6 +518,94 @@
                 $(element).removeClass('is-invalid'); // Hapus kelas jika input valid
             },
             focusInvalid: false, // Disable auto-focus on the first invalid field
+        });
+
+        let rowCount = 0;
+
+        function addRow() {
+            rowCount++;
+            const row = `
+        <tr id="row-${rowCount}">
+            <td class="row-number">${rowCount}</td>
+            <td>
+                <input type="text" class="form-control" name="hari[${rowCount}]" placeholder="Input here..." />
+            </td>
+            <td>
+                <input type="date" class="form-control" id="tanggal-${rowCount}" name="tanggal[${rowCount}]" placeholder="Input here..." />
+                <input type="hidden" id="hidden_nominal${rowCount}" name="hidden_nominal[${rowCount}]" value="">
+            </td>
+            <td>
+                <div id="kegiatan-${rowCount}" class="border p-2" style="height: 200px;"></div>
+                <input type="text" name="hidden_kegiatan[${rowCount}]" id="hidden_kegiatan[${rowCount}]" value="">
+            </td>
+            <td>
+                <span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span>
+            </td>
+        </tr>
+    `;
+
+            // Append row to container
+            $('#input-container').append(row);
+
+            // Initialize Quill editor
+            const quillKegiatan = new Quill(`#kegiatan-${rowCount}`, {
+                theme: 'snow'
+            });
+
+            // Sync Quill content with hidden input
+            quillKegiatan.on('text-change', function() {
+                document.getElementById(`hidden_kegiatan[${rowCount}]`).value = quillKegiatan.root.innerHTML;
+            });
+
+            updateSubmitButtonState();
+
+            // Validation rules for dynamically added inputs
+            $("#form").validate().settings.rules[`hari[${rowCount}]`] = {
+                required: true
+            };
+            $("#form").validate().settings.rules[`tanggal[${rowCount}]`] = {
+                required: true
+            };
+            $("#form").validate().settings.rules[`hidden_kegiatan[${rowCount}]`] = {
+                required: true
+            };
+        }
+
+        // Delete row function
+        function deleteRow(id) {
+            $(`#row-${id}`).remove();
+            reorderRows();
+            updateSubmitButtonState();
+        }
+
+        // Reorder rows after a row is deleted
+        function reorderRows() {
+            $('#input-container tr').each(function(index) {
+                const newRowNumber = index + 1;
+                $(this).attr('id', `row-${newRowNumber}`);
+                $(this).find('.row-number').text(newRowNumber);
+                $(this).find('input[name^="hari"]').attr('name', `hari[${newRowNumber}]`);
+                $(this).find('input[name^="tanggal"]').attr('name', `tanggal[${newRowNumber}]`).attr('id', `tanggal-${newRowNumber}`);
+                $(this).find('input[name^="hidden_nominal"]').attr('name', `hidden_nominal[${newRowNumber}]`).attr('id', `hidden_nominal${newRowNumber}`);
+                $(this).find('div[id^="kegiatan"]').attr('id', `kegiatan-${newRowNumber}`);
+                $(this).find('input[name^="hidden_kegiatan"]').attr('name', `hidden_kegiatan[${newRowNumber}]`).attr('id', `hidden_kegiatan[${newRowNumber}]`);
+                $(this).find('.delete-btn').attr('data-id', newRowNumber);
+            });
+            rowCount = $('#input-container tr').length;
+        }
+
+        $('#add-row').click(function() {
+            addRow();
+        });
+
+        function updateSubmitButtonState() {
+            const rowCount = $('#input-container tr').length;
+            $('.aksi').prop('disabled', rowCount === 0);
+        }
+
+        $(document).on('click', '.delete-btn', function() {
+            const id = $(this).data('id');
+            deleteRow(id);
         });
 
 
