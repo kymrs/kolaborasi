@@ -56,7 +56,7 @@ class Penawaran_la_pu extends CI_Controller
             $action_read = ($read == 'Y') ? '<a href="penawaran_la_pu/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
             $action_edit = ($edit == 'Y') ? '<a href="penawaran_la_pu/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
-            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="penawaran_la_pu/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
+            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="penawaran_la_pu/generate_pdf2/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             $action = $action_read . $action_edit . $action_delete . $action_print;
@@ -225,7 +225,7 @@ class Penawaran_la_pu extends CI_Controller
         // INISIASI INPUT KE RUNDOWN
         $hari = $this->input->post('hari[]');
         $tanggal = $this->input->post('tanggal[]');
-        $kegiatan = $this->input->post('kegiatan[]');
+        $kegiatan = $this->input->post('hidden_kegiatan[]');
         // PERULANGAN INPUT RUNDOWN
         for ($i = 1; $i <= count($_POST['hari']); $i++) {
             $data2[] = array(
@@ -291,10 +291,365 @@ class Penawaran_la_pu extends CI_Controller
         echo json_encode(array("status" => TRUE));
     }
 
+    // PRINTOUT TCPDF
+    public function generate_pdf2($id)
+    {
+        // Load
+        $this->load->library('t_cpdf');
+
+        // INISIAI VARIABLE
+        $penawaran = $this->M_penawaran_la_pu->getPenawaran($id);
+        $rundowns = $this->M_penawaran_la_pu->get_rundown($penawaran->no_pelayanan);
+
+        // Initialize the TCPDF object
+        $t_cpdf = new t_cpdf('P', 'mm', 'A4', true, 'UTF-8', false);
+
+        // Set document properties
+        $t_cpdf->SetCreator(PDF_CREATOR);
+        $t_cpdf->SetAuthor('Author Name');
+        $t_cpdf->SetTitle('Penawaran PDF');
+
+        // Add a new page
+        $t_cpdf->AddPage();
+
+        // $t_cpdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php');
+        // $t_cpdf->AddFont('Poppins-Bold', '', 'Poppins-Bold.php');
+
+        // Mengatur posisi Y untuk menggeser seluruh konten ke bawah
+        $t_cpdf->SetY(35); // Ganti 50 dengan jumlah yang Anda inginkan
+
+        // Pilih font untuk isi
+        $t_cpdf->SetFont('Poppins-Bold', '', 24);
+
+        // Margin setup
+        $left_margin = 10;
+        $t_cpdf->SetLeftMargin($left_margin);  // Mengatur margin kiri
+
+        // Bagian TO
+        $t_cpdf->SetXY($left_margin, $t_cpdf->GetY());
+        $t_cpdf->Cell(0, 10, 'PENAWARAN', 0, 1, 'L');
+
+        // Name and title (Creative Director)
+        $t_cpdf->SetFont('Poppins-Regular', '', 9);
+        $t_cpdf->Cell(38, 5, 'No', 0, 0,);
+        $t_cpdf->cell(5, 5, ':', 0, 0);
+        $t_cpdf->Cell(50, 5, $penawaran->no_pelayanan, 0, 1);
+
+        $t_cpdf->Cell(38, 5, 'Tanggal Dokumen', 0, 0);
+        $t_cpdf->Cell(5, 5, ':', 0, 0);
+        $t_cpdf->Cell(50, 5, $penawaran->created_at, 0, 1);
+
+        $t_cpdf->Cell(38, 5, 'Berlaku s.d.', 0, 0);
+        $t_cpdf->Cell(5, 5, ':', 0, 0);
+        $t_cpdf->Cell(50, 5, $penawaran->tgl_berlaku, 0, 1);
+
+        $t_cpdf->Cell(38, 5, 'Produk', 0, 0);
+        $t_cpdf->Cell(5, 5, ':', 0, 0);
+        $t_cpdf->Cell(50, 5, $penawaran->produk, 0, 1);
+
+        $t_cpdf->Cell(38, 5, 'Kepada', 0, 0);
+        $t_cpdf->Cell(5, 5, ':', 0, 0);
+        $t_cpdf->Cell(50, 5, $penawaran->pelanggan, 0, 1);
+
+        // QRCODE
+        // Define QR Code parameters
+        $params['data'] = 'https://example.com'; // Data to encode in QR
+        $params['level'] = 'H'; // QR Code error correction level
+        $params['size'] = 5; // Size of QR Code
+        $qr_image_path = 'assets/qrcode.png'; // Path to save QR Code image
+        $params['savename'] = FCPATH . $qr_image_path;
+
+        // Generate QR Code
+        $this->ciqrcode->generate($params);
+
+        // Add QR Code image
+        if (file_exists($qr_image_path)) { // Check if the file exists
+            $t_cpdf->Image($qr_image_path, 140, 37, 32, 32); // Position (X,Y), Width, Height
+
+            // Delete the QR Code file after using it
+            unlink($qr_image_path);
+        } else {
+            $t_cpdf->Text(10, 30, 'QR Code image not found.');
+        }
+
+        $t_cpdf->Ln(5); // SPASI
+
+        // HEADER LAYANAN
+        $t_cpdf->SetFont('Poppins-Regular', '', 11);
+        $t_cpdf->SetFillColor(252, 118, 19);
+        $t_cpdf->SetTextColor(255, 255, 255);
+        $t_cpdf->Cell(0, 10, 'LAYANAN', 0, 1, 'L', true);
+        $t_cpdf->SetTextColor(0, 0, 0);
+
+
+        // Spasi antara bagian atas dan konten
+        $t_cpdf->Ln(2);
+
+        // Konten text (justify)
+        $t_cpdf->SetFont('Poppins-Regular', '', 9);
+
+        // HEADER DESKRIPSI
+        $t_cpdf->Cell(100, 5, 'Deskripsi :', 0, 0);
+        $right_column_x = 120;
+
+        // Keberangkatan
+        $t_cpdf->SetX($right_column_x); // Pindahkan posisi ke kolom kanan
+        $t_cpdf->Cell(26, 5, 'Keberangkatan', 0, 0);
+        $t_cpdf->cell(2, 5, ':', 0, 0);
+        $t_cpdf->Cell(50, 5, $penawaran->tgl_keberangkatan, 0, 1);
+        // Durasi
+        $t_cpdf->SetX($right_column_x); // Pindahkan posisi ke kolom kanan
+        $t_cpdf->Cell(26, 5, 'Durasi', 0, 0);
+        $t_cpdf->cell(2, 5, ':', 0, 0);
+        $t_cpdf->Cell(50, 5, $penawaran->durasi, 0, 1);
+        // Berangkat dari
+        $t_cpdf->SetX($right_column_x); // Pindahkan posisi ke kolom kanan
+        $t_cpdf->Cell(26, 5, 'Berangkat Dari', 0, 0);
+        $t_cpdf->cell(2, 5, ':', 0, 0);
+        $t_cpdf->Cell(50, 5, $penawaran->berangkat_dari, 0, 1);
+
+        $keberangkatanY = $t_cpdf->GetY();
+
+        // Mengatur lebar untuk konten agar justify bisa bekerja
+        $content_width = 100;  // Misal, lebar halaman adalah 210, jadi margin kiri 10 dan margin kanan 10
+
+        // KONTEN DESKRIPSI
+        $body_text = $penawaran->deskripsi;
+        $t_cpdf->Sety(91 + 1);
+        $t_cpdf->MultiCell($content_width, 4, $body_text, 0, 'J');  // 'J' digunakan untuk rata kiri dan kanan (justify)
+
+        $deskripsiY = $t_cpdf->GetY();
+
+        // Kondisi penggunaan Y
+        if ($deskripsiY > $keberangkatanY) {
+            $useY = $deskripsiY;
+        } else {
+            $useY = $keberangkatanY;
+        }
+
+
+        $t_cpdf->Sety($useY + 5);
+
+        // HEADER LAYANAN TERMASUK
+        $t_cpdf->SetFont('Poppins-Regular', '', 9);
+        $t_cpdf->Cell(100, 5, 'Layanan Termasuk :', 0, 0);
+
+        $trmskY = $t_cpdf->GetY();
+
+        // HEADER LAYANAN TIDAK TERMASUK
+        $t_cpdf->SetX($right_column_x); // Pindahkan posisi ke kolom kanan
+        $t_cpdf->Cell(80, 5, 'Layanan Tidak Termasuk :', 0, 1);
+
+        // KONTEN LAYANAN TIDAK TERMASUK
+        $t_cpdf->SetX($right_column_x);
+        $body_text3 = $penawaran->layanan_tdk_trmsk;
+        // $body_text3 = html_entity_decode($body_text3);
+        // $t_cpdf->WriteHTML($body_text3);
+        // $t_cpdf->MultiCell(80, 4, $body_text3, 0, 'J');
+        $t_cpdf->writeHTMLCell(
+            80,                    // Lebar sel
+            0,                     // Tinggi sel (0 berarti tinggi dinamis)
+            111,       // Posisi X
+            $t_cpdf->GetY(),       // Posisi Y saat ini
+            $body_text3,           // Konten HTML
+            0,                     // Border (0 = tidak ada border)
+            1,                     // Line break (1 = pindah ke baris baru setelah cell)
+            false,                 // Fill (false = tidak ada latar belakang)
+            true,                  // Auto padding
+            'L',                   // Align (L = kiri)
+            true                   // Konversi tag HTML
+        );
+
+        $t_cpdf->Ln(10); // Spasi antara paragraf
+
+        // KONTEN HOTEL DAN PENERBANGAN
+        $t_cpdf->SetFont('Poppins-Regular', '', 9);
+        $t_cpdf->SetX(100); // Pindahkan posisi ke kolom kanan
+        $t_cpdf->Cell(25, 5, 'Hotel Makkah', 0, 0,);
+        $t_cpdf->SetFont('ZapfDingbats');
+        $stars = '';
+        for ($i = 0; $i < 5; $i++) {
+            $stars .= chr(73);
+        }
+        $t_cpdf->cell(15, 5, $stars, 0, 0);
+        $t_cpdf->SetFont('Poppins-Regular', '', 9);
+        $t_cpdf->cell(3, 5, ':', 0, 0);
+        $t_cpdf->Cell(40, 5, 'Sofwah Orchid', 0, 1);
+
+        $t_cpdf->SetX(100); // Pindahkan posisi ke kolom kanan
+        $t_cpdf->Cell(25, 5, 'Hotel Madinah', 0, 0);
+        $t_cpdf->SetFont('ZapfDingbats');
+        $stars2 = '';
+        for ($i = 0; $i < 5; $i++) {
+            $stars2 .= chr(73);
+        }
+        $t_cpdf->cell(15, 5, $stars2, 0, 0);
+        $t_cpdf->SetFont('Poppins-Regular', '', 9);
+        $t_cpdf->Cell(3, 5, ':', 0, 0);
+        $t_cpdf->Cell(40, 5, 'Taiba Front', 0, 1);
+
+        $t_cpdf->SetX(100); // Pindahkan posisi ke kolom kanan
+        $t_cpdf->Cell(40, 5, 'Keberangkatan', 0, 0);
+        $t_cpdf->Cell(3, 5, ':', 0, 0);
+        $t_cpdf->Cell(40, 5, 'Direct Saudia Airlines SV817', 0, 1);
+
+        $t_cpdf->SetX(100); // Pindahkan posisi ke kolom kanan
+        $t_cpdf->Cell(40, 5, 'Kepulangan', 0, 0);
+        $t_cpdf->Cell(3, 5, ':', 0, 0);
+        $t_cpdf->Cell(40, 5, 'Direct Saudia Airlines SV826', 0, 1);
+
+        // Dapatkan posisi Y setelah konten terakhir
+        $tidak_termasukY = $t_cpdf->GetY();
+
+        // KONTEN LAYANAN TERMASUK
+        $t_cpdf->Sety($trmskY + 5);
+        $body_text2 = $penawaran->layanan_trmsk;
+        // $t_cpdf->MultiCell(86, 4, $body_text2, 0, 'L');
+        // $t_cpdf->writeHTML($body_text2, true, false, true, false, '');
+        $t_cpdf->writeHTMLCell(
+            80,                    // Lebar sel
+            0,                     // Tinggi sel (0 berarti tinggi dinamis)
+            2,       // Posisi X
+            $t_cpdf->GetY(),       // Posisi Y saat ini
+            $body_text2,           // Konten HTML
+            0,                     // Border (0 = tidak ada border)
+            1,                     // Line break (1 = pindah ke baris baru setelah cell)
+            false,                 // Fill (false = tidak ada latar belakang)
+            true,                  // Auto padding
+            'L',                   // Align (L = kiri)
+            true                   // Konversi tag HTML
+        );
+
+        // Dapatkan posisi Y setelah konten terakhir
+        $termasukY = $t_cpdf->GetY();
+
+        // Kondisi penggunaan setY yang sesuai
+        if ($tidak_termasukY > $termasukY) {
+            $useY2 = $tidak_termasukY;
+        } else {
+            $useY2 = $termasukY;
+        }
+
+        // Set posisi header "HARGA PAKET"
+        $t_cpdf->SetY($useY2 + 5);
+
+        // HEADER HARGA PAKET
+        $t_cpdf->SetFont('Poppins-Regular', '', 11);
+        $t_cpdf->SetFillColor(252, 118, 19);
+        $t_cpdf->SetTextColor(255, 255, 255);
+        $t_cpdf->Cell(0, 10, 'HARGA PAKET', 0, 1, 'L', true);
+        $t_cpdf->SetTextColor(0, 0, 0);
+
+        // Spasi antara konten dan signature
+        $t_cpdf->Ln(2);
+
+        // BIAYA
+        $t_cpdf->SetFont('Poppins-Bold', '', 15);
+        $t_cpdf->Cell(20, 5, 'BIAYA', 0, 0,);
+        $t_cpdf->cell(5, 5, ':', 0, 0);
+        $t_cpdf->Cell(50, 5, 'Rp. ' . number_format($penawaran->biaya, 0, ',', '.'), 0, 1);
+
+        // Spasi antara konten dan signature
+        $t_cpdf->Ln(2);
+
+        // HEADER LAYANAN PASTI
+        $t_cpdf->SetFont('Poppins-Regular', '', 11);
+        $t_cpdf->SetFillColor(252, 118, 19);
+        $t_cpdf->SetTextColor(255, 255, 255);
+        $t_cpdf->Cell(0, 10, 'LAYANAN PASTI', 0, 1, 'L', true);
+        $t_cpdf->SetTextColor(0, 0, 0);
+
+        // Spasi antara konten dan signature
+        $t_cpdf->Ln(1);
+
+        $layananPastiY = $t_cpdf->GetY();
+
+        $body_text4 = "1. Konsultasi Gratis
+2. Gratis Bantuan Pembuatan Paspor
+3. Gratis Antar Dokumen & Perlengkapan
+4. Gratis Pendampingan Manasik";
+        $t_cpdf->MultiCell(84, 4, $body_text4, 0, 'J');
+
+        $t_cpdf->Sety($layananPastiY);
+        $t_cpdf->SetX(96); // Pindahkan posisi ke kolom kanan
+        $body_text5 = "5. Gratis Handling Keberangkatan
+6. Gratis Handling Kepulangan
+7. Jaminan Pasti Berangkat
+8. Garansi 100% Uang Kembali Apabila Travel Gagal
+Memberangkatkan";
+        $t_cpdf->MultiCell(84, 4, $body_text5, 0, 'J');
+
+        // Add a new page
+        $t_cpdf->AddPage();
+
+        // Awal dari tabel
+        $tbl = <<<EOD
+<table border="1" cellpadding="4">
+<thead>
+ <tr>
+  <th width="100" align="center">Hari</th>
+  <th width="140" align="center">Tanggal</th>
+  <th width="300" align="center">Kegiatan</th>
+ </tr>
+</thead>
+<tbody>
+EOD;
+
+        // Looping melalui rundown untuk menambahkan baris dinamis
+        foreach ($rundowns as $rundown) {
+            $tbl .= '<tr>';
+            $tbl .= '<td width="100" align="center">' . $rundown->hari . '</td>';
+            $tbl .= '<td width="140" align="center">' . $rundown->tanggal . '</td>';
+            $tbl .= '<td width="300" align="left">' . $rundown->kegiatan . '</td>';
+            $tbl .= '</tr>';
+        }
+
+        // Akhir dari tabel
+        $tbl .= <<<EOD
+</tbody>
+</table>
+EOD;
+        $t_cpdf->Sety(38);
+        $t_cpdf->writeHTML($tbl, true, false, false, false, '');
+
+        // // Table Header
+        // $t_cpdf->Sety(38);
+        // $t_cpdf->SetFont('Poppins-Bold', '', 10);
+        // $t_cpdf->Cell(32, 5, 'Hari', 1, 0, 'C');
+        // $t_cpdf->Cell(32, 5, 'Tanggal', 1, 0, 'C');
+        // $t_cpdf->Cell(127, 5, 'Kegiatan', 1, 1, 'C');
+
+        // $t_cpdf->SetFont('Poppins-Regular', '', 10);
+
+        // // Looping melalui rundown
+        // foreach ($rundowns as $rundown) {
+        //     $content_text = $rundown->kegiatan;
+
+        //     // Hitung jumlah baris teks untuk kolom 3
+        //     $lines = $t_cpdf->getNumLines($content_text, 127);
+
+        //     // Hitung tinggi total untuk setiap sel, sesuaikan dengan tinggi baris kolom 3
+        //     $height3 = round($lines * 5); // 5 adalah tinggi baris (disesuaikan sesuai kebutuhan)
+
+        //     // Menulis data ke PDF dengan menyesuaikan tinggi kolom 1 dan 2
+        //     $t_cpdf->Cell(32, $height3, $rundown->hari, 1, 0, 'L'); // Kolom 1
+        //     $t_cpdf->Cell(32, $height3, $rundown->tanggal, 1, 0, 'C'); // Kolom 2
+
+        //     // Menulis kolom 3 dengan MultiCell yang menyesuaikan tinggi
+        //     $t_cpdf->MultiCell(127, 5, $content_text, 1, 'L'); // Kolom 3
+
+        //     // Menyesuaikan posisi Y setelah menulis kolom 3, agar kolom 1 dan 2 tetap sejajar
+        //     $t_cpdf->SetY($t_cpdf->GetY() + $height3); // Sesuaikan posisi Y berdasarkan tinggi kolom 3
+        // }
+
+
+        // Output PDF (tampilkan di browser)
+        $t_cpdf->Output('example.t_cpdf', 'I'); // 'I' untuk menampilkan di browser
+    }
+
     // PRINTOUT FPDF
     public function generate_pdf($id)
     {
-        // $this->load->library('fpdf_html');
         $this->load->library('pdf');
 
         // INISIAI VARIABLE
@@ -302,7 +657,6 @@ class Penawaran_la_pu extends CI_Controller
         $rundowns = $this->M_penawaran_la_pu->get_rundown($penawaran->no_pelayanan);
 
         // Start FPDF
-        // $pdf = new Fpdf_html();
         $pdf = new pdf();
         $pdf->AddPage();
 
@@ -584,7 +938,7 @@ Memberangkatkan";
             // Hitung tinggi total
             $height2 = $lines * 5;
 
-            $pdf->Cell(32, $height2, $rundown->hari, 1, 0, 'L');
+            $pdf->Cell(32, $height2, $height2, 1, 0, 'L');
             $pdf->Cell(32, $height2, $rundown->tanggal, 1, 0, 'C');
 
             $pdf->MultiCell(127, 5, $content_text, 1, 'L');
