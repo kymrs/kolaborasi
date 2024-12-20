@@ -91,24 +91,14 @@ class Penawaran_pu extends CI_Controller
         // var_dump($kode);
         $data['penawaran'] = $this->M_penawaran_pu->getPenawaran($kode);
 
-        if ($data['penawaran'] == null) {
-            $this->load->view('backend/penawaran_pu/404');
-        } else {
-            $no_arsip = $data['penawaran']['no_arsip'];
-            $data['layanan_termasuk'] = $this->M_penawaran_pu->getLayananTermasuk($kode);
-            $data['layanan_tidak_termasuk'] = $this->M_penawaran_pu->getLayananTidakTermasuk($kode);
-            $data['hotel'] = $this->M_penawaran_pu->getHotel($kode);
+        $no_arsip = $data['penawaran']['no_arsip'];
+        $data['layanan_termasuk'] = $this->M_penawaran_pu->getLayananTermasuk($kode);
+        $data['layanan_tidak_termasuk'] = $this->M_penawaran_pu->getLayananTidakTermasuk($kode);
+        $data['hotel'] = $this->M_penawaran_pu->getHotel($kode);
 
-            $params['data'] = 'https://arsip.pengenumroh.com/' . $no_arsip;
-            $params['level'] = 'H';
-            $params['size'] = 10;
-            $params['savename'] = 'assets/backend/document/qrcode/qr-' . $no_arsip . '.png';
-            $this->ciqrcode->generate($params);
-
-            $data['title'] = 'backend/penawaran_pu/penawaran_read_pu';
-            $data['title_view'] = 'Prepayment';
-            $this->load->view('backend/home', $data);
-        }
+        $data['title'] = 'backend/penawaran_pu/penawaran_read_pu';
+        $data['title_view'] = 'Prepayment';
+        $this->load->view('backend/home', $data);
     }
 
     public function add_form()
@@ -130,6 +120,8 @@ class Penawaran_pu extends CI_Controller
         $data['aksi'] = 'update';
         $data['title_view'] = "Edit Data Prepayment";
         $data['title'] = 'backend/penawaran_pu/penawaran_form_pu';
+        $data['hotel'] = $this->db->get('tbl_hotel_pu')->result_array();
+        $this->db->order_by('nama_layanan', 'ASC');
         $data['layanan'] = $this->db->get('tbl_layanan')->result_array();
         $this->load->view('backend/home', $data);
     }
@@ -138,6 +130,7 @@ class Penawaran_pu extends CI_Controller
     {
         $data['master'] = $this->db->get_where('tbl_penawaran', ['id' => $id])->row_array();
         $data['layanan'] = $this->M_penawaran_pu->get_penawaran_detail($id); // Ambil detail layanan (status, nominal)
+        $data['hotel'] = $this->M_penawaran_pu->get_penawaran_detail2($id); // Ambil detail hotel
         echo json_encode($data);
     }
 
@@ -191,10 +184,17 @@ class Penawaran_pu extends CI_Controller
         } else {
             $no_urut2 = substr($kode2->no_arsip, 6, 2);
         }
+
         $urutan2 = str_pad(number_format($no_urut2 + 1), 2, "0", STR_PAD_LEFT);
         $year2 = substr($date2, 0, 2);
         $bulan2 = substr($date2, 3, 2);
         $no_arsip = 'PU' . $year2 . $bulan2 . $urutan2;
+
+        $params['data'] = 'https://arsip.pengenumroh.com/' . $no_arsip;
+        $params['level'] = 'H';
+        $params['size'] = 10;
+        $params['savename'] = 'assets/backend/document/qrcode/qr-' . $no_arsip . '.png';
+        $this->ciqrcode->generate($params);
 
         //CONVERT TIME
         // Ambil nilai input datetime dari form
@@ -209,7 +209,7 @@ class Penawaran_pu extends CI_Controller
         $data = array(
             'no_pelayanan' => $no_pelayanan,
             'no_arsip' => $no_arsip,
-            'pelanggan' => $this->input->post('title') . ' ' . $this->input->post('pelanggan'),
+            'pelanggan' => $this->input->post('title') . '. ' . $this->input->post('pelanggan'),
             'produk' => $this->input->post('produk'),
             'deskripsi' => $this->input->post('deskripsi'),
             'tgl_berlaku' => $formatted_datetime,
@@ -225,6 +225,20 @@ class Penawaran_pu extends CI_Controller
 
         // Simpan data ke tabel penawaran dan ambil ID penawaran yang baru disimpan
         $id_penawaran = $this->M_penawaran_pu->save($data);
+
+        // Simpan data ke Arsip
+        $getUser = $this->db->get_where('tbl_data_user', ['id_user' => $this->session->userdata('id_user')])->row_array();
+        $divisi = $getUser['divisi'];
+
+        $data2 = [
+            'id_user' => $this->session->userdata('id_user'),
+            'no_arsip' => $no_arsip,
+            'nama_dokumen' => $this->input->post('produk'),
+            'penerbit' => $divisi,
+            'no_dokumen' => $no_pelayanan
+        ];
+
+        $this->db->insert('tbl_arsip_pu', $data2);
 
         // // Ambil data layanan dari input (id layanan, status, dan nominal)
         $ids = $this->input->post('id_layanan'); // ID layanan
@@ -306,50 +320,51 @@ class Penawaran_pu extends CI_Controller
 
     public function update($id)
     {
-        // Ambil data dari form
+        // Ambil data dari form layanan
         $no_pelayanan = $this->input->post('no_pelayanan');
-        $pelanggan = $this->input->post('pelanggan');
-        $catatan = $this->input->post('editor_content');
         $layanan_ids = $this->input->post('id_layanan'); // Array of layanan IDs
         $statuses = $this->input->post('status'); // Array of layanan statuses
         $extra_inputs = $this->input->post('nominal'); // Ambil nominal dari input
+
+        // Data Hotel
+        $hotel_ids = $this->input->post('id_hotel');
+        $statuses2 = $this->input->post('status2');
 
         // Jika nominal berformat rupiah, bersihkan dari karakter non-digit
         $extra_inputs = array_map(function ($input) {
             return preg_replace('/\D/', '', $input); // Hanya ambil karakter digit
         }, $extra_inputs);
 
-        // Debugging: Tampilkan nilai nominal
-        // var_dump($extra_inputs);
-
         // CONVERT TIME
         // Ambil nilai input datetime dari form
         $input_datetime = $this->input->post('tgl_berlaku');
-        $input2_datetime = $this->input->post('keberangkatan');
+        $input2_datetime = $this->input->post('tgl_keberangkatan');
 
-        // Ubah format dari 'Y-m-dTH:i' ke 'Y-m-d H:i:s' agar sesuai dengan format MySQL
-        $formatted_datetime = date('Y-m-d H:i:s', strtotime($input_datetime));
-        $formatted2_datetime = date('Y-m-d H:i:s', strtotime($input2_datetime));
+        // Ubah format dari 'Y-m-dTH:i' ke 'Y-m-d' agar sesuai dengan format MySQL
+        $formatted_datetime = date('Y-m-d', strtotime($input_datetime));
+        $formatted2_datetime = date('Y-m-d', strtotime($input2_datetime));
 
         // Data untuk tabel penawaran
         $data = array(
             'no_pelayanan' => $no_pelayanan,
-            'pelanggan' => $this->input->post('pelanggan'),
-            'alamat' => $this->input->post('alamat'),
+            'pelanggan' => $this->input->post('title') . '. ' . $this->input->post('pelanggan'),
             'produk' => $this->input->post('produk'),
             'deskripsi' => $this->input->post('deskripsi'),
             'tgl_berlaku' => $formatted_datetime,
-            'keberangkatan' => $formatted2_datetime,
+            'tgl_keberangkatan' => $formatted2_datetime,
             'durasi' => $this->input->post('durasi'),
-            'tempat' => $this->input->post('tempat'),
-            'biaya' => preg_replace('/\D/', '', $this->input->post('biaya')),
-            'catatan' => $this->input->post('catatan_content')
+            'berangkat_dari' => $this->input->post('berangkat_dari'),
+            'pkt_quad' => preg_replace('/\D/', '', $this->input->post('pkt_quad')),
+            'pkt_triple' => preg_replace('/\D/', '', $this->input->post('pkt_triple')),
+            'pkt_double' => preg_replace('/\D/', '', $this->input->post('pkt_double')),
+            'keberangkatan' => $this->input->post('keberangkatan'),
+            'kepulangan' => $this->input->post('kepulangan')
         );
 
         // Update data penawaran
         $this->db->update('tbl_penawaran', $data, ['id' => $id]);
 
-        // Pastikan semua input adalah array
+        // // Pastikan semua input adalah array
         if (!is_array($layanan_ids) || !is_array($statuses) || !is_array($extra_inputs)) {
             echo json_encode(array("status" => FALSE, "message" => "Data tidak valid."));
             return;
@@ -373,10 +388,10 @@ class Penawaran_pu extends CI_Controller
 
             // Jika layanan sudah ada, lakukan update
             if ($existing_layanan) {
-                if ($layanan_id == 9 && $status === 'N') {
+                if ($layanan_id == 9 && $status === 'Y') {
                     // Jika id_layanan 9 dan statusnya N, hapus nilai nominal
                     $data_layanan_update = array(
-                        'is_active' => 'N' // Set is_active hanya 'N'
+                        'is_active' => 'Y' // Set is_active hanya 'N'
                     );
                 } else {
                     // Gabungkan nominal ke dalam is_active
@@ -398,6 +413,47 @@ class Penawaran_pu extends CI_Controller
                 $this->db->insert('tbl_penawaran_detail_lyn', $data_layanan_insert);
             }
         }
+
+        // Proses Update Data Hotel
+
+        // // Pastikan semua input adalah array
+        if (!is_array($hotel_ids) || !is_array($statuses2)) {
+            echo json_encode(array("status" => FALSE, "message" => "Data tidak valid."));
+            return;
+        }
+
+        foreach ($hotel_ids as $index => $hotel_id) {
+            $status2 = isset($statuses2[$index]) ? $statuses2[$index] : null;
+
+            $existing_hotel = $this->db->get_where('tbl_penawaran_detail_htl', [
+                'id_hotel' => $hotel_id,
+                'id_penawaran' => $id
+            ])->row();
+
+            // Jika status kosong, hapus dari database
+            if (empty($status2)) {
+                if ($existing_hotel) {
+                    $this->db->delete('tbl_penawaran_detail_htl', ['id' => $existing_hotel->id]);
+                }
+                continue; // Lewati iterasi ini dan lanjutkan ke hotel berikutnya
+            }
+
+            // Jika hotel sudah ada, lakukan update
+            if ($existing_hotel) {
+                $this->db->update('tbl_penawaran_detail_htl', ['is_active' => $status2], ['id' => $existing_hotel->id]);
+            } else {
+                // Jika hotel tidak ada, lakukan insert
+                $data_hotel_insert = array(
+                    'id_penawaran' => $id,
+                    'id_hotel' => $hotel_id,
+                    'is_active' => $status2 // Gabungkan status dengan nominal
+                );
+
+                // Debugging: Tampilkan data yang akan diinsert
+                $this->db->insert('tbl_penawaran_detail_htl', $data_hotel_insert);
+            }
+        }
+
         // Mengembalikan status berhasil
         echo json_encode(array("status" => TRUE));
     }
@@ -405,8 +461,24 @@ class Penawaran_pu extends CI_Controller
 
     function delete($id)
     {
+        // Hapus data master
         $this->db->delete('tbl_penawaran', ['id' => $id]);
+
+        // Hapus data detail layanan
         $this->db->delete('tbl_penawaran_detail_lyn', ['id_penawaran' => $id]);
+
+        // Hapus data detail hotel
+        $this->db->delete('tbl_penawaran_detail_htl', ['id_penawaran' => $id]);
+
+        // ambil semua 1 row data pada tabel penawaran
+        $get_penawaran = $this->db->get('tbl_penawaran', ['id' => $id])->row_array();
+
+        // ambil data no arsip pada penawaran
+        $no_arsip = $get_penawaran['no_arsip'];
+
+        // Hapus data arsip berdasarkan no_arsip
+        $this->db->delete('tbl_arsip_pu', ['no_arsip' => $no_arsip]);
+
         echo json_encode(array("status" => TRUE));
     }
 

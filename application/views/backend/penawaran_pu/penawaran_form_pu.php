@@ -86,14 +86,64 @@
             /* Warna untuk silang */
         }
 
+        /* Style Form Rundown */
+        .table-transaksi {
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .table-transaksi td {
+            border: 1px solid rgba(26, 32, 53, 0.1);
+        }
+
+        .table-transaksi tbody tr {
+            transition: 200ms;
+        }
+
+        .table-transaksi tbody tr:hover {
+            background-color: rgba(234, 236, 244, 0.5);
+        }
+
+        .header-table-transaksi {
+            background-color: rgb(36, 44, 73);
+            color: white;
+        }
+
+        .header-table-transaksi th {
+            border: 1px solid rgb(255, 255, 255, 0.2);
+            font-weight: 400;
+            text-align: center;
+        }
+
         #durasi {
             width: 50px;
         }
 
         i.fa-plane {
             transform: rotate3d(3, 1, 3, -30deg);
-            scale: 1;
             margin-right: 5px;
+        }
+
+        .btn-style {
+            color: white;
+            cursor: pointer;
+            transition: all 0.055s ease;
+        }
+
+        .btn-style:hover {
+            scale: 1.020;
+            color: white;
+        }
+
+        .btn-style:active {
+            transform: translateY(2px);
+            color: white;
+            box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1), -2px 2px 6px rgba(0, 0, 0, 0.1), 2px 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-delete {
+            background-color: #DC0808;
+            position: relative;
+            top: 1px;
         }
     </style>
 </head>
@@ -129,9 +179,9 @@
                                     <div class="col-sm-7">
                                         <select name="title" id="title" class="form-control" style="cursor: pointer;">
                                             <option selected value="" hidden>Pilih Title</option>
-                                            <option value="Ny. ">Ny.</option>
-                                            <option value="Nn.">Nn.</option>
-                                            <option value="Tn.">Tn.</option>
+                                            <option value="Ny">Ny.</option>
+                                            <option value="Nn">Nn.</option>
+                                            <option value="Tn">Tn.</option>
                                         </select>
                                     </div>
                                 </div>
@@ -222,6 +272,29 @@
                             </div>
                         </div>
 
+                        <!-- Rundown Tabel -->
+                        <!-- BUTTON TAMBAH FORM -->
+                        <div class="mt-3">
+                            <button type="button" class="btn-sm modal-input" id="add-row" style="width: 75px;"><span class="front front-add"><i class="fa fa-plus" aria-hidden="true"></i> Add</span></button>
+                        </div>
+                        <!-- Rundown Kegiatan -->
+                        <div class="mt-2 mb-3" style="overflow-x: scroll;">
+                            <table class="table table-bordered table-transaksi">
+                                <thead class="header-table-transaksi">
+                                    <tr>
+                                        <th scope="col" style="width: 20px;" class="text-center">No</th>
+                                        <th scope="col" style="width: 80px;" class="text-center">Hari</th>
+                                        <th scope="col" style="width: 80px;" class="text-center">Tanggal</th>
+                                        <th scope="col" style="width: 330px;" class="text-center">Kegiatan</th>
+                                        <th scope="col" style="width: 80px;" class="text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="input-container">
+                                    <!-- CONTAINER INPUTAN -->
+                                </tbody>
+                            </table>
+                        </div>
+
 
                         <!-- Layanan Modal -->
                         <div class="modal fade" id="layananModal" tabindex="-1" aria-labelledby="layananModal" aria-hidden="true">
@@ -243,10 +316,10 @@
                                         <?php foreach ($layanan as $data) : ?>
                                             <div class="layanan">
                                                 <input type="hidden" name="id_layanan[]" value="<?= htmlspecialchars($data['id'], ENT_QUOTES) ?>">
-                                                <button type="button" id="button-<?= htmlspecialchars($data['id'], ENT_QUOTES) ?>" class="uncheck checklistButtonLayanan">
+                                                <button type="button" id="buttonLayanan-<?= htmlspecialchars($data['id'], ENT_QUOTES) ?>" class="uncheck checklistButtonLayanan">
                                                     <i class="fa fa-square"></i>
                                                 </button>
-                                                <label for="button-<?= htmlspecialchars($data['id'], ENT_QUOTES) ?>">
+                                                <label for="buttonLayanan-<?= htmlspecialchars($data['id'], ENT_QUOTES) ?>">
                                                     <?= htmlspecialchars($data['nama_layanan'], ENT_QUOTES) ?>
                                                 </label>
                                                 <input type="hidden" name="status[]" id="inputLayanan-<?= htmlspecialchars($data['id'], ENT_QUOTES) ?>" value="">
@@ -295,10 +368,10 @@
                                                 }
                                                 ?>
                                                 <input type="hidden" name="id_hotel[]" value="<?= htmlspecialchars($data['id'], ENT_QUOTES) ?>">
-                                                <button type="button" id="button-<?= htmlspecialchars($data['id'], ENT_QUOTES) ?>" class="uncheck checklistButtonHotel">
+                                                <button type="button" id="buttonHotel-<?= htmlspecialchars($data['id'], ENT_QUOTES) ?>" class="uncheck checklistButtonHotel">
                                                     <i class="fa fa-square"></i>
                                                 </button>
-                                                <label for="button-<?= htmlspecialchars($data['id'], ENT_QUOTES) ?>">
+                                                <label for="buttonHotel-<?= htmlspecialchars($data['id'], ENT_QUOTES) ?>">
                                                     <?= htmlspecialchars($data['nama_hotel'], ENT_QUOTES) . " " . $rating ?>
                                                 </label>
                                                 <input type="hidden" name="status2[]" id="inputHotel-<?= htmlspecialchars($data['id'], ENT_QUOTES) ?>" value="">
@@ -338,6 +411,61 @@
 
 
 <script>
+    let id = $('#id').val();
+
+    const toolbarOptions = [
+        ['bold', 'italic', 'underline', 'strike'], // toggled buttons
+        ['blockquote', 'code-block'],
+        ['link', 'image', 'video', 'formula'],
+
+        [{
+            'header': 1
+        }, {
+            'header': 2
+        }], // custom button values
+        [{
+            'list': 'ordered'
+        }, {
+            'list': 'bullet'
+        }, {
+            'list': 'check'
+        }],
+        [{
+            'script': 'sub'
+        }, {
+            'script': 'super'
+        }], // superscript/subscript
+        [{
+            'indent': '-1'
+        }, {
+            'indent': '+1'
+        }], // outdent/indent
+        [{
+            'direction': 'rtl'
+        }], // text direction
+
+        [{
+            'size': ['small', false, 'large', 'huge']
+        }], // custom dropdown
+        [{
+            'header': [1, 2, 3, 4, 5, 6, false]
+        }],
+
+        [{
+            'color': []
+        }, {
+            'background': []
+        }], // dropdown with defaults from theme
+        [{
+            'font': []
+        }],
+        [{
+            'align': []
+        }],
+
+        ['clean']
+    ];
+
     $(document).ready(function() {
         $("#tgl_berlaku").datepicker({
             dateFormat: "yy-mm-dd", // Format tanggal: Tahun-Bulan-Hari
@@ -494,7 +622,7 @@
                     inputField.value = 'Y'; // Set input value to 'Y'
 
                     // Jika tombol dengan id "button-9" diklik, sembunyikan input tambahan
-                    if (button.id === 'button-9') {
+                    if (button.id === 'buttonLayanan-9') {
                         extraInput.style.display = 'none'; // Sembunyikan input tambahan
                     }
 
@@ -507,7 +635,7 @@
                     inputField.value = 'N'; // Set input value to 'N'
 
                     // Jika tombol dengan id "button-9" diklik, tampilkan input tambahan
-                    if (button.id === 'button-9') {
+                    if (button.id === 'buttonLayanan-9') {
                         extraInput.style.display = 'block'; // Tampilkan input tambahan
                     }
 
@@ -519,7 +647,7 @@
                     inputField.value = ''; // Clear input value
 
                     // Sembunyikan input tambahan jika dibutuhkan
-                    if (button.id === 'button-9') {
+                    if (button.id === 'buttonLayanan-9') {
                         extraInput.style.display = 'none';
                     }
                 }
@@ -536,7 +664,6 @@
         buttons.forEach(function(button) {
             const icon = button.querySelector('i');
             const inputField = document.getElementById('inputHotel-' + button.id.split('-')[1]);
-            const extraInput = document.getElementById('extra-input-' + button.id.split('-')[1]);
 
             button.addEventListener('click', function() {
                 // Inisialisasi currentState berdasarkan nilai inputField
@@ -548,8 +675,6 @@
                     icon.classList.remove('fa-square');
                     icon.classList.add('fa-check');
                     inputField.value = 'Y';
-
-
                 } else if (currentState === 'check') {
                     button.classList.remove('check');
                     button.classList.add('uncheck');
@@ -572,20 +697,21 @@
     $('.name').select2();
 
     //GENERATE NOMOR PELAYANAN
-    $.ajax({
-        url: "<?php echo site_url('penawaran_pu/generate_kode') ?>",
-        type: "POST",
-        data: {},
-        dataType: "JSON",
-        success: function(data) {
-            console.log(data);
-            $('#no_pelayanan').val(data.toUpperCase());
-            $('#kode').val(data);
-        },
-        error: function(error) {
-            alert("error" + error);
-        }
-    });
+    if (id == 0) {
+        $.ajax({
+            url: "<?php echo site_url('penawaran_pu/generate_kode') ?>",
+            type: "POST",
+            data: {},
+            dataType: "JSON",
+            success: function(data) {
+                $('#no_pelayanan').val(data.toUpperCase());
+                $('#kode').val(data);
+            },
+            error: function(error) {
+                alert("error" + error);
+            }
+        });
+    }
 
     $(document).ready(function() {
 
@@ -620,22 +746,25 @@
                 success: function(data) {
                     // Set data master
                     $('#no_pelayanan').val(data['master']['no_pelayanan']);
-                    $('#pelanggan').val(data['master']['pelanggan']);
+                    $('#pelanggan').val(data['master']['pelanggan'].substring(4));
+                    $('#title').val(data['master']['pelanggan'].substring(0, 2));
                     $('#produk').val(data['master']['produk']).trigger('change');
-                    $('#alamat').val(data['master']['alamat']).trigger('change');
                     $('#deskripsi').val(data['master']['deskripsi']).trigger('change');
                     $('#tgl_berlaku').val(data['master']['tgl_berlaku']).trigger('change');
-                    $('#keberangkatan').val(data['master']['keberangkatan']).trigger('change');
+                    $('#tgl_keberangkatan').val(data['master']['tgl_keberangkatan']).trigger('change');
                     $('#durasi').val(data['master']['durasi']).trigger('change');
-                    $('#tempat').val(data['master']['tempat']).trigger('change');
-                    $('#biaya').val(formatRupiah(data['master']['biaya'])).trigger('change');
+                    $('#berangkat_dari').val(data['master']['berangkat_dari']).trigger('change');
+                    $('#pkt_quad').val(formatRupiah(data['master']['pkt_quad'])).trigger('change');
+                    $('#pkt_triple').val(formatRupiah(data['master']['pkt_triple'])).trigger('change');
+                    $('#pkt_double').val(formatRupiah(data['master']['pkt_double'])).trigger('change');
+                    $('#keberangkatan').val(data['master']['keberangkatan']).trigger('change');
+                    $('#kepulangan').val(data['master']['kepulangan']).trigger('change');
 
-                    // console.log(data['layanan']);
 
                     // Set status layanan (Y/N) dan nominal
                     data['layanan'].forEach(function(layanan) {
-                        const button = document.getElementById('button-' + layanan.id_layanan);
-                        const inputField = document.getElementById('input-' + layanan.id_layanan);
+                        const button = document.getElementById('buttonLayanan-' + layanan.id_layanan);
+                        const inputField = document.getElementById('inputLayanan-' + layanan.id_layanan);
                         const extraInput = document.getElementById('extra-input-' + layanan.id_layanan);
                         const icon = button.querySelector('i');
 
@@ -681,6 +810,22 @@
                         }
                     });
 
+                    // Set status hotel (Y) dan nominal
+                    data['hotel'].forEach(function(hotel) {
+                        const button2 = document.getElementById('buttonHotel-' + hotel.id_hotel);
+                        const inputField2 = document.getElementById('inputHotel-' + hotel.id_hotel);
+                        const icon2 = button2.querySelector('i');
+
+                        // Set status hotel (Y/N)
+                        if (hotel.is_active.startsWith('Y')) {
+                            button2.classList.add('check');
+                            icon2.classList.remove('fa-square');
+                            icon2.classList.add('fa-check');
+
+                            inputField2.value = 'Y'; // Set input value to 'Y'
+                        }
+                    });
+
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     alert('Error get data from ajax');
@@ -700,7 +845,114 @@
             }
         }
 
-        // INSERT ATAU UPDATE
+        // Rundown Add
+        let rowCount = 0;
+
+        function addRow() {
+            rowCount++;
+            //         const row = `
+            //     <tr id="row-${rowCount}">
+            //         <td class="row-number">${rowCount}</td>
+            //         <td>
+            //             <input type="text" class="form-control" name="hari[${rowCount}]" placeholder="Input here..." />
+            //         </td>
+            //         <td>
+            //             <input type="date" class="form-control" id="tanggal-${rowCount}" name="tanggal[${rowCount}]" placeholder="Input here..." />
+            //             <input type="hidden" id="hidden_nominal${rowCount}" name="hidden_nominal[${rowCount}]" value="">
+            //         </td>
+            //         <td>
+            //             <div id="kegiatan-${rowCount}" class="border p-2" style="height: 200px;"></div>
+            //             <input type="text" name="hidden_kegiatan[${rowCount}]" id="hidden_kegiatan[${rowCount}]" value="">
+            //         </td>
+            //         <td>
+            //             <span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span>
+            //         </td>
+            //     </tr>
+            // `;
+            const row = `
+        <tr id="row-${rowCount}">
+            <td class="row-number">${rowCount}</td>
+            <td>
+                <input type="text" class="form-control" name="hari[${rowCount}]" placeholder="Input here..." />
+            </td>
+            <td>
+                <input type="date" class="form-control" id="tanggal-${rowCount}" name="tanggal[${rowCount}]" placeholder="Input here..." />
+                <input type="hidden" id="hidden_nominal${rowCount}" name="hidden_nominal[${rowCount}]" value="">
+            </td>
+            <td>
+                <textarea name="kegiatan[${rowCount}]" id="kegiatan[${rowCount}]" cols="10" rows="5" class="form-control"></textarea>
+            </td>
+            <td>
+                <span class="btn delete-btn btn-style btn-delete" data-id="${rowCount}">Delete</span>
+            </td>
+        </tr>
+    `;
+
+            // Append row to container
+            $('#input-container').append(row);
+
+            // // Initialize Quill editor
+            // const quillKegiatan = new Quill(`#kegiatan-${rowCount}`, {
+            //     theme: 'snow'
+            // });
+
+            // // Sync Quill content with hidden input
+            // quillKegiatan.on('text-change', function() {
+            //     document.getElementById(`hidden_kegiatan[${rowCount}]`).value = quillKegiatan.root.innerHTML;
+            // });
+
+            updateSubmitButtonState();
+
+            // Validation rules for dynamically added inputs
+            $("#form").validate().settings.rules[`hari[${rowCount}]`] = {
+                required: true
+            };
+            $("#form").validate().settings.rules[`tanggal[${rowCount}]`] = {
+                required: true
+            };
+            // $("#form").validate().settings.rules[`hidden_kegiatan[${rowCount}]`] = {
+            //     required: true
+            // };
+        }
+
+        // Delete row function
+        function deleteRow(id) {
+            $(`#row-${id}`).remove();
+            reorderRows();
+            updateSubmitButtonState();
+        }
+
+        // Reorder rows after a row is deleted
+        function reorderRows() {
+            $('#input-container tr').each(function(index) {
+                const newRowNumber = index + 1;
+                $(this).attr('id', `row-${newRowNumber}`);
+                $(this).find('.row-number').text(newRowNumber);
+                $(this).find('input[name^="hari"]').attr('name', `hari[${newRowNumber}]`);
+                $(this).find('input[name^="tanggal"]').attr('name', `tanggal[${newRowNumber}]`).attr('id', `tanggal-${newRowNumber}`);
+                $(this).find('textarea[name^="kegiatan"]').attr('name', `kegiatan[${newRowNumber}]`).attr('id', `kegiatan-${newRowNumber}`);
+                // $(this).find('div[id^="kegiatan"]').attr('id', `kegiatan-${newRowNumber}`);
+                // $(this).find('input[name^="hidden_kegiatan"]').attr('name', `hidden_kegiatan[${newRowNumber}]`).attr('id', `hidden_kegiatan[${newRowNumber}]`);
+                $(this).find('.delete-btn').attr('data-id', newRowNumber);
+            });
+            rowCount = $('#input-container tr').length;
+        }
+
+        $('#add-row').click(function() {
+            addRow();
+        });
+
+        function updateSubmitButtonState() {
+            const rowCount = $('#input-container tr').length;
+            $('.aksi').prop('disabled', rowCount === 0);
+        }
+
+        $(document).on('click', '.delete-btn', function() {
+            const id = $(this).data('id');
+            deleteRow(id);
+        });
+
+        // // INSERT ATAU UPDATE
         $("#form").submit(function(e) {
             e.preventDefault();
             var $form = $(this);
@@ -718,7 +970,6 @@
                 data: $('#form').serialize(),
                 dataType: "JSON",
                 success: function(data) {
-                    // console.log(data);
                     if (data.status) //if success close modal and reload ajax table
                     {
                         Swal.fire({
@@ -750,9 +1001,6 @@
                     required: true,
                 },
                 produk: {
-                    required: true,
-                },
-                alamat: {
                     required: true,
                 },
                 deskripsi: {
@@ -798,9 +1046,6 @@
                 },
                 produk: {
                     required: "Produk is required",
-                },
-                alamat: {
-                    required: "Alamat is required",
                 },
                 deskripsi: {
                     required: "Deskripsi is required",

@@ -243,4 +243,15 @@ class M_penawaran_pu extends CI_Model
         // Mengembalikan hasil dalam bentuk array objek
         return $query->result_array();
     }
+
+    public function get_penawaran_detail2($id_penawaran)
+    {
+        $this->db->select('id_penawaran, id_hotel, is_active');
+        $this->db->from('tbl_penawaran_detail_htl');
+        $this->db->where('id_penawaran', $id_penawaran);
+        $query = $this->db->get();
+
+        // Mengembalikan hasil dalam bentuk array objek
+        return $query->result_array();
+    }
 }

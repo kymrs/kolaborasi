@@ -45,7 +45,7 @@
                             </tr>
                         </table>
                         <div class="qr-code">
-                            <img src="<?= base_url('assets/backend/document/qrcode/qr-PU240902.png') ?>" alt="qrcode" class="img-qrcode">
+                            <img src="<?= base_url('assets/backend/document/qrcode/qr-' . $penawaran['no_arsip'] . '.png') ?>" alt="qrcode" class="img-qrcode">
                             <img src="<?= base_url('assets/backend/img/favicon-pu.png') ?>" alt="pengenumroh-logo" class="pu-logo">
                         </div>
                     </div>
@@ -93,7 +93,12 @@
                             <ol>
                                 <?php foreach ($layanan_tidak_termasuk as $data) : ?>
                                     <?php if ($data['id_layanan'] == 9) : ?>
-                                        <li><?= $data['nama_layanan'] ?> <?= "Rp " . number_format(preg_replace('/\D/', '', $data['is_active']), 0, ',', '.') ?></li>
+                                        <?php $nominal =  preg_replace('/\D/', '', $data['is_active']) ?>
+                                        <?php if ($nominal) : ?>
+                                            <li><?= $data['nama_layanan'] ?> <?= "Rp " . number_format($nominal, 0, ',', '.') ?></li>
+                                        <?php else : ?>
+                                            <li><?= $data['nama_layanan'] ?></li>
+                                        <?php endif ?>
                                     <?php else : ?>
                                         <li><?= $data['nama_layanan'] ?></li>
                                     <?php endif ?>

@@ -454,7 +454,7 @@ main {
     .canvas,
     .canvas2 {
         width: 90mm;
-        max-height: 202mm;
+        max-height: 240mm;
         margin: 0;
     }
 
@@ -509,7 +509,7 @@ main {
 
     .layanan .row .left-side {
         width: 45%;
-        min-height: 80px;
+        min-height: 45px;
     }
 
     .layanan .row .right-side {
@@ -538,14 +538,19 @@ main {
 
     .layanan-list .right-side {
         margin: 0;
+        width: 55%;
     }
 
     .layanan-list .right-side p {
-        margin-left: 52px;
+        margin-left: 15px;
     }
 
     .layanan-list .right-side ol {
-        margin-left: 70px;
+        margin-left: 35px;
+    }
+
+    .layanan-list .left-side {
+        width: 45%;
     }
 
     .layanan-list .left-side p,
