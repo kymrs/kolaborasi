@@ -600,7 +600,7 @@ EOD;
             $tbl .= '<tr>';
             $tbl .= '<td width="100" align="center">' . $rundown->hari . '</td>';
             $tbl .= '<td width="140" align="center">' . $rundown->tanggal . '</td>';
-            $tbl .= '<td width="300" align="left">' . $rundown->kegiatan . '</td>';
+            $tbl .= '<td width="300">' . $rundown->kegiatan . '</td>';
             $tbl .= '</tr>';
         }
 
