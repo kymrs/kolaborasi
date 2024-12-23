@@ -314,6 +314,22 @@ class Penawaran_pu extends CI_Controller
                 $this->session->set_flashdata('error', 'Data hotel tidak valid.');
             }
         }
+
+        // INISIASI INPUT KE RUNDOWN
+        $hari = $this->input->post('hari[]');
+        $tanggal = $this->input->post('tanggal[]');
+        $kegiatan = $this->input->post('hidden_kegiatan[]');
+        // PERULANGAN INPUT RUNDOWN
+        for ($i = 1; $i <= count($_POST['hari']); $i++) {
+            $data3[] = array(
+                'no_pelayanan' => $no_pelayanan,
+                'hari' => $hari[$i],
+                'tanggal' => $tanggal[$i],
+                'kegiatan' => $kegiatan[$i]
+            );
+        }
+        $this->M_penawaran_pu->save_rundown($data3);
+
         // Kirim response
         echo json_encode(array("status" => TRUE));
     }

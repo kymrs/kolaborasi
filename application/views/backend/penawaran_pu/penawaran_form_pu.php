@@ -850,6 +850,25 @@
 
         function addRow() {
             rowCount++;
+            const row = `
+                <tr id="row-${rowCount}">
+                    <td class="row-number">${rowCount}</td>
+                    <td>
+                        <input type="text" class="form-control" name="hari[${rowCount}]" placeholder="Hari">
+                    </td>
+                    <td>
+                        <input type="text" class="form-control tgl_rundown" id="tanggal-${rowCount}" name="tanggal[${rowCount}]" placeholder="Tanggal" style="">
+                        <input type="hidden" id="hidden_nominal${rowCount}" name="hidden_nominal[${rowCount}]" value="">
+                    </td>
+                    <td>
+                        <div id="kegiatan-${rowCount}" class="border p-2" style="height: 200px;"></div>
+                        <input type="text" name="hidden_kegiatan[${rowCount}]" id="hidden_kegiatan[${rowCount}]" value="">
+                    </td>
+                    <td>
+                        <span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span>
+                    </td>
+                </tr>
+            `;
             //         const row = `
             //     <tr id="row-${rowCount}">
             //         <td class="row-number">${rowCount}</td>
@@ -861,45 +880,34 @@
             //             <input type="hidden" id="hidden_nominal${rowCount}" name="hidden_nominal[${rowCount}]" value="">
             //         </td>
             //         <td>
-            //             <div id="kegiatan-${rowCount}" class="border p-2" style="height: 200px;"></div>
-            //             <input type="text" name="hidden_kegiatan[${rowCount}]" id="hidden_kegiatan[${rowCount}]" value="">
+            //             <textarea name="kegiatan[${rowCount}]" id="kegiatan[${rowCount}]" cols="10" rows="5" class="form-control"></textarea>
             //         </td>
             //         <td>
             //             <span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span>
             //         </td>
             //     </tr>
             // `;
-            const row = `
-        <tr id="row-${rowCount}">
-            <td class="row-number">${rowCount}</td>
-            <td>
-                <input type="text" class="form-control" name="hari[${rowCount}]" placeholder="Input here..." />
-            </td>
-            <td>
-                <input type="date" class="form-control" id="tanggal-${rowCount}" name="tanggal[${rowCount}]" placeholder="Input here..." />
-                <input type="hidden" id="hidden_nominal${rowCount}" name="hidden_nominal[${rowCount}]" value="">
-            </td>
-            <td>
-                <textarea name="kegiatan[${rowCount}]" id="kegiatan[${rowCount}]" cols="10" rows="5" class="form-control"></textarea>
-            </td>
-            <td>
-                <span class="btn delete-btn btn-style btn-delete" data-id="${rowCount}">Delete</span>
-            </td>
-        </tr>
-    `;
 
             // Append row to container
             $('#input-container').append(row);
 
-            // // Initialize Quill editor
-            // const quillKegiatan = new Quill(`#kegiatan-${rowCount}`, {
-            //     theme: 'snow'
-            // });
+            // Initialize Quill editor
+            const quillKegiatan = new Quill(`#kegiatan-${rowCount}`, {
+                theme: 'snow'
+            });
 
-            // // Sync Quill content with hidden input
-            // quillKegiatan.on('text-change', function() {
-            //     document.getElementById(`hidden_kegiatan[${rowCount}]`).value = quillKegiatan.root.innerHTML;
-            // });
+            // Sync Quill content with hidden input
+            quillKegiatan.on('text-change', function() {
+                document.getElementById(`hidden_kegiatan[${rowCount}]`).value = quillKegiatan.root.innerHTML;
+            });
+
+            $(document).ready(function() {
+                $(".tgl_rundown").datepicker({
+                    dateFormat: "yy-mm-dd", // Format tanggal: Tahun-Bulan-Hari
+                    changeMonth: true,
+                    changeYear: true
+                });
+            });
 
             updateSubmitButtonState();
 
@@ -930,9 +938,9 @@
                 $(this).find('.row-number').text(newRowNumber);
                 $(this).find('input[name^="hari"]').attr('name', `hari[${newRowNumber}]`);
                 $(this).find('input[name^="tanggal"]').attr('name', `tanggal[${newRowNumber}]`).attr('id', `tanggal-${newRowNumber}`);
-                $(this).find('textarea[name^="kegiatan"]').attr('name', `kegiatan[${newRowNumber}]`).attr('id', `kegiatan-${newRowNumber}`);
-                // $(this).find('div[id^="kegiatan"]').attr('id', `kegiatan-${newRowNumber}`);
-                // $(this).find('input[name^="hidden_kegiatan"]').attr('name', `hidden_kegiatan[${newRowNumber}]`).attr('id', `hidden_kegiatan[${newRowNumber}]`);
+                // $(this).find('textarea[name^="kegiatan"]').attr('name', `kegiatan[${newRowNumber}]`).attr('id', `kegiatan-${newRowNumber}`);
+                $(this).find('div[id^="kegiatan"]').attr('id', `kegiatan-${newRowNumber}`);
+                $(this).find('input[name^="hidden_kegiatan"]').attr('name', `hidden_kegiatan[${newRowNumber}]`).attr('id', `hidden_kegiatan[${newRowNumber}]`);
                 $(this).find('.delete-btn').attr('data-id', newRowNumber);
             });
             rowCount = $('#input-container tr').length;
@@ -951,7 +959,6 @@
             const id = $(this).data('id');
             deleteRow(id);
         });
-
         // // INSERT ATAU UPDATE
         $("#form").submit(function(e) {
             e.preventDefault();

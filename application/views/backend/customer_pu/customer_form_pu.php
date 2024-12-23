@@ -120,7 +120,11 @@
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="pakaian">Pakaian</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="pakaian" name="pakaian" autocomplete="off">
+                                        <select class="form-control" id="pakaian" name="pakaian" style="cursor: pointer;">
+                                            <option value="" hidden>Pilih Pakaian</option>
+                                            <option value="Gamis">Gamis</option>
+                                            <option value="Koko">Koko</option>
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -132,7 +136,11 @@
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="kirim_perlengkapan">Kirim Perlengkapan</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="kirim_perlengkapan" name="kirim_perlengkapan" autocomplete="off">
+                                        <select class="form-control" id="kirim_perlengkapan" name="kirim_perlengkapan" style="cursor: pointer;">
+                                            <option value="" hidden>Pilih Opsi</option>
+                                            <option value="Sudah">Sudah</option>
+                                            <option value="Belum">Belum</option>
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="form-group row">

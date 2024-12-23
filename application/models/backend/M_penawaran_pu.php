@@ -254,4 +254,10 @@ class M_penawaran_pu extends CI_Model
         // Mengembalikan hasil dalam bentuk array objek
         return $query->result_array();
     }
+
+    public function save_rundown($data)
+    {
+        $this->db->insert_batch('tbl_rundown', $data);
+        return $this->db->insert_id();
+    }
 }
