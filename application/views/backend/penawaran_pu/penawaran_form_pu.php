@@ -848,85 +848,24 @@
         // Rundown Add
         let rowCount = 0;
 
-        function addRow() {
-            rowCount++;
-            const row = `
-                <tr id="row-${rowCount}">
-                    <td class="row-number">${rowCount}</td>
-                    <td>
-                        <input type="text" class="form-control" name="hari[${rowCount}]" placeholder="Hari">
-                    </td>
-                    <td>
-                        <input type="text" class="form-control tgl_rundown" id="tanggal-${rowCount}" name="tanggal[${rowCount}]" placeholder="Tanggal" style="">
-                        <input type="hidden" id="hidden_nominal${rowCount}" name="hidden_nominal[${rowCount}]" value="">
-                    </td>
-                    <td>
-                        <div id="kegiatan-${rowCount}" class="border p-2" style="height: 200px;"></div>
-                        <input type="text" name="hidden_kegiatan[${rowCount}]" id="hidden_kegiatan[${rowCount}]" value="">
-                    </td>
-                    <td>
-                        <span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span>
-                    </td>
-                </tr>
-            `;
-            //         const row = `
-            //     <tr id="row-${rowCount}">
-            //         <td class="row-number">${rowCount}</td>
-            //         <td>
-            //             <input type="text" class="form-control" name="hari[${rowCount}]" placeholder="Input here..." />
-            //         </td>
-            //         <td>
-            //             <input type="date" class="form-control" id="tanggal-${rowCount}" name="tanggal[${rowCount}]" placeholder="Input here..." />
-            //             <input type="hidden" id="hidden_nominal${rowCount}" name="hidden_nominal[${rowCount}]" value="">
-            //         </td>
-            //         <td>
-            //             <textarea name="kegiatan[${rowCount}]" id="kegiatan[${rowCount}]" cols="10" rows="5" class="form-control"></textarea>
-            //         </td>
-            //         <td>
-            //             <span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span>
-            //         </td>
-            //     </tr>
-            // `;
-
-            // Append row to container
-            $('#input-container').append(row);
-
-            // Initialize Quill editor
-            const quillKegiatan = new Quill(`#kegiatan-${rowCount}`, {
-                theme: 'snow'
-            });
-
-            // Sync Quill content with hidden input
-            quillKegiatan.on('text-change', function() {
-                document.getElementById(`hidden_kegiatan[${rowCount}]`).value = quillKegiatan.root.innerHTML;
-            });
-
-            $(document).ready(function() {
-                $(".tgl_rundown").datepicker({
-                    dateFormat: "yy-mm-dd", // Format tanggal: Tahun-Bulan-Hari
-                    changeMonth: true,
-                    changeYear: true
-                });
-            });
-
-            updateSubmitButtonState();
-
-            // Validation rules for dynamically added inputs
-            $("#form").validate().settings.rules[`hari[${rowCount}]`] = {
-                required: true
-            };
-            $("#form").validate().settings.rules[`tanggal[${rowCount}]`] = {
-                required: true
-            };
-            // $("#form").validate().settings.rules[`hidden_kegiatan[${rowCount}]`] = {
-            //     required: true
-            // };
-        }
+        // Objek untuk menyimpan referensi Quill instances
+        const quillInstances = {};
 
         // Delete row function
         function deleteRow(id) {
+            // Hapus instance Quill yang terkait
+            if (quillInstances[id]) {
+                quillInstances[id].off('text-change');
+                delete quillInstances[id];
+            }
+
+            // Hapus baris dari DOM
             $(`#row-${id}`).remove();
+
+            // Reorder baris
             reorderRows();
+
+            // Perbarui tombol submit
             updateSubmitButtonState();
         }
 
@@ -934,16 +873,107 @@
         function reorderRows() {
             $('#input-container tr').each(function(index) {
                 const newRowNumber = index + 1;
+                const oldRowNumber = $(this).attr('id').split('-')[1];
+
+                // Update atribut ID dan Name
                 $(this).attr('id', `row-${newRowNumber}`);
                 $(this).find('.row-number').text(newRowNumber);
                 $(this).find('input[name^="hari"]').attr('name', `hari[${newRowNumber}]`);
                 $(this).find('input[name^="tanggal"]').attr('name', `tanggal[${newRowNumber}]`).attr('id', `tanggal-${newRowNumber}`);
-                // $(this).find('textarea[name^="kegiatan"]').attr('name', `kegiatan[${newRowNumber}]`).attr('id', `kegiatan-${newRowNumber}`);
                 $(this).find('div[id^="kegiatan"]').attr('id', `kegiatan-${newRowNumber}`);
-                $(this).find('input[name^="hidden_kegiatan"]').attr('name', `hidden_kegiatan[${newRowNumber}]`).attr('id', `hidden_kegiatan[${newRowNumber}]`);
+                $(this).find('input[name^="hidden_kegiatan"]').attr('name', `hidden_kegiatan[${newRowNumber}]`).attr('id', `hidden_kegiatan_${newRowNumber}`);
                 $(this).find('.delete-btn').attr('data-id', newRowNumber);
+
+                // Pindahkan instance Quill ke nomor baru dan perbarui event listener
+                if (quillInstances[oldRowNumber]) {
+                    const quillEditor = quillInstances[oldRowNumber];
+                    delete quillInstances[oldRowNumber];
+                    quillInstances[newRowNumber] = quillEditor;
+
+                    // Perbarui event listener untuk sinkronisasi dengan hidden input baru
+                    quillEditor.off('text-change');
+                    quillEditor.on('text-change', function() {
+                        const hiddenInput = document.getElementById(`hidden_kegiatan_${newRowNumber}`);
+                        if (hiddenInput) {
+                            hiddenInput.value = quillEditor.root.innerHTML;
+                        }
+                    });
+                }
             });
+
+            // Perbarui nilai rowCount
             rowCount = $('#input-container tr').length;
+        }
+
+        // Fungsi untuk menambah baris
+        function addRow() {
+            rowCount++;
+            const row = `
+        <tr id="row-${rowCount}">
+            <td class="row-number">${rowCount}</td>
+            <td>
+                <input type="text" class="form-control" name="hari[${rowCount}]" placeholder="Input here..." />
+            </td>
+            <td>
+                <input type="date" class="form-control" id="tanggal-${rowCount}" name="tanggal[${rowCount}]" placeholder="Input here..." />
+                <input type="hidden" id="hidden_nominal${rowCount}" name="hidden_nominal[${rowCount}]" value="">
+            </td>
+            <td>
+                <div id="kegiatan-${rowCount}" class="border p-2" style="height: 200px;"></div>
+                <input type="text" name="hidden_kegiatan_[${rowCount}]" id="hidden_kegiatan_${rowCount}" value="">
+            </td>
+            <td>
+                <span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span>
+            </td>
+        </tr>
+    `;
+
+            // Tambahkan baris ke container
+            $('#input-container').append(row);
+
+            // Inisialisasi Quill
+            initializeQuill(rowCount);
+
+            // Perbarui tombol submit
+            updateSubmitButtonState();
+
+            // Tambahkan validasi untuk input baru
+            $("#form").validate().settings.rules[`hari[${rowCount}]`] = {
+                required: true
+            };
+            $("#form").validate().settings.rules[`tanggal[${rowCount}]`] = {
+                required: true
+            };
+        }
+
+        // Inisialisasi Quill editor
+        function initializeQuill(rowCount) {
+            const quillKegiatan = new Quill(`#kegiatan-${rowCount}`, {
+                theme: 'snow'
+            });
+
+            // Simpan referensi editor di dalam objek
+            quillInstances[rowCount] = quillKegiatan;
+
+            // Sinkronkan konten Quill dengan input tersembunyi
+            quillKegiatan.on('text-change', function() {
+                const hiddenInput = document.getElementById(`hidden_kegiatan_${rowCount}`);
+                if (hiddenInput) {
+                    hiddenInput.value = quillKegiatan.root.innerHTML;
+                }
+            });
+        }
+
+        // Event untuk tombol delete
+        $(document).on('click', '.delete-btn', function() {
+            const id = $(this).data('id');
+            deleteRow(id);
+        });
+
+        // Perbarui tombol submit berdasarkan jumlah baris
+        function updateSubmitButtonState() {
+            const rowCount = $('#input-container tr').length;
+            $('.aksi').prop('disabled', rowCount === 0);
         }
 
         $('#add-row').click(function() {
@@ -959,6 +989,8 @@
             const id = $(this).data('id');
             deleteRow(id);
         });
+
+
         // // INSERT ATAU UPDATE
         $("#form").submit(function(e) {
             e.preventDefault();

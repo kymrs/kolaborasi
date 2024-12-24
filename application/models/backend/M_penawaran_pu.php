@@ -118,6 +118,17 @@ class M_penawaran_pu extends CI_Model
         return $formatted_tgl;
     }
 
+    public function getPenawaranById($id)
+    {
+        $data = $this->db->from('tbl_penawaran')->where('id', $id)->get()->row();
+        return $data;
+    }
+
+    public function getRundown($no_pelayanan)
+    {
+        $data = $this->db->from('tbl_rundown')->where('no_pelayanan', $no_pelayanan)->get()->result_array();
+        return $data;
+    }
 
     public function getPenawaran($kode)
     {

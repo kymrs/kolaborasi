@@ -206,16 +206,13 @@
                         <th>Tanggal</th>
                         <th>Kegiatan</th>
                     </tr>
-                    <tr>
-                        <td>Kesatu</td>
-                        <td>25/01/2025</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>Kesatu</td>
-                        <td>25/01/2025</td>
-                        <td></td>
-                    </tr>
+                    <?php foreach ($rundown as $data) : ?>
+                        <tr>
+                            <td><?= $data['hari'] ?></td>
+                            <td><?= date('d/m/Y', strtotime($data['tanggal'])) ?></td>
+                            <td><?= $data['kegiatan'] ?></td>
+                        </tr>
+                    <?php endforeach ?>
                 </table>
             </main>
             <div class="footer-logo">
