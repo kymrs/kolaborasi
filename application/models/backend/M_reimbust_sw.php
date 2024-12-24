@@ -15,7 +15,7 @@ class M_reimbust_sw extends CI_Model
 
     // Deklarasi
     var $table3 = 'tbl_deklarasi'; //nama tabel dari database
-    var $column_order2 = array(null, null, 'kode_deklarasi', 'tgl_deklarasi', 'name', 'jabatan', 'nama_dibayar', 'tujuan', 'sebesar', 'status',);
+    var $column_order2 = array(null, null, 'kode_deklarasi', 'tgl_deklarasi', 'name', 'jabatan', 'nama_dibayar', 'tujuan', 'sebesar', 'status');
     var $column_search2 = array('kode_deklarasi', 'tgl_deklarasi', 'name', 'jabatan', 'nama_dibayar', 'tujuan', 'sebesar', 'status'); //field yang diizin untuk pencarian 
     var $order2 = array('id' => 'desc'); // default order 
 
@@ -269,6 +269,7 @@ class M_reimbust_sw extends CI_Model
         $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_prepayment.id_user', 'left'); // JOIN dengan tabel tbl_user
         $id_user_logged_in = $this->session->userdata('id_user'); // Mengambil id_user dari sesi pengguna yang login
         $this->db->where('tbl_prepayment.id_user', $id_user_logged_in);
+        $this->db->where('tbl_prepayment.status', 'approved');
 
         $i = 0;
 
@@ -332,7 +333,6 @@ class M_reimbust_sw extends CI_Model
         $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_prepayment.id_user', 'left'); // JOIN dengan tabel tbl_user
         $id_user_logged_in = $this->session->userdata('id_user'); // Mengambil id_user dari sesi pengguna yang login
         $this->db->where('tbl_prepayment.id_user', $id_user_logged_in);
-        $this->db->where('tbl_prepayment.status', 'approved');
 
         return $this->db->count_all_results();
     }

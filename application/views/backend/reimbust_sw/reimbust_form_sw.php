@@ -520,10 +520,10 @@
             $('#departemenPrepayment').val(data[4]);
             // $('#jabatan').val(data[5]);
             // $('#tgl_pengajuan').val(data[6]);
-            $('#jumlah_prepayment').val(data[9]);
-            var cleanedValue = data[9].replace(/\./g, '');
+            $('#jumlah_prepayment').val(data[8]);
+            var cleanedValue = data[8].replace(/\./g, '');
             $('#hidden_jumlah_prepayment').val(cleanedValue);
-            $('#tujuan').val(data[8]);
+            $('#tujuan').val(data[7]);
 
             // Tutup modal setelah data dipilih
             $('#pelaporanModal').modal('hide');

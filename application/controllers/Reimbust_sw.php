@@ -251,15 +251,12 @@ class Reimbust_sw extends CI_Controller
             $row[] = $no;
             $row[] = $action;
             $row[] = strtoupper($field->kode_prepayment);
-            $query = $this->db->get_where('tbl_event_sw', ['id' => $field->event])->row_array();
-            $row[] = $query['event_name'];
             $row[] = $field->name;
             $row[] = strtoupper($field->divisi);
             $row[] = strtoupper($field->jabatan);
             $row[] = date("d M Y", strtotime($field->tgl_prepayment));
             $row[] = $field->tujuan;
             $row[] = $formatted_nominal;
-            $row[] = $field->status;
 
             $data[] = $row;
         }
