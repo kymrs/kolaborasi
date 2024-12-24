@@ -481,9 +481,6 @@ class Penawaran_pu extends CI_Controller
 
     function delete($id)
     {
-        // Hapus data master
-        $this->db->delete('tbl_penawaran', ['id' => $id]);
-
         // Hapus data detail layanan
         $this->db->delete('tbl_penawaran_detail_lyn', ['id_penawaran' => $id]);
 
@@ -502,8 +499,11 @@ class Penawaran_pu extends CI_Controller
         // Ambil data no pelayanan dari tabel master
         $no_pelayanan = $get_penawaran['no_pelayanan'];
 
-        // Hapus data arsip berdasarkan no_arsip
+        // Hapus data arsip berdasarkan no_pelayanan
         $this->db->delete('tbl_rundown', ['no_pelayanan' => $no_pelayanan]);
+
+        // Hapus data master
+        $this->db->delete('tbl_penawaran', ['id' => $id]);
 
         echo json_encode(array("status" => TRUE));
     }
