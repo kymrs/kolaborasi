@@ -490,7 +490,7 @@ class Penawaran_pu extends CI_Controller
         // Hapus data detail hotel
         $this->db->delete('tbl_penawaran_detail_htl', ['id_penawaran' => $id]);
 
-        // ambil semua 1 row data pada tabel penawaran
+        // ambil semua 1 row data pada tabel master
         $get_penawaran = $this->db->get('tbl_penawaran', ['id' => $id])->row_array();
 
         // ambil data no arsip pada penawaran
@@ -498,6 +498,12 @@ class Penawaran_pu extends CI_Controller
 
         // Hapus data arsip berdasarkan no_arsip
         $this->db->delete('tbl_arsip_pu', ['no_arsip' => $no_arsip]);
+
+        // Ambil data no pelayanan dari tabel master
+        $no_pelayanan = $get_penawaran['no_pelayanan'];
+
+        // Hapus data arsip berdasarkan no_arsip
+        $this->db->delete('tbl_rundown', ['no_pelayanan' => $no_pelayanan]);
 
         echo json_encode(array("status" => TRUE));
     }
