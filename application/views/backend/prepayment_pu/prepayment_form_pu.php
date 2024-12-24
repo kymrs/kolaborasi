@@ -377,7 +377,7 @@
                 deletedRows.push(rowId);
             }
 
-            console.log(rowId);
+            // console.log(rowId);
 
             $(`#row-${id}`).remove();
             // Reorder rows and update row numbers

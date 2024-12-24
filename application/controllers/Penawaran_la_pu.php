@@ -137,7 +137,8 @@ class Penawaran_la_pu extends CI_Controller
 
     function edit_data($id)
     {
-        $data['master'] = $this->db->get_where('tbl_land_arrangement', ['id' => $id])->row_array();
+        $data['master'] = $this->db->get_where('tbl_land_arrangement', ['id' => $id])->row();
+        $data['transaksi'] = $this->db->get_where('tbl_rundown', ['no_pelayanan' => $data['master']->no_pelayanan])->result_array();
         echo json_encode($data);
     }
 
@@ -225,7 +226,7 @@ class Penawaran_la_pu extends CI_Controller
         // INISIASI INPUT KE RUNDOWN
         $hari = $this->input->post('hari[]');
         $tanggal = $this->input->post('tanggal[]');
-        $kegiatan = $this->input->post('hidden_kegiatan[]');
+        $kegiatan = $this->input->post('hidden_kegiatan_[]');
         // PERULANGAN INPUT RUNDOWN
         for ($i = 1; $i <= count($_POST['hari']); $i++) {
             $data2[] = array(
@@ -263,25 +264,67 @@ class Penawaran_la_pu extends CI_Controller
         $input2_datetime = $this->input->post('keberangkatan');
 
         // Ubah format dari 'Y-m-dTH:i' ke 'Y-m-d H:i:s' agar sesuai dengan format MySQL
-        $formatted_datetime = date('Y-m-d H:i:s', strtotime($input_datetime));
-        $formatted2_datetime = date('Y-m-d H:i:s', strtotime($input2_datetime));
+        $formatted_datetime = date('Y-m-d', strtotime($input_datetime));
+        $formatted2_datetime = date('Y-m-d', strtotime($input2_datetime));
 
         $data = array(
             'pelanggan' => $this->input->post('pelanggan'),
-            'alamat' => $this->input->post('alamat'),
             'produk' => $this->input->post('produk'),
             'deskripsi' => $this->input->post('deskripsi'),
             'tgl_berlaku' => $formatted_datetime,
-            'keberangkatan' => $formatted2_datetime,
+            'tgl_keberangkatan' => $formatted2_datetime,
             'durasi' => $this->input->post('durasi'),
-            'tempat' => $this->input->post('tempat'),
+            'berangkat_dari' => $this->input->post('berangkat_dari'),
             'biaya' => $this->input->post('biaya_integer'),
-            'layanan_la' => $this->input->post('layanan_content'),
-            'pelanggan' => $this->input->post('pelanggan'),
-            'catatan' => $this->input->post('catatan_content'),
-            'updated_at' => date('Y-m-d H:i:s')
+            'layanan_trmsk' => $this->input->post('layanan_content'),
+            'layanan_tdk_trmsk' => $this->input->post('layanan_content2'),
+            'catatan' => $this->input->post('catatan_content')
         );
         $this->db->update('tbl_land_arrangement', $data, ['id' => $id]);
+
+        // UPDATE TRANSAKSI PENAWARAN LAND_ARRANGEMENT
+        $la_id = $this->input->post('hidden_id[]');
+        $hari = $this->input->post('hari[]');
+        $tanggal = $this->input->post('tanggal[]');
+        $kegiatan = $this->input->post('hidden_kegiatan_[]');
+        // UNTUK MENGHAPUS ROW YANG TELAH DIDELETE
+        $deletedRows = json_decode($this->input->post('deleted_rows'), true);
+        if (!empty($deletedRows)) {
+            foreach ($deletedRows as $id2) {
+                // Hapus row dari database berdasarkan ID
+                $this->db->where('id', $id2);
+                $this->db->delete('tbl_rundown');
+            }
+        }
+
+        //MELAKUKAN REPLACE DATA LAMA DENGAN YANG BARU
+        for ($i = 1; $i <= count($_POST['hari']); $i++) {
+            // Set id menjadi NULL jika id_detail tidak ada atau kosong
+            $id = !empty($la_id[$i]) ? $la_id[$i] : NULL;
+            if (!empty($kegiatan[$i])) {
+                $data2[$i] = array(
+                    'id' => $id,
+                    'no_pelayanan' => $this->input->post('no_pelayanan'),
+                    'hari' => $hari[$i],
+                    'tanggal' => $tanggal[$i],
+                    'kegiatan' => $kegiatan[$i]
+                );
+                // // Menggunakan db->replace untuk memasukkan atau menggantikan data
+                $this->db->replace('tbl_rundown', $data2[$i]);
+            } else {
+                $data2[$i] = array(
+                    'id' => $id,
+                    'no_pelayanan' => $this->input->post('no_pelayanan'),
+                    'hari' => $hari[$i],
+                    'tanggal' => $tanggal[$i],
+                );
+                // // Menggunakan db->replace untuk memasukkan atau menggantikan data
+                $this->db->where('id', $data2[$i]['id']); // Tambahkan kondisi WHERE
+                // $this->db->update('tbl_rundown', $data2[$i]); // Lakukan update
+            }
+        }
+
+        // var_dump($data2);
         echo json_encode(array("status" => TRUE));
     }
 
@@ -309,6 +352,10 @@ class Penawaran_la_pu extends CI_Controller
         $t_cpdf->SetAuthor('Author Name');
         $t_cpdf->SetTitle('Penawaran PDF');
 
+        $t_cpdf->SetMargins(15, 38, 15); // Margin kiri, atas (untuk header), kanan
+        // $t_cpdf->SetHeaderMargin(40);    // Jarak antara header dan konten
+        $t_cpdf->SetAutoPageBreak(true, 40); // Penanganan otomatis margin bawah
+
         // Add a new page
         $t_cpdf->AddPage();
 
@@ -316,7 +363,7 @@ class Penawaran_la_pu extends CI_Controller
         // $t_cpdf->AddFont('Poppins-Bold', '', 'Poppins-Bold.php');
 
         // Mengatur posisi Y untuk menggeser seluruh konten ke bawah
-        $t_cpdf->SetY(35); // Ganti 50 dengan jumlah yang Anda inginkan
+        // $t_cpdf->SetY(35); // Ganti 50 dengan jumlah yang Anda inginkan
 
         // Pilih font untuk isi
         $t_cpdf->SetFont('Poppins-Bold', '', 24);
@@ -364,7 +411,7 @@ class Penawaran_la_pu extends CI_Controller
 
         // Add QR Code image
         if (file_exists($qr_image_path)) { // Check if the file exists
-            $t_cpdf->Image($qr_image_path, 140, 37, 32, 32); // Position (X,Y), Width, Height
+            $t_cpdf->Image($qr_image_path, 140, 42, 32, 32); // Position (X,Y), Width, Height
 
             // Delete the QR Code file after using it
             unlink($qr_image_path);
@@ -415,7 +462,7 @@ class Penawaran_la_pu extends CI_Controller
 
         // KONTEN DESKRIPSI
         $body_text = $penawaran->deskripsi;
-        $t_cpdf->Sety(91 + 1);
+        $t_cpdf->Sety(91 + 4);
         $t_cpdf->MultiCell($content_width, 4, $body_text, 0, 'J');  // 'J' digunakan untuk rata kiri dan kanan (justify)
 
         $deskripsiY = $t_cpdf->GetY();
