@@ -64,6 +64,7 @@ class User extends CI_Controller
 		$data['aksi'] = 'add';
 		$data['title'] = 'backend/user/user_form';
 		$data['users'] = $this->db->select('id_user, fullname')->from('tbl_user')->get()->result_object();
+		$data['userlevel'] = $this->db->select('id_level', 'nama_level')->from('tbl_userlevel')->get()->result();
 		$data['approvals'] = $this->db->select('id_user, fullname')->from('tbl_user')->where('app', 'Y')->get()->result_object();
 		$this->load->view('backend/home', $data);
 	}

@@ -255,7 +255,7 @@ class Prepayment_sw extends CI_Controller
     {
         $event_id = $this->db->select('event')->from('tbl_prepayment')->where('id', $id)->get()->row('event');
         $data['master'] = $this->M_prepayment_sw->get_by_id($id);
-        $data['event'] = $this->db->select('event_name')->from('swa_event')->where('id', $event_id)->get()->row('event_name');
+        $data['event'] = $this->db->select('event_name')->from('tbl_event_sw')->where('id', $event_id)->get()->row('event_name');
         $data['transaksi'] = $this->M_prepayment_sw->get_by_id_detail($id);
         $data['nama'] = $this->db->select('name')
             ->from('tbl_data_user')
@@ -433,7 +433,7 @@ class Prepayment_sw extends CI_Controller
         }
 
         // Menggunakan db->replace untuk memasukkan atau menggantikan data
-        $this->db->replace('swa_event', $data);
+        $this->db->replace('tbl_event_sw', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -450,7 +450,7 @@ class Prepayment_sw extends CI_Controller
     function delete_event($id)
     {
         $this->db->where('id', $id);
-        $this->db->delete('swa_event');
+        $this->db->delete('tbl_event_sw');
         echo json_encode(array("status" => TRUE));
     }
 
@@ -540,7 +540,7 @@ class Prepayment_sw extends CI_Controller
             ->where('id_user', $data['master']->id_user)
             ->get()
             ->row('name');
-        $data['event_name'] = $this->db->select('event_name')->from('swa_event')->where('id', $data['master']->event)->get()->row('event_name');
+        $data['event_name'] = $this->db->select('event_name')->from('tbl_event_sw')->where('id', $data['master']->event)->get()->row('event_name');
         $data['app_status'] = strtoupper($data['master']->app_status);
         $data['app2_status'] = strtoupper($data['master']->app2_status);
 

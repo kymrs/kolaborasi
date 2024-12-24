@@ -119,6 +119,7 @@ class Penawaran_la_pu extends CI_Controller
         $data['id'] = 0;
         $data['title'] = 'backend/penawaran_pu/penawaran_form_la_pu_2';
         // $data['products'] = $this->db->select('id, nama')->from('tbl_produk')->get()->result_object();
+        $data['hotel'] = $this->db->get('tbl_hotel_pu')->result_array();
         $data['title_view'] = 'Land Arrangement Form';
         $this->load->view('backend/home', $data);
     }
@@ -131,6 +132,7 @@ class Penawaran_la_pu extends CI_Controller
         $data['aksi'] = 'update';
         $data['title'] = 'backend/penawaran_pu/penawaran_form_la_pu_2';
         // $data['products'] = $this->db->select('id, nama')->from('tbl_produk')->get()->result_object();
+        $data['hotel'] = $this->db->get('tbl_hotel_pu')->result_array();
         $data['title_view'] = 'Edit Land Arrangement Form';
         $this->load->view('backend/home', $data);
     }
@@ -218,7 +220,9 @@ class Penawaran_la_pu extends CI_Controller
             'biaya' => $this->input->post('biaya_integer'),
             'layanan_trmsk' => $this->input->post('layanan_content'),
             'layanan_tdk_trmsk' => $this->input->post('layanan_content2'),
-            'catatan' => $this->input->post('catatan_content')
+            'catatan' => $this->input->post('catatan_content'),
+            'keberangkatan' => $this->input->post('keberangkatan'),
+            'kepulangan' => $this->input->post('kepulangan')
         );
 
         $this->M_penawaran_la_pu->save($data);

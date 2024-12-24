@@ -38,6 +38,149 @@
         .btn-special:active .front {
             transform: translateY(-2px);
         }
+
+        /* modal */
+        .modal-input {
+            background-color: rgb(36, 44, 73);
+            color: white;
+            width: 130px;
+            border: none;
+            padding: 8px 10px;
+            font-size: 14px;
+            border-radius: 5px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.15), -4px 4px 6px rgba(0, 0, 0, 0.15), 4px 4px 6px rgba(0, 0, 0, 0.15);
+            /* Bayangan bawah dan kiri-kanan */
+            cursor: pointer;
+            transition: all 0.055s ease;
+        }
+
+        .modal-input:hover {
+            scale: 1.020;
+        }
+
+        .modal-input:active {
+            transform: translateY(2px);
+            box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1), -2px 2px 6px rgba(0, 0, 0, 0.1), 2px 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        #layananModal .modal-body .layanan {
+            display: flex;
+            align-items: center;
+        }
+
+        #hotelModal .modal-body .hotel {
+            display: flex;
+            align-items: center;
+        }
+
+        #layananModal .modal-body .layanan label {
+            margin: 0;
+            cursor: pointer;
+        }
+
+        #hotelModal .modal-body .hotel label {
+            margin: 0;
+            cursor: pointer;
+        }
+
+        #layananModal .modal-body .input-biaya {
+            border: 2px solid rgba(0, 0, 0, 0.5);
+            padding: 5px 10px;
+            box-sizing: border-box;
+            border-radius: 7px;
+        }
+
+        /* Style untuk tombol */
+        .checklistButtonLayanan,
+        .checklistButtonHotel {
+            width: 50px;
+            height: 50px;
+            border: none;
+            outline: none;
+            background-color: transparent;
+            cursor: pointer;
+            font-size: 24px;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Tambahkan warna untuk masing-masing status */
+        .uncheck i {
+            color: gray;
+            /* Warna untuk kotak kosong */
+        }
+
+        .check i {
+            color: green;
+            /* Warna untuk centang */
+        }
+
+        .times i {
+            color: red;
+            /* Warna untuk silang */
+        }
+
+        /* Style Form Rundown */
+        .table-transaksi {
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .table-transaksi td {
+            border: 1px solid rgba(26, 32, 53, 0.1);
+        }
+
+        .table-transaksi tbody tr {
+            transition: 200ms;
+        }
+
+        .table-transaksi tbody tr:hover {
+            background-color: rgba(234, 236, 244, 0.5);
+        }
+
+        .header-table-transaksi {
+            background-color: rgb(36, 44, 73);
+            color: white;
+        }
+
+        .header-table-transaksi th {
+            border: 1px solid rgb(255, 255, 255, 0.2);
+            font-weight: 400;
+            text-align: center;
+        }
+
+        #durasi {
+            width: 50px;
+        }
+
+        i.fa-plane {
+            transform: rotate3d(3, 1, 3, -30deg);
+            margin-right: 5px;
+        }
+
+        .btn-style {
+            color: white;
+            cursor: pointer;
+            transition: all 0.055s ease;
+        }
+
+        .btn-style:hover {
+            scale: 1.020;
+            color: white;
+        }
+
+        .btn-style:active {
+            transform: translateY(2px);
+            color: white;
+            box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1), -2px 2px 6px rgba(0, 0, 0, 0.1), 2px 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-delete {
+            background-color: #DC0808;
+            position: relative;
+            top: 1px;
+        }
     </style>
 </head>
 
@@ -107,6 +250,26 @@
                                         <input type="text" id="biaya" name="biaya" class="form-control w-50">
                                     </div>
                                 </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4">Hotel</label>
+                                    <div class="col-sm-8">
+                                        <button type="button" class="modal-input" data-toggle="modal" data-target="#hotelModal">
+                                            Pilih Hotel
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4"><i class="fas fa-plane"></i>Keberangkatan</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" id="keberangkatan" name="keberangkatan" placeholder="Keberangkatan" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4"><i class="fas fa-plane"></i>Kepulangan</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" id="kepulangan" name="kepulangan" placeholder="Kepulangan" class="form-control">
+                                    </div>
+                                </div>
                                 <div class="mb-3 row">
                                     <label class="col-sm-4">Deskripsi:</label>
                                     <div class="col-sm-8">
@@ -166,6 +329,57 @@
                                     <!-- CONTAINER INPUTAN -->
                                 </tbody>
                             </table>
+                        </div>
+
+                        <!-- Hotel Modal -->
+                        <div class="modal fade" id="hotelModal" tabindex="-1" aria-labelledby="hotelModal" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="hotelModal">Hotel</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div style="text-align: center;">
+                                            <i class="fa fa-check" style="color: green; margin: 0 7px 0 15px"></i>Ditampilkan
+                                            <i class="fa fa-square" style="color: gray; margin: 0 7px 0 15px"></i>Tidak Ditampilkan
+                                            <hr style="margin-top: 10px;">
+                                        </div>
+                                        <?php foreach ($hotel as $data) : ?>
+                                            <div class="hotel">
+                                                <!-- Rating -->
+                                                <?php
+                                                $rating = '';
+                                                if ($data['rating'] == 5) {
+                                                    $rating = '<i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>';
+                                                } else if ($data['rating'] == 4) {
+                                                    $rating = '<i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>';
+                                                } else if ($data['rating'] == 3) {
+                                                    $rating = '<i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>';
+                                                } else if ($data['rating'] == 2) {
+                                                    $rating = '<i class="fas fa-star"></i><i class="fas fa-star"></i>';
+                                                } else if ($data['rating'] == 1) {
+                                                    $rating = '<i class="fas fa-star"></i>';
+                                                }
+                                                ?>
+                                                <input type="hidden" name="id_hotel[]" value="<?= htmlspecialchars($data['id'], ENT_QUOTES) ?>">
+                                                <button type="button" id="buttonHotel-<?= htmlspecialchars($data['id'], ENT_QUOTES) ?>" class="uncheck checklistButtonHotel">
+                                                    <i class="fa fa-square"></i>
+                                                </button>
+                                                <label for="buttonHotel-<?= htmlspecialchars($data['id'], ENT_QUOTES) ?>">
+                                                    <?= htmlspecialchars($data['nama_hotel'], ENT_QUOTES) . " " . $rating ?>
+                                                </label>
+                                                <input type="hidden" name="status2[]" id="inputHotel-<?= htmlspecialchars($data['id'], ENT_QUOTES) ?>" value="">
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-primary" data-dismiss="modal">Simpan</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Hidden inputs -->
@@ -298,6 +512,37 @@
         error: function(error) {
             alert("error" + error);
         }
+    });
+
+    // Hotel
+    document.addEventListener('DOMContentLoaded', function() {
+        // Mengambil semua tombol yang memiliki class 'checklistButton'
+        const buttons = document.querySelectorAll('.checklistButtonHotel');
+
+        buttons.forEach(function(button) {
+            const icon = button.querySelector('i');
+            const inputField = document.getElementById('inputHotel-' + button.id.split('-')[1]);
+
+            button.addEventListener('click', function() {
+                // Inisialisasi currentState berdasarkan nilai inputField
+                let currentState = inputField.value === 'Y' ? 'check' : 'uncheck';
+
+                if (currentState === 'uncheck') {
+                    button.classList.remove('uncheck');
+                    button.classList.add('check');
+                    icon.classList.remove('fa-square');
+                    icon.classList.add('fa-check');
+                    inputField.value = 'Y';
+                } else if (currentState === 'check') {
+                    button.classList.remove('check');
+                    button.classList.add('uncheck');
+                    icon.classList.remove('fa-check');
+                    icon.classList.add('fa-square');
+                    inputField.value = '';
+                }
+            });
+        });
+
     });
 
     $(document).ready(function() {

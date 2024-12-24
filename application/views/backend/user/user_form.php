@@ -58,7 +58,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="level" class="col-sm-4 col-form-label">Level</label>
+                                    <label for="level" class="col-sm-4 col-form-label">User Level</label>
                                     <div class="col-sm-8">
                                         <select class="form-control" id="level" name="level">
                                             <option value="" selected disabled>No Selected</option>
