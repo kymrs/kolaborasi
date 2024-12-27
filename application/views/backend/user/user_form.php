@@ -62,9 +62,9 @@
                                     <div class="col-sm-8">
                                         <select class="form-control" id="level" name="level">
                                             <option value="" selected disabled>No Selected</option>
-                                            <option value="1">1</option>
-                                            <option value="2">2</option>
-                                            <option value="3">3</option>
+                                            <?php foreach ($userlevels as $userlevel) { ?>
+                                                <option value="<?= $userlevel->id_level ?>"><?= $userlevel->nama_level ?></option>
+                                            <?php } ?>
                                         </select>
                                     </div>
                                 </div>
@@ -78,15 +78,6 @@
                                         <div class="custom-control custom-radio">
                                             <input class="custom-control-input" type="radio" id="customRadio2" name="aktif" value="N" checked>
                                             <label for="customRadio2" class="custom-control-label">No</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label for="no_rek" class="col-sm-4 col-form-label">No Rek</label>
-                                    <div class="col-sm-8">
-                                        <div class="input-group mb-3">
-                                            <span class="input-group-text" id="inputGroup-sizing-default">BCA</span>
-                                            <input type="number" name="no_rek" id="no_rek" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
                                         </div>
                                     </div>
                                 </div>
@@ -200,7 +191,7 @@
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
-                    // console.log(data);
+                    console.log(data);
                     moment.locale('id');
                     $('#hidden_id').val(data.user.id_user);
                     $('#password').prop('readonly', true);
@@ -209,7 +200,6 @@
                     $('#fullname').val(data.user.fullname);
                     $('#password').val(data.user.password);
                     $('#level').val(data.user.id_level);
-                    $('#aktif').val(data.user.is_active);
                     $('#no_rek').val(data.user.no_rek);
                     $('#divisi').val(data.approval.divisi);
                     $('#jabatan').val(data.approval.jabatan);
@@ -217,6 +207,15 @@
                     $('#app2_id').val(data.approval.app2_id);
                     $('#app3_id').val(data.approval.app3_id);
                     $('#app4_id').val(data.approval.app4_id);
+
+                    // RADIO BUTTON
+                    if (data.user.is_active == 'Y') {
+                        $('#customRadio1').prop('checked', true);
+                        $('#customRadio2').prop('checked', false);
+                    } else {
+                        $('#customRadio1').prop('checked', false);
+                        $('#customRadio2').prop('checked', true);
+                    }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     alert('Error getting data from ajax');

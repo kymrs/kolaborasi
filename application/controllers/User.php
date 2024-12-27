@@ -64,7 +64,7 @@ class User extends CI_Controller
 		$data['aksi'] = 'add';
 		$data['title'] = 'backend/user/user_form';
 		$data['users'] = $this->db->select('id_user, fullname')->from('tbl_user')->get()->result_object();
-		$data['userlevel'] = $this->db->select('id_level', 'nama_level')->from('tbl_userlevel')->get()->result();
+		$data['userlevels'] = $this->db->select('id_level, nama_level')->from('tbl_userlevel')->get()->result_object();
 		$data['approvals'] = $this->db->select('id_user, fullname')->from('tbl_user')->where('app', 'Y')->get()->result_object();
 		$this->load->view('backend/home', $data);
 	}
@@ -77,6 +77,7 @@ class User extends CI_Controller
 		$data['title_view'] = "Edit User Form";
 		$data['aksi'] = 'update';
 		$data['users'] = $this->db->select('id_user, fullname')->from('tbl_user')->get()->result_object();
+		$data['userlevels'] = $this->db->select('id_level, nama_level')->from('tbl_userlevel')->get()->result_object();
 		$data['approvals'] = $this->db->select('id_user, fullname')->from('tbl_user')->where('app', 'Y')->get()->result_object();
 		$data['title'] = 'backend/user/user_form';
 		$this->load->view('backend/home', $data);
@@ -113,12 +114,32 @@ class User extends CI_Controller
 	function add()
 	{
 		// ADD USER
-		$config['upload_path'] = "./assets/backend/img/user/";
-		$config['allowed_types'] = 'gif|jpg|png';
-		$this->load->library('upload', $config); //call library upload 
-		if ($this->upload->do_upload("image")) { //upload file
-			$data = array('upload_data' => $this->upload->data()); //ambil file name yang diupload
-			$img = $data['upload_data']['file_name']; //set file name ke variable image
+
+		// PENGECEKAN FILE UPLOAD
+		$max_size = 3072 * 1024; // Maksimum ukuran file: 3MB
+		$allowed_types = array('image/jpg', 'image/jpeg', 'image/png');
+
+		if (!empty($_FILES['image']['name'])) {
+
+			if ($_FILES['image']['size'] > $max_size) {
+				echo json_encode(array("status" => FALSE, "error" => "size"));
+				return;
+			} elseif (!in_array($_FILES['image']['type'], $allowed_types)) {
+				echo json_encode(array("status" => FALSE, "error" => "type"));
+				return;
+			}
+
+			$config['upload_path'] = "./assets/backend/img/user/";
+			$config['allowed_types'] = 'jpg|png|jpeg';
+			$config['max_size'] = 3000;
+			$config['encrypt_name'] = true;
+			$this->load->library('upload', $config); //call library upload 
+			if ($this->upload->do_upload("image")) { //upload file
+				$data = array('upload_data' => $this->upload->data()); //ambil file name yang diupload
+				$img = $data['upload_data']['file_name']; //set file name ke variable image
+			} else {
+				$img = '';
+			}
 		} else {
 			$img = '';
 		}
@@ -128,9 +149,9 @@ class User extends CI_Controller
 			'fullname' => $this->input->post('fullname'),
 			'password' => md5($this->input->post('password')),
 			'image' => $img,
+			'core' => $this->input->post('core'),
 			'id_level' => $this->input->post('level'),
 			'is_active' => $this->input->post('aktif'),
-			'no_rek' => $this->input->post('no_rek')
 		);
 
 		// $insert = $this->M_user->save($data);

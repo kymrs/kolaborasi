@@ -168,4 +168,35 @@ class M_penawaran_la_pu extends CI_Model
         $this->db->insert('tbl_arsip_pu', $data);
         return $this->db->insert_id();
     }
+
+    public function save_hotel($data)
+    {
+        // Cek apakah array $data tidak kosong
+        if (!empty($data)) {
+            // Menggunakan insert_batch untuk memasukkan banyak baris data sekaligus
+            $this->db->insert_batch('tbl_land_arrangement_htl', $data);
+
+            // Cek apakah ada kesalahan pada saat insert
+            if ($this->db->affected_rows() > 0) {
+                return TRUE;
+            } else {
+                log_message('error', 'Insert to tbl_land_arrangement_htl failed: ' . $this->db->last_query());
+                return FALSE;
+            }
+        } else {
+            log_message('error', 'Empty data array in insert_penawaran_detail');
+            return FALSE;
+        }
+    }
+
+    public function get_la_hotel($id_la)
+    {
+        $this->db->select('id_la, id_hotel, is_active');
+        $this->db->from('tbl_land_arrangement_htl');
+        $this->db->where('id_la', $id_la);
+        $query = $this->db->get();
+
+        // Mengembalikan hasil dalam bentuk array objek
+        return $query->result_array();
+    }
 }

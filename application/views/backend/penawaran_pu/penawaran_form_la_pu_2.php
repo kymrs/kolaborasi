@@ -588,7 +588,26 @@
                         $('#tgl_berlaku').val(data['master']['tgl_berlaku']);
                         $('#tgl_keberangkatan').val(data['master']['tgl_keberangkatan']);
                         $('#durasi').val(data['master']['durasi']);
+                        $('#keberangkatan').val(data['master']['keberangkatan']);
+                        $('#kepulangan').val(data['master']['kepulangan']);
                         $('#berangkat_dari').val(data['master']['berangkat_dari']);
+
+                        // Set status hotel (Y) dan nominal
+                        data['hotel'].forEach(function(hotel) {
+                            const button2 = document.getElementById('buttonHotel-' + hotel.id_hotel);
+                            const inputField2 = document.getElementById('inputHotel-' + hotel.id_hotel);
+                            const icon2 = button2.querySelector('i');
+
+                            // Set status hotel (Y/N)
+                            if (hotel.is_active.startsWith('Y')) {
+                                button2.classList.add('check');
+                                icon2.classList.remove('fa-square');
+                                icon2.classList.add('fa-check');
+
+                                inputField2.value = 'Y'; // Set input value to 'Y'
+                            }
+                        });
+
                         quill.clipboard.dangerouslyPasteHTML(data['master']['layanan_trmsk']);
                         $('#biaya').val($biaya);
                         quill2.clipboard.dangerouslyPasteHTML(data['master']['layanan_tdk_trmsk']);
@@ -698,7 +717,6 @@
                 data: $.param(formData), // Gunakan data form yang sudah ditambahkan nilai integer
                 dataType: "JSON",
                 success: function(data) {
-                    console.log(data);
                     if (data.status) //if success close modal and reload ajax table
                     {
                         Swal.fire({
@@ -710,6 +728,40 @@
                         }).then((result) => {
                             location.href = "<?= base_url('penawaran_la_pu') ?>";
                         })
+                    } else {
+                        if (data.error == "master") {
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'error',
+                                title: 'Failed to save Penawaran!',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        } else if (data.error == "hotel") {
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'warning',
+                                title: 'Failed to save Hotel!',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        } else if (data.error == "rundown") {
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'warning',
+                                title: 'Failed to save Rundown!',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        } else if (data.error == "divisi") {
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'warning',
+                                title: 'Failed to save Divisi!',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        }
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {

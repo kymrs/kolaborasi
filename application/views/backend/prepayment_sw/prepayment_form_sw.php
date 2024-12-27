@@ -94,7 +94,7 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header text-right">
-                    <a class="btn btn-secondary btn-sm" href="<?= base_url('prepayment_pu') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+                    <a class="btn btn-secondary btn-sm" href="<?= base_url('prepayment_sw') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
                     <form id="form">
@@ -411,7 +411,7 @@
 
             $('.delete').prop('disabled', false);
 
-            if (data[3] == 'Active') {
+            if (data[4] == 'Active') {
                 $('#customRadio1').prop('checked', true);
                 $('#customRadio2').prop('checked', false);
             } else {

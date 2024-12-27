@@ -141,6 +141,7 @@ class Penawaran_la_pu extends CI_Controller
     {
         $data['master'] = $this->db->get_where('tbl_land_arrangement', ['id' => $id])->row();
         $data['transaksi'] = $this->db->get_where('tbl_rundown', ['no_pelayanan' => $data['master']->no_pelayanan])->result_array();
+        $data['hotel'] = $this->M_penawaran_la_pu->get_la_hotel($id); // Ambil detail hotel
         echo json_encode($data);
     }
 
@@ -225,39 +226,79 @@ class Penawaran_la_pu extends CI_Controller
             'kepulangan' => $this->input->post('kepulangan')
         );
 
-        $this->M_penawaran_la_pu->save($data);
+        if ($id_la = $this->M_penawaran_la_pu->save($data)) {
 
-        // INISIASI INPUT KE RUNDOWN
-        $hari = $this->input->post('hari[]');
-        $tanggal = $this->input->post('tanggal[]');
-        $kegiatan = $this->input->post('hidden_kegiatan_[]');
-        // PERULANGAN INPUT RUNDOWN
-        for ($i = 1; $i <= count($_POST['hari']); $i++) {
-            $data2[] = array(
-                'no_pelayanan' => $no_pelayanan,
-                'hari' => $hari[$i],
-                'tanggal' => $tanggal[$i],
-                'kegiatan' => $kegiatan[$i]
-            );
+            // Proses save data hotel
+            // Ambil data yang dikirimkan
+            $id_hotel = $this->input->post('id_hotel'); // Array ID hotel
+            $status2 = $this->input->post('status2');   // Array status hotel
+
+            // Validasi sederhana untuk memastikan data ada
+            if (!empty($id_hotel) && is_array($id_hotel) && !empty($status2) && is_array($status2)) {
+                // Gabungkan ID hotel dan status2 menjadi satu array
+                $hotel_data = [];
+                foreach ($id_hotel as $index => $id) {
+                    // Pastikan status2 memiliki nilai sebelum menambahkannya ke array
+                    if (!empty($status2[$index])) {
+                        $hotel_data[] = [
+                            'id_la' => $id_la, // ID penawaran yang baru disimpan
+                            'id_hotel' => $id,
+                            'is_active' => $status2[$index], // Nilai status2
+                        ];
+                    }
+                }
+
+                // Hanya insert jika ada data yang valid
+                if (!empty($hotel_data)) {
+                    $this->M_penawaran_la_pu->save_hotel($hotel_data);
+                } else {
+                    // PESAN ERROR TABLE HOTEL
+                    echo json_encode(array("status" => FALSE, "error" => "hotel"));
+                }
+            }
+
+            // INISIASI INPUT KE RUNDOWN
+            $hari = $this->input->post('hari[]');
+            $tanggal = $this->input->post('tanggal[]');
+            $kegiatan = $this->input->post('hidden_kegiatan_[]');
+            // PERULANGAN INPUT RUNDOWN
+            for ($i = 1; $i <= count($_POST['hari']); $i++) {
+                $data2[] = array(
+                    'no_pelayanan' => $no_pelayanan,
+                    'hari' => $hari[$i],
+                    'tanggal' => $tanggal[$i],
+                    'kegiatan' => $kegiatan[$i]
+                );
+            }
+
+            if ($this->M_penawaran_la_pu->save_rundown($data2)) {
+                //ARSIP
+                $id_user = $this->session->userdata('id_user');
+                $divisi = $this->db->select('divisi')->from('tbl_data_user')->where('id_user', $id_user)->get()->row('divisi');
+
+                $data3 = array(
+                    'id_user' => $id_user,
+                    'nama_dokumen' => $this->input->post('produk'),
+                    'penerbit' => $divisi,
+                    'no_dokumen' => $no_pelayanan,
+                    'tgl_dokumen' => date('Y-m-d H:i:s'),
+                    'no_arsip' => $no_arsip
+                );
+                if ($this->M_penawaran_la_pu->save_arsip($data3)) {
+                    // PESAN PENGINPUTAN BERHASIL
+                    echo json_encode(array("status" => TRUE));
+                } else {
+                    // PESAN ERROR TABLE RUNDOWN
+                    echo json_encode(array("status" => FALSE, "error" => "arsip"));
+                }
+            } else {
+                // PESAN ERROR TABLE RUNDOWN
+                echo json_encode(array("status" => FALSE, "error" => "rundown"));
+            }
+        } else {
+            // PESAN ERROR TABLE MASTER
+            echo json_encode(array("status" => FALSE, "error" => "master"));
         }
-        $this->M_penawaran_la_pu->save_rundown($data2);
-
-        //DIVISI
-        $id_user = $this->session->userdata('id_user');
-        $divisi = $this->db->select('divisi')->from('tbl_data_user')->where('id_user', $id_user)->get()->row('divisi');
-
-        $data3 = array(
-            'id_user' => $id_user,
-            'nama_dokumen' => $this->input->post('produk'),
-            'penerbit' => $divisi,
-            'no_dokumen' => $no_pelayanan,
-            'tgl_dokumen' => date('Y-m-d H:i:s'),
-            'no_arsip' => $no_arsip
-        );
-
-        $this->M_penawaran_la_pu->save_arsip($data3);
-        // echo json_encode($data2);
-        echo json_encode(array("status" => TRUE));
     }
 
     public function update($id)
@@ -282,7 +323,9 @@ class Penawaran_la_pu extends CI_Controller
             'biaya' => $this->input->post('biaya_integer'),
             'layanan_trmsk' => $this->input->post('layanan_content'),
             'layanan_tdk_trmsk' => $this->input->post('layanan_content2'),
-            'catatan' => $this->input->post('catatan_content')
+            'catatan' => $this->input->post('catatan_content'),
+            'keberangkatan' => $this->input->post('keberangkatan'),
+            'kepulangan' => $this->input->post('kepulangan')
         );
         $this->db->update('tbl_land_arrangement', $data, ['id' => $id]);
 
@@ -304,10 +347,10 @@ class Penawaran_la_pu extends CI_Controller
         //MELAKUKAN REPLACE DATA LAMA DENGAN YANG BARU
         for ($i = 1; $i <= count($_POST['hari']); $i++) {
             // Set id menjadi NULL jika id_detail tidak ada atau kosong
-            $id = !empty($la_id[$i]) ? $la_id[$i] : NULL;
+            $id2 = !empty($la_id[$i]) ? $la_id[$i] : NULL;
             if (!empty($kegiatan[$i])) {
                 $data2[$i] = array(
-                    'id' => $id,
+                    'id' => $id2,
                     'no_pelayanan' => $this->input->post('no_pelayanan'),
                     'hari' => $hari[$i],
                     'tanggal' => $tanggal[$i],
@@ -317,14 +360,58 @@ class Penawaran_la_pu extends CI_Controller
                 $this->db->replace('tbl_rundown', $data2[$i]);
             } else {
                 $data2[$i] = array(
-                    'id' => $id,
+                    'id' => $id2,
                     'no_pelayanan' => $this->input->post('no_pelayanan'),
                     'hari' => $hari[$i],
                     'tanggal' => $tanggal[$i],
                 );
                 // // Menggunakan db->replace untuk memasukkan atau menggantikan data
                 $this->db->where('id', $data2[$i]['id']); // Tambahkan kondisi WHERE
-                // $this->db->update('tbl_rundown', $data2[$i]); // Lakukan update
+                $this->db->update('tbl_rundown', $data2[$i]); // Lakukan update
+            }
+        }
+
+        // Data Hotel
+        $hotel_ids = $this->input->post('id_hotel');
+        $statuses2 = $this->input->post('status2');
+
+        // Proses Update Data Hotel
+
+        // // Pastikan semua input adalah array
+        if (!is_array($hotel_ids) || !is_array($statuses2)) {
+            echo json_encode(array("status" => FALSE, "message" => "Data tidak valid."));
+            return;
+        }
+
+        foreach ($hotel_ids as $index => $hotel_id) {
+            $status2 = isset($statuses2[$index]) ? $statuses2[$index] : null;
+
+            $existing_hotel = $this->db->get_where('tbl_land_arrangement_htl', [
+                'id_hotel' => $hotel_id,
+                'id_la' => $id
+            ])->row();
+
+            // Jika status kosong, hapus dari database
+            if (empty($status2)) {
+                if ($existing_hotel) {
+                    $this->db->delete('tbl_land_arrangement_htl', ['id' => $existing_hotel->id]);
+                }
+                continue; // Lewati iterasi ini dan lanjutkan ke hotel berikutnya
+            }
+
+            // Jika hotel sudah ada, lakukan update
+            if ($existing_hotel) {
+                $this->db->update('tbl_land_arrangement_htl', ['is_active' => $status2], ['id' => $existing_hotel->id]);
+            } else {
+                // Jika hotel tidak ada, lakukan insert
+                $data_hotel_insert = array(
+                    'id_la' => $id,
+                    'id_hotel' => $hotel_id,
+                    'is_active' => $status2 // Gabungkan status dengan nominal
+                );
+
+                // Debugging: Tampilkan data yang akan diinsert
+                $this->db->insert('tbl_land_arrangement_htl', $data_hotel_insert);
             }
         }
 
@@ -334,8 +421,30 @@ class Penawaran_la_pu extends CI_Controller
 
     function delete($id)
     {
-        $this->db->delete('tbl_land_arrangement', ['id' => $id]);
-        echo json_encode(array("status" => TRUE));
+        // Ambil no_pelayanan berdasarkan id
+        $no_pelayanan = $this->db->select('no_pelayanan')
+            ->from('tbl_land_arrangement')
+            ->where('id', $id)
+            ->get()
+            ->row();
+
+        // Periksa apakah data ditemukan
+        if ($no_pelayanan) {
+            // Hapus dari tabel tbl_land_arrangement
+            $this->db->delete('tbl_land_arrangement', ['id' => $id]);
+
+            // Hapus dari tabel tbl_rundown berdasarkan no_pelayanan
+            $this->db->delete('tbl_rundown', ['no_pelayanan' => $no_pelayanan->no_pelayanan]);
+
+            // Hapus dari tabel tbl_land_arrangement_htl berdasarkan id
+            $this->db->delete('tbl_land_arrangement_htl', ['id_la' => $id]);
+
+            // Kirim respons sukses
+            echo json_encode(array("status" => TRUE, "message" => "Data berhasil dihapus"));
+        } else {
+            // Jika no_pelayanan tidak ditemukan, kirim respons error
+            echo json_encode(array("status" => FALSE, "message" => "Data tidak ditemukan atau sudah dihapus"));
+        }
     }
 
     // PRINTOUT TCPDF
