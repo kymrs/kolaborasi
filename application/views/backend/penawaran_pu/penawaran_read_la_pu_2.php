@@ -83,37 +83,41 @@
                     <div class="layanan-list">
                         <div class="left-side">
                             <p>Layanan Termasuk :</p>
-                            <?= $penawaran->layanan_trmsk ?>
+                            <div class="la-list">
+                                <?= $penawaran->layanan_trmsk ?>
+                            </div>
                         </div>
                         <div class="right-side">
                             <p>Layanan Tidak Termasuk :</p>
-                            <?= $penawaran->layanan_tdk_trmsk ?>
+                            <div class="la-list">
+                                <?= $penawaran->layanan_tdk_trmsk ?>
+                            </div>
+                            <div class="extra-content">
+                                <table>
+                                    <tr>
+                                        <td>Hotel Makkah<i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i></td>
+                                        <td>:</td>
+                                        <td>Sofwah Orchid</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Hotel Madinah<i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i></td>
+                                        <td>:</td>
+                                        <td>Taiba Front</td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="fas fa-solid fa-plane"></i></i>Keberangkatan</td>
+                                        <td>:</td>
+                                        <td>Direct Saudia Airlines SV817</td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="fas fa-solid fa-plane"></i>Kepulangan</td>
+                                        <td>:</td>
+                                        <td>Direct Saudia Airlines SV826</td>
+                                    </tr>
+                                </table>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="extra-content">
-                    <table>
-                        <tr>
-                            <td>Hotel Makkah<i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i></td>
-                            <td>:</td>
-                            <td>Sofwah Orchid</td>
-                        </tr>
-                        <tr>
-                            <td>Hotel Madinah<i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i></td>
-                            <td>:</td>
-                            <td>Taiba Front</td>
-                        </tr>
-                        <tr>
-                            <td><i class="fi fi-sr-plane-departure"></i></i>Keberangkatan</td>
-                            <td>:</td>
-                            <td>Direct Saudia Airlines SV817</td>
-                        </tr>
-                        <tr>
-                            <td><i class="fas fa-solid fa-plane"></i>Kepulangan</td>
-                            <td>:</td>
-                            <td>Direct Saudia Airlines SV826</td>
-                        </tr>
-                    </table>
                 </div>
                 <div class="harga-paket">
                     <div class="header">

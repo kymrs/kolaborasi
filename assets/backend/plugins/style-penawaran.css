@@ -143,7 +143,6 @@ main {
 .layanan-list {
     margin-top: 10px;
     display: flex;
-
 }
 
 .layanan-list .left-side {
@@ -154,7 +153,8 @@ main {
     margin-left: 4px;
 }
 
-.layanan-list .left-side ol {
+.layanan-list .left-side ol,
+.layanan-list .left-side .la-list {
     padding: 0;
     margin-left: 25px;
     max-width: 100%;
