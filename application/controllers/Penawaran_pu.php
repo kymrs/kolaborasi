@@ -435,48 +435,6 @@ class Penawaran_pu extends CI_Controller
             }
         }
 
-        // UPDATE TRANSAKSI PENAWARAN LAND_ARRANGEMENT
-        $la_id = $this->input->post('hidden_id[]');
-        $hari = $this->input->post('hari[]');
-        $tanggal = $this->input->post('tanggal[]');
-        $kegiatan = $this->input->post('hidden_kegiatan_[]');
-        // UNTUK MENGHAPUS ROW YANG TELAH DIDELETE
-        $deletedRows = json_decode($this->input->post('deleted_rows'), true);
-        if (!empty($deletedRows)) {
-            foreach ($deletedRows as $id2) {
-                // Hapus row dari database berdasarkan ID
-                $this->db->where('id', $id2);
-                $this->db->delete('tbl_rundown');
-            }
-        }
-
-        //MELAKUKAN REPLACE DATA LAMA DENGAN YANG BARU
-        for ($i = 1; $i <= count($_POST['hari']); $i++) {
-            // Set id menjadi NULL jika id_detail tidak ada atau kosong
-            $id2 = !empty($la_id[$i]) ? $la_id[$i] : NULL;
-            if (!empty($kegiatan[$i])) {
-                $data2[$i] = array(
-                    'id' => $id2,
-                    'no_pelayanan' => $this->input->post('no_pelayanan'),
-                    'hari' => $hari[$i],
-                    'tanggal' => $tanggal[$i],
-                    'kegiatan' => $kegiatan[$i]
-                );
-                // // Menggunakan db->replace untuk memasukkan atau menggantikan data
-                $this->db->replace('tbl_rundown', $data2[$i]);
-            } else {
-                $data2[$i] = array(
-                    'id' => $id2,
-                    'no_pelayanan' => $this->input->post('no_pelayanan'),
-                    'hari' => $hari[$i],
-                    'tanggal' => $tanggal[$i],
-                );
-                // // Menggunakan db->replace untuk memasukkan atau menggantikan data
-                $this->db->where('id', $data2[$i]['id']); // Tambahkan kondisi WHERE
-                $this->db->update('tbl_rundown', $data2[$i]); // Lakukan update
-            }
-        }
-
         // Proses Update Data Hotel
 
         // // Pastikan semua input adalah array
@@ -819,81 +777,19 @@ class Penawaran_pu extends CI_Controller
         // Spasi antara konten dan signature
         $t_cpdf->Ln(1);
 
-        $layananPastiY = $t_cpdf->GetY();
+        // Konten text (justify)
+        $t_cpdf->SetFont('Poppins-Regular', '', 9);
 
-        // Daftar pertama
-        $body_text4_part1 = '<ol>
-<li>Konsultasi Gratis</li>
-<li>Gratis Bantuan Pembuatan Paspor</li>
-<li>Gratis Antar Dokumen & Perlengkapan</li>
-<li>Gratis Pendampingan Manasik</li>
-</ol>';
-
-        // Daftar kedua
-        $body_text4_part2 = '<ol start="5"> <!-- start="5" untuk melanjutkan nomor -->
-<li>Gratis Handling Keberangkatan</li>
-<li>Gratis Handling Kepulangan</li>
-<li>Jaminan Pasti Berangkat</li>
-<li>Garansi 100% Uang Kembali Apabila Travel Gagal Memberangkatkan</li>
-</ol>';
-
-        // Tulis daftar pertama
-        $t_cpdf->writeHTMLCell(
-            90,
-            0,
-            -1,
-            $t_cpdf->GetY(),
-            $body_text4_part1,
-            0,
-            1,
-            false,
-            true,
-            'J',
-            true
-        );
-
-        // Periksa ruang sebelum menulis daftar kedua
-        $marginBottom = $t_cpdf->getMargins()['bottom'];
-        if ($t_cpdf->GetY() + 30 > ($t_cpdf->getPageHeight() - $marginBottom)) {
-            $t_cpdf->AddPage();
-        }
-
-        // Tulis daftar kedua
-        $t_cpdf->writeHTMLCell(
-            90,
-            0,
-            110,
-            $layananPastiY,
-            $body_text4_part2,
-            0,
-            1,
-            false,
-            true,
-            'J',
-            true
-        );
-
-
-        // $t_cpdf->Sety($layananPastiY);
-        // $body_text5 = '<ol>
-        //     <li>Gratis Handling Keberangkatan</li>
-        //     <li>Gratis Handling Kepulangan</li>
-        //     <li>Jaminan Pasti Berangkat</li>
-        //     <li>Garansi 100% Uang Kembali Apabila Travel Gagal Memberangkatkan</li>
-        // </ol>';
-        // $t_cpdf->writeHTMLCell(
-        //     90,                    // Lebar sel
-        //     0,                     // Tinggi sel (0 berarti tinggi dinamis)
-        //     98,       // Posisi X
-        //     $t_cpdf->GetY(),       // Posisi Y saat ini
-        //     $body_text5,           // Konten HTML
-        //     0,                     // Border (0 = tidak ada border)
-        //     1,                     // Line break (1 = pindah ke baris baru setelah cell)
-        //     false,                 // Fill (false = tidak ada latar belakang)
-        //     true,                  // Auto padding
-        //     'J',                   // Align (L = kiri)
-        //     true                   // Konversi tag HTML
-        // );
+        // LAYANAN PASTI
+        $t_cpdf->Cell(100, 5, '1. Konsultasi Gratis', 0, 0);
+        $t_cpdf->Cell(100, 5, '5. Gratis Handling Keberangkatan', 0, 1);
+        $t_cpdf->Cell(100, 5, '2. Gratis Bantuan Pembuatan Paspor', 0, 0);
+        $t_cpdf->Cell(100, 5, '6. Gratis Handling Kepulangan', 0, 1);
+        $t_cpdf->Cell(100, 5, '3. Gratis Antar Dokumen & Perlengkapan', 0, 0);
+        $t_cpdf->Cell(100, 5, '7. Jaminan Pasti Berangkat<', 0, 1);
+        $t_cpdf->Cell(100, 5, '4. Gratis Pendampingan Manasik', 0, 0);
+        $t_cpdf->SetXY(110, $t_cpdf->GetY() + 0); // Pindah ke kolom kanan
+        $t_cpdf->MultiCell(100, 4, '8. Garansi 100% Uang Kembali Apabila Travel Gagal Memberangkatkan', 0, 'L', false);
 
         // Add a new page
         $t_cpdf->AddPage();
