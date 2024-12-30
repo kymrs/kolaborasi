@@ -737,30 +737,24 @@ class Penawaran_pu extends CI_Controller
         $t_cpdf->Ln(10); // Spasi antara paragraf
 
         // KONTEN HOTEL DAN PENERBANGAN
-        $t_cpdf->SetFont('Poppins-Regular', '', 9);
-        $t_cpdf->SetX(100); // Pindahkan posisi ke kolom kanan
-        $t_cpdf->Cell(25, 5, 'Hotel Makkah', 0, 0,);
-        $t_cpdf->SetFont('ZapfDingbats');
-        $stars = '';
-        for ($i = 0; $i < 5; $i++) {
-            $stars .= chr(73);
+        foreach ($hotels as $hotel) {
+            $t_cpdf->SetFont('Poppins-Regular', '', 9);
+            $t_cpdf->SetX(100); // Pindahkan posisi ke kolom kanan
+            $t_cpdf->Cell(25, 5, 'Hotel ' . $hotel->kota, 0, 0,);
+            $t_cpdf->SetFont('ZapfDingbats');
+            $stars = '';
+            for ($i = 0; $i < 5; $i++) {
+                if ($i < $hotel->rating) {
+                    $stars .= chr(72);
+                } else {
+                    $stars .= chr(73);
+                }
+            }
+            $t_cpdf->cell(15, 5, $stars, 0, 0);
+            $t_cpdf->SetFont('Poppins-Regular', '', 9);
+            $t_cpdf->cell(3, 5, ':', 0, 0);
+            $t_cpdf->Cell(40, 5, $hotel->nama_hotel, 0, 1);
         }
-        $t_cpdf->cell(15, 5, $stars, 0, 0);
-        $t_cpdf->SetFont('Poppins-Regular', '', 9);
-        $t_cpdf->cell(3, 5, ':', 0, 0);
-        $t_cpdf->Cell(40, 5, 'Sofwah Orchid', 0, 1);
-
-        $t_cpdf->SetX(100); // Pindahkan posisi ke kolom kanan
-        $t_cpdf->Cell(25, 5, 'Hotel Madinah', 0, 0);
-        $t_cpdf->SetFont('ZapfDingbats');
-        $stars2 = '';
-        for ($i = 0; $i < 5; $i++) {
-            $stars2 .= chr(73);
-        }
-        $t_cpdf->cell(15, 5, $stars2, 0, 0);
-        $t_cpdf->SetFont('Poppins-Regular', '', 9);
-        $t_cpdf->Cell(3, 5, ':', 0, 0);
-        $t_cpdf->Cell(40, 5, 'Taiba Front', 0, 1);
 
         $t_cpdf->SetX(100); // Pindahkan posisi ke kolom kanan
         $t_cpdf->Cell(40, 5, 'Keberangkatan', 0, 0);
@@ -857,37 +851,6 @@ EOD;
 EOD;
         $t_cpdf->Sety(38);
         $t_cpdf->writeHTML($tbl, true, false, false, false, '');
-
-        // // Table Header
-        // $t_cpdf->Sety(38);
-        // $t_cpdf->SetFont('Poppins-Bold', '', 10);
-        // $t_cpdf->Cell(32, 5, 'Hari', 1, 0, 'C');
-        // $t_cpdf->Cell(32, 5, 'Tanggal', 1, 0, 'C');
-        // $t_cpdf->Cell(127, 5, 'Kegiatan', 1, 1, 'C');
-
-        // $t_cpdf->SetFont('Poppins-Regular', '', 10);
-
-        // // Looping melalui rundown
-        // foreach ($rundowns as $rundown) {
-        //     $content_text = $rundown->kegiatan;
-
-        //     // Hitung jumlah baris teks untuk kolom 3
-        //     $lines = $t_cpdf->getNumLines($content_text, 127);
-
-        //     // Hitung tinggi total untuk setiap sel, sesuaikan dengan tinggi baris kolom 3
-        //     $height3 = round($lines * 5); // 5 adalah tinggi baris (disesuaikan sesuai kebutuhan)
-
-        //     // Menulis data ke PDF dengan menyesuaikan tinggi kolom 1 dan 2
-        //     $t_cpdf->Cell(32, $height3, $rundown->hari, 1, 0, 'L'); // Kolom 1
-        //     $t_cpdf->Cell(32, $height3, $rundown->tanggal, 1, 0, 'C'); // Kolom 2
-
-        //     // Menulis kolom 3 dengan MultiCell yang menyesuaikan tinggi
-        //     $t_cpdf->MultiCell(127, 5, $content_text, 1, 'L'); // Kolom 3
-
-        //     // Menyesuaikan posisi Y setelah menulis kolom 3, agar kolom 1 dan 2 tetap sejajar
-        //     $t_cpdf->SetY($t_cpdf->GetY() + $height3); // Sesuaikan posisi Y berdasarkan tinggi kolom 3
-        // }
-
 
         // Output PDF (tampilkan di browser)
         $t_cpdf->Output('example.t_cpdf', 'I'); // 'I' untuk menampilkan di browser
