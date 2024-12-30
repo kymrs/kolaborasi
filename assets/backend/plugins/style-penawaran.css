@@ -302,7 +302,6 @@ main {
 .canvas2 {
     margin: 0 auto;
     width: 210mm;
-    max-height: 297mm;
     display: block;
     margin-bottom: 20px;
     background-color: white;

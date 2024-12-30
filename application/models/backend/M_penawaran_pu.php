@@ -275,7 +275,7 @@ class M_penawaran_pu extends CI_Model
     public function get_hotels($id_penawaran)
     {
         $this->db->select('b.id, b.nama_hotel, b.rating, b.kota, b.negara');
-        $this->db->from('tbl_land_arrangement_htl AS a');
+        $this->db->from('tbl_penawaran_detail_htl AS a');
         $this->db->join('tbl_hotel_pu AS b', 'a.id_hotel = b.id'); // Kondisi ON untuk join
         $this->db->where('a.id_penawaran', $id_penawaran); // Pastikan $id_penawaran terdefinisi
         $query = $this->db->get();
