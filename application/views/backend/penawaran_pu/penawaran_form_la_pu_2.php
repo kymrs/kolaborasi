@@ -224,7 +224,7 @@
                                     </div>
                                 </div>
                                 <div class="mb-3 row">
-                                    <label class="col-sm-4">Keberangkatan:</label>
+                                    <label class="col-sm-4"> Tanggal Keberangkatan:</label>
                                     <div class="col-sm-8">
                                         <input type="date" id="tgl_keberangkatan" name="tgl_keberangkatan" class="form-control">
                                     </div>

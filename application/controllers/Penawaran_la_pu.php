@@ -226,7 +226,7 @@ class Penawaran_la_pu extends CI_Controller
         //CONVERT TIME
         // Ambil nilai input datetime dari form
         $input_datetime = $this->input->post('tgl_berlaku');
-        $input2_datetime = $this->input->post('keberangkatan');
+        $input2_datetime = $this->input->post('tgl_keberangkatan');
 
         // Ubah format dari 'Y-m-dTH:i' ke 'Y-m-d H:i:s' agar sesuai dengan format MySQL
         $formatted_datetime = date('Y-m-d', strtotime($input_datetime));
@@ -330,7 +330,7 @@ class Penawaran_la_pu extends CI_Controller
         //CONVERT TIME
         // Ambil nilai input datetime dari form
         $input_datetime = $this->input->post('tgl_berlaku');
-        $input2_datetime = $this->input->post('keberangkatan');
+        $input2_datetime = $this->input->post('tgl_keberangkatan');
 
         // Ubah format dari 'Y-m-dTH:i' ke 'Y-m-d H:i:s' agar sesuai dengan format MySQL
         $formatted_datetime = date('Y-m-d', strtotime($input_datetime));
@@ -589,7 +589,7 @@ class Penawaran_la_pu extends CI_Controller
         $t_cpdf->SetX($right_column_x); // Pindahkan posisi ke kolom kanan
         $t_cpdf->Cell(26, 5, 'Keberangkatan', 0, 0);
         $t_cpdf->cell(2, 5, ':', 0, 0);
-        $t_cpdf->Cell(50, 5, $penawaran->tgl_keberangkatan, 0, 1);
+        $t_cpdf->Cell(50, 5, DateTime::createFromFormat('Y-m-d', $penawaran->tgl_keberangkatan)->format('d F Y'), 0, 1);
         // Durasi
         $t_cpdf->SetX($right_column_x); // Pindahkan posisi ke kolom kanan
         $t_cpdf->Cell(26, 5, 'Durasi', 0, 0);
