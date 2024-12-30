@@ -74,15 +74,15 @@ main {
 .header-content .row .qr-code .img-qrcode{
     width: 40%;
     position: relative;
+    border-radius: 28px 28px 0 28px;
     left: 60px;
     bottom: 5px;
-    border-radius: 27px 27px 0px 27px;
 }
 
 .header-content .row .qr-code .pu-logo{
-    width: 11%;
+    width: 9%;
     position: relative;
-    left: -19px;
+    left: -16.5px;
     bottom: 5px;
     background-color: white;
 }
