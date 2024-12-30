@@ -855,9 +855,7 @@
 
             const rowId = $(`#row-${id}`).find('input:text[id^="hidden_id"]').val();
             console.log(rowId);
-            // if (rowId) {
             deletedRows.push(rowId);
-            // }
 
             // Hapus instance Quill yang terkait
             if (quillInstances[id]) {

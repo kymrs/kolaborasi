@@ -283,4 +283,10 @@ class M_penawaran_pu extends CI_Model
         // Mengembalikan hasil dalam bentuk array objek
         return $query->result();
     }
+
+    public function get_rundown($no_pelayanan)
+    {
+        $data = $this->db->from('tbl_rundown')->where('no_pelayanan', $no_pelayanan)->get()->result();
+        return $data;
+    }
 }
