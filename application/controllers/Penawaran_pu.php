@@ -435,6 +435,48 @@ class Penawaran_pu extends CI_Controller
             }
         }
 
+        // UPDATE TRANSAKSI PENAWARAN LAND_ARRANGEMENT
+        $la_id = $this->input->post('hidden_id[]');
+        $hari = $this->input->post('hari[]');
+        $tanggal = $this->input->post('tanggal[]');
+        $kegiatan = $this->input->post('hidden_kegiatan_[]');
+        // UNTUK MENGHAPUS ROW YANG TELAH DIDELETE
+        $deletedRows = json_decode($this->input->post('deleted_rows'), true);
+        if (!empty($deletedRows)) {
+            foreach ($deletedRows as $id2) {
+                // Hapus row dari database berdasarkan ID
+                $this->db->where('id', $id2);
+                $this->db->delete('tbl_rundown');
+            }
+        }
+
+        //MELAKUKAN REPLACE DATA LAMA DENGAN YANG BARU
+        for ($i = 1; $i <= count($_POST['hari']); $i++) {
+            // Set id menjadi NULL jika id_detail tidak ada atau kosong
+            $id2 = !empty($la_id[$i]) ? $la_id[$i] : NULL;
+            if (!empty($kegiatan[$i])) {
+                $data2[$i] = array(
+                    'id' => $id2,
+                    'no_pelayanan' => $this->input->post('no_pelayanan'),
+                    'hari' => $hari[$i],
+                    'tanggal' => $tanggal[$i],
+                    'kegiatan' => $kegiatan[$i]
+                );
+                // // Menggunakan db->replace untuk memasukkan atau menggantikan data
+                $this->db->replace('tbl_rundown', $data2[$i]);
+            } else {
+                $data2[$i] = array(
+                    'id' => $id2,
+                    'no_pelayanan' => $this->input->post('no_pelayanan'),
+                    'hari' => $hari[$i],
+                    'tanggal' => $tanggal[$i],
+                );
+                // // Menggunakan db->replace untuk memasukkan atau menggantikan data
+                $this->db->where('id', $data2[$i]['id']); // Tambahkan kondisi WHERE
+                $this->db->update('tbl_rundown', $data2[$i]); // Lakukan update
+            }
+        }
+
         // Proses Update Data Hotel
 
         // // Pastikan semua input adalah array

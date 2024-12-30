@@ -948,24 +948,24 @@
         function addRow() {
             rowCount++;
             const row = `
-        <tr id="row-${rowCount}">
-            <td class="row-number">${rowCount}</td>
-            <td>
-                <input type="text" class="form-control" name="hari[${rowCount}]" placeholder="Input here..." />
-            </td>
-            <td>
-                <input type="date" class="form-control" id="tanggal-${rowCount}" name="tanggal[${rowCount}]" placeholder="Input here..." />
-                <input type="text" id="hidden_id${rowCount}" name="hidden_id[${rowCount}]" value="">
-            </td>
-            <td>
-                <div id="kegiatan-${rowCount}" class="border p-2" style="height: 200px;"></div>
-                <input type="text" name="hidden_kegiatan_[${rowCount}]" id="hidden_kegiatan_${rowCount}" value="">
-            </td>
-            <td>
-                <span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span>
-            </td>
-        </tr>
-    `;
+                <tr id="row-${rowCount}">
+                    <td class="row-number">${rowCount}</td>
+                    <td>
+                        <input type="text" class="form-control" name="hari[${rowCount}]" placeholder="Input here..." />
+                    </td>
+                    <td>
+                        <input type="date" class="form-control" id="tanggal-${rowCount}" name="tanggal[${rowCount}]" placeholder="Input here..." />
+                        <input type="text" id="hidden_id${rowCount}" name="hidden_id[${rowCount}]" value="">
+                    </td>
+                    <td>
+                        <div id="kegiatan-${rowCount}" class="border p-2" style="height: 200px;"></div>
+                        <input type="text" name="hidden_kegiatan_[${rowCount}]" id="hidden_kegiatan_${rowCount}" value="">
+                    </td>
+                    <td>
+                        <span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span>
+                    </td>
+                </tr>
+            `;
 
             // Tambahkan baris ke container
             $('#input-container').append(row);

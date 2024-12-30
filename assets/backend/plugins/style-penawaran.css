@@ -383,7 +383,7 @@ main {
     }
 
     .header-content .row .qr-code .pu-logo {
-        left: -11.5px;
+        left: -8px;
     }
 
     .extra-content table tr td:nth-child(3) {
@@ -411,7 +411,7 @@ main {
     }
 
     .header-content .row .qr-code .pu-logo {
-        left: -1.5px;
+        left: 1px;
     }
 
     .layanan-list .right-side {
@@ -439,7 +439,7 @@ main {
     }
 
     .header-content .row .qr-code .pu-logo {
-        left: 2px;
+        left: 5px;
     }
 
     .harga-paket table tr td {
@@ -500,11 +500,11 @@ main {
     .header-content .row .qr-code .img-qrcode{
         left: 40px;
         bottom: -5px;
-        border-radius: 18px 18px 0px 18px;
+        border-radius: 14px 14px 0px 14px;
     }
     
     .header-content .row .qr-code .pu-logo{
-        left: 6.5px;
+        left: 7.5px;
         bottom: -5px;
     }
 
