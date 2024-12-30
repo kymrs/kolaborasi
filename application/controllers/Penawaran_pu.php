@@ -135,6 +135,7 @@ class Penawaran_pu extends CI_Controller
         $data['master'] = $this->db->get_where('tbl_penawaran', ['id' => $id])->row_array();
         $data['layanan'] = $this->M_penawaran_pu->get_penawaran_detail($id); // Ambil detail layanan (status, nominal)
         $data['hotel'] = $this->M_penawaran_pu->get_penawaran_detail2($id); // Ambil detail hotel
+        $data['rundowns'] = $this->M_penawaran_pu->get_rundown($data['master']['no_pelayanan']);
         echo json_encode($data);
     }
 
@@ -713,7 +714,7 @@ class Penawaran_pu extends CI_Controller
                 $t_cpdf->Cell(4, 5, $nomorTermasuk . '.', 0, 0, 'L'); // Nomor
                 $t_cpdf->Cell(106, 5, $data_layanan_termasuk[$i]['nama_layanan'], 0, 0, 'L'); // Nama layanan
             } else {
-                $t_cpdf->Cell(90, 5, '', 0, 0); // Kosongkan cell jika data habis
+                $t_cpdf->Cell(110, 5, '', 0, 0); // Kosongkan cell jika data habis
             }
 
             // Kolom Layanan Tidak Termasuk
