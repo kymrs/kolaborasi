@@ -745,48 +745,19 @@ class Penawaran_la_pu extends CI_Controller
         // Spasi antara konten dan signature
         $t_cpdf->Ln(1);
 
-        $layananPastiY = $t_cpdf->GetY();
+        // Konten text (justify)
+        $t_cpdf->SetFont('Poppins-Regular', '', 9);
 
-        $body_text4 = '<ol>
-            <li>Konsultasi Gratis</li>
-            <li>Gratis Bantuan Pembuatan Paspor</li>
-            <li>Gratis Antar Dokumen & Perlengkapan</li>
-            <li>Gratis Pendampingan Manasik</li>
-        </ol>';
-        $t_cpdf->writeHTMLCell(
-            0,                    // Lebar sel
-            0,                     // Tinggi sel (0 berarti tinggi dinamis)
-            -1,       // Posisi X
-            $t_cpdf->GetY(),       // Posisi Y saat ini
-            $body_text4,           // Konten HTML
-            0,                     // Border (0 = tidak ada border)
-            1,                     // Line break (1 = pindah ke baris baru setelah cell)
-            false,                 // Fill (false = tidak ada latar belakang)
-            true,                  // Auto padding
-            'J',                   // Align (L = kiri)
-            true                   // Konversi tag HTML
-        );
-
-        $t_cpdf->Sety($layananPastiY);
-        $body_text5 = '<ol>
-            <li>Gratis Handling Keberangkatan</li>
-            <li>Gratis Handling Kepulangan</li>
-            <li>Jaminan Pasti Berangkat</li>
-            <li>Garansi 100% Uang Kembali Apabila Travel Gagal Memberangkatkan</li>
-        </ol>';
-        $t_cpdf->writeHTMLCell(
-            90,                    // Lebar sel
-            0,                     // Tinggi sel (0 berarti tinggi dinamis)
-            98,       // Posisi X
-            $t_cpdf->GetY(),       // Posisi Y saat ini
-            $body_text5,           // Konten HTML
-            0,                     // Border (0 = tidak ada border)
-            1,                     // Line break (1 = pindah ke baris baru setelah cell)
-            false,                 // Fill (false = tidak ada latar belakang)
-            true,                  // Auto padding
-            'J',                   // Align (L = kiri)
-            true                   // Konversi tag HTML
-        );
+        // LAYANAN PASTI
+        $t_cpdf->Cell(100, 5, '1. Konsultasi Gratis', 0, 0);
+        $t_cpdf->Cell(100, 5, '5. Gratis Handling Keberangkatan', 0, 1);
+        $t_cpdf->Cell(100, 5, '2. Gratis Bantuan Pembuatan Paspor', 0, 0);
+        $t_cpdf->Cell(100, 5, '6. Gratis Handling Kepulangan', 0, 1);
+        $t_cpdf->Cell(100, 5, '3. Gratis Antar Dokumen & Perlengkapan', 0, 0);
+        $t_cpdf->Cell(100, 5, '7. Jaminan Pasti Berangkat<', 0, 1);
+        $t_cpdf->Cell(100, 5, '4. Gratis Pendampingan Manasik', 0, 0);
+        $t_cpdf->SetXY(110, $t_cpdf->GetY() + 0); // Pindah ke kolom kanan
+        $t_cpdf->MultiCell(100, 4, '8. Garansi 100% Uang Kembali Apabila Travel Gagal Memberangkatkan', 0, 'L', false);
 
         // Add a new page
         $t_cpdf->AddPage();
