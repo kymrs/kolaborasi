@@ -57,7 +57,7 @@ main {
 }
 
 .header-content .row table td:nth-child(1) {
-    width: 175px;
+    width: 150px;
     display: inline-block;
 }
 
@@ -186,30 +186,28 @@ main {
 
 .extra-content table tr td:nth-child(1) {
     display: inline-block;
-    width: 195px;
+    width: 135px;
 }
 
 .extra-content table tr td:nth-child(2) {
     display: inline-block;
-    width: 10px;
+    width: 75px;
+    text-align: left;
+}
+
+.extra-content table tr td:nth-child(3) {
+    position: relative;
+    right: 10px;
+}
+
+.extra-content .fa-star {
+    position: relative;
+    right: 20px;
 }
 
 .extra-content i {
     scale: 0.8;
     margin: 0 -1px;
-}
-
-.extra-content i.fa-star {
-    position: relative;
-    left: 10px;
-}
-
-.extra-content table tr:nth-child(1) i.fa-star {
-    left: 18px;
-}
-
-.extra-content table tr:nth-child(2) i.fa-star {
-    left: 10px;
 }
 
 .extra-content i.fa-plane {
@@ -391,13 +389,23 @@ main {
         left: -8px;
     }
 
+    .extra-content table tr {
+        height: 25px;
+    }
+    
     .extra-content table tr td:nth-child(3) {
         position: relative;
-        bottom: 3.5px;
+        right: 35px;
     }
 
-    .extra-content table tr td:nth-child(1) {
-        width: 175px;
+    .extra-content table tr td:nth-child(4) {
+        position: relative;
+        right: 30px;
+    }
+    
+    .extra-content .fa-star {
+        position: relative;
+        right: 35px;
     }
 }
 
@@ -423,8 +431,23 @@ main {
         width: 100%;
     }
 
-    .extra-content table tr td:nth-child(1) {
-        width: 160px;
+    .extra-content table tr {
+        height: 20px;
+    }
+
+    .extra-content table tr td:nth-child(3) {
+        position: relative;
+        right: 35px;
+    }
+
+    .extra-content table tr td:nth-child(4) {
+        position: relative;
+        right: 30px;
+    }
+    
+    .extra-content .fa-star {
+        position: relative;
+        right: 35px;
     }
 }
 
@@ -443,6 +466,15 @@ main {
         font-size: 1.2rem;
     }
 
+    .header-content .row table td:nth-child(1) {
+        width: 100px;
+    }
+
+    .header-content .row table td:nth-child(3) {
+        position: relative;
+        right: 9px;
+    }
+
     .header-content .row .qr-code .pu-logo {
         left: 5px;
     }
@@ -455,12 +487,21 @@ main {
         height: 20px;
     }
 
-    .extra-content table tr td:nth-child(1) {
-        width: 140px;
+    .extra-content table tr td:nth-child(3) {
+        position: relative;
+        right: 70px;
+        top: -3px;
     }
 
-    .extra-content table tr td:nth-child(3) {
-        bottom: 0px;
+    .extra-content table tr td:nth-child(4) {
+        position: relative;
+        right: 65px;
+        top: -1px;
+    }
+    
+    .extra-content .fa-star {
+        position: relative;
+        right: 55px;
     }
 }
 
@@ -500,6 +541,11 @@ main {
 
     .header-content .row table td:nth-child(2) {
         padding-right: 2px;
+    }
+
+    .header-content .row table td:nth-child(3) {
+        background-color: red;
+        left: 2px;
     }
 
     .header-content .row .qr-code .img-qrcode{
@@ -578,35 +624,40 @@ main {
     }
 
     .extra-content {
-        font-size: 85%;
-    }
-
-    .extra-content table tr {
-        height: 7px;
+        margin-left: -50px;
     }
 
     .extra-content table tr td:nth-child(1) {
-        width: 92px;
+        width: 80px;
     }
-
+    
     .extra-content table tr td:nth-child(2) {
-        width: 4px;
+        display: inline-block;
+        width: 40px;
+        text-align: left;
+        left: -10px;
+        position: relative;
+    }
+
+    .extra-content table tr {
+        height: 20px;
     }
 
     .extra-content table tr td:nth-child(3) {
-        bottom: 6.5px;
+        position: relative;
+        right: 5px;
+        top: -3px;
     }
 
-    .extra-content table tr:nth-child(1) i.fa-star {
-        left: 10px;
+    .extra-content table tr td:nth-child(4) {
+        position: relative;
+        right: 5px;
+        top: -2.5px;
     }
-
-    .extra-content table tr:nth-child(2) i.fa-star {
-        left: 6px;
-    }
-
-    .extra-content table tr td:nth-child(3) {
-        top: 1px;
+    
+    .extra-content .fa-star {
+        position: relative;
+        right: 0px;
     }
 
     .harga-paket table tr td {
