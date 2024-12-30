@@ -5,6 +5,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?= base_url('assets/backend/plugins/style-penawaran.css') ?>">
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.6.0/uicons-solid-rounded/css/uicons-solid-rounded.css'>
 </head>
 
 <body>
@@ -45,7 +46,7 @@
                             </tr>
                         </table>
                         <div class="qr-code">
-                            <img src="<?= base_url('assets/backend/document/qrcode/qr-PU240902.png') ?>" alt="qrcode" class="img-qrcode">
+                            <img src="data:image/png;base64, <?= $qr_code ?>" alt="qrcode" class="img-qrcode">
                             <img src="<?= base_url('assets/backend/img/favicon-pu.png') ?>" alt="pengenumroh-logo" class="pu-logo">
                         </div>
                     </div>
@@ -103,7 +104,7 @@
                             <td>Taiba Front</td>
                         </tr>
                         <tr>
-                            <td><i class="fas fa-solid fa-plane"></i>Keberangkatan</td>
+                            <td><i class="fi fi-sr-plane-departure"></i></i>Keberangkatan</td>
                             <td>:</td>
                             <td>Direct Saudia Airlines SV817</td>
                         </tr>
