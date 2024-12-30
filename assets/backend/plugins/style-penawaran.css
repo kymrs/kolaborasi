@@ -302,7 +302,6 @@ main {
 .canvas2 {
     margin: 0 auto;
     width: 210mm;
-    max-height: 297mm;
     display: block;
     margin-bottom: 20px;
     background-color: white;
@@ -315,7 +314,8 @@ main {
 }
 
 .rundown tr th,
-.rundown tr td {
+.rundown tr td:nth-child(1),
+.rundown tr td:nth-child(2) {
     border: 2px solid #222;
     text-align: center;
 }
@@ -328,8 +328,17 @@ main {
     width: 25%;
 }
 
+.rundown tr td:nth-child(3) {
+    border: 2px solid #222;
+}
+
 .rundown tr th:nth-child(3) {
     width: 55%;
+}
+
+.rundown tr td ol {
+    padding-left: 20px;
+    list-style-type:disc;
 }
 
 
