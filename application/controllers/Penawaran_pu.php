@@ -779,46 +779,79 @@ class Penawaran_pu extends CI_Controller
 
         $layananPastiY = $t_cpdf->GetY();
 
-        $body_text4 = '<ol>
-            <li>Konsultasi Gratis</li>
-            <li>Gratis Bantuan Pembuatan Paspor</li>
-            <li>Gratis Antar Dokumen & Perlengkapan</li>
-            <li>Gratis Pendampingan Manasik</li>
-        </ol>';
+        // Daftar pertama
+        $body_text4_part1 = '<ol>
+<li>Konsultasi Gratis</li>
+<li>Gratis Bantuan Pembuatan Paspor</li>
+<li>Gratis Antar Dokumen & Perlengkapan</li>
+<li>Gratis Pendampingan Manasik</li>
+</ol>';
+
+        // Daftar kedua
+        $body_text4_part2 = '<ol start="5"> <!-- start="5" untuk melanjutkan nomor -->
+<li>Gratis Handling Keberangkatan</li>
+<li>Gratis Handling Kepulangan</li>
+<li>Jaminan Pasti Berangkat</li>
+<li>Garansi 100% Uang Kembali Apabila Travel Gagal Memberangkatkan</li>
+</ol>';
+
+        // Tulis daftar pertama
         $t_cpdf->writeHTMLCell(
-            900,                    // Lebar sel
-            0,                     // Tinggi sel (0 berarti tinggi dinamis)
-            -1,       // Posisi X
-            $t_cpdf->GetY(),       // Posisi Y saat ini
-            $body_text4,           // Konten HTML
-            0,                     // Border (0 = tidak ada border)
-            1,                     // Line break (1 = pindah ke baris baru setelah cell)
-            false,                 // Fill (false = tidak ada latar belakang)
-            true,                  // Auto padding
-            'J',                   // Align (L = kiri)
-            true                   // Konversi tag HTML
+            90,
+            0,
+            -1,
+            $t_cpdf->GetY(),
+            $body_text4_part1,
+            0,
+            1,
+            false,
+            true,
+            'J',
+            true
         );
 
-        $t_cpdf->Sety($layananPastiY);
-        $body_text5 = '<ol>
-            <li>Gratis Handling Keberangkatan</li>
-            <li>Gratis Handling Kepulangan</li>
-            <li>Jaminan Pasti Berangkat</li>
-            <li>Garansi 100% Uang Kembali Apabila Travel Gagal Memberangkatkan</li>
-        </ol>';
+        // Periksa ruang sebelum menulis daftar kedua
+        $marginBottom = $t_cpdf->getMargins()['bottom'];
+        if ($t_cpdf->GetY() + 30 > ($t_cpdf->getPageHeight() - $marginBottom)) {
+            $t_cpdf->AddPage();
+        }
+
+        // Tulis daftar kedua
         $t_cpdf->writeHTMLCell(
-            90,                    // Lebar sel
-            0,                     // Tinggi sel (0 berarti tinggi dinamis)
-            98,       // Posisi X
-            $t_cpdf->GetY(),       // Posisi Y saat ini
-            $body_text5,           // Konten HTML
-            0,                     // Border (0 = tidak ada border)
-            1,                     // Line break (1 = pindah ke baris baru setelah cell)
-            false,                 // Fill (false = tidak ada latar belakang)
-            true,                  // Auto padding
-            'J',                   // Align (L = kiri)
-            true                   // Konversi tag HTML
+            90,
+            0,
+            110,
+            $layananPastiY,
+            $body_text4_part2,
+            0,
+            1,
+            false,
+            true,
+            'J',
+            true
         );
+
+
+        // $t_cpdf->Sety($layananPastiY);
+        // $body_text5 = '<ol>
+        //     <li>Gratis Handling Keberangkatan</li>
+        //     <li>Gratis Handling Kepulangan</li>
+        //     <li>Jaminan Pasti Berangkat</li>
+        //     <li>Garansi 100% Uang Kembali Apabila Travel Gagal Memberangkatkan</li>
+        // </ol>';
+        // $t_cpdf->writeHTMLCell(
+        //     90,                    // Lebar sel
+        //     0,                     // Tinggi sel (0 berarti tinggi dinamis)
+        //     98,       // Posisi X
+        //     $t_cpdf->GetY(),       // Posisi Y saat ini
+        //     $body_text5,           // Konten HTML
+        //     0,                     // Border (0 = tidak ada border)
+        //     1,                     // Line break (1 = pindah ke baris baru setelah cell)
+        //     false,                 // Fill (false = tidak ada latar belakang)
+        //     true,                  // Auto padding
+        //     'J',                   // Align (L = kiri)
+        //     true                   // Konversi tag HTML
+        // );
 
         // Add a new page
         $t_cpdf->AddPage();
