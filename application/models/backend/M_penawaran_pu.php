@@ -210,7 +210,7 @@ class M_penawaran_pu extends CI_Model
     public function getLayananTermasuk($kode)
     {
         $this->db->select('a.nama_layanan, b.id_penawaran, b.id_layanan, b.is_active');
-        $this->db->from('tbl_layanan as a');
+        $this->db->from('tbl_layanan_pu as a');
         $this->db->join('tbl_penawaran_detail_lyn as b', 'a.id = b.id_layanan', 'left');
         $this->db->join('tbl_penawaran as c', 'b.id_penawaran = c.id', 'left');
         $this->db->where('b.is_active', 'Y');
@@ -223,7 +223,7 @@ class M_penawaran_pu extends CI_Model
     public function getLayananTidakTermasuk($kode)
     {
         $this->db->select('a.nama_layanan, b.id_penawaran, b.id_layanan, b.is_active');
-        $this->db->from('tbl_layanan as a');
+        $this->db->from('tbl_layanan_pu as a');
         $this->db->join('tbl_penawaran_detail_lyn as b', 'a.id = b.id_layanan', 'left');
         $this->db->join('tbl_penawaran as c', 'b.id_penawaran = c.id', 'left');
         $this->db->where("(b.is_active = 'N' OR (b.is_active LIKE 'N%' AND LENGTH(b.is_active) > 1))");

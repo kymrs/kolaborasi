@@ -544,7 +544,6 @@ main {
     }
 
     .header-content .row table td:nth-child(3) {
-        background-color: red;
         left: 2px;
     }
 
@@ -624,7 +623,7 @@ main {
     }
 
     .extra-content {
-        margin-left: -50px;
+        margin-left: -30px;
     }
 
     .extra-content table tr td:nth-child(1) {
@@ -640,19 +639,18 @@ main {
     }
 
     .extra-content table tr {
-        height: 20px;
+        height: 15px;
     }
 
     .extra-content table tr td:nth-child(3) {
         position: relative;
         right: 5px;
-        top: -3px;
+        top: 0;
     }
 
     .extra-content table tr td:nth-child(4) {
         position: relative;
         right: 5px;
-        top: -2.5px;
     }
     
     .extra-content .fa-star {
