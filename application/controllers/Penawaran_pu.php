@@ -111,7 +111,7 @@ class Penawaran_pu extends CI_Controller
         $data['id'] = 0;
         $data['title'] = 'backend/penawaran_pu/penawaran_form_pu';
         $this->db->order_by('nama_layanan', 'ASC');
-        $data['layanan'] = $this->db->get('tbl_layanan')->result_array();
+        $data['layanan'] = $this->db->get('tbl_layanan_pu')->result_array();
         $data['hotel'] = $this->db->get('tbl_hotel_pu')->result_array();
         $data['title_view'] = 'Penawaran Form';
         $this->load->view('backend/home', $data);
@@ -126,7 +126,7 @@ class Penawaran_pu extends CI_Controller
         $data['title'] = 'backend/penawaran_pu/penawaran_form_pu';
         $data['hotel'] = $this->db->get('tbl_hotel_pu')->result_array();
         $this->db->order_by('nama_layanan', 'ASC');
-        $data['layanan'] = $this->db->get('tbl_layanan')->result_array();
+        $data['layanan'] = $this->db->get('tbl_layanan_pu')->result_array();
         $this->load->view('backend/home', $data);
     }
 
@@ -475,6 +475,48 @@ class Penawaran_pu extends CI_Controller
             }
         }
 
+        // UPDATE TRANSAKSI PENAWARAN LAND_ARRANGEMENT
+        $la_id = $this->input->post('hidden_id[]');
+        $hari = $this->input->post('hari[]');
+        $tanggal = $this->input->post('tanggal[]');
+        $kegiatan = $this->input->post('hidden_kegiatan_[]');
+        // UNTUK MENGHAPUS ROW YANG TELAH DIDELETE
+        $deletedRows = json_decode($this->input->post('deleted_rows'), true);
+        if (!empty($deletedRows)) {
+            foreach ($deletedRows as $id2) {
+                // Hapus row dari database berdasarkan ID
+                $this->db->where('id', $id2);
+                $this->db->delete('tbl_rundown');
+            }
+        }
+
+        //MELAKUKAN REPLACE DATA LAMA DENGAN YANG BARU
+        for ($i = 1; $i <= count($_POST['hari']); $i++) {
+            // Set id menjadi NULL jika id_detail tidak ada atau kosong
+            $id2 = !empty($la_id[$i]) ? $la_id[$i] : NULL;
+            if (!empty($kegiatan[$i])) {
+                $data2[$i] = array(
+                    'id' => $id2,
+                    'no_pelayanan' => $this->input->post('no_pelayanan'),
+                    'hari' => $hari[$i],
+                    'tanggal' => $tanggal[$i],
+                    'kegiatan' => $kegiatan[$i]
+                );
+                // // Menggunakan db->replace untuk memasukkan atau menggantikan data
+                $this->db->replace('tbl_rundown', $data2[$i]);
+            } else {
+                $data2[$i] = array(
+                    'id' => $id2,
+                    'no_pelayanan' => $this->input->post('no_pelayanan'),
+                    'hari' => $hari[$i],
+                    'tanggal' => $tanggal[$i],
+                );
+                // // Menggunakan db->replace untuk memasukkan atau menggantikan data
+                $this->db->where('id', $data2[$i]['id']); // Tambahkan kondisi WHERE
+                $this->db->update('tbl_rundown', $data2[$i]); // Lakukan update
+            }
+        }
+
         // Mengembalikan status berhasil
         echo json_encode(array("status" => TRUE));
     }
@@ -733,7 +775,9 @@ class Penawaran_pu extends CI_Controller
             $t_cpdf->Cell(0, 5, 'Tidak ada layanan tersedia.', 0, 1, 'C');
         }
 
-        $t_cpdf->Ln(10); // Spasi antara paragraf
+        $trmskY = $t_cpdf->GetY();
+
+        $t_cpdf->Ln(-5); // Spasi antara paragraf
 
         // KONTEN HOTEL DAN PENERBANGAN
         foreach ($hotels as $hotel) {
@@ -758,12 +802,54 @@ class Penawaran_pu extends CI_Controller
         $t_cpdf->SetX(100); // Pindahkan posisi ke kolom kanan
         $t_cpdf->Cell(40, 5, 'Keberangkatan', 0, 0);
         $t_cpdf->Cell(3, 5, ':', 0, 0);
-        $t_cpdf->Cell(40, 5, 'Direct Saudia Airlines SV817', 0, 1);
+        $t_cpdf->Cell(40, 5, $penawaran->keberangkatan, 0, 1);
 
         $t_cpdf->SetX(100); // Pindahkan posisi ke kolom kanan
         $t_cpdf->Cell(40, 5, 'Kepulangan', 0, 0);
         $t_cpdf->Cell(3, 5, ':', 0, 0);
-        $t_cpdf->Cell(40, 5, 'Direct Saudia Airlines SV826', 0, 1);
+        $t_cpdf->Cell(40, 5, $penawaran->kepulangan, 0, 1);
+
+        $t_cpdf->Ln(2); // Spasi antara paragraf
+
+        // HEADER LAYANAN PASTI
+        $t_cpdf->SetFont('Poppins-Regular', '', 11);
+        $t_cpdf->SetFillColor(252, 118, 19);
+        $t_cpdf->SetTextColor(255, 255, 255);
+        $t_cpdf->Cell(0, 10, 'HARGA PAKET', 0, 1, 'L', true);
+        $t_cpdf->SetTextColor(0, 0, 0);
+
+        // Spasi antara konten dan signature
+        $t_cpdf->Ln(1);
+
+        // Konten text (justify)
+        $t_cpdf->SetFont('Poppins-Regular', '', 9);
+
+        // Name and title (Creative Director)
+        $t_cpdf->SetFont('Poppins-Regular', 'B', 13);
+
+        // Format nilai menjadi Rupiah
+        $pkt_quad = 'Rp ' . number_format($penawaran->pkt_quad, 0, ',', '.');
+        $pkt_triple = 'Rp ' . number_format($penawaran->pkt_triple, 0, ',', '.');
+        $pkt_double = 'Rp ' . number_format($penawaran->pkt_double, 0, ',', '.');
+
+        // Output data dengan format Rupiah
+        $t_cpdf->Ln(1);
+
+        $t_cpdf->Cell(25, 5, 'Quad', 0, 0);
+        $t_cpdf->Cell(5, 5, ':', 0, 0);
+        $t_cpdf->Cell(50, 5, $pkt_quad, 0, 1);
+
+        $t_cpdf->Cell(25, 5, 'Triple', 0, 0);
+        $t_cpdf->Cell(5, 5, ':', 0, 0);
+        $t_cpdf->Cell(50, 5, $pkt_triple, 0, 1);
+
+        $t_cpdf->Cell(25, 5, 'Double', 0, 0);
+        $t_cpdf->Cell(5, 5, ':', 0, 0);
+        $t_cpdf->Cell(50, 5, $pkt_double, 0, 1);
+
+        $t_cpdf->Ln(1);
+
+
 
         $trmskY = $t_cpdf->GetY();
 

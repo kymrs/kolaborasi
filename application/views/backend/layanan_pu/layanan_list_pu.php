@@ -42,16 +42,13 @@
                     <!-- Added padding for spacing -->
                     <div class="table-responsive">
                         <!-- Table wrapper -->
-                        <table id="hotel-table" class="table table-bordered table-striped display nowrap w-100 mb-4">
+                        <table id="layanan-table" class="table table-bordered table-striped display nowrap w-100 mb-4">
                             <!-- Added margin-bottom -->
                             <thead>
                                 <tr>
                                     <th>No</th>
                                     <th style="width: 120px;">Action</th>
-                                    <th>Nama Hotel</th>
-                                    <th>Rating</th>
-                                    <th>Kota</th>
-                                    <th>Negara</th>
+                                    <th>Nama Layanan</th>
                                     <th>Created At</th>
                                 </tr>
                             </thead>
@@ -62,10 +59,7 @@
                                 <tr>
                                     <th>No</th>
                                     <th style="width: 120px;">Action</th>
-                                    <th>Nama Hotel</th>
-                                    <th>Rating</th>
-                                    <th>Kota</th>
-                                    <th>Negara</th>
+                                    <th>Nama Layanan</th>
                                     <th>Created At</th>
                                 </tr>
                             </tfoot>
@@ -82,7 +76,7 @@
             <div class="modal-content">
                 <form id="modalform">
                     <div class="modal-header bg-primary text-gray-100">
-                        <h5 class="card-title" style="margin: 0;">Tambah Data Hotel</h5>
+                        <h5 class="card-title" style="margin: 0;">Tambah Data Layanan</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-top: -23px;">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -91,39 +85,10 @@
                     <div class="modal-body">
                         <input type="hidden" name="id" />
                         <div class="form-group row">
-                            <label for="" class="col-sm-3 col-form-label">Nama Hotel</label>
+                            <label for="" class="col-sm-3 col-form-label">Layanan</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" id="nama_hotel" name="nama_hotel" placeholder="Nama Hotel" required>
+                                <input type="text" class="form-control" id="nama_layanan" name="nama_layanan" placeholder="Nama Layanan" required>
                                 <input type="hidden" class="form-control" id="id" name="id" placeholder="id">
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="" class="col-sm-3 col-form-label">Kota</label>
-                            <div class="col-sm-9">
-                                <input type="text" class="form-control" id="kota" name="kota" placeholder="Kota" required>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="" class="col-sm-3 col-form-label">Negara</label>
-                            <div class="col-sm-9">
-                                <input type="text" class="form-control" id="negara" name="negara" placeholder="Negara" required>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="" class="col-sm-3 col-form-label">Rating</label>
-                            <div class="col-sm-9">
-                                <div class="rating">
-                                    <input type="radio" id="star5" name="rating" value="5">
-                                    <label for="star5" title="5 Bintang">★</label>
-                                    <input type="radio" id="star4" name="rating" value="4">
-                                    <label for="star4" title="4 Bintang">★</label>
-                                    <input type="radio" id="star3" name="rating" value="3">
-                                    <label for="star3" title="3 Bintang">★</label>
-                                    <input type="radio" id="star2" name="rating" value="2">
-                                    <label for="star2" title="2 Bintang">★</label>
-                                    <input type="radio" id="star1" name="rating" value="1">
-                                    <label for="star1" title="1 Bintang">★</label>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -143,14 +108,14 @@
 <script type="text/javascript">
     var table;
     $(document).ready(function() {
-        table = $('#hotel-table').DataTable({
+        table = $('#layanan-table').DataTable({
             "responsive": true,
             "scrollX": true,
             "processing": true,
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('hotel_pu/get_list') ?>",
+                "url": "<?php echo site_url('layanan_pu/get_list') ?>",
                 "type": "POST",
             },
             "language": {
@@ -161,7 +126,7 @@
                     "className": 'dt-head-nowrap'
                 },
                 {
-                    "targets": [1],
+                    "targets": [],
                     "className": 'dt-body-nowrap'
                 },
                 {
@@ -178,9 +143,9 @@
         var $form = $(this);
         if (!$form.valid()) return false;
         if (method == 'add') {
-            url = "<?php echo site_url('hotel_pu/add') ?>";
+            url = "<?php echo site_url('layanan_pu/add') ?>";
         } else {
-            url = "<?php echo site_url('hotel_pu/update') ?>";
+            url = "<?php echo site_url('layanan_pu/update') ?>";
         }
 
         $.ajax({
@@ -236,31 +201,15 @@
         validator.resetForm();
         $('.form-control').removeClass('error');
         $('#modal-default').modal('show');
-        $('.card-title').text('Edit Data Hotel');
+        $('.card-title').text('Edit Data Layanan');
         $('.aksi').text('Update');
         $.ajax({
-            url: "<?php echo site_url('hotel_pu/get_id/') ?>/" + id,
+            url: "<?php echo site_url('layanan_pu/get_id/') ?>/" + id,
             type: "GET",
             dataType: "JSON",
             success: function(data) {
                 $('[name="id"]').val(data.id);
-                $('[name="nama_hotel"]').val(data.nama_hotel);
-                $('[name="kota"]').val(data.kota);
-                $('[name="negara"]').val(data.negara);
-
-                if (data.rating == 1) {
-                    $('#star1').prop('checked', true);
-                } else if (data.rating == 2) {
-                    $('#star2').prop('checked', true);
-                } else if (data.rating == 3) {
-                    $('#star3').prop('checked', true);
-                } else if (data.rating == 4) {
-                    $('#star4').prop('checked', true);
-                } else if (data.rating == 5) {
-                    $('#star5').prop('checked', true);
-                }
-
-
+                $('[name="nama_layanan"]').val(data.nama_layanan);
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 alert('Error get data from ajax');
@@ -280,7 +229,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: "<?php echo site_url('hotel_pu/delete') ?>/" + id,
+                    url: "<?php echo site_url('layanan_pu/delete') ?>/" + id,
                     type: "POST",
                     dataType: "JSON",
                     success: function(data) {
