@@ -34,6 +34,9 @@
                                         <input type="password" class="form-control" id="password" name="password" placeholder="Password">
                                     </div>
                                 </div>
+                                <div class="form-group row password-field">
+                                    <!-- FIELD NEW PASSWORD -->
+                                </div>
                                 <div class="form-group row">
                                     <label for="core" class="col-sm-4 col-form-label">Core</label>
                                     <div class="col-sm-8">
@@ -182,6 +185,7 @@
 
         if (id == 0) {
             $('.aksi').text('Save');
+            $('.password-field').remove();
             $('#kode_notifikasi').val(kode).attr('readonly', true);
         } else {
             $('.aksi').text('Update');
@@ -207,6 +211,14 @@
                     $('#app2_id').val(data.approval.app2_id);
                     $('#app3_id').val(data.approval.app3_id);
                     $('#app4_id').val(data.approval.app4_id);
+
+                    //APPEND NEW PASSWORD
+                    $('.password-field').append(`
+                        <label for="fullname" class="col-sm-4 col-form-label">New Password</label>
+                                    <div class="col-sm-8">
+                                        <input type="password" class="form-control" id="new_password" name="new_password" placeholder="New Password">
+                                    </div>
+                    `);
 
                     // RADIO BUTTON
                     if (data.user.is_active == 'Y') {

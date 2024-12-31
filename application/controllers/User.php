@@ -201,9 +201,12 @@ class User extends CI_Controller
 			'fullname' => $this->input->post('fullname'),
 			'core' => $this->input->post('core'),
 			'id_level' => $this->input->post('level'),
-			'is_active' => $this->input->post('aktif'),
-			'no_rek' => $this->input->post('no_rek')
+			'is_active' => $this->input->post('aktif')
 		);
+
+		if (!empty($_POST['new_password'])) {
+			$data2['password'] = md5($this->input->post('new_password'));
+		}
 		// $data3 = array('password' => md5($this->input->post('password')));
 
 		// PENGECEKAN FILE UPLOAD

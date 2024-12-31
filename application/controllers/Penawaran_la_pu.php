@@ -746,7 +746,7 @@ class Penawaran_la_pu extends CI_Controller
         $t_cpdf->Ln(1);
 
         // Konten text (justify)
-        $t_cpdf->SetFont('Poppins-Regular', '', 9);
+        $t_cpdf->SetFont('Poppins-Regular', '', 11);
 
         // LAYANAN PASTI
         $t_cpdf->Cell(100, 5, '1. Konsultasi Gratis', 0, 0);
@@ -754,7 +754,7 @@ class Penawaran_la_pu extends CI_Controller
         $t_cpdf->Cell(100, 5, '2. Gratis Bantuan Pembuatan Paspor', 0, 0);
         $t_cpdf->Cell(100, 5, '6. Gratis Handling Kepulangan', 0, 1);
         $t_cpdf->Cell(100, 5, '3. Gratis Antar Dokumen & Perlengkapan', 0, 0);
-        $t_cpdf->Cell(100, 5, '7. Jaminan Pasti Berangkat<', 0, 1);
+        $t_cpdf->Cell(100, 5, '7. Jaminan Pasti Berangkat', 0, 1);
         $t_cpdf->Cell(100, 5, '4. Gratis Pendampingan Manasik', 0, 0);
         $t_cpdf->SetXY(110, $t_cpdf->GetY() + 0); // Pindah ke kolom kanan
         $t_cpdf->MultiCell(100, 4, '8. Garansi 100% Uang Kembali Apabila Travel Gagal Memberangkatkan', 0, 'L', false);
