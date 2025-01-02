@@ -121,7 +121,7 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header text-right">
-                    <a class="btn btn-primary btn-sm btn-style" href="<?= base_url('reimbust_pu') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+                    <a class="btn btn-primary btn-sm btn-style" href="<?= base_url('reimbust_ctz') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
                     <form id="form" enctype="multipart/form-data">
@@ -428,7 +428,7 @@
                 $("#tgl_pengajuan-error").remove(); // Menghapus label error
             }
             $.ajax({
-                url: "<?php echo site_url('reimbust_pu/generate_kode') ?>",
+                url: "<?php echo site_url('reimbust_ctz/generate_kode') ?>",
                 type: "POST",
                 data: {
                     "date": dateText
@@ -491,7 +491,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('reimbust_pu/get_list3') ?>",
+                "url": "<?php echo site_url('reimbust_ctz/get_list3') ?>",
                 "type": "POST",
                 "data": function(d) {
                     d.status = 'approved';
@@ -543,7 +543,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('reimbust_pu/get_list2') ?>",
+                "url": "<?php echo site_url('reimbust_ctz/get_list2') ?>",
                 "type": "POST"
             },
             "columnDefs": [{
@@ -1073,7 +1073,7 @@
             $('#kode_reimbust').val(kode).prop('readonly', true).css('cursor', 'not-allowed');
             $("select option[value='']").hide();
             $.ajax({
-                url: "<?= site_url('reimbust_pu/edit_data') ?>/" + id,
+                url: "<?= site_url('reimbust_ctz/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -1332,9 +1332,9 @@
 
             var url;
             if (id == 0) {
-                url = "<?php echo site_url('reimbust_pu/add') ?>";
+                url = "<?php echo site_url('reimbust_ctz/add') ?>";
             } else {
-                url = "<?php echo site_url('reimbust_pu/update') ?>";
+                url = "<?php echo site_url('reimbust_ctz/update') ?>";
             }
 
             var formData = new FormData(this);
@@ -1364,7 +1364,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then((result) => {
-                            location.href = "<?= base_url('reimbust_pu') ?>";
+                            location.href = "<?= base_url('reimbust_ctz') ?>";
                         });
                     } else {
                         // Sembunyikan loading saat respons diterima
