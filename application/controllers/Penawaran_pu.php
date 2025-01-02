@@ -67,7 +67,8 @@ class Penawaran_pu extends CI_Controller
             $row[] = strtoupper($field->no_pelayanan);
             $row[] = strtoupper($field->no_arsip);
             $row[] = $field->pelanggan;
-            $row[] = $field->tgl_keberangkatan;
+            $row[] = $field->produk;
+            $row[] = $this->M_penawaran_pu->getTanggal($field->tgl_keberangkatan);
             $row[] = $field->durasi . ' Hari';
             $row[] = $this->M_penawaran_pu->getTanggal($field->created_at);
             $row[] = $this->M_penawaran_pu->getTanggal($field->tgl_berlaku);
@@ -521,34 +522,54 @@ class Penawaran_pu extends CI_Controller
         echo json_encode(array("status" => TRUE));
     }
 
-
     function delete($id)
     {
+        // Mulai transaksi
+        $this->db->trans_start();
+
+        // Ambil semua 1 row data pada tabel master
+        $get_penawaran = $this->db->get_where('tbl_penawaran', ['id' => $id])->row_array();
+
+        // Cek apakah data penawaran ditemukan
+        if (!$get_penawaran) {
+            echo json_encode(array("status" => FALSE, "message" => "Data penawaran tidak ditemukan."));
+            return;
+        }
+
+        // Ambil data no_arsip dan no_pelayanan
+        $no_arsip = $get_penawaran['no_arsip'];
+        $no_pelayanan = $get_penawaran['no_pelayanan'];
+
         // Hapus data detail layanan
         $this->db->delete('tbl_penawaran_detail_lyn', ['id_penawaran' => $id]);
 
         // Hapus data detail hotel
         $this->db->delete('tbl_penawaran_detail_htl', ['id_penawaran' => $id]);
 
-        // ambil semua 1 row data pada tabel master
-        $get_penawaran = $this->db->get('tbl_penawaran', ['id' => $id])->row_array();
-
-        // ambil data no arsip pada penawaran
-        $no_arsip = $get_penawaran['no_arsip'];
-
         // Hapus data arsip berdasarkan no_arsip
-        $this->db->delete('tbl_arsip_pu', ['no_arsip' => $no_arsip]);
+        if ($no_arsip) {
+            $this->db->delete('tbl_arsip_pu', ['no_arsip' => $no_arsip]);
+        }
 
-        // Ambil data no pelayanan dari tabel master
-        $no_pelayanan = $get_penawaran['no_pelayanan'];
-
-        // Hapus data arsip berdasarkan no_pelayanan
-        $this->db->delete('tbl_rundown', ['no_pelayanan' => $no_pelayanan]);
+        // Hapus data rundown berdasarkan no_pelayanan
+        if ($no_pelayanan) {
+            $this->db->delete('tbl_rundown', ['no_pelayanan' => $no_pelayanan]);
+        }
 
         // Hapus data master
         $this->db->delete('tbl_penawaran', ['id' => $id]);
 
-        echo json_encode(array("status" => TRUE));
+        // Selesaikan transaksi
+        $this->db->trans_complete();
+
+        // Cek status transaksi
+        if ($this->db->trans_status() === FALSE) {
+            // Jika transaksi gagal, rollback perubahan
+            echo json_encode(array("status" => FALSE, "message" => "Gagal menghapus data."));
+        } else {
+            // Jika transaksi berhasil
+            echo json_encode(array("status" => TRUE, "message" => "Data berhasil dihapus."));
+        }
     }
 
     // PRINTOUT TCPDF

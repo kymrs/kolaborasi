@@ -31,6 +31,7 @@
                                 <th>Kode Pelayanan</th>
                                 <th>No Arsip</th>
                                 <th>Pelanggan</th>
+                                <th>Produk</th>
                                 <th>Keberangkatan</th>
                                 <th>Durasi</th>
                                 <th>Tanggal Dokumen</th>
@@ -46,6 +47,7 @@
                                 <th>Kode Pelayanan</th>
                                 <th>No Arsip</th>
                                 <th>Pelanggan</th>
+                                <th>Produk</th>
                                 <th>Keberangkatan</th>
                                 <th>Durasi</th>
                                 <th>Tanggal Dokumen</th>
@@ -85,11 +87,11 @@
             //     "infoFiltered": ""
             // },
             "columnDefs": [{
-                    "targets": [3, 7, 8],
+                    "targets": [3, 8, 9],
                     "className": 'dt-head-nowrap'
                 },
                 {
-                    "targets": [1, 4],
+                    "targets": [1, 4, 5, 8, 9],
                     "className": 'dt-body-nowrap'
                 }, {
                     "targets": [0, 1],

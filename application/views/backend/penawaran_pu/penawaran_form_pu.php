@@ -839,11 +839,11 @@
                                 </td>
                                 <td>
                                     <input type="date" class="form-control" id="tanggal-${index+1}" name="tanggal[${index+1}]" placeholder="Input here..." value="${data['rundowns'][index]['tanggal']}" />
-                                    <input type="text" id="hidden_id${index+1}" name="hidden_id[${index+1}]" value="${data['rundowns'][index]['id']}">
+                                    <input type="hidden" id="hidden_id${index+1}" name="hidden_id[${index+1}]" value="${data['rundowns'][index]['id']}">
                                 </td>
                                 <td>
                                     <div id="kegiatan-${index+1}" class="border p-2" style="height: 200px;">${data['rundowns'][index]['kegiatan']}</div>
-                                    <input type="text" name="hidden_kegiatan_[${index+1}]" id="hidden_kegiatan_${index+1}" value="">
+                                    <input type="hidden" name="hidden_kegiatan_[${index+1}]" id="hidden_kegiatan_${index+1}" value="">
                                 </td>
                                 <td>
                                     <span class="btn delete-btn btn-danger" data-id="${index+1}">Delete</span>
@@ -957,11 +957,11 @@
                     </td>
                     <td>
                         <input type="date" class="form-control" id="tanggal-${rowCount}" name="tanggal[${rowCount}]" placeholder="Input here..." />
-                        <input type="text" id="hidden_id${rowCount}" name="hidden_id[${rowCount}]" value="">
+                        <input type="hidden" id="hidden_id${rowCount}" name="hidden_id[${rowCount}]" value="">
                     </td>
                     <td>
                         <div id="kegiatan-${rowCount}" class="border p-2" style="height: 200px;"></div>
-                        <input type="text" name="hidden_kegiatan_[${rowCount}]" id="hidden_kegiatan_${rowCount}" value="">
+                        <input type="hidden" name="hidden_kegiatan_[${rowCount}]" id="hidden_kegiatan_${rowCount}" value="">
                     </td>
                     <td>
                         <span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span>

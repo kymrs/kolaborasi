@@ -8,8 +8,8 @@ class M_penawaran_pu extends CI_Model
     // INISIASI VARIABLE
     var $id = 'id';
     var $table = 'tbl_penawaran';
-    var $column_order = array(null, null, 'no_pelayanan', 'no_arsip', 'pelanggan', 'tgl_keberangkatan', 'durasi', 'created_at', 'tgl_berlaku');
-    var $column_search = array('no_pelayanan', 'no_arsip', 'pelanggan', 'tgl_keberangkatan', 'durasi', 'created_at', 'tgl_berlaku'); //field yang diizin untuk pencarian
+    var $column_order = array(null, null, 'no_pelayanan', 'no_arsip', 'pelanggan', 'produk', 'tgl_keberangkatan', 'durasi', 'created_at', 'tgl_berlaku');
+    var $column_search = array('no_pelayanan', 'no_arsip', 'pelanggan', 'produk', 'tgl_keberangkatan', 'durasi', 'created_at', 'tgl_berlaku'); //field yang diizin untuk pencarian
     var $order = array('id' => 'desc');
 
     // UNTUK QUERY DATA TABLE
