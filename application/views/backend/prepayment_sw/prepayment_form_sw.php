@@ -125,7 +125,7 @@
                                                 <input class="form-check-input" type="radio" name="radioNoLabel" id="exist" value="" aria-label="..." checked><label for="exist" style="margin-right: 14px; margin-top: 8px; cursor: pointer">Rekening terdaftar</label>
                                                 <input class="form-check-input" type="radio" name="radioNoLabel" id="new" value="" aria-label="..."><label for="new" style="margin-top: 8px; cursor: pointer">Rekening baru</label>
                                             </div>
-                                            <select class="js-example-basic-single" id="rekening" name="rekening">
+                                            <select class="js-example-basic-single" id="rekening" name="rekening" required>
                                                 <option value="Pilih rekening tujuan" selected disabled>Pilih rekening tujuan</option>
                                                 <?php foreach ($rek_options as $option) { ?>
                                                     <option value="<?= $option['no_rek'] ?>"><?= $option['no_rek'] ?></option>
@@ -148,7 +148,7 @@
                                 <div class="form-group row">
                                     <label class="col-sm-4 col-form-label prepayment-field">Event</label>
                                     <div class="row-sm-10" style="margin-left: 14px; width: 60%;">
-                                        <select class="form-control event_sw" id="event" name="event" style="width: 80%;">
+                                        <select class="form-control event_sw" id="event" name="event" style="width: 80%;" required>
                                             <option value="" selected disabled>Pilih opsi...</option>
                                             <?php foreach ($events as $event) { ?>
                                                 <?php if (isset($selected)) { ?>
@@ -158,11 +158,13 @@
                                                 <?php } ?>
                                             <?php } ?>
                                         </select>
-                                        <?php if (in_array($hak_akses, [1, 2])) { ?>
-                                            <button class="btn btn-success btn-sm" type="button" data-toggle="modal" data-target="#staticBackdrop">
-                                                <i class="fa fa-plus" aria-hidden="true"></i>
-                                            </button>
-                                        <?php } ?>
+
+                                        <button class="btn btn-success btn-sm" type="button" data-toggle="modal" data-target="#staticBackdrop">
+                                            <i class="fa fa-plus" aria-hidden="true"></i>
+                                        </button>
+
+                                        <div class="invalid-feedback" style="display: none; color: red;"></div>
+
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -811,6 +813,12 @@
                 nomor_rekening: {
                     required: true,
                 },
+                rekening: {
+                    required: true,
+                },
+                event: { // Tambahkan aturan untuk field event
+                    required: true,
+                },
             },
             messages: {
                 tgl_prepayment: {
@@ -836,10 +844,18 @@
                 nomor_rekening: {
                     required: "*Nomor rekening perlu diisi",
                 },
+                rekening: {
+                    required: "Rekening is required",
+                },
+                event: { // Tambahkan pesan untuk event
+                    required: "Event is required",
+                },
             },
             errorPlacement: function(error, element) {
                 if (element.parent().hasClass('input-group')) {
                     error.insertAfter(element.parent());
+                } else if (element.attr("id") === "event") { // Targetkan elemen select dengan ID "event"
+                    element.siblings(".invalid-feedback").html(error.html()).show(); // Masukkan pesan error ke dalam div.invalid-feedback
                 } else {
                     error.insertAfter(element);
                 }

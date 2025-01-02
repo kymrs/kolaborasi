@@ -221,7 +221,7 @@ class Penawaran_la_pu extends CI_Controller
 
         //GENERATE NOMOR ARSIP
         $urutan2 = str_pad($no_urut2, 2, "0", STR_PAD_LEFT);
-        $no_arsip = 'PU' . $year2 . '09' . $urutan2;
+        $no_arsip = 'PU' . $year2 . $bulan . $urutan2;
 
         //CONVERT TIME
         // Ambil nilai input datetime dari form
@@ -446,7 +446,7 @@ class Penawaran_la_pu extends CI_Controller
     function delete($id)
     {
         // Ambil no_pelayanan berdasarkan id
-        $no_pelayanan = $this->db->select('no_pelayanan')
+        $no_pelayanan = $this->db->select('no_pelayanan, no_arsip')
             ->from('tbl_land_arrangement')
             ->where('id', $id)
             ->get()
@@ -462,6 +462,9 @@ class Penawaran_la_pu extends CI_Controller
 
             // Hapus dari tabel tbl_land_arrangement_htl berdasarkan id
             $this->db->delete('tbl_land_arrangement_htl', ['id_la' => $id]);
+
+            // Hapus dari tabel tbL-arsip berdasarkan nomor pelayanan
+            $this->db->delete('tbl_arsip_pu', ['no_arsip' => $no_pelayanan->no_arsip]);
 
             // Kirim respons sukses
             echo json_encode(array("status" => TRUE, "message" => "Data berhasil dihapus"));
