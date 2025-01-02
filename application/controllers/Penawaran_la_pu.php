@@ -129,7 +129,7 @@ class Penawaran_la_pu extends CI_Controller
             // Kirim base64 ke view
             $data['qr_code'] = $qrCodeBase64;
 
-            $data['title'] = 'backend/penawaran_pu/penawaran_read_la_pu_2';
+            $data['title'] = 'backend/penawaran_pu/penawaran_read_la_pu';
             $data['title_view'] = 'Land Arrangement';
             $data['rundowns'] = $this->M_penawaran_la_pu->get_rundown($data['penawaran']->no_pelayanan);
             $data['hotel'] = $this->M_penawaran_la_pu->getHotel($id);
@@ -142,7 +142,7 @@ class Penawaran_la_pu extends CI_Controller
         $this->load->model('backend/M_notifikasi');
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = 0;
-        $data['title'] = 'backend/penawaran_pu/penawaran_form_la_pu_2';
+        $data['title'] = 'backend/penawaran_pu/penawaran_form_la_pu';
         // $data['products'] = $this->db->select('id, nama')->from('tbl_produk')->get()->result_object();
         $data['hotel'] = $this->db->get('tbl_hotel_pu')->result_array();
         $data['title_view'] = 'Land Arrangement Form';
@@ -155,7 +155,7 @@ class Penawaran_la_pu extends CI_Controller
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = $id;
         $data['aksi'] = 'update';
-        $data['title'] = 'backend/penawaran_pu/penawaran_form_la_pu_2';
+        $data['title'] = 'backend/penawaran_pu/penawaran_form_la_pu';
         // $data['products'] = $this->db->select('id, nama')->from('tbl_produk')->get()->result_object();
         $data['hotel'] = $this->db->get('tbl_hotel_pu')->result_array();
         $data['title_view'] = 'Edit Land Arrangement Form';

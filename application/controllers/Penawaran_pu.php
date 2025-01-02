@@ -806,7 +806,7 @@ class Penawaran_pu extends CI_Controller
 
         $trmskY = $t_cpdf->GetY();
 
-        $t_cpdf->Ln(-5); // Spasi antara paragraf
+        $t_cpdf->Ln(5); // Spasi antara paragraf
 
         // KONTEN HOTEL DAN PENERBANGAN
         foreach ($hotels as $hotel) {

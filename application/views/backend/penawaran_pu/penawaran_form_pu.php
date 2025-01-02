@@ -829,7 +829,7 @@
                     });
 
                     // Set Rundown
-                    console.log(data);
+                    // console.log(data);
                     for (let index = 0; index <= data['rundowns'].length; index++) {
                         const row = `
                             <tr id="row-${index+1}">
@@ -889,8 +889,8 @@
         // Delete row function
         function deleteRow(id) {
 
-            const rowId = $(`#row-${id}`).find('input:text[id^="hidden_id"]').val();
-            console.log(rowId);
+            const rowId = $(`#row-${id}`).find('input:hidden[id^="hidden_id"]').val();
+            // console.log(rowId);
             deletedRows.push(rowId);
 
             // Hapus instance Quill yang terkait
