@@ -95,22 +95,26 @@
                             <div class="extra-content">
                                 <table>
                                     <tr>
-                                        <td>Hotel Makkah<i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i></td>
+                                        <td>Hotel Makkah</td>
+                                        <td><i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i></td>
                                         <td>:</td>
                                         <td>Sofwah Orchid</td>
                                     </tr>
                                     <tr>
-                                        <td>Hotel Madinah<i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i></td>
+                                        <td>Hotel Madinah</td>
+                                        <td><i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i></td>
                                         <td>:</td>
                                         <td>Taiba Front</td>
                                     </tr>
                                     <tr>
                                         <td><i class="fas fa-solid fa-plane"></i></i>Keberangkatan</td>
+                                        <td></td>
                                         <td>:</td>
                                         <td>Direct Saudia Airlines SV817</td>
                                     </tr>
                                     <tr>
                                         <td><i class="fas fa-solid fa-plane"></i>Kepulangan</td>
+                                        <td></td>
                                         <td>:</td>
                                         <td>Direct Saudia Airlines SV826</td>
                                     </tr>
