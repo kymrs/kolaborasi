@@ -94,29 +94,39 @@
                             </div>
                             <div class="extra-content">
                                 <table>
+                                    <?php foreach ($hotel as $data) : ?>
+                                        <?php
+                                        $rating = '';
+                                        if ($data['rating'] == 5) {
+                                            $rating = '<i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>';
+                                        } else if ($data['rating'] == 4) {
+                                            $rating = '<i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>';
+                                        } else if ($data['rating'] == 3) {
+                                            $rating = '<i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>';
+                                        } else if ($data['rating'] == 2) {
+                                            $rating = '<i class="fas fa-star"></i><i class="fas fa-star"></i>';
+                                        } else if ($data['rating'] == 1) {
+                                            $rating = '<i class="fas fa-star"></i>';
+                                        }
+                                        ?>
+                                        <tr>
+                                            <td>Hotel <?= $data['kota'] ?></td>
+                                            <td><?= $rating ?></td>
+                                            <td>:</td>
+                                            <td><?= $data['nama_hotel'] ?></td>
+                                        </tr>
+                                    <?php endforeach ?>
                                     <tr>
-                                        <td>Hotel Makkah</td>
-                                        <td><i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i></td>
-                                        <td>:</td>
-                                        <td>Sofwah Orchid</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Hotel Madinah</td>
-                                        <td><i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i><i class="fas fa-solid fa-star"></i></td>
-                                        <td>:</td>
-                                        <td>Taiba Front</td>
-                                    </tr>
-                                    <tr>
-                                        <td><i class="fas fa-solid fa-plane"></i></i>Keberangkatan</td>
+                                        <td><i class="fas fa-solid fa-plane"></i>Keberangkatan</td>
                                         <td></td>
                                         <td>:</td>
-                                        <td>Direct Saudia Airlines SV817</td>
+                                        <td><?= $penawaran->keberangkatan ?></td>
                                     </tr>
                                     <tr>
                                         <td><i class="fas fa-solid fa-plane"></i>Kepulangan</td>
                                         <td></td>
                                         <td>:</td>
-                                        <td>Direct Saudia Airlines SV826</td>
+                                        <td><?= $penawaran->kepulangan ?></td>
                                     </tr>
                                 </table>
                             </div>

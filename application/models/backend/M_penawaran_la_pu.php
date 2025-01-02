@@ -131,6 +131,16 @@ class M_penawaran_la_pu extends CI_Model
         return $data;
     }
 
+    public function getHotel($id)
+    {
+        $this->db->select('a.nama_hotel, a.rating, a.kota, a.negara');
+        $this->db->from('tbl_hotel_pu as a');
+        $this->db->join('tbl_land_arrangement_htl as b', 'a.id = b.id_hotel', 'left');
+        $this->db->where('b.id_la', $id);
+        $data = $this->db->get()->result_array();
+        return $data;
+    }
+
     public function max_kode($date)
     {
         $formatted_date = date('Y', strtotime($date));
