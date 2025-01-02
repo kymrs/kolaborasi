@@ -65,7 +65,7 @@
                                 <tr>
                                     <td>Keberangkatan</td>
                                     <td>:</td>
-                                    <td><?= $penawaran->tgl_keberangkatan ?></td>
+                                    <td><?= $tgl_keberangkatan ?></td>
                                 </tr>
                                 <tr>
                                     <td>Durasi</td>

@@ -133,6 +133,7 @@ class Penawaran_la_pu extends CI_Controller
             $data['title_view'] = 'Land Arrangement';
             $data['rundowns'] = $this->M_penawaran_la_pu->get_rundown($data['penawaran']->no_pelayanan);
             $data['hotel'] = $this->M_penawaran_la_pu->getHotel($id);
+            $data['tgl_keberangkatan'] = $this->M_penawaran_la_pu->anotherMethod($data['penawaran']->tgl_keberangkatan);
             $this->load->view('backend/home', $data);
         }
     }
