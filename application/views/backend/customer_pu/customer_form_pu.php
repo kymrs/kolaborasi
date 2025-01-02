@@ -52,6 +52,7 @@
                                             <option value="" hidden>Pilih Title</option>
                                             <option value="Tn">Tn</option>
                                             <option value="Yn">Yn</option>
+                                            <option value="Nn">Nn</option>
                                         </select>
                                     </div>
                                 </div>
@@ -700,9 +701,9 @@
             $('#pelunasan').prop('readonly', true).css('cursor', 'not-allowed');;
             $('#cashback').prop('readonly', true).css('cursor', 'not-allowed');;
             $('#akun').prop('readonly', true).css('cursor', 'not-allowed');;
-            $('#pakaian').prop('readonly', true).css('cursor', 'not-allowed');;
+            $('#pakaian').prop('disabled', true).css('cursor', 'not-allowed');;
             $('#ukuran').prop('readonly', true).css('cursor', 'not-allowed');;
-            $('#kirim_perlengkapan').prop('readonly', true).css('cursor', 'not-allowed');;
+            $('#kirim_perlengkapan').prop('disabled', true).css('cursor', 'not-allowed');;
             $('#status').prop('disabled', true).css('cursor', 'not-allowed');;
 
             $('#delete_paspor').hide();

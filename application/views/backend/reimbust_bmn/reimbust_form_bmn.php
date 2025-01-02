@@ -1552,6 +1552,9 @@
                 jumlah: {
                     required: true,
                 },
+                rekening: {
+                    required: true,
+                },
                 nama_rek: {
                     required: true,
                     maxlength: 22,
@@ -1587,6 +1590,9 @@
                 },
                 jumlah: {
                     required: "Jumlah Prepayment is required",
+                },
+                rekening: {
+                    required: "Rekening is required",
                 },
                 nama_rek: {
                     required: "*Nama rekening perlu diisi",

@@ -194,7 +194,7 @@ class Customer_pu extends CI_Controller
                 $_FILES['file']['size'] = $_FILES[$field]['size'];
 
                 // Tentukan folder upload sesuai dengan field
-                $upload_path = './assets/backend/document/customer/' . $field . '/';
+                $upload_path = './assets/backend/document/customer/' . $this->input->post('nama') . ' - ' . $field . '/';
                 $config['upload_path'] = $upload_path;
                 $config['allowed_types'] = 'jpeg|jpg|png'; // Tipe file yang diizinkan
                 $config['max_size'] = 4000; // Maksimal ukuran file 4MB 4000(KB)
