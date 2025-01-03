@@ -94,7 +94,7 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header text-right">
-                    <a class="btn btn-secondary btn-sm" href="<?= base_url('prepayment_mc') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+                    <a class="btn btn-secondary btn-sm" href="<?= base_url('prepayment_mac') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
                     <form id="form">
@@ -228,7 +228,7 @@
                 $("#tgl_prepayment-error").remove(); // Menghapus label error
             }
             $.ajax({
-                url: "<?php echo site_url('prepayment_mc/generate_kode') ?>",
+                url: "<?php echo site_url('prepayment_mac/generate_kode') ?>",
                 type: "POST",
                 data: {
                     "date": dateText
@@ -434,7 +434,7 @@
             $('.aksi').append('<span class="front front-aksi">Update</span>');
             $("select option[value='']").hide();
             $.ajax({
-                url: "<?php echo site_url('prepayment_mc/edit_data') ?>/" + id,
+                url: "<?php echo site_url('prepayment_mac/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -520,7 +520,7 @@
             $('th:last-child').remove();
 
             $.ajax({
-                url: "<?php echo site_url('prepayment_mc/read_detail/') ?>" + id,
+                url: "<?php echo site_url('prepayment_mac/read_detail/') ?>" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -548,9 +548,9 @@
             if (!$form.valid()) return false;
             var url;
             if (id == 0) {
-                url = "<?php echo site_url('prepayment_mc/add') ?>";
+                url = "<?php echo site_url('prepayment_mac/add') ?>";
             } else {
-                url = "<?php echo site_url('prepayment_mc/update') ?>";
+                url = "<?php echo site_url('prepayment_mac/update') ?>";
             }
 
             // Tampilkan loading
@@ -578,7 +578,7 @@
                             timer: 1500
                         }).then((result) => {
                             checkNotifications();
-                            location.href = "<?= base_url('prepayment_mc') ?>";
+                            location.href = "<?= base_url('prepayment_mac') ?>";
                         })
                     }
                 },
