@@ -133,9 +133,17 @@
         }
 
         @media (max-width: 546px) {
+
+            td,
+            th,
+            button,
+            .btn,
+            span {
+                font-size: 75%;
+            }
+
             .table-main {
                 overflow-x: scroll;
-                font-size: 75%;
             }
 
             .table-approve table {
@@ -146,6 +154,10 @@
             .header h2 {
                 font-size: 90%;
                 margin-right: 0;
+            }
+
+            .no-prepayment {
+                margin-right: 80px;
             }
         }
     </style>
@@ -168,11 +180,11 @@
             <!-- Header -->
             <div class="header">
                 <div class="logo">
-                    <img src="<?= base_url() ?>assets/backend/img/kolaborasi.png" alt="Logo">
+                    <img src="<?= base_url() ?>assets/backend/img/carstensz.png" alt="Logo">
                 </div>
                 <div class="title">
                     <h1>FORM PELAPORAN / REIMBUST</h1>
-                    <h2>PENGENUMROH</h2>
+                    <h2>CARSTENSZ</h2>
                 </div>
             </div>
 

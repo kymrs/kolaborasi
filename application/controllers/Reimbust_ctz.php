@@ -332,7 +332,7 @@ class Reimbust_ctz extends CI_Controller
         $pdf->SetAutoPageBreak(true, 5); // Margin bawah 15mm
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/kolaborasi.png', 15, 8, 35, 22);
+        $pdf->Image(base_url('') . '/assets/backend/img/carstensz.png', 15, 8, 35, 25);
 
         // Set font
         $pdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php');
@@ -342,7 +342,7 @@ class Reimbust_ctz extends CI_Controller
 
         // Teks yang ingin ditampilkan
         $text1 = 'FORM PELAPORAN / REIMBUST';
-        $text2 = 'PENGENUMROH';
+        $text2 = 'CARSTENSZ';
 
         // Menghitung lebar teks
         $textWidth1 = $pdf->GetStringWidth($text1);

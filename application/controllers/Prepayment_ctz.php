@@ -350,7 +350,7 @@ class Prepayment_ctz extends CI_Controller
                 foreach ($deletedRows as $id2) {
                     // Hapus row dari database berdasarkan ID
                     $this->db->where('id', $id2);
-                    $this->db->delete('tbl_prepayment_detail_ctz');
+                    $this->db->delete('ctz_prepayment_detail');
                 }
             }
 
@@ -366,7 +366,7 @@ class Prepayment_ctz extends CI_Controller
                     'keterangan' => $keterangan[$i]
                 );
                 // Menggunakan db->replace untuk memasukkan atau menggantikan data
-                $this->db->replace('tbl_prepayment_detail_ctz', $data2[$i - 1]);
+                $this->db->replace('ctz_prepayment_detail', $data2[$i - 1]);
             }
         }
         echo json_encode(array("status" => TRUE));
@@ -472,7 +472,7 @@ class Prepayment_ctz extends CI_Controller
         $pdf->AddPage('P', 'Letter');
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/kolaborasi.png', 11.5, 3, 35, 22);
+        $pdf->Image(base_url('') . '/assets/backend/img/carstensz.png', 11.5, 3, 35, 25);
 
         $pdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php');
         $pdf->AddFont('Poppins-Bold', '', 'Poppins-Bold.php');

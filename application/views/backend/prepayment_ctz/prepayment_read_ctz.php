@@ -161,7 +161,7 @@
                     <!-- Header Section -->
                     <div class="header">
                         <div class="header-field">
-                            <img src="<?= base_url('assets/backend/img/kolaborasi.png') ?>" alt="" class="logo">
+                            <img src="<?= base_url('assets/backend/img/carstensz.png') ?>" alt="" class="logo">
                             <table>
                                 <tr>
                                     <td style="font-weight: bold;">Divisi</td>

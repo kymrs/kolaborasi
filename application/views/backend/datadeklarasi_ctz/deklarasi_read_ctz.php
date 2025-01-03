@@ -20,7 +20,7 @@
 
         /* header */
         .header {
-            height: 60px;
+            height: 85px;
         }
 
         .header .logo {
@@ -108,7 +108,7 @@
             .header .title {
                 width: 100%;
                 position: relative;
-                bottom: 30px;
+                bottom: 75px;
             }
         }
     </style>
@@ -131,7 +131,7 @@
 
                     <!-- Header Section -->
                     <div class="header">
-                        <img src="<?= base_url('assets/backend/img/kolaborasi.png') ?>" alt="" class="logo">
+                        <img src="<?= base_url('assets/backend/img/carstensz.png') ?>" alt="" class="logo">
                         <div class="title">
                             <!-- <h1>SEBELASWARNA</h1> -->
                             <h2>FORM DEKLARASI</h2>
