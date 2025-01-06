@@ -436,42 +436,29 @@ class Invoice_pu extends CI_Controller
         echo json_encode(array("status" => TRUE));
     }
 
-    public function generate_pdf($id)
+    // PRINTOUT TCPDF
+    public function generate_pdf2()
     {
-        // Load FPDF library
-        $this->load->library('Fpdf_generate');
 
-        // Load data from database based on $id
-        $data['master'] = $this->M_prepayment_pu->get_by_id($id);
-        $data['transaksi'] = $this->M_prepayment_pu->get_by_id_detail($id);
-        $data['user'] = $this->db->select('name')
-            ->from('tbl_data_user')
-            ->where('id_user', $data['master']->id_user)
-            ->get()
-            ->row('name');
-        $data['app_status'] = strtoupper($data['master']->app_status);
-        $data['app2_status'] = strtoupper($data['master']->app2_status);
+        // INISIAI VARIABLE
+        // $penawaran = $this->M_penawaran_la_pu->getPenawaran($id);
+        // $rundowns = $this->M_penawaran_la_pu->get_rundown($penawaran->no_pelayanan);
+        // $hotels = $this->M_penawaran_la_pu->get_hotels($id);
 
-        // Format tgl_prepayment to Indonesian date
-        $tanggal = $data['master']->tgl_prepayment;
-        $formatted_date = date('d F Y', strtotime($tanggal));
-        $months = [
-            'January' => 'Januari',
-            'February' => 'Februari',
-            'March' => 'Maret',
-            'April' => 'April',
-            'May' => 'Mei',
-            'June' => 'Juni',
-            'July' => 'Juli',
-            'August' => 'Agustus',
-            'September' => 'September',
-            'October' => 'Oktober',
-            'November' => 'November',
-            'December' => 'Desember'
-        ];
-        $month = date('F', strtotime($tanggal));
-        $translated_month = $months[$month];
-        $formatted_date = str_replace($month, $translated_month, $formatted_date);
+        // Initialize the TCPDF object
+        $t_cpdf2 = new t_cpdf2('P', 'mm', 'A5', true, 'UTF-8', false);
+
+        // Set document properties
+        $t_cpdf2->SetCreator(PDF_CREATOR);
+        $t_cpdf2->SetAuthor('Author Name');
+        $t_cpdf2->SetTitle('Penawaran PDF');
+
+        $t_cpdf2->SetMargins(15, 38, 15); // Margin kiri, atas (untuk header), kanan
+        // $t_cpdf2->SetHeaderMargin(40);    // Jarak antara header dan konten
+        $t_cpdf2->SetAutoPageBreak(true, 40); // Penanganan otomatis margin bawah
+
+        // Add a new page
+        $t_cpdf2->AddPage();
 
         // Start FPDF
         $pdf = new Fpdf_generate('P', 'mm', 'A4');
