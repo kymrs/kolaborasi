@@ -31,7 +31,7 @@
         .header .logo {
             display: flex;
             align-items: center;
-            width: 120px;
+            width: 150px;
             position: relative;
             left: 0px;
             margin-bottom: 20px;

@@ -327,7 +327,6 @@ class prepayment_mac extends CI_Controller
             'tgl_prepayment' => date('Y-m-d', strtotime($this->input->post('tgl_prepayment'))),
             'total_nominal' => $this->input->post('total_nominal'),
             'no_rek' => $no_rek,
-            'jenis_rek' =>  $this->input->post('jenis_rek'),
             'app_status' => 'waiting',
             'app_date' => null,
             'app_keterangan' => null,

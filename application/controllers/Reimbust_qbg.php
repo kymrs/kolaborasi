@@ -332,7 +332,7 @@ class Reimbust_qbg extends CI_Controller
         $pdf->SetAutoPageBreak(true, 5); // Margin bawah 15mm
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/qubagift.png', 9, 5, 30, 29);
+        $pdf->Image(base_url('') . '/assets/backend/img/qubagift.png', 9, 5, 40, 25);
 
         // Set font
         $pdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php');

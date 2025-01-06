@@ -371,7 +371,7 @@ class Datadeklarasi_qbg extends CI_Controller
         $pdf->AddPage('P', 'Letter');
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/qubagift.png', 9, 8, 30, 29);
+        $pdf->Image(base_url('') . '/assets/backend/img/qubagift.png', 9, 8, 40, 25);
 
         // Title of the form
         $pdf->Ln(25);
