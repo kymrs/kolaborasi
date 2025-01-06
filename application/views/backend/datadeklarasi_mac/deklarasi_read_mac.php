@@ -24,16 +24,16 @@
         }
 
         .header .logo {
-            width: 210px;
+            width: 170px;
             position: relative;
             bottom: 100px;
-            right: 34px;
+            right: 1px;
         }
 
         .header .title {
             width: 100%;
             position: relative;
-            bottom: 170px;
+            bottom: 150px;
         }
 
         .header .title h1 {
@@ -104,13 +104,13 @@
             .header .logo {
                 width: 200px;
                 position: relative;
-                bottom: 50px;
+                bottom: 80px;
             }
 
             .header .title {
                 width: 100%;
                 position: relative;
-                bottom: 30px;
+                bottom: 130px;
             }
         }
     </style>
@@ -132,9 +132,13 @@
                     </div>
 
                     <!-- Header Section -->
-
-                    <!-- <h1>SEBELASWARNA</h1> -->
-                    <h2>FORM DEKLARASI</h2>
+                    <div class="header">
+                        <img src="<?= base_url('assets/backend/img/MAC.png') ?>" alt="" class="logo">
+                        <div class="title">
+                            <!-- <h1>SEBELASWARNA</h1> -->
+                            <h2>FORM DEKLARASI</h2>
+                        </div>
+                    </div>
 
                     <div class="main-field">
                         <table>
@@ -274,11 +278,11 @@
         $('#appBtn').click(function() {
             $('#app_keterangan').attr('name', 'app_keterangan');
             $('#app_status').attr('name', 'app_status');
-            $('#approvalForm').attr('action', '<?= site_url('datadeklarasi_mc/approve') ?>');
+            $('#approvalForm').attr('action', '<?= site_url('datadeklarasi_mac/approve') ?>');
 
             // Additional logic to dynamically load data into the form
             $.ajax({
-                url: "<?php echo site_url('datadeklarasi_mc/edit_data') ?>/" + id,
+                url: "<?php echo site_url('datadeklarasi_mac/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -313,11 +317,11 @@
         $('#appBtn2').click(function() {
             $('#app_keterangan').attr('name', 'app2_keterangan').attr('id', 'app2_keterangan');
             $('#app_status').attr('name', 'app2_status').attr('id', 'app2_status');
-            $('#approvalForm').attr('action', '<?= site_url('datadeklarasi_mc/approve2') ?>');
+            $('#approvalForm').attr('action', '<?= site_url('datadeklarasi_mac/approve2') ?>');
 
             // Additional logic to dynamically load data into the form
             $.ajax({
-                url: "<?php echo site_url('datadeklarasi_mc/edit_data') ?>/" + id,
+                url: "<?php echo site_url('datadeklarasi_mac/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -361,7 +365,7 @@
 
         // Additional logic to dynamically load data into the form
         $.ajax({
-            url: "<?php echo site_url('datadeklarasi_mc/edit_data') ?>/" + id,
+            url: "<?php echo site_url('datadeklarasi_mac/edit_data') ?>/" + id,
             type: "GET",
             dataType: "JSON",
             success: function(data) {

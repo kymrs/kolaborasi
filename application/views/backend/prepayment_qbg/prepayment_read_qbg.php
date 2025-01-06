@@ -26,7 +26,7 @@
         }
 
         .header .logo {
-            width: 105px;
+            width: 135px;
             position: relative;
             right: -3px;
             bottom: 80px;

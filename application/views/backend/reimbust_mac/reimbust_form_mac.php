@@ -121,7 +121,7 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header text-right">
-                    <a class="btn btn-primary btn-sm btn-style" href="<?= base_url('reimbust_mc') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+                    <a class="btn btn-primary btn-sm btn-style" href="<?= base_url('reimbust_mac') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
                     <form id="form" enctype="multipart/form-data">
@@ -300,7 +300,7 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="deklarasiModalLabel">Data Deklarasi</h5>
-                                        <!-- <a style="position: relative; right: 75px" class="btn btn-primary btn-sm" href="<?= base_url('datadeklarasi_mc/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a> -->
+                                        <!-- <a style="position: relative; right: 75px" class="btn btn-primary btn-sm" href="<?= base_url('datadeklarasi_mac/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a> -->
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span style="position: relative; bottom: 5px" aria-hidden="true">&times;</span>
                                         </button>
@@ -347,7 +347,8 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="deklarasiModalLabel">Data Deklarasi</h5>
-                                        <a style="position: relative; right: 75px" class="btn btn-primary btn-sm" href="<?= base_url('datadeklarasi_mc /add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a>
+                                        <a style="position: relative; right: 75px" class="btn btn-primary btn-sm" href="<?= base_url('mac
+                                        /add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span style="position: relative; bottom: 5px" aria-hidden="true">&times;</span>
                                         </button>
@@ -421,7 +422,7 @@
                 $("#tgl_pengajuan-error").remove(); // Menghapus label error
             }
             $.ajax({
-                url: "<?php echo site_url('reimbust_mc/generate_kode') ?>",
+                url: "<?php echo site_url('reimbust_mac/generate_kode') ?>",
                 type: "POST",
                 data: {
                     "date": dateText
@@ -484,7 +485,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('reimbust_mc/get_list3') ?>",
+                "url": "<?php echo site_url('reimbust_mac/get_list3') ?>",
                 "type": "POST",
                 "data": function(d) {
                     d.status = 'approved';
@@ -536,7 +537,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('reimbust_mc/get_list2') ?>",
+                "url": "<?php echo site_url('reimbust_mac/get_list2') ?>",
                 "type": "POST"
             },
             "columnDefs": [{
@@ -629,7 +630,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('datadeklarasi_mc/get_list') ?>",
+                "url": "<?php echo site_url('datadeklarasi_mac/get_list') ?>",
                 "type": "POST"
             },
             "columnDefs": [{
@@ -1047,7 +1048,7 @@
             $('#kode_reimbust').val(kode).prop('readonly', true).css('cursor', 'not-allowed');
             $("select option[value='']").hide();
             $.ajax({
-                url: "<?= site_url('reimbust_mc/edit_data') ?>/" + id,
+                url: "<?= site_url('reimbust_mac/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -1224,7 +1225,7 @@
                                         <div class="btn btn-primary btn-lg btn-block btn-sm openModal" data-kwitansi="${data['transaksi'][index]['kwitansi']}">Lihat Foto</div>
                                     </td>
                                     <td width="150" style="padding: 15px 10px">
-                                        <a href="<?= base_url() ?>datadeklarasi_mc/read_form/25" class="btn btn-primary btn-lg btn-block btn-sm" 
+                                        <a href="<?= base_url() ?>datadeklarasi_mac/read_form/25" class="btn btn-primary btn-lg btn-block btn-sm" 
                                             data-id="${index + 1}"
                                             data-deklarasi="${data['transaksi'][index]['deklarasi']}"
                                             id="deklarasi-modal${index + 1}">
@@ -1303,9 +1304,9 @@
 
             var url;
             if (id == 0) {
-                url = "<?php echo site_url('reimbust_mc/add') ?>";
+                url = "<?php echo site_url('reimbust_mac/add') ?>";
             } else {
-                url = "<?php echo site_url('reimbust_mc/update') ?>";
+                url = "<?php echo site_url('reimbust_mac/update') ?>";
             }
 
             var formData = new FormData(this);
@@ -1335,7 +1336,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then((result) => {
-                            location.href = "<?= base_url('reimbust_mc') ?>";
+                            location.href = "<?= base_url('reimbust_mac') ?>";
                         });
                     } else {
                         // Sembunyikan loading saat respons diterima

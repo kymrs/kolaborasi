@@ -1,12 +1,12 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Prepayment_qbg extends CI_Controller
+class prepayment_mac extends CI_Controller
 {
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('backend/M_prepayment_qbg');
+        $this->load->model('backend/M_prepayment_mac');
         $this->load->model('backend/M_notifikasi');
         $this->M_login->getsecurity();
         date_default_timezone_set('Asia/Jakarta');
@@ -45,7 +45,7 @@ class Prepayment_qbg extends CI_Controller
 
         $data['notif'] = $this->M_notifikasi->pending_notification();
 
-        $data['title'] = "backend/prepayment_qbg/prepayment_list_qbg";
+        $data['title'] = "backend/prepayment_mac/prepayment_list_mac";
         $data['titleview'] = "Data Prepayment";
         $name = $this->db->select('name')
             ->from('tbl_data_user')
@@ -53,7 +53,7 @@ class Prepayment_qbg extends CI_Controller
             ->get()
             ->row('name');
         $data['approval'] = $this->db->select('COUNT(*) as total_approval')
-            ->from('qbg_prepayment')
+            ->from('mac_prepayment')
             ->where('app_name', $name)
             ->or_where('app2_name', $name)
             ->get()
@@ -63,7 +63,7 @@ class Prepayment_qbg extends CI_Controller
 
     public function get_pdf()
     {
-        $this->load->view('backend/prepayment_qbg/prepayment_pdf');
+        $this->load->view('backend/prepayment_mac/prepayment_pdf');
     }
 
     function get_list()
@@ -74,7 +74,7 @@ class Prepayment_qbg extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $list = $this->M_prepayment_qbg->get_datatables();
+        $list = $this->M_prepayment_mac->get_datatables();
         $data = array();
         $no = $_POST['start'];
 
@@ -88,10 +88,10 @@ class Prepayment_qbg extends CI_Controller
         foreach ($list as $field) {
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
-            $action_read = ($read == 'Y') ? '<a href="prepayment_qbg/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
-            $action_edit = ($edit == 'Y') ? '<a href="prepayment_qbg/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
+            $action_read = ($read == 'Y') ? '<a href="prepayment_mac/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
+            $action_edit = ($edit == 'Y') ? '<a href="prepayment_mac/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
-            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="prepayment_qbg/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
+            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="prepayment_mac/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             if ($field->app_name == $fullname && $field->id_user != $this->session->userdata('id_user')) {
@@ -143,8 +143,8 @@ class Prepayment_qbg extends CI_Controller
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_prepayment_qbg->count_all(),
-            "recordsFiltered" => $this->M_prepayment_qbg->count_filtered(),
+            "recordsTotal" => $this->M_prepayment_mac->count_all(),
+            "recordsFiltered" => $this->M_prepayment_mac->count_filtered(),
             "data" => $data,
         );
         //output dalam format JSON
@@ -156,7 +156,7 @@ class Prepayment_qbg extends CI_Controller
     {
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = $id;
-        $data['user'] = $this->M_prepayment_qbg->get_by_id($id);
+        $data['user'] = $this->M_prepayment_mac->get_by_id($id);
         $data['app_name'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $this->session->userdata('id_user'))
@@ -167,7 +167,7 @@ class Prepayment_qbg extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $data['title'] = 'backend/prepayment_qbg/prepayment_read_qbg';
+        $data['title'] = 'backend/prepayment_mac/prepayment_read_mac';
         $data['title_view'] = 'Prepayment';
         $this->load->view('backend/home', $data);
     }
@@ -176,9 +176,9 @@ class Prepayment_qbg extends CI_Controller
     public function add_form()
     {
         $data['id'] = 0;
-        $data['title'] = 'backend/prepayment_qbg/prepayment_form_qbg';
+        $data['title'] = 'backend/prepayment_mac/prepayment_form_mac';
         $data['title_view'] = 'Prepayment Form';
-        $data['rek_options'] = $this->M_prepayment_qbg->options()->result_array();
+        $data['rek_options'] = $this->M_prepayment_mac->options()->result_array();
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $this->load->view('backend/home', $data);
     }
@@ -187,7 +187,7 @@ class Prepayment_qbg extends CI_Controller
     public function generate_kode()
     {
         $date = $this->input->post('date');
-        $kode = $this->M_prepayment_qbg->max_kode($date)->row();
+        $kode = $this->M_prepayment_mac->max_kode($date)->row();
         if (empty($kode->kode_prepayment)) {
             $no_urut = 1;
         } else {
@@ -208,15 +208,15 @@ class Prepayment_qbg extends CI_Controller
         $data['id'] = $id;
         $data['aksi'] = 'update';
         $data['title_view'] = "Edit Data Prepayment";
-        $data['rek_options'] = $this->M_prepayment_qbg->options()->result_array();
-        $data['title'] = 'backend/prepayment_qbg/prepayment_form_qbg';
+        $data['rek_options'] = $this->M_prepayment_mac->options()->result_array();
+        $data['title'] = 'backend/prepayment_mac/prepayment_form_mac';
         $this->load->view('backend/home', $data);
     }
 
     function edit_data($id)
     {
-        $data['master'] = $this->M_prepayment_qbg->get_by_id($id);
-        $data['transaksi'] = $this->M_prepayment_qbg->get_by_id_detail($id);
+        $data['master'] = $this->M_prepayment_mac->get_by_id($id);
+        $data['transaksi'] = $this->M_prepayment_mac->get_by_id_detail($id);
         $data['nama'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $data['master']->id_user)
@@ -226,7 +226,7 @@ class Prepayment_qbg extends CI_Controller
 
     function read_detail($id)
     {
-        $data = $this->M_prepayment_qbg->get_by_id_detail($id);
+        $data = $this->M_prepayment_mac->get_by_id_detail($id);
         echo json_encode($data);
     }
 
@@ -235,7 +235,7 @@ class Prepayment_qbg extends CI_Controller
     {
         // INSERT KODE PREPAYMENT SAAT SUBMIT
         $date = $this->input->post('tgl_prepayment');
-        $kode = $this->M_prepayment_qbg->max_kode($date)->row();
+        $kode = $this->M_prepayment_mac->max_kode($date)->row();
         if (empty($kode->kode_prepayment)) {
             $no_urut = 1;
         } else {
@@ -248,7 +248,7 @@ class Prepayment_qbg extends CI_Controller
         $kode_prepayment = 'P' . $year . $month . $urutan;
 
         // MENCARI SIAPA YANG AKAN MELAKUKAN APPROVAL PERMINTAAN
-        $approval = $this->M_prepayment_qbg->approval($this->session->userdata('id_user'));
+        $approval = $this->M_prepayment_mac->approval($this->session->userdata('id_user'));
         $id = $this->session->userdata('id_user');
 
         // CHECK APAKAH MENGINPUT YANG SUDAH ADA ATAU YANG BARU (REKENING)
@@ -289,7 +289,7 @@ class Prepayment_qbg extends CI_Controller
             'created_at' => date('Y-m-d H:i:s')
         );
 
-        $inserted = $this->M_prepayment_qbg->save($data);
+        $inserted = $this->M_prepayment_mac->save($data);
 
         if ($inserted) {
             // INISIASI VARIABEL INPUT DETAIL PREPAYMENT
@@ -305,7 +305,7 @@ class Prepayment_qbg extends CI_Controller
                     'keterangan' => $keterangan[$i]
                 );
             }
-            $this->M_prepayment_qbg->save_detail($data2);
+            $this->M_prepayment_mac->save_detail($data2);
         }
         echo json_encode(array("status" => TRUE));
     }
@@ -343,14 +343,14 @@ class Prepayment_qbg extends CI_Controller
         $rincian = $this->input->post('rincian[]');
         $nominal = $this->input->post('hidden_nominal[]');
         $keterangan = $this->input->post('keterangan[]');
-        if ($this->db->update('qbg_prepayment', $data)) {
+        if ($this->db->update('mac_prepayment', $data)) {
             // UNTUK MENGHAPUS ROW YANG TELAH DIDELETE
             $deletedRows = json_decode($this->input->post('deleted_rows'), true);
             if (!empty($deletedRows)) {
                 foreach ($deletedRows as $id2) {
                     // Hapus row dari database berdasarkan ID
                     $this->db->where('id', $id2);
-                    $this->db->delete('qbg_prepayment_detail');
+                    $this->db->delete('mac_prepayment_detail');
                 }
             }
 
@@ -366,7 +366,7 @@ class Prepayment_qbg extends CI_Controller
                     'keterangan' => $keterangan[$i]
                 );
                 // Menggunakan db->replace untuk memasukkan atau menggantikan data
-                $this->db->replace('qbg_prepayment_detail', $data2[$i - 1]);
+                $this->db->replace('mac_prepayment_detail', $data2[$i - 1]);
             }
         }
         echo json_encode(array("status" => TRUE));
@@ -375,8 +375,8 @@ class Prepayment_qbg extends CI_Controller
     // MENGHAPUS DATA
     function delete($id)
     {
-        $this->M_prepayment_qbg->delete($id);
-        $this->M_prepayment_qbg->delete_detail($id);
+        $this->M_prepayment_mac->delete($id);
+        $this->M_prepayment_mac->delete_detail($id);
         echo json_encode(array("status" => TRUE));
     }
 
@@ -400,7 +400,7 @@ class Prepayment_qbg extends CI_Controller
 
         //UPDATE APPROVAL PERTAMA
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('qbg_prepayment', $data);
+        $this->db->update('mac_prepayment', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -424,7 +424,7 @@ class Prepayment_qbg extends CI_Controller
 
         // UPDATE APPROVAL 2
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('qbg_prepayment', $data);
+        $this->db->update('mac_prepayment', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -435,8 +435,8 @@ class Prepayment_qbg extends CI_Controller
         $this->load->library('Fpdf_generate');
 
         // Load data from database based on $id
-        $data['master'] = $this->M_prepayment_qbg->get_by_id($id);
-        $data['transaksi'] = $this->M_prepayment_qbg->get_by_id_detail($id);
+        $data['master'] = $this->M_prepayment_mac->get_by_id($id);
+        $data['transaksi'] = $this->M_prepayment_mac->get_by_id_detail($id);
         $data['user'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $data['master']->id_user)
@@ -472,7 +472,7 @@ class Prepayment_qbg extends CI_Controller
         $pdf->AddPage('P', 'Letter');
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/qubagift.png', 9, 2, 40, 25);
+        $pdf->Image(base_url('') . '/assets/backend/img/MAC.png', 11, -7, 42, 45);
 
         $pdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php');
         $pdf->AddFont('Poppins-Bold', '', 'Poppins-Bold.php');
@@ -628,36 +628,36 @@ class Prepayment_qbg extends CI_Controller
         }
 
         // Output the PDF
-        $pdf->Output('I', 'Prepayment_qubagift.pdf');
+        $pdf->Output('I', 'prepayment_mac.pdf');
     }
 
     // QUERY UNTUK INPUT TANDA TANGAN
-    // function signature()
-    // {
-    //     // Ambil data dari request
-    //     $img = $this->input->post('imgBase64');
+    function signature()
+    {
+        // Ambil data dari request
+        $img = $this->input->post('imgBase64');
 
-    //     // Decode base64
-    //     $img = str_replace('data:image/png;base64,', '', $img);
-    //     $img = str_replace(' ', '+', $img);
-    //     $data = base64_decode($img);
+        // Decode base64
+        $img = str_replace('data:image/png;base64,', '', $img);
+        $img = str_replace(' ', '+', $img);
+        $data = base64_decode($img);
 
-    //     // Tentukan lokasi dan nama file
-    //     $fileName = uniqid() . '.png';
-    //     $filePath = './assets/backend/img/signatures/' . $fileName;
+        // Tentukan lokasi dan nama file
+        $fileName = uniqid() . '.png';
+        $filePath = './assets/backend/img/signatures/' . $fileName;
 
-    //     // Simpan file ke server
-    //     if (file_qbgt_contents($filePath, $data)) {
-    //         echo json_encode(['status' => 'success', 'fileName' => $fileName]);
-    //     } else {
-    //         echo json_encode(['status' => 'error']);
-    //     }
-    // }
+        // Simpan file ke server
+        if (file_put_contents($filePath, $data)) {
+            echo json_encode(['status' => 'success', 'fileName' => $fileName]);
+        } else {
+            echo json_encode(['status' => 'error']);
+        }
+    }
 
     function payment()
     {
         $this->db->where('id', $this->input->post('id'));
-        $this->db->update('qbg_prepayment', ['payment_status' => $this->input->post('payment_status')]);
+        $this->db->update('mac_prepayment', ['payment_status' => $this->input->post('payment_status')]);
 
         echo json_encode(array("status" => TRUE));
     }

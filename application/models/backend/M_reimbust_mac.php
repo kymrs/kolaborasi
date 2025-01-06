@@ -3,24 +3,24 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-class M_reimbust_mc extends CI_Model
+class M_reimbust_mac extends CI_Model
 {
     // Reimbust
     var $id = 'id';
-    var $table = 'mc_reimbust'; //nama tabel dari database
-    var $table2 = 'mc_reimbust_detail';
+    var $table = 'mac_reimbust'; //nama tabel dari database
+    var $table2 = 'mac_reimbust_detail';
     var $column_order = array(null, null, 'payment_status', 'kode_reimbust', 'name', 'jabatan', 'departemen', 'sifat_pelaporan', 'tgl_pengajuan', 'tujuan', 'jumlah_prepayment', 'status');
     var $column_search = array('payment_status', 'kode_reimbust', 'name', 'jabatan', 'departemen', 'sifat_pelaporan', 'tgl_pengajuan', 'tujuan', 'jumlah_prepayment', 'status'); //field yang diizin untuk pencarian 
     var $order = array('id' => 'desc'); // default order 
 
     // Deklarasi
-    var $table3 = 'mc_deklarasi'; //nama tabel dari database
+    var $table3 = 'mac_deklarasi'; //nama tabel dari database
     var $column_order2 = array(null, null, 'kode_deklarasi', 'tgl_deklarasi', 'name', 'jabatan', 'nama_dibayar', 'tujuan', 'sebesar', 'status');
     var $column_search2 = array('kode_deklarasi', 'tgl_deklarasi', 'name', 'jabatan', 'nama_dibayar', 'tujuan', 'sebesar', 'status'); //field yang diizin untuk pencarian 
     var $order2 = array('id' => 'desc'); // default order 
 
     // Prepayment
-    var $table4 = 'mc_prepayment';
+    var $table4 = 'mac_prepayment';
     var $column_order3 = array(null, null, 'kode_prepayment', 'name', 'divisi', 'jabatan', 'tgl_prepayment', 'prepayment', 'total_nominal', 'status');
     var $column_search3 = array('kode_prepayment', 'name', 'divisi', 'jabatan', 'tgl_prepayment', 'prepayment', 'total_nominal', 'status'); //field yang diizin untuk pencarian
     var $order3 = array('id' => 'desc');
@@ -32,9 +32,9 @@ class M_reimbust_mc extends CI_Model
 
     private function _get_datatables_query()
     {
-        $this->db->select('mc_reimbust.*, tbl_data_user.name'); // Memilih kolom dari kedua tabel
+        $this->db->select('mac_reimbust.*, tbl_data_user.name'); // Memilih kolom dari kedua tabel
         $this->db->from($this->table);
-        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = mc_reimbust.id_user', 'left'); // JOIN dengan tabel tbl_user
+        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = mac_reimbust.id_user', 'left'); // JOIN dengan tabel tbl_user
 
         $i = 0;
 
@@ -49,13 +49,13 @@ class M_reimbust_mc extends CI_Model
                     if ($item == 'name') {
                         $this->db->like('tbl_data_user.' . $item, $_POST['search']['value']);
                     } else {
-                        $this->db->like('mc_reimbust.' . $item, $_POST['search']['value']);
+                        $this->db->like('mac_reimbust.' . $item, $_POST['search']['value']);
                     }
                 } else {
                     if ($item == 'name') {
                         $this->db->or_like('tbl_data_user.' . $item, $_POST['search']['value']);
                     } else {
-                        $this->db->or_like('mc_reimbust.' . $item, $_POST['search']['value']);
+                        $this->db->or_like('mac_reimbust.' . $item, $_POST['search']['value']);
                     }
                 }
 
@@ -77,7 +77,7 @@ class M_reimbust_mc extends CI_Model
                 // Conditions for 'on-process' status
                 $this->db->where('app_status', 'waiting')
                     ->where('app2_status', 'waiting')
-                    ->or_where('mc_reimbust.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
+                    ->or_where('mac_reimbust.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
                     ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
             } elseif ($_POST['status'] == 'approved') {
                 // Conditions for 'approved' status
@@ -87,7 +87,7 @@ class M_reimbust_mc extends CI_Model
             } elseif ($_POST['status'] == 'revised') {
                 $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
                     ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "revised")', NULL, FALSE)
-                    ->or_where('mc_reimbust.id_user =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
+                    ->or_where('mac_reimbust.id_user =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
             } elseif ($_POST['status'] == 'rejected') {
                 $this->db->where('status', $_POST['status']);
             }
@@ -98,13 +98,13 @@ class M_reimbust_mc extends CI_Model
         // Tambahkan kondisi berdasarkan tab yang dipilih
         if (!empty($_POST['tab'])) {
             if ($_POST['tab'] == 'personal') {
-                $this->db->where('mc_reimbust.id_user', $this->session->userdata('id_user'));
+                $this->db->where('mac_reimbust.id_user', $this->session->userdata('id_user'));
             } elseif ($_POST['tab'] == 'employee') {
                 $this->db->group_start()
-                    ->where('mc_reimbust.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-                    ->where('mc_reimbust.id_user !=', $this->session->userdata('id_user'))
-                    ->or_where('mc_reimbust.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && mc_reimbust.app_status = 'approved'", FALSE)
-                    ->where('mc_reimbust.id_user !=', $this->session->userdata('id_user'))
+                    ->where('mac_reimbust.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                    ->where('mac_reimbust.id_user !=', $this->session->userdata('id_user'))
+                    ->or_where('mac_reimbust.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && mac_reimbust.app_status = 'approved'", FALSE)
+                    ->where('mac_reimbust.id_user !=', $this->session->userdata('id_user'))
                     ->group_end();
             }
         }
@@ -135,9 +135,9 @@ class M_reimbust_mc extends CI_Model
 
     public function count_all()
     {
-        $this->db->select('mc_reimbust.*, tbl_data_user.name'); // Memilih kolom dari kedua tabel
+        $this->db->select('mac_reimbust.*, tbl_data_user.name'); // Memilih kolom dari kedua tabel
         $this->db->from($this->table);
-        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = mc_reimbust.id_user', 'left'); // JOIN dengan tabel tbl_user
+        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = mac_reimbust.id_user', 'left'); // JOIN dengan tabel tbl_user
         // Tambahkan pemfilteran berdasarkan status
         $id_user_logged_in = $this->session->userdata('id_user'); // Mengambil id_user dari sesi pengguna yang login
 
@@ -148,7 +148,7 @@ class M_reimbust_mc extends CI_Model
                 // Conditions for 'on-process' status
                 $this->db->where('app_status', 'waiting')
                     ->where('app2_status', 'waiting')
-                    ->or_where('mc_reimbust.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
+                    ->or_where('mac_reimbust.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
                     ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
             } elseif ($_POST['status'] == 'approved') {
                 // Conditions for 'approved' status
@@ -158,7 +158,7 @@ class M_reimbust_mc extends CI_Model
             } elseif ($_POST['status'] == 'revised') {
                 $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
                     ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "revised")', NULL, FALSE)
-                    ->or_where('mc_reimbust.id_user =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
+                    ->or_where('mac_reimbust.id_user =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
             } elseif ($_POST['status'] == 'rejected') {
                 $this->db->where('status', $_POST['status']);
             }
@@ -169,13 +169,13 @@ class M_reimbust_mc extends CI_Model
         // Tambahkan kondisi be'rdasarkan tab yang dipilih
         if (!empty($_POST['tab'])) {
             if ($_POST['tab'] == 'personal') {
-                $this->db->where('mc_reimbust.id_user', $this->session->userdata('id_user'));
+                $this->db->where('mac_reimbust.id_user', $this->session->userdata('id_user'));
             } elseif ($_POST['tab'] == 'employee') {
                 $this->db->group_start()
-                    ->where('mc_reimbust.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-                    ->where('mc_reimbust.id_user !=', $this->session->userdata('id_user'))
-                    ->or_where('mc_reimbust.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && mc_reimbust.app_status = 'approved'", FALSE)
-                    ->where('mc_reimbust.id_user !=', $this->session->userdata('id_user'))
+                    ->where('mac_reimbust.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                    ->where('mac_reimbust.id_user !=', $this->session->userdata('id_user'))
+                    ->or_where('mac_reimbust.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && mac_reimbust.app_status = 'approved'", FALSE)
+                    ->where('mac_reimbust.id_user !=', $this->session->userdata('id_user'))
                     ->group_end();
             }
         }
@@ -188,9 +188,9 @@ class M_reimbust_mc extends CI_Model
 
         // $this->db->from($this->table);
         $this->db->where('is_active', 1);
-        $this->db->select('mc_deklarasi.*, tbl_data_user.name');
+        $this->db->select('mac_deklarasi.*, tbl_data_user.name');
         $this->db->from($this->table3);
-        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = mc_deklarasi.id_pengaju', 'left');
+        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = mac_deklarasi.id_pengaju', 'left');
         $id_user_logged_in = $this->session->userdata('id_user'); // Mengambil id_user dari sesi pengguna yang login
         $this->db->where('id_pengaju', $id_user_logged_in);
 
@@ -207,13 +207,13 @@ class M_reimbust_mc extends CI_Model
                     if ($item == 'name') {
                         $this->db->like('tbl_data_user.' . $item, $_POST['search']['value']);
                     } else {
-                        $this->db->like('mc_deklarasi.' . $item, $_POST['search']['value']);
+                        $this->db->like('mac_deklarasi.' . $item, $_POST['search']['value']);
                     }
                 } else {
                     if ($item == 'name') {
                         $this->db->or_like('tbl_data_user.' . $item, $_POST['search']['value']);
                     } else {
-                        $this->db->or_like('mc_deklarasi.' . $item, $_POST['search']['value']);
+                        $this->db->or_like('mac_deklarasi.' . $item, $_POST['search']['value']);
                     }
                 }
 
@@ -249,9 +249,9 @@ class M_reimbust_mc extends CI_Model
 
     public function count_all2()
     {
-        $this->db->select('mc_deklarasi.*, tbl_data_user.name');
+        $this->db->select('mac_deklarasi.*, tbl_data_user.name');
         $this->db->from($this->table3);
-        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = mc_deklarasi.id_pengaju', 'left');
+        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = mac_deklarasi.id_pengaju', 'left');
         $id_user_logged_in = $this->session->userdata('id_user'); // Mengambil id_user dari sesi pengguna yang login
         $this->db->where('id_pengaju', $id_user_logged_in);
 
@@ -262,12 +262,12 @@ class M_reimbust_mc extends CI_Model
     function _get_datatables_query3()
     {
         $this->db->where('is_active', 1);
-        $this->db->select('mc_prepayment.*, tbl_data_user.name'); // Memilih kolom dari kedua tabel
+        $this->db->select('mac_prepayment.*, tbl_data_user.name'); // Memilih kolom dari kedua tabel
         $this->db->from($this->table4);
-        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = mc_prepayment.id_user', 'left'); // JOIN dengan tabel tbl_user
+        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = mac_prepayment.id_user', 'left'); // JOIN dengan tabel tbl_user
         $id_user_logged_in = $this->session->userdata('id_user'); // Mengambil id_user dari sesi pengguna yang login
-        $this->db->where('mc_prepayment.id_user', $id_user_logged_in);
-        $this->db->where('mc_prepayment.status', 'approved');
+        $this->db->where('mac_prepayment.id_user', $id_user_logged_in);
+        $this->db->where('mac_prepayment.status', 'approved');
 
         $i = 0;
 
@@ -282,13 +282,13 @@ class M_reimbust_mc extends CI_Model
                     if ($item == 'name') {
                         $this->db->like('tbl_data_user.' . $item, $_POST['search']['value']);
                     } else {
-                        $this->db->like('mc_prepayment.' . $item, $_POST['search']['value']);
+                        $this->db->like('mac_prepayment.' . $item, $_POST['search']['value']);
                     }
                 } else {
                     if ($item == 'name') {
                         $this->db->or_like('tbl_data_user.' . $item, $_POST['search']['value']);
                     } else {
-                        $this->db->or_like('mc_prepayment.' . $item, $_POST['search']['value']);
+                        $this->db->or_like('mac_prepayment.' . $item, $_POST['search']['value']);
                     }
                 }
 
@@ -302,13 +302,13 @@ class M_reimbust_mc extends CI_Model
         // Tambahkan kondisi berdasarkan tab yang dipilih
         if (!empty($_POST['tab'])) {
             if ($_POST['tab'] == 'personal') {
-                $this->db->where('mc_prepayment.id_user', $this->session->userdata('id_user'));
+                $this->db->where('mac_prepayment.id_user', $this->session->userdata('id_user'));
             } elseif ($_POST['tab'] == 'employee') {
                 $this->db->group_start()
-                    ->where('mc_prepayment.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-                    ->where('mc_prepayment.id_user !=', $this->session->userdata('id_user'))
-                    ->or_where('mc_prepayment.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_prepayment.app_status = 'approved'", FALSE)
-                    ->where('mc_prepayment.id_user !=', $this->session->userdata('id_user'))
+                    ->where('mac_prepayment.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                    ->where('mac_prepayment.id_user !=', $this->session->userdata('id_user'))
+                    ->or_where('mac_prepayment.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_prepayment.app_status = 'approved'", FALSE)
+                    ->where('mac_prepayment.id_user !=', $this->session->userdata('id_user'))
                     ->group_end();
             }
         }
@@ -340,11 +340,11 @@ class M_reimbust_mc extends CI_Model
 
     public function count_all3()
     {
-        $this->db->select('mc_prepayment.*, tbl_data_user.name'); // Memilih kolom dari kedua tabel
+        $this->db->select('mac_prepayment.*, tbl_data_user.name'); // Memilih kolom dari kedua tabel
         $this->db->from($this->table4);
-        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = mc_prepayment.id_user', 'left'); // JOIN dengan tabel tbl_user
+        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = mac_prepayment.id_user', 'left'); // JOIN dengan tabel tbl_user
         $id_user_logged_in = $this->session->userdata('id_user'); // Mengambil id_user dari sesi pengguna yang login
-        $this->db->where('mc_prepayment.id_user', $id_user_logged_in);
+        $this->db->where('mac_prepayment.id_user', $id_user_logged_in);
 
         return $this->db->count_all_results();
     }
@@ -368,9 +368,9 @@ class M_reimbust_mc extends CI_Model
     {
         $formatted_date = date('ym', strtotime($date));
         $this->db->select('kode_reimbust');
-        $where = 'id=(SELECT max(id) FROM mc_reimbust where SUBSTRING(kode_reimbust, 2, 4) = ' . $formatted_date . ')';
+        $where = 'id=(SELECT max(id) FROM mac_reimbust where SUBSTRING(kode_reimbust, 2, 4) = ' . $formatted_date . ')';
         $this->db->where($where);
-        $query = $this->db->get('mc_reimbust');
+        $query = $this->db->get('mac_reimbust');
         return $query;
     }
 
@@ -398,13 +398,13 @@ class M_reimbust_mc extends CI_Model
     public function delete($id)
     {
         // Ambil data tbl_reimbust_detail berdasarkan reimbust_id
-        $detail = $this->db->get_where('mc_reimbust_detail', ['reimbust_id' => $id])->result_array();
+        $detail = $this->db->get_where('mac_reimbust_detail', ['reimbust_id' => $id])->result_array();
 
         // untuk menghapus file gambar
         if ($detail) {
             foreach ($detail as $rd) {
                 $old_image = $rd['kwitansi'];
-                $file_path = FCPATH . './assets/backend/document/reimbust/kwitansi_mc/' . $old_image;
+                $file_path = FCPATH . './assets/backend/document/reimbust/kwitansi_mac/' . $old_image;
 
                 if (file_exists($file_path)) {
                     unlink($file_path);
@@ -420,18 +420,18 @@ class M_reimbust_mc extends CI_Model
             foreach ($detail as $deklarasi) {
                 $deklarasi = $deklarasi['deklarasi'];
 
-                $this->db->update('mc_deklarasi', ['is_active' => 1], ['kode_deklarasi' => $deklarasi]);
+                $this->db->update('mac_deklarasi', ['is_active' => 1], ['kode_deklarasi' => $deklarasi]);
             }
         }
 
         // Ambil data tbl_reimbust berdasarkan reimbust_id
-        $reimbust = $this->db->get_where('mc_reimbust', ['id' => $id])->row_array();
+        $reimbust = $this->db->get_where('mac_reimbust', ['id' => $id])->row_array();
 
         // ambil data prepayment pada table reimbust
         $prepayment = $reimbust['kode_prepayment'];
 
         // update data pada kolom is active menjadi 1 di table prepayment
-        $this->db->update('mc_prepayment', ['is_active' => 1], ['kode_prepayment' => $prepayment]);
+        $this->db->update('mac_prepayment', ['is_active' => 1], ['kode_prepayment' => $prepayment]);
 
         // delete data master reimbust
         $this->db->where($this->id, $id);
@@ -439,7 +439,7 @@ class M_reimbust_mc extends CI_Model
 
         // delete data detail teimbust
         $this->db->where('reimbust_id', $id);
-        $this->db->delete('mc_reimbust_detail');
+        $this->db->delete('mac_reimbust_detail');
 
         echo json_encode(array("status" => TRUE));
     }
@@ -447,6 +447,6 @@ class M_reimbust_mc extends CI_Model
     // OPSI REKENING
     public function options()
     {
-        return $this->db->distinct()->select('no_rek')->from('mc_reimbust')->get();
+        return $this->db->distinct()->select('no_rek')->from('mac_reimbust')->get();
     }
 }
