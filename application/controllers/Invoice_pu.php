@@ -177,7 +177,7 @@ class Invoice_pu extends CI_Controller
     {
         $data['id'] = 0;
         $data['title'] = 'backend/invoice/pu_invoice_form';
-        $data['title_view'] = 'Prepayment Form';
+        $data['title_view'] = 'Invoice Form';
         $data['rek_options'] = $this->M_prepayment_pu->options()->result_array();
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $this->load->view('backend/home', $data);
