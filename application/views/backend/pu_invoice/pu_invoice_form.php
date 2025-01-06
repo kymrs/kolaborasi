@@ -113,9 +113,9 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-sm-4 col-form-label">Refrensi</label>
+                                    <label class="col-sm-4 col-form-label">Kode Invoice</label>
                                     <div class="col-sm-8">
-                                        <input type="text" class="form-control" id="refrensi" name="refrensi" readonly>
+                                        <input type="text" class="form-control" id="kode_invoice" name="kode_invoice" readonly>
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -267,7 +267,7 @@
         // minDate: new Date(),
         // maxDate: new Date(),
 
-        // MENGENERATE KODE PREPAYMENT SETELAH PILIH TANGGAL
+        // MENGENERATE KODE INVOICE SETELAH PILIH TANGGAL
         onSelect: function(dateText) {
             var id = dateText;
             $('#tgl_invoice').removeClass("is-invalid");
@@ -277,7 +277,7 @@
                 $("#tgl_invoice-error").remove(); // Menghapus label error
             }
             $.ajax({
-                url: "<?php echo site_url('prepayment_pu/generate_kode') ?>",
+                url: "<?php echo site_url('invoice_pu/generate_kode') ?>",
                 type: "POST",
                 data: {
                     "date": dateText
@@ -285,7 +285,7 @@
                 dataType: "JSON",
                 success: function(data) {
                     // console.log(data);
-                    $('#kode_prepayment').val(data.toUpperCase());
+                    $('#kode_invoice').val(data.toUpperCase());
                     $('#kode').val(data);
                 },
                 error: function(error) {
@@ -293,6 +293,32 @@
                 }
             });
         }
+    });
+
+    $(document).ready(function() {
+        // Event ketika tanggal diubah
+        $('#tgl_invoice, #tgl_tempo').on('change', function() {
+            let tglInvoice = $('#tgl_invoice').val(); // Ambil nilai tanggal invoice
+            let tglTempo = $('#tgl_tempo').val(); // Ambil nilai tanggal tempo
+
+            if (tglInvoice && tglTempo) { // Cek jika kedua tanggal sudah terisi
+                // Format tanggal ke objek Date
+                let dateInvoice = moment(tglInvoice, "DD-MM-YYYY");
+                let dateTempo = moment(tglTempo, "DD-MM-YYYY");
+
+                if (dateTempo.isBefore(dateInvoice)) { // Cek apakah tanggal tempo sebelum tanggal invoice
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Kesalahan',
+                        text: 'Tanggal invoice tidak boleh mundur dari tanggal tempo!',
+                    });
+
+                    // Reset input tanggal
+                    $('#tgl_invoice').val('');
+                    $('#tgl_tempo').val('');
+                }
+            }
+        });
     });
 
     $('#tgl_tempo').datepicker({

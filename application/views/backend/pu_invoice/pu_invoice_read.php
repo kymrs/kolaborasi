@@ -66,6 +66,24 @@
                             <td class="total">100.000</td>
                         </tr>
                         <tr>
+                            <td>Air Zam-zam</td>
+                            <td class="jumlah">1 L</td>
+                            <td class="harga">150.000</td>
+                            <td class="total">150.000</td>
+                        </tr>
+                        <tr>
+                            <td>Kacang Almond</td>
+                            <td class="jumlah">2 Kg</td>
+                            <td class="harga">200.000</td>
+                            <td class="total">200.000</td>
+                        </tr>
+                        <tr>
+                            <td>Kacang kacangan</td>
+                            <td class="jumlah">5 Kg</td>
+                            <td class="harga">400.000</td>
+                            <td class="total">400.000</td>
+                        </tr>
+                        <tr>
                             <td colspan="2" style="border-left-color: #fff; border-bottom-color: #fff"></td>
                             <td style="text-align: center;">Diskon</td>
                             <td style="text-align: center">0</td>
@@ -73,7 +91,7 @@
                         <tr>
                             <td colspan="2" style="border-left-color: #fff; border-bottom-color: #fff"></td>
                             <th>Total</th>
-                            <td style="text-align: center">100.000</td>
+                            <td style="text-align: center">850.000</td>
                         </tr>
                     </table>
                 </div>
@@ -87,6 +105,7 @@
                 </div>
             </main>
         </div>
+
     </div>
 
     <?php $this->load->view('template/footer'); ?>

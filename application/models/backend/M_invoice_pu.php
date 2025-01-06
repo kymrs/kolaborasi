@@ -186,11 +186,11 @@ class M_invoice_pu extends CI_Model
     // UNTUK QUERY MENGAMBIL KODE UNTUK DIGENERATE DI CONTROLLER
     public function max_kode($date)
     {
-        $formatted_date = date('ym', strtotime($date));
-        $this->db->select('kode_prepayment');
-        $where = 'id=(SELECT max(id) FROM tbl_prepayment_pu where SUBSTRING(kode_prepayment, 2, 4) = ' . $formatted_date . ')';
+        $formatted_date = date('m', strtotime($date));
+        $this->db->select('kode_invoice');
+        $where = 'id=(SELECT max(id) FROM pu_invoice where SUBSTRING(kode_invoice, 6, 2) = ' . $formatted_date . ')';
         $this->db->where($where);
-        $query = $this->db->get('tbl_prepayment_pu');
+        $query = $this->db->get('pu_invoice');
         return $query;
     }
 
