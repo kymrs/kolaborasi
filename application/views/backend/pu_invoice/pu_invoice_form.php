@@ -162,9 +162,22 @@
                                                 <span class="py-2">-</span>&nbsp;
                                                 <input type="text" class="form-control col-sm-6" style="font-size: 13px;" id="nomor_rekening" name="nomor_rekening" placeholder="No Rekening">
                                                 <span class="py-2"></span>&nbsp;
-                                                <button class="btn-primary" style="height: 33.5px; width: 40px"><i class="fa fa-plus" aria-hidden="true"></i></button>
+                                                <button type="button" class="btn-primary" id="btn-rek" style="height: 33.5px; width: 40px"><i class="fa fa-plus" aria-hidden="true"></i></button>
                                             </div>
                                         </div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <table id="rek-table" class=" table table-bordered">
+                                            <thead>
+                                                <th>No</th>
+                                                <th class="col-sm-4">Nama Bank</th>
+                                                <th class="col-sm-8">No Rekening</th>
+                                                <th>Delete</th>
+                                            </thead>
+                                            <tbody>
+
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
@@ -215,7 +228,7 @@
                                     <!-- CONTAINER INPUTAN -->
                                 </tbody>
                                 <tr class="font-weight-bold">
-                                    <td colspan="4" id="total_nominal_row" class="text-right">Total</td>
+                                    <td colspan="5" id="total_nominal_row" class="text-right">Total</td>
                                     <td id="total_nominal_view"></td>
                                     <input type="hidden" id="total_nominal" name="total_nominal" value="">
                                 </tr>
@@ -249,19 +262,19 @@
 <?php $this->load->view('template/script'); ?>
 
 <script>
-    $('#tgl_prepayment').datepicker({
+    $('#tgl_invoice').datepicker({
         dateFormat: 'dd-mm-yy',
-        minDate: new Date(),
-        maxDate: new Date(),
+        // minDate: new Date(),
+        // maxDate: new Date(),
 
         // MENGENERATE KODE PREPAYMENT SETELAH PILIH TANGGAL
         onSelect: function(dateText) {
             var id = dateText;
-            $('#tgl_prepayment').removeClass("is-invalid");
+            $('#tgl_invoice').removeClass("is-invalid");
 
             // Menghapus label error secara manual jika ada
-            if ($("#tgl_prepayment-error").length) {
-                $("#tgl_prepayment-error").remove(); // Menghapus label error
+            if ($("#tgl_invoice-error").length) {
+                $("#tgl_invoice-error").remove(); // Menghapus label error
             }
             $.ajax({
                 url: "<?php echo site_url('prepayment_pu/generate_kode') ?>",
@@ -280,6 +293,12 @@
                 }
             });
         }
+    });
+
+    $('#tgl_tempo').datepicker({
+        dateFormat: 'dd-mm-yy',
+        // minDate: new Date(),
+        // maxDate: new Date(),
     });
 
     $(document).ready(function() {
@@ -361,7 +380,27 @@
 
         //MENAMBAH FORM INPUTAN DI ADD FORM
         let rowCount = 0;
+        let rowRekCount = 0;
 
+        //ADD ROW NOMOR REKENING
+        function addRekRow() {
+            // Ambil nilai dari input
+            const namaBank = $('#nama_bank').val().trim();
+            const nomorRekening = $('#nomor_rekening').val().trim();
+
+            rowRekCount++;
+            const rekRow = `
+                <tr id="rek-${rowRekCount}">
+                    <td class="rek-number">${rowRekCount}</td>
+                    <td>${namaBank}</td>
+                    <td>${nomorRekening}</td>
+                    <td><button type="button" class="btn rek-delete btn-danger" data-id="${rowRekCount}">Delete</button></td>
+                </tr>
+            `;
+            $('#rek-table tbody').append(rekRow);
+        }
+
+        // ADD Row Detail Invoice
         function addRow() {
             rowCount++;
             const row = `
@@ -370,9 +409,9 @@
                     <td><input type="text" class="form-control" name="rincian[${rowCount}]" value="" placeholder="Input here..." /></td>
                     <td>
                     <div class="row">
-                    <input type="text" class="form-control col-sm-4 ml-2" name="satuan[${rowCount}]" value="" placeholder="Satuan..." />
+                    <input type="text" class="form-control col-sm-4 ml-2" id="satuan-${rowCount}" name="satuan[${rowCount}]" value="" placeholder="Satuan..." />
                     <span class="py-4"></span>&nbsp;
-                    <input type="number" class="form-control col-sm-7" name="jumlah[${rowCount}]" value="" placeholder="Jumlah..." />
+                    <input type="number" class="form-control col-sm-7" id="jumlah-${rowCount}" name="jumlah[${rowCount}]" value="" placeholder="Jumlah..." />
                     </div>
                     </td>
                     <td>
@@ -407,10 +446,6 @@
             $("#form").validate().settings.messages[`nominal[${rowCount}]`] = {
                 required: "Nominal is required"
             };
-
-            // $("#form").validate().settings.rules[`keterangan[${rowCount}]`] = {
-            //     required: true
-            // };
         }
 
         // MENGHAPUS ROW
@@ -433,31 +468,53 @@
             calculateTotalNominal();
         }
 
-        // MENHATUR ULANG URUTAN ROW SAAT DIHAPUS
+        // REORDER DETAIL INVOICE
         function reorderRows() {
             $('#input-container tr').each(function(index) {
                 //INISIASI VARIABLE UNTUK reorderRows
                 const newRowNumber = index + 1;
                 const rincianValue = $(this).find('input[name^="rincian"]').val();
+                const satuanValue = $(this).find('input[name^="satuan"]').val();
+                const jumlahValue = $(this).find('input[name^="jumlah"]').val();
                 const nominalValue = $(this).find('input[name^="nominal"]').val();
                 const hiddenIdValue = $(this).find('input[name^="hidden_id_detail"]').val();
                 const hiddenNominalValue = $(this).find('input[name^="hidden_nominal"]').val();
-                const keteranganValue = $(this).find('input[name^="keterangan"]').val();
+                const keteranganValue = $(this).find('textarea[name^="keterangan"]').val();
 
                 $(this).attr('id', `row-${newRowNumber}`);
                 $(this).find('.row-number').text(newRowNumber);
                 $(this).find('input[name^="rincian"]').attr('name', `rincian[${newRowNumber}]`).attr('placeholder', `Input here...`).val(rincianValue);
+                $(this).find('input[name^="satuan"]').attr('name', `satuan[${newRowNumber}]`).attr('id', `satuan-${newRowNumber}`).attr('placeholder', 'Satuan...').val(satuanValue);
+                $(this).find('input[name^="jumlah"]').attr('name', `jumlah[${newRowNumber}]`).attr('id', `jumlah-${newRowNumber}`).attr('placeholder', `Jumlah...`).val(jumlahValue);
                 $(this).find('input[name^="nominal"]').attr('name', `nominal[${newRowNumber}]`).attr('id', `nominal-${newRowNumber}`).attr('placeholder', `Input here...`).val(nominalValue);
                 $(this).find('input[name^="hidden_id_detail"]').attr('name', `hidden_id_detail[${newRowNumber}]`).val(hiddenIdValue);
                 $(this).find('input[name^="hidden_nominal"]').attr('name', `hidden_nominal[${newRowNumber}]`).attr('id', `hidden_nominal${newRowNumber}`).val(hiddenNominalValue);
-                $(this).find('input[name^="keterangan"]').attr('name', `keterangan[${newRowNumber}]`).attr('placeholder', `Input here...`).val(keteranganValue);
+                $(this).find('textarea[name^="keterangan"]').attr('name', `keterangan[${newRowNumber}]`).attr('placeholder', `Input here...`).val(keteranganValue);
                 $(this).find('.delete-btn').attr('data-id', newRowNumber).text('Delete');
             });
             rowCount = $('#input-container tr').length; // Update rowCount to the current number of rows
         }
 
+        // REORDER NOMOR REKENING
+        function reorderRekRows() {
+            $('#rek-table tbody tr').each(function(index) {
+                const newRekRowNumber = index + 1;
+
+                $(this).attr('id', `rek-${newRekRowNumber}`);
+                $(this).find('.rek-number').text(newRekRowNumber);
+                $(this).find('.rek-delete').attr('data-id', newRekRowNumber).text('Delete');
+            });
+            rowRekCount = $('#rek-table tbody tr').length;
+        }
+
+        // BUTTON ADD ROW DETAIL TRANSAKSI
         $('#add-row').click(function() {
             addRow();
+        });
+
+        // BUTTON ADD ROW NOMOR REKENING
+        $('#btn-rek').click(function() {
+            addRekRow();
         });
 
         function updateSubmitButtonState() {
@@ -469,9 +526,17 @@
             }
         }
 
+        // BUTTON HAPUS TRANSAKSI INVOICE
         $(document).on('click', '.delete-btn', function() {
             const id = $(this).data('id');
             deleteRow(id);
+        });
+
+        // BUTTON HAPUS NOMOR REKENING
+        $(document).on('click', '.rek-delete', function() {
+            const rowId = $(this).data('id');
+            $(`#rek-${rowId}`).remove();
+            reorderRekRows()
         });
 
         $('#form').submit(function(event) {
@@ -505,7 +570,7 @@
                     //SET VALUE DATA MASTER PREPAYMENT
                     $('#id').val(data['master']['id']);
                     $('#kode_prepayment').val(data['master']['kode_prepayment'].toUpperCase()).attr('readonly', true);
-                    $('#tgl_prepayment').val(moment(data['master']['tgl_prepayment']).format('DD-MM-YYYY'));
+                    $('#tgl_invoice').val(moment(data['master']['tgl_invoice']).format('DD-MM-YYYY'));
                     $('#nama').val(data['master']['nama']);
                     if (data['master']['no_rek'] == '') {
                         $('#rekening').val().trigger('change');
@@ -576,7 +641,7 @@
         if (aksi == "read") {
             $('.aksi').hide();
             $('#id').prop('readonly', true);
-            $('#tgl_prepayment').prop('disabled', true);
+            $('#tgl_invoice').prop('disabled', true);
             $('#nama').prop('readonly', true);
             // $('#jabatan').prop('disabled', true);
             // $('#divisi').prop('disabled', true);
@@ -664,7 +729,7 @@
 
         $("#form").validate({
             rules: {
-                tgl_prepayment: {
+                tgl_invoice: {
                     required: true,
                 },
                 nama: {
@@ -688,7 +753,7 @@
                 },
             },
             messages: {
-                tgl_prepayment: {
+                tgl_invoice: {
                     required: "Tanggal is required",
                 },
                 nama: {
