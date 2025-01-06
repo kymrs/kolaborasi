@@ -152,22 +152,11 @@ class Invoice_pu extends CI_Controller
     }
 
     // UNTUK MENAMPILKAN FORM READ
-    public function read_form($id)
+    public function read_form()
     {
         $data['notif'] = $this->M_notifikasi->pending_notification();
-        $data['id'] = $id;
-        $data['user'] = $this->M_prepayment_pu->get_by_id($id);
-        $data['app_name'] = $this->db->select('name')
-            ->from('tbl_data_user')
-            ->where('id_user', $this->session->userdata('id_user'))
-            ->get()
-            ->row('name');
-        $data['app2_name'] = $this->db->select('name')
-            ->from('tbl_data_user')
-            ->where('id_user', $this->session->userdata('id_user'))
-            ->get()
-            ->row('name');
-        $data['title'] = 'backend/prepayment_pu/prepayment_read_pu';
+        // $data['id'] = $id;
+        $data['title'] = 'backend/pu_invoice/pu_invoice_read';
         $data['title_view'] = 'Prepayment';
         $this->load->view('backend/home', $data);
     }

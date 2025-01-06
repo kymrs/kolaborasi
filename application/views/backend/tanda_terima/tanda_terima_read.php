@@ -34,7 +34,7 @@
         }
 
         header img {
-            width: 285px;
+            width: 150px;
         }
 
         .header-content {
@@ -100,7 +100,7 @@
             <header>
                 <h1>Tanda Terima</h1>
                 <div>
-                    <img src="<?= base_url() ?>/assets/backend/img/logo_new.png" alt="Logo pengenumroh.com">
+                    <img src="<?= base_url() ?>/assets/backend/img/pengenumroh.png" alt="Logo pengenumroh.com">
                 </div>
             </header>
             <div class="header-content">
