@@ -6,7 +6,7 @@ class Invoice_pu extends CI_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('backend/M_prepayment_pu');
+        $this->load->model('backend/M_invoice_pu');
         $this->load->model('backend/M_notifikasi');
         $this->M_login->getsecurity();
         date_default_timezone_set('Asia/Jakarta');
@@ -74,7 +74,7 @@ class Invoice_pu extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $list = $this->M_prepayment_pu->get_datatables();
+        $list = $this->M_invoice_pu->get_datatables();
         $data = array();
         $no = $_POST['start'];
 
@@ -143,8 +143,8 @@ class Invoice_pu extends CI_Controller
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_prepayment_pu->count_all(),
-            "recordsFiltered" => $this->M_prepayment_pu->count_filtered(),
+            "recordsTotal" => $this->M_invoice_pu->count_all(),
+            "recordsFiltered" => $this->M_invoice_pu->count_filtered(),
             "data" => $data,
         );
         //output dalam format JSON
@@ -167,26 +167,27 @@ class Invoice_pu extends CI_Controller
         $data['id'] = 0;
         $data['title'] = 'backend/pu_invoice/pu_invoice_form';
         $data['title_view'] = 'Invoice Form';
-        $data['rek_options'] = $this->M_prepayment_pu->options()->result_array();
+        $data['rek_options'] = $this->M_invoice_pu->options()->result_array();
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $this->load->view('backend/home', $data);
     }
 
-    // MEREGENERATE KODE PREPAYMENT
+    // MEREGENERATE KODE INVOICE
     public function generate_kode()
     {
         $date = $this->input->post('date');
-        $kode = $this->M_prepayment_pu->max_kode($date)->row();
-        if (empty($kode->kode_prepayment)) {
+
+        $kode = $this->M_invoice_pu->max_kode($date)->row();
+
+        if (empty($kode->kode_invoice)) {
             $no_urut = 1;
         } else {
-            $bln = substr($kode->kode_prepayment, 3, 2);
-            $no_urut = substr($kode->kode_prepayment, 5) + 1;
+            $bln = substr($kode->kode_invoice, 5, 2);
+            $no_urut = substr($kode->kode_invoice, 10) + 1;
         }
         $urutan = str_pad($no_urut, 4, "0", STR_PAD_LEFT);
         $month = substr($date, 3, 2);
-        $year = substr($date, 8, 2);
-        $data = 'p' . $year . $month . $urutan;
+        $data = 'INVPU' . $month . $urutan;
         echo json_encode($data);
     }
 
@@ -197,15 +198,15 @@ class Invoice_pu extends CI_Controller
         $data['id'] = $id;
         $data['aksi'] = 'update';
         $data['title_view'] = "Edit Data Prepayment";
-        $data['rek_options'] = $this->M_prepayment_pu->options()->result_array();
+        $data['rek_options'] = $this->M_invoice_pu->options()->result_array();
         $data['title'] = 'backend/prepayment_pu/prepayment_form_pu';
         $this->load->view('backend/home', $data);
     }
 
     function edit_data($id)
     {
-        $data['master'] = $this->M_prepayment_pu->get_by_id($id);
-        $data['transaksi'] = $this->M_prepayment_pu->get_by_id_detail($id);
+        $data['master'] = $this->M_invoice_pu->get_by_id($id);
+        $data['transaksi'] = $this->M_invoice_pu->get_by_id_detail($id);
         $data['nama'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $data['master']->id_user)
@@ -215,7 +216,7 @@ class Invoice_pu extends CI_Controller
 
     function read_detail($id)
     {
-        $data = $this->M_prepayment_pu->get_by_id_detail($id);
+        $data = $this->M_invoice_pu->get_by_id_detail($id);
         echo json_encode($data);
     }
 
@@ -224,7 +225,7 @@ class Invoice_pu extends CI_Controller
     {
         // INSERT KODE PREPAYMENT SAAT SUBMIT
         $date = $this->input->post('tgl_prepayment');
-        $kode = $this->M_prepayment_pu->max_kode($date)->row();
+        $kode = $this->M_invoice_pu->max_kode($date)->row();
         if (empty($kode->kode_prepayment)) {
             $no_urut = 1;
         } else {
@@ -236,66 +237,6 @@ class Invoice_pu extends CI_Controller
         $year = substr($date, 8, 2);
         $kode_prepayment = 'P' . $year . $month . $urutan;
 
-        // MENCARI SIAPA YANG AKAN MELAKUKAN APPROVAL PERMINTAAN
-        $approval = $this->M_prepayment_pu->approval($this->session->userdata('id_user'));
-        $id = $this->session->userdata('id_user');
-
-        // CHECK APAKAH MENGINPUT YANG SUDAH ADA ATAU YANG BARU (REKENING)
-        if (!empty($_POST['nama_rek'])) {
-            $no_rek = $this->input->post('nama_rek') . "-" . $this->input->post('nama_bank') . "-" . $this->input->post('nomor_rekening');
-        } else {
-            $no_rek = $this->input->post('rekening');
-        }
-
-        $data = array(
-            'kode_prepayment' => $kode_prepayment,
-            'id_user' => $id,
-            'prepayment' => $this->input->post('prepayment'),
-            'tujuan' => $this->input->post('tujuan'),
-            'tgl_prepayment' => date('Y-m-d', strtotime($this->input->post('tgl_prepayment'))),
-            'total_nominal' => $this->input->post('total_nominal'),
-            'no_rek' => $no_rek,
-            'divisi' => $this->db->select('divisi')
-                ->from('tbl_data_user')
-                ->where('id_user', $id)
-                ->get()
-                ->row('divisi'),
-            'jabatan' => $this->db->select('jabatan')
-                ->from('tbl_data_user')
-                ->where('id_user', $id)
-                ->get()
-                ->row('jabatan'),
-            'app_name' => $this->db->select('name')
-                ->from('tbl_data_user')
-                ->where('id_user', $approval->app_id)
-                ->get()
-                ->row('name'),
-            'app2_name' => $this->db->select('name')
-                ->from('tbl_data_user')
-                ->where('id_user', $approval->app2_id)
-                ->get()
-                ->row('name'),
-            'created_at' => date('Y-m-d H:i:s')
-        );
-
-        $inserted = $this->M_prepayment_pu->save($data);
-
-        if ($inserted) {
-            // INISIASI VARIABEL INPUT DETAIL PREPAYMENT
-            $rincian = $this->input->post('rincian[]');
-            $nominal = $this->input->post('hidden_nominal[]');
-            $keterangan = $this->input->post('keterangan[]');
-            //PERULANGAN UNTUK INSER QUERY DETAIL PREPAYMENT
-            for ($i = 1; $i <= count($_POST['rincian']); $i++) {
-                $data2[] = array(
-                    'prepayment_id' => $inserted,
-                    'rincian' => $rincian[$i],
-                    'nominal' => $nominal[$i],
-                    'keterangan' => $keterangan[$i]
-                );
-            }
-            $this->M_prepayment_pu->save_detail($data2);
-        }
         echo json_encode(array("status" => TRUE));
     }
 
@@ -364,8 +305,8 @@ class Invoice_pu extends CI_Controller
     // MENGHAPUS DATA
     function delete($id)
     {
-        $this->M_prepayment_pu->delete($id);
-        $this->M_prepayment_pu->delete_detail($id);
+        $this->M_invoice_pu->delete($id);
+        $this->M_invoice_pu->delete_detail($id);
         echo json_encode(array("status" => TRUE));
     }
 
@@ -424,8 +365,8 @@ class Invoice_pu extends CI_Controller
         $this->load->library('Fpdf_generate');
 
         // Load data from database based on $id
-        $data['master'] = $this->M_prepayment_pu->get_by_id($id);
-        $data['transaksi'] = $this->M_prepayment_pu->get_by_id_detail($id);
+        $data['master'] = $this->M_invoice_pu->get_by_id($id);
+        $data['transaksi'] = $this->M_invoice_pu->get_by_id_detail($id);
         $data['user'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $data['master']->id_user)
