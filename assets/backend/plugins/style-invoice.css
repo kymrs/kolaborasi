@@ -9,18 +9,14 @@
 
 .canvas {
     margin: 0 auto;
-    width: 185mm;
+    width: 165mm;
     /* height: 297mm; */
     display: block;
     margin-bottom: 20px;
     background-color: white;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     border-radius: 4px;
-    padding: 10px;
-}
-
-main {
-    margin: 15px 18px;
+    padding: 15px;
 }
 
 /* Header */
@@ -155,6 +151,23 @@ main .invoice h3 {
     padding-left: 5px;
 }
 
+.watermark {
+    border: 5px solid #FC7613;
+    color: black;
+    font-weight: bold;
+    border-radius: 10px;
+    background-color: rgba(234,36,39,0.7);
+    text-align: center;
+    line-height: 100px;
+    font-size: 3rem;
+    width: 300px;
+    height: 100px;
+    position: absolute;
+    top: 450px;
+    transform: rotate(-30deg);
+    left: 740px;
+}
+
 /* Media Queries */
 @media (max-width: 1080px) {
     .container {
@@ -162,7 +175,7 @@ main .invoice h3 {
     }
 
     .canvas {
-        width: 170mm;
+        width: 160mm;
     }
 }
 
