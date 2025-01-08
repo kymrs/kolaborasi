@@ -4,13 +4,15 @@
         <?php $core = $this->session->userdata('core') ?>
 
         <?php
-        $statement1 = $core == "test";
-        $statement2 = $core == "test";
-        $statement3 = $core == "test";
-        $statement4 = $core == "test";
-        $statement5 = $core == "test";
-        $statement6 = $core == "test";
-        $statement7 = $core == "test";
+        $statement1 = $core == "all";
+        $statement2 = $core == "kps";
+        $statement3 = $core == "pu";
+        $statement4 = $core == "swa";
+        $statement5 = $core == "swi";
+        $statement6 = $core == "bmn";
+        $statement7 = $core == "qbg";
+        $statement8 = $core == "ctz";
+        $statement9 = $core == "mac";
         ?>
 
         <!-- ALL -->
@@ -18,7 +20,7 @@
             <!-- Card -->
             <div class="col-xl-3 col-md-6 mb-4">
                 <!-- Card with hover effect and clickable action -->
-                <a href="#" class="card shadow h-100 py-4 text-decoration-none" style="border-left: 5px solid #3BB8EA;">
+                <a href="https://kolaborasigroup.com/" target="_blank" class="card shadow h-100 py-4 text-decoration-none" style="border-left: 5px solid #3BB8EA;">
                     <div class="card-body">
                         <div class="d-flex justify-content-center">
                             <!-- Image inside card, properly scaled and responsive -->
@@ -31,7 +33,7 @@
             <!-- Card -->
             <div class="col-xl-3 col-md-6 mb-4">
                 <!-- Card with hover effect and clickable action -->
-                <a href="#" class="card border-left-warning shadow h-100 py-4 text-decoration-none">
+                <a href="https://pengenumroh.com/" target="_blank" class="card border-left-warning shadow h-100 py-4 text-decoration-none">
                     <div class="card-body">
                         <div class="d-flex justify-content-center">
                             <!-- Image inside card, properly scaled and responsive -->
@@ -44,7 +46,7 @@
             <!-- Card -->
             <div class="col-xl-3 col-md-6 mb-4">
                 <!-- Card with hover effect and clickable action -->
-                <a href="#" class="card shadow h-100 py-4 text-decoration-none" style="border-left: 5px solid #594093;">
+                <a href="https://sebelaswarna.com/" target="_blank" class="card shadow h-100 py-4 text-decoration-none" style="border-left: 5px solid #594093;">
                     <div class="card-body">
                         <div class="d-flex justify-content-center">
                             <!-- Image inside card, properly scaled and responsive -->
@@ -61,7 +63,7 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-center">
                             <!-- Image inside card, properly scaled and responsive -->
-                            <img src="<?= base_url('assets/backend/img/pengenwisata.png'); ?>" class="img-fluid" alt="Logo" style="max-width: 100%; height: auto; border-radius: 10px;">
+                            <img src="<?= base_url('assets/backend/img/sobatwisata.png'); ?>" class="img-fluid" alt="Logo" style="max-width: 100%; height: auto; border-radius: 10px;">
                         </div>
                     </div>
                 </a>
@@ -92,6 +94,33 @@
                     </div>
                 </a>
             </div>
+
+            <!-- Card -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <!-- Card with hover effect and clickable action -->
+                <a href="#" class="card shadow h-100 py-4 text-decoration-none" style="border-left: 5px solid #110A69;">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-center">
+                            <!-- Image inside card, properly scaled and responsive -->
+                            <img src="<?= base_url('assets/backend/img/carstensz.png'); ?>" class="img-fluid" alt="Logo" style="max-width: 100%; height: auto; border-radius: 10px;">
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Card -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <!-- Card with hover effect and clickable action -->
+                <a href="#" class="card shadow h-100 py-4 text-decoration-none" style="border-left: 5px solid #E91E24;">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-center">
+                            <!-- Image inside card, properly scaled and responsive -->
+                            <img src="<?= base_url('assets/backend/img/mobileautocare.png'); ?>" class="img-fluid" alt="Logo" style="max-width: 100%; height: auto; border-radius: 10px;">
+                        </div>
+                    </div>
+                </a>
+            </div>
+
         <?php endif ?>
 
         <!-- KPS -->
@@ -152,7 +181,7 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-center">
                             <!-- Image inside card, properly scaled and responsive -->
-                            <img src="<?= base_url('assets/backend/img/pengenwisata.png'); ?>" class="img-fluid" alt="Logo" style="max-width: 100%; height: auto; border-radius: 10px;">
+                            <img src="<?= base_url('assets/backend/img/sobatwisata.png'); ?>" class="img-fluid" alt="Logo" style="max-width: 100%; height: auto; border-radius: 10px;">
                         </div>
                     </div>
                 </a>
@@ -190,6 +219,39 @@
                 </a>
             </div>
         <?php endif ?>
+
+        <!-- CTZ -->
+        <?php if ($statement8) : ?>
+            <!-- Card -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <!-- Card with hover effect and clickable action -->
+                <a href="#" class="card shadow h-100 py-4 text-decoration-none" style="border-left: 5px solid #110A69;">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-center">
+                            <!-- Image inside card, properly scaled and responsive -->
+                            <img src="<?= base_url('assets/backend/img/carstensz.png'); ?>" class="img-fluid" alt="Logo" style="max-width: 100%; height: auto; border-radius: 10px;">
+                        </div>
+                    </div>
+                </a>
+            </div>
+        <?php endif ?>
+
+        <!-- MAC -->
+        <?php if ($statement9) : ?>
+            <!-- Card -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <!-- Card with hover effect and clickable action -->
+                <a href="#" class="card shadow h-100 py-4 text-decoration-none" style="border-left: 5px solid #E91E24;">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-center">
+                            <!-- Image inside card, properly scaled and responsive -->
+                            <img src="<?= base_url('assets/backend/img/mobileautocare.png'); ?>" class="img-fluid" alt="Logo" style="max-width: 100%; height: auto; border-radius: 10px;">
+                        </div>
+                    </div>
+                </a>
+            </div>
+        <?php endif ?>
+
     </div>
 </div>
 

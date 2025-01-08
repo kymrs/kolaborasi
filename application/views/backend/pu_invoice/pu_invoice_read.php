@@ -19,31 +19,33 @@
                 <div class="right-side">
                     <div class="email">pengenumroh@gmail.com</div>
                     <div class="noHP">089602984422</div>
+                    <div class="alamat">Depok</div>
                 </div>
             </header>
             <hr class="line">
             <main>
                 <div class="invoice">
                     <h3>INVOICE</h3>
-                    <p>No. Invoice : 01234</p>
+                    <?php $result = substr($invoice['kode_invoice'], 0, 5) . substr($invoice['kode_invoice'], 7); ?>
+                    <p>No. Invoice : <?= $result; ?></p>
                 </div>
                 <div class="header-content">
                     <div class="left-side">
                         <h2>Kepada Yth.</h2>
-                        <h1>Aldo Kurniawan</h1>
-                        <p class="alamat">Alamat : Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam, quasi?</p>
+                        <h1><?= $invoice['ctc_nama2'] ?></h1>
+                        <p class="alamat">Alamat : <?= $invoice['ctc_alamat'] ?></p>
                     </div>
                     <div class="right-side">
                         <table>
                             <tr>
                                 <td>Tanggal Invoice</td>
                                 <td>:</td>
-                                <td>02/01/2025</td>
+                                <td><?= date('d/m/Y', strtotime($invoice['tgl_invoice'])) ?></td>
                             </tr>
                             <tr>
                                 <td>Tanggal Jatuh Tempo</td>
                                 <td>:</td>
-                                <td>02/01/2025</td>
+                                <td><?= date('d/m/Y', strtotime($invoice['tgl_tempo'])) ?></td>
                             </tr>
                         </table>
                     </div>
@@ -59,30 +61,18 @@
                             <th>HARGA</th>
                             <th>TOTAL</th>
                         </tr>
-                        <tr>
-                            <td>Cokelat Krikil</td>
-                            <td class="jumlah">1 Kg</td>
-                            <td class="harga">100.000</td>
-                            <td class="total">100.000</td>
-                        </tr>
-                        <tr>
-                            <td>Air Zam-zam</td>
-                            <td class="jumlah">1 L</td>
-                            <td class="harga">150.000</td>
-                            <td class="total">150.000</td>
-                        </tr>
-                        <tr>
-                            <td>Kacang Almond</td>
-                            <td class="jumlah">2 Kg</td>
-                            <td class="harga">200.000</td>
-                            <td class="total">200.000</td>
-                        </tr>
-                        <tr>
-                            <td>Kacang kacangan</td>
-                            <td class="jumlah">5 Kg</td>
-                            <td class="harga">400.000</td>
-                            <td class="total">400.000</td>
-                        </tr>
+                        <?php
+                        $total = 0; // Inisialisasi variabel total
+                        foreach ($detail as $data) :
+                            $total += (float)$data['harga']; // Tambahkan harga ke total
+                        ?>
+                            <tr>
+                                <td><?= $data['deskripsi'] ?></td>
+                                <td class="jumlah"><?= $data['jumlah'] ?></td>
+                                <td class="harga"><?= "Rp. " . number_format($data['harga'], 0, ',', '.') ?></td>
+                                <td class="total"><?= "Rp. " . number_format($data['total'], 0, ',', '.') ?></td>
+                            </tr>
+                        <?php endforeach; ?>
                         <tr>
                             <td colspan="2" style="border-left-color: #fff; border-bottom-color: #fff"></td>
                             <td style="text-align: center;">Diskon</td>
@@ -91,15 +81,16 @@
                         <tr>
                             <td colspan="2" style="border-left-color: #fff; border-bottom-color: #fff"></td>
                             <th>Total</th>
-                            <td style="text-align: center">850.000</td>
+                            <td style="text-align: center"><?= "Rp. " . number_format($total, 0, ',', '.') ?></td>
                         </tr>
                     </table>
                 </div>
                 <div class="metode-pembayaran">
                     <p>Metode Pembayaran</p>
                     <ol>
-                        <li>Bank : Bank Syariah Indonesia <br> No. Rekening : 7215671498 </li>
-                        <li>Bank : Bank Central Asia <br> No. Rekening : 7131720452 </li>
+                        <?php foreach ($rekening as $data) : ?>
+                            <li>Bank : <?= $data['nama_bank'] ?> <br> No. Rekening : <?= $data['no_rek'] ?> </li>
+                        <?php endforeach ?>
                     </ol>
                     <p>Atas Nama : PT. Kolaborasi Para Sahabat </p>
                 </div>

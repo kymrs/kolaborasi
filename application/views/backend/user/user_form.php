@@ -44,11 +44,13 @@
                                             <option value="" selected disabled>No Selected</option>
                                             <option value="all">All</option>
                                             <option value="kps">KPS</option>
-                                            <option value="pu">Pengenumroh</option>
-                                            <option value="sw">Sebelaswarna</option>
-                                            <option value="pw">Sobat Wisata</option>
-                                            <option value="bmn">By.Momemnt</option>
-                                            <option value="qbg">Qubagift</option>
+                                            <option value="pu">pengenumroh</option>
+                                            <option value="swa">selebaswarna</option>
+                                            <option value="swi">sobatwisata</option>
+                                            <option value="bmn">by.momemnt</option>
+                                            <option value="qbg">qubagift</option>
+                                            <option value="ctz">carstensz</option>
+                                            <option value="mac">mobileautocare</option>
                                         </select>
                                     </div>
                                 </div>
