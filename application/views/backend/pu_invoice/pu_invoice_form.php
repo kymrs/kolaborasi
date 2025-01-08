@@ -94,7 +94,7 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header text-right">
-                    <a class="btn btn-secondary btn-sm" href="<?= base_url('prepayment_pu') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+                    <a class="btn btn-secondary btn-sm" href="<?= base_url('invoice_pu') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
                     <form id="form">
@@ -105,7 +105,7 @@
                                     <label class="col-sm-4 col-form-label">Tanggal Invoice</label>
                                     <div class="col-sm-8">
                                         <div class="input-group date">
-                                            <input type="text" class="form-control" name="tgl_invoice" id="tgl_invoice" placeholder="DD-MM-YYYY" autocomplete="off" readonly />
+                                            <input type="text" class="form-control" name="tgl_invoice" id="tgl_invoice" placeholder="DD-MM-YYYY" autocomplete="off" readonly style="cursor: pointer">
                                             <div class="input-group-append">
                                                 <div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
                                             </div>
@@ -115,14 +115,14 @@
                                 <div class="form-group row">
                                     <label class="col-sm-4 col-form-label">Kode Invoice</label>
                                     <div class="col-sm-8">
-                                        <input type="text" class="form-control" id="kode_invoice" name="kode_invoice" readonly>
+                                        <input type="text" class="form-control" id="kode_invoice" name="kode_invoice" readonly placeholder="Kode Invoice">
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-4 col-form-label">Tanggal Jatuh Tempo</label>
                                     <div class="col-sm-8">
                                         <div class="input-group date">
-                                            <input type="text" class="form-control" name="tgl_tempo" id="tgl_tempo" placeholder="DD-MM-YYYY" autocomplete="off" readonly />
+                                            <input type="text" class="form-control" name="tgl_tempo" id="tgl_tempo" placeholder="DD-MM-YYYY" autocomplete="off" readonly style="cursor: pointer">
                                             <div class="input-group-append">
                                                 <div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
                                             </div>
@@ -132,13 +132,13 @@
                                 <div class="form-group row">
                                     <label class="col-sm-4 col-form-label">Contact Nama</label>
                                     <div class="col-sm-8">
-                                        <input type="text" class="form-control" id="name" name="name">
+                                        <input type="text" class="form-control" id="ctc_nama1" name="ctc_nama1" placeholder="Contact Nama">
                                     </div>
                                 </div>
                                 <div class="form-group row mb-3">
                                     <label class="col-sm-4 col-form-label">Contact Nomor</label>
                                     <div class="col-sm-8">
-                                        <input type="text" class="form-control" id="number" name="number">
+                                        <input type="text" class="form-control" id="ctc_nomor1" name="ctc_nomor1" placeholder="Contact Nomor">
                                     </div>
                                 </div>
                                 <h4 class="section-title">PAYMENT INFO :</h4>
@@ -188,19 +188,19 @@
                                 <div class="form-group row">
                                     <label class="col-sm-4 col-form-label">Contact Nama</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="ct_name" name="ct_name" placeholder="Prepayment for....">
+                                        <input type="text" class="form-control" id="ctc_nama2" name="ctc_nama2" placeholder="Contact Nama">
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-4 col-form-label">Contact Nomor</label>
                                     <div class="col-sm-7">
-                                        <input type="number" class="form-control" id="ct_number" name="ct_number" placeholder="Contact Nomor....">
+                                        <input type="text" class="form-control" id="ctc_nomor2" name="ctc_nomor2" placeholder="Contact Nomor">
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-4 col-form-label">Contact Alamat</label>
                                     <div class="col-sm-7">
-                                        <textarea class="form-control" id="ct_address" name="ct_address" rows="2"></textarea>
+                                        <textarea class="form-control" id="ctc_alamat" name="ctc_alamat" rows="2" placeholder="Contact Alamat"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -217,21 +217,17 @@
                                 <thead class="thead-dark">
                                     <tr>
                                         <th scope="col" class="text-center">No</th>
-                                        <th scope="col">Rincian</th>
+                                        <th scope="col">Deskripsi</th>
                                         <th scope="col">Jumlah</th>
+                                        <th scope="col">Satuan</th>
                                         <th scope="col">Harga</th>
-                                        <th scope="col">Keterangan</th>
+                                        <th scope="col">Total</th>
                                         <th scope="col" class="text-center">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody id="input-container">
                                     <!-- CONTAINER INPUTAN -->
                                 </tbody>
-                                <tr class="font-weight-bold">
-                                    <td colspan="5" id="total_nominal_row" class="text-right">Total</td>
-                                    <td id="total_nominal_view"></td>
-                                    <input type="hidden" id="total_nominal" name="total_nominal" value="">
-                                </tr>
                             </table>
                         </div>
                         <!-- Loading indicator -->
@@ -262,6 +258,24 @@
 <?php $this->load->view('template/script'); ?>
 
 <script>
+    $(document).ready(function() {
+        $('#ctc_nomor1').on('input', function() {
+            // Ambil nilai input
+            let value = $(this).val();
+
+            // Hapus semua karakter yang bukan angka
+            $(this).val(value.replace(/[^0-9]/g, ''));
+        });
+        $('#ctc_nomor2').on('input', function() {
+            // Ambil nilai input
+            let value = $(this).val();
+
+            // Hapus semua karakter yang bukan angka
+            $(this).val(value.replace(/[^0-9]/g, ''));
+        });
+    });
+
+
     $('#tgl_invoice').datepicker({
         dateFormat: 'dd-mm-yy',
         // minDate: new Date(),
@@ -310,7 +324,7 @@
                     Swal.fire({
                         icon: 'error',
                         title: 'Kesalahan',
-                        text: 'Tanggal invoice tidak boleh mundur dari tanggal tempo!',
+                        text: 'Tanggal tempo tidak boleh mundur dari tanggal invoice!',
                     });
 
                     // Reset input tanggal
@@ -415,15 +429,17 @@
             const nomorRekening = $('#nomor_rekening').val().trim();
 
             rowRekCount++;
-            const rekRow = `
+            if (namaBank != '' && nomorRekening != '') {
+                const rekRow = `
                 <tr id="rek-${rowRekCount}">
                     <td class="rek-number">${rowRekCount}</td>
-                    <td>${namaBank}</td>
-                    <td>${nomorRekening}</td>
+                    <td><input name="nama_bank[]" id="nama_bank-${rowRekCount}" value="${namaBank}" style="border: none; pointer-events: none; color: #666"></td>
+                    <td><input name="no_rek[]" id="no_rek-${rowRekCount}" value="${nomorRekening}" style="border: none; pointer-events: none; color: #666"></td>
                     <td><button type="button" class="btn rek-delete btn-danger" data-id="${rowRekCount}">Delete</button></td>
                 </tr>
             `;
-            $('#rek-table tbody').append(rekRow);
+                $('#rek-table tbody').append(rekRow);
+            }
         }
 
         // ADD Row Detail Invoice
@@ -432,20 +448,19 @@
             const row = `
                 <tr id="row-${rowCount}">
                     <td class="row-number">${rowCount}</td>
-                    <td><input type="text" class="form-control" name="rincian[${rowCount}]" value="" placeholder="Input here..." /></td>
+                    <td><input type="text" class="form-control" name="deskripsi[${rowCount}]" value="" placeholder="Deskripsi" /></td>
                     <td>
-                    <div class="row">
-                    <input type="text" class="form-control col-sm-4 ml-2" id="satuan-${rowCount}" name="satuan[${rowCount}]" value="" placeholder="Satuan..." />
-                    <span class="py-4"></span>&nbsp;
-                    <input type="number" class="form-control col-sm-7" id="jumlah-${rowCount}" name="jumlah[${rowCount}]" value="" placeholder="Jumlah..." />
-                    </div>
+                        <input type="text" class="form-control jumlah" id="jumlah-${rowCount}" name="jumlah[${rowCount}]" value="" placeholder="Jumlah">
                     </td>
                     <td>
-                        <input type="text" class="form-control" id="nominal-${rowCount}" name="nominal[${rowCount}]" value="" placeholder="Input here..." />
-                        <input type="hidden" id="hidden_nominal${rowCount}" name="hidden_nominal[${rowCount}]" value="">
+                        <input type="text" class="form-control" id="satuan-${rowCount}" name="satuan[${rowCount}]" value="" placeholder="Satuan">
                     </td>
                     <td>
-                    <textarea name="keterangan[${rowCount}]" id="keterangan" cols="30" placeholder="Input here..."></textarea></td>
+                        <input type="text" class="form-control harga" id="harga-${rowCount}" name="harga[${rowCount}]" value="" placeholder="Harga" />
+                    </td>
+                    <td>
+                        <input type="text" class="form-control total" id="total-${rowCount}" name="total[${rowCount}]" value="" placeholder="Total" />
+                    </td>
 
                     <td><span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span></td>
                 </tr>
@@ -459,18 +474,35 @@
             // Hitung total nominal setelah baris baru ditambahkan
             calculateTotalNominal();
 
+            $('.harga, .total, .jumlah').on('input', function() {
+                // Ambil nilai input
+                let value = $(this).val();
+
+                // Hapus semua karakter yang bukan angka
+                value = value.replace(/[^0-9]/g, '');
+
+                // Format ke Rupiah
+                let formatted = new Intl.NumberFormat('id-ID').format(value);
+
+                // Set nilai input dengan format Rupiah
+                $(this).val(formatted);
+            });
+
             //VALIDASI ROW YANG TELAH DI APPEND
-            $("#form").validate().settings.rules[`rincian[${rowCount}]`] = {
+            $("#form").validate().settings.rules[`deskripsi[${rowCount}]`] = {
                 required: true
             };
-            $("#form").validate().settings.rules[`nominal[${rowCount}]`] = {
+            $("#form").validate().settings.rules[`jumlah[${rowCount}]`] = {
                 required: true
             };
-            $("#form").validate().settings.messages[`rincian[${rowCount}]`] = {
-                required: "Rincian is required"
+            $("#form").validate().settings.rules[`satuan[${rowCount}]`] = {
+                required: true
             };
-            $("#form").validate().settings.messages[`nominal[${rowCount}]`] = {
-                required: "Nominal is required"
+            $("#form").validate().settings.rules[`harga[${rowCount}]`] = {
+                required: true
+            };
+            $("#form").validate().settings.rules[`total[${rowCount}]`] = {
+                required: true
             };
         }
 
@@ -499,23 +531,19 @@
             $('#input-container tr').each(function(index) {
                 //INISIASI VARIABLE UNTUK reorderRows
                 const newRowNumber = index + 1;
-                const rincianValue = $(this).find('input[name^="rincian"]').val();
+                const deskripsiValue = $(this).find('input[name^="deskripsi"]').val();
                 const satuanValue = $(this).find('input[name^="satuan"]').val();
                 const jumlahValue = $(this).find('input[name^="jumlah"]').val();
                 const nominalValue = $(this).find('input[name^="nominal"]').val();
                 const hiddenIdValue = $(this).find('input[name^="hidden_id_detail"]').val();
-                const hiddenNominalValue = $(this).find('input[name^="hidden_nominal"]').val();
-                const keteranganValue = $(this).find('textarea[name^="keterangan"]').val();
 
                 $(this).attr('id', `row-${newRowNumber}`);
                 $(this).find('.row-number').text(newRowNumber);
-                $(this).find('input[name^="rincian"]').attr('name', `rincian[${newRowNumber}]`).attr('placeholder', `Input here...`).val(rincianValue);
-                $(this).find('input[name^="satuan"]').attr('name', `satuan[${newRowNumber}]`).attr('id', `satuan-${newRowNumber}`).attr('placeholder', 'Satuan...').val(satuanValue);
-                $(this).find('input[name^="jumlah"]').attr('name', `jumlah[${newRowNumber}]`).attr('id', `jumlah-${newRowNumber}`).attr('placeholder', `Jumlah...`).val(jumlahValue);
-                $(this).find('input[name^="nominal"]').attr('name', `nominal[${newRowNumber}]`).attr('id', `nominal-${newRowNumber}`).attr('placeholder', `Input here...`).val(nominalValue);
+                $(this).find('input[name^="deskripsi"]').attr('name', `deskripsi[${newRowNumber}]`).attr('placeholder', `Deskripsi`).val(deskripsiValue);
+                $(this).find('input[name^="jumlah"]').attr('name', `jumlah[${newRowNumber}]`).attr('id', `jumlah-${newRowNumber}`).attr('placeholder', `Jumlah`).val(jumlahValue);
+                $(this).find('input[name^="satuan"]').attr('name', `satuan[${newRowNumber}]`).attr('id', `satuan-${newRowNumber}`).attr('placeholder', 'Satuan').val(satuanValue);
+                $(this).find('input[name^="harga"]').attr('name', `harga[${newRowNumber}]`).attr('id', `nominal-${newRowNumber}`).attr('placeholder', `Harga`).val(nominalValue);
                 $(this).find('input[name^="hidden_id_detail"]').attr('name', `hidden_id_detail[${newRowNumber}]`).val(hiddenIdValue);
-                $(this).find('input[name^="hidden_nominal"]').attr('name', `hidden_nominal[${newRowNumber}]`).attr('id', `hidden_nominal${newRowNumber}`).val(hiddenNominalValue);
-                $(this).find('textarea[name^="keterangan"]').attr('name', `keterangan[${newRowNumber}]`).attr('placeholder', `Input here...`).val(keteranganValue);
                 $(this).find('.delete-btn').attr('data-id', newRowNumber).text('Delete');
             });
             rowCount = $('#input-container tr').length; // Update rowCount to the current number of rows
@@ -541,6 +569,8 @@
         // BUTTON ADD ROW NOMOR REKENING
         $('#btn-rek').click(function() {
             addRekRow();
+            $('#nama_bank').val('');
+            $('#nomor_rekening').val('');
         });
 
         function updateSubmitButtonState() {
@@ -583,73 +613,95 @@
             $('.aksi').append('<span class="front front-aksi">Update</span>');
             $("select option[value='']").hide();
             $.ajax({
-                url: "<?php echo site_url('prepayment_pu/edit_data') ?>/" + id,
+                url: "<?php echo site_url('invoice_pu/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
-                    // moment.locale('id')
-                    let total_nominal = 0;
-                    // console.log(data);
-                    for (let index = 0; index < data['transaksi'].length; index++) {
-                        total_nominal += parseInt(data['transaksi'][index]['nominal'], 10);
-                    }
                     //SET VALUE DATA MASTER PREPAYMENT
                     $('#id').val(data['master']['id']);
-                    $('#kode_prepayment').val(data['master']['kode_prepayment'].toUpperCase()).attr('readonly', true);
-                    $('#tgl_invoice').val(moment(data['master']['tgl_invoice']).format('DD-MM-YYYY'));
-                    $('#nama').val(data['master']['nama']);
-                    if (data['master']['no_rek'] == '') {
-                        $('#rekening').val().trigger('change');
-                    } else {
-                        $('#rekening').val(data['master']['no_rek']).trigger('change');
-                    }
-                    $('#prepayment').val(data['master']['prepayment']);
-                    $('#tujuan').val(data['master']['tujuan']);
-                    if (data['master']['total_nominal'] == null) {
-                        $('#total_nominal_view').text(total_nominal.toLocaleString());
-                        $('#total_nominal').val(total_nominal);
-                    } else {
-                        total_nominal = parseInt(data['master']['total_nominal'], 10);
-                        $('#total_nominal_view').text(total_nominal.toLocaleString());
-                        $('#total_nominal').val(data['master']['total_nominal']);
-                    }
-
-                    //APPEND DATA TRANSAKSI DETAIL PREPAYMENT
+                    $('#tgl_invoice').val(data['master']['tgl_invoice']);
+                    $('#kode_invoice').val(data['master']['kode_invoice']);
+                    $('#tgl_tempo').val(data['master']['tgl_tempo']);
+                    $('#ctc_nama1').val(data['master']['ctc_nama1']);
+                    $('#ctc_nomor1').val(data['master']['ctc_nomor1']);
+                    $('#ctc_nama2').val(data['master']['ctc_nama2']);
+                    $('#ctc_nomor2').val(data['master']['ctc_nomor2']);
+                    $('#ctc_alamat').val(data['master']['ctc_alamat']);
+                    //APPEND DATA pu_rek_invoice DETAIL PREPAYMENT
+                    console.log(data['rek_invoice']);
                     if (aksi == 'update') {
-                        $(data['transaksi']).each(function(index) {
-                            //Nilai nominal diformat menggunakan pemisah ribuan sebelum dimasukkan ke dalam elemen input.
-                            const nominalFormatted = data['transaksi'][index]['nominal'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                        // Rekening
+                        $(data['rek_invoice']).each(function(index) {
                             const row = `
-                        <tr id="row-${index + 1}">
-                            <td class="row-number">${index + 1}</td>
-                            <td><input type="text" class="form-control" name="rincian[${index + 1}]" value="${data['transaksi'][index]['rincian']}" />
-                                <input type="hidden" id="hidden_id${index + 1}" name="hidden_id" value="${data['master']['id']}">
-                                <input type="hidden" id="hidden_id_detail${index + 1}" name="hidden_id_detail[${index + 1}]" value="${data['transaksi'][index]['id']}">
-                            </td>
-                            <td><input type="text" class="form-control" id="nominal-${index + 1}" name="nominal[${index + 1}]" value="${nominalFormatted}" />
-                                <input type="hidden" id="hidden_nominal${index + 1}" name="hidden_nominal[${index + 1}]" value="${data['transaksi'][index]['nominal']}">
-                            </td>
-                            <td><input type="text" class="form-control" name="keterangan[${index + 1}]" value="${data['transaksi'][index]['keterangan']}" placeholder="input here...."/></td>
-                            <td><span class="btn delete-btn btn-danger" data-id="${index + 1}">Delete</span></td>
-                        </tr>
-                        `;
-                            $('#input-container').append(row);
+                            <tr id="rek-${index + 1}">
+                                <td class="rek-number">${index + 1}</td>
+                                <td><input name="nama_bank[]" id="nama_bank-${index + 1}" value="${data['rek_invoice'][index]['nama_bank']}" style="border: none; pointer-events: none; color: #666"></td>
+                                <td><input name="no_rek[]" id="no_rek-${index + 1}" value="${data['rek_invoice'][index]['no_rek']}" style="border: none; pointer-events: none; color: #666"></td>
+                                <td><button type="button" class="btn rek-delete btn-danger" data-id="${index + 1}">Delete</button></td>
+                            </tr>
+                            `;
+                            $('#rek-table tbody').append(row);
                             // Tambahkan format ke input nominal yang baru
-                            formatJumlahInput(`#nominal-${index+1}`);
+                            // formatJumlahInput(`#nominal-${index+1}`);
 
                             //VALIDASI ROW YANG TELAH DI APPEND
-                            $("#form").validate().settings.rules[`rincian[${index + 1}]`] = {
-                                required: true
-                            };
-                            $("#form").validate().settings.rules[`nominal[${index + 1}]`] = {
-                                required: true
-                            };
-                            $("#form").validate().settings.messages[`rincian[${index + 1}]`] = {
-                                required: "Rincian is required"
-                            };
-                            $("#form").validate().settings.messages[`nominal[${index + 1}]`] = {
-                                required: "Nominal is required"
-                            };
+                            // $("#form").validate().settings.rules[`rincian[${index + 1}]`] = {
+                            //     required: true
+                            // };
+                            // $("#form").validate().settings.rules[`nominal[${index + 1}]`] = {
+                            //     required: true
+                            // };
+                            // $("#form").validate().settings.messages[`rincian[${index + 1}]`] = {
+                            //     required: "Rincian is required"
+                            // };
+                            // $("#form").validate().settings.messages[`nominal[${index + 1}]`] = {
+                            //     required: "Nominal is required"
+                            // };
+                            // $("#form").validate().settings.rules[`keterangan[${index + 1}]`] = {
+                            //     required: true
+                            // };
+                            rowCount = index + 1;
+                        });
+
+                        // Detail pemesanan
+                        $(data['detail_invoice']).each(function(index) {
+                            const row = `
+                            <tr id="row-${index + 1}">
+                                <td class="row-number">${index + 1}</td>
+                                <td><input type="text" class="form-control" name="deskripsi[${index + 1}]" value="${data['detail_invoice'][index]['deskripsi']}" placeholder="Deskripsi" /></td>
+                                <td>
+                                    <input type="text" class="form-control jumlah" id="jumlah-${index + 1}" name="jumlah[${index + 1}]" value="${data['detail_invoice'][index]['jumlah']}" placeholder="Jumlah" style="margin-left: 10px">
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" id="satuan-${index + 1}" name="satuan[${index + 1}]" value="" placeholder="Satuan">
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control harga" id="harga-${index + 1}" name="harga[${index + 1}]" value="${data['detail_invoice'][index]['harga']}" placeholder="Harga" />
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control total" id="total-${index + 1}" name="total[${index + 1}]" value="${data['detail_invoice'][index]['total']}" placeholder="Harga" />
+                                </td>
+
+                                <td><span class="btn delete-btn btn-danger" data-id="${index + 1}">Delete</span></td>
+                            </tr>
+                            `;
+                            $('#input-container').append(row);
+                            // Tambahkan format ke input nominal yang baru
+                            // formatJumlahInput(`#nominal-${index+1}`);
+
+                            //VALIDASI ROW YANG TELAH DI APPEND
+                            // $("#form").validate().settings.rules[`rincian[${index + 1}]`] = {
+                            //     required: true
+                            // };
+                            // $("#form").validate().settings.rules[`nominal[${index + 1}]`] = {
+                            //     required: true
+                            // };
+                            // $("#form").validate().settings.messages[`rincian[${index + 1}]`] = {
+                            //     required: "Rincian is required"
+                            // };
+                            // $("#form").validate().settings.messages[`nominal[${index + 1}]`] = {
+                            //     required: "Nominal is required"
+                            // };
                             // $("#form").validate().settings.rules[`keterangan[${index + 1}]`] = {
                             //     required: true
                             // };
@@ -678,7 +730,7 @@
             $('th:last-child').remove();
 
             $.ajax({
-                url: "<?php echo site_url('prepayment_pu/read_detail/') ?>" + id,
+                url: "<?php echo site_url('invoice_pu/read_detail/') ?>" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -706,9 +758,9 @@
             if (!$form.valid()) return false;
             var url;
             if (id == 0) {
-                url = "<?php echo site_url('prepayment_pu/add') ?>";
+                url = "<?php echo site_url('invoice_pu/add') ?>";
             } else {
-                url = "<?php echo site_url('prepayment_pu/update') ?>";
+                url = "<?php echo site_url('invoice_pu/update') ?>";
             }
 
             // Tampilkan loading
@@ -736,7 +788,7 @@
                             timer: 1500
                         }).then((result) => {
                             checkNotifications();
-                            location.href = "<?= base_url('prepayment_pu') ?>";
+                            location.href = "<?= base_url('invoice_pu') ?>";
                         })
                     }
                 },
@@ -758,49 +810,53 @@
                 tgl_invoice: {
                     required: true,
                 },
-                nama: {
+                kode_invoice: {
                     required: true,
                 },
-                prepayment: {
+                tgl_tempo: {
                     required: true,
                 },
-                tujuan: {
+                ctc_nama1: {
                     required: true,
                 },
-                nama_rek: {
-                    required: true,
-                    maxlength: 22,
-                },
-                nama_bank: {
+                ctc_nomor1: {
                     required: true,
                 },
-                nomor_rekening: {
+                ctc_nama2: {
+                    required: true,
+                },
+                ctc_nomor2: {
+                    required: true,
+                },
+                ctc_alamat: {
                     required: true,
                 },
             },
             messages: {
                 tgl_invoice: {
-                    required: "Tanggal is required",
+                    required: "Tanggal Invoice is required",
                 },
-                nama: {
-                    required: "Nama is required",
+                kode_invoice: {
+                    required: "Kode Invoice is required",
                 },
-                prepayment: {
-                    required: "Prepayment is required",
+                tgl_tempo: {
+                    required: "Tanggal Tempo is required",
                 },
-                tujuan: {
-                    required: "Tujuan is required",
+                ctc_nama1: {
+                    required: "Contact Nama is required",
                 },
-                nama_rek: {
-                    required: "*Nama rekening perlu diisi",
-                    maxlength: "*Nama rekening tidak boleh lebih dari 22 digit",
+                ctc_nomor1: {
+                    required: "Contact Nomor is required",
                 },
-                nama_bank: {
-                    required: "*Nama Bank perlu diisi",
+                ctc_nama2: {
+                    required: "Contact Nama is required",
                 },
-                nomor_rekening: {
-                    required: "*Nomor rekening perlu diisi",
+                ctc_nomor2: {
+                    required: "Contact Nomor is required",
                 },
+                ctc_alamat: {
+                    required: "Contact Nomor is required",
+                }
             },
             errorPlacement: function(error, element) {
                 if (element.parent().hasClass('input-group')) {

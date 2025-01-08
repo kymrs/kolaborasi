@@ -7,18 +7,18 @@ class M_invoice_pu extends CI_Model
 {
     // INISIASI VARIABLE
     var $id = 'id';
-    var $table = 'tbl_prepayment_pu';
-    var $table2 = 'tbl_prepayment_detail_pu';
-    var $column_order = array(null, null, 'payment_status', 'kode_prepayment', 'name', 'divisi', 'jabatan', 'tgl_prepayment', 'prepayment', 'total_nominal', 'status');
-    var $column_search = array('payment_status', 'kode_prepayment', 'name', 'divisi', 'jabatan', 'tgl_prepayment', 'prepayment', 'total_nominal', 'status'); //field yang diizin untuk pencarian
+    var $table = 'pu_invoice';
+    var $table2 = 'pu_rek_invoice';
+    var $column_order = array(null, null, 'tgl_invoice', 'kode_invoice', 'tgl_tempo', 'ctc_nama2', 'ctc_alamat');
+    var $column_search = array('tgl_invoice', 'kode_invoice', 'tgl_tempo', 'ctc_nama2', 'ctc_alamat'); //field yang diizin untuk pencarian
     var $order = array('id' => 'desc');
 
     // UNTUK QUERY DATA TABLE
     function _get_datatables_query()
     {
-        $this->db->select('tbl_prepayment_pu.*, tbl_data_user.name'); // Memilih kolom dari kedua tabel
+        $this->db->select('*'); // Memilih kolom dari kedua tabel
         $this->db->from($this->table);
-        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_prepayment_pu.id_user', 'left'); // JOIN dengan tabel tbl_user
+        // $this->db->join('tbl_data_user', 'tbl_data_user.id_user = pu_invoice.id_user', 'left'); // JOIN dengan tabel tbl_user
 
         $i = 0;
 
@@ -30,68 +30,59 @@ class M_invoice_pu extends CI_Model
                 if ($i === 0) // looping awal
                 {
                     $this->db->group_start();
-                    if ($item == 'name') {
-                        $this->db->like('tbl_data_user.' . $item, $_POST['search']['value']);
-                    } else {
-                        $this->db->like('tbl_prepayment_pu.' . $item, $_POST['search']['value']);
-                    }
+                    $this->db->like($item, $_POST['search']['value']);
                 } else {
-                    if ($item == 'name') {
-                        $this->db->or_like('tbl_data_user.' . $item, $_POST['search']['value']);
-                    } else {
-                        $this->db->or_like('tbl_prepayment_pu.' . $item, $_POST['search']['value']);
-                    }
+                    $this->db->or_like($item, $_POST['search']['value']);
                 }
 
-                if (count($this->column_search) - 1 == $i) {
+                if (count($this->column_search) - 1 == $i)
                     $this->db->group_end();
-                }
             }
             $i++;
         }
 
         // Tambahkan pemfilteran berdasarkan status
         // Tambahkan kondisi jika id_user login sesuai dengan app2_name
-        $id_user_logged_in = $this->session->userdata('id_user'); // Mengambil id_user dari sesi pengguna yang login
+        // $id_user_logged_in = $this->session->userdata('id_user'); // Mengambil id_user dari sesi pengguna yang login
 
-        if (!empty($_POST['status'])) {
-            $this->db->group_start(); // Start grouping conditions
+        // if (!empty($_POST['status'])) {
+        //     $this->db->group_start(); // Start grouping conditions
 
-            if ($_POST['status'] == 'on-process') {
-                // Conditions for 'on-process' status
-                $this->db->where('app_status', 'waiting')
-                    ->where('app2_status', 'waiting')
-                    ->or_where('tbl_prepayment_pu.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
-                    ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
-            } elseif ($_POST['status'] == 'approved') {
-                // Conditions for 'approved' status
-                $this->db->where('app_status', $_POST['status'])
-                    ->where('app2_status', 'approved')
-                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status != "rejected")', NULL, FALSE);
-            } elseif ($_POST['status'] == 'revised') {
-                $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
-                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "revised")', NULL, FALSE)
-                    ->or_where('tbl_prepayment_pu.id_user =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
-            } elseif ($_POST['status'] == 'rejected') {
-                $this->db->where('status', $_POST['status']);
-            }
+        //     if ($_POST['status'] == 'on-process') {
+        //         // Conditions for 'on-process' status
+        //         $this->db->where('app_status', 'waiting')
+        //             ->where('app2_status', 'waiting')
+        //             ->or_where('pu_invoice.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
+        //             ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
+        //     } elseif ($_POST['status'] == 'approved') {
+        //         // Conditions for 'approved' status
+        //         $this->db->where('app_status', $_POST['status'])
+        //             ->where('app2_status', 'approved')
+        //             ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status != "rejected")', NULL, FALSE);
+        //     } elseif ($_POST['status'] == 'revised') {
+        //         $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
+        //             ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "revised")', NULL, FALSE)
+        //             ->or_where('pu_invoice.id_user =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
+        //     } elseif ($_POST['status'] == 'rejected') {
+        //         $this->db->where('status', $_POST['status']);
+        //     }
 
-            $this->db->group_end(); // End grouping conditions
-        }
+        //     $this->db->group_end(); // End grouping conditions
+        // }
 
-        // Tambahkan kondisi berdasarkan tab yang dipilih
-        if (!empty($_POST['tab'])) {
-            if ($_POST['tab'] == 'personal') {
-                $this->db->where('tbl_prepayment_pu.id_user', $this->session->userdata('id_user'));
-            } elseif ($_POST['tab'] == 'employee') {
-                $this->db->group_start()
-                    ->where('tbl_prepayment_pu.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-                    ->where('tbl_prepayment_pu.id_user !=', $this->session->userdata('id_user'))
-                    ->or_where('tbl_prepayment_pu.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_prepayment_pu.app_status = 'approved'", FALSE)
-                    ->where('tbl_prepayment_pu.id_user !=', $this->session->userdata('id_user'))
-                    ->group_end();
-            }
-        }
+        // // Tambahkan kondisi berdasarkan tab yang dipilih
+        // if (!empty($_POST['tab'])) {
+        //     if ($_POST['tab'] == 'personal') {
+        //         $this->db->where('pu_invoice.id_user', $this->session->userdata('id_user'));
+        //     } elseif ($_POST['tab'] == 'employee') {
+        //         $this->db->group_start()
+        //             ->where('pu_invoice.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+        //             ->where('pu_invoice.id_user !=', $this->session->userdata('id_user'))
+        //             ->or_where('pu_invoice.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && pu_invoice.app_status = 'approved'", FALSE)
+        //             ->where('pu_invoice.id_user !=', $this->session->userdata('id_user'))
+        //             ->group_end();
+        //     }
+        // }
 
         if (isset($_POST['order'])) {
             $this->db->order_by($this->column_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
@@ -120,52 +111,55 @@ class M_invoice_pu extends CI_Model
 
     public function count_all()
     {
-        $this->db->select('tbl_prepayment_pu.*, tbl_data_user.name'); // Memilih kolom dari kedua tabel
-        $this->db->from($this->table);
-        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_prepayment_pu.id_user', 'left'); // JOIN dengan tabel tbl_user
+        // $this->db->select('pu_invoice.*'); // Memilih kolom dari kedua tabel
+        // $this->db->from($this->table);
+        // $this->db->join('tbl_data_user', 'tbl_data_user.id_user = pu_invoice.id_user', 'left'); // JOIN dengan tabel tbl_user
         // Tambahkan pemfilteran berdasarkan status
         // Tambahkan pemfilteran berdasarkan status
         // Tambahkan kondisi jika id_user login sesuai dengan app2_name
-        $id_user_logged_in = $this->session->userdata('id_user'); // Mengambil id_user dari sesi pengguna yang login
+        // $id_user_logged_in = $this->session->userdata('id_user'); // Mengambil id_user dari sesi pengguna yang login
 
-        if (!empty($_POST['status'])) {
-            $this->db->group_start(); // Start grouping conditions
+        // if (!empty($_POST['status'])) {
+        //     $this->db->group_start(); // Start grouping conditions
 
-            if ($_POST['status'] == 'on-process') {
-                // Conditions for 'on-process' status
-                $this->db->where('app_status', 'waiting')
-                    ->where('app2_status', 'waiting')
-                    ->or_where('tbl_prepayment_pu.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
-                    ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
-            } elseif ($_POST['status'] == 'approved') {
-                // Conditions for 'approved' status
-                $this->db->where('app_status', $_POST['status'])
-                    ->where('app2_status', 'approved')
-                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status != "rejected")', NULL, FALSE);
-            } elseif ($_POST['status'] == 'revised') {
-                $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
-                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "revised")', NULL, FALSE)
-                    ->or_where('tbl_prepayment_pu.id_user =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
-            } elseif ($_POST['status'] == 'rejected') {
-                $this->db->where('status', $_POST['status']);
-            }
+        //     if ($_POST['status'] == 'on-process') {
+        //         // Conditions for 'on-process' status
+        //         $this->db->where('app_status', 'waiting')
+        //             ->where('app2_status', 'waiting')
+        //             ->or_where('pu_invoice.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
+        //             ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
+        //     } elseif ($_POST['status'] == 'approved') {
+        //         // Conditions for 'approved' status
+        //         $this->db->where('app_status', $_POST['status'])
+        //             ->where('app2_status', 'approved')
+        //             ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status != "rejected")', NULL, FALSE);
+        //     } elseif ($_POST['status'] == 'revised') {
+        //         $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
+        //             ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "revised")', NULL, FALSE)
+        //             ->or_where('pu_invoice.id_user =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
+        //     } elseif ($_POST['status'] == 'rejected') {
+        //         $this->db->where('status', $_POST['status']);
+        //     }
 
-            $this->db->group_end(); // End grouping conditions
-        }
+        //     $this->db->group_end(); // End grouping conditions
+        // }
 
-        // Tambahkan kondisi berdasarkan tab yang dipilih
-        if (!empty($_POST['tab'])) {
-            if ($_POST['tab'] == 'personal') {
-                $this->db->where('tbl_prepayment_pu.id_user', $this->session->userdata('id_user'));
-            } elseif ($_POST['tab'] == 'employee') {
-                $this->db->group_start()
-                    ->where('tbl_prepayment_pu.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-                    ->where('tbl_prepayment_pu.id_user !=', $this->session->userdata('id_user'))
-                    ->or_where('tbl_prepayment_pu.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_prepayment_pu.app_status = 'approved'", FALSE)
-                    ->where('tbl_prepayment_pu.id_user !=', $this->session->userdata('id_user'))
-                    ->group_end();
-            }
-        }
+        // // Tambahkan kondisi berdasarkan tab yang dipilih
+        // if (!empty($_POST['tab'])) {
+        //     if ($_POST['tab'] == 'personal') {
+        //         $this->db->where('pu_invoice.id_user', $this->session->userdata('id_user'));
+        //     } elseif ($_POST['tab'] == 'employee') {
+        //         $this->db->group_start()
+        //             ->where('pu_invoice.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+        //             ->where('pu_invoice.id_user !=', $this->session->userdata('id_user'))
+        //             ->or_where('pu_invoice.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && pu_invoice.app_status = 'approved'", FALSE)
+        //             ->where('pu_invoice.id_user !=', $this->session->userdata('id_user'))
+        //             ->group_end();
+        //     }
+        // }
+        // return $this->db->count_all_results();
+
+        $this->db->from($this->table);
         return $this->db->count_all_results();
     }
 
@@ -183,12 +177,21 @@ class M_invoice_pu extends CI_Model
         return $this->db->get($this->table2)->result_array();
     }
 
+    public function getInvoiceData($id)
+    {
+        $this->db->select('tgl_invoice, kode_invoice, tgl_tempo, ctc_nama1, ctc_nomor1, ctc_nama2, ctc_nomor2, ctc_alamat');
+        $this->db->from('pu_invoice');
+        $this->db->where('id', $id);
+        $data = $this->db->get()->row_array();
+        return $data;
+    }
+
     // UNTUK QUERY MENGAMBIL KODE UNTUK DIGENERATE DI CONTROLLER
     public function max_kode($date)
     {
-        $formatted_date = date('m', strtotime($date));
+        $formatted_date = date('ym', strtotime($date));
         $this->db->select('kode_invoice');
-        $where = 'id=(SELECT max(id) FROM pu_invoice where SUBSTRING(kode_invoice, 6, 2) = ' . $formatted_date . ')';
+        $where = 'id=(SELECT max(id) FROM pu_invoice where SUBSTRING(kode_invoice, 6, 4) = ' . $formatted_date . ')';
         $this->db->where($where);
         $query = $this->db->get('pu_invoice');
         return $query;
@@ -211,30 +214,39 @@ class M_invoice_pu extends CI_Model
         return $this->db->insert_id();
     }
 
-    // UNTUK QUERY INSERT DATA PREPAYMENT_DETAIL
+    // UNTUK QUERY INSERT DATA KE PU_REK_INVOICE
     public function save_detail($data)
     {
         $this->db->insert_batch($this->table2, $data);
         return $this->db->insert_id();
     }
 
+    // UNTUK QUERY INSERT DATA KE PU_DETAIL_INVOICE
+    public function save_detail2($data)
+    {
+        $this->db->insert_batch('pu_detail_invoice', $data);
+        return $this->db->insert_id();
+    }
+
     // UNTUK QUERY DELETE DATA PREPAYMENT
     public function delete($id)
     {
+        // Hapus data master
         $this->db->where($this->id, $id);
         $this->db->delete($this->table);
-    }
 
-    // UNTUK QUERY DELETE DATA PREPAYMENT DETAIL BERBARENGAN DENGAN PREPAYMENT MASTER
-    public function delete_detail($id)
-    {
-        $this->db->where('prepayment_id', $id);
-        $this->db->delete($this->table2);
+        // Hapus data rekening
+        $this->db->where('invoice_id', $id);
+        $this->db->delete('pu_rek_invoice');
+
+        // Hapus data detail
+        $this->db->where('invoice_id', $id);
+        $this->db->delete('pu_detail_invoice');
     }
 
     // OPSI REKENING
-    public function options()
-    {
-        return $this->db->distinct()->select('no_rek')->from('tbl_prepayment_pu')->get();
-    }
+    // public function options()
+    // {
+    //     return $this->db->distinct()->select('no_rek')->from('pu_invoice')->get();
+    // }
 }
