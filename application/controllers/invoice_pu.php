@@ -12,9 +12,14 @@ class T_cpdf2 extends TCPDf
         // Logo
         $this->SetFont('helvetica', 'B', 12);
         $this->Image('assets/backend/img/pengenumroh.png', 5, 3, 37, 20);
-        $this->SetX(120);
+        $this->SetX(102);
         $this->SetFont('Poppins-Regular', '', 9);
-        $this->Cell(40, 5, 'Keberangkatan', 0, 0);
+        $this->Cell(40, 16, 'pengenumroh@gmail.com', 0, 0);
+        $this->SetX(121);
+        $this->Cell(40, 26, '089602984422', 0, 0);
+        $style = array('width' => 0.5, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0));
+
+        $this->Line(4, 27, 145, 27, $style);
         $this->Ln(5);
     }
 }
@@ -453,12 +458,136 @@ class Invoice_pu extends CI_Controller
         $t_cpdf2->SetAuthor('Author Name');
         $t_cpdf2->SetTitle('Penawaran PDF');
 
-        $t_cpdf2->SetMargins(15, 38, 15); // Margin kiri, atas (untuk header), kanan
+        // $t_cpdf2->SetY(50); // Margin kiri, atas (untuk header), kanan
         // $t_cpdf2->SetHeaderMargin(40);    // Jarak antara header dan konten
-        $t_cpdf2->SetAutoPageBreak(true, 40); // Penanganan otomatis margin bawah
+        // $t_cpdf2->SetAutoPageBreak(true, 40); // Penanganan otomatis margin bawah
 
         // Add a new page
         $t_cpdf2->AddPage();
+
+        $t_cpdf2->SetY(30);
+
+        // Pilih font untuk isi
+        $t_cpdf2->SetFont('Poppins-Bold', '', 22);
+
+        $t_cpdf2->SetX(57);
+        $t_cpdf2->Cell(100, 10, 'INVOICE', 0, 1, 'L');
+
+        $t_cpdf2->SetFont('Poppins-Regular', '', 11);
+        $t_cpdf2->SetX(56);
+        $t_cpdf2->Cell(19, 4, 'No. Invoice : 01234', 0, 0, 'L');
+
+        $t_cpdf2->SetY($t_cpdf2->GetY());
+        $t_cpdf2->SetX(4);
+        $t_cpdf2->SetFont('Poppins-Regular', '', 10);
+        $t_cpdf2->Cell(75, 20, 'Kepada Yth.', 0, 0);
+        $t_cpdf2->Cell(45, 20, 'Tanggal Invoice', 0, 0);
+        $t_cpdf2->Cell(19, 20, ':' . '02/01/2025', 0, 0);
+        $t_cpdf2->SetY($t_cpdf2->GetY() + 13);
+        $t_cpdf2->SetX(4);
+        $t_cpdf2->SetFont('Poppins-Regular', '', 14);
+        $t_cpdf2->Cell(75, 5, 'Aldo Kurniawan', 0, 0);
+        $t_cpdf2->SetFont('Poppins-Regular', '', 10);
+        $t_cpdf2->Cell(45, 5, 'Tanggal Jatuh Tempo', 0, 0);
+        $t_cpdf2->Cell(19, 5, ':' . '02/01/2025', 0, 0);
+
+        $t_cpdf2->SetFont('Poppins-Regular', '', 10);
+        $t_cpdf2->SetY($t_cpdf2->GetY() + 7);
+        $t_cpdf2->SetX(4);
+        $t_cpdf2->MultiCell(55, 4, 'Alamat :' . 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam, quasi?', 0, 'L');
+
+        $t_cpdf2->SetY($t_cpdf2->GetY() + 2);
+        // HEADER DETAIL PEMESANAN
+        $t_cpdf2->SetFont('Poppins-Regular', '', 11);
+        $t_cpdf2->SetFillColor(252, 118, 19);
+        $t_cpdf2->SetTextColor(255, 255, 255);
+        $t_cpdf2->SetX(5);
+        $t_cpdf2->Cell(140, 10, 'Detail Pemesanan', 0, 1, 'L', true);
+        $t_cpdf2->SetTextColor(0, 0, 0);
+
+        $tbl = <<<EOD
+<table border="1" cellpadding="3">
+    <thead>
+        <tr>
+            <th align="center" width="30%"><b>DESKRIPSI</b></th>
+            <th align="center" width="20%"><b>JUMLAH</b></th>
+            <th align="center" width="25%"><b>HARGA</b></th>
+            <th align="center" width="25%"><b>TOTAL</b></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td width="30%">Cokelat Krikil</td>
+            <td width="20%">1 Kg</td>
+            <td width="25%">100.000</td>
+            <td width="25%">100.000</td>
+        </tr>
+        <tr>
+            <td width="30%">Air Zam-zam</td>
+            <td width="20%">1 L</td>
+            <td width="25%">150.000</td>
+            <td width="25%">150.000</td>
+        </tr>
+        <tr>
+            <td width="30%">Kacang Almond</td>
+            <td width="20%">2 Kg</td>
+            <td width="25%">200.000</td>
+            <td width="25%">200.000</td>
+        </tr>
+        <tr>
+            <td width="30%">Kacang kacangan</td>
+            <td width="20%">5 Kg</td>
+            <td width="25%">400.000</td>
+            <td width="25%">400.000</td>
+        </tr>
+    </tbody>
+</table>
+EOD;
+
+        $t_cpdf2->writeHTMLCell(142, 0, 4, $t_cpdf2->GetY() + 4, $tbl, 0, 1, false, true, 'L', true);
+
+        $table2 = <<<EOD
+            <table>
+            <tbody>
+            <tr style="border: none;">
+                <td colspan="2"></td>
+                <td width="25%" style="border: 1px solid black;"> Diskon</td>
+                <td width="25%" style="border: 1px solid black;"> 0</td>
+            </tr>
+            <tr style="border: none;">
+                <td colspan="2" style="border: none;"></td>
+                <td width="25%" style="border: 1px solid black;"> <b>Total</b></td>
+                <td width="25%" style="border: 1px solid black;"> 850.000</td>
+            </tr>
+            <tbody>
+            </table>
+        EOD;
+
+        $t_cpdf2->writeHTMLCell(142, 0, 4, $t_cpdf2->GetY(), $table2, 0, 1, false, true, 'L', true);
+
+        $t_cpdf2->SetY($t_cpdf2->GetY() + 1);
+        $t_cpdf2->SetX(4);
+        $t_cpdf2->SetFont('Poppins-Bold', '', 11);
+        $t_cpdf2->Cell(14, 9, 'Metode Pembayaran', 0, 1);
+        $list = <<<EOD
+                <ol>
+                    <li>Bank : Bank Syariah Indonesia<br>No. Rekening : 7215671498</li>
+                    <li>Bank : Bank Central Asia<br>No. Rekening : 7131720452</li>
+                </ol>
+        EOD;
+        $t_cpdf2->SetFont('Poppins-Regular', '', 10);
+        $y = $t_cpdf2->GetY();
+        $x = -4;
+        $t_cpdf2->writeHTMLCell(0, 0, $x, $y, $list, 0, 1, false, true, 'L', true);
+
+        $t_cpdf2->SetY($t_cpdf2->GetY() - 1);
+        $t_cpdf2->SetX(4);
+
+        $t_cpdf2->SetFont('Poppins-Bold', '', 11);
+        $t_cpdf2->Cell(19, 9, 'Atas Nama : PT. Kolaborasi Para Sahabat', 0, 1);
+
+        // Output PDF (tampilkan di browser)
+        $t_cpdf2->Output('example.pdf', 'I'); // 'I' untuk menampilkan di browser
     }
 
     // QUERY UNTUK INPUT TANDA TANGAN

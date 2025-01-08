@@ -26,9 +26,9 @@
         }
 
         .header .logo {
-            width: 170px;
+            width: 160px;
             position: relative;
-            right: 1px;
+            right: -1px;
             bottom: 150px;
             margin-bottom: -210px;
         }
@@ -162,7 +162,7 @@
                     <!-- Header Section -->
                     <div class="header">
                         <div class="header-field">
-                            <img src="<?= base_url('assets/backend/img/MAC.png') ?>" alt="" class="logo">
+                            <img src="<?= base_url('assets/backend/img/mobileautocare.png') ?>" alt="" class="logo">
                             <table>
                                 <tr>
                                     <td style="font-weight: bold;">Divisi</td>

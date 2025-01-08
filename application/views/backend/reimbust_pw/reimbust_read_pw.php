@@ -29,12 +29,13 @@
         }
 
         .header .logo {
-            height: 150px;
+            /* height: 150px; */
             display: flex;
             align-items: center;
-            width: 250px;
+            width: 170px;
             position: relative;
-            left: 20px;
+            left: 0px;
+            bottom: 14px;
         }
 
         .header .logo img {

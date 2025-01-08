@@ -472,7 +472,7 @@ class prepayment_mac extends CI_Controller
         $pdf->AddPage('P', 'Letter');
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/MAC.png', 11, -7, 42, 45);
+        $pdf->Image(base_url('') . '/assets/backend/img/mobileautocare.png', 11, 3, 37, 22);
 
         $pdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php');
         $pdf->AddFont('Poppins-Bold', '', 'Poppins-Bold.php');

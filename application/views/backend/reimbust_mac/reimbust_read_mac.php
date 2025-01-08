@@ -32,10 +32,10 @@
             /* height: 150px; */
             display: flex;
             align-items: center;
-            width: 260px;
+            width: 190px;
             position: relative;
-            left: -3px;
-            bottom: 10px;
+            left: 0px;
+            bottom: 11px;
         }
 
         .header .logo img {
@@ -163,7 +163,7 @@
             <!-- Header -->
             <div class="header">
                 <div class="logo">
-                    <img src="<?= base_url() ?>assets/backend/img/MAC.png" alt="Logo">
+                    <img src="<?= base_url() ?>assets/backend/img/mobileautocare.png" alt="Logo">
                 </div>
                 <div class="title">
                     <h1>FORM PELAPORAN / REIMBUST</h1>

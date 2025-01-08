@@ -346,7 +346,7 @@ class Datadeklarasi_pw extends CI_Controller
         $pdf->AddPage('P', 'Letter');
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/pengenwisata.png', 15, 8, 35, 22);
+        $pdf->Image(base_url('') . '/assets/backend/img/sobatwisata.png', 12, 8, 34, 26);
 
         // Title of the form
         $pdf->Ln(25);

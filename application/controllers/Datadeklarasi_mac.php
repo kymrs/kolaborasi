@@ -371,7 +371,7 @@ class datadeklarasi_mac extends CI_Controller
         $pdf->AddPage('P', 'Letter');
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/mac.png', 12, 1, 43, 47);
+        $pdf->Image(base_url('') . '/assets/backend/img/mobileautocare.png', 12, 8, 42, 23);
 
         // Title of the form
         $pdf->Ln(25);

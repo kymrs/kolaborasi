@@ -28,10 +28,10 @@
         }
 
         .header .logo {
-            width: 180px;
+            width: 120px;
             position: relative;
-            right: 20px;
-            bottom: 80px;
+            right: -1px;
+            bottom: 100px;
             margin-bottom: -120px;
         }
 
