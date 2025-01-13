@@ -651,10 +651,19 @@ class Penawaran_la_pu extends CI_Controller
         // KONTEN LAYANAN TIDAK TERMASUK
         $t_cpdf->SetX($right_column_x);
         $body_text3 = $penawaran->layanan_tdk_trmsk;
+
+        if (strpos($body_text3, '<ol>') !== false) {
+            $x3 = 111;
+        } else if (strpos($body_text3, '<li>') !== false) {
+            $x3 = 111;
+        } else {
+            $x3 = 120;
+        }
+
         $t_cpdf->writeHTMLCell(
             80,                    // Lebar sel
             0,                     // Tinggi sel (0 berarti tinggi dinamis)
-            111,       // Posisi X
+            $x3,       // Posisi X
             $t_cpdf->GetY(),       // Posisi Y saat ini
             $body_text3,           // Konten HTML
             0,                     // Border (0 = tidak ada border)
@@ -704,10 +713,20 @@ class Penawaran_la_pu extends CI_Controller
         // KONTEN LAYANAN TERMASUK
         $t_cpdf->Sety($trmskY + 5);
         $body_text2 = $penawaran->layanan_trmsk;
+
+        if (strpos($body_text2, '<ol>') !== false) {
+            $x2 = 1;
+        } else if (strpos($body_text2, '<li>') !== false) {
+            $x2 = 1;
+        } else {
+            $x2 = 10;
+        }
+
+
         $t_cpdf->writeHTMLCell(
             80,                    // Lebar sel
             0,                     // Tinggi sel (0 berarti tinggi dinamis)
-            2,       // Posisi X
+            $x2,       // Posisi X
             $t_cpdf->GetY(),       // Posisi Y saat ini
             $body_text2,           // Konten HTML
             0,                     // Border (0 = tidak ada border)
