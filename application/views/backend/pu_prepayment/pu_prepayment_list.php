@@ -16,7 +16,7 @@
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex justify-content-between align-items-center">
                     <?php if ($add == 'Y') { ?>
-                        <a class="btn btn-primary btn-sm" href="<?= base_url('pu_invoice/add_form') ?>">
+                        <a class="btn btn-primary btn-sm" href="<?= base_url('pu_prepayment/add_form') ?>">
                             <i class="fa fa-plus"></i>&nbsp;Add Data
                         </a>
                     <?php } ?>
@@ -32,7 +32,7 @@
                     </div>
                 </div>
                 <!-- NAV TABS -->
-                <!-- <ul class="nav nav-tabs">
+                <ul class="nav nav-tabs">
                     <li class="nav-item">
                         <a class="nav-link active" id="personalTab" href="#" data-tab="personal">User</a>
                     </li>
@@ -41,19 +41,23 @@
                             <a class="nav-link" id="employeeTab" href="#" data-tab="employee">Approval</a>
                         </li>
                     <?php } ?>
-                </ul> -->
+                </ul>
 
                 <div class="card-body">
-                    <table id="table" class="table table-bordered table-striped" style="width: 100%;">
+                    <table id="table" class="table table-bordered table-striped">
                         <thead>
                             <tr>
                                 <th>No</th>
                                 <th>Action</th>
-                                <th>Tanggal Invoice</th>
-                                <th>Kode Invoice</th>
-                                <th>Nama Tujuan</th>
-                                <th>Alamat Tujuan</th>
-                                <th>Tanggal Tempo</th>
+                                <th>Status Pembayaran</th>
+                                <th>Kode Prepayment</th>
+                                <th>Nama</th>
+                                <th>Divisi</th>
+                                <th>Jabatan</th>
+                                <th>Tanggal Pengajuan</th>
+                                <th>Prepayment</th>
+                                <th>Total Nominal</th>
+                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -62,11 +66,15 @@
                             <tr>
                                 <th>No</th>
                                 <th>Action</th>
-                                <th>Tanggal Invoice</th>
-                                <th>Kode Invoice</th>
-                                <th>Nama Tujuan</th>
-                                <th>Alamat Tujuan</th>
-                                <th>Tanggal Tempo</th>
+                                <th>Status Pembayaran</th>
+                                <th>Kode Prepayment</th>
+                                <th>Nama</th>
+                                <th>Divisi</th>
+                                <th>Jabatan</th>
+                                <th>Tanggal Pengajuan</th>
+                                <th>Prepayment</th>
+                                <th>Total Nominal</th>
+                                <th>Status</th>
                             </tr>
                         </tfoot>
                     </table>
@@ -133,7 +141,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('pu_invoice/get_list') ?>",
+                "url": "<?php echo site_url('pu_prepayment/get_list') ?>",
                 "type": "POST",
                 "data": function(d) {
                     d.status = $('#appFilter').val(); // Tambahkan parameter status ke permintaan server
@@ -144,11 +152,11 @@
             //     "infoFiltered": ""
             // },
             "columnDefs": [{
-                    "targets": [2, 3, 4, 6],
+                    "targets": [2, 3, 7, 9],
                     "className": 'dt-head-nowrap'
                 },
                 {
-                    "targets": [1],
+                    "targets": [1, 3, 4, 6, 8, 9, 10],
                     "className": 'dt-body-nowrap'
                 }, {
                     "targets": [0, 1],
@@ -187,7 +195,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: "<?php echo site_url('pu_invoice/delete/') ?>" + id,
+                    url: "<?php echo site_url('pu_prepayment/delete/') ?>" + id,
                     type: "POST",
                     dataType: "JSON",
                     success: function(data) {
@@ -198,7 +206,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then((result) => {
-                            location.href = "<?= base_url('pu_invoice') ?>";
+                            location.href = "<?= base_url('pu_prepayment') ?>";
                         })
                     },
                     error: function(jqXHR, textStatus, errorThrown) {

@@ -539,8 +539,8 @@ class Penawaran_la_pu extends CI_Controller
 
         // QR Code configuration
         $config = [
-            'cacheable'    => false, // No need to cache the QR code
-            'imagedir'     => '',    // Do not save the QR code to a directory
+            'cacheable'    => false,
+            'imagedir'     => '',    // Do not save QR code to directory
             'quality'      => true,
             'size'         => 1024,
             'black'        => [0, 0, 0],       // Black QR code
@@ -548,21 +548,31 @@ class Penawaran_la_pu extends CI_Controller
         ];
         $this->ciqrcode->initialize($config);
 
+        // Set QR Code data
+        if ($penawaran->no_arsip == null) {
+            $no_arsip = 'backend/penawaran_pu/404';
+            $data = $no_arsip;
+        } else {
+            $no_arsip = $penawaran->no_arsip;
+            $data = 'https://arsip.pengenumroh.com/' . $no_arsip;
+        }
+
         // QR Code parameters
         $params = [
-            'data'     => 'https://example.com', // The content of the QR code
-            'level'    => 'H',                  // Error correction level (L, M, Q, H)
-            'size'     => 10,                   // Size of the QR code
-            'savename' => null,                 // Do not save the QR code
+            'data'     => $data,
+            'level'    => 'H',
+            'size'     => 10,
+            'savename' => null, // Output to memory
         ];
 
-        // Generate QR Code directly into a variable
+        // Generate QR Code
         ob_start();
         $this->ciqrcode->generate($params);
         $qrCodeImage = ob_get_clean();
 
-        // Add QR Code image to PDF
-        $t_cpdf->Image('@' . $qrCodeImage, 140, 42, 32, 32); // Directly add the image from memory
+        // Add QR Code to PDF
+        $t_cpdf->Image('@' . $qrCodeImage, 140, 42, 32, 32); // Directly from memory
+
 
         // Add favicon with white background
         $t_cpdf->SetFillColor(255, 255, 255); // RGB for white
