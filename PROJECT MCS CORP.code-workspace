@@ -5,6 +5,12 @@
 		},
 		{
 			"path": "../link.kolaborasigroup"
+		},
+		{
+			"path": "../linkgroup"
+		},
+		{
+			"path": "../survey"
 		}
 	],
 	"settings": {}
