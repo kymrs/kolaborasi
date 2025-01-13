@@ -923,15 +923,6 @@ class Penawaran_pu extends CI_Controller
 
         $t_cpdf->SetY($trmskY + 3);
 
-        // HEADER PAKET
-        $t_cpdf->SetFont('Poppins-Regular', '', 11);
-        $t_cpdf->SetFillColor(252, 118, 19);
-        $t_cpdf->SetTextColor(255, 255, 255);
-        $t_cpdf->Cell(0, 10, 'HARGA PAKET', 0, 1, 'L', true);
-        $t_cpdf->SetTextColor(0, 0, 0);
-
-        $t_cpdf->SetY($t_cpdf->GetY() + 3);
-
         // HEADER LAYANAN PASTI
         $t_cpdf->SetFont('Poppins-Regular', '', 11);
         $t_cpdf->SetFillColor(252, 118, 19);
