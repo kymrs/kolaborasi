@@ -45,7 +45,7 @@
                             </tr>
                         </table>
                         <div class="qr-code">
-                            <img src="<?= base_url('assets/backend/document/qrcode/qr-' . $penawaran['no_arsip'] . '.png') ?>" alt="qrcode" class="img-qrcode">
+                            <img src="data:image/png;base64, <?= $qr_code ?>" alt="qrcode" class="img-qrcode">
                             <img src="<?= base_url('assets/backend/img/favicon-pu.png') ?>" alt="pengenumroh-logo" class="pu-logo">
                         </div>
                     </div>

@@ -145,7 +145,7 @@ class M_penawaran_pu extends CI_Model
     {
         $formatted_date = date('Y', strtotime($date));
         $this->db->select('no_pelayanan');
-        $where = 'id=(SELECT max(id) FROM tbl_penawaran where SUBSTRING(no_pelayanan, 15, 4) = ' . $formatted_date . ')';
+        $where = 'id=(SELECT max(id) FROM tbl_penawaran where SUBSTRING(no_pelayanan, -4, 4) = ' . $formatted_date . ')';
         $this->db->where($where);
         $query = $this->db->from('tbl_penawaran')->get();
         return $query;

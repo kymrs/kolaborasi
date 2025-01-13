@@ -101,9 +101,45 @@ class Penawaran_pu extends CI_Controller
 
         $data['hotel'] = $this->M_penawaran_pu->getHotel($kode);
 
-        $data['title'] = 'backend/penawaran_pu/penawaran_read_pu';
-        $data['title_view'] = 'Prepayment';
-        $this->load->view('backend/home', $data);
+        if ($data['penawaran'] == null) {
+            $this->load->view('backend/penawaran_pu/404');
+        } else {
+            $no_arsip = $data['penawaran']['no_arsip'];
+
+            // QR Code configuration
+            $config = [
+                'cacheable'    => false, // Tidak perlu cache
+                'imagedir'     => '',    // Tidak menyimpan file
+                'quality'      => true,
+                'size'         => 1024,
+                'black'        => [0, 0, 0],       // Warna QR Code
+                'white'        => [255, 255, 255], // Warna latar belakang
+            ];
+            $this->ciqrcode->initialize($config);
+
+            // QR Code parameters
+            $params = [
+                'data'     => 'https://arsip.pengenumroh.com/' . $no_arsip, // Data dalam QR Code
+                'level'    => 'H',                  // Tingkat koreksi kesalahan (L, M, Q, H)
+                'size'     => 10,                   // Ukuran QR Code
+                'savename' => null,                 // Tidak menyimpan file
+            ];
+
+            // Menghasilkan QR Code ke buffer
+            ob_start();
+            $this->ciqrcode->generate($params);
+            $qrCodeImage = ob_get_clean();
+
+            // Encode QR Code menjadi base64
+            $qrCodeBase64 = base64_encode($qrCodeImage);
+
+            // Kirim base64 ke view
+            $data['qr_code'] = $qrCodeBase64;
+
+            $data['title'] = 'backend/penawaran_pu/penawaran_read_pu';
+            $data['title_view'] = 'Prepayment';
+            $this->load->view('backend/home', $data);
+        }
     }
 
     public function add_form()
@@ -195,12 +231,6 @@ class Penawaran_pu extends CI_Controller
         $year2 = substr($date2, 0, 2);
         $bulan2 = substr($date2, 3, 2);
         $no_arsip = 'PU' . $year2 . $bulan2 . $urutan2;
-
-        $params['data'] = 'https://arsip.pengenumroh.com/' . $no_arsip;
-        $params['level'] = 'H';
-        $params['size'] = 10;
-        $params['savename'] = 'assets/backend/document/qrcode/qr-' . $no_arsip . '.png';
-        $this->ciqrcode->generate($params);
 
         //CONVERT TIME
         // Ambil nilai input datetime dari form
@@ -652,11 +682,20 @@ class Penawaran_pu extends CI_Controller
         $this->ciqrcode->initialize($config);
 
         // QR Code parameters
+        if ($penawaran->no_arsip == null) {
+            $no_arsip = 'backend/penawaran_pu/404';
+            $data = $no_arsip;
+        } else {
+            $no_arsip = $penawaran->no_arsip;
+            $data = 'https://arsip.pengenumroh.com/' . $no_arsip;
+        }
+
+        // QR Code parameters
         $params = [
-            'data'     => 'https://example.com', // The content of the QR code
-            'level'    => 'H',                  // Error correction level (L, M, Q, H)
-            'size'     => 10,                   // Size of the QR code
-            'savename' => null,                 // Do not save the QR code
+            'data'     => $data,
+            'level'    => 'H',
+            'size'     => 10,
+            'savename' => null, // Output to memory
         ];
 
         // Generate QR Code directly into a variable
