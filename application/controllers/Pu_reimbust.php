@@ -1,12 +1,12 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class reimbust_mac extends CI_Controller
+class Pu_reimbust extends CI_Controller
 {
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('backend/M_reimbust_mac');
+        $this->load->model('backend/M_pu_reimbust');
         $this->load->model('backend/M_notifikasi');
         $this->M_login->getsecurity();
         date_default_timezone_set('Asia/Jakarta');
@@ -20,7 +20,7 @@ class reimbust_mac extends CI_Controller
 
         $data['notif'] = $this->M_notifikasi->pending_notification();
 
-        $data['title'] = "backend/reimbust_mac/reimbust_list_mac";
+        $data['title'] = "backend/pu_reimbust/pu_reimbust_list";
         $data['titleview'] = "Data Reimbust";
         $name = $this->db->select('name')
             ->from('tbl_data_user')
@@ -28,7 +28,7 @@ class reimbust_mac extends CI_Controller
             ->get()
             ->row('name');
         $data['approval'] = $this->db->select('COUNT(*) as total_approval')
-            ->from('mac_reimbust')
+            ->from('pu_reimbust')
             ->where('app_name', $name)
             ->or_where('app2_name', $name)
             ->get()
@@ -45,7 +45,7 @@ class reimbust_mac extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $list = $this->M_reimbust_mac->get_datatables();
+        $list = $this->M_pu_reimbust->get_datatables();
         $data = array();
         $no = $_POST['start'];
 
@@ -58,10 +58,10 @@ class reimbust_mac extends CI_Controller
         foreach ($list as $field) {
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
-            $action_read = ($read == 'Y') ? '<a href="reimbust_mac/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
-            $action_edit = ($edit == 'Y') ? '<a href="reimbust_mac/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
+            $action_read = ($read == 'Y') ? '<a href="pu_reimbust/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
+            $action_edit = ($edit == 'Y') ? '<a href="pu_reimbust/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
-            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="reimbust_mac/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
+            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="pu_reimbust/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             if ($field->app_name == $fullname && $field->id_user != $this->session->userdata('id_user')) {
@@ -126,8 +126,8 @@ class reimbust_mac extends CI_Controller
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_reimbust_mac->count_all(),
-            "recordsFiltered" => $this->M_reimbust_mac->count_filtered(),
+            "recordsTotal" => $this->M_pu_reimbust->count_all(),
+            "recordsFiltered" => $this->M_pu_reimbust->count_filtered(),
             "data" => $data,
         );
         //output dalam format JSON
@@ -143,7 +143,7 @@ class reimbust_mac extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $list = $this->M_reimbust_mac->get_datatables2();
+        $list = $this->M_pu_reimbust->get_datatables2();
         $data = array();
         $no = $_POST['start'];
 
@@ -152,26 +152,26 @@ class reimbust_mac extends CI_Controller
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             if ($field->app_name == $fullname) {
-                $action = '<a href="datadeklarasi_mac/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                                <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi_mac/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="pu_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                                <a class="btn btn-success btn-circle btn-sm" href="pu_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app2_name == $fullname) {
-                $action = '<a href="datadeklarasi_mac/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
-                                <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi_mac/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="pu_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
+                                <a class="btn btn-success btn-circle btn-sm" href="pu_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif (in_array($field->status, ['rejected', 'approved'])) {
-                $action = '<a href="datadeklarasi_mac/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi_mac/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="pu_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                <a class="btn btn-success btn-circle btn-sm" href="pu_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app_status == 'revised' || $field->app2_status == 'revised') {
-                $action = '<a href="datadeklarasi_mac/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                    <a href="datadeklarasi_mac/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
-                    <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi_mac/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="pu_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                    <a href="pu_datadeklarasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
+                    <a class="btn btn-success btn-circle btn-sm" href="pu_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app_status == 'approved') {
-                $action = '<a href="datadeklarasi_mac/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                            <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi_mac/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="pu_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                            <a class="btn btn-success btn-circle btn-sm" href="pu_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } else {
-                $action = '<a href="datadeklarasi_mac/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                        <a href="datadeklarasi_mac/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
+                $action = '<a href="pu_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                        <a href="pu_datadeklarasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
 			            <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
-                        <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi_mac/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                        <a class="btn btn-success btn-circle btn-sm" href="pu_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             }
 
             $no++;
@@ -192,15 +192,15 @@ class reimbust_mac extends CI_Controller
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_reimbust_mac->count_all2(),
-            "recordsFiltered" => $this->M_reimbust_mac->count_filtered2(),
+            "recordsTotal" => $this->M_pu_reimbust->count_all2(),
+            "recordsFiltered" => $this->M_pu_reimbust->count_filtered2(),
             "data" => $data,
         );
         //output dalam format JSON
         echo json_encode($output);
     }
 
-    // get list prepayment_mac
+    // get list pu_prepayment
     function get_list3()
     {
         // INISIAI VARIABLE YANG DIBUTUHKAN
@@ -209,7 +209,7 @@ class reimbust_mac extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $list = $this->M_reimbust_mac->get_datatables3();
+        $list = $this->M_pu_reimbust->get_datatables3();
         $data = array();
         $no = $_POST['start'];
 
@@ -218,26 +218,26 @@ class reimbust_mac extends CI_Controller
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             if ($field->app_name == $fullname) {
-                $action = '<a href="prepayment_mac/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                                <a class="btn btn-success btn-circle btn-sm" href="prepayment_mac/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="pu_prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                                <a class="btn btn-success btn-circle btn-sm" href="pu_prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app2_name == $fullname) {
-                $action = '<a href="prepayment_mac/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
-                                <a class="btn btn-success btn-circle btn-sm" href="prepayment_mac/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="pu_prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
+                                <a class="btn btn-success btn-circle btn-sm" href="pu_prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif (in_array($field->status, ['rejected', 'approved'])) {
-                $action = '<a href="prepayment_mac/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                <a class="btn btn-success btn-circle btn-sm" href="prepayment_mac/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="pu_prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                <a class="btn btn-success btn-circle btn-sm" href="pu_prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app_status == 'revised' || $field->app2_status == 'revised') {
-                $action = '<a href="prepayment_mac/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                    <a href="prepayment_mac/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
-                    <a class="btn btn-success btn-circle btn-sm" href="prepayment_mac/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="pu_prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                    <a href="pu_prepayment/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
+                    <a class="btn btn-success btn-circle btn-sm" href="pu_prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app_status == 'approved') {
-                $action = '<a href="prepayment_mac/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                            <a class="btn btn-success btn-circle btn-sm" href="prepayment_mac/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="pu_prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                            <a class="btn btn-success btn-circle btn-sm" href="pu_prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } else {
-                $action = '<a href="prepayment_mac/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                        <a href="prepayment_mac/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
+                $action = '<a href="pu_prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                        <a href="pu_prepayment/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
                         <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
-                        <a class="btn btn-success btn-circle btn-sm" href="prepayment_mac/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                        <a class="btn btn-success btn-circle btn-sm" href="pu_prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             }
 
 
@@ -261,8 +261,8 @@ class reimbust_mac extends CI_Controller
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_reimbust_mac->count_all3(),
-            "recordsFiltered" => $this->M_reimbust_mac->count_filtered3(),
+            "recordsTotal" => $this->M_pu_reimbust->count_all3(),
+            "recordsFiltered" => $this->M_pu_reimbust->count_filtered3(),
             "data" => $data,
         );
         //output dalam format JSON
@@ -273,7 +273,7 @@ class reimbust_mac extends CI_Controller
     {
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['aksi'] = 'read';
-        $data['user'] = $this->M_reimbust_mac->get_by_id($id);
+        $data['user'] = $this->M_pu_reimbust->get_by_id($id);
         $data['app_name'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $this->session->userdata('id_user'))
@@ -286,10 +286,10 @@ class reimbust_mac extends CI_Controller
             ->row('name');
         $data['id'] = $id;
         $data['title_view'] = "Data Reimbust";
-        $data['title'] = 'backend/reimbust_mac/reimbust_read_mac';
+        $data['title'] = 'backend/pu_reimbust/pu_reimbust_read';
         $this->db->select('kwitansi');
         $this->db->where('reimbust_id', $id);
-        $data['kwitansi'] = $this->db->get('mac_reimbust_detail')->result_array();
+        $data['kwitansi'] = $this->db->get('pu_reimbust_detail')->result_array();
         $this->load->view('backend/home', $data);
     }
 
@@ -298,9 +298,9 @@ class reimbust_mac extends CI_Controller
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = 0;
         $data['aksi'] = 'add';
-        $data['rek_options'] = $this->M_reimbust_mac->options()->result_array();
+        $data['rek_options'] = $this->M_pu_reimbust->options()->result_array();
         $data['title_view'] = "Reimbust Form";
-        $data['title'] = 'backend/reimbust_mac/reimbust_form_mac';
+        $data['title'] = 'backend/pu_reimbust/pu_reimbust_form';
         $this->load->view('backend/home', $data);
     }
 
@@ -310,8 +310,8 @@ class reimbust_mac extends CI_Controller
         $this->load->library('Fpdf_generate');
 
         // Load data from database based on $id
-        $data['master'] = $this->M_reimbust_mac->get_by_id($id);
-        $data['transaksi'] = $this->M_reimbust_mac->get_by_id_detail($id);
+        $data['master'] = $this->M_pu_reimbust->get_by_id($id);
+        $data['transaksi'] = $this->M_pu_reimbust->get_by_id_detail($id);
         $data['user'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $data['master']->id_user)
@@ -332,7 +332,7 @@ class reimbust_mac extends CI_Controller
         $pdf->SetAutoPageBreak(true, 5); // Margin bawah 15mm
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/mobileautocare.png', 11, 5, 45, 25);
+        $pdf->Image(base_url('') . '/assets/backend/img/pengenumroh.png', 15, 8, 35, 22);
 
         // Set font
         $pdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php');
@@ -342,7 +342,7 @@ class reimbust_mac extends CI_Controller
 
         // Teks yang ingin ditampilkan
         $text1 = 'FORM PELAPORAN / REIMBUST';
-        $text2 = 'MAC';
+        $text2 = 'PENGENUMROH';
 
         // Menghitung lebar teks
         $textWidth1 = $pdf->GetStringWidth($text1);
@@ -493,7 +493,7 @@ class reimbust_mac extends CI_Controller
             $pdf->Cell(33, 8.5, $row['deklarasi'] ? 'Ada' : '-', 1, 1, 'C');
         }
 
-        // Add total and remaining prepayment_mac
+        // Add total and remaining pu_prepayment
         $pdf->SetFont('Poppins-Bold', '', 10);
         $pdf->Cell(259, 8.5, 'TOTAL PEMAKAIAN', 1, 0, 'L');
         $pdf->Cell(-1, 8.5, 'Rp. ' . number_format($totalJumlah, 0, ',', '.'), 0, 1, 'R');
@@ -602,14 +602,14 @@ class reimbust_mac extends CI_Controller
 
 
         // Output the PDF
-        $pdf->Output('I', 'reimbust_mac - ' . $data['master']->kode_reimbust . '.pdf');
+        $pdf->Output('I', 'pu_reimbust - ' . $data['master']->kode_reimbust . '.pdf');
     }
 
     // MEREGENERATE KODE REIMBUST
     public function generate_kode()
     {
         $date = $this->input->post('date');
-        $kode = $this->M_reimbust_mac->max_kode($date)->row();
+        $kode = $this->M_pu_reimbust->max_kode($date)->row();
         if (empty($kode->kode_reimbust)) {
             $no_urut = 1;
         } else {
@@ -629,15 +629,15 @@ class reimbust_mac extends CI_Controller
         $data['id'] = $id;
         $data['aksi'] = 'update';
         $data['title_view'] = "Edit Reimbust";
-        $data['rek_options'] = $this->M_reimbust_mac->options()->result_array();
-        $data['title'] = 'backend/reimbust_mac/reimbust_form_mac';
+        $data['rek_options'] = $this->M_pu_reimbust->options()->result_array();
+        $data['title'] = 'backend/pu_reimbust/pu_reimbust_form';
         $this->load->view('backend/home', $data);
     }
 
     function edit_data($id)
     {
-        $data['master'] = $this->M_reimbust_mac->get_by_id($id);
-        $data['transaksi'] = $this->M_reimbust_mac->get_by_id_detail($id);
+        $data['master'] = $this->M_pu_reimbust->get_by_id($id);
+        $data['transaksi'] = $this->M_pu_reimbust->get_by_id_detail($id);
         $data['nama'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $data['master']->id_user)
@@ -647,7 +647,7 @@ class reimbust_mac extends CI_Controller
 
     function read_detail($id)
     {
-        $data = $this->M_reimbust_mac->get_by_id_detail($id);
+        $data = $this->M_pu_reimbust->get_by_id_detail($id);
         echo json_encode($data);
     }
 
@@ -657,7 +657,7 @@ class reimbust_mac extends CI_Controller
             $deklarasi = $this->input->post('deklarasi');
 
             // Mengambil data deklarasi dari database
-            $deklarasiRecord = $this->db->get_where('mac_deklarasi', ['kode_deklarasi' => $deklarasi])->row_array();
+            $deklarasiRecord = $this->db->get_where('pu_deklarasi', ['kode_deklarasi' => $deklarasi])->row_array();
 
             // Debug log
             log_message('debug', 'Deklarasi: ' . print_r($deklarasi, true));
@@ -666,7 +666,7 @@ class reimbust_mac extends CI_Controller
             if ($deklarasiRecord) {
                 // Mengambil ID dari record yang ditemukan
                 $deklarasiId = $deklarasiRecord['id']; // Pastikan 'id' adalah nama kolom yang sesuai
-                $redirect_url = site_url('datadeklarasi_mac/read_form/' . $deklarasiId);
+                $redirect_url = site_url('datadeklarasi_pu/read_form/' . $deklarasiId);
 
                 $response = array(
                     'status' => 'success',
@@ -691,7 +691,7 @@ class reimbust_mac extends CI_Controller
     {
         // INSERT KODE REIMBUST SAAT SUBMIT
         $date = $this->input->post('tgl_pengajuan');
-        $kode = $this->M_reimbust_mac->max_kode($date)->row();
+        $kode = $this->M_pu_reimbust->max_kode($date)->row();
         if (empty($kode->kode_reimbust)) {
             $no_urut = 1;
         } else {
@@ -724,7 +724,7 @@ class reimbust_mac extends CI_Controller
         $id_user = $this->session->userdata('id_user');
 
         $data_user = $this->db->get_where('tbl_data_user', ['id_user' => $id_user])->row_array();
-        $approval = $this->M_reimbust_mac->approval($this->session->userdata('id_user'));
+        $approval = $this->M_pu_reimbust->approval($this->session->userdata('id_user'));
 
         $departemen = $data_user['divisi'];
         $jabatan = $data_user['jabatan'];
@@ -780,7 +780,7 @@ class reimbust_mac extends CI_Controller
         );
         // Hanya simpan ke database jika tidak ada file yang melebihi 3 MB
         if ($valid) {
-            $reimbust_id = $this->M_reimbust_mac->save($data1);
+            $reimbust_id = $this->M_pu_reimbust->save($data1);
         }
 
         $data2 = [];
@@ -795,7 +795,7 @@ class reimbust_mac extends CI_Controller
                 $_FILES['file']['error'] = $_FILES['kwitansi']['error'][$i];
                 $_FILES['file']['size'] = $_FILES['kwitansi']['size'][$i];
 
-                $config['upload_path'] = './assets/backend/document/reimbust/kwitansi_mac/';
+                $config['upload_path'] = './assets/backend/document/reimbust/kwitansi_pu/';
                 $config['allowed_types'] = 'jpeg|jpg|png';
                 $config['max_size'] = 3072; // Batasan ukuran file dalam kilobytes (3 MB)
                 $config['encrypt_name'] = TRUE;
@@ -822,13 +822,13 @@ class reimbust_mac extends CI_Controller
             // Update data deklarasi yang di tampilkan di modal, jika gambar di submit maka is active akan menjadi 0
             $this->db->set('is_active', 0);
             $this->db->where('kode_deklarasi', $deklarasi[$i]);
-            $this->db->update('mac_deklarasi');
+            $this->db->update('pu_deklarasi');
         }
         $this->db->set('is_active', 0);
         $this->db->where('kode_prepayment', $this->input->post('kode_prepayment'));
-        $this->db->update('mac_prepayment');
+        $this->db->update('pu_prepayment');
 
-        $this->M_reimbust_mac->save_detail($data2);
+        $this->M_pu_reimbust->save_detail($data2);
 
 
         echo json_encode(array("status" => TRUE));
@@ -852,8 +852,8 @@ class reimbust_mac extends CI_Controller
             'kode_reimbust' => $this->input->post('kode_reimbust'),
             'tujuan' => $this->input->post('tujuan'),
             'jumlah_prepayment' => $this->input->post('jumlah_prepayment'),
-            'no_rek' => $no_rek,
             'kode_prepayment' => $this->input->post('kode_prepayment'),
+            'no_rek' => $no_rek,
             'app_status' => 'waiting',
             'app_date' => null,
             'app_keterangan' => null,
@@ -877,24 +877,24 @@ class reimbust_mac extends CI_Controller
         $deklarasi = $this->input->post('deklarasi');
         $deklarasi_old = $this->input->post('deklarasi_old');
 
-        if ($this->db->update('mac_reimbust', $data)) {
+        if ($this->db->update('pu_reimbust', $data)) {
             // 1. Hapus Baris yang Telah Dihapus
             $deletedRows = json_decode($this->input->post('deleted_rows'), true);
             if (!empty($deletedRows)) {
                 foreach ($deletedRows as $id2) {
-                    $reimbust_detail = $this->db->get_where('mac_reimbust_detail', ['id' => $id2])->row_array();
+                    $reimbust_detail = $this->db->get_where('pu_reimbust_detail', ['id' => $id2])->row_array();
 
                     if ($reimbust_detail) {
                         $old_image = $reimbust_detail['kwitansi'];
                         if ($old_image != 'default.jpg') {
-                            @unlink(FCPATH . './assets/backend/document/reimbust/kwitansi_mac/' . $old_image);
+                            @unlink(FCPATH . './assets/backend/document/reimbust/kwitansi_pu/' . $old_image);
                         }
 
                         $this->db->where('id', $id2);
-                        $this->db->delete('mac_reimbust_detail');
+                        $this->db->delete('pu_reimbust_detail');
 
                         $kode_deklarasi = $reimbust_detail['deklarasi'];
-                        $this->db->update('mac_deklarasi', ['is_active' => 1], ['kode_deklarasi' => $kode_deklarasi]);
+                        $this->db->update('pu_deklarasi', ['is_active' => 1], ['kode_deklarasi' => $kode_deklarasi]);
                     }
                 }
             }
@@ -916,7 +916,7 @@ class reimbust_mac extends CI_Controller
                         return;
                     }
 
-                    $config['upload_path'] = './assets/backend/document/reimbust/kwitansi_mac/';
+                    $config['upload_path'] = './assets/backend/document/reimbust/kwitansi_pu/';
                     $config['allowed_types'] = 'jpeg|jpg|png';
                     $config['max_size'] = 3072;
                     $config['encrypt_name'] = TRUE;
@@ -926,13 +926,13 @@ class reimbust_mac extends CI_Controller
                     if ($this->upload->do_upload('file')) {
                         $id = !empty($detail_id[$i]) ? $detail_id[$i] : NULL;
 
-                        $reimbust_detail = $this->db->get_where('mac_reimbust_detail', ['id' => $id])->row_array();
+                        $reimbust_detail = $this->db->get_where('pu_reimbust_detail', ['id' => $id])->row_array();
 
                         if ($reimbust_detail) {
                             $old_image = $reimbust_detail['kwitansi'];
 
                             if ($old_image && $old_image != 'default.jpg') {
-                                @unlink(FCPATH . './assets/backend/document/reimbust/kwitansi_mac/' . $old_image);
+                                @unlink(FCPATH . './assets/backend/document/reimbust/kwitansi_pu/' . $old_image);
                             }
                         }
                         $kwitansi = $this->upload->data('file_name');
@@ -954,27 +954,27 @@ class reimbust_mac extends CI_Controller
                     'deklarasi' => $deklarasi[$i]
                 );
 
-                // Mengubah data prepayment_mac is_active menjadi 0 pada data prepayment_mac terbaru, jika kode_prepayment ada
+                // Mengubah data pu_prepayment is_active menjadi 0 pada data pu_prepayment terbaru, jika kode_prepayment ada
                 $kode_prepayment = $this->input->post('kode_prepayment');
                 if (!empty($kode_prepayment)) {
-                    $this->db->update('mac_prepayment', ['is_active' => 0], ['kode_prepayment' => $kode_prepayment]);
+                    $this->db->update('pu_prepayment', ['is_active' => 0], ['kode_prepayment' => $kode_prepayment]);
                 }
 
-                // Mengubah data prepayment_mac is_active menjadi 1 pada data prepayment_mac terlama, jika kode_prepayment_old ada
+                // Mengubah data pu_prepayment is_active menjadi 1 pada data pu_prepayment terlama, jika kode_prepayment_old ada
                 $kode_prepayment_old = $this->input->post('kode_prepayment_old');
                 if ($kode_prepayment != $kode_prepayment_old && !empty($kode_prepayment_old)) {
-                    $this->db->update('mac_prepayment', ['is_active' => 1], ['kode_prepayment' => $kode_prepayment_old]);
+                    $this->db->update('pu_prepayment', ['is_active' => 1], ['kode_prepayment' => $kode_prepayment_old]);
                 }
 
                 // Replace data di tbl_reimbust_detail
-                $this->db->replace('mac_reimbust_detail', $data2);
+                $this->db->replace('pu_reimbust_detail', $data2);
 
                 // mengubah is_active deklarasi awal menjadi 1, dan deklarasi baru menjadi 0
                 if ($deklarasi_old[$i]) {
-                    $this->db->update('mac_deklarasi', ['is_active' => 1], ['kode_deklarasi' => $deklarasi_old[$i]]);
-                    $this->db->update('mac_deklarasi', ['is_active' => 0], ['kode_deklarasi' => $deklarasi[$i]]);
+                    $this->db->update('pu_deklarasi', ['is_active' => 1], ['kode_deklarasi' => $deklarasi_old[$i]]);
+                    $this->db->update('pu_deklarasi', ['is_active' => 0], ['kode_deklarasi' => $deklarasi[$i]]);
                 } else {
-                    $this->db->update('mac_deklarasi', ['is_active' => 0], ['kode_deklarasi' => $deklarasi[$i]]);
+                    $this->db->update('pu_deklarasi', ['is_active' => 0], ['kode_deklarasi' => $deklarasi[$i]]);
                 }
             }
         }
@@ -983,7 +983,7 @@ class reimbust_mac extends CI_Controller
 
     function delete($id)
     {
-        $this->M_reimbust_mac->delete($id);
+        $this->M_pu_reimbust->delete($id);
         echo json_encode(array("status" => TRUE));
     }
 
@@ -1007,7 +1007,7 @@ class reimbust_mac extends CI_Controller
 
         //UPDATE APPROVAL PERTAMA
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('mac_reimbust', $data);
+        $this->db->update('pu_reimbust', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -1031,7 +1031,7 @@ class reimbust_mac extends CI_Controller
 
         // UPDATE APPROVAL 2
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('mac_reimbust', $data);
+        $this->db->update('pu_reimbust', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -1039,7 +1039,7 @@ class reimbust_mac extends CI_Controller
     function payment()
     {
         $this->db->where('id', $this->input->post('id'));
-        $this->db->update('mac_reimbust', ['payment_status' => $this->input->post('payment_status')]);
+        $this->db->update('pu_reimbust', ['payment_status' => $this->input->post('payment_status')]);
 
         echo json_encode(array("status" => TRUE));
     }

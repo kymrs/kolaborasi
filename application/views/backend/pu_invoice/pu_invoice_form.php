@@ -69,6 +69,10 @@
         transform: translateY(20%);
     }
 
+    .colomn-kanan {
+        height: 20px;
+    }
+
     @media (min-width: 768px) {
 
         .tujuan-field,
@@ -82,6 +86,11 @@
         .table-transaksi {
             overflow-x: scroll;
         }
+
+        .colomn-kanan {
+            height: auto;
+        }
+
     }
 </style>
 
@@ -94,7 +103,7 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header text-right">
-                    <a class="btn btn-secondary btn-sm" href="<?= base_url('invoice_pu') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+                    <a class="btn btn-secondary btn-sm" href="<?= base_url('pu_invoice') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
                     <form id="form">
@@ -143,6 +152,12 @@
                                 </div>
                                 <h4 class="section-title">PAYMENT INFO :</h4>
                                 <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label">Diskon</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" class="form-control" id="diskon" name="diskon" placeholder="Diskon %">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
                                     <label class="col-sm-4 col-form-label">No Rekening</label>
                                     <div class="col-sm-8">
                                         <div class="input-group mb-3">
@@ -154,7 +169,7 @@
                                             <select class="js-example-basic-single" id="rekening" name="rekening">
                                                 <option value="" selected disabled>Pilih rekening tujuan</option>
                                                 <?php foreach ($rek_options as $option) { ?>
-                                                    <option value="<?= $option['no_rek'] ?>"><?= $option['no_rek'] ?></option>
+                                                    <option data-bank="<?= $option->nama_bank ?>" data-rek="<?= $option->no_rek ?>" value=""><?= $option->nama_bank . '-' . $option->no_rek ?></option>
                                                 <?php } ?>
                                             </select>
                                             <div class="input-group rekening-text">
@@ -183,7 +198,7 @@
                             </div>
 
                             <!-- SEBELAH KANAN -->
-                            <div class="col-md-6">
+                            <div class="col-md-6 colomn-kanan">
                                 <h4>INVOICE TO:</h4>
                                 <div class="form-group row">
                                     <label class="col-sm-4 col-form-label">Contact Nama</label>
@@ -230,6 +245,17 @@
                                 </tbody>
                             </table>
                         </div>
+
+                        <!-- KETERANGAN -->
+                        <div class="mt-3 mb-3 row">
+                            <!-- Layanan Termasuk -->
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">Catatan:</label>
+                                <div id="catatan" name="catatan" class="border p-2" style="height: 200px;"></div>
+                                <input type="hidden" name="catatan_item" id="catatan_item">
+                            </div>
+                        </div>
+
                         <!-- Loading indicator -->
                         <div id="loading" style="display: none;">
                             <p>Loading...</p>
@@ -258,6 +284,74 @@
 <?php $this->load->view('template/script'); ?>
 
 <script>
+    const toolbarOptions = [
+        ['bold', 'italic', 'underline', 'strike'], // toggled buttons
+        ['blockquote', 'code-block'],
+        ['link', 'image', 'video', 'formula'],
+
+        [{
+            'header': 1
+        }, {
+            'header': 2
+        }], // custom button values
+        [{
+            'list': 'ordered'
+        }, {
+            'list': 'bullet'
+        }, {
+            'list': 'check'
+        }],
+        [{
+            'script': 'sub'
+        }, {
+            'script': 'super'
+        }], // superscript/subscript
+        [{
+            'indent': '-1'
+        }, {
+            'indent': '+1'
+        }], // outdent/indent
+        [{
+            'direction': 'rtl'
+        }], // text direction
+
+        [{
+            'size': ['small', false, 'large', 'huge']
+        }], // custom dropdown
+        [{
+            'header': [1, 2, 3, 4, 5, 6, false]
+        }],
+
+        [{
+            'color': []
+        }, {
+            'background': []
+        }], // dropdown with defaults from theme
+        [{
+            'font': []
+        }],
+        [{
+            'align': []
+        }],
+
+        ['clean']
+    ];
+
+    const quill = new Quill('#catatan', {
+        modules: {
+            toolbar: toolbarOptions
+        },
+        placeholder: 'Catatan...',
+        theme: 'snow',
+    });
+
+    document.getElementById("form").onsubmit = function() {
+        // Get HTML content from Quill editor
+        var catatanItem = quill.root.innerHTML;
+        // Set it to hidden input
+        document.getElementById("catatan_item").value = catatanItem;
+    };
+
     $(document).ready(function() {
         $('#ctc_nomor1').on('input', function() {
             // Ambil nilai input
@@ -267,6 +361,13 @@
             $(this).val(value.replace(/[^0-9]/g, ''));
         });
         $('#ctc_nomor2').on('input', function() {
+            // Ambil nilai input
+            let value = $(this).val();
+
+            // Hapus semua karakter yang bukan angka
+            $(this).val(value.replace(/[^0-9]/g, ''));
+        });
+        $('#diskon').on('input', function() {
             // Ambil nilai input
             let value = $(this).val();
 
@@ -291,14 +392,14 @@
                 $("#tgl_invoice-error").remove(); // Menghapus label error
             }
             $.ajax({
-                url: "<?php echo site_url('invoice_pu/generate_kode') ?>",
+                url: "<?php echo site_url('pu_invoice/generate_kode') ?>",
                 type: "POST",
                 data: {
                     "date": dateText
                 },
                 dataType: "JSON",
                 success: function(data) {
-                    // console.log(data);
+                    console.log(data);
                     $('#kode_invoice').val(data.toUpperCase());
                     $('#kode').val(data);
                 },
@@ -349,6 +450,7 @@
         var kode = $('#kode').val();
         let inputCount = 0;
         let deletedRows = [];
+        let deletedRekRows = [];
 
         $('.js-example-basic-single').select2();
 
@@ -423,18 +525,21 @@
         let rowRekCount = 0;
 
         //ADD ROW NOMOR REKENING
-        function addRekRow() {
+        function addRekRow(bank, rek) {
             // Ambil nilai dari input
-            const namaBank = $('#nama_bank').val().trim();
-            const nomorRekening = $('#nomor_rekening').val().trim();
+            const namaBank = bank;
+            const nomorRekening = rek;
 
             rowRekCount++;
             if (namaBank != '' && nomorRekening != '') {
                 const rekRow = `
                 <tr id="rek-${rowRekCount}">
                     <td class="rek-number">${rowRekCount}</td>
-                    <td><input name="nama_bank[]" id="nama_bank-${rowRekCount}" value="${namaBank}" style="border: none; pointer-events: none; color: #666"></td>
-                    <td><input name="no_rek[]" id="no_rek-${rowRekCount}" value="${nomorRekening}" style="border: none; pointer-events: none; color: #666"></td>
+                    <td>
+                    <input name="nama_bank[${rowRekCount}]" id="nama_bank-${rowRekCount}" value="${namaBank}" style="border: none; pointer-events: none; color: #666">
+                    <input type="hidden" id="hidden_rekId${rowRekCount}" name="hidden_rekId[${rowRekCount}]" value="">
+                    </td>
+                    <td><input name="no_rek[${rowRekCount}]" id="no_rek-${rowRekCount}" value="${nomorRekening}" style="border: none; pointer-events: none; color: #666"></td>
                     <td><button type="button" class="btn rek-delete btn-danger" data-id="${rowRekCount}">Delete</button></td>
                 </tr>
             `;
@@ -448,7 +553,10 @@
             const row = `
                 <tr id="row-${rowCount}">
                     <td class="row-number">${rowCount}</td>
-                    <td><input type="text" class="form-control" name="deskripsi[${rowCount}]" value="" placeholder="Deskripsi" /></td>
+                    <td>
+                        <input type="text" class="form-control" name="deskripsi[${rowCount}]" value="" placeholder="Deskripsi" /></td>
+                        <input type="hidden" id="hidden_id${rowCount}" name="hidden_id[${rowCount}]" value="">
+                        <input type="hidden" name="hidden_invoiceId[${rowCount}]" id="hidden_invoiceId${rowCount}" value="">
                     <td>
                         <input type="text" class="form-control jumlah" id="jumlah-${rowCount}" name="jumlah[${rowCount}]" value="" placeholder="Jumlah">
                     </td>
@@ -509,7 +617,7 @@
         // MENGHAPUS ROW
         function deleteRow(id) {
             // Simpan ID dari row yang dihapus
-            const rowId = $(`#row-${id}`).find('input:hidden[id^="hidden_id_detail"]').val();
+            const rowId = $(`#row-${id}`).find('input:hidden[id^="hidden_id"]').val();
             if (rowId) {
                 deletedRows.push(rowId);
             }
@@ -526,6 +634,21 @@
             calculateTotalNominal();
         }
 
+        // MENGHAPUS REKENING
+        function deleteRekRow(id) {
+            // Simpan ID dari row yang dihapus
+            const rowRekId = $(`#rek-${id}`).find('input:hidden[id^="hidden_rekId"]').val();
+            if (rowRekId) {
+                deletedRekRows.push(rowRekId);
+            }
+
+            console.log(rowRekId);
+
+            $(`#rek-${id}`).remove();
+            // Reorder rows and update row numbers
+            reorderRekRows();
+        }
+
         // REORDER DETAIL INVOICE
         function reorderRows() {
             $('#input-container tr').each(function(index) {
@@ -534,16 +657,20 @@
                 const deskripsiValue = $(this).find('input[name^="deskripsi"]').val();
                 const satuanValue = $(this).find('input[name^="satuan"]').val();
                 const jumlahValue = $(this).find('input[name^="jumlah"]').val();
-                const nominalValue = $(this).find('input[name^="nominal"]').val();
-                const hiddenIdValue = $(this).find('input[name^="hidden_id_detail"]').val();
+                const hargaValue = $(this).find('input[name^="harga"]').val();
+                const totalValue = $(this).find('input[name^="total"]').val();
+                const hiddenInvoiceIdValue = $(this).find('input[name^="hidden_invoiceId"]').val();
+                const hiddenIdValue = $(this).find('input[name^="hidden_id"]').val();
 
                 $(this).attr('id', `row-${newRowNumber}`);
                 $(this).find('.row-number').text(newRowNumber);
                 $(this).find('input[name^="deskripsi"]').attr('name', `deskripsi[${newRowNumber}]`).attr('placeholder', `Deskripsi`).val(deskripsiValue);
                 $(this).find('input[name^="jumlah"]').attr('name', `jumlah[${newRowNumber}]`).attr('id', `jumlah-${newRowNumber}`).attr('placeholder', `Jumlah`).val(jumlahValue);
                 $(this).find('input[name^="satuan"]').attr('name', `satuan[${newRowNumber}]`).attr('id', `satuan-${newRowNumber}`).attr('placeholder', 'Satuan').val(satuanValue);
-                $(this).find('input[name^="harga"]').attr('name', `harga[${newRowNumber}]`).attr('id', `nominal-${newRowNumber}`).attr('placeholder', `Harga`).val(nominalValue);
-                $(this).find('input[name^="hidden_id_detail"]').attr('name', `hidden_id_detail[${newRowNumber}]`).val(hiddenIdValue);
+                $(this).find('input[name^="harga"]').attr('name', `harga[${newRowNumber}]`).attr('id', `harga-${newRowNumber}`).attr('placeholder', `Harga`).val(hargaValue);
+                $(this).find('input[name^="total"]').attr('name', `total[${newRowNumber}]`).attr('id', `total-${newRowNumber}`).attr('placeholder', `Total`).val(totalValue);
+                $(this).find('input[name^="hidden_invoiceId"]').attr('name', `hidden_invoiceId[${newRowNumber}]`).attr('id', `hidden_invoiceId${newRowNumber}`).val(hiddenInvoiceIdValue);
+                $(this).find('input[name^=hidden_id]').attr('name', `hidden_id[${newRowNumber}]`).attr('id', `hidden_id[${newRowNumber}]`).val(hiddenIdValue);
                 $(this).find('.delete-btn').attr('data-id', newRowNumber).text('Delete');
             });
             rowCount = $('#input-container tr').length; // Update rowCount to the current number of rows
@@ -553,9 +680,15 @@
         function reorderRekRows() {
             $('#rek-table tbody tr').each(function(index) {
                 const newRekRowNumber = index + 1;
+                const hiddenRekIdValue = $(this).find('input[name^="hidden_rekId"]').val();
+                const namaBankValue = $(this).find('input[name^="nama_bank"]').val();
+                const noRekValue = $(this).find('input[name^="no_rek"]').val();
 
                 $(this).attr('id', `rek-${newRekRowNumber}`);
                 $(this).find('.rek-number').text(newRekRowNumber);
+                $(this).find('input[name^="nama_bank"]').attr('name', `nama_bank[${newRekRowNumber}]`).attr('id', `nama_bank-${newRekRowNumber}`).attr('placeholder', `Nama Bank...`).val(namaBankValue);
+                $(this).find('input[name^="no_rek"]').attr('name', `no_rek[${newRekRowNumber}]`).attr('id', `no_rek-${newRekRowNumber}`).attr('placeholder', `Nomor Rekening...`).val(noRekValue);
+                $(this).find('input[name^="hidden_rekId"]').attr('name', `hidden_rekId[${newRekRowNumber}]`).attr('id', `hidden_rekId${newRekRowNumber}`).val(hiddenRekIdValue);
                 $(this).find('.rek-delete').attr('data-id', newRekRowNumber).text('Delete');
             });
             rowRekCount = $('#rek-table tbody tr').length;
@@ -568,9 +701,26 @@
 
         // BUTTON ADD ROW NOMOR REKENING
         $('#btn-rek').click(function() {
-            addRekRow();
+            var bank = $('#nama_bank').val();
+            var rek = $('#nomor_rekening').val();
+            addRekRow(bank, rek);
             $('#nama_bank').val('');
             $('#nomor_rekening').val('');
+        });
+
+        // SELECT ADD ROW NOMOR REKENING
+        $('#rekening').change(function() {
+            // Ambil elemen yang dipilih
+            var selectedOption = $(this).find(':selected');
+
+            // Ambil nilai atribut data
+            var bank = selectedOption.data('bank');
+            var rek = selectedOption.data('rek');
+
+            addRekRow(bank, rek);
+            // // Cetak ke konsol untuk memastikan
+            // console.log('Bank:', bank);
+            // console.log('Rekening:', rek);
         });
 
         function updateSubmitButtonState() {
@@ -591,8 +741,9 @@
         // BUTTON HAPUS NOMOR REKENING
         $(document).on('click', '.rek-delete', function() {
             const rowId = $(this).data('id');
-            $(`#rek-${rowId}`).remove();
-            reorderRekRows()
+            // console.log(rowId);
+            deleteRekRow(rowId);
+            reorderRekRows();
         });
 
         $('#form').submit(function(event) {
@@ -601,6 +752,12 @@
                 type: 'hidden',
                 name: 'deleted_rows',
                 value: JSON.stringify(deletedRows)
+            }).appendTo('#form');
+
+            $('<input>').attr({
+                type: 'hidden',
+                name: 'deletedRekRows',
+                value: JSON.stringify(deletedRekRows)
             }).appendTo('#form');
 
             // Lanjutkan dengan submit form
@@ -613,10 +770,11 @@
             $('.aksi').append('<span class="front front-aksi">Update</span>');
             $("select option[value='']").hide();
             $.ajax({
-                url: "<?php echo site_url('invoice_pu/edit_data') ?>/" + id,
+                url: "<?php echo site_url('pu_invoice/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
+                    console.log(data);
                     //SET VALUE DATA MASTER PREPAYMENT
                     $('#id').val(data['master']['id']);
                     $('#tgl_invoice').val(data['master']['tgl_invoice']);
@@ -627,6 +785,7 @@
                     $('#ctc_nama2').val(data['master']['ctc_nama2']);
                     $('#ctc_nomor2').val(data['master']['ctc_nomor2']);
                     $('#ctc_alamat').val(data['master']['ctc_alamat']);
+                    quill.clipboard.dangerouslyPasteHTML(data['master']['keterangan']);
                     //APPEND DATA pu_rek_invoice DETAIL PREPAYMENT
                     console.log(data['rek_invoice']);
                     if (aksi == 'update') {
@@ -635,76 +794,46 @@
                             const row = `
                             <tr id="rek-${index + 1}">
                                 <td class="rek-number">${index + 1}</td>
-                                <td><input name="nama_bank[]" id="nama_bank-${index + 1}" value="${data['rek_invoice'][index]['nama_bank']}" style="border: none; pointer-events: none; color: #666"></td>
-                                <td><input name="no_rek[]" id="no_rek-${index + 1}" value="${data['rek_invoice'][index]['no_rek']}" style="border: none; pointer-events: none; color: #666"></td>
+                                <td>
+                                <input name="nama_bank[${index+1}]" id="nama_bank-${index + 1}" value="${data['rek_invoice'][index]['nama_bank']}" style="border: none; pointer-events: none; color: #666">
+                                <input type="hidden" id="hidden_rekId${index + 1}" name="hidden_rekId[${index + 1}]" value="${data['rek_invoice'][index]['id']}">
+                                </td>
+                                <td><input name="no_rek[${index+1}]" id="no_rek-${index + 1}" value="${data['rek_invoice'][index]['no_rek']}" style="border: none; pointer-events: none; color: #666"></td>
                                 <td><button type="button" class="btn rek-delete btn-danger" data-id="${index + 1}">Delete</button></td>
                             </tr>
                             `;
                             $('#rek-table tbody').append(row);
-                            // Tambahkan format ke input nominal yang baru
-                            // formatJumlahInput(`#nominal-${index+1}`);
-
-                            //VALIDASI ROW YANG TELAH DI APPEND
-                            // $("#form").validate().settings.rules[`rincian[${index + 1}]`] = {
-                            //     required: true
-                            // };
-                            // $("#form").validate().settings.rules[`nominal[${index + 1}]`] = {
-                            //     required: true
-                            // };
-                            // $("#form").validate().settings.messages[`rincian[${index + 1}]`] = {
-                            //     required: "Rincian is required"
-                            // };
-                            // $("#form").validate().settings.messages[`nominal[${index + 1}]`] = {
-                            //     required: "Nominal is required"
-                            // };
-                            // $("#form").validate().settings.rules[`keterangan[${index + 1}]`] = {
-                            //     required: true
-                            // };
-                            rowCount = index + 1;
+                            rowRekCount = index + 1;
                         });
 
                         // Detail pemesanan
                         $(data['detail_invoice']).each(function(index) {
+                            const hargaFormatted = data['detail_invoice'][index]['harga'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                            const totalFormatted = data['detail_invoice'][index]['total'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
                             const row = `
                             <tr id="row-${index + 1}">
                                 <td class="row-number">${index + 1}</td>
-                                <td><input type="text" class="form-control" name="deskripsi[${index + 1}]" value="${data['detail_invoice'][index]['deskripsi']}" placeholder="Deskripsi" /></td>
+                                <td>
+                                    <input type="text" class="form-control" name="deskripsi[${index + 1}]" value="${data['detail_invoice'][index]['deskripsi']}" placeholder="Deskripsi" /></td>
+                                    <input type="hidden" id="hidden_id${index + 1}" name="hidden_id[${index + 1}]" value="${data['detail_invoice'][index]['id']}">
+                                    <input type="hidden" name="hidden_invoiceId[${index + 1}]" id="hidden_invoiceId${index + 1}" value="${data['detail_invoice'][index]['invoice_id']}">
                                 <td>
                                     <input type="text" class="form-control jumlah" id="jumlah-${index + 1}" name="jumlah[${index + 1}]" value="${data['detail_invoice'][index]['jumlah']}" placeholder="Jumlah" style="margin-left: 10px">
                                 </td>
                                 <td>
-                                    <input type="text" class="form-control" id="satuan-${index + 1}" name="satuan[${index + 1}]" value="" placeholder="Satuan">
+                                    <input type="text" class="form-control" id="satuan-${index + 1}" name="satuan[${index + 1}]" value="${data['detail_invoice'][index]['satuan']}" placeholder="Satuan">
                                 </td>
                                 <td>
-                                    <input type="text" class="form-control harga" id="harga-${index + 1}" name="harga[${index + 1}]" value="${data['detail_invoice'][index]['harga']}" placeholder="Harga" />
+                                    <input type="text" class="form-control harga" id="harga-${index + 1}" name="harga[${index + 1}]" value="${hargaFormatted}" placeholder="Harga" />
                                 </td>
                                 <td>
-                                    <input type="text" class="form-control total" id="total-${index + 1}" name="total[${index + 1}]" value="${data['detail_invoice'][index]['total']}" placeholder="Harga" />
+                                    <input type="text" class="form-control total" id="total-${index + 1}" name="total[${index + 1}]" value="${totalFormatted}" placeholder="Harga" />
                                 </td>
 
                                 <td><span class="btn delete-btn btn-danger" data-id="${index + 1}">Delete</span></td>
                             </tr>
                             `;
                             $('#input-container').append(row);
-                            // Tambahkan format ke input nominal yang baru
-                            // formatJumlahInput(`#nominal-${index+1}`);
-
-                            //VALIDASI ROW YANG TELAH DI APPEND
-                            // $("#form").validate().settings.rules[`rincian[${index + 1}]`] = {
-                            //     required: true
-                            // };
-                            // $("#form").validate().settings.rules[`nominal[${index + 1}]`] = {
-                            //     required: true
-                            // };
-                            // $("#form").validate().settings.messages[`rincian[${index + 1}]`] = {
-                            //     required: "Rincian is required"
-                            // };
-                            // $("#form").validate().settings.messages[`nominal[${index + 1}]`] = {
-                            //     required: "Nominal is required"
-                            // };
-                            // $("#form").validate().settings.rules[`keterangan[${index + 1}]`] = {
-                            //     required: true
-                            // };
                             rowCount = index + 1;
                         });
                     }
@@ -730,7 +859,7 @@
             $('th:last-child').remove();
 
             $.ajax({
-                url: "<?php echo site_url('invoice_pu/read_detail/') ?>" + id,
+                url: "<?php echo site_url('pu_invoice/read_detail/') ?>" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -758,9 +887,9 @@
             if (!$form.valid()) return false;
             var url;
             if (id == 0) {
-                url = "<?php echo site_url('invoice_pu/add') ?>";
+                url = "<?php echo site_url('pu_invoice/add') ?>";
             } else {
-                url = "<?php echo site_url('invoice_pu/update') ?>";
+                url = "<?php echo site_url('pu_invoice/update') ?>";
             }
 
             // Tampilkan loading
@@ -788,7 +917,7 @@
                             timer: 1500
                         }).then((result) => {
                             checkNotifications();
-                            location.href = "<?= base_url('invoice_pu') ?>";
+                            location.href = "<?= base_url('pu_invoice') ?>";
                         })
                     }
                 },
@@ -831,6 +960,9 @@
                 ctc_alamat: {
                     required: true,
                 },
+                diskon: {
+                    max: 100,
+                }
             },
             messages: {
                 tgl_invoice: {
@@ -856,6 +988,9 @@
                 },
                 ctc_alamat: {
                     required: "Contact Nomor is required",
+                },
+                diskon: {
+                    max: "Diskon tidak boleh melibihi 100",
                 }
             },
             errorPlacement: function(error, element) {

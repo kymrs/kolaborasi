@@ -24,16 +24,16 @@
         }
 
         .header .logo {
-            width: 170px;
+            width: 166px;
             position: relative;
-            bottom: 100px;
-            right: 1px;
+            bottom: 40px;
+            right: -5px;
         }
 
         .header .title {
             width: 100%;
             position: relative;
-            bottom: 150px;
+            bottom: 80px;
         }
 
         .header .title h1 {
@@ -102,15 +102,16 @@
             }
 
             .header .logo {
-                width: 200px;
+                width: 120px;
                 position: relative;
-                bottom: 80px;
+                bottom: 40px;
             }
 
             .header .title {
-                width: 100%;
+                width: 80%;
                 position: relative;
-                bottom: 130px;
+                right: -24px;
+                bottom: 10px;
             }
         }
     </style>
@@ -133,7 +134,7 @@
 
                     <!-- Header Section -->
                     <div class="header">
-                        <img src="<?= base_url('assets/backend/img/MAC.png') ?>" alt="" class="logo">
+                        <img src="<?= base_url('assets/backend/img/mobileautocare.png') ?>" alt="" class="logo">
                         <div class="title">
                             <!-- <h1>SEBELASWARNA</h1> -->
                             <h2>FORM DEKLARASI</h2>

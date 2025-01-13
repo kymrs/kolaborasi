@@ -29,13 +29,12 @@
         }
 
         .header .logo {
-            /* height: 150px; */
+            height: 150px;
             display: flex;
             align-items: center;
-            width: 190px;
+            width: 160px;
             position: relative;
-            left: 0px;
-            bottom: 11px;
+            left: 20px;
         }
 
         .header .logo img {
@@ -65,7 +64,7 @@
         }
 
         /* Table Main */
-        .no-prepayment_mac {
+        .no-prepayment {
             margin-top: 30px;
             float: right;
             margin-right: 200px;
@@ -112,6 +111,12 @@
             border-radius: 7px;
             cursor: pointer;
             transition: 300ms;
+        }
+
+        .rekening-info {
+            position: relative;
+            bottom: 20px;
+            right: 30px;
         }
 
         .kwitansi:hover {
@@ -163,11 +168,11 @@
             <!-- Header -->
             <div class="header">
                 <div class="logo">
-                    <img src="<?= base_url() ?>assets/backend/img/mobileautocare.png" alt="Logo">
+                    <img src="<?= base_url() ?>assets/backend/img/pengenumroh.png" alt="Logo">
                 </div>
                 <div class="title">
                     <h1>FORM PELAPORAN / REIMBUST</h1>
-                    <h2>MAC</h2>
+                    <h2>PENGENUMROH</h2>
                 </div>
             </div>
 
@@ -207,7 +212,7 @@
                 </table>
             </div>
 
-            <span class="no-prepayment_mac">No. Prepayment : <span id="kode_reimbust"></span></span>
+            <span class="no-prepayment">No. Prepayment : <span id="kode_reimbust"></span></span>
             <div class="clear"></div>
             <div class="table-main">
                 <table>
@@ -330,7 +335,7 @@
                 <div class="modal-body">
                     <form id="paymentForm" action="">
                         <div class="form-group">
-                            <label style="font-size: 107%;"><span style="font-weight: bold">No Rekening</span> <span style="margin-left: 20px;">:</span> <span id="no_rek"></span></label> <br>
+                            <label style="font-size: 107%;"><span style="font-weight: bold">No Rekening</span> <span style="margin-left: 5px;">:</span> <span id="no_rek"></span></label>
                         </div>
                         <div class="form-group">
                             <div style="display: flex; justify-content: space-between">
@@ -387,9 +392,9 @@
             $('#appBtn').click(function() {
                 $('#app_keterangan').attr('name', 'app_keterangan');
                 $('#app_status').attr('name', 'app_status');
-                $('#approvalForm').attr('action', '<?= site_url('reimbust_mac/approve') ?>');
+                $('#approvalForm').attr('action', '<?= site_url('pu_reimbust/approve') ?>');
                 $.ajax({
-                    url: "<?php echo site_url('reimbust_mac/edit_data') ?>/" + id,
+                    url: "<?php echo site_url('pu_reimbust/edit_data') ?>/" + id,
                     type: "GET",
                     dataType: "JSON",
                     success: function(data) {
@@ -416,10 +421,10 @@
             $('#appBtn2').click(function() {
                 $('#app_keterangan').attr('name', 'app2_keterangan').attr('id', 'app2_keterangan');
                 $('#app_status').attr('name', 'app2_status').attr('id', 'app2_status');
-                $('#approvalForm').attr('action', '<?= site_url('reimbust_mac/approve2') ?>');
+                $('#approvalForm').attr('action', '<?= site_url('pu_reimbust/approve2') ?>');
 
                 $.ajax({
-                    url: "<?php echo site_url('reimbust_mac/edit_data') ?>/" + id,
+                    url: "<?php echo site_url('pu_reimbust/edit_data') ?>/" + id,
                     type: "GET",
                     dataType: "JSON",
                     success: function(data) {
@@ -443,10 +448,10 @@
             });
 
             $('#paymentBtn').click(function() {
-                $('#paymentForm').attr('action', '<?= site_url('reimbust_mac/payment') ?>');
+                $('#paymentForm').attr('action', '<?= site_url('pu_reimbust/payment') ?>');
 
                 $.ajax({
-                    url: "<?php echo site_url('reimbust_mac/edit_data') ?>/" + id,
+                    url: "<?php echo site_url('pu_reimbust/edit_data') ?>/" + id,
                     type: "GET",
                     dataType: "JSON",
                     success: function(data) {
@@ -469,7 +474,7 @@
 
             // Additional logic to dynamically load data into the form
             $.ajax({
-                url: "<?php echo site_url('reimbust_mac/edit_data') ?>/" + id,
+                url: "<?php echo site_url('pu_reimbust/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -504,7 +509,7 @@
                         nama = data['master']['app_name'];
                         status = data['master']['app_status'];
                         keterangan = data['master']['app_keterangan'];
-                        url = "<?php echo site_url('reimbust_mac/approve') ?>";
+                        url = "<?php echo site_url('pu_reimbust/approve') ?>";
                         $('#note_id').append(`<p>* ${keterangan}</p>`);
                     }
 
@@ -520,7 +525,7 @@
                         nama = data['master']['app_name'];
                         status = data['master']['app_status'];
                         keterangan = data['master']['app_keterangan'];
-                        url = "<?php echo site_url('reimbust_mac/approve') ?>";
+                        url = "<?php echo site_url('pu_reimbust/approve') ?>";
                         $('#note_id').append(`<p>* ${keterangan}</p>`);
                     }
                     if (data['master']['app_date'] == null) {
@@ -535,7 +540,7 @@
                         nama2 = data['master']['app2_name'];
                         status2 = data['master']['app2_status'];
                         keterangan2 = data['master']['app2_keterangan'];
-                        url = "<?php echo site_url('prepayment_mac/approve2') ?>";
+                        url = "<?php echo site_url('prepayment/approve2') ?>";
                         $('#note_id').append(`<p>* ${keterangan2}</p>`);
                     }
                     if (data['master']['app2_date'] == null) {
@@ -588,7 +593,7 @@
                         if (kwitansi) {
                             // Jika data kwitansi ada, lanjutkan dengan membuka modal
                             modal.css("display", "block");
-                            modalImg.attr('src', `<?= base_url() ?>/assets/backend/document/reimbust/kwitansi_mac/${kwitansi}`);
+                            modalImg.attr('src', `<?= base_url() ?>/assets/backend/document/reimbust/kwitansi_pu/${kwitansi}`);
                             // captionText.text('Deskripsi gambar Anda di sini'); // Ubah dengan deskripsi gambar
                         }
                     });
@@ -645,7 +650,7 @@
                         var deklarasi = $(this).data('deklarasi');
 
                         $.ajax({
-                            url: '<?= site_url('reimbust_mac/detail_deklarasi') ?>', // URL method controller
+                            url: '<?= site_url('pu_reimbust/detail_deklarasi') ?>', // URL method controller
                             method: 'POST',
                             data: {
                                 deklarasi: deklarasi
@@ -826,30 +831,6 @@
                     }
                 });
             });
-
-            // Example: Load data into the form fields and tables
-            // $('#divisiCol').text('Finance');
-            // $('#prepaymentCol').text('001234');
-            // $('#tanggal').text('29 August 2024');
-            // $('#nama').text('Rakha Rizki');
-            // $('#jabatan').text('Software Developer');
-            // $('#tujuan').text('Project Development');
-
-            // Example: Append rows to the rincian table
-            // $('#input-container').append(`
-            //     <tr>
-            //         <td>Consultation Fees</td>
-            //         <td>Rp. 5,000,000</td>
-            //         <td>Consulting on project scope</td>
-            //     </tr>
-            //     <tr>
-            //         <td>Development Tools</td>
-            //         <td>Rp. 3,000,000</td>
-            //         <td>Purchase of software licenses</td>
-            //     </tr>
-            // `);
-
-            // $('#keterangan').append(`<span class="form-control-plaintext">*Berikut ini merupakan catatan keterangan prepayment_mac.</span>`);
         });
     </script>
 </body>

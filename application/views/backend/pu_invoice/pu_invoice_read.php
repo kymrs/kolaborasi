@@ -63,8 +63,13 @@
                         </tr>
                         <?php
                         $total = 0; // Inisialisasi variabel total
+                        $diskon = $invoice['diskon'];
                         foreach ($detail as $data) :
-                            $total += (float)$data['harga']; // Tambahkan harga ke total
+                            if ($diskon != 0) {
+                                $total += $data['total'] - ($data['total'] * $diskon / 100);
+                            } else {
+                                $total += $data['total']; // Tambahkan harga ke total
+                            }
                         ?>
                             <tr>
                                 <td><?= $data['deskripsi'] ?></td>
@@ -76,7 +81,7 @@
                         <tr>
                             <td colspan="2" style="border-left-color: #fff; border-bottom-color: #fff"></td>
                             <td style="text-align: center;">Diskon</td>
-                            <td style="text-align: center">0</td>
+                            <td style="text-align: center"><?= $invoice['diskon'] ?>%</td>
                         </tr>
                         <tr>
                             <td colspan="2" style="border-left-color: #fff; border-bottom-color: #fff"></td>
@@ -93,6 +98,12 @@
                         <?php endforeach ?>
                     </ol>
                     <p>Atas Nama : PT. Kolaborasi Para Sahabat </p>
+                </div>
+                <div class="">
+                    <p>Catatan :</p>
+                    <div style="margin-top: -16px;">
+                        <?= $invoice['keterangan'] ?>
+                    </div>
                 </div>
             </main>
         </div>

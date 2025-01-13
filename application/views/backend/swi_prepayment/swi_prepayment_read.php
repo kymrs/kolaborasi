@@ -1,6 +1,8 @@
 <head>
     <?php $this->load->view('template/header'); ?>
     <style>
+        /* style prepayment */
+
         body .container {
             font-family: Arial, Helvetica, sans-serif;
             padding: 0;
@@ -26,11 +28,11 @@
         }
 
         .header .logo {
-            width: 160px;
+            width: 120px;
             position: relative;
             right: -1px;
-            bottom: 150px;
-            margin-bottom: -210px;
+            bottom: 100px;
+            margin-bottom: -120px;
         }
 
         .header h1 {
@@ -49,8 +51,7 @@
 
         .title {
             text-align: center;
-            margin-top: -20px;
-            margin-bottom: 25px;
+            margin-top: 10px;
         }
 
         .title h1 {
@@ -162,7 +163,7 @@
                     <!-- Header Section -->
                     <div class="header">
                         <div class="header-field">
-                            <img src="<?= base_url('assets/backend/img/mobileautocare.png') ?>" alt="" class="logo">
+                            <img src="<?= base_url('assets/backend/img/sobatwisata.png') ?>" alt="" class="logo">
                             <table>
                                 <tr>
                                     <td style="font-weight: bold;">Divisi</td>
@@ -367,9 +368,9 @@
         $('#appBtn').click(function() {
             $('#app_keterangan').attr('name', 'app_keterangan');
             $('#app_status').attr('name', 'app_status');
-            $('#approvalForm').attr('action', '<?= site_url('prepayment_mac/approve') ?>');
+            $('#approvalForm').attr('action', '<?= site_url('swi_prepayment/approve') ?>');
             $.ajax({
-                url: "<?php echo site_url('prepayment_mac/edit_data') ?>/" + id,
+                url: "<?php echo site_url('swi_prepayment/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -396,10 +397,10 @@
         $('#appBtn2').click(function() {
             $('#app_keterangan').attr('name', 'app2_keterangan').attr('id', 'app2_keterangan');
             $('#app_status').attr('name', 'app2_status').attr('id', 'app2_status');
-            $('#approvalForm').attr('action', '<?= site_url('prepayment_mac/approve2') ?>');
+            $('#approvalForm').attr('action', '<?= site_url('swi_prepayment/approve2') ?>');
 
             $.ajax({
-                url: "<?php echo site_url('prepayment_mac/edit_data') ?>/" + id,
+                url: "<?php echo site_url('swi_prepayment/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -423,10 +424,10 @@
         });
 
         $('#paymentBtn').click(function() {
-            $('#paymentForm').attr('action', '<?= site_url('prepayment_mac/payment') ?>');
+            $('#paymentForm').attr('action', '<?= site_url('swi_prepayment/payment') ?>');
 
             $.ajax({
-                url: "<?php echo site_url('prepayment_mac/edit_data') ?>/" + id,
+                url: "<?php echo site_url('swi_prepayment/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -450,7 +451,7 @@
 
         // Additional logic to dynamically load data into the form
         $.ajax({
-            url: "<?php echo site_url('prepayment_mac/edit_data') ?>/" + id,
+            url: "<?php echo site_url('swi_prepayment/edit_data') ?>/" + id,
             type: "GET",
             dataType: "JSON",
             success: function(data) {

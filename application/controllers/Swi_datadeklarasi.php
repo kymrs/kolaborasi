@@ -1,41 +1,16 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class datadeklarasi_mac extends CI_Controller
+class Swi_datadeklarasi extends CI_Controller
 {
 
     function __construct()
     {
         parent::__construct();
-        $this->load->model('backend/M_datadeklarasi_mac');
+        $this->load->model('backend/M_swi_datadeklarasi');
         $this->load->model('backend/M_notifikasi');
         $this->M_login->getsecurity();
         date_default_timezone_set('Asia/Jakarta');
-    }
-
-    function tgl_indo($tanggal)
-    {
-        $bulan = array(
-            1 =>   'Januari',
-            'Februari',
-            'Maret',
-            'April',
-            'Mei',
-            'Juni',
-            'Juli',
-            'Agustus',
-            'September',
-            'Oktober',
-            'November',
-            'Desember'
-        );
-        $pecahkan = explode('-', $tanggal);
-
-        // variabel pecahkan 0 = tanggal
-        // variabel pecahkan 1 = bulan
-        // variabel pecahkan 2 = tahun
-
-        return $pecahkan[2] . ' ' . $bulan[(int)$pecahkan[1]] . ' ' . $pecahkan[0];
     }
 
     public function index()
@@ -45,7 +20,7 @@ class datadeklarasi_mac extends CI_Controller
         ($akses->view_level == 'N' ? redirect('auth') : '');
         $data['add'] = $akses->add_level;
 
-        $data['title'] = "backend/datadeklarasi_mac/deklarasi_list_mac";
+        $data['title'] = "backend/swi_datadeklarasi/swi_deklarasi_list";
         $data['titleview'] = "Deklarasi";
         $name = $this->db->select('name')
             ->from('tbl_data_user')
@@ -53,7 +28,7 @@ class datadeklarasi_mac extends CI_Controller
             ->get()
             ->row('name');
         $data['approval'] = $this->db->select('COUNT(*) as total_approval')
-            ->from('mac_deklarasi')
+            ->from('swi_deklarasi')
             ->where('app_name', $name)
             ->or_where('app2_name', $name)
             ->get()
@@ -69,7 +44,7 @@ class datadeklarasi_mac extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $list = $this->M_datadeklarasi_mac->get_datatables();
+        $list = $this->M_swi_datadeklarasi->get_datatables();
         $data = array();
         $no = $_POST['start'];
 
@@ -82,10 +57,10 @@ class datadeklarasi_mac extends CI_Controller
         //LOOPING DATATABLES
         foreach ($list as $field) {
 
-            $action_read = ($read == 'Y') ? '<a href="datadeklarasi_mac/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
-            $action_edit = ($edit == 'Y') ? '<a href="datadeklarasi_mac/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
+            $action_read = ($read == 'Y') ? '<a href="swi_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
+            $action_edit = ($edit == 'Y') ? '<a href="swi_datadeklarasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
-            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="datadeklarasi_mac/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
+            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="swi_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             if ($field->app_name == $fullname && $field->id_pengaju != $this->session->userdata('id_user')) {
@@ -116,7 +91,7 @@ class datadeklarasi_mac extends CI_Controller
             $row[] = $no;
             $row[] = $action;
             $row[] = strtoupper($field->kode_deklarasi);
-            $row[] = $this->tgl_indo(date("Y-m-j", strtotime($field->tgl_deklarasi)));
+            $row[] = date("d M Y", strtotime($field->tgl_deklarasi));
             $row[] = $field->name;
             $row[] = $field->jabatan;
             $row[] = $field->nama_dibayar;
@@ -129,8 +104,8 @@ class datadeklarasi_mac extends CI_Controller
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_datadeklarasi_mac->count_all(),
-            "recordsFiltered" => $this->M_datadeklarasi_mac->count_filtered(),
+            "recordsTotal" => $this->M_swi_datadeklarasi->count_all(),
+            "recordsFiltered" => $this->M_swi_datadeklarasi->count_filtered(),
             "data" => $data,
         );
         //output dalam format JSON
@@ -141,7 +116,7 @@ class datadeklarasi_mac extends CI_Controller
     {
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = $id;
-        $data['user'] = $this->M_datadeklarasi_mac->get_by_id($id);
+        $data['user'] = $this->M_swi_datadeklarasi->get_by_id($id);
         $data['app_name'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $this->session->userdata('id_user'))
@@ -153,7 +128,7 @@ class datadeklarasi_mac extends CI_Controller
             ->get()
             ->row('name');
         $data['title_view'] = "Data Deklarasi";
-        $data['title'] = 'backend/datadeklarasi_mac/deklarasi_read_mac';
+        $data['title'] = 'backend/swi_datadeklarasi/swi_deklarasi_read';
         $this->load->view('backend/home', $data);
     }
 
@@ -163,7 +138,7 @@ class datadeklarasi_mac extends CI_Controller
         $data['id'] = 0;
         $data['title_view'] = "Deklarasi Form";
         $data['aksi'] = 'update';
-        $data['title'] = 'backend/datadeklarasi_mac/deklarasi_form_mac';
+        $data['title'] = 'backend/swi_datadeklarasi/swi_deklarasi_form';
         $this->load->view('backend/home', $data);
     }
 
@@ -172,13 +147,13 @@ class datadeklarasi_mac extends CI_Controller
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = $id;
         $data['title_view'] = "Edit Data Deklarasi";
-        $data['title'] = 'backend/datadeklarasi_mac/deklarasi_form_mac';
+        $data['title'] = 'backend/swi_datadeklarasi/swi_deklarasi_form';
         $this->load->view('backend/home', $data);
     }
 
     function edit_data($id)
     {
-        $data['master'] = $this->M_datadeklarasi_mac->get_by_id($id);
+        $data['master'] = $this->M_swi_datadeklarasi->get_by_id($id);
         $data['nama'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $data['master']->id_pengaju)
@@ -190,7 +165,7 @@ class datadeklarasi_mac extends CI_Controller
     public function generate_kode()
     {
         $date = $this->input->post('date');
-        $kode = $this->M_datadeklarasi_mac->max_kode($date)->row();
+        $kode = $this->M_swi_datadeklarasi->max_kode($date)->row();
         if (empty($kode->kode_deklarasi)) {
             $no_urut = 1;
         } else {
@@ -208,7 +183,7 @@ class datadeklarasi_mac extends CI_Controller
     {
         // INSERT KODE DEKLARASI
         $date = $this->input->post('tgl_deklarasi');
-        $kode = $this->M_datadeklarasi_mac->max_kode($date)->row();
+        $kode = $this->M_swi_datadeklarasi->max_kode($date)->row();
         if (empty($kode->kode_deklarasi)) {
             $no_urut = 1;
         } else {
@@ -221,7 +196,7 @@ class datadeklarasi_mac extends CI_Controller
         $kode_deklarasi = 'D' . $year . $month . $urutan;
 
         // MENCARI SIAPA YANG AKAN MELAKUKAN APPROVAL PERMINTAAN
-        $approval = $this->M_datadeklarasi_mac->approval($this->session->userdata('id_user'));
+        $approval = $this->M_swi_datadeklarasi->approval($this->session->userdata('id_user'));
         $id = $this->session->userdata('id_user');
 
         $data = array(
@@ -249,7 +224,7 @@ class datadeklarasi_mac extends CI_Controller
             'created_at' => date('Y-m-d H:i:s')
         );
 
-        $this->M_datadeklarasi_mac->save($data);
+        $this->M_swi_datadeklarasi->save($data);
         echo json_encode(array("status" => TRUE));
     }
 
@@ -269,13 +244,13 @@ class datadeklarasi_mac extends CI_Controller
             'status' => 'on-process'
         );
         $this->db->where('id', $this->input->post('id'));
-        $this->db->update('mac_deklarasi', $data);
+        $this->db->update('swi_deklarasi', $data);
         echo json_encode(array("status" => TRUE));
     }
 
     function delete($id)
     {
-        $this->M_datadeklarasi_mac->delete($id);
+        $this->M_swi_datadeklarasi->delete($id);
         echo json_encode(array("status" => TRUE));
     }
 
@@ -299,7 +274,7 @@ class datadeklarasi_mac extends CI_Controller
 
         //UPDATE APPROVAL PERTAMA
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('mac_deklarasi', $data);
+        $this->db->update('swi_deklarasi', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -323,7 +298,7 @@ class datadeklarasi_mac extends CI_Controller
 
         // UPDATE APPROVAL 2
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('mac_deklarasi', $data);
+        $this->db->update('swi_deklarasi', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -335,7 +310,7 @@ class datadeklarasi_mac extends CI_Controller
         $this->load->library('Fpdf_generate');
 
         // Load data from database based on $id
-        $data['master'] = $this->M_datadeklarasi_mac->get_by_id($id);
+        $data['master'] = $this->M_swi_datadeklarasi->get_by_id($id);
         $data['user'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $data['master']->id_pengaju)
@@ -371,7 +346,7 @@ class datadeklarasi_mac extends CI_Controller
         $pdf->AddPage('P', 'Letter');
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/mobileautocare.png', 12, 8, 42, 23);
+        $pdf->Image(base_url('') . '/assets/backend/img/sobatwisata.png', 12, 8, 34, 26);
 
         // Title of the form
         $pdf->Ln(25);
@@ -463,6 +438,6 @@ class datadeklarasi_mac extends CI_Controller
         }
 
         // Output the PDF
-        $pdf->Output('I', 'Deklarasi_MAC.pdf');
+        $pdf->Output('I', 'Deklarasi.pdf');
     }
 }
