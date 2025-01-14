@@ -3,11 +3,11 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-class M_penawaran_pu extends CI_Model
+class M_pu_penawaran extends CI_Model
 {
     // INISIASI VARIABLE
     var $id = 'id';
-    var $table = 'tbl_penawaran';
+    var $table = 'pu_penawaran';
     var $column_order = array(null, null, 'no_pelayanan', 'no_arsip', 'pelanggan', 'produk', 'tgl_keberangkatan', 'durasi', 'created_at', 'tgl_berlaku');
     var $column_search = array('no_pelayanan', 'no_arsip', 'pelanggan', 'produk', 'tgl_keberangkatan', 'durasi', 'created_at', 'tgl_berlaku'); //field yang diizin untuk pencarian
     var $order = array('id' => 'desc');
@@ -27,9 +27,9 @@ class M_penawaran_pu extends CI_Model
                 if ($i === 0) // looping awal
                 {
                     $this->db->group_start();
-                    $this->db->like('tbl_penawaran.' . $item, $_POST['search']['value']);
+                    $this->db->like('pu_penawaran.' . $item, $_POST['search']['value']);
                 } else {
-                    $this->db->or_like('tbl_penawaran.' . $item, $_POST['search']['value']);
+                    $this->db->or_like('pu_penawaran.' . $item, $_POST['search']['value']);
                 }
 
                 if (count($this->column_search) - 1 == $i) {
@@ -120,22 +120,22 @@ class M_penawaran_pu extends CI_Model
 
     public function getPenawaranById($id)
     {
-        $data = $this->db->from('tbl_penawaran')->where('id', $id)->get()->row();
+        $data = $this->db->from('pu_penawaran')->where('id', $id)->get()->row();
         return $data;
     }
 
     public function getRundown($no_pelayanan)
     {
-        $data = $this->db->from('tbl_rundown')->where('no_pelayanan', $no_pelayanan)->get()->result_array();
+        $data = $this->db->from('pu_rundown')->where('no_pelayanan', $no_pelayanan)->get()->result_array();
         return $data;
     }
 
     public function getPenawaran($kode)
     {
         $this->db->select('no_pelayanan, a.no_arsip, tgl_berlaku, produk, pelanggan, deskripsi, tgl_keberangkatan, durasi, keberangkatan, kepulangan, berangkat_dari, pkt_quad, pkt_triple, pkt_double, created_at');
-        $this->db->from('tbl_penawaran as a');
+        $this->db->from('pu_penawaran as a');
         $this->db->where('a.no_arsip', $kode);
-        $this->db->join('tbl_arsip_pu as b', 'a.no_pelayanan = b.no_dokumen', 'left');
+        $this->db->join('pu_arsip as b', 'a.no_pelayanan = b.no_dokumen', 'left');
         // $this->db->where('id', $id);
         $data = $this->db->get()->row_array();
         return $data;
@@ -145,9 +145,9 @@ class M_penawaran_pu extends CI_Model
     {
         $formatted_date = date('Y', strtotime($date));
         $this->db->select('no_pelayanan');
-        $where = 'id=(SELECT max(id) FROM tbl_penawaran where SUBSTRING(no_pelayanan, -4, 4) = ' . $formatted_date . ')';
+        $where = 'id=(SELECT max(id) FROM pu_penawaran where SUBSTRING(no_pelayanan, -4, 4) = ' . $formatted_date . ')';
         $this->db->where($where);
-        $query = $this->db->from('tbl_penawaran')->get();
+        $query = $this->db->from('pu_penawaran')->get();
         return $query;
     }
 
@@ -155,9 +155,9 @@ class M_penawaran_pu extends CI_Model
     {
         $formatted_date = date('y', strtotime($date));
         $this->db->select('no_arsip');
-        $where = 'id=(SELECT max(id) FROM tbl_arsip_pu where SUBSTRING(no_arsip, 3, 2) = ' . $formatted_date . ')';
+        $where = 'id=(SELECT max(id) FROM pu_arsip where SUBSTRING(no_arsip, 3, 2) = ' . $formatted_date . ')';
         $this->db->where($where);
-        $query = $this->db->from('tbl_arsip_pu')->get();
+        $query = $this->db->from('pu_arsip')->get();
         return $query;
     }
 
@@ -172,13 +172,13 @@ class M_penawaran_pu extends CI_Model
         // Cek apakah array $data tidak kosong
         if (!empty($data)) {
             // Menggunakan insert_batch untuk memasukkan banyak baris data sekaligus
-            $this->db->insert_batch('tbl_penawaran_detail_lyn', $data);
+            $this->db->insert_batch('pu_penawaran_detail_lyn', $data);
 
             // Cek apakah ada kesalahan pada saat insert
             if ($this->db->affected_rows() > 0) {
                 return TRUE;
             } else {
-                log_message('error', 'Insert to tbl_penawaran_detail_lyn failed: ' . $this->db->last_query());
+                log_message('error', 'Insert to pu_penawaran_detail_lyn failed: ' . $this->db->last_query());
                 return FALSE;
             }
         } else {
@@ -192,13 +192,13 @@ class M_penawaran_pu extends CI_Model
         // Cek apakah array $data tidak kosong
         if (!empty($data)) {
             // Menggunakan insert_batch untuk memasukkan banyak baris data sekaligus
-            $this->db->insert_batch('tbl_penawaran_detail_htl', $data);
+            $this->db->insert_batch('pu_penawaran_detail_htl', $data);
 
             // Cek apakah ada kesalahan pada saat insert
             if ($this->db->affected_rows() > 0) {
                 return TRUE;
             } else {
-                log_message('error', 'Insert to tbl_penawaran_detail_htl failed: ' . $this->db->last_query());
+                log_message('error', 'Insert to pu_penawaran_detail_htl failed: ' . $this->db->last_query());
                 return FALSE;
             }
         } else {
@@ -210,9 +210,9 @@ class M_penawaran_pu extends CI_Model
     public function getLayananTermasuk($kode)
     {
         $this->db->select('a.nama_layanan, b.id_penawaran, b.id_layanan, b.is_active');
-        $this->db->from('tbl_layanan_pu as a');
-        $this->db->join('tbl_penawaran_detail_lyn as b', 'a.id = b.id_layanan', 'left');
-        $this->db->join('tbl_penawaran as c', 'b.id_penawaran = c.id', 'left');
+        $this->db->from('pu_layanan as a');
+        $this->db->join('pu_penawaran_detail_lyn as b', 'a.id = b.id_layanan', 'left');
+        $this->db->join('pu_penawaran as c', 'b.id_penawaran = c.id', 'left');
         $this->db->where('b.is_active', 'Y');
         $this->db->where('c.no_arsip', $kode);
         // $this->db->join('tbl_produk as c', 'a.id_produk = c.id', 'left');
@@ -223,9 +223,9 @@ class M_penawaran_pu extends CI_Model
     public function getLayananTidakTermasuk($kode)
     {
         $this->db->select('a.nama_layanan, b.id_penawaran, b.id_layanan, b.is_active');
-        $this->db->from('tbl_layanan_pu as a');
-        $this->db->join('tbl_penawaran_detail_lyn as b', 'a.id = b.id_layanan', 'left');
-        $this->db->join('tbl_penawaran as c', 'b.id_penawaran = c.id', 'left');
+        $this->db->from('pu_layanan as a');
+        $this->db->join('pu_penawaran_detail_lyn as b', 'a.id = b.id_layanan', 'left');
+        $this->db->join('pu_penawaran as c', 'b.id_penawaran = c.id', 'left');
         $this->db->where("(b.is_active = 'N' OR (b.is_active LIKE 'N%' AND LENGTH(b.is_active) > 1))");
         $this->db->where('c.no_arsip', $kode);
         $data = $this->db->get()->result_array();
@@ -235,9 +235,9 @@ class M_penawaran_pu extends CI_Model
     public function getHotel($kode)
     {
         $this->db->select('a.nama_hotel, a.rating, a.kota, a.negara');
-        $this->db->from('tbl_hotel_pu as a');
-        $this->db->join('tbl_penawaran_detail_htl as b', 'a.id = b.id_hotel', 'left');
-        $this->db->join('tbl_penawaran as c', 'c.id = b.id_penawaran', 'left');
+        $this->db->from('pu_hotel as a');
+        $this->db->join('pu_penawaran_detail_htl as b', 'a.id = b.id_hotel', 'left');
+        $this->db->join('pu_penawaran as c', 'c.id = b.id_penawaran', 'left');
         $this->db->where('c.no_arsip', $kode);
         $data = $this->db->get()->result_array();
         return $data;
@@ -247,7 +247,7 @@ class M_penawaran_pu extends CI_Model
     public function get_penawaran_detail($id_penawaran)
     {
         $this->db->select('id_penawaran, id_layanan, is_active');
-        $this->db->from('tbl_penawaran_detail_lyn');
+        $this->db->from('pu_penawaran_detail_lyn');
         $this->db->where('id_penawaran', $id_penawaran);
         $query = $this->db->get();
 
@@ -258,7 +258,7 @@ class M_penawaran_pu extends CI_Model
     public function get_penawaran_detail2($id_penawaran)
     {
         $this->db->select('id_penawaran, id_hotel, is_active');
-        $this->db->from('tbl_penawaran_detail_htl');
+        $this->db->from('pu_penawaran_detail_htl');
         $this->db->where('id_penawaran', $id_penawaran);
         $query = $this->db->get();
 
@@ -268,15 +268,15 @@ class M_penawaran_pu extends CI_Model
 
     public function save_rundown($data)
     {
-        $this->db->insert_batch('tbl_rundown', $data);
+        $this->db->insert_batch('pu_rundown', $data);
         return $this->db->insert_id();
     }
 
     public function get_hotels($id_penawaran)
     {
         $this->db->select('b.id, b.nama_hotel, b.rating, b.kota, b.negara');
-        $this->db->from('tbl_penawaran_detail_htl AS a');
-        $this->db->join('tbl_hotel_pu AS b', 'a.id_hotel = b.id'); // Kondisi ON untuk join
+        $this->db->from('pu_penawaran_detail_htl AS a');
+        $this->db->join('pu_hotel AS b', 'a.id_hotel = b.id'); // Kondisi ON untuk join
         $this->db->where('a.id_penawaran', $id_penawaran); // Pastikan $id_penawaran terdefinisi
         $query = $this->db->get();
 
@@ -286,7 +286,7 @@ class M_penawaran_pu extends CI_Model
 
     public function get_rundown($no_pelayanan)
     {
-        $data = $this->db->from('tbl_rundown')->where('no_pelayanan', $no_pelayanan)->get()->result();
+        $data = $this->db->from('pu_rundown')->where('no_pelayanan', $no_pelayanan)->get()->result();
         return $data;
     }
 }

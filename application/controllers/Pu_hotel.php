@@ -1,20 +1,20 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Hotel_pu extends CI_Controller
+class Pu_hotel extends CI_Controller
 {
 
     function __construct()
     {
         parent::__construct();
-        $this->load->model('backend/M_hotel_pu');
+        $this->load->model('backend/M_pu_hotel');
         $this->M_login->getsecurity();
         date_default_timezone_set('Asia/Jakarta');
     }
 
     public function index()
     {
-        $data['title'] = "backend/hotel_pu/hotel_list_pu";
+        $data['title'] = "backend/pu_hotel/pu_hotel_list";
         $data['titleview'] = "Hotel";
         $this->load->view('backend/home', $data);
     }
@@ -28,7 +28,7 @@ class Hotel_pu extends CI_Controller
             ->get()
             ->row('name');
         $status = $this->input->post('status'); // Ambil status dari permintaan POST
-        $list = $this->M_hotel_pu->get_datatables($status);
+        $list = $this->M_pu_hotel->get_datatables($status);
         $data = array();
         $no = $_POST['start'];
 
@@ -72,8 +72,8 @@ class Hotel_pu extends CI_Controller
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_hotel_pu->count_all(),
-            "recordsFiltered" => $this->M_hotel_pu->count_filtered(),
+            "recordsTotal" => $this->M_pu_hotel->count_all(),
+            "recordsFiltered" => $this->M_pu_hotel->count_filtered(),
             "data" => $data,
         );
         //output dalam format JSON
@@ -82,9 +82,9 @@ class Hotel_pu extends CI_Controller
 
     function read_form($id)
     {
-        $data['master'] = $this->M_hotel_pu->get_by_id($id);
+        $data['master'] = $this->M_pu_hotel->get_by_id($id);
         $data['title_view'] = "Data Hotel";
-        $data['title'] = 'backend/hotel_pu/Hotel_read_pu';
+        $data['title'] = 'backend/pu_hotel/Hotel_read_pu';
         $this->load->view('backend/home', $data);
     }
 
@@ -92,21 +92,21 @@ class Hotel_pu extends CI_Controller
     {
         $data['id'] = 0;
         $data['title_view'] = "Hotel Form";
-        $data['title'] = 'backend/hotel_pu/hotel_form_pu';
+        $data['title'] = 'backend/pu_hotel/hotel_form_pu';
         $this->load->view('backend/home', $data);
     }
 
     function edit_form($id)
     {
-        $data['master'] = $this->M_hotel_pu->get_by_id($id);
+        $data['master'] = $this->M_pu_hotel->get_by_id($id);
         $data['title_view'] = "Edit Data Hotel";
-        $data['title'] = 'backend/hotel_pu/hotel_form_pu';
+        $data['title'] = 'backend/pu_hotel/hotel_form_pu';
         $this->load->view('backend/home', $data);
     }
 
     function get_id($id)
     {
-        $data = $this->M_hotel_pu->get_by_id($id);
+        $data = $this->M_pu_hotel->get_by_id($id);
         echo json_encode($data);
     }
 
@@ -119,7 +119,7 @@ class Hotel_pu extends CI_Controller
             'rating' => $this->input->post('rating')
         );
 
-        $this->M_hotel_pu->save($data);
+        $this->M_pu_hotel->save($data);
         echo json_encode(array("status" => TRUE));
     }
 
@@ -132,13 +132,13 @@ class Hotel_pu extends CI_Controller
             'rating' => $this->input->post('rating')
         );
         $this->db->where('id', $this->input->post('id'));
-        $this->db->update('tbl_Hotel_pu', $data);
+        $this->db->update('pu_hotel', $data);
         echo json_encode(array("status" => TRUE));
     }
 
     function delete($id)
     {
-        $this->M_hotel_pu->delete($id);
+        $this->M_pu_hotel->delete($id);
         echo json_encode(array("status" => TRUE));
     }
 }

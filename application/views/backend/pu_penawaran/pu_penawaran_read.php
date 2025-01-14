@@ -64,7 +64,7 @@
                                 <tr>
                                     <td>Keberangkatan</td>
                                     <td>:</td>
-                                    <td><?= $this->M_penawaran_pu->getTanggal($penawaran['tgl_keberangkatan']) ?></td>
+                                    <td><?= $this->M_pu_penawaran->getTanggal($penawaran['tgl_keberangkatan']) ?></td>
                                 </tr>
                                 <tr>
                                     <td>Durasi</td>

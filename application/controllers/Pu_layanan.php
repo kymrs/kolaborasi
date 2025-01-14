@@ -1,27 +1,27 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Layanan_pu extends CI_Controller
+class Pu_layanan extends CI_Controller
 {
 
     function __construct()
     {
         parent::__construct();
-        $this->load->model('backend/M_layanan_pu');
+        $this->load->model('backend/M_pu_layanan');
         $this->M_login->getsecurity();
         date_default_timezone_set('Asia/Jakarta');
     }
 
     public function index()
     {
-        $data['title'] = "backend/layanan_pu/layanan_list_pu";
+        $data['title'] = "backend/pu_layanan/pu_layanan_list";
         $data['titleview'] = "Layanan";
         $this->load->view('backend/home', $data);
     }
 
     function get_list()
     {
-        $list = $this->M_layanan_pu->get_datatables();
+        $list = $this->M_pu_layanan->get_datatables();
         $data = array();
         $no = $_POST['start'];
 
@@ -48,8 +48,8 @@ class Layanan_pu extends CI_Controller
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_layanan_pu->count_all(),
-            "recordsFiltered" => $this->M_layanan_pu->count_filtered(),
+            "recordsTotal" => $this->M_pu_layanan->count_all(),
+            "recordsFiltered" => $this->M_pu_layanan->count_filtered(),
             "data" => $data,
         );
         //output dalam format JSON
@@ -58,9 +58,9 @@ class Layanan_pu extends CI_Controller
 
     function read_form($id)
     {
-        $data['master'] = $this->M_layanan_pu->get_by_id($id);
+        $data['master'] = $this->M_pu_layanan->get_by_id($id);
         $data['title_view'] = "Data Layanan";
-        $data['title'] = 'backend/layanan_pu/layanan_read_pu';
+        $data['title'] = 'backend/pu_layanan/layanan_read_pu';
         $this->load->view('backend/home', $data);
     }
 
@@ -68,21 +68,21 @@ class Layanan_pu extends CI_Controller
     {
         $data['id'] = 0;
         $data['title_view'] = "Layanan Form";
-        $data['title'] = 'backend/layanan_pu/layanan_form_pu';
+        $data['title'] = 'backend/pu_layanan/layanan_form_pu';
         $this->load->view('backend/home', $data);
     }
 
     function edit_form($id)
     {
-        $data['master'] = $this->M_layanan_pu->get_by_id($id);
+        $data['master'] = $this->M_pu_layanan->get_by_id($id);
         $data['title_view'] = "Edit Data Layanan";
-        $data['title'] = 'backend/layanan_pu/layanan_form_pu';
+        $data['title'] = 'backend/pu_layanan/layanan_form_pu';
         $this->load->view('backend/home', $data);
     }
 
     function get_id($id)
     {
-        $data = $this->M_layanan_pu->get_by_id($id);
+        $data = $this->M_pu_layanan->get_by_id($id);
         echo json_encode($data);
     }
 
@@ -92,7 +92,7 @@ class Layanan_pu extends CI_Controller
             'nama_layanan' => $this->input->post('nama_layanan')
         );
 
-        $this->M_layanan_pu->save($data);
+        $this->M_pu_layanan->save($data);
         echo json_encode(array("status" => TRUE));
     }
 
@@ -102,13 +102,13 @@ class Layanan_pu extends CI_Controller
             'nama_layanan' => $this->input->post('nama_layanan')
         );
         $this->db->where('id', $this->input->post('id'));
-        $this->db->update('tbl_layanan_pu', $data);
+        $this->db->update('pu_layanan', $data);
         echo json_encode(array("status" => TRUE));
     }
 
     function delete($id)
     {
-        $this->M_layanan_pu->delete($id);
+        $this->M_pu_layanan->delete($id);
         echo json_encode(array("status" => TRUE));
     }
 }

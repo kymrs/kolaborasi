@@ -156,7 +156,7 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header text-right">
-                    <a class="btn btn-secondary btn-sm" style="background-color: rgb(36, 44, 73);" href="<?= base_url('penawaran_pu') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+                    <a class="btn btn-secondary btn-sm" style="background-color: rgb(36, 44, 73);" href="<?= base_url('pu_penawaran') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
                     <form id="form">
@@ -701,7 +701,7 @@
     //GENERATE NOMOR PELAYANAN
     if (id == 0) {
         $.ajax({
-            url: "<?php echo site_url('penawaran_pu/generate_kode') ?>",
+            url: "<?php echo site_url('pu_penawaran/generate_kode') ?>",
             type: "POST",
             data: {},
             dataType: "JSON",
@@ -742,7 +742,7 @@
             $('.aksi').text('Update');
             $("select option[value='']").hide();
             $.ajax({
-                url: "<?php echo site_url('penawaran_pu/edit_data') ?>/" + id,
+                url: "<?php echo site_url('pu_penawaran/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -1034,9 +1034,9 @@
             if (!$form.valid()) return false;
             var url;
             if (id == 0) {
-                url = "<?php echo site_url('penawaran_pu/add') ?>";
+                url = "<?php echo site_url('pu_penawaran/add') ?>";
             } else {
-                url = "<?php echo site_url('penawaran_pu/update/') ?>" + id;
+                url = "<?php echo site_url('pu_penawaran/update/') ?>" + id;
             }
 
             $.ajax({
@@ -1054,7 +1054,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then((result) => {
-                            location.href = "<?= base_url('penawaran_pu') ?>";
+                            location.href = "<?= base_url('pu_penawaran') ?>";
                         })
                     }
                 },

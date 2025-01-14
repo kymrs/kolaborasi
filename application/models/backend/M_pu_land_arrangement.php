@@ -3,11 +3,11 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-class M_penawaran_la_pu extends CI_Model
+class M_pu_land_arrangement extends CI_Model
 {
     // INISIASI VARIABLE
     var $id = 'id';
-    var $table = 'tbl_land_arrangement';
+    var $table = 'pu_land_arrangement';
     var $column_order = array(null, null, 'no_pelayanan', 'no_arsip', 'produk', 'tgl_berlaku', 'keberangkatan', 'durasi', 'tempat', 'biaya', 'pelanggan', 'created_at');
     var $column_search = array('no_pelayanan', 'no_arsip', 'produk', 'tgl_berlaku', 'keberangkatan', 'durasi', 'tempat', 'biaya', 'pelanggan', 'created_at'); //field yang diizin untuk pencarian
     var $order = array('id' => 'desc');
@@ -27,9 +27,9 @@ class M_penawaran_la_pu extends CI_Model
                 if ($i === 0) // looping awal
                 {
                     $this->db->group_start();
-                    $this->db->like('tbl_land_arrangement.' . $item, $_POST['search']['value']);
+                    $this->db->like('pu_land_arrangement.' . $item, $_POST['search']['value']);
                 } else {
-                    $this->db->or_like('tbl_land_arrangement.' . $item, $_POST['search']['value']);
+                    $this->db->or_like('pu_land_arrangement.' . $item, $_POST['search']['value']);
                 }
 
                 if (count($this->column_search) - 1 == $i) {
@@ -121,21 +121,21 @@ class M_penawaran_la_pu extends CI_Model
 
     public function getPenawaran($id)
     {
-        $data = $this->db->from('tbl_land_arrangement')->where('id', $id)->get()->row();
+        $data = $this->db->from('pu_land_arrangement')->where('id', $id)->get()->row();
         return $data;
     }
 
     public function get_rundown($no_pelayanan)
     {
-        $data = $this->db->from('tbl_rundown')->where('no_pelayanan', $no_pelayanan)->get()->result();
+        $data = $this->db->from('pu_rundown')->where('no_pelayanan', $no_pelayanan)->get()->result();
         return $data;
     }
 
     public function getHotel($id)
     {
         $this->db->select('a.nama_hotel, a.rating, a.kota, a.negara');
-        $this->db->from('tbl_hotel_pu as a');
-        $this->db->join('tbl_land_arrangement_htl as b', 'a.id = b.id_hotel', 'left');
+        $this->db->from('pu_hotel as a');
+        $this->db->join('pu_land_arrangement_htl as b', 'a.id = b.id_hotel', 'left');
         $this->db->where('b.id_la', $id);
         $data = $this->db->get()->result_array();
         return $data;
@@ -145,9 +145,9 @@ class M_penawaran_la_pu extends CI_Model
     {
         $formatted_date = date('Y', strtotime($date));
         $this->db->select('no_pelayanan');
-        $where = 'id=(SELECT max(id) FROM tbl_land_arrangement where SUBSTRING(no_pelayanan, -4, 4) = ' . $formatted_date . ')';
+        $where = 'id=(SELECT max(id) FROM pu_land_arrangement where SUBSTRING(no_pelayanan, -4, 4) = ' . $formatted_date . ')';
         $this->db->where($where);
-        $query = $this->db->from('tbl_land_arrangement')->get();
+        $query = $this->db->from('pu_land_arrangement')->get();
         return $query;
     }
 
@@ -155,27 +155,27 @@ class M_penawaran_la_pu extends CI_Model
     {
         $formatted_date = date('y', strtotime($date));
         $this->db->select('no_arsip');
-        $where = 'id=(SELECT max(id) FROM tbl_arsip_pu where SUBSTRING(no_arsip, 3, 2) = ' . $formatted_date . ')';
+        $where = 'id=(SELECT max(id) FROM pu_arsip where SUBSTRING(no_arsip, 3, 2) = ' . $formatted_date . ')';
         $this->db->where($where);
-        $query = $this->db->from('tbl_arsip_pu')->get();
+        $query = $this->db->from('pu_arsip')->get();
         return $query;
     }
 
     public function save($data)
     {
-        $this->db->insert('tbl_land_arrangement', $data);
+        $this->db->insert('pu_land_arrangement', $data);
         return $this->db->insert_id();
     }
 
     public function save_rundown($data)
     {
-        $this->db->insert_batch('tbl_rundown', $data);
+        $this->db->insert_batch('pu_rundown', $data);
         return $this->db->insert_id();
     }
 
     public function save_arsip($data)
     {
-        $this->db->insert('tbl_arsip_pu', $data);
+        $this->db->insert('pu_arsip', $data);
         return $this->db->insert_id();
     }
 
@@ -184,13 +184,13 @@ class M_penawaran_la_pu extends CI_Model
         // Cek apakah array $data tidak kosong
         if (!empty($data)) {
             // Menggunakan insert_batch untuk memasukkan banyak baris data sekaligus
-            $this->db->insert_batch('tbl_land_arrangement_htl', $data);
+            $this->db->insert_batch('pu_land_arrangement_htl', $data);
 
             // Cek apakah ada kesalahan pada saat insert
             if ($this->db->affected_rows() > 0) {
                 return TRUE;
             } else {
-                log_message('error', 'Insert to tbl_land_arrangement_htl failed: ' . $this->db->last_query());
+                log_message('error', 'Insert to pu_land_arrangement_htl failed: ' . $this->db->last_query());
                 return FALSE;
             }
         } else {
@@ -202,8 +202,8 @@ class M_penawaran_la_pu extends CI_Model
     public function get_hotels($id_la)
     {
         $this->db->select('b.id, b.nama_hotel, b.rating, b.kota, b.negara');
-        $this->db->from('tbl_land_arrangement_htl AS a');
-        $this->db->join('tbl_hotel_pu AS b', 'a.id_hotel = b.id'); // Kondisi ON untuk join
+        $this->db->from('pu_land_arrangement_htl AS a');
+        $this->db->join('pu_hotel AS b', 'a.id_hotel = b.id'); // Kondisi ON untuk join
         $this->db->where('a.id_la', $id_la); // Pastikan $id_la terdefinisi
         $query = $this->db->get();
 
@@ -214,7 +214,7 @@ class M_penawaran_la_pu extends CI_Model
     public function get_la_hotel($id_la)
     {
         $this->db->select('id_la, id_hotel, is_active');
-        $this->db->from('tbl_land_arrangement_htl');
+        $this->db->from('pu_land_arrangement_htl');
         $this->db->where('id_la', $id_la);
         $query = $this->db->get();
 

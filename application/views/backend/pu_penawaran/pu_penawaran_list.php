@@ -16,7 +16,7 @@
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex justify-content-between align-items-center">
                     <?php if ($add == 'Y') { ?>
-                        <a class="btn btn-primary btn-sm" href="<?= base_url('penawaran_la_pu/add_form') ?>">
+                        <a class="btn btn-primary btn-sm" href="<?= base_url('pu_penawaran/add_form') ?>">
                             <i class="fa fa-plus"></i>&nbsp;Add Data
                         </a>
                     <?php } ?>
@@ -30,14 +30,12 @@
                                 <th>Action</th>
                                 <th>Kode Pelayanan</th>
                                 <th>No Arsip</th>
+                                <th>Pelanggan</th>
                                 <th>Produk</th>
-                                <th>Tanggal Berlaku</th>
                                 <th>Keberangkatan</th>
                                 <th>Durasi</th>
-                                <th>Tempat</th>
-                                <th>Biaya</th>
-                                <th>Pelanggan</th>
                                 <th>Tanggal Dokumen</th>
+                                <th>Tanggal Berlaku</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -48,14 +46,12 @@
                                 <th>Action</th>
                                 <th>Kode Pelayanan</th>
                                 <th>No Arsip</th>
+                                <th>Pelanggan</th>
                                 <th>Produk</th>
-                                <th>Tanggal Berlaku</th>
                                 <th>Keberangkatan</th>
                                 <th>Durasi</th>
-                                <th>Tempat</th>
-                                <th>Biaya</th>
-                                <th>Pelanggan</th>
                                 <th>Tanggal Dokumen</th>
+                                <th>Tanggal Berlaku</th>
                             </tr>
                         </tfoot>
                     </table>
@@ -80,7 +76,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('penawaran_la_pu/get_list') ?>",
+                "url": "<?php echo site_url('pu_penawaran/get_list') ?>",
                 "type": "POST",
                 "data": function(d) {
                     d.status = $('#appFilter').val(); // Tambahkan parameter status ke permintaan server
@@ -91,11 +87,11 @@
             //     "infoFiltered": ""
             // },
             "columnDefs": [{
-                    "targets": [2, 3, 5, 6],
+                    "targets": [3, 8, 9],
                     "className": 'dt-head-nowrap'
                 },
                 {
-                    "targets": [1, 3, 4],
+                    "targets": [1, 4, 5, 8, 9],
                     "className": 'dt-body-nowrap'
                 }, {
                     "targets": [0, 1],
@@ -118,7 +114,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: "<?php echo site_url('penawaran_la_pu/delete/') ?>" + id,
+                    url: "<?php echo site_url('pu_penawaran/delete/') ?>" + id,
                     type: "POST",
                     dataType: "JSON",
                     success: function(data) {
@@ -129,7 +125,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then((result) => {
-                            location.href = "<?= base_url('penawaran_la_pu') ?>";
+                            location.href = "<?= base_url('pu_penawaran') ?>";
                         })
                     },
                     error: function(jqXHR, textStatus, errorThrown) {

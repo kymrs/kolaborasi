@@ -193,10 +193,10 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header text-right">
-                    <a class="btn btn-secondary btn-sm" href="<?= base_url('penawaran_la_pu') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+                    <a class="btn btn-secondary btn-sm" href="<?= base_url('pu_land_arrangement') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
-                    <form id="form" method="POST" action="<?= base_url('penawaran_la_pu/add') ?>">
+                    <form id="form" method="POST" action="<?= base_url('pu_land_arrangement/add') ?>">
                         <div class="row p-3">
                             <div class="col-md-6">
                                 <div class="mb-3 row">
@@ -500,7 +500,7 @@
 
     //GENERATE NOMOR PELAYANAN
     $.ajax({
-        url: "<?php echo site_url('penawaran_la_pu/generate_kode') ?>",
+        url: "<?php echo site_url('pu_land_arrangement/generate_kode') ?>",
         type: "POST",
         data: {},
         dataType: "JSON",
@@ -572,7 +572,7 @@
             $('.aksi').append('<span class="front front-aksi">Update</span>');
             $("select option[value='']").hide();
             $.ajax({
-                url: "<?php echo site_url('penawaran_la_pu/edit_data') ?>/" + id,
+                url: "<?php echo site_url('pu_land_arrangement/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -699,9 +699,9 @@
             if (!$form.valid()) return false;
             var url;
             if (id == 0) {
-                url = "<?php echo site_url('penawaran_la_pu/add') ?>";
+                url = "<?php echo site_url('pu_land_arrangement/add') ?>";
             } else {
-                url = "<?php echo site_url('penawaran_la_pu/update/') ?>" + id;
+                url = "<?php echo site_url('pu_land_arrangement/update/') ?>" + id;
             }
 
             // Tambahkan integerValue ke dalam data form
@@ -726,7 +726,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then((result) => {
-                            location.href = "<?= base_url('penawaran_la_pu') ?>";
+                            location.href = "<?= base_url('pu_land_arrangement') ?>";
                         })
                     } else {
                         if (data.error == "master") {
