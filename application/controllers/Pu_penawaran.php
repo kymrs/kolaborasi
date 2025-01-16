@@ -586,14 +586,6 @@ class Pu_penawaran extends CI_Controller
             $this->db->delete('pu_rundown', ['no_pelayanan' => $no_pelayanan]);
         }
 
-        // Path file yang akan dihapus
-        $file_path = './assets/backend/document/qrcode/' . 'qr-' . $no_arsip;
-
-        // Hapus file jika ada
-        if ($no_arsip && file_exists($file_path)) {
-            unlink($file_path);
-        }
-
         // Hapus data master
         $this->db->delete('pu_penawaran', ['id' => $id]);
 

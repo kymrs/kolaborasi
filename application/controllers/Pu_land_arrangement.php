@@ -466,7 +466,7 @@ class Pu_land_arrangement extends CI_Controller
             $this->db->delete('pu_land_arrangement_htl', ['id_la' => $id]);
 
             // Hapus dari tabel tbL-arsip berdasarkan nomor pelayanan
-            $this->db->delete('tbl_arsip_pu', ['no_arsip' => $no_pelayanan->no_arsip]);
+            $this->db->delete('pu_arsip', ['no_arsip' => $no_pelayanan->no_arsip]);
 
             // Kirim respons sukses
             echo json_encode(array("status" => TRUE, "message" => "Data berhasil dihapus"));
