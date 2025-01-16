@@ -154,7 +154,7 @@
                 <div class="row">
                     <div class="col-12 text-center">
                         <p class="lead" style="font-size: 32px">Bukti Serah Terima:</p>
-                        <img src="<?= base_url() ?>/assets/backend/document/tanda_terima/<?= $data->foto ?>" height="300px">
+                        <img src="<?= base_url() ?>/assets/backend/document/tanda_terima_pu/<?= $data->foto ?>" height="300px">
                     </div>
                 </div><br />
 

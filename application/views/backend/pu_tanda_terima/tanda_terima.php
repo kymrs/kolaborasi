@@ -151,7 +151,7 @@
                 "serverSide": true,
                 "order": [],
                 "ajax": {
-                    "url": "<?php echo site_url('tanda_terima/get_list') ?>",
+                    "url": "<?php echo site_url('pu_tanda_terima/get_list') ?>",
                     "type": "POST"
                 },
                 "columnDefs": [{
@@ -211,9 +211,9 @@
                 var $form = $(this);
                 if (!$form.valid()) return false;
                 if (method == 'add') {
-                    url = "<?php echo site_url('tanda_terima/add') ?>";
+                    url = "<?php echo site_url('pu_tanda_terima/add') ?>";
                 } else {
-                    url = "<?php echo site_url('tanda_terima/update') ?>";
+                    url = "<?php echo site_url('pu_tanda_terima/update') ?>";
                 }
 
                 $.ajax({
@@ -268,7 +268,7 @@
             $('.card-title').text('Edit Data');
             $('.aksi').text('Update');
             $.ajax({
-                url: "<?php echo site_url('tanda_terima/get_id/') ?>/" + id,
+                url: "<?php echo site_url('pu_tanda_terima/get_id/') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -302,12 +302,12 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: "<?php echo site_url('tanda_terima/delete') ?>/" + id,
+                        url: "<?php echo site_url('pu_tanda_terima/delete') ?>/" + id,
                         type: "POST",
                         dataType: "JSON",
                         success: function(data) {
                             Swal.fire({
-                                position: 'top-end',
+                                position: 'center',
                                 icon: 'success',
                                 title: 'Your data has been deleted',
                                 showConfirmButton: false,
@@ -325,7 +325,7 @@
 
         function get_nomor() {
             $.ajax({
-                url: "<?php echo site_url('tanda_terima/get_no/') ?>",
+                url: "<?php echo site_url('pu_tanda_terima/get_no/') ?>",
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -345,18 +345,18 @@
         }
 
         function view_data(id) {
-            window.open("<?php echo site_url('tanda_terima/preview/') ?>" + id, '_self');
+            window.open("<?php echo site_url('pu_tanda_terima/preview/') ?>" + id, '_self');
         }
 
         function print_data(id) {
-            window.open('<?= base_url("tanda_terima/print/") ?>' + id, '_blank')
+            window.open('<?= base_url("pu_tanda_terima/print/") ?>' + id, '_blank')
         }
 
         function back() {
-            window.open('<?= base_url("tanda_terima/") ?>', '_self')
+            window.open('<?= base_url("pu_tanda_terima/") ?>', '_self')
         }
 
         function pdf(id) {
-            window.open('<?= base_url("tanda_terima/pdf/") ?>' + id, '_blank')
+            window.open('<?= base_url("pu_tanda_terima/pdf/") ?>' + id, '_blank')
         }
     </script>

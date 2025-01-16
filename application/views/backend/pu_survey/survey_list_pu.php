@@ -42,11 +42,11 @@
                             <thead>
                                 <tr>
                                     <th>No</th>
-                                    <th style="width: 120px;">Action</th>
-                                    <th>Nama</th>
-                                    <th>Email</th>
-                                    <th>No HP</th>
-                                    <th>Created At</th>
+                                    <th style="width: 10px;">Action</th>
+                                    <th>Nama Jamaah</th>
+                                    <th>Tanggal Keberangkatan</th>
+                                    <th>No. Handphone</th>
+                                    <th>Dibuat Pada</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -55,11 +55,11 @@
                             <tfoot>
                                 <tr>
                                     <th>No</th>
-                                    <th style="width: 120px;">Action</th>
-                                    <th>Nama</th>
-                                    <th>Email</th>
-                                    <th>No HP</th>
-                                    <th>Created At</th>
+                                    <th style="width: 10px;">Action</th>
+                                    <th>Nama Jamaah</th>
+                                    <th>Tanggal Keberangkatan</th>
+                                    <th>No. Handphone</th>
+                                    <th>Dibuat Pada</th>
                                 </tr>
                             </tfoot>
                         </table>

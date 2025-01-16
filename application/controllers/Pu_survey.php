@@ -12,19 +12,20 @@ class Pu_survey extends CI_Controller
         date_default_timezone_set('Asia/Jakarta');
 
         // Header untuk CORS
-        header("Access-Control-Allow-Origin: https://survey.pengenumroh.com");
-        header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-        header("Access-Control-Allow-Headers: Content-Type, Authorization");
+        // header("Access-Control-Allow-Origin: https://survey.pengenumroh.com");
+        // header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+        // header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
-        // Tangani preflight request OPTIONS
-        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-            header("HTTP/1.1 200 OK");
-            exit;
-        }
+        // // Tangani preflight request OPTIONS
+        // if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+        //     header("HTTP/1.1 200 OK");
+        //     exit;
+        // }
     }
 
     public function index()
     {
+        $this->M_login->getsecurity();
         $data['title'] = "backend/pu_survey/survey_list_pu";
         $data['titleview'] = "Data Survey Jamaah";
         $this->load->view('backend/home', $data);
@@ -42,18 +43,18 @@ class Pu_survey extends CI_Controller
         function bulanIndonesia($tanggal)
         {
             $bulan = array(
-                '01' => 'januari',
-                '02' => 'februari',
-                '03' => 'maret',
-                '04' => 'april',
-                '05' => 'mei',
-                '06' => 'juni',
-                '07' => 'juli',
-                '08' => 'agustus',
-                '09' => 'september',
-                '10' => 'oktober',
-                '11' => 'november',
-                '12' => 'desember'
+                '01' => 'Januari',
+                '02' => 'Februari',
+                '03' => 'Maret',
+                '04' => 'April',
+                '05' => 'Mei',
+                '06' => 'Juni',
+                '07' => 'Juli',
+                '08' => 'Agustus',
+                '09' => 'September',
+                '10' => 'Oktober',
+                '11' => 'November',
+                '12' => 'Desember'
             );
 
             return $bulan[date('m', strtotime($tanggal))];
@@ -64,16 +65,16 @@ class Pu_survey extends CI_Controller
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
 
-            $action_read = ($read == 'Y') ? '<a href="pu_survey/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
+            $action_read = ($read == 'Y') ? '<a href="pu_survey/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>' : '';
 
             $action = $action_read;
 
             $no++;
             $row = array();
             $row[] = $no;
-            $row[] = $action;
+            $row[] = '<div style="text-align: center;">' . $action . '</div>';
             $row[] = $field->nama;
-            $row[] = $field->email;
+            $row[] = date('d ', strtotime($field->tgl_keberangkatan)) . bulanIndonesia($field->tgl_keberangkatan) . date(' Y', strtotime($field->tgl_keberangkatan));
             $row[] = $field->no_hp;
             $row[] = date('d ', strtotime($field->created_at)) . bulanIndonesia($field->created_at) . date(' Y', strtotime($field->created_at));
             $row[] = $field->created_at;
@@ -93,6 +94,7 @@ class Pu_survey extends CI_Controller
 
     function read_form($id)
     {
+        $this->M_login->getsecurity();
         $data['survey'] = $this->M_pu_survey->get_by_id($id);
         $data['title_view'] = "Data Survey Jamaah";
         $data['title'] = 'backend/pu_survey/survey_read_pu';
@@ -107,13 +109,13 @@ class Pu_survey extends CI_Controller
 
     public function add()
     {
-        // header("Access-Control-Allow-Origin: *");
-        // header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
-        // header("Access-Control-Allow-Headers: Content-Type, Authorization");
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
+        header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
         $data = array(
             'nama' => ucwords(strtolower($this->input->post('nama'))),
-            'email' => $this->input->post('email'),
+            'tgl_keberangkatan' => date('Y-m-d', strtotime($this->input->post('tgl_keberangkatan'))),
             'no_hp' => $this->input->post('no_hp'),
             'q1' => $this->input->post('q1'),
             'q2' => $this->input->post('q2'),
@@ -131,7 +133,9 @@ class Pu_survey extends CI_Controller
             'q14' => $this->input->post('q14'),
             'q15' => $this->input->post('q15'),
             'q16' => $this->input->post('q16'),
-            'q17' => $this->input->post('q17')
+            'q17' => $this->input->post('q17'),
+            'q18' => $this->input->post('q18'),
+            'created_at' => date('Y-m-d H:i:s')
         );
 
         $this->db->insert('pu_survey', $data);

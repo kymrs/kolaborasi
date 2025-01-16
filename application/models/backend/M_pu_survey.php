@@ -7,8 +7,8 @@ class M_pu_survey extends CI_Model
 {
     var $id = 'id';
     var $table = 'pu_survey'; //nama tabel dari database
-    var $column_order = array(null, null, 'nama', 'email', 'no_hp', 'created_at');
-    var $column_search = array('nama', 'email', 'no_hp', 'created_at'); //field yang diizin untuk pencarian 
+    var $column_order = array(null, null, 'nama', 'tgl_keberangkatan', 'no_hp', 'created_at');
+    var $column_search = array('nama', 'tgl_keberangkatan', 'no_hp', 'created_at'); //field yang diizin untuk pencarian 
     var $order = array('id' => 'desc'); // default order 
 
     public function __construct()

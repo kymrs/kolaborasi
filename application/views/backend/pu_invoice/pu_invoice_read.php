@@ -10,6 +10,8 @@
 <body>
     <div class="container">
         <div class="canvas">
+            <a class="btn btn-secondary btn-sm" onclick="history.back()" style="float: right"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+            <hr class="line-header">
             <header>
                 <div class="left-side">
                     <div class="logo">

@@ -54,6 +54,12 @@ hr.line {
     margin: 12px 0;
 }
 
+hr.line-header {
+    background-color: rgba(0,0,0,0.1);
+    clear: both;
+    margin-top: 50px;
+}
+
 /* Main Content */
 main {
     margin: 0;

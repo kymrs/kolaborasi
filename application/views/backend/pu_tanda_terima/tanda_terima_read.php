@@ -159,7 +159,7 @@
             </table>
             <div class="serah-terima">
                 <p class="lead">Bukti Serah Terima:</p>
-                <img src="<?= base_url() ?>/assets/backend/document/tanda_terima/<?= $data->foto ?>" height="300px">
+                <img src="<?= base_url() ?>/assets/backend/document/tanda_terima_pu/<?= $data->foto ?>" height="300px">
                 <h1>PENGENUMROH.COM</h1>
                 <h2>YOUR TRUSTED UMRAH & HAJJ MARKETPLACE</h2>
             </div>

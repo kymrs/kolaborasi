@@ -131,19 +131,40 @@
                         </div>
                         <p style="font-weight:bold;">Identitas Responden</p>
                         <div class="form-group row mt-3">
-                            <label class="col-sm-2 col-form-label">Nama</label>
+                            <label class="col-sm-3 col-form-label">Nama Lengkap</label>
                             <div class="col-sm-4">
                                 <input type="text" class="form-control" name="nama" id="nama" placeholder="Nama" value="<?= $survey->nama ?>" disabled>
                             </div>
                         </div>
                         <div class="form-group row mt-3">
-                            <label class="col-sm-2 col-form-label">Email</label>
+                            <label class="col-sm-3 col-form-label">Tanggal Keberangkatan</label>
+                            <?php
+                            function bulanIndonesia($tanggal)
+                            {
+                                $bulan = array(
+                                    '01' => 'Januari',
+                                    '02' => 'Februari',
+                                    '03' => 'Maret',
+                                    '04' => 'April',
+                                    '05' => 'Mei',
+                                    '06' => 'Juni',
+                                    '07' => 'Juli',
+                                    '08' => 'Agustus',
+                                    '09' => 'September',
+                                    '10' => 'Oktober',
+                                    '11' => 'November',
+                                    '12' => 'Desember'
+                                );
+
+                                return $bulan[date('m', strtotime($tanggal))];
+                            }
+                            ?>
                             <div class="col-sm-4">
-                                <input type="email" class="form-control" name="email" id="email" placeholder="Email" value="<?= $survey->email ?>" disabled>
+                                <input type="text" class="form-control" name="tgl_keberangkatan" id="tgl_keberangkatan" placeholder="Email" value="<?= date('d ', strtotime($survey->tgl_keberangkatan)) . bulanIndonesia($survey->tgl_keberangkatan) . date(' Y', strtotime($survey->tgl_keberangkatan)) ?>" disabled>
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label class="col-sm-2 col-form-label">No. Handphone</label>
+                            <label class="col-sm-3 col-form-label">No. Handphone</label>
                             <div class="col-sm-4">
                                 <input type="text" class="form-control" name="no_hp" id="no_hp" placeholder="No. Handphone" value="<?= $survey->no_hp ?>" disabled>
                             </div>
@@ -214,7 +235,7 @@
                                     <input type="radio" name="q5" value="2" <?= $survey->q5 == 2 ? 'checked' : '' ?>><i></i>
                                     <input type="radio" name="q5" value="3" <?= $survey->q5 == 3 ? 'checked' : '' ?>><i></i>
                                     <input type="radio" name="q5" value="5" <?= $survey->q5 == 4 ? 'checked' : '' ?>><i></i>
-                                    <input type="radio" name="q4" value="5" <?= $survey->q5 == 5 ? 'checked' : '' ?>><i></i>
+                                    <input type="radio" name="q5" value="5" <?= $survey->q5 == 5 ? 'checked' : '' ?>><i></i>
                                 </span>
                             </div>
                         </fieldset>
@@ -243,7 +264,7 @@
 
                         <h5>5. Pelayanan di Makkah dan Madinah</h5>
                         <fieldset class="form-group row">
-                            <legend class="col-form-label col-sm-9 float-sm-left pt-0">A. Apakah Bapak/Ibu mendapatkan pelayanan terbaik selama di Makkah dan Madinah, termasuk hotel, transportasi, tour leader, muthowif, dan layanan lainnya?</legend>
+                            <legend class="col-form-label col-sm-9 float-sm-left pt-0">A. Apakah Bapak/Ibu mendapatkan pelayanan terbaik selama di Makkah dan Madinah, termasuk hotel, transportasi, tour leader, muthowwif, dan layanan lainnya?</legend>
                             <div class="col-sm-3">
                                 <span class="star-rating">
                                     <input type="radio" name="q8" value="1" <?= $survey->q8 == 1 ? 'checked' : '' ?>><i></i>
@@ -255,16 +276,24 @@
                             </div>
                         </fieldset>
 
+                        <h5>5. Saran dan Masukan</h5>
+                        <fieldset class="form-group row">
+                            <legend class="col-form-label col-sm-9 float-sm-left pt-0">A. Menurut Bapak / Ibu apa yang perlu di perbaiki dari layanan travel untuk meningkatkan kualitas pelayanan di masa depan?</legend>
+                            <div class="col-sm-12">
+                                <textarea class="form-control" name="q9" id="q9" placeholder="Type in here..." style="resize:none; height: 90px;"><?= $survey->q9 ?></textarea>
+                            </div>
+                        </fieldset>
+
                         <h5>6. Penilaian Travel</h5>
                         <fieldset class="form-group row">
                             <legend class="col-form-label col-sm-9 float-sm-left pt-0">A. Penilaian secara menyeluruh terhadap layanan travel?</legend>
                             <div class="col-sm-3">
                                 <span class="star-rating">
-                                    <input type="radio" name="q9" value="1" <?= $survey->q9 == 1 ? 'checked' : '' ?>><i></i>
-                                    <input type="radio" name="q9" value="2" <?= $survey->q9 == 2 ? 'checked' : '' ?>><i></i>
-                                    <input type="radio" name="q9" value="3" <?= $survey->q9 == 3 ? 'checked' : '' ?>><i></i>
-                                    <input type="radio" name="q9" value="4" <?= $survey->q9 == 4 ? 'checked' : '' ?>><i></i>
-                                    <input type="radio" name="q9" value="5" <?= $survey->q9 == 5 ? 'checked' : '' ?>><i></i>
+                                    <input type="radio" name="q10" value="1" <?= $survey->q10 == 1 ? 'checked' : '' ?>><i></i>
+                                    <input type="radio" name="q10" value="2" <?= $survey->q10 == 2 ? 'checked' : '' ?>><i></i>
+                                    <input type="radio" name="q10" value="3" <?= $survey->q10 == 3 ? 'checked' : '' ?>><i></i>
+                                    <input type="radio" name="q10" value="4" <?= $survey->q10 == 4 ? 'checked' : '' ?>><i></i>
+                                    <input type="radio" name="q10" value="5" <?= $survey->q10 == 5 ? 'checked' : '' ?>><i></i>
                                 </span>
                             </div>
                         </fieldset>
@@ -277,19 +306,6 @@
                             <label class="col-sm-12">A. Sejauh mana Bapak/Ibu puas dengan proses pendaftaran, pendataan, dan pembayaran di pengenumroh? Apakah Bapak/Ibu mendapatkan kemudahan dan informasi yang jelas?</label>
                             <div class="col-sm-3">
                                 <span class="star-rating">
-                                    <input type="radio" name="q10" value="1" <?= $survey->q10 == 1 ? 'checked' : '' ?>><i></i>
-                                    <input type="radio" name="q10" value="2" <?= $survey->q10 == 2 ? 'checked' : '' ?>><i></i>
-                                    <input type="radio" name="q10" value="3" <?= $survey->q10 == 3 ? 'checked' : '' ?>><i></i>
-                                    <input type="radio" name="q10" value="4" <?= $survey->q10 == 4 ? 'checked' : '' ?>><i></i>
-                                    <input type="radio" name="q10" value="5" <?= $survey->q10 == 5 ? 'checked' : '' ?>><i></i>
-                                </span>
-                            </div>
-                        </div>
-                        <br />
-                        <div class="form-group row">
-                            <label class="col-sm-12">B. Apakah informasi yang diberikan oleh staff pengenumroh sebelum keberangkatan sudah cukup jelas, termasuk cara pendaftaran, pemilihan produk, pembayaran, dan penyaluran perlengkapan?</label>
-                            <div class="col-sm-3">
-                                <span class="star-rating">
                                     <input type="radio" name="q11" value="1" <?= $survey->q11 == 1 ? 'checked' : '' ?>><i></i>
                                     <input type="radio" name="q11" value="2" <?= $survey->q11 == 2 ? 'checked' : '' ?>><i></i>
                                     <input type="radio" name="q11" value="3" <?= $survey->q11 == 3 ? 'checked' : '' ?>><i></i>
@@ -300,8 +316,7 @@
                         </div>
                         <br />
                         <div class="form-group row">
-                            <h5 style="margin-left: 15px;">2. Pelayanan Penanganan Masalah Jamaah</h5>
-                            <label class="col-sm-12">A. Bagaimana penilaian Bapak/Ibu terhadap pelayanan pengenumroh saat menghadapi kendala sebelum keberangkatan, seperti Paspor, vaksin, seragam, atau perlengkapan lainnya?</label>
+                            <label class="col-sm-12">B. Apakah informasi yang diberikan oleh staff pengenumroh sebelum keberangkatan sudah cukup jelas, termasuk cara pendaftaran, pemilihan produk, pembayaran, dan penyaluran perlengkapan?</label>
                             <div class="col-sm-3">
                                 <span class="star-rating">
                                     <input type="radio" name="q12" value="1" <?= $survey->q12 == 1 ? 'checked' : '' ?>><i></i>
@@ -314,8 +329,8 @@
                         </div>
                         <br />
                         <div class="form-group row">
-                            <h5 style="margin-left: 15px;">3. Pelayanan Selama di Indonesia</h5>
-                            <label class="col-sm-12">A. Seberapa puas Bapak/Ibu dengan kualitas pelayanan kami, seperti pembuatan paspor, penyediaan vaksin dan buku kuning, antar jemput berkas, serta handling Manasik, keberangkatan, dan kepulangan?</label>
+                            <h5 style="margin-left: 15px;">2. Pelayanan Penanganan Masalah Jamaah</h5>
+                            <label class="col-sm-12">A. Bagaimana penilaian Bapak/Ibu terhadap pelayanan pengenumroh saat menghadapi kendala sebelum keberangkatan, seperti Paspor, vaksin, seragam, atau perlengkapan lainnya?</label>
                             <div class="col-sm-3">
                                 <span class="star-rating">
                                     <input type="radio" name="q13" value="1" <?= $survey->q13 == 1 ? 'checked' : '' ?>><i></i>
@@ -328,20 +343,22 @@
                         </div>
                         <br />
                         <div class="form-group row">
-                            <h5 style="margin-left: 15px;">4. Kepuasan Pelanggan</h5>
-                            <label class="col-sm-12">A. Apakah Bapak / Ibu akan mempercayakan untuk menggunakan layanan pengenumroh di kemudian hari? (repeat order)</label>
-                            <div class="col-sm-12">
-                                <input type="radio" id="q14y" name="q14" value="Ya" <?= $survey->q14 == 'Ya' ? 'checked' : '' ?>>
-                                <label for="q14y" style="position: relative; bottom: 2px; left: 4px; margin-right: 10px">Ya</label>
-
-                                <input type="radio" id="q14n" name="q14" value="Tidak" <?= $survey->q14 == 'Tidak' ? 'checked' : '' ?>>
-                                <label for="q14n" style="position: relative; bottom: 2px; left: 4px">Tidak</label>
+                            <h5 style="margin-left: 15px;">3. Pelayanan Selama di Indonesia</h5>
+                            <label class="col-sm-12">A. Seberapa puas Bapak/Ibu dengan kualitas pelayanan kami, seperti pembuatan paspor, penyediaan vaksin dan buku kuning, antar jemput berkas, serta handling Manasik, keberangkatan, dan kepulangan?</label>
+                            <div class="col-sm-3">
+                                <span class="star-rating">
+                                    <input type="radio" name="q14" value="1" <?= $survey->q14 == 1 ? 'checked' : '' ?>><i></i>
+                                    <input type="radio" name="q14" value="2" <?= $survey->q14 == 2 ? 'checked' : '' ?>><i></i>
+                                    <input type="radio" name="q14" value="3" <?= $survey->q14 == 3 ? 'checked' : '' ?>><i></i>
+                                    <input type="radio" name="q14" value="4" <?= $survey->q14 == 4 ? 'checked' : '' ?>><i></i>
+                                    <input type="radio" name="q14" value="5" <?= $survey->q14 == 5 ? 'checked' : '' ?>><i></i>
+                                </span>
                             </div>
                         </div>
                         <br />
                         <div class="form-group row">
-                            <label class="col-sm-12">B. Apakah Bapak / Ibu akan merekomendasikan pengenumroh kepada khalayak ramai?
-                            </label>
+                            <h5 style="margin-left: 15px;">4. Kepuasan Pelanggan</h5>
+                            <label class="col-sm-12">A. Apakah Bapak / Ibu akan mempercayakan untuk menggunakan layanan pengenumroh di kemudian hari? (repeat order)</label>
                             <div class="col-sm-12">
                                 <input type="radio" id="q15y" name="q15" value="Ya" <?= $survey->q15 == 'Ya' ? 'checked' : '' ?>>
                                 <label for="q15y" style="position: relative; bottom: 2px; left: 4px; margin-right: 10px">Ya</label>
@@ -350,12 +367,24 @@
                                 <label for="q15n" style="position: relative; bottom: 2px; left: 4px">Tidak</label>
                             </div>
                         </div>
+                        <br />
+                        <div class="form-group row">
+                            <label class="col-sm-12">B. Apakah Bapak / Ibu akan merekomendasikan pengenumroh kepada khalayak ramai?
+                            </label>
+                            <div class="col-sm-12">
+                                <input type="radio" id="q16y" name="q16" value="Ya" <?= $survey->q16 == 'Ya' ? 'checked' : '' ?>>
+                                <label for="q16y" style="position: relative; bottom: 2px; left: 4px; margin-right: 10px">Ya</label>
+
+                                <input type="radio" id="q16n" name="q16" value="Tidak" <?= $survey->q16 == 'Tidak' ? 'checked' : '' ?>>
+                                <label for="q16n" style="position: relative; bottom: 2px; left: 4px">Tidak</label>
+                            </div>
+                        </div>
                         <br>
                         <div class="form-group row">
                             <h5 style="margin-left: 15px;">5. Saran dan Masukan</h5>
-                            <label class="col-sm-12">A. Menurut Bapak / Ibu apa yang perlu di perbaiki dari layanan pengenumroh untuk meningkatkan kualitas pelayanan di masa depan.</label>
+                            <label class="col-sm-12">A. Menurut Bapak / Ibu apa yang perlu di perbaiki dari layanan pengenumroh untuk meningkatkan kualitas pelayanan di masa depan?</label>
                             <div class="col-sm-12">
-                                <textarea class="form-control" name="q16" id="q16" placeholder="Type in here..." style="resize:none; height: 90px;"><?= $survey->q16 ?></textarea>
+                                <textarea class="form-control" name="q17" id="q17" placeholder="Type in here..." style="resize:none; height: 90px;"><?= $survey->q17 ?></textarea>
                             </div>
                         </div>
                         <h5>6. Penilaian pengenumroh</h5>
@@ -363,11 +392,11 @@
                             <legend class="col-form-label col-sm-9 float-sm-left pt-0">A. Penilaian secara menyeluruh terhadap pengenumroh?</legend>
                             <div class="col-sm-3">
                                 <span class="star-rating">
-                                    <input type="radio" name="q17" value="1" <?= $survey->q17 == 1 ? 'checked' : '' ?>><i></i>
-                                    <input type="radio" name="q17" value="2" <?= $survey->q17 == 2 ? 'checked' : '' ?>><i></i>
-                                    <input type="radio" name="q17" value="3" <?= $survey->q17 == 3 ? 'checked' : '' ?>><i></i>
-                                    <input type="radio" name="q17" value="4" <?= $survey->q17 == 4 ? 'checked' : '' ?>><i></i>
-                                    <input type="radio" name="q17" value="5" <?= $survey->q17 == 5 ? 'checked' : '' ?>><i></i>
+                                    <input type="radio" name="q18" value="1" <?= $survey->q18 == 1 ? 'checked' : '' ?>><i></i>
+                                    <input type="radio" name="q18" value="2" <?= $survey->q18 == 2 ? 'checked' : '' ?>><i></i>
+                                    <input type="radio" name="q18" value="3" <?= $survey->q18 == 3 ? 'checked' : '' ?>><i></i>
+                                    <input type="radio" name="q18" value="4" <?= $survey->q18 == 4 ? 'checked' : '' ?>><i></i>
+                                    <input type="radio" name="q18" value="5" <?= $survey->q18 == 5 ? 'checked' : '' ?>><i></i>
                                 </span>
                             </div>
                         </fieldset>

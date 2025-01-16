@@ -302,7 +302,7 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="layananModal">Layanan</h5>
-                                        <a href="<?= base_url('layanan_pu?action=add') ?>" class="btn btn-primary" style="scale: 0.8; position: relative; left: 110px; bottom: 5px">Tambah Data Layanan</a>
+                                        <a href="<?= base_url('pu_layanan?action=add') ?>" class="btn btn-primary" style="scale: 0.8; position: relative; left: 110px; bottom: 5px">Tambah Data Layanan</a>
                                         <button type="button" data-dismiss="modal" aria-label="Close" style="scale: 1.7;">
                                             <span>&times;</span>
                                         </button>
@@ -341,7 +341,7 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="hotelModal">Hotel</h5>
-                                        <a href="<?= base_url('hotel_pu?action=add') ?>" class="btn btn-primary" style="scale: 0.8; position: relative; left: 110px; bottom: 5px">Tambah Data Hotel</a>
+                                        <a href="<?= base_url('pu_hotel?action=add') ?>" class="btn btn-primary" style="scale: 0.8; position: relative; left: 110px; bottom: 5px">Tambah Data Hotel</a>
                                         <button type="button" style="scale: 1.7;" data-dismiss="modal" aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
