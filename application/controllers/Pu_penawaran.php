@@ -1,12 +1,12 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Penawaran_pu extends CI_Controller
+class Pu_penawaran extends CI_Controller
 {
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('backend/M_penawaran_pu');
+        $this->load->model('backend/M_pu_penawaran');
         $this->load->model('backend/M_notifikasi');
         $this->load->helper('date');
         $this->M_login->getsecurity();
@@ -21,7 +21,7 @@ class Penawaran_pu extends CI_Controller
         $data['add'] = $akses->add_level;
 
 
-        $data['title'] = "backend/penawaran_pu/penawaran_list_pu";
+        $data['title'] = "backend/pu_penawaran/pu_penawaran_list";
         $data['titleview'] = "Data Penawaran";
         $name = $this->db->select('name')
             ->from('tbl_data_user')
@@ -39,7 +39,7 @@ class Penawaran_pu extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $list = $this->M_penawaran_pu->get_datatables();
+        $list = $this->M_pu_penawaran->get_datatables();
         $data = array();
         $no = $_POST['start'];
 
@@ -52,10 +52,10 @@ class Penawaran_pu extends CI_Controller
         //LOOPING DATATABLES
         foreach ($list as $field) {
 
-            $action_read = ($read == 'Y') ? '<a href="penawaran_pu/read_form/' . $field->no_arsip . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
-            $action_edit = ($edit == 'Y') ? '<a href="penawaran_pu/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
+            $action_read = ($read == 'Y') ? '<a href="pu_penawaran/read_form/' . $field->no_arsip . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
+            $action_edit = ($edit == 'Y') ? '<a href="pu_penawaran/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
-            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="penawaran_pu/generate_pdf2/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
+            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="pu_penawaran/generate_pdf2/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             $action = $action_read . $action_edit . $action_delete . $action_print;
@@ -68,17 +68,17 @@ class Penawaran_pu extends CI_Controller
             $row[] = strtoupper($field->no_arsip);
             $row[] = $field->pelanggan;
             $row[] = $field->produk;
-            $row[] = $this->M_penawaran_pu->getTanggal($field->tgl_keberangkatan);
+            $row[] = $this->M_pu_penawaran->getTanggal($field->tgl_keberangkatan);
             $row[] = $field->durasi . ' Hari';
-            $row[] = $this->M_penawaran_pu->getTanggal($field->created_at);
-            $row[] = $this->M_penawaran_pu->getTanggal($field->tgl_berlaku);
+            $row[] = $this->M_pu_penawaran->getTanggal($field->created_at);
+            $row[] = $this->M_pu_penawaran->getTanggal($field->tgl_berlaku);
             $data[] = $row;
         }
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_penawaran_pu->count_all(),
-            "recordsFiltered" => $this->M_penawaran_pu->count_filtered(),
+            "recordsTotal" => $this->M_pu_penawaran->count_all(),
+            "recordsFiltered" => $this->M_pu_penawaran->count_filtered(),
             "data" => $data,
         );
         //output dalam format JSON
@@ -90,19 +90,19 @@ class Penawaran_pu extends CI_Controller
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $kode = $this->uri->segment(3);
         // var_dump($kode);
-        $data['penawaran'] = $this->M_penawaran_pu->getPenawaran($kode);
+        $data['penawaran'] = $this->M_pu_penawaran->getPenawaran($kode);
 
-        $data['layanan_termasuk'] = $this->M_penawaran_pu->getLayananTermasuk($kode);
-        $data['layanan_tidak_termasuk'] = $this->M_penawaran_pu->getLayananTidakTermasuk($kode);
+        $data['layanan_termasuk'] = $this->M_pu_penawaran->getLayananTermasuk($kode);
+        $data['layanan_tidak_termasuk'] = $this->M_pu_penawaran->getLayananTidakTermasuk($kode);
 
-        $getPenawaran = $this->db->get_where('tbl_penawaran', ['no_arsip' => $kode])->row_array();
+        $getPenawaran = $this->db->get_where('pu_penawaran', ['no_arsip' => $kode])->row_array();
         $no_pelayanan = $getPenawaran['no_pelayanan'];
-        $data['rundown'] = $this->M_penawaran_pu->getRundown($no_pelayanan);
+        $data['rundown'] = $this->M_pu_penawaran->getRundown($no_pelayanan);
 
-        $data['hotel'] = $this->M_penawaran_pu->getHotel($kode);
+        $data['hotel'] = $this->M_pu_penawaran->getHotel($kode);
 
         if ($data['penawaran'] == null) {
-            $this->load->view('backend/penawaran_pu/404');
+            $this->load->view('backend/pu_penawaran/404');
         } else {
             $no_arsip = $data['penawaran']['no_arsip'];
 
@@ -136,7 +136,7 @@ class Penawaran_pu extends CI_Controller
             // Kirim base64 ke view
             $data['qr_code'] = $qrCodeBase64;
 
-            $data['title'] = 'backend/penawaran_pu/penawaran_read_pu';
+            $data['title'] = 'backend/pu_penawaran/pu_penawaran_read';
             $data['title_view'] = 'Prepayment';
             $this->load->view('backend/home', $data);
         }
@@ -146,10 +146,10 @@ class Penawaran_pu extends CI_Controller
     {
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = 0;
-        $data['title'] = 'backend/penawaran_pu/penawaran_form_pu';
+        $data['title'] = 'backend/pu_penawaran/pu_penawaran_form';
         $this->db->order_by('nama_layanan', 'ASC');
-        $data['layanan'] = $this->db->get('tbl_layanan_pu')->result_array();
-        $data['hotel'] = $this->db->get('tbl_hotel_pu')->result_array();
+        $data['layanan'] = $this->db->get('pu_layanan')->result_array();
+        $data['hotel'] = $this->db->get('pu_hotel')->result_array();
         $data['title_view'] = 'Penawaran Form';
         $this->load->view('backend/home', $data);
     }
@@ -160,26 +160,26 @@ class Penawaran_pu extends CI_Controller
         $data['id'] = $id;
         $data['aksi'] = 'update';
         $data['title_view'] = "Edit Data Prepayment";
-        $data['title'] = 'backend/penawaran_pu/penawaran_form_pu';
-        $data['hotel'] = $this->db->get('tbl_hotel_pu')->result_array();
+        $data['title'] = 'backend/pu_penawaran/pu_penawaran_form';
+        $data['hotel'] = $this->db->get('pu_hotel')->result_array();
         $this->db->order_by('nama_layanan', 'ASC');
-        $data['layanan'] = $this->db->get('tbl_layanan_pu')->result_array();
+        $data['layanan'] = $this->db->get('pu_layanan')->result_array();
         $this->load->view('backend/home', $data);
     }
 
     function edit_data($id)
     {
-        $data['master'] = $this->db->get_where('tbl_penawaran', ['id' => $id])->row_array();
-        $data['layanan'] = $this->M_penawaran_pu->get_penawaran_detail($id); // Ambil detail layanan (status, nominal)
-        $data['hotel'] = $this->M_penawaran_pu->get_penawaran_detail2($id); // Ambil detail hotel
-        $data['rundowns'] = $this->M_penawaran_pu->get_rundown($data['master']['no_pelayanan']);
+        $data['master'] = $this->db->get_where('pu_penawaran', ['id' => $id])->row_array();
+        $data['layanan'] = $this->M_pu_penawaran->get_penawaran_detail($id); // Ambil detail layanan (status, nominal)
+        $data['hotel'] = $this->M_pu_penawaran->get_penawaran_detail2($id); // Ambil detail hotel
+        $data['rundowns'] = $this->M_pu_penawaran->get_rundown($data['master']['no_pelayanan']);
         echo json_encode($data);
     }
 
     public function generate_kode()
     {
         $date = date('Y-m-d');
-        $kode = $this->M_penawaran_pu->max_kode($date)->row();
+        $kode = $this->M_pu_penawaran->max_kode($date)->row();
         if (empty($kode->no_pelayanan)) {
             $no_urut = 0;
         } else {
@@ -206,7 +206,7 @@ class Penawaran_pu extends CI_Controller
     {
         $date = date('Y-m-d');
         // GENERATE NO PELAYANAN
-        $kode = $this->M_penawaran_pu->max_kode($date)->row();
+        $kode = $this->M_pu_penawaran->max_kode($date)->row();
         if (empty($kode->no_pelayanan)) {
             $no_urut = 0;
         } else {
@@ -220,7 +220,7 @@ class Penawaran_pu extends CI_Controller
 
         // GENERATE NOMOR ARSIP
         $date2 = date('y-m-d');
-        $kode2 = $this->M_penawaran_pu->max_kode_arsip($date2)->row();
+        $kode2 = $this->M_pu_penawaran->max_kode_arsip($date2)->row();
         if (empty($kode2->no_arsip)) {
             $no_urut2 = 0;
         } else {
@@ -260,7 +260,7 @@ class Penawaran_pu extends CI_Controller
         );
 
         // Simpan data ke tabel penawaran dan ambil ID penawaran yang baru disimpan
-        $id_penawaran = $this->M_penawaran_pu->save($data);
+        $id_penawaran = $this->M_pu_penawaran->save($data);
 
         // Simpan data ke Arsip
         $getUser = $this->db->get_where('tbl_data_user', ['id_user' => $this->session->userdata('id_user')])->row_array();
@@ -274,14 +274,14 @@ class Penawaran_pu extends CI_Controller
             'no_dokumen' => $no_pelayanan
         ];
 
-        $this->db->insert('tbl_arsip_pu', $data2);
+        $this->db->insert('pu_arsip', $data2);
 
         // // Ambil data layanan dari input (id layanan, status, dan nominal)
         $ids = $this->input->post('id_layanan'); // ID layanan
         $statuses = $this->input->post('status'); // Status layanan (Y/N)
         $nominals = preg_replace('/\D/', '', $this->input->post('nominal')); // Nominal biaya layanan
 
-        // Siapkan array untuk insert ke tabel tbl_penawaran_detail_lyn
+        // Siapkan array untuk insert ke tabel pu_penawaran_detail_lyn
         $detail_data = [];
         if (is_array($ids) && is_array($statuses) && is_array($nominals)) {
             foreach ($ids as $key => $id_layanan) {
@@ -307,9 +307,9 @@ class Penawaran_pu extends CI_Controller
             // Log atau print untuk memeriksa data yang akan diinsert
             log_message('info', 'Detail Data to insert: ' . print_r($detail_data, TRUE));
 
-            // Simpan detail layanan ke tabel tbl_penawaran_detail_lyn
+            // Simpan detail layanan ke tabel pu_penawaran_detail_lyn
             if (!empty($detail_data)) {
-                $this->M_penawaran_pu->insert_penawaran_detail($detail_data);
+                $this->M_pu_penawaran->insert_penawaran_detail($detail_data);
             }
 
             // Proses save data hotel
@@ -335,7 +335,7 @@ class Penawaran_pu extends CI_Controller
 
                 // Hanya insert jika ada data yang valid
                 if (!empty($hotel_data)) {
-                    $result = $this->M_penawaran_pu->insert_penawaran_detail2($hotel_data);
+                    $result = $this->M_pu_penawaran->insert_penawaran_detail2($hotel_data);
 
                     // Berikan respons berdasarkan hasil simpan
                     if ($result) {
@@ -364,7 +364,7 @@ class Penawaran_pu extends CI_Controller
                 'kegiatan' => $kegiatan[$i]
             );
         }
-        $this->M_penawaran_pu->save_rundown($data3);
+        $this->M_pu_penawaran->save_rundown($data3);
 
         // Kirim response
         echo json_encode(array("status" => TRUE));
@@ -414,7 +414,7 @@ class Penawaran_pu extends CI_Controller
         );
 
         // Update data penawaran
-        $this->db->update('tbl_penawaran', $data, ['id' => $id]);
+        $this->db->update('pu_penawaran', $data, ['id' => $id]);
 
         // // Pastikan semua input adalah array
         if (!is_array($layanan_ids) || !is_array($statuses) || !is_array($extra_inputs)) {
@@ -428,12 +428,12 @@ class Penawaran_pu extends CI_Controller
             $extra_input = isset($extra_inputs[$index]) ? $extra_inputs[$index] : null; // Ambil nominal
 
             // Cek apakah layanan sudah ada di database
-            $existing_layanan = $this->db->get_where('tbl_penawaran_detail_lyn', ['id_layanan' => $layanan_id, 'id_penawaran' => $id])->row();
+            $existing_layanan = $this->db->get_where('pu_penawaran_detail_lyn', ['id_layanan' => $layanan_id, 'id_penawaran' => $id])->row();
 
             // Jika status kosong, hapus dari database
             if (empty($status)) {
                 if ($existing_layanan) {
-                    $this->db->delete('tbl_penawaran_detail_lyn', ['id' => $existing_layanan->id]);
+                    $this->db->delete('pu_penawaran_detail_lyn', ['id' => $existing_layanan->id]);
                 }
                 continue; // Lewati iterasi ini dan lanjutkan ke layanan berikutnya
             }
@@ -451,7 +451,7 @@ class Penawaran_pu extends CI_Controller
                         'is_active' => $status . ' ' . $extra_input // Gabungkan status dengan nominal
                     );
                 }
-                $this->db->update('tbl_penawaran_detail_lyn', $data_layanan_update, ['id' => $existing_layanan->id]);
+                $this->db->update('pu_penawaran_detail_lyn', $data_layanan_update, ['id' => $existing_layanan->id]);
             } else {
                 // Jika layanan tidak ada, lakukan insert
                 $data_layanan_insert = array(
@@ -462,7 +462,7 @@ class Penawaran_pu extends CI_Controller
 
                 // Debugging: Tampilkan data yang akan diinsert
                 // var_dump($data_layanan_insert);
-                $this->db->insert('tbl_penawaran_detail_lyn', $data_layanan_insert);
+                $this->db->insert('pu_penawaran_detail_lyn', $data_layanan_insert);
             }
         }
 
@@ -477,7 +477,7 @@ class Penawaran_pu extends CI_Controller
         foreach ($hotel_ids as $index => $hotel_id) {
             $status2 = isset($statuses2[$index]) ? $statuses2[$index] : null;
 
-            $existing_hotel = $this->db->get_where('tbl_penawaran_detail_htl', [
+            $existing_hotel = $this->db->get_where('pu_penawaran_detail_htl', [
                 'id_hotel' => $hotel_id,
                 'id_penawaran' => $id
             ])->row();
@@ -485,14 +485,14 @@ class Penawaran_pu extends CI_Controller
             // Jika status kosong, hapus dari database
             if (empty($status2)) {
                 if ($existing_hotel) {
-                    $this->db->delete('tbl_penawaran_detail_htl', ['id' => $existing_hotel->id]);
+                    $this->db->delete('pu_penawaran_detail_htl', ['id' => $existing_hotel->id]);
                 }
                 continue; // Lewati iterasi ini dan lanjutkan ke hotel berikutnya
             }
 
             // Jika hotel sudah ada, lakukan update
             if ($existing_hotel) {
-                $this->db->update('tbl_penawaran_detail_htl', ['is_active' => $status2], ['id' => $existing_hotel->id]);
+                $this->db->update('pu_penawaran_detail_htl', ['is_active' => $status2], ['id' => $existing_hotel->id]);
             } else {
                 // Jika hotel tidak ada, lakukan insert
                 $data_hotel_insert = array(
@@ -502,7 +502,7 @@ class Penawaran_pu extends CI_Controller
                 );
 
                 // Debugging: Tampilkan data yang akan diinsert
-                $this->db->insert('tbl_penawaran_detail_htl', $data_hotel_insert);
+                $this->db->insert('pu_penawaran_detail_htl', $data_hotel_insert);
             }
         }
 
@@ -517,7 +517,7 @@ class Penawaran_pu extends CI_Controller
             foreach ($deletedRows as $id2) {
                 // Hapus row dari database berdasarkan ID
                 $this->db->where('id', $id2);
-                $this->db->delete('tbl_rundown');
+                $this->db->delete('pu_rundown');
             }
         }
 
@@ -534,7 +534,7 @@ class Penawaran_pu extends CI_Controller
                     'kegiatan' => $kegiatan[$i]
                 );
                 // // Menggunakan db->replace untuk memasukkan atau menggantikan data
-                $this->db->replace('tbl_rundown', $data2[$i]);
+                $this->db->replace('pu_rundown', $data2[$i]);
             } else {
                 $data2[$i] = array(
                     'id' => $id2,
@@ -544,7 +544,7 @@ class Penawaran_pu extends CI_Controller
                 );
                 // // Menggunakan db->replace untuk memasukkan atau menggantikan data
                 $this->db->where('id', $data2[$i]['id']); // Tambahkan kondisi WHERE
-                $this->db->update('tbl_rundown', $data2[$i]); // Lakukan update
+                $this->db->update('pu_rundown', $data2[$i]); // Lakukan update
             }
         }
 
@@ -558,7 +558,7 @@ class Penawaran_pu extends CI_Controller
         $this->db->trans_start();
 
         // Ambil semua 1 row data pada tabel master
-        $get_penawaran = $this->db->get_where('tbl_penawaran', ['id' => $id])->row_array();
+        $get_penawaran = $this->db->get_where('pu_penawaran', ['id' => $id])->row_array();
 
         // Cek apakah data penawaran ditemukan
         if (!$get_penawaran) {
@@ -571,19 +571,19 @@ class Penawaran_pu extends CI_Controller
         $no_pelayanan = $get_penawaran['no_pelayanan'];
 
         // Hapus data detail layanan
-        $this->db->delete('tbl_penawaran_detail_lyn', ['id_penawaran' => $id]);
+        $this->db->delete('pu_penawaran_detail_lyn', ['id_penawaran' => $id]);
 
         // Hapus data detail hotel
-        $this->db->delete('tbl_penawaran_detail_htl', ['id_penawaran' => $id]);
+        $this->db->delete('pu_penawaran_detail_htl', ['id_penawaran' => $id]);
 
         // Hapus data arsip berdasarkan no_arsip
         if ($no_arsip) {
-            $this->db->delete('tbl_arsip_pu', ['no_arsip' => $no_arsip]);
+            $this->db->delete('pu_arsip', ['no_arsip' => $no_arsip]);
         }
 
         // Hapus data rundown berdasarkan no_pelayanan
         if ($no_pelayanan) {
-            $this->db->delete('tbl_rundown', ['no_pelayanan' => $no_pelayanan]);
+            $this->db->delete('pu_rundown', ['no_pelayanan' => $no_pelayanan]);
         }
 
         // Path file yang akan dihapus
@@ -595,7 +595,7 @@ class Penawaran_pu extends CI_Controller
         }
 
         // Hapus data master
-        $this->db->delete('tbl_penawaran', ['id' => $id]);
+        $this->db->delete('pu_penawaran', ['id' => $id]);
 
         // Selesaikan transaksi
         $this->db->trans_complete();
@@ -617,9 +617,9 @@ class Penawaran_pu extends CI_Controller
         $this->load->library('t_cpdf');
 
         // INISIAI VARIABLE
-        $penawaran = $this->M_penawaran_pu->getPenawaranById($id);
-        $rundowns = $this->M_penawaran_pu->getRundown($penawaran->no_pelayanan);
-        $hotels = $this->M_penawaran_pu->get_hotels($id);
+        $penawaran = $this->M_pu_penawaran->getPenawaranById($id);
+        $rundowns = $this->M_pu_penawaran->getRundown($penawaran->no_pelayanan);
+        $hotels = $this->M_pu_penawaran->get_hotels($id);
 
         // Initialize the TCPDF object
         $t_cpdf = new t_cpdf('P', 'mm', 'A4', true, 'UTF-8', false);
@@ -683,7 +683,7 @@ class Penawaran_pu extends CI_Controller
 
         // QR Code parameters
         if ($penawaran->no_arsip == null) {
-            $no_arsip = 'backend/penawaran_pu/404';
+            $no_arsip = 'backend/pu_penawaran/404';
             $data = $no_arsip;
         } else {
             $no_arsip = $penawaran->no_arsip;
@@ -809,8 +809,8 @@ class Penawaran_pu extends CI_Controller
 
         // Ambil data layanan
         $kode = $penawaran->no_arsip; // Kode arsip dari penawaran
-        $data_layanan_termasuk = $this->M_penawaran_pu->getLayananTermasuk($kode); // Data layanan termasuk
-        $data_layanan_tidak_termasuk = $this->M_penawaran_pu->getLayananTidakTermasuk($kode); // Data layanan tidak termasuk
+        $data_layanan_termasuk = $this->M_pu_penawaran->getLayananTermasuk($kode); // Data layanan termasuk
+        $data_layanan_tidak_termasuk = $this->M_pu_penawaran->getLayananTidakTermasuk($kode); // Data layanan tidak termasuk
 
         // Menentukan jumlah baris terbesar antara dua data
         $maxRows = max(count($data_layanan_termasuk), count($data_layanan_tidak_termasuk));
@@ -916,8 +916,6 @@ class Penawaran_pu extends CI_Controller
         $t_cpdf->Cell(50, 5, $pkt_double, 0, 1);
 
         $t_cpdf->Ln(1);
-
-
 
         $trmskY = $t_cpdf->GetY();
 

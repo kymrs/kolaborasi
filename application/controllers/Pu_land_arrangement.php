@@ -1,12 +1,12 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Penawaran_la_pu extends CI_Controller
+class Pu_land_arrangement extends CI_Controller
 {
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('backend/M_penawaran_la_pu');
+        $this->load->model('backend/M_pu_land_arrangement');
         $this->load->model('backend/M_notifikasi');
         $this->load->helper('date');
         $this->M_login->getsecurity();
@@ -22,7 +22,7 @@ class Penawaran_la_pu extends CI_Controller
 
         $this->load->model('backend/M_notifikasi');
 
-        $data['title'] = "backend/penawaran_pu/penawaran_list_la_pu";
+        $data['title'] = "backend/pu_penawaran/pu_land_arrangement_list";
         $data['titleview'] = "Data Penawaran";
         $name = $this->db->select('name')
             ->from('tbl_data_user')
@@ -40,7 +40,7 @@ class Penawaran_la_pu extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $list = $this->M_penawaran_la_pu->get_datatables();
+        $list = $this->M_pu_land_arrangement->get_datatables();
         $data = array();
         $no = $_POST['start'];
 
@@ -53,10 +53,10 @@ class Penawaran_la_pu extends CI_Controller
         //LOOPING DATATABLES
         foreach ($list as $field) {
 
-            $action_read = ($read == 'Y') ? '<a href="penawaran_la_pu/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
-            $action_edit = ($edit == 'Y') ? '<a href="penawaran_la_pu/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
+            $action_read = ($read == 'Y') ? '<a href="pu_land_arrangement/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
+            $action_edit = ($edit == 'Y') ? '<a href="pu_land_arrangement/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
-            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="penawaran_la_pu/generate_pdf2/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
+            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="pu_land_arrangement/generate_pdf2/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             $action = $action_read . $action_edit . $action_delete . $action_print;
@@ -81,8 +81,8 @@ class Penawaran_la_pu extends CI_Controller
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_penawaran_la_pu->count_all(),
-            "recordsFiltered" => $this->M_penawaran_la_pu->count_filtered(),
+            "recordsTotal" => $this->M_pu_land_arrangement->count_all(),
+            "recordsFiltered" => $this->M_pu_land_arrangement->count_filtered(),
             "data" => $data,
         );
         //output dalam format JSON
@@ -91,11 +91,11 @@ class Penawaran_la_pu extends CI_Controller
 
     public function read_form($id)
     {
-        $data['penawaran'] = $this->M_penawaran_la_pu->getPenawaran($id);
+        $data['penawaran'] = $this->M_pu_land_arrangement->getPenawaran($id);
 
         $data['id'] = $id;
         if ($data['penawaran'] == null) {
-            $this->load->view('backend/penawaran_pu/404');
+            $this->load->view('backend/pu_penawaran/404');
         } else {
             $no_arsip = $data['penawaran']->no_arsip;
 
@@ -129,11 +129,11 @@ class Penawaran_la_pu extends CI_Controller
             // Kirim base64 ke view
             $data['qr_code'] = $qrCodeBase64;
 
-            $data['title'] = 'backend/penawaran_pu/penawaran_read_la_pu';
+            $data['title'] = 'backend/pu_penawaran/pu_land_arrangement_read';
             $data['title_view'] = 'Land Arrangement';
-            $data['rundowns'] = $this->M_penawaran_la_pu->get_rundown($data['penawaran']->no_pelayanan);
-            $data['hotel'] = $this->M_penawaran_la_pu->getHotel($id);
-            $data['tgl_keberangkatan'] = $this->M_penawaran_la_pu->anotherMethod($data['penawaran']->tgl_keberangkatan);
+            $data['rundowns'] = $this->M_pu_land_arrangement->get_rundown($data['penawaran']->no_pelayanan);
+            $data['hotel'] = $this->M_pu_land_arrangement->getHotel($id);
+            $data['tgl_keberangkatan'] = $this->M_pu_land_arrangement->anotherMethod($data['penawaran']->tgl_keberangkatan);
             $this->load->view('backend/home', $data);
         }
     }
@@ -143,9 +143,9 @@ class Penawaran_la_pu extends CI_Controller
         $this->load->model('backend/M_notifikasi');
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = 0;
-        $data['title'] = 'backend/penawaran_pu/penawaran_form_la_pu';
+        $data['title'] = 'backend/pu_penawaran/pu_land_arrangement_form';
         // $data['products'] = $this->db->select('id, nama')->from('tbl_produk')->get()->result_object();
-        $data['hotel'] = $this->db->get('tbl_hotel_pu')->result_array();
+        $data['hotel'] = $this->db->get('pu_hotel')->result_array();
         $data['title_view'] = 'Land Arrangement Form';
         $this->load->view('backend/home', $data);
     }
@@ -156,25 +156,25 @@ class Penawaran_la_pu extends CI_Controller
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = $id;
         $data['aksi'] = 'update';
-        $data['title'] = 'backend/penawaran_pu/penawaran_form_la_pu';
+        $data['title'] = 'backend/pu_penawaran/pu_land_arrangement_form';
         // $data['products'] = $this->db->select('id, nama')->from('tbl_produk')->get()->result_object();
-        $data['hotel'] = $this->db->get('tbl_hotel_pu')->result_array();
+        $data['hotel'] = $this->db->get('pu_hotel')->result_array();
         $data['title_view'] = 'Edit Land Arrangement Form';
         $this->load->view('backend/home', $data);
     }
 
     function edit_data($id)
     {
-        $data['master'] = $this->db->get_where('tbl_land_arrangement', ['id' => $id])->row();
-        $data['transaksi'] = $this->db->get_where('tbl_rundown', ['no_pelayanan' => $data['master']->no_pelayanan])->result_array();
-        $data['hotel'] = $this->M_penawaran_la_pu->get_la_hotel($id); // Ambil detail hotel
+        $data['master'] = $this->db->get_where('pu_land_arrangement', ['id' => $id])->row();
+        $data['transaksi'] = $this->db->get_where('pu_rundown', ['no_pelayanan' => $data['master']->no_pelayanan])->result_array();
+        $data['hotel'] = $this->M_pu_land_arrangement->get_la_hotel($id); // Ambil detail hotel
         echo json_encode($data);
     }
 
     public function generate_kode()
     {
         $date = date('Y-m-d h:i:sa');
-        $kode = $this->M_penawaran_la_pu->max_kode($date)->row();
+        $kode = $this->M_pu_land_arrangement->max_kode($date)->row();
         if (empty($kode->no_pelayanan)) {
             $no_urut = 0;
         } else {
@@ -201,7 +201,7 @@ class Penawaran_la_pu extends CI_Controller
     {
         //GENERATE NOMOR PELAYANAN
         $date = date('Y-m-d h:i:sa');
-        $kode = $this->M_penawaran_la_pu->max_kode($date)->row();
+        $kode = $this->M_pu_land_arrangement->max_kode($date)->row();
         if (empty($kode->no_pelayanan)) {
             $no_urut = 0;
         } else {
@@ -214,7 +214,7 @@ class Penawaran_la_pu extends CI_Controller
         $bulan_romawi = bulan_angka_ke_romawi((int)$bulan);
         $no_pelayanan = 'UMROH/LA/' . $urutan . '/' . $bulan_romawi . '/' . $year;
 
-        $arsip = $this->M_penawaran_la_pu->max_kode_arsip($date)->row();
+        $arsip = $this->M_pu_land_arrangement->max_kode_arsip($date)->row();
         if (empty($arsip->no_arsip)) {
             $no_urut2 = 1;
         } else {
@@ -252,7 +252,7 @@ class Penawaran_la_pu extends CI_Controller
             'kepulangan' => $this->input->post('kepulangan')
         );
 
-        if ($id_la = $this->M_penawaran_la_pu->save($data)) {
+        if ($id_la = $this->M_pu_land_arrangement->save($data)) {
 
             // Proses save data hotel
             // Ambil data yang dikirimkan
@@ -276,7 +276,7 @@ class Penawaran_la_pu extends CI_Controller
 
                 // Hanya insert jika ada data yang valid
                 if (!empty($hotel_data)) {
-                    $this->M_penawaran_la_pu->save_hotel($hotel_data);
+                    $this->M_pu_land_arrangement->save_hotel($hotel_data);
                 } else {
                     // PESAN ERROR TABLE HOTEL
                     echo json_encode(array("status" => FALSE, "error" => "hotel"));
@@ -297,7 +297,7 @@ class Penawaran_la_pu extends CI_Controller
                 );
             }
 
-            if ($this->M_penawaran_la_pu->save_rundown($data2)) {
+            if ($this->M_pu_land_arrangement->save_rundown($data2)) {
                 //ARSIP
                 $id_user = $this->session->userdata('id_user');
                 $divisi = $this->db->select('divisi')->from('tbl_data_user')->where('id_user', $id_user)->get()->row('divisi');
@@ -310,7 +310,7 @@ class Penawaran_la_pu extends CI_Controller
                     'tgl_dokumen' => date('Y-m-d H:i:s'),
                     'no_arsip' => $no_arsip
                 );
-                if ($this->M_penawaran_la_pu->save_arsip($data3)) {
+                if ($this->M_pu_land_arrangement->save_arsip($data3)) {
                     // PESAN PENGINPUTAN BERHASIL
                     echo json_encode(array("status" => TRUE));
                 } else {
@@ -353,7 +353,7 @@ class Penawaran_la_pu extends CI_Controller
             'keberangkatan' => $this->input->post('keberangkatan'),
             'kepulangan' => $this->input->post('kepulangan')
         );
-        $this->db->update('tbl_land_arrangement', $data, ['id' => $id]);
+        $this->db->update('pu_land_arrangement', $data, ['id' => $id]);
 
         // UPDATE TRANSAKSI PENAWARAN LAND_ARRANGEMENT
         $la_id = $this->input->post('hidden_id[]');
@@ -366,7 +366,7 @@ class Penawaran_la_pu extends CI_Controller
             foreach ($deletedRows as $id2) {
                 // Hapus row dari database berdasarkan ID
                 $this->db->where('id', $id2);
-                $this->db->delete('tbl_rundown');
+                $this->db->delete('pu_rundown');
             }
         }
 
@@ -383,7 +383,7 @@ class Penawaran_la_pu extends CI_Controller
                     'kegiatan' => $kegiatan[$i]
                 );
                 // // Menggunakan db->replace untuk memasukkan atau menggantikan data
-                $this->db->replace('tbl_rundown', $data2[$i]);
+                $this->db->replace('pu_rundown', $data2[$i]);
             } else {
                 $data2[$i] = array(
                     'id' => $id2,
@@ -393,7 +393,7 @@ class Penawaran_la_pu extends CI_Controller
                 );
                 // // Menggunakan db->replace untuk memasukkan atau menggantikan data
                 $this->db->where('id', $data2[$i]['id']); // Tambahkan kondisi WHERE
-                $this->db->update('tbl_rundown', $data2[$i]); // Lakukan update
+                $this->db->update('pu_rundown', $data2[$i]); // Lakukan update
             }
         }
 
@@ -412,7 +412,7 @@ class Penawaran_la_pu extends CI_Controller
         foreach ($hotel_ids as $index => $hotel_id) {
             $status2 = isset($statuses2[$index]) ? $statuses2[$index] : null;
 
-            $existing_hotel = $this->db->get_where('tbl_land_arrangement_htl', [
+            $existing_hotel = $this->db->get_where('pu_land_arrangement_htl', [
                 'id_hotel' => $hotel_id,
                 'id_la' => $id
             ])->row();
@@ -420,14 +420,14 @@ class Penawaran_la_pu extends CI_Controller
             // Jika status kosong, hapus dari database
             if (empty($status2)) {
                 if ($existing_hotel) {
-                    $this->db->delete('tbl_land_arrangement_htl', ['id' => $existing_hotel->id]);
+                    $this->db->delete('pu_land_arrangement_htl', ['id' => $existing_hotel->id]);
                 }
                 continue; // Lewati iterasi ini dan lanjutkan ke hotel berikutnya
             }
 
             // Jika hotel sudah ada, lakukan update
             if ($existing_hotel) {
-                $this->db->update('tbl_land_arrangement_htl', ['is_active' => $status2], ['id' => $existing_hotel->id]);
+                $this->db->update('pu_land_arrangement_htl', ['is_active' => $status2], ['id' => $existing_hotel->id]);
             } else {
                 // Jika hotel tidak ada, lakukan insert
                 $data_hotel_insert = array(
@@ -437,7 +437,7 @@ class Penawaran_la_pu extends CI_Controller
                 );
 
                 // Debugging: Tampilkan data yang akan diinsert
-                $this->db->insert('tbl_land_arrangement_htl', $data_hotel_insert);
+                $this->db->insert('pu_land_arrangement_htl', $data_hotel_insert);
             }
         }
 
@@ -449,21 +449,21 @@ class Penawaran_la_pu extends CI_Controller
     {
         // Ambil no_pelayanan berdasarkan id
         $no_pelayanan = $this->db->select('no_pelayanan, no_arsip')
-            ->from('tbl_land_arrangement')
+            ->from('pu_land_arrangement')
             ->where('id', $id)
             ->get()
             ->row();
 
         // Periksa apakah data ditemukan
         if ($no_pelayanan) {
-            // Hapus dari tabel tbl_land_arrangement
-            $this->db->delete('tbl_land_arrangement', ['id' => $id]);
+            // Hapus dari tabel pu_land_arrangement
+            $this->db->delete('pu_land_arrangement', ['id' => $id]);
 
-            // Hapus dari tabel tbl_rundown berdasarkan no_pelayanan
-            $this->db->delete('tbl_rundown', ['no_pelayanan' => $no_pelayanan->no_pelayanan]);
+            // Hapus dari tabel pu_rundown berdasarkan no_pelayanan
+            $this->db->delete('pu_rundown', ['no_pelayanan' => $no_pelayanan->no_pelayanan]);
 
-            // Hapus dari tabel tbl_land_arrangement_htl berdasarkan id
-            $this->db->delete('tbl_land_arrangement_htl', ['id_la' => $id]);
+            // Hapus dari tabel pu_land_arrangement_htl berdasarkan id
+            $this->db->delete('pu_land_arrangement_htl', ['id_la' => $id]);
 
             // Hapus dari tabel tbL-arsip berdasarkan nomor pelayanan
             $this->db->delete('tbl_arsip_pu', ['no_arsip' => $no_pelayanan->no_arsip]);
@@ -483,9 +483,9 @@ class Penawaran_la_pu extends CI_Controller
         $this->load->library('t_cpdf');
 
         // INISIAI VARIABLE
-        $penawaran = $this->M_penawaran_la_pu->getPenawaran($id);
-        $rundowns = $this->M_penawaran_la_pu->get_rundown($penawaran->no_pelayanan);
-        $hotels = $this->M_penawaran_la_pu->get_hotels($id);
+        $penawaran = $this->M_pu_land_arrangement->getPenawaran($id);
+        $rundowns = $this->M_pu_land_arrangement->get_rundown($penawaran->no_pelayanan);
+        $hotels = $this->M_pu_land_arrangement->get_hotels($id);
 
         // Initialize the TCPDF object
         $t_cpdf = new t_cpdf('P', 'mm', 'A4', true, 'UTF-8', false);
@@ -550,7 +550,7 @@ class Penawaran_la_pu extends CI_Controller
 
         // Set QR Code data
         if ($penawaran->no_arsip == null) {
-            $no_arsip = 'backend/penawaran_pu/404';
+            $no_arsip = 'backend/pu_penawaran/404';
             $data = $no_arsip;
         } else {
             $no_arsip = $penawaran->no_arsip;
@@ -604,7 +604,7 @@ class Penawaran_la_pu extends CI_Controller
         $t_cpdf->SetX($right_column_x); // Pindahkan posisi ke kolom kanan
         $t_cpdf->Cell(26, 5, 'Keberangkatan', 0, 0);
         $t_cpdf->cell(2, 5, ':', 0, 0);
-        $t_cpdf->Cell(50, 5, $this->M_penawaran_la_pu->getTanggal($penawaran->tgl_keberangkatan), 0, 1);
+        $t_cpdf->Cell(50, 5, $this->M_pu_land_arrangement->getTanggal($penawaran->tgl_keberangkatan), 0, 1);
         // Durasi
         $t_cpdf->SetX($right_column_x); // Pindahkan posisi ke kolom kanan
         $t_cpdf->Cell(26, 5, 'Durasi', 0, 0);

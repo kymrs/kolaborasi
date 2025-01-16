@@ -150,7 +150,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('hotel_pu/get_list') ?>",
+                "url": "<?php echo site_url('pu_hotel/get_list') ?>",
                 "type": "POST",
             },
             "language": {
@@ -178,9 +178,9 @@
         var $form = $(this);
         if (!$form.valid()) return false;
         if (method == 'add') {
-            url = "<?php echo site_url('hotel_pu/add') ?>";
+            url = "<?php echo site_url('pu_hotel/add') ?>";
         } else {
-            url = "<?php echo site_url('hotel_pu/update') ?>";
+            url = "<?php echo site_url('pu_hotel/update') ?>";
         }
 
         $.ajax({
@@ -239,7 +239,7 @@
         $('.card-title').text('Edit Data Hotel');
         $('.aksi').text('Update');
         $.ajax({
-            url: "<?php echo site_url('hotel_pu/get_id/') ?>/" + id,
+            url: "<?php echo site_url('pu_hotel/get_id/') ?>/" + id,
             type: "GET",
             dataType: "JSON",
             success: function(data) {
@@ -280,7 +280,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: "<?php echo site_url('hotel_pu/delete') ?>/" + id,
+                    url: "<?php echo site_url('pu_hotel/delete') ?>/" + id,
                     type: "POST",
                     dataType: "JSON",
                     success: function(data) {

@@ -3,13 +3,13 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-class M_layanan_pu extends CI_Model
+class M_pu_hotel extends CI_Model
 {
     var $id = 'id';
-    var $table = 'tbl_layanan_pu'; //nama tabel dari database
-    var $column_order = array(null, null, 'nama_layanan', 'created_at');
-    var $column_search = array('nama_layanan', 'created_at'); //field yang diizin untuk pencarian 
-    var $order = array('id' => 'asc'); // default order 
+    var $table = 'pu_hotel'; //nama tabel dari database
+    var $column_order = array(null, null, 'nama_hotel', 'rating', 'kota', 'negara', 'created_at');
+    var $column_search = array('nama_hotel', 'rating', 'kota', 'negara', 'created_at'); //field yang diizin untuk pencarian 
+    var $order = array('id' => 'desc'); // default order 
 
     public function __construct()
     {
