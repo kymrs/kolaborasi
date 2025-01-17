@@ -1479,7 +1479,7 @@
             // Tampilkan loading
             $('#loading').show();
 
-            $('.aksi').prop('disabled', true);
+            // $('.aksi').prop('disabled', true);
 
             $.ajax({
                 url: url,
