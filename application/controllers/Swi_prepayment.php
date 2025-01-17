@@ -150,10 +150,13 @@ class Swi_prepayment extends CI_Controller
     // UNTUK MENAMPILKAN FORM ADD
     public function add_form()
     {
+        // INISIASI
+        $id = $this->session->userdata('id_user');
+
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = 0;
         $data['title'] = 'backend/swi_prepayment/swi_prepayment_form';
-        $data['rek_options'] = $this->M_swi_prepayment->options()->result_array();
+        $data['rek_options'] = $this->M_swi_prepayment->options($id)->result_array();
         $data['title_view'] = 'Prepayment Form';
         $this->load->view('backend/home', $data);
     }
@@ -179,12 +182,15 @@ class Swi_prepayment extends CI_Controller
     // UNTUK MENAMPILKAN FORM EDIT
     function edit_form($id)
     {
+        // INISIASI
+        $id_user = $this->session->userdata('id_user');
+
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = $id;
         $data['aksi'] = 'update';
         $data['title_view'] = "Edit Data Prepayment";
         $data['title'] = 'backend/swi_prepayment/swi_prepayment_form';
-        $data['rek_options'] = $this->M_swi_prepayment->options()->result_array();
+        $data['rek_options'] = $this->M_swi_prepayment->options($id_user)->result_array();
         $this->load->view('backend/home', $data);
     }
 

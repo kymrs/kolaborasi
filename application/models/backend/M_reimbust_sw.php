@@ -433,8 +433,8 @@ class M_reimbust_sw extends CI_Model
     }
 
     // OPSI REKENING
-    public function options()
+    public function options($id)
     {
-        return $this->db->distinct()->select('no_rek')->from('tbl_reimbust')->get();
+        return $this->db->distinct()->select('no_rek')->where('id_user', $id)->from('tbl_reimbust')->get();
     }
 }

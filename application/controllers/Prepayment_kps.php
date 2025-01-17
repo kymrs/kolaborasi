@@ -175,10 +175,13 @@ class Prepayment_kps extends CI_Controller
     // UNTUK MENAMPILKAN FORM ADD
     public function add_form()
     {
+        // INISIASI
+        $id_user = $this->session->userdata('id_user');
+
         $data['id'] = 0;
         $data['title'] = 'backend/prepayment_kps/prepayment_form_kps';
         $data['title_view'] = 'Prepayment Form';
-        $data['rek_options'] = $this->M_prepayment_kps->options()->result_array();
+        $data['rek_options'] = $this->M_prepayment_kps->options($id_user)->result_array();
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $this->load->view('backend/home', $data);
     }
@@ -204,11 +207,14 @@ class Prepayment_kps extends CI_Controller
     // UNTUK MENAMPILKAN FORM EDIT
     function edit_form($id)
     {
+        // INISIASI
+        $id_user = $this->session->userdata('id_user');
+
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = $id;
         $data['aksi'] = 'update';
         $data['title_view'] = "Edit Data Prepayment";
-        $data['rek_options'] = $this->M_prepayment_kps->options()->result_array();
+        $data['rek_options'] = $this->M_prepayment_kps->options($id_user)->result_array();
         $data['title'] = 'backend/prepayment_kps/prepayment_form_kps';
         $this->load->view('backend/home', $data);
     }

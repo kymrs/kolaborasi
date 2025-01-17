@@ -208,10 +208,13 @@ class Prepayment_sw extends CI_Controller
     // UNTUK MENAMPILKAN FORM ADD
     public function add_form()
     {
+        // INISIASI
+        $id = $this->session->userdata('id_user');
+
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['events'] = $this->M_prepayment_sw->get_events();
         $data['hak_akses'] = $this->session->userdata('id_level');
-        $data['rek_options'] = $this->M_prepayment_sw->options()->result_array();
+        $data['rek_options'] = $this->M_prepayment_sw->options($id)->result_array();
         $data['id'] = 0;
         $data['title'] = 'backend/prepayment_sw/prepayment_form_sw';
         $data['title_view'] = 'Prepayment Form';
@@ -239,13 +242,16 @@ class Prepayment_sw extends CI_Controller
     // UNTUK MENAMPILKAN FORM EDIT
     function edit_form($id)
     {
+        // INISIASI
+        $id_user = $this->session->userdata('id_user');
+
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = $id;
         $data['hak_akses'] = $this->session->userdata('id_level');
         $data['selected'] = $this->M_prepayment_sw->get_selected_event($id);
         $data['aksi'] = 'update';
         $data['events'] = $this->M_prepayment_sw->get_events();
-        $data['rek_options'] = $this->M_prepayment_sw->options()->result_array();
+        $data['rek_options'] = $this->M_prepayment_sw->options($id_user)->result_array();
         $data['title_view'] = "Edit Data Prepayment";
         $data['title'] = 'backend/prepayment_sw/prepayment_form_sw';
         $this->load->view('backend/home', $data);

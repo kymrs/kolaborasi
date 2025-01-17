@@ -233,8 +233,8 @@ class M_prepayment_bmn extends CI_Model
     }
 
     // OPSI REKENING
-    public function options()
+    public function options($id)
     {
-        return $this->db->distinct()->select('no_rek')->from('bmn_prepayment')->get();
+        return $this->db->distinct()->select('no_rek')->where('id_user', $id)->from('bmn_prepayment')->get();
     }
 }

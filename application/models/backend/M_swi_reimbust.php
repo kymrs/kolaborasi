@@ -445,8 +445,8 @@ class M_swi_reimbust extends CI_Model
     }
 
     // OPSI REKENING
-    public function options()
+    public function options($id)
     {
-        return $this->db->distinct()->select('no_rek')->from('swi_reimbust')->get();
+        return $this->db->distinct()->select('no_rek')->where('id_user', $id)->from('swi_reimbust')->get();
     }
 }
