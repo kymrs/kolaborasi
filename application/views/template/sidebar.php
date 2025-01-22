@@ -55,6 +55,7 @@
                         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#<?= $parent->nama_menu ?>" aria-expanded="true" aria-controls="collapseUtilities">
                             <i class="<?= $parent->icon ?>"></i>
                             <span><?= $parent->nama_menu ?></span>
+                            <div id="<?= $parent->link ?>-notif" style="display:none; width: 17px; height: 17px; border-radius: 15px; background-color: red; color: white; font-size: 10px; text-align: center; position: relative; bottom: 2px; line-height: 17px"></div>
                         </a>
                         <div id="<?= $parent->nama_menu ?>" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
                             <div class="bg-white py-2 collapse-inner rounded">

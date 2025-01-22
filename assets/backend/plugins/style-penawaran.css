@@ -80,9 +80,9 @@ main {
 }
 
 .header-content .row .qr-code .pu-logo{
-    width: 9%;
+    width: 7%;
     position: relative;
-    left: -16.5px;
+    left: -14.5px;
     bottom: 5px;
     background-color: white;
 }

@@ -1,6 +1,10 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
+
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Writer\PngWriter;
+
 class Pu_land_arrangement extends CI_Controller
 {
     public function __construct()
@@ -99,35 +103,17 @@ class Pu_land_arrangement extends CI_Controller
         } else {
             $no_arsip = $data['penawaran']->no_arsip;
 
-            // QR Code configuration
-            $config = [
-                'cacheable'    => false, // Tidak perlu cache
-                'imagedir'     => '',    // Tidak menyimpan file
-                'quality'      => true,
-                'size'         => 1024,
-                'black'        => [0, 0, 0],       // Warna QR Code
-                'white'        => [255, 255, 255], // Warna latar belakang
-            ];
-            $this->ciqrcode->initialize($config);
+            // Create a QR code instance with the data you want to encode
+            $qrCode = new QrCode('https://arsip.pengenumroh.com/' . $no_arsip);
 
-            // QR Code parameters
-            $params = [
-                'data'     => 'https://arsip.pengenumroh.com/' . $no_arsip, // Data dalam QR Code
-                'level'    => 'H',                  // Tingkat koreksi kesalahan (L, M, Q, H)
-                'size'     => 10,                   // Ukuran QR Code
-                'savename' => null,                 // Tidak menyimpan file
-            ];
+            // Create the writer for PNG format
+            $writer = new PngWriter();
 
-            // Menghasilkan QR Code ke buffer
-            ob_start();
-            $this->ciqrcode->generate($params);
-            $qrCodeImage = ob_get_clean();
+            // Generate the QR code and get it as a Data URI (base64 encoded)
+            $result = $writer->write($qrCode)->getDataUri();
 
-            // Encode QR Code menjadi base64
-            $qrCodeBase64 = base64_encode($qrCodeImage);
-
-            // Kirim base64 ke view
-            $data['qr_code'] = $qrCodeBase64;
+            // Pass the base64 QR code data to the view
+            $data['qr_code'] = $result;
 
             $data['title'] = 'backend/pu_penawaran/pu_land_arrangement_read';
             $data['title_view'] = 'Land Arrangement';
@@ -499,6 +485,9 @@ class Pu_land_arrangement extends CI_Controller
         // $t_cpdf->SetHeaderMargin(40);    // Jarak antara header dan konten
         $t_cpdf->SetAutoPageBreak(true, 40); // Penanganan otomatis margin bawah
 
+        $t_cpdf->AddFont('poppins-bold', '', base_url('\application\third_party\TCPDF-main\fonts\Poppins-Bold.php'));
+        $t_cpdf->AddFont('Poppins-Regular', '', base_url('\application\third_party\TCPDF-main\fonts\Poppins-Regular.php'));
+
         // Add a new page
         $t_cpdf->AddPage();
 
@@ -537,17 +526,6 @@ class Pu_land_arrangement extends CI_Controller
 
         // QRCODE
 
-        // QR Code configuration
-        $config = [
-            'cacheable'    => false,
-            'imagedir'     => '',    // Do not save QR code to directory
-            'quality'      => true,
-            'size'         => 1024,
-            'black'        => [0, 0, 0],       // Black QR code
-            'white'        => [255, 255, 255], // White background
-        ];
-        $this->ciqrcode->initialize($config);
-
         // Set QR Code data
         if ($penawaran->no_arsip == null) {
             $no_arsip = 'backend/pu_penawaran/404';
@@ -557,22 +535,18 @@ class Pu_land_arrangement extends CI_Controller
             $data = 'https://arsip.pengenumroh.com/' . $no_arsip;
         }
 
-        // QR Code parameters
-        $params = [
-            'data'     => $data,
-            'level'    => 'H',
-            'size'     => 10,
-            'savename' => null, // Output to memory
-        ];
+        // Create a QR code instance with the data you want to encode
+        $qrCode = new QrCode($data);
 
-        // Generate QR Code
-        ob_start();
-        $this->ciqrcode->generate($params);
-        $qrCodeImage = ob_get_clean();
+        // Create the writer for PNG format
+        $writer = new PngWriter();
 
-        // Add QR Code to PDF
-        $t_cpdf->Image('@' . $qrCodeImage, 140, 42, 32, 32); // Directly from memory
+        // Generate the QR code as a binary string (raw PNG data)
+        $result = $writer->write($qrCode)->getString();
 
+        // Add QR Code to PDF using TCPDF
+        // Use TCPDF Image() method with '@"' to directly use the binary string
+        $t_cpdf->Image('@' . $result, 140, 42, 32, 32, 'PNG');
 
         // Add favicon with white background
         $t_cpdf->SetFillColor(255, 255, 255); // RGB for white

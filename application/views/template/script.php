@@ -26,8 +26,9 @@
 <script src="<?= base_url() ?>assets/backend/plugins/chartjs/chart.js"></script>
 <script src="<?= base_url() ?>assets/backend/plugins/chartjs/chartjs-plugin-datalabels.min.js"></script>
 <script>
-    // Jalankan polling notifikasi
-    checkNotifications();
+    $(document).ready(function() {
+        checkNotifications();
+    });
 
     function checkNotifications() {
         $.ajax({
@@ -35,6 +36,7 @@
             type: "GET",
             dataType: "json",
             success: function(data) {
+                // $('.pu-notif').text(1).css('display', 'inline-block');
                 // console.log(data);
                 // Update elemen notifikasi dengan data baru
                 $.each(data.notif_pending, function(key, value) {
@@ -44,6 +46,14 @@
                     } else {
                         // Sembunyikan notifikasi jika tidak ada
                         $('#' + key + '-notif').hide();
+                    }
+                });
+
+                $.each(data.notif_menu, function(menu, value) {
+                    if (value > 0) {
+                        $('#' + menu + '-notif').text(value).css('display', 'inline-block');
+                    } else {
+                        $('#' + menu + '-notif').hide();
                     }
                 });
 
