@@ -295,10 +295,13 @@ class Reimbust_bmn extends CI_Controller
 
     public function add_form()
     {
+        // INISIASI
+        $id_user = $this->session->userdata('id_user');
+
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = 0;
         $data['aksi'] = 'add';
-        $data['rek_options'] = $this->M_reimbust_bmn->options()->result_array();
+        $data['rek_options'] = $this->M_reimbust_bmn->options($id_user)->result_array();
         $data['title_view'] = "Reimbust Form";
         $data['title'] = 'backend/reimbust_bmn/reimbust_form_bmn';
         $this->load->view('backend/home', $data);
@@ -625,11 +628,14 @@ class Reimbust_bmn extends CI_Controller
 
     function edit_form($id)
     {
+        // INISIASI
+        $id_user = $this->session->userdata('id_user');
+
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = $id;
         $data['aksi'] = 'update';
         $data['title_view'] = "Edit Reimbust";
-        $data['rek_options'] = $this->M_reimbust_bmn->options()->result_array();
+        $data['rek_options'] = $this->M_reimbust_bmn->options($id_user)->result_array();
         $data['title'] = 'backend/reimbust_bmn/reimbust_form_bmn';
         $this->load->view('backend/home', $data);
     }

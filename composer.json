@@ -15,7 +15,8 @@
 		"phpoffice/phpspreadsheet": "*",
 		"phpmailer/phpmailer": "^6.9",
 		"mpdf/mpdf": "^8.2",
-		"dompdf/dompdf": "^3.0"
+		"dompdf/dompdf": "^3.0",
+		"endroid/qr-code": "^4.6"
 	},
 	"suggest": {
 		"paragonie/random_compat": "Provides better randomness in PHP 5.x"
