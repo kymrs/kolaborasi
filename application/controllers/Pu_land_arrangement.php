@@ -503,7 +503,7 @@ class Pu_land_arrangement extends CI_Controller
         $t_cpdf->AddPage();
 
         // Pilih font untuk isi
-        $t_cpdf->SetFont('Poppins-Bold', '', 24);
+        $t_cpdf->SetFont('poppins-bold', '', 24);
 
         // Margin setup
         $left_margin = 10;
@@ -514,7 +514,7 @@ class Pu_land_arrangement extends CI_Controller
         $t_cpdf->Cell(0, 10, 'PENAWARAN', 0, 1, 'L');
 
         // Name and title (Creative Director)
-        $t_cpdf->SetFont('Poppins-Regular', '', 9);
+        $t_cpdf->SetFont('poppins-regular', '', 9);
         $t_cpdf->Cell(38, 6, 'No', 0, 0,);
         $t_cpdf->cell(5, 5, ':', 0, 0);
         $t_cpdf->Cell(50, 5, $penawaran->no_pelayanan, 0, 1);
@@ -583,7 +583,7 @@ class Pu_land_arrangement extends CI_Controller
         $t_cpdf->Ln(5); // SPASI
 
         // HEADER LAYANAN
-        $t_cpdf->SetFont('Poppins-Regular', '', 11);
+        $t_cpdf->SetFont('poppins-regular', '', 11);
         $t_cpdf->SetFillColor(252, 118, 19);
         $t_cpdf->SetTextColor(255, 255, 255);
         $t_cpdf->Cell(0, 10, 'LAYANAN', 0, 1, 'L', true);
@@ -594,7 +594,7 @@ class Pu_land_arrangement extends CI_Controller
         $t_cpdf->Ln(2);
 
         // Konten text (justify)
-        $t_cpdf->SetFont('Poppins-Regular', '', 9);
+        $t_cpdf->SetFont('poppins-regular', '', 9);
 
         // HEADER DESKRIPSI
         $t_cpdf->Cell(100, 5, 'Deskripsi :', 0, 0);
@@ -639,7 +639,7 @@ class Pu_land_arrangement extends CI_Controller
         $t_cpdf->Sety($useY + 5);
 
         // HEADER LAYANAN TERMASUK
-        $t_cpdf->SetFont('Poppins-Regular', '', 9);
+        $t_cpdf->SetFont('poppins-regular', '', 9);
         $t_cpdf->Cell(100, 5, 'Layanan Termasuk :', 0, 0);
 
         $trmskY = $t_cpdf->GetY();
@@ -678,7 +678,7 @@ class Pu_land_arrangement extends CI_Controller
 
         // KONTEN HOTEL DAN PENERBANGAN
         foreach ($hotels as $hotel) {
-            $t_cpdf->SetFont('Poppins-Regular', '', 9);
+            $t_cpdf->SetFont('poppins-regular', '', 9);
             $t_cpdf->SetX(100); // Pindahkan posisi ke kolom kanan
             $t_cpdf->Cell(25, 5, 'Hotel ' . $hotel->kota, 0, 0,);
             $t_cpdf->SetFont('ZapfDingbats');
@@ -691,7 +691,7 @@ class Pu_land_arrangement extends CI_Controller
                 }
             }
             $t_cpdf->cell(15, 5, $stars, 0, 0);
-            $t_cpdf->SetFont('Poppins-Regular', '', 9);
+            $t_cpdf->SetFont('poppins-regular', '', 9);
             $t_cpdf->cell(3, 5, ':', 0, 0);
             $t_cpdf->Cell(40, 5, $hotel->nama_hotel, 0, 1);
         }
@@ -751,7 +751,7 @@ class Pu_land_arrangement extends CI_Controller
         $t_cpdf->SetY($useY2 + 5);
 
         // HEADER HARGA PAKET
-        $t_cpdf->SetFont('Poppins-Regular', '', 11);
+        $t_cpdf->SetFont('poppins-regular', '', 11);
         $t_cpdf->SetFillColor(252, 118, 19);
         $t_cpdf->SetTextColor(255, 255, 255);
         $t_cpdf->Cell(0, 10, 'HARGA PAKET', 0, 1, 'L', true);
@@ -761,7 +761,7 @@ class Pu_land_arrangement extends CI_Controller
         $t_cpdf->Ln(2);
 
         // BIAYA
-        $t_cpdf->SetFont('Poppins-Bold', '', 15);
+        $t_cpdf->SetFont('poppins-bold', '', 15);
         $t_cpdf->Cell(20, 5, 'BIAYA', 0, 0,);
         $t_cpdf->cell(5, 5, ':', 0, 0);
         $t_cpdf->Cell(50, 5, 'Rp. ' . number_format($penawaran->biaya, 0, ',', '.'), 0, 1);
@@ -770,7 +770,7 @@ class Pu_land_arrangement extends CI_Controller
         $t_cpdf->Ln(2);
 
         // HEADER LAYANAN PASTI
-        $t_cpdf->SetFont('Poppins-Regular', '', 11);
+        $t_cpdf->SetFont('poppins-regular', '', 11);
         $t_cpdf->SetFillColor(252, 118, 19);
         $t_cpdf->SetTextColor(255, 255, 255);
         $t_cpdf->Cell(0, 10, 'LAYANAN PASTI', 0, 1, 'L', true);
@@ -780,7 +780,7 @@ class Pu_land_arrangement extends CI_Controller
         $t_cpdf->Ln(1);
 
         // Konten text (justify)
-        $t_cpdf->SetFont('Poppins-Regular', '', 11);
+        $t_cpdf->SetFont('poppins-regular', '', 11);
 
         // LAYANAN PASTI
         $t_cpdf->Cell(100, 5, '1. Konsultasi Gratis', 0, 0);
@@ -827,6 +827,6 @@ EOD;
         $t_cpdf->writeHTML($tbl, true, false, false, false, '');
 
         // Output PDF (tampilkan di browser)
-        $t_cpdf->Output('example.t_cpdf', 'I'); // 'I' untuk menampilkan di browser
+        $t_cpdf->Output('Land_Arrangement', 'I'); // 'I' untuk menampilkan di browser
     }
 }

@@ -1,6 +1,6 @@
 <?php
 $type = 'TrueType';
-$name = 'Poppins-Bold';
+$name = 'poppins-bold';
 $desc = array('Ascent' => 1050, 'Descent' => -350, 'CapHeight' => 702, 'Flags' => 32, 'FontBBox' => '[-63 -275 1149 987]', 'ItalicAngle' => 0, 'StemV' => 120, 'MissingWidth' => 500);
 $up = -75;
 $ut = 50;
@@ -35,6 +35,6 @@ $cw = array(
 );
 $enc = 'cp1252';
 $diff = '';
-// $file='Poppins-Bold.z';
+// $file = 'poppins-bold.z';
 $originalsize = 153944;
 // --- EOF ---
