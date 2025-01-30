@@ -7,7 +7,6 @@ class Swi_prepayment extends CI_Controller
     {
         parent::__construct();
         $this->load->model('backend/M_swi_prepayment');
-        $this->load->model('backend/M_notifikasi');
         $this->M_login->getsecurity();
         date_default_timezone_set('Asia/Jakarta');
     }
@@ -18,7 +17,6 @@ class Swi_prepayment extends CI_Controller
         ($akses->view_level == 'N' ? redirect('auth') : '');
         $data['add'] = $akses->add_level;
 
-        $data['notif'] = $this->M_notifikasi->pending_notification();
 
         $data['title'] = "backend/swi_prepayment/swi_prepayment_list";
         $data['titleview'] = "Data Prepayment";
@@ -129,7 +127,6 @@ class Swi_prepayment extends CI_Controller
     // UNTUK MENAMPILKAN FORM READ
     public function read_form($id)
     {
-        $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = $id;
         $data['user'] = $this->M_swi_prepayment->get_by_id($id);
         $data['app_name'] = $this->db->select('name')
@@ -153,7 +150,6 @@ class Swi_prepayment extends CI_Controller
         // INISIASI
         $id = $this->session->userdata('id_user');
 
-        $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = 0;
         $data['title'] = 'backend/swi_prepayment/swi_prepayment_form';
         $data['rek_options'] = $this->M_swi_prepayment->options($id)->result_array();
@@ -185,7 +181,6 @@ class Swi_prepayment extends CI_Controller
         // INISIASI
         $id_user = $this->session->userdata('id_user');
 
-        $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = $id;
         $data['aksi'] = 'update';
         $data['title_view'] = "Edit Data Prepayment";

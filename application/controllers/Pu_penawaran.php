@@ -13,7 +13,7 @@ class Pu_penawaran extends CI_Controller
         $this->load->model('backend/M_notifikasi');
         $this->load->helper('date');
         $this->M_login->getsecurity();
-        $this->load->library('ciqrcode');
+        // $this->load->library('ciqrcode');
     }
 
     public function index()
@@ -674,8 +674,8 @@ class Pu_penawaran extends CI_Controller
 
         // Add favicon with white background
         $t_cpdf->SetFillColor(255, 255, 255); // RGB for white
-        $t_cpdf->Rect(152.5, 54, 7, 8, 'F');   // X, Y, Width, Height, 'F' for filled rectangle
-        $t_cpdf->Image('assets/backend/img/favicon-pu.png', 152.5, 54, 7, 8);
+        $t_cpdf->Rect(153.5, 56, 5, 6, 'F');   // X, Y, Width, Height, 'F' for filled rectangle
+        $t_cpdf->Image('assets/backend/img/favicon-pu.png', 153.5, 56, 5, 6);
 
         $t_cpdf->Ln(5); // SPASI
 

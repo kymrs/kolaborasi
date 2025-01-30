@@ -73,7 +73,6 @@ class Ctz_rekapitulasi extends CI_Controller
             $no++;
             $row = array();
             $row[] = $no; // Nomor urut
-            $row[] = 'pu';
             $row[] = $kode_prepayment; // Kode prepayment, atau tanda "-"
             $row[] = $kode_reimbust; // Kode reimburse
             $row[] = $field->name; // Nama pengguna
@@ -118,14 +117,14 @@ class Ctz_rekapitulasi extends CI_Controller
         $sheet = $spreadsheet->getActiveSheet();
 
         // Set judul kolom
-        $sheet->setCellValue('A1', 'Core');
+        // $sheet->setCellValue('A1', 'Core');
         $sheet->setCellValue('B1', 'Kode Transaksi');
         $sheet->setCellValue('C1', 'Jenis Transaksi');
         $sheet->setCellValue('D1', 'Tanggal Transaksi');
         $sheet->setCellValue('E1', 'Nominal');
 
         // Atur Auto Size untuk setiap kolom
-        $sheet->getColumnDimension('A')->setAutoSize(true);
+        // $sheet->getColumnDimension('A')->setAutoSize(true);
         $sheet->getColumnDimension('B')->setAutoSize(true);
         $sheet->getColumnDimension('C')->setAutoSize(true);
         $sheet->getColumnDimension('D')->setAutoSize(true);
@@ -137,7 +136,7 @@ class Ctz_rekapitulasi extends CI_Controller
         // Isi data dari database mulai dari baris ke-2
         $row = 2;
         foreach ($prepayment as $data) {
-            $sheet->setCellValue('A' . $row, 'pu');
+            // $sheet->setCellValue('A' . $row, 'pu');
             $sheet->setCellValue('B' . $row, $data->kode_prepayment);
             $sheet->setCellValue('C' . $row, 'Prepayment');
             $sheet->setCellValue('D' . $row, $this->tgl_indo(date("Y-m-j", strtotime($data->tgl_prepayment))));
@@ -146,7 +145,7 @@ class Ctz_rekapitulasi extends CI_Controller
         }
 
         foreach ($reimbust as $data) {
-            $sheet->setCellValue('A' . $row, 'pu');
+            // $sheet->setCellValue('A' . $row, 'pu');
             $sheet->setCellValue('B' . $row, strtoupper($data->kode_reimbust));
             $sheet->setCellValue('C' . $row, $data->sifat_pelaporan);
             $sheet->setCellValue('D' . $row, $this->tgl_indo(date("Y-m-j", strtotime($data->tgl_pengajuan))));
@@ -164,7 +163,7 @@ class Ctz_rekapitulasi extends CI_Controller
 
         // Set header untuk download file Excel
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="Data Rekapitulasi PU.xlsx"');
+        header('Content-Disposition: attachment;filename="Data Rekapitulasi carstensz.xlsx"');
         header('Cache-Control: max-age=0');
 
         // Simpan file ke output

@@ -22,7 +22,7 @@ class Dashboard extends CI_Controller
 	{
 		$data['title'] = "backend/dashboard";
 		$data['titleview'] = 'Dashboard';
-		$data['notif'] = $this->M_notifikasi->pending_notification();
+		// $data['notif'] = $this->M_notifikasi->pending_notification();
 		$this->load->view('backend/home', $data);
 	}
 }

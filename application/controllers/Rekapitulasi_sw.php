@@ -73,7 +73,6 @@ class Rekapitulasi_sw extends CI_Controller
             $no++;
             $row = array();
             $row[] = $no; // Nomor urut
-            $row[] = 'sw';
             $row[] = $kode_prepayment; // Kode prepayment, atau tanda "-"
             $row[] = $kode_reimbust; // Kode reimburse
             $row[] = $field->name; // Nama pengguna
@@ -118,39 +117,35 @@ class Rekapitulasi_sw extends CI_Controller
         $sheet = $spreadsheet->getActiveSheet();
 
         // Set judul kolom
-        $sheet->setCellValue('A1', 'Core');
-        $sheet->setCellValue('B1', 'Kode Transaksi');
-        $sheet->setCellValue('C1', 'Jenis Transaksi');
-        $sheet->setCellValue('D1', 'Tanggal Transaksi');
-        $sheet->setCellValue('E1', 'Nominal');
+        $sheet->setCellValue('A1', 'Kode Transaksi');
+        $sheet->setCellValue('B1', 'Jenis Transaksi');
+        $sheet->setCellValue('C1', 'Tanggal Transaksi');
+        $sheet->setCellValue('D1', 'Nominal');
 
         // Atur Auto Size untuk setiap kolom
         $sheet->getColumnDimension('A')->setAutoSize(true);
         $sheet->getColumnDimension('B')->setAutoSize(true);
         $sheet->getColumnDimension('C')->setAutoSize(true);
         $sheet->getColumnDimension('D')->setAutoSize(true);
-        $sheet->getColumnDimension('E')->setAutoSize(true);
 
         // Tambahkan filter ke header (baris pertama)
-        $sheet->setAutoFilter('A1:E1');
+        $sheet->setAutoFilter('A1:D1');
 
         // Isi data dari database mulai dari baris ke-2
         $row = 2;
         foreach ($prepayment as $data) {
-            $sheet->setCellValue('A' . $row, 'sw');
-            $sheet->setCellValue('B' . $row, $data->kode_prepayment);
-            $sheet->setCellValue('C' . $row, 'Prepayment');
-            $sheet->setCellValue('D' . $row, $this->tgl_indo(date("Y-m-j", strtotime($data->tgl_prepayment))));
-            $sheet->setCellValue('E' . $row, $data->total_nominal);
+            $sheet->setCellValue('A' . $row, $data->kode_prepayment);
+            $sheet->setCellValue('B' . $row, 'Prepayment');
+            $sheet->setCellValue('C' . $row, $this->tgl_indo(date("Y-m-j", strtotime($data->tgl_prepayment))));
+            $sheet->setCellValue('D' . $row, $data->total_nominal);
             $row++;
         }
 
         foreach ($reimbust as $data) {
-            $sheet->setCellValue('A' . $row, 'sw');
-            $sheet->setCellValue('B' . $row, strtoupper($data->kode_reimbust));
-            $sheet->setCellValue('C' . $row, $data->sifat_pelaporan);
-            $sheet->setCellValue('D' . $row, $this->tgl_indo(date("Y-m-j", strtotime($data->tgl_pengajuan))));
-            $sheet->setCellValue('E' . $row, $data->total_nominal);
+            $sheet->setCellValue('A' . $row, strtoupper($data->kode_reimbust));
+            $sheet->setCellValue('B' . $row, $data->sifat_pelaporan);
+            $sheet->setCellValue('C' . $row, $this->tgl_indo(date("Y-m-j", strtotime($data->tgl_pengajuan))));
+            $sheet->setCellValue('D' . $row, $data->total_nominal);
             $row++;
         }
 
