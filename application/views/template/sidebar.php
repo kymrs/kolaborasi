@@ -32,7 +32,7 @@
 
             <?php
             $idlevel  = $this->session->userdata('id_level');
-            $menu = $this->db->select('b.nama_menu,b.icon,b.link,b.id_menu,b.nama_tbl');
+            $menu = $this->db->select('b.nama_menu,b.icon,b.link,b.id_menu');
             $menu = $this->db->join('tbl_menu b', 'a.id_menu=b.id_menu');
             $menu = $this->db->join('tbl_userlevel c', 'a.id_level=c.id_level');
             $menu = $this->db->where('a.id_level', $idlevel);
@@ -55,14 +55,14 @@
                         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#<?= $parent->nama_menu ?>" aria-expanded="true" aria-controls="collapseUtilities">
                             <i class="<?= $parent->icon ?>"></i>
                             <span><?= $parent->nama_menu ?></span>
-                            <!-- <div id="<?= $parent->link ?>-notif" style="display:none; width: 16px; height: 16px; border-radius: 15px; background-color: red; color: white; font-size: 10px; text-align: center; position: relative; bottom: 3px; line-height: 17px"></div> -->
+                            <div id="<?= $parent->nama_menu ?>-notif" style="display:none; width: 16px; height: 16px; border-radius: 15px; background-color: red; color: white; font-size: 10px; text-align: center; position: relative; bottom: 3px; line-height: 17px"></div>
                         </a>
                         <div id="<?= $parent->nama_menu ?>" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
                             <div class="bg-white py-2 collapse-inner rounded">
                                 <?php foreach ($sub->result() as $child) {  ?>
                                     <a class="collapse-item" href="<?= base_url() . $child->link ?>">
                                         <?= $child->nama_submenu ?>
-                                        <div id="<?= $child->nama_tbl ?>-notif" style="display:none; width: 17px; height: 17px; border-radius: 15px; background-color: red; color: white; font-size: 10px; text-align: center; position: relative; bottom: 2px; line-height: 17px"></div>
+                                        <div id="<?= $child->link ?>-notif" style="display:none; width: 17px; height: 17px; border-radius: 15px; background-color: red; color: white; font-size: 10px; text-align: center; position: relative; bottom: 2px; line-height: 17px"></div>
                                     </a>
                                 <?php } ?>
                             </div>

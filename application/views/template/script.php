@@ -29,9 +29,6 @@
     $(document).ready(function() {
         checkNotifications();
     });
-    // $(document).ready(function() {
-    //     $('#tbl_prepayment-notif').text('1').css('display', 'inline-block');
-    // });
 
     function checkNotifications() {
         $.ajax({
@@ -39,39 +36,26 @@
             type: "GET",
             dataType: "json",
             success: function(data) {
-                // $('#tbl_prepayment-notif').text('1').css('display', 'inline-block');
-                console.log(data);
-                for (const table in data) {
-                    // console.log(`Table: ${table}`);
-
-                    const fields = data[table];
-                    for (const field in fields) {
-                        // console.log(`  ${field}: ${fields[field]}`);
-                        // console.log('#' + table + '-notif');
-                        if (fields[field] > 0) {
-                            // console.log('#' + table + '-notif : ' + fields[field]);
-                            $('#' + table + '-notif').text(fields[field]).css('display', 'inline-block');
-                        }
-                    }
-                }
+                // $('.pu-notif').text(1).css('display', 'inline-block');
+                // console.log(data);
                 // Update elemen notifikasi dengan data baru
-                // $.each(data.notif_pending, function(key, value) {
-                //     if (value > 0) {
-                //         // Jika ada notifikasi baru, tampilkan jumlah notifikasi
-                //         $('#' + key + '-notif').text(value).css('display', 'inline-block');
-                //     } else {
-                //         // Sembunyikan notifikasi jika tidak ada
-                //         $('#' + key + '-notif').hide();
-                //     }
-                // });
+                $.each(data.notif_pending, function(key, value) {
+                    if (value > 0) {
+                        // Jika ada notifikasi baru, tampilkan jumlah notifikasi
+                        $('#' + key + '-notif').text(value).css('display', 'inline-block');
+                    } else {
+                        // Sembunyikan notifikasi jika tidak ada
+                        $('#' + key + '-notif').hide();
+                    }
+                });
 
-                // $.each(data.notif_menu, function(menu, value) {
-                //     if (value > 0) {
-                //         $('#' + menu + '-notif').text(value).css('display', 'inline-block');
-                //     } else {
-                //         $('#' + menu + '-notif').hide();
-                //     }
-                // });
+                $.each(data.notif_menu, function(menu, value) {
+                    if (value > 0) {
+                        $('#' + menu + '-notif').text(value).css('display', 'inline-block');
+                    } else {
+                        $('#' + menu + '-notif').hide();
+                    }
+                });
 
                 // // Panggil fungsi lagi setelah sukses
                 // checkNotifications();

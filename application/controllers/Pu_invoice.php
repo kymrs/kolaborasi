@@ -22,11 +22,6 @@ class T_cpdf2 extends TCPDf
         $this->Line(4, 27, 145, 27, $style);
         $this->Ln(5);
     }
-
-    // public function __construct()
-    // {
-    //     parent::__construct();
-    // }
 }
 
 class Pu_invoice extends CI_Controller
@@ -71,21 +66,10 @@ class Pu_invoice extends CI_Controller
         ($akses->view_level == 'N' ? redirect('auth') : '');
         $data['add'] = $akses->add_level;
 
-        // $data['notif'] = $this->M_notifikasi->pending_notification();
+        $data['notif'] = $this->M_notifikasi->pending_notification();
 
         $data['title'] = "backend/pu_invoice/pu_invoice_list";
         $data['titleview'] = "Data Invoice";
-        // $name = $this->db->select('name')
-        //     ->from('tbl_data_user')
-        //     ->where('id_user', $this->session->userdata('id_user'))
-        //     ->get()
-        //     ->row('name');
-        // $data['approval'] = $this->db->select('COUNT(*) as total_approval')
-        //     ->from('tbl_prepayment_pu')
-        //     ->where('app_name', $name)
-        //     ->or_where('app2_name', $name)
-        //     ->get()
-        //     ->row('total_approval');
         $this->load->view('backend/home', $data);
     }
 
@@ -121,30 +105,6 @@ class Pu_invoice extends CI_Controller
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
             $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="pu_invoice/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
-            // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
-            // if ($field->app_name == $fullname && $field->id_user != $this->session->userdata('id_user')) {
-            //     $action = $action_read . $action_print;
-            // } elseif ($field->id_user != $this->session->userdata('id_user') && $field->app2_name == $fullname) {
-            //     $action = $action_read . $action_print;
-            // } elseif (in_array($field->status, ['rejected', 'approved'])) {
-            //     $action = $action_read . $action_print;
-            // } elseif ($field->app_status == 'revised' || $field->app2_status == 'revised') {
-            //     $action = $action_read . $action_edit . $action_print;
-            // } elseif ($field->app_status == 'approved') {
-            //     $action = $action_read . $action_print;
-            // } else {
-            //     $action = $action_read . $action_edit . $action_delete . $action_print;
-            // }
-
-            // //MENENSTUKAN SATTSU PROGRESS PENGAJUAN PERMINTAAN
-            // if ($field->app_status == 'approved' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
-            //     $status = $field->status . ' (' . $field->app2_name . ')';
-            // } elseif ($field->app_status == 'waiting' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
-            //     $status = $field->status . ' (' . $field->app_name . ')';
-            // } else {
-            //     $status = $field->status;
-            // }
-
             $action = $action_read . $action_edit . $action_delete . $action_print;
 
             $no++;
@@ -155,8 +115,8 @@ class Pu_invoice extends CI_Controller
             $row[] = $this->tgl_indo(date("Y-m-j", strtotime($field->tgl_invoice)));
             $kode_invoice = substr($field->kode_invoice, 0, 5) . substr($field->kode_invoice, 7, 6);
             $row[] = strtoupper($kode_invoice);
-            $row[] = $field->ctc_nama2;
-            $row[] = $field->ctc_alamat;
+            $row[] = $field->ctc2_nama;
+            $row[] = $field->ctc2_alamat;
             $row[] = $this->tgl_indo(date("Y-m-j", strtotime($field->tgl_tempo)));
 
             $data[] = $row;
@@ -219,7 +179,7 @@ class Pu_invoice extends CI_Controller
     // UNTUK MENAMPILKAN FORM EDIT
     function edit_form($id)
     {
-        // $data['notif'] = $this->M_notifikasi->pending_notification();
+        $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = $id;
         $data['aksi'] = 'update';
         $data['title_view'] = "Edit Data Invoice";
@@ -266,11 +226,12 @@ class Pu_invoice extends CI_Controller
             'tgl_invoice' => date('Y-m-d', strtotime($this->input->post('tgl_invoice'))),
             'kode_invoice' => $kode_invoice,
             'tgl_tempo' => date('Y-m-d', strtotime($this->input->post('tgl_tempo'))),
-            'ctc_nama1' => $this->input->post('ctc_nama1'),
-            'ctc_nomor1' => $this->input->post('ctc_nomor1'),
-            'ctc_nama2' => $this->input->post('ctc_nama2'),
-            'ctc_nomor2' => $this->input->post('ctc_nomor2'),
-            'ctc_alamat' => $this->input->post('ctc_alamat'),
+            'ctc_nama' => $this->input->post('ctc_nama'),
+            'ctc_nomor' => $this->input->post('ctc_nomor'),
+            'ctc2_nama' => $this->input->post('ctc2_nama'),
+            'ctc2_nomor' => $this->input->post('ctc2_nomor'),
+            'ctc2_email' => $this->input->post('ctc2_email'),
+            'ctc2_alamat' => $this->input->post('ctc2_alamat'),
             'created_at' => date('Y-m-d H:i:s')
         );
 
@@ -348,11 +309,12 @@ class Pu_invoice extends CI_Controller
             'tgl_invoice' => date('Y-m-d', strtotime($this->input->post('tgl_invoice'))),
             'kode_invoice' => $kode_invoice,
             'tgl_tempo' => date('Y-m-d', strtotime($this->input->post('tgl_tempo'))),
-            'ctc_nama1' => $this->input->post('ctc_nama1'),
-            'ctc_nomor1' => $this->input->post('ctc_nomor1'),
-            'ctc_nama2' => $this->input->post('ctc_nama2'),
-            'ctc_nomor2' => $this->input->post('ctc_nomor2'),
-            'ctc_alamat' => $this->input->post('ctc_alamat'),
+            'ctc_nama' => $this->input->post('ctc_nama'),
+            'ctc_nomor' => $this->input->post('ctc_nomor'),
+            'ctc2_nama' => $this->input->post('ctc2_nama'),
+            'ctc2_email' => $this->input->post('ctc2_email'),
+            'ctc2_nomor' => $this->input->post('ctc2_nomor'),
+            'ctc2_alamat' => $this->input->post('ctc2_alamat'),
             'created_at' => date('Y-m-d H:i:s')
         );
 
@@ -500,7 +462,7 @@ class Pu_invoice extends CI_Controller
         // Set document properties
         $t_cpdf2->SetCreator(PDF_CREATOR);
         $t_cpdf2->SetAuthor('Author Name');
-        $t_cpdf2->SetTitle('Penawaran PDF');
+        $t_cpdf2->SetTitle('Invoice Pengenumroh PDF');
 
         $t_cpdf2->SetMargins(15, 28, 15); // Margin kiri, atas (untuk header), kanan
         // $t_cpdf2->SetHeaderMargin(30);    // Jarak antara header dan konten
@@ -524,21 +486,27 @@ class Pu_invoice extends CI_Controller
         $t_cpdf2->SetY($t_cpdf2->GetY());
         $t_cpdf2->SetX(4);
         $t_cpdf2->SetFont('Poppins-Regular', '', 10);
-        $t_cpdf2->Cell(75, 20, 'Kepada Yth.', 0, 0);
+        $t_cpdf2->Cell(74, 20, 'Kepada Yth.', 0, 0);
         $t_cpdf2->Cell(45, 20, 'Tanggal Invoice', 0, 0);
-        $t_cpdf2->Cell(19, 20, ':' . date('d/m/Y', strtotime($invoice->tgl_invoice)), 0, 0);
+        $t_cpdf2->Cell(19, 20, ': ' . date('d/m/Y', strtotime($invoice->tgl_invoice)), 0, 0);
         $t_cpdf2->SetY($t_cpdf2->GetY() + 13);
         $t_cpdf2->SetX(4);
-        $t_cpdf2->SetFont('Poppins-Regular', '', 14);
-        $t_cpdf2->Cell(75, 5, $invoice->ctc_nama2, 0, 0);
+        $t_cpdf2->SetFont('Poppins-Bold', '', 14);
+        $t_cpdf2->Cell(74, 5, $invoice->ctc2_nama, 0, 0);
         $t_cpdf2->SetFont('Poppins-Regular', '', 10);
         $t_cpdf2->Cell(45, 5, 'Tanggal Jatuh Tempo', 0, 0);
-        $t_cpdf2->Cell(19, 5, ':' . date('d/m/Y', strtotime($invoice->tgl_tempo)), 0, 0);
+        $t_cpdf2->Cell(19, 5, ': ' . date('d/m/Y', strtotime($invoice->tgl_tempo)), 0, 0);
 
         $t_cpdf2->SetFont('Poppins-Regular', '', 10);
-        $t_cpdf2->SetY($t_cpdf2->GetY() + 7);
+        $t_cpdf2->SetY($t_cpdf2->GetY() + 6);
         $t_cpdf2->SetX(4);
-        $t_cpdf2->MultiCell(55, 4, 'Alamat :' . $invoice->ctc_alamat, 0, 'L');
+        $t_cpdf2->Cell(0, 0, 'Alamat', 0, 0);
+        $t_cpdf2->SetY($t_cpdf2->GetY());
+        $t_cpdf2->SetX(23);
+        $t_cpdf2->Cell(0, 0, ':', 0, 0);
+        $t_cpdf2->SetY($t_cpdf2->GetY());
+        $t_cpdf2->SetX(24.5);
+        $t_cpdf2->MultiCell(58, 0, $invoice->ctc2_alamat, 0, 'L');
 
         $t_cpdf2->SetY($t_cpdf2->GetY() + 2);
         // HEADER DETAIL PEMESANAN
@@ -564,9 +532,9 @@ class Pu_invoice extends CI_Controller
         foreach ($invoice_details as $detail) {
             $tbl .= '<tr>';
             $tbl .= '<td width="30%">' . $detail->deskripsi . '</td>';
-            $tbl .= '<td width="20%">' . $detail->jumlah . '</td>';
-            $tbl .= '<td width="25%">' . 'Rp. ' . number_format($detail->harga, 0, ',', '.') . '</td>';
-            $tbl .= '<td width="25%">' . 'Rp. ' . number_format($detail->total, 0, ',', '.') . '</td>';
+            $tbl .= '<td width="20%" style="text-align: center">' . $detail->jumlah . '</td>';
+            $tbl .= '<td width="25%" style="text-align: center">' . 'Rp. ' . number_format($detail->harga, 0, ',', '.') . '</td>';
+            $tbl .= '<td width="25%" style="text-align: center">' . 'Rp. ' . number_format($detail->total, 0, ',', '.') . '</td>';
             $tbl .= '</tr>';
         }
         $tbl .= <<<EOD
@@ -593,13 +561,13 @@ EOD;
 
         $table2 .= '<tr style="border: none;">';
         $table2 .= '<td colspan="2"></td>';
-        $table2 .= '<td width="25%" style="border: 1px solid black;"> Diskon</td>';
-        $table2 .= '<td width="25%" style="border: 1px solid black;"> ' . $invoice->diskon .  '%</td>';
+        $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center"> Diskon</td>';
+        $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center"> ' . $invoice->diskon .  '%</td>';
         $table2 .= '</tr>';
         $table2 .= '<tr style="border: none;">';
         $table2 .= '<td colspan="2" style="border: none;"></td>';
-        $table2 .= '<td width="25%" style="border: 1px solid black;"> <b>Total</b></td>';
-        $table2 .= '<td width="25%" style="border: 1px solid black;"> ' . 'Rp. ' . number_format($total, 0, ',', '.') . '</td>';
+        $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center"> <b>Total</b></td>';
+        $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center"> ' . 'Rp. ' . number_format($total, 0, ',', '.') . '</td>';
         $table2 .= '</tr>';
         $table2 .=  <<<EOD
             <tbody>
@@ -647,31 +615,8 @@ EOD;
         $t_cpdf2->writeHTMLCell(0, 0, 4, $t_cpdf2->GetY(), $catatan, 0, 1, false, true, 'L', true);
 
         // Output PDF (tampilkan di browser)
-        $t_cpdf2->Output('penawaran.pdf', 'I'); // 'I' untuk menampilkan di browser
+        $t_cpdf2->Output('Invoice Pengenumroh.pdf', 'I'); // 'I' untuk menampilkan di browser
     }
-
-    // QUERY UNTUK INPUT TANDA TANGAN
-    // function signature()
-    // {
-    //     // Ambil data dari request
-    //     $img = $this->input->post('imgBase64');
-
-    //     // Decode base64
-    //     $img = str_replace('data:image/png;base64,', '', $img)
-    //     $img = str_replace(' ', '+', $img);
-    //     $data = base64_decode($img);
-
-    //     // Tentukan lokasi dan nama file
-    //     $fileName = uniqid() . '.png';
-    //     $filePath = './assets/backend/img/signatures/' . $fileName;
-
-    //     // Simpan file ke server
-    //     if (file_put_contents($filePath, $data)) {
-    //         echo json_encode(['status' => 'success', 'fileName' => $fileName]);
-    //     } else {
-    //         echo json_encode(['status' => 'error']);
-    //     }
-    // }
 
     function payment()
     {

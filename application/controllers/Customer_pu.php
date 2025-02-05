@@ -47,7 +47,7 @@ class Customer_pu extends CI_Controller
         ($akses->view_level == 'N' ? redirect('auth') : '');
         $data['add'] = $akses->add_level;
 
-        $data['notif'] = $this->M_notifikasi->pending_notification();
+
         $data['title'] = "backend/customer_pu/customer_list_pu";
         $data['titleview'] = "Data Customer";
         $this->load->view('backend/home', $data);
@@ -113,7 +113,7 @@ class Customer_pu extends CI_Controller
         $data['id'] = $id;
         $data['user'] = $this->M_customer_pu->get_by_id($id);
         $data['aksi'] = 'read';
-        $data['notif'] = $this->M_notifikasi->pending_notification();
+
         $data['title_view'] = "Data Customer";
         $data['title'] = 'backend/customer_pu/customer_form_pu';
         $data['travel'] = $this->db->get('tbl_travel_pu')->result_array();
@@ -126,7 +126,7 @@ class Customer_pu extends CI_Controller
     {
         $data['id'] = 0;
         $data['title_view'] = "Customer Form";
-        $data['notif'] = $this->M_notifikasi->pending_notification();
+
         $data['aksi'] = 'update';
         $data['title'] = 'backend/customer_pu/customer_form_pu';
         $data['travel'] = $this->db->get('tbl_travel_pu')->result_array();
@@ -139,7 +139,7 @@ class Customer_pu extends CI_Controller
     {
         $data['id'] = $id;
         $data['title_view'] = "Edit Data Customer";
-        $data['notif'] = $this->M_notifikasi->pending_notification();
+
         $data['title'] = 'backend/customer_pu/customer_form_pu';
         $data['travel'] = $this->db->get('tbl_travel_pu')->result_array();
         $query = "SELECT DISTINCT group_id FROM tbl_customer_pu ORDER BY group_id DESC";

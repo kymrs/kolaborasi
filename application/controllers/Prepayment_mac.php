@@ -43,7 +43,7 @@ class prepayment_mac extends CI_Controller
         ($akses->view_level == 'N' ? redirect('auth') : '');
         $data['add'] = $akses->add_level;
 
-        $data['notif'] = $this->M_notifikasi->pending_notification();
+
 
         $data['title'] = "backend/prepayment_mac/prepayment_list_mac";
         $data['titleview'] = "Data Prepayment";
@@ -154,7 +154,7 @@ class prepayment_mac extends CI_Controller
     // UNTUK MENAMPILKAN FORM READ
     public function read_form($id)
     {
-        $data['notif'] = $this->M_notifikasi->pending_notification();
+
         $data['id'] = $id;
         $data['user'] = $this->M_prepayment_mac->get_by_id($id);
         $data['app_name'] = $this->db->select('name')
@@ -182,7 +182,7 @@ class prepayment_mac extends CI_Controller
         $data['title'] = 'backend/prepayment_mac/prepayment_form_mac';
         $data['title_view'] = 'Prepayment Form';
         $data['rek_options'] = $this->M_prepayment_mac->options($id_user)->result_array();
-        $data['notif'] = $this->M_notifikasi->pending_notification();
+
         $this->load->view('backend/home', $data);
     }
 
@@ -210,7 +210,7 @@ class prepayment_mac extends CI_Controller
         // INISIASI
         $id_user = $this->session->userdata('id_user');
 
-        $data['notif'] = $this->M_notifikasi->pending_notification();
+
         $data['id'] = $id;
         $data['aksi'] = 'update';
         $data['title_view'] = "Edit Data Prepayment";
