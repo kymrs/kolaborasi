@@ -4,10 +4,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
 class Pu_data_link extends CI_Controller
 {
 
+	private $data_path_crew = '../linkgroup/link.pengenumroh/data-crew.json';
+	private $data_path_member = '../linkgroup/link.pengenumroh/data-member.json';
+
 	function __construct()
 	{
 		parent::__construct();
 		date_default_timezone_set('Asia/Jakarta');
+		$this->load->model('backend/M_pu_data_link');
 	}
 
 	public function index()
@@ -18,128 +22,110 @@ class Pu_data_link extends CI_Controller
 		$this->load->view('backend/home', $data);
 	}
 
-	function get_list1()
+
+	public function get_list1()
 	{
-		// INISIALISASI VARIABEL YANG DIBUTUHKAN
-		$fullname = $this->db->select('name')
-			->from('tbl_data_user')
-			->where('id_user', $this->session->userdata('id_user'))
-			->get()
-			->row('name');
+		// Pastikan parameter `start` dan `draw` ada di request
+		$start = $this->input->post('start') ?? 0;
+		$draw = $this->input->post('draw') ?? 1;
 
-		// Membaca data dari file JSON
-		$file_path = FCPATH . '../linkgroup/link.pengenumroh/data-crew.json';
+		// Ambil data dari model
+		$list = $this->M_pu_data_link->get_datatables();
+		$data = [];
+		$no = $start;
 
-		if (file_exists($file_path)) {
-			$json_data = file_get_contents($file_path);
-			$data = json_decode($json_data, true); // Mengubah JSON menjadi array
-
-			$list = $data; // Semua data yang sudah dibaca dari JSON
-		} else {
-			$list = array();
-		}
-
-		$data = array();
-		$no = $_POST['start'];
-
+		// Periksa hak akses edit dan delete
 		$akses = $this->M_app->hak_akses($this->session->userdata('id_level'), $this->router->fetch_class());
-		$edit = $akses->edit_level;
-		$delete = $akses->delete_level;
+		$edit = $akses->edit_level ?? 'N';
+		$delete = $akses->delete_level ?? 'N';
 
-		foreach ($list as $field) {
+		if (!empty($list)) {
+			foreach ($list as $crew) {
+				$action_edit = ($edit == 'Y') ? '<a class="btn btn-warning btn-circle btn-sm" title="Edit" onclick="edit_data_crew(' . "'" . $crew['id'] . "'" . ')"><i class="fa fa-edit"></i></a>&nbsp;' : '';
+				$action_delete = ($delete == 'Y') ? '<a onclick="delete_data_crew(' . "'" . $crew['id'] . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
 
-			// MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
-			$action_edit = ($edit == 'Y') ? '<a class="btn btn-warning btn-circle btn-sm" title="Edit" onclick="edit_data_crew(' . "'" . $field['noHP'] . "'" . ')"><i class="fa fa-edit"></i></a>&nbsp;' : '';
-			$action_delete = ($delete == 'Y') ? '<a onclick="delete_data_crew(' . "'" . $field['noHP'] . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
+				$action = $action_edit . $action_delete;
 
-			$action = $action_edit . $action_delete;
+				$no++;
+				$row = [];
+				$row[] = $no;  // Nomor urut
+				$row[] = $action;
+				$row[] = isset($crew['id']) ? $crew['id'] : '';  // Kolom id
+				$row[] = isset($crew['nama']) ? $crew['nama'] : '';  // Kolom nama
+				$row[] = isset($crew['noHP']) ? $crew['noHP'] : '';  // Kolom noHP
 
-			$no++;
-			$row = array();
-			$row[] = $no;
-			$row[] = $action;
-			$row[] = ucwords(strtolower($field['nama']));
-			$row[] = $field['noHP'];
-			$data[] = $row;
+				$data[] = $row;
+			}
 		}
 
-		$output = array(
-			"draw" => $_POST['draw'],
-			"recordsTotal" => count($data), // Menghitung semua data
-			"recordsFiltered" => count($data), // Menghitung data yang difilter
+		// Respons ke DataTables
+		$output = [
+			"draw" => intval($draw),
+			"recordsTotal" => $this->M_pu_data_link->count_all(),
+			"recordsFiltered" => $this->M_pu_data_link->count_filtered(),
 			"data" => $data,
-		);
-		// output dalam format JSON
+		];
+
 		echo json_encode($output);
 	}
 
-	function get_list2()
+	public function get_list2()
 	{
-		// INISIALISASI VARIABEL YANG DIBUTUHKAN
-		$fullname = $this->db->select('name')
-			->from('tbl_data_user')
-			->where('id_user', $this->session->userdata('id_user'))
-			->get()
-			->row('name');
+		// Pastikan parameter `start` dan `draw` ada di request
+		$start = $this->input->post('start') ?? 0;
+		$draw = $this->input->post('draw') ?? 1;
 
-		// Membaca data dari file JSON
-		$file_path = FCPATH . '../linkgroup/link.pengenumroh/data-member.json';
+		// Ambil data dari model
+		$list = $this->M_pu_data_link->get_datatables2();
+		$data = [];
+		$no = $start;
 
-		if (file_exists($file_path)) {
-			$json_data = file_get_contents($file_path);
-			$data = json_decode($json_data, true); // Mengubah JSON menjadi array
-
-			$list = $data; // Semua data yang sudah dibaca dari JSON
-		} else {
-			$list = array();
-		}
-
-		$data = array();
-		$no = $_POST['start'];
-
+		// Periksa hak akses edit dan delete
 		$akses = $this->M_app->hak_akses($this->session->userdata('id_level'), $this->router->fetch_class());
-		$edit = $akses->edit_level;
-		$delete = $akses->delete_level;
+		$edit = $akses->edit_level ?? 'N';
+		$delete = $akses->delete_level ?? 'N';
 
-		foreach ($list as $field) {
+		if (!empty($list)) {
+			foreach ($list as $member) {
+				$action_edit = ($edit == 'Y') ? '<a class="btn btn-warning btn-circle btn-sm" title="Edit" onclick="edit_data_member(' . "'" . $member['idMember'] . "'" . ')"><i class="fa fa-edit"></i></a>&nbsp;' : '';
+				$action_delete = ($delete == 'Y') ? '<a onclick="delete_data_member(' . "'" . $member['idMember'] . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
 
-			// MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
-			$action_edit = ($edit == 'Y') ? '<a class="btn btn-warning btn-circle btn-sm" title="Edit" onclick="edit_data_member(' . "'" . $field['noHP'] . "'" . ')"><i class="fa fa-edit"></i></a>&nbsp;' : '';
-			$action_delete = ($delete == 'Y') ? '<a onclick="delete_data_member(' . "'" . $field['noHP'] . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
+				$action = $action_edit . $action_delete;
 
-			$action = $action_edit . $action_delete;
+				$no++;
+				$row = [];
+				$row[] = $action;
+				$row[] = $member['idMember'] ?? '';
+				$row[] = $member['namaMember'] ?? '';
 
-			$no++;
-			$row = array();
-			$row[] = $no;
-			$row[] = $action;
-			$row[] = ucwords(strtolower($field['namaMember']));
-			$row[] = $field['noHP'];
-			$data[] = $row;
+				$data[] = $row;
+			}
 		}
 
-		$output = array(
-			"draw" => $_POST['draw'],
-			"recordsTotal" => count($data), // Menghitung semua data
-			"recordsFiltered" => count($data), // Menghitung data yang difilter
+		// Respons ke DataTables
+		$output = [
+			"draw" => intval($draw),
+			"recordsTotal" => $this->M_pu_data_link->count_all2(),
+			"recordsFiltered" => $this->M_pu_data_link->count_filtered2(),
 			"data" => $data,
-		);
-		// output dalam format JSON
+		];
+
 		echo json_encode($output);
 	}
 
-	function get_noHP($noHP)
+
+	function get_id($id)
 	{
 		// Path file JSON
-		$file_path = FCPATH . '../linkgroup/link.pengenumroh/data-crew.json';
+		$file_path = FCPATH . $this->data_path_crew;
 
 		if (file_exists($file_path)) {
 			$json_data = file_get_contents($file_path);
 			$data = json_decode($json_data, true); // Mengubah JSON menjadi array
 
-			// Cari data berdasarkan noHP
-			$result = array_filter($data, function ($crew) use ($noHP) {
-				return $crew['noHP'] == $noHP;
+			// Cari data berdasarkan id
+			$result = array_filter($data, function ($crew) use ($id) {
+				return $crew['id'] == $id;
 			});
 
 			// Mengembalikan hasil pertama jika ditemukan
@@ -151,18 +137,18 @@ class Pu_data_link extends CI_Controller
 		echo json_encode($data);
 	}
 
-	function get_noHpMember($noHP)
+	function get_idMember($idMember)
 	{
 		// Path file JSON
-		$file_path = FCPATH . '../linkgroup/link.pengenumroh/data-member.json';
+		$file_path = FCPATH . '';
 
 		if (file_exists($file_path)) {
 			$json_data = file_get_contents($file_path);
 			$data = json_decode($json_data, true); // Mengubah JSON menjadi array
 
-			// Cari data berdasarkan noHP
-			$result = array_filter($data, function ($crew) use ($noHP) {
-				return $crew['noHP'] == $noHP;
+			// Cari data berdasarkan idMember
+			$result = array_filter($data, function ($crew) use ($idMember) {
+				return $crew['idMember'] == $idMember;
 			});
 
 			// Mengembalikan hasil pertama jika ditemukan
@@ -177,17 +163,18 @@ class Pu_data_link extends CI_Controller
 	public function addCrew()
 	{
 		// Ambil input dari form atau AJAX
-		$nama = $this->input->post('nama_crew'); // Data nama
+		$id = $this->input->post('id'); // Data id
+		$nama = ucwords($this->input->post('nama_crew'));
 		$noHP = $this->input->post('no_hp'); // Data noHP
 
 		// Pastikan data tidak kosong
-		if (empty($nama) || empty($noHP)) {
-			echo json_encode(['status' => 'error', 'message' => 'Nama dan noHP harus diisi']);
+		if (empty($nama) || empty($noHP) || empty($id)) {
+			echo json_encode(['status' => 'error', 'message' => 'id, Nama dan noHP harus diisi']);
 			return;
 		}
 
 		// Path file data.json
-		$file_path = FCPATH . '../linkgroup/link.pengenumroh/data-crew.json'; // Sesuaikan dengan lokasi file
+		$file_path = FCPATH . $this->data_path_crew; // Sesuaikan dengan lokasi file
 
 		// Baca data yang sudah ada di data.json
 		$existing_data = [];
@@ -198,6 +185,7 @@ class Pu_data_link extends CI_Controller
 
 		// Tambahkan data baru ke array existing_data
 		$new_data = [
+			'id' => $id,
 			'nama' => $nama,
 			'noHP' => (int)$noHP // Pastikan noHP menjadi integer
 		];
@@ -218,16 +206,16 @@ class Pu_data_link extends CI_Controller
 	{
 		// Ambil input dari form atau AJAX
 		$nama = $this->input->post('nama_member'); // Data nama
-		$noHP = $this->input->post('no_hp'); // Data noHP
+		$idMember = $this->input->post('id_member'); // Data idMember
 
 		// Pastikan data tidak kosong
-		if (empty($nama) || empty($noHP)) {
-			echo json_encode(['status' => 'error', 'message' => 'Nama dan noHP harus diisi']);
+		if (empty($nama) || empty($idMember)) {
+			echo json_encode(['status' => 'error', 'message' => 'Nama dan idMember harus diisi']);
 			return;
 		}
 
 		// Path file data.json
-		$file_path = FCPATH . '../linkgroup/link.pengenumroh/data-member.json'; // Sesuaikan dengan lokasi file
+		$file_path = FCPATH . $this->data_path_member; // Sesuaikan dengan lokasi file
 
 		// Baca data yang sudah ada di data.json
 		$existing_data = [];
@@ -238,8 +226,8 @@ class Pu_data_link extends CI_Controller
 
 		// Tambahkan data baru ke array existing_data
 		$new_data = [
-			'namaMember' => $nama,
-			'noHP' => (int)$noHP // Pastikan noHP menjadi integer
+			'idMember' => $idMember,
+			'namaMember' => $nama
 		];
 		$existing_data[] = $new_data;
 
@@ -257,7 +245,7 @@ class Pu_data_link extends CI_Controller
 	public function updateCrew()
 	{
 		// Lokasi file JSON
-		$file_path = FCPATH . '../linkgroup/link.pengenumroh/data-crew.json';
+		$file_path = FCPATH . $this->data_path_crew;
 
 		// Pastikan file JSON ada
 		if (!file_exists($file_path)) {
@@ -270,16 +258,17 @@ class Pu_data_link extends CI_Controller
 		$data_crew = json_decode($json_content, true);
 
 		// Input no_hp dari form
+		$id = $this->input->post('id');
 		$no_hp = $this->input->post('no_hp');
 
 		// Data yang diupdate
-		$nama_crew = strtolower($this->input->post('nama_crew'));
-		$no_hp_update = $this->input->post('no_hp');
+		$nama_crew = ucwords($this->input->post('nama_crew'));
 
 		// Cari dan update data berdasarkan no_hp
 		$updated = false;
 		foreach ($data_crew as &$crew) {
-			if ($crew['noHP'] == (int)$no_hp) {
+			if ($crew['id'] == $id) {
+				$crew['noHP'] = $no_hp;
 				$crew['nama'] = $nama_crew;
 				$updated = true;
 				break;
@@ -301,7 +290,7 @@ class Pu_data_link extends CI_Controller
 	public function updateMember()
 	{
 		// Lokasi file JSON
-		$file_path = FCPATH . '../linkgroup/link.pengenumroh/data-member.json';
+		$file_path = FCPATH . $this->data_path_member;
 
 		// Pastikan file JSON ada
 		if (!file_exists($file_path)) {
@@ -314,16 +303,15 @@ class Pu_data_link extends CI_Controller
 		$data_member = json_decode($json_content, true);
 
 		// Input no_hp dari form
-		$no_hp = $this->input->post('no_hp');
+		$idMember = $this->input->post('id_member');
 
 		// Data yang diupdate
-		$nama_member = strtolower($this->input->post('nama_member'));
-		$no_hp_update = $this->input->post('no_hp');
+		$nama_member = ucwords($this->input->post('nama_member'));
 
 		// Cari dan update data berdasarkan no_hp
 		$updated = false;
 		foreach ($data_member as &$member) {
-			if ($member['noHP'] == (int)$no_hp) {
+			if ($member['idMember'] == $idMember) {
 				$member['namaMember'] = $nama_member;
 				$updated = true;
 				break;
@@ -343,17 +331,17 @@ class Pu_data_link extends CI_Controller
 	}
 
 
-	function delete($noHP)
+	function delete($id)
 	{
-		$file_path = FCPATH . '../linkgroup/link.pengenumroh/data-crew.json';
+		$file_path = FCPATH . $this->data_path_crew;
 
 		if (file_exists($file_path)) {
 			$json_data = file_get_contents($file_path);
 			$data = json_decode($json_data, true); // Mengubah JSON menjadi array
 
-			// Cari dan hapus data berdasarkan noHP
-			$updated_data = array_filter($data, function ($crew) use ($noHP) {
-				return $crew['noHP'] != $noHP;
+			// Cari dan hapus data berdasarkan id
+			$updated_data = array_filter($data, function ($crew) use ($id) {
+				return $crew['id'] != $id;
 			});
 
 			// Simpan kembali data setelah dihapus
@@ -368,17 +356,17 @@ class Pu_data_link extends CI_Controller
 		}
 	}
 
-	function deleteMember($noHP)
+	function deleteMember($idMember)
 	{
-		$file_path = FCPATH . '../linkgroup/link.pengenumroh/data-member.json';
+		$file_path = FCPATH . $this->data_path_member;
 
 		if (file_exists($file_path)) {
 			$json_data = file_get_contents($file_path);
 			$data = json_decode($json_data, true); // Mengubah JSON menjadi array
 
-			// Cari dan hapus data berdasarkan noHP
-			$updated_data = array_filter($data, function ($member) use ($noHP) {
-				return $member['noHP'] != $noHP;
+			// Cari dan hapus data berdasarkan idMember
+			$updated_data = array_filter($data, function ($member) use ($idMember) {
+				return $member['idMember'] != $idMember;
 			});
 
 			// Simpan kembali data setelah dihapus
@@ -390,32 +378,6 @@ class Pu_data_link extends CI_Controller
 			}
 		} else {
 			echo json_encode(array("status" => FALSE, "message" => "File tidak ditemukan."));
-		}
-	}
-
-
-	public function fetch_crew_data()
-	{
-		// Path ke file JSON
-		$file_path = FCPATH . '../linkgroup/link.pengenumroh/data-crew.json'; // Sesuaikan dengan lokasi file
-
-		if (file_exists($file_path)) {
-			// Membaca file JSON
-			$json_data = file_get_contents($file_path);
-
-			// Mengubah JSON menjadi array PHP
-			$data = json_decode($json_data, true);
-
-			// Kirim data sebagai JSON untuk DataTables
-			echo json_encode([
-				"data" => $data
-			]);
-		} else {
-			// Jika file tidak ditemukan
-			echo json_encode([
-				"data" => [],
-				"message" => "File data-crew.json tidak ditemukan!"
-			]);
 		}
 	}
 }

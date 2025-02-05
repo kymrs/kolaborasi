@@ -22,6 +22,7 @@
                                 <tr>
                                     <th>No</th>
                                     <th style="width: 120px;">Action</th>
+                                    <th>Kode Crew</th>
                                     <th>Nama Crew</th>
                                     <th>No Handphone</th>
                                 </tr>
@@ -33,6 +34,7 @@
                                 <tr>
                                     <th>No</th>
                                     <th style="width: 120px;">Action</th>
+                                    <th>Kode Crew</th>
                                     <th>Nama Crew</th>
                                     <th>No Handphone</th>
                                 </tr>
@@ -61,8 +63,8 @@
                                 <tr>
                                     <th>No</th>
                                     <th style="width: 120px;">Action</th>
+                                    <th>Kode Member</th>
                                     <th>Nama Member</th>
-                                    <th>No Handphone</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -72,8 +74,8 @@
                                 <tr>
                                     <th>No</th>
                                     <th style="width: 120px;">Action</th>
+                                    <th>Kode Member</th>
                                     <th>Nama Member</th>
-                                    <th>No Handphone</th>
                                 </tr>
                             </tfoot>
                         </table>
@@ -98,10 +100,15 @@
                     <div class="modal-body">
                         <input type="hidden" name="id" />
                         <div class="form-group row">
+                            <label for="" class="col-sm-3 col-form-label">Kode Crew</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="id" name="id" placeholder="Kode Crew" required>
+                            </div>
+                        </div>
+                        <div class="form-group row">
                             <label for="" class="col-sm-3 col-form-label">Nama</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control" id="nama_crew" name="nama_crew" placeholder="Nama Crew" required>
-                                <input type="hidden" class="form-control" id="id" name="id" placeholder="id">
                             </div>
                         </div>
                         <div class="form-group row">
@@ -134,15 +141,15 @@
                     <div class="modal-body">
                         <input type="hidden" name="id" />
                         <div class="form-group row">
-                            <label for="" class="col-sm-3 col-form-label">Nama</label>
+                            <label for="" class="col-sm-3 col-form-label">Kode</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" id="nama_member" name="nama_member" placeholder="Nama Member" required>
+                                <input type="text" class="form-control" id="id_member" name="id_member" placeholder="Kode Member" required>
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="" class="col-sm-3 col-form-label">No. Telp</label>
+                            <label for="" class="col-sm-3 col-form-label">Nama</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" id="no_hp" name="no_hp" placeholder="No. Telp" value="628" required>
+                                <input type="text" class="form-control" id="nama_member" name="nama_member" placeholder="Nama Member" required>
                             </div>
                         </div>
                     </div>
@@ -176,62 +183,77 @@
     });
 
     var table, table2;
-    $(document).ready(function() {
-        table = $('#crew-table').DataTable({
-            "responsive": true,
-            "scrollX": true,
-            "processing": true,
-            "serverSide": true,
-            "order": [],
-            "ajax": {
-                "url": "<?php echo site_url('pu_data_link/get_list1') ?>",
-                "type": "POST",
+    table = $('#crew-table').DataTable({
+        "responsive": true,
+        "scrollX": true,
+        "processing": true,
+        "serverSide": true,
+        "paging": true,
+        "order": [],
+        "ajax": {
+            "url": "<?php echo site_url('pu_data_link/get_list1'); ?>",
+            "type": "POST"
+        },
+        "language": {
+            "infoFiltered": ""
+        },
+        "columnDefs": [{
+                "targets": [0],
+                "className": 'dt-head-nowrap'
             },
-            "language": {
-                "infoFiltered": ""
+            {
+                "targets": [1],
+                "className": 'dt-body-nowrap'
             },
-            "columnDefs": [{
-                    "targets": [], // Adjusted indices to match the number of columns
-                    "className": 'dt-head-nowrap'
-                },
-                {
-                    "targets": [1],
-                    "className": 'dt-body-nowrap'
-                },
-                {
-                    "targets": [0, 1], // Indices for non-orderable columns
-                    "orderable": false,
-                }
-            ],
-        });
+            {
+                "targets": [0, 1],
+                "orderable": false
+            }
+        ]
+    });
 
-        table2 = $('#member-table').DataTable({
-            "responsive": true,
-            "scrollX": true,
-            "processing": true,
-            "serverSide": true,
-            "order": [],
-            "ajax": {
-                "url": "<?php echo site_url('pu_data_link/get_list2') ?>",
-                "type": "POST",
+    table2 = $('#member-table').DataTable({
+        "responsive": true,
+        "scrollX": true,
+        "processing": true,
+        "serverSide": true,
+        "paging": true,
+        "order": [],
+        "ajax": {
+            "url": "<?php echo site_url('pu_data_link/get_list2'); ?>",
+            "type": "POST",
+            "dataSrc": function(json) {
+                // Urutkan data berdasarkan kolom 'id' atau kolom lain yang menunjukkan data terbaru
+                json.data.sort(function(a, b) {
+                    return b[0] - a[0]; // Misal mengurutkan berdasarkan kolom 'id'
+                });
+
+                // Hitung nomor urut setelah data di-sort
+                let no = 0;
+                json.data.forEach(function(item) {
+                    no++;
+                    item.unshift(no); // Sisipkan nomor urut di indeks pertama
+                });
+
+                return json.data || [];
+            }
+        },
+        "language": {
+            "infoFiltered": ""
+        },
+        "columnDefs": [{
+                "targets": [0],
+                "className": 'dt-head-nowrap'
             },
-            "language": {
-                "infoFiltered": ""
+            {
+                "targets": [1],
+                "className": 'dt-body-nowrap'
             },
-            "columnDefs": [{
-                    "targets": [], // Adjusted indices to match the number of columns
-                    "className": 'dt-head-nowrap'
-                },
-                {
-                    "targets": [1],
-                    "className": 'dt-body-nowrap'
-                },
-                {
-                    "targets": [0, 1], // Indices for non-orderable columns
-                    "orderable": false,
-                }
-            ],
-        });
+            {
+                "targets": [0, 1],
+                "orderable": false
+            }
+        ]
     });
 
     $("#modalformcrew").submit(function(e) {
@@ -262,7 +284,7 @@
                     showConfirmButton: false,
                     timer: 1500
                 });
-                reload_table();
+                document.location.href = 'pu_data_link';
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 alert('Error adding / update data');
@@ -298,7 +320,7 @@
                     showConfirmButton: false,
                     timer: 1500
                 });
-                reload_table();
+                document.location.href = 'pu_data_link';
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 alert('Error adding / update data');
@@ -314,6 +336,8 @@
     function add_data_crew() {
         method = 'add';
         $('#modalformcrew')[0].reset();
+        $('[name="id"]').prop('readonly', false);
+        $('.card-title').text('Tambah Data Crew');
         var validator = $("#modalformcrew").validate();
         validator.resetForm();
     };
@@ -321,6 +345,8 @@
     function add_data_member() {
         method = 'add';
         $('#modalformmember')[0].reset();
+        $('[name="id_member"]').prop('readonly', false);
+        $('.card-title').text('Tambah Data Member');
         var validator = $("#modalformmember").validate();
         validator.resetForm();
     };
@@ -335,20 +361,22 @@
         $('#add_btn').click();
     }
 
-    function edit_data_crew(HP) {
+    function edit_data_crew(id) {
         method = 'update';
         $('#modalformcrew')[0].reset();
         var validator = $("#modalformcrew").validate();
         validator.resetForm();
+        $('[name="id"]').prop('readonly', true);
         $('.form-control').removeClass('error');
         $('#modal-defaultcrew').modal('show');
         $('.card-title').text('Edit Data Crew');
         $('.aksi').text('Update');
         $.ajax({
-            url: "<?php echo site_url('pu_data_link/get_noHP/') ?>" + HP,
+            url: "<?php echo site_url('pu_data_link/get_id/') ?>" + id,
             type: "GET",
             dataType: "JSON",
             success: function(data) {
+                $('[name="id"]').val(data.id);
                 $('[name="nama_crew"]').val(data.nama);
                 $('[name="no_hp"]').val(data.noHP);
             },
@@ -358,7 +386,7 @@
         });
     }
 
-    function edit_data_member(noHP) {
+    function edit_data_member(idMember) {
         method = 'update';
         $('#modalformmember')[0].reset();
         var validator = $("#modalformmember").validate();
@@ -366,14 +394,15 @@
         $('.form-control').removeClass('error');
         $('#modal-defaultmember').modal('show');
         $('.card-title').text('Edit Data Member');
+        $('[name="id_member"]').prop('readonly', true);
         $('.aksi').text('Update');
         $.ajax({
-            url: "<?php echo site_url('pu_data_link/get_noHpMember/') ?>" + noHP,
+            url: "<?php echo site_url('pu_data_link/get_IdMember/') ?>" + idMember,
             type: "GET",
             dataType: "JSON",
             success: function(data) {
+                $('[name="id_member"]').val(data.idMember);
                 $('[name="nama_member"]').val(data.namaMember);
-                $('[name="no_hp"]').val(data.noHP);
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 alert('Error get data from ajax');
@@ -381,7 +410,7 @@
         });
     }
 
-    function delete_data_crew(noHP) {
+    function delete_data_crew(id) {
         Swal.fire({
             title: 'Are you sure?',
             text: "You won't be able to revert this!",
@@ -393,7 +422,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: "<?php echo site_url('pu_data_link/delete') ?>/" + noHP,
+                    url: "<?php echo site_url('pu_data_link/delete') ?>/" + id,
                     type: "POST",
                     dataType: "JSON",
                     success: function(data) {
@@ -404,7 +433,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         });
-                        reload_table();
+                        document.location.href = 'pu_data_link';
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
                         alert('Error deleting data');
@@ -414,7 +443,7 @@
         })
     };
 
-    function delete_data_member(noHP) {
+    function delete_data_member(idMember) {
         Swal.fire({
             title: 'Are you sure?',
             text: "You won't be able to revert this!",
@@ -426,7 +455,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: "<?php echo site_url('pu_data_link/deleteMember') ?>/" + noHP,
+                    url: "<?php echo site_url('pu_data_link/deleteMember') ?>/" + idMember,
                     type: "POST",
                     dataType: "JSON",
                     success: function(data) {
@@ -437,7 +466,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         });
-                        reload_table();
+                        document.location.href = 'pu_data_link';
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
                         alert('Error deleting data');

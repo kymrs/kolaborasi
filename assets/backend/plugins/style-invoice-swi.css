@@ -1,0 +1,386 @@
+.container .canvas-bg-swi {
+    width: 595px;
+    /* min-height: 842px; */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    margin: 30px auto;
+    position: relative;
+    background-color: #fff;
+}
+
+.background-image-swi {
+    width: 100%;
+    margin-top: -30px;
+}
+
+.btn-back {
+    float: right;
+    position: relative;
+    right: 150px;
+}
+
+.content {
+    width: 595px;
+    height: 842px;
+    margin-top: -842px;
+    position: relative;
+    z-index: 99;
+}
+
+.header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+}
+
+.header .logo {
+    width: 45%;
+}
+
+.header .ellipse {
+    width: 50%;
+    position: relative;
+}
+
+.header .logo img {
+    width: 50%;
+    margin-top: 50px;
+    margin-left: 30px;
+}
+
+.header .ellipse img {
+    width: 100%;
+}
+
+.header .ellipse .ellipse-content {
+    position: absolute;
+    top: 25px;
+    left: 33%;
+    color: #111;
+}
+
+.header .ellipse .ellipse-content h1{
+    font-weight: bold;
+    font-size: 2rem;
+}
+
+.header .ellipse .ellipse-content table {
+    margin: auto;
+}
+
+.header .ellipse .ellipse-content table tr td{
+    font-size: 0.9rem;
+}
+
+/* Data Content */
+.data-content {
+    position: absolute;
+    top: 170px;
+    width: 100%;
+}
+
+.data-content .from-to-group {
+    margin-left: 20px;
+    display: flex;
+    width: 40%;
+    justify-content: space-between;
+    color: #111;
+}
+
+.data-content .from-to-group h4 {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 3px;
+}
+
+.data-content .from-to-group p {
+    font-size: 0.9rem;
+}
+
+.data-content .address {
+    margin-left: 20px;
+    color: #111;
+    width: 35%;
+    margin-top: 5px;
+}
+
+.data-content .address h4 {
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.data-content .address p {
+    font-size: 0.9rem;
+}
+
+/* Table Data */
+.table-data {
+    margin-top: 180px;
+}
+
+.table-data .table-header {
+    width: 90%;
+    margin: auto;
+    background: linear-gradient(to right, #5BDDE5, #004BAD);
+    height: 35px;
+    border-radius: 20px;
+    display: flex;
+    color: #fff;
+    align-items: center;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.table-data .table-header span,
+.table-data .data span {
+    text-align: center;
+    font-size: 0.8rem;
+}
+
+.table-data .data-container {
+    min-height: 100px;
+}
+
+.table-data .data {
+    width: 90%;
+    margin: auto;
+    display: flex;
+    color: #111;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+
+.table-data .total {
+    width: 85%;
+    margin: auto;
+    color: #111;
+    align-items: center;
+    margin-top: 20px;
+    font-size: 0.8rem;
+}
+
+/* Bank Details */
+.bank-details {
+    width: 50%;
+    margin-left: 45px;
+    color: #111;
+    height: 250px;
+}
+
+.bank-details h4 {
+    font-weight: bold;
+    font-size: 0.8rem;
+}
+
+.bank-details p {
+    margin: 0;
+    font-size: 0.8rem;
+}
+
+/* Footer */
+.footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #0089D9;
+    text-align: center;
+    padding: 25px 0;
+}
+
+.footer img {
+    width: 90%;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Media Queries */
+@media (max-width: 1080px) {
+    .container .canvas-bg-swi {
+        width: 550px;
+        /* min-height: 770px; */
+    }
+
+    .btn-back {
+        right: 100px;
+    }
+
+    .header .ellipse .ellipse-content h1{
+        font-weight: bold;
+        font-size: 1.6rem;
+    }
+    .header .ellipse .ellipse-content table tr td{
+        font-size: 0.7rem;
+    }
+
+    .data-content {
+        top: 160px;
+    }
+
+}
+
+@media (max-width: 936px) {
+    .container .canvas-bg-swi {
+        width: 500px;
+        /* min-height: 750px; */
+    }
+
+    .btn-back {
+        right: 80px;
+    }
+
+    .table-data {
+        margin-top: 200px;
+    }
+
+    .data-content {
+        top: 140px;
+    }
+}
+
+@media (max-width: 767px) {
+    .container .canvas-bg-swi {
+        width: 450px;
+        /* min-height: 730px; */
+    }
+
+    .btn-back {
+        right: 50px;
+    }
+
+    .table-data {
+        margin-top: 200px;
+    }
+
+    .data-content {
+        top: 130px;
+    }
+}
+
+@media (max-width: 546px) {
+    .container .canvas-bg-swi {
+        /* min-height: 610px; */
+        width: 345px;
+    }
+
+    .btn-back {
+        right: 20px;
+    }
+
+    .header .ellipse .ellipse-content {
+        top: 10px;
+    }
+
+    .header .ellipse .ellipse-content h1{
+        font-weight: bold;
+        font-size: 1.4rem;
+        margin: 1px;
+    }
+    .header .ellipse .ellipse-content table tr td{
+        font-size: 0.6rem;
+    }
+    
+    .header .logo img {
+        width: 60%;
+    }    
+
+    .data-content {
+        top: 125px;
+    }
+    
+    .data-content .from-to-group h4 {
+        font-size: 0.8rem;
+    }
+    
+    .data-content .from-to-group p {
+        font-size: 0.7rem;
+    }
+    
+    .data-content .address {
+        margin-top: 0;
+    }
+    
+    .data-content .address h4 {
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+    
+    .data-content .address p {
+        font-size: 0.7rem;
+    }
+
+    .table-data {
+        margin-top: 180px;
+    }
+    
+    .table-data .table-header {
+        height: 25px;
+    }
+    
+    .table-data .table-header span,
+    .table-data .data span {
+        font-size: 0.7rem;
+    }
+    
+    .table-data .data-container {
+        min-height: 50px;
+    }
+    
+    .table-data .total {
+        font-size: 0.7rem;
+    }
+
+    /* Bank Details */
+    .bank-details {
+        margin-left: 20px;
+        height: 190px;
+    }
+
+    .bank-details h4 {
+        font-size: 0.7rem;
+    }
+
+    .bank-details p {
+        font-size: 0.7rem;
+    }
+
+    .footer {
+        padding: 15px 0;
+    }
+}

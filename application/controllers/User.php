@@ -10,13 +10,13 @@ class User extends CI_Controller
 		$this->load->model('backend/M_user');
 		$this->load->model('backend/M_approval');
 		$this->load->model('backend/M_level');
-		$this->load->model('backend/M_notifikasi');
+		// $this->load->model('backend/M_notifikasi');
 		$this->M_login->getsecurity();
 	}
 
 	function index()
 	{
-		$data['notif'] = $this->M_notifikasi->pending_notification();
+		// $data['notif'] = $this->M_notifikasi->pending_notification();
 		$akses = $this->M_app->hak_akses($this->session->userdata('id_level'), $this->router->fetch_class());
 		($akses->view_level == 'N' ? redirect('auth') : '');
 		$data['add'] = $akses->add_level;
@@ -72,8 +72,8 @@ class User extends CI_Controller
 	function edit_form($id)
 	{
 		$data['id'] = $id;
-		$this->load->model('backend/M_notifikasi');
-		$data['notif'] = $this->M_notifikasi->pending_notification();
+		// $this->load->model('backend/M_notifikasi');
+		// $data['notif'] = $this->M_notifikasi->pending_notification();
 		$data['title_view'] = "Edit User Form";
 		$data['aksi'] = 'update';
 		$data['users'] = $this->db->select('id_user, fullname')->from('tbl_user')->get()->result_object();
