@@ -18,7 +18,7 @@ class Pu_penawaran extends CI_Controller
 
     public function index()
     {
-        $data['notif'] = $this->M_notifikasi->pending_notification();
+
         $akses = $this->M_app->hak_akses($this->session->userdata('id_level'), $this->router->fetch_class());
         ($akses->view_level == 'N' ? redirect('auth') : '');
         $data['add'] = $akses->add_level;
@@ -90,7 +90,7 @@ class Pu_penawaran extends CI_Controller
 
     public function read_form()
     {
-        $data['notif'] = $this->M_notifikasi->pending_notification();
+
         $kode = $this->uri->segment(3);
         // var_dump($kode);
         $data['penawaran'] = $this->M_pu_penawaran->getPenawaran($kode);
@@ -129,7 +129,7 @@ class Pu_penawaran extends CI_Controller
 
     public function add_form()
     {
-        $data['notif'] = $this->M_notifikasi->pending_notification();
+
         $data['id'] = 0;
         $data['title'] = 'backend/pu_penawaran/pu_penawaran_form';
         $this->db->order_by('nama_layanan', 'ASC');
@@ -141,7 +141,7 @@ class Pu_penawaran extends CI_Controller
 
     function edit_form($id)
     {
-        $data['notif'] = $this->M_notifikasi->pending_notification();
+
         $data['id'] = $id;
         $data['aksi'] = 'update';
         $data['title_view'] = "Edit Data Prepayment";

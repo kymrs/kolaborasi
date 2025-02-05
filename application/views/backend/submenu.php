@@ -79,6 +79,12 @@
                         </div>
                     </div>
                     <div class="form-group row">
+                        <label for="nama_tbl" class="col-sm-2 col-form-label">Table</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="nama_tbl" name="nama_tbl" placeholder="Table">
+                        </div>
+                    </div>
+                    <div class="form-group row">
                         <label for="icon" class="col-sm-2 col-form-label">Icon</label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" id="icon" name="icon" placeholder="Icon">
@@ -248,6 +254,7 @@
                 $('[name="menu"]').val(data.id_menu);
                 $('[name="submenu"]').val(data.nama_submenu);
                 $('[name="link"]').val(data.link);
+                $('[name="nama_tbl"]').val(data.nama_tbl);
                 $('[name="icon"]').val(data.icon);
                 $('[name="urutan"]').val(data.urutan).prop('readonly', false);
                 var elements = $('[name="aktif"]');

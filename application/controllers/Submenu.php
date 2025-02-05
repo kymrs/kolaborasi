@@ -15,7 +15,7 @@ class Submenu extends CI_Controller
 
 	function index()
 	{
-		$data['notif'] = $this->M_notifikasi->pending_notification();
+
 		$akses = $this->M_app->hak_akses($this->session->userdata('id_level'), $this->router->fetch_class());
 		($akses->view_level == 'N' ? redirect('auth') : '');
 		$data['add'] = $akses->add_level;
@@ -69,6 +69,7 @@ class Submenu extends CI_Controller
 			'nama_submenu' => $this->input->post('submenu'),
 			'id_menu' => $this->input->post('menu'),
 			'link' => $this->input->post('link'),
+			'nama_tbl' => $this->input->post('nama_tbl'),
 			'icon' => $this->input->post('icon'),
 			'urutan' => $this->input->post('urutan'),
 			'is_active' => $this->input->post('aktif'),
@@ -83,6 +84,7 @@ class Submenu extends CI_Controller
 			'nama_submenu' => $this->input->post('submenu'),
 			'id_menu' => $this->input->post('menu'),
 			'link' => $this->input->post('link'),
+			'nama_tbl' => $this->input->post('nama_tbl'),
 			'icon' => $this->input->post('icon'),
 			'urutan' => $this->input->post('urutan'),
 			'is_active' => $this->input->post('aktif'),

@@ -141,13 +141,13 @@
                                 <div class="form-group row">
                                     <label class="col-sm-4 col-form-label">Contact Nama</label>
                                     <div class="col-sm-8">
-                                        <input type="text" class="form-control" id="ctc_nama1" name="ctc_nama1" placeholder="Contact Nama">
+                                        <input type="text" class="form-control" id="ctc_nama" name="ctc_nama" placeholder="Contact Nama">
                                     </div>
                                 </div>
                                 <div class="form-group row mb-3">
                                     <label class="col-sm-4 col-form-label">Contact Nomor</label>
                                     <div class="col-sm-8">
-                                        <input type="text" class="form-control" id="ctc_nomor1" name="ctc_nomor1" placeholder="Contact Nomor">
+                                        <input type="text" class="form-control" id="ctc_nomor" name="ctc_nomor" placeholder="Contact Nomor">
                                     </div>
                                 </div>
                                 <h4 class="section-title">PAYMENT INFO :</h4>
@@ -203,19 +203,25 @@
                                 <div class="form-group row">
                                     <label class="col-sm-4 col-form-label">Contact Nama</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="ctc_nama2" name="ctc_nama2" placeholder="Contact Nama">
+                                        <input type="text" class="form-control" id="ctc2_nama" name="ctc2_nama" placeholder="Contact Nama">
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-4 col-form-label">Contact Nomor</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="ctc_nomor2" name="ctc_nomor2" placeholder="Contact Nomor">
+                                        <input type="text" class="form-control" id="ctc2_nomor" name="ctc2_nomor" placeholder="Contact Nomor">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label">Email</label>
+                                    <div class="col-sm-7">
+                                        <input type="email" class="form-control" id="ctc2_email" name="ctc2_email" placeholder="Email">
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-4 col-form-label">Contact Alamat</label>
                                     <div class="col-sm-7">
-                                        <textarea class="form-control" id="ctc_alamat" name="ctc_alamat" rows="2" placeholder="Contact Alamat"></textarea>
+                                        <textarea class="form-control" id="ctc2_alamat" name="ctc2_alamat" rows="2" placeholder="Contact Alamat"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -353,14 +359,14 @@
     };
 
     $(document).ready(function() {
-        $('#ctc_nomor1').on('input', function() {
+        $('#ctc_nomor').on('input', function() {
             // Ambil nilai input
             let value = $(this).val();
 
             // Hapus semua karakter yang bukan angka
             $(this).val(value.replace(/[^0-9]/g, ''));
         });
-        $('#ctc_nomor2').on('input', function() {
+        $('#ctc2_nomor').on('input', function() {
             // Ambil nilai input
             let value = $(this).val();
 
@@ -777,14 +783,18 @@
                     console.log(data);
                     //SET VALUE DATA MASTER PREPAYMENT
                     $('#id').val(data['master']['id']);
-                    $('#tgl_invoice').val(data['master']['tgl_invoice']);
+                    let dateParts = data['master']['tgl_invoice'].split('-'); // Pisahkan berdasarkan "-"
+                    let formattedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`; // Susun jadi DD-MM-YYYY
+                    $('#tgl_invoice').val(formattedDate); // Masukkan ke input
                     $('#kode_invoice').val(data['master']['kode_invoice']);
                     $('#tgl_tempo').val(data['master']['tgl_tempo']);
-                    $('#ctc_nama1').val(data['master']['ctc_nama1']);
-                    $('#ctc_nomor1').val(data['master']['ctc_nomor1']);
-                    $('#ctc_nama2').val(data['master']['ctc_nama2']);
-                    $('#ctc_nomor2').val(data['master']['ctc_nomor2']);
-                    $('#ctc_alamat').val(data['master']['ctc_alamat']);
+                    $('#ctc_nama').val(data['master']['ctc_nama']);
+                    $('#ctc_nomor').val(data['master']['ctc_nomor']);
+                    $('#diskon').val(data['master']['diskon']);
+                    $('#ctc2_nama').val(data['master']['ctc2_nama']);
+                    $('#ctc2_email').val(data['master']['ctc2_email']);
+                    $('#ctc2_nomor').val(data['master']['ctc2_nomor']);
+                    $('#ctc2_alamat').val(data['master']['ctc2_alamat']);
                     quill.clipboard.dangerouslyPasteHTML(data['master']['keterangan']);
                     //APPEND DATA pu_rek_invoice DETAIL PREPAYMENT
                     console.log(data['rek_invoice']);

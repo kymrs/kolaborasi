@@ -16,7 +16,7 @@ class User extends CI_Controller
 
 	function index()
 	{
-		$data['notif'] = $this->M_notifikasi->pending_notification();
+
 		$akses = $this->M_app->hak_akses($this->session->userdata('id_level'), $this->router->fetch_class());
 		($akses->view_level == 'N' ? redirect('auth') : '');
 		$data['add'] = $akses->add_level;
@@ -73,7 +73,7 @@ class User extends CI_Controller
 	{
 		$data['id'] = $id;
 		$this->load->model('backend/M_notifikasi');
-		$data['notif'] = $this->M_notifikasi->pending_notification();
+
 		$data['title_view'] = "Edit User Form";
 		$data['aksi'] = 'update';
 		$data['users'] = $this->db->select('id_user, fullname')->from('tbl_user')->get()->result_object();

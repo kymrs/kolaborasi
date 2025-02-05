@@ -34,8 +34,8 @@
                 <div class="header-content">
                     <div class="left-side">
                         <h2>Kepada Yth.</h2>
-                        <h1><?= $invoice['ctc_nama2'] ?></h1>
-                        <p class="alamat">Alamat : <?= $invoice['ctc_alamat'] ?></p>
+                        <h1><?= $invoice['ctc2_nama'] ?></h1>
+                        <p class="alamat">Alamat : <?= $invoice['ctc2_alamat'] ?></p>
                     </div>
                     <div class="right-side">
                         <table>

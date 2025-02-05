@@ -14,7 +14,7 @@ class Reimbust_sw extends CI_Controller
 
     public function index()
     {
-        $data['notif'] = $this->M_notifikasi->pending_notification();
+
         $akses = $this->M_app->hak_akses($this->session->userdata('id_level'), $this->router->fetch_class());
         ($akses->view_level == 'N' ? redirect('auth') : '');
         $data['add'] = $akses->add_level;
@@ -273,7 +273,7 @@ class Reimbust_sw extends CI_Controller
 
     function read_form($id)
     {
-        $data['notif'] = $this->M_notifikasi->pending_notification();
+
         $data['aksi'] = 'read';
         $data['user'] = $this->M_reimbust_sw->get_by_id($id);
         $data['app_name'] = $this->db->select('name')
@@ -300,7 +300,7 @@ class Reimbust_sw extends CI_Controller
         // INISIASI
         $id = $this->session->userdata('id_user');
 
-        $data['notif'] = $this->M_notifikasi->pending_notification();
+
         $data['id'] = 0;
         $data['aksi'] = 'add';
         $data['rek_options'] = $this->M_reimbust_sw->options($id)->result_array();
@@ -578,7 +578,7 @@ class Reimbust_sw extends CI_Controller
         // INISIASI
         $id_user = $this->session->userdata('id_user');
 
-        $data['notif'] = $this->M_notifikasi->pending_notification();
+
         $data['id'] = $id;
         $data['aksi'] = 'update';
         $data['title_view'] = "Edit Reimbust";

@@ -19,7 +19,7 @@ class Pu_land_arrangement extends CI_Controller
 
     public function index()
     {
-        $data['notif'] = $this->M_notifikasi->pending_notification();
+
         $akses = $this->M_app->hak_akses($this->session->userdata('id_level'), $this->router->fetch_class());
         ($akses->view_level == 'N' ? redirect('auth') : '');
         $data['add'] = $akses->add_level;
@@ -127,7 +127,7 @@ class Pu_land_arrangement extends CI_Controller
     public function add_form()
     {
         $this->load->model('backend/M_notifikasi');
-        $data['notif'] = $this->M_notifikasi->pending_notification();
+
         $data['id'] = 0;
         $data['title'] = 'backend/pu_penawaran/pu_land_arrangement_form';
         // $data['products'] = $this->db->select('id, nama')->from('tbl_produk')->get()->result_object();
@@ -139,7 +139,7 @@ class Pu_land_arrangement extends CI_Controller
     function edit_form($id)
     {
         $this->load->model('backend/M_notifikasi');
-        $data['notif'] = $this->M_notifikasi->pending_notification();
+
         $data['id'] = $id;
         $data['aksi'] = 'update';
         $data['title'] = 'backend/pu_penawaran/pu_land_arrangement_form';

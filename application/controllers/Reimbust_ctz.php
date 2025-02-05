@@ -18,7 +18,7 @@ class Reimbust_ctz extends CI_Controller
         ($akses->view_level == 'N' ? redirect('auth') : '');
         $data['add'] = $akses->add_level;
 
-        $data['notif'] = $this->M_notifikasi->pending_notification();
+
 
         $data['title'] = "backend/reimbust_ctz/reimbust_list_ctz";
         $data['titleview'] = "Data Reimbust";
@@ -271,7 +271,7 @@ class Reimbust_ctz extends CI_Controller
 
     function read_form($id)
     {
-        $data['notif'] = $this->M_notifikasi->pending_notification();
+
         $data['aksi'] = 'read';
         $data['user'] = $this->M_reimbust_ctz->get_by_id($id);
         $data['app_name'] = $this->db->select('name')
@@ -298,7 +298,7 @@ class Reimbust_ctz extends CI_Controller
         // INISIASI
         $id_user = $this->session->userdata('id_user');
 
-        $data['notif'] = $this->M_notifikasi->pending_notification();
+
         $data['id'] = 0;
         $data['aksi'] = 'add';
         $data['rek_options'] = $this->M_reimbust_ctz->options($id_user)->result_array();
@@ -631,7 +631,7 @@ class Reimbust_ctz extends CI_Controller
         // INISIASI
         $id_user = $this->session->userdata('id_user');
 
-        $data['notif'] = $this->M_notifikasi->pending_notification();
+
         $data['id'] = $id;
         $data['aksi'] = 'update';
         $data['title_view'] = "Edit Reimbust";
