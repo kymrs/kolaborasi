@@ -282,16 +282,8 @@
         validator.resetForm();
         $('#modal-default').modal('show');
         $('.card-title').text('Add Menu');
-        $('.aksi').text('Save'); <<
-        << << < HEAD
-        $('#core').hide(); ===
-        === =
-        $('#sub_name').val('');
-        $('#app_id').val('').trigger('change');
-        $('#app2_id').val('').trigger('change');
-        $('#app3_id').val('').trigger('change');
-        $('#app4_id').val('').trigger('change'); >>>
-        >>> > 4 d224803968f96b47abd9f361825b40983e45acd
+        $('.aksi').text('Save');
+        $('#core').hide();
 
         $.ajax({
             url: "<?php echo site_url('menu/get_max') ?>",
@@ -321,25 +313,13 @@
             type: "GET",
             dataType: "JSON",
             success: function(data) {
-                <<
-                << << < HEAD
                 $('[name="id"]').val(data.id_menu);
                 $('[name="menu"]').val(data.nama_menu);
                 $('[name="link"]').val(data.link);
                 $('[name="sub_image"]').val(data.sub_image);
                 $('[name="sub_color"]').val(data.sub_color);
                 $('[name="icon"]').val(data.icon);
-                $('[name="urutan"]').val(data.urutan).prop('readonly', false); ===
-                === =
-                console.log(data);
-                $('[name="id"]').val(data['menu']['id_menu']);
-                $('[name="menu"]').val(data['menu']['nama_menu']);
-                $('[name="link"]').val(data['menu']['link']);
-                $('[name="sub_image"]').val(data.sub_image);
-                $('[name="sub_color"]').val(data.sub_color);
-                $('[name="icon"]').val(data['menu']['icon']);
-                $('[name="urutan"]').val(data['menu']['urutan']).prop('readonly', false); >>>
-                >>> > 4 d224803968f96b47abd9f361825b40983e45acd
+                $('[name="urutan"]').val(data.urutan).prop('readonly', false);
                 var elements = $('[name="aktif"]');
                 for (i = 0; i < elements.length; i++) {
                     if (elements[i].value == data['menu']['is_active']) {
