@@ -74,9 +74,34 @@ class M_menu extends CI_Model
 
     public function delete_id($id)
     {
+        // Pastikan ID tidak kosong atau null
+        if (empty($id)) {
+            echo json_encode(array("status" => FALSE, "message" => "ID tidak valid"));
+            return;
+        }
+
+        // Gunakan transaksi database untuk memastikan integritas data
+        $this->db->trans_start();
+
+        // Hapus dari tabel utama
         $this->db->where('id_menu', $id);
         $this->db->delete($this->table);
+
+        // Hapus dari tabel approval terkait
+        $this->db->where('id_menu', $id);
+        $this->db->delete('tbl_approval');
+
+        // Selesaikan transaksi
+        $this->db->trans_complete();
+
+        // Cek apakah transaksi berhasil
+        if ($this->db->trans_status() === FALSE) {
+            return json_encode(array("status" => FALSE, "message" => "Gagal menghapus data"));
+        } else {
+            return json_encode(array("status" => TRUE, "message" => "Data berhasil dihapus"));
+        }
     }
+
 
     public function get_by_id($id)
     {
@@ -98,6 +123,12 @@ class M_menu extends CI_Model
     public function save($data)
     {
         $this->db->insert($this->table, $data);
+        return $this->db->insert_id();
+    }
+
+    public function save2($data2)
+    {
+        $this->db->insert('tbl_approval', $data2);
         return $this->db->insert_id();
     }
 }

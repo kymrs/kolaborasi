@@ -285,7 +285,7 @@
             type: "GET",
             dataType: "JSON",
             success: function(data) {
-                console.log(data);
+                // console.log(data);
                 $('[name="id"]').val(data['menu']['id_menu']);
                 $('[name="menu"]').val(data['menu']['nama_menu']);
                 $('[name="link"]').val(data['menu']['link']);
@@ -297,11 +297,19 @@
                         elements[i].checked = true;
                     }
                 }
-                $('#sub_name').val(data['approval']['sub_name']);
-                $('#app_id').val(data['approval']['app_id']).trigger('change');
-                $('#app2_id').val(data['approval']['app2_id']).trigger('change');
-                $('#app3_id').val(data['approval']['app3_id']).trigger('change');
-                $('#app4_id').val(data['approval']['app4_id']).trigger('change');
+                if (data['approval'] == null) {
+                    $('#sub_name').val('');
+                    $('#app_id').val('').trigger('change');
+                    $('#app2_id').val('').trigger('change');
+                    $('#app3_id').val('').trigger('change');
+                    $('#app4_id').val('').trigger('change');
+                } else {
+                    $('#sub_name').val(data['approval']['sub_name']);
+                    $('#app_id').val(data['approval']['app_id']).trigger('change');
+                    $('#app2_id').val(data['approval']['app2_id']).trigger('change');
+                    $('#app3_id').val(data['approval']['app3_id']).trigger('change');
+                    $('#app4_id').val(data['approval']['app4_id']).trigger('change');
+                }
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 alert('Error get data from ajax');
@@ -325,18 +333,32 @@
                     type: "POST",
                     dataType: "JSON",
                     success: function(data) {
-                        Swal.fire({
-                            position: 'top-end',
-                            icon: 'success',
-                            title: 'Your data has been deleted',
-                            showConfirmButton: false,
-                            timer: 1500
-                        }).then((result) => {
-                            location.reload();
-                        })
+                        console.log(data);
+                        if (data['status']) { // Pastikan respons dari server memiliki `status: true`
+                            Swal.fire({
+                                position: "top-end",
+                                icon: "success",
+                                title: "Data berhasil dihapus",
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then(() => {
+                                location.reload(true); // Force reload tanpa cache
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Gagal menghapus data",
+                                text: data.message || "Terjadi kesalahan",
+                            });
+                        }
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
-                        alert('Error deleting data');
+                        console.log("AJAX Error:", textStatus, errorThrown); // Untuk debugging
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error!",
+                            text: "Gagal menghapus data. Coba lagi nanti.",
+                        });
                     }
                 });
             }
