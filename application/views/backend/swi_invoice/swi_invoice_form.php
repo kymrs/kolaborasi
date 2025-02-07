@@ -184,7 +184,7 @@
                                 <div class="form-group row">
                                     <label class="col-sm-4 col-form-label">Address</label>
                                     <div class="col-sm-7">
-                                        <textarea name="ctc_address" id="ctc_address" class="form-control" placeholder="Address" rows="3">Jl. Mahoni No. 13, RT.03/RW.10, Bakti Jaya, Kec. Sukmajaya, Kota Depok, Jawa Barat 16418, Indonesia</textarea>
+                                        <textarea name="ctc_address" id="ctc_address" class="form-control" placeholder="Address" rows="3">Kp. Tunggilis, Desa/Kelurahan Situsari, Kec. Cileungsi, Kab. Bogor, Provinsi Jawa Barat, Kode Pos: 16820</textarea>
                                     </div>
                                 </div>
                                 <input type="hidden" class="form-control" id="total_akhir" name="total_akhir" placeholder="Contact To">

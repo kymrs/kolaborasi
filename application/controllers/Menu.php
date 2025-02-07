@@ -65,6 +65,8 @@ class Menu extends CI_Controller
 			'nama_menu' => $this->input->post('menu'),
 			'link' => $this->input->post('link'),
 			'icon' => $this->input->post('icon'),
+			'sub_image' => $this->input->post('sub_image'),
+			'sub_color' => $this->input->post('sub_color'),
 			'urutan' => $this->input->post('urutan'),
 			'is_active' => $this->input->post('aktif'),
 		);
@@ -78,6 +80,8 @@ class Menu extends CI_Controller
 			'nama_menu' => $this->input->post('menu'),
 			'link' => $this->input->post('link'),
 			'icon' => $this->input->post('icon'),
+			'sub_image' => $this->input->post('sub_image'),
+			'sub_color' => $this->input->post('sub_color'),
 			'urutan' => $this->input->post('urutan'),
 			'is_active' => $this->input->post('aktif'),
 		);
