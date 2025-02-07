@@ -19,8 +19,6 @@ class Approval extends CI_Controller
         ($akses->view_level == 'N' ? redirect('auth') : '');
         $data['add'] = $akses->add_level;
 
-
-
         $data['title'] = "backend/approval/approval_list";
         $data['titleview'] = "Approval";
         $this->load->view('backend/home', $data);
@@ -46,8 +44,8 @@ class Approval extends CI_Controller
         foreach ($list as $field) {
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
-            $action_edit = ($edit == 'Y') ? '<a href="approval/edit_form/' . $field->id_user . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
-            $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id_user . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
+            $action_edit = ($edit == 'Y') ? '<a href="approval/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
+            $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             $action = $action_edit . $action_delete;
@@ -56,10 +54,12 @@ class Approval extends CI_Controller
             $row = array();
             $row[] = $no;
             $row[] = $action;
-            $row[] = $field->name;
-            $row[] = $field->divisi;
-            $row[] = $field->jabatan;
-            $row[] = date('d F Y', strtotime($field->created_at));
+            $row[] = $field->sub_name;
+            $row[] = $field->id_menu;
+            $row[] = $field->app_id;
+            $row[] = $field->app2_id;
+            $row[] = $field->app3_id;
+            $row[] = $field->app4_id;
 
             $data[] = $row;
         }
@@ -80,10 +80,9 @@ class Approval extends CI_Controller
         // $this->check_access();
         $this->load->model('backend/M_notifikasi');
         $data['id'] = 0;
-
         $data['title_view'] = "Approval Form";
         $data['aksi'] = 'save';
-        $data['users'] = $this->db->select('id_user, fullname')->from('tbl_user')->get()->result_object();
+        $data['menus'] = $this->db->select('id_menu, nama_menu')->from('tbl_menu')->get()->result();
         $data['approvals'] = $this->db->select('id_user, fullname')->from('tbl_user')->where('app', 'Y')->get()->result_object();
         $data['title'] = 'backend/approval/approval_form';
         $this->load->view('backend/home', $data);
@@ -138,10 +137,9 @@ class Approval extends CI_Controller
     {
         $data['id'] = $id;
         $this->load->model('backend/M_notifikasi');
-
         $data['title_view'] = "Edit Approval Form";
         $data['aksi'] = 'update';
-        $data['users'] = $this->db->select('id_user, fullname')->from('tbl_user')->get()->result_object();
+        $data['menus'] = $this->db->select('id_menu, nama_menu')->from('tbl_menu')->get()->result();
         $data['approvals'] = $this->db->select('id_user, fullname')->from('tbl_user')->where('app', 'Y')->get()->result_object();
         $data['title'] = 'backend/approval/approval_form';
         $this->load->view('backend/home', $data);
@@ -149,8 +147,8 @@ class Approval extends CI_Controller
 
     function edit_data($id)
     {
-        $data['master'] = $this->db->get_where('tbl_data_user', ['id_user' => $id])->row_array();
-        $data['approvals'] = $this->db->get_where('tbl_user', ['id_user' => $id])->row_array();
+        // $data['master'] = $this->db->get_where('tbl_data_user', ['id_user' => $id])->row_array();
+        $data = $this->db->get_where('tbl_approval', ['id' => $id])->row_array();
         echo json_encode($data);
     }
 

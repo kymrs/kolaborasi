@@ -9,28 +9,41 @@ class T_cpdf2 extends TCPDf
     // Page header
     function Header()
     {
+        // Warna latar belakang header (RGB)
+        // $this->SetFillColor(176, 210, 219); // Warna abu-abu terang
+        // $this->Rect(3.5, 0, 142, 4.5, 'F'); // Mengisi kotak di area header
+        // $this->SetFillColor(69, 87, 123); // Warna abu-abu terang
+        // $this->Rect(3.5, 4.5, 142, 18.5, 'F'); // Mengisi kotak di area header
+        // $this->SetFillColor(176, 210, 219); // Warna abu-abu terang
+        // $this->Rect(3.5, 23, 142, 4.5, 'F'); // Mengisi kotak di area header
+
         // Logo
         $this->SetFont('helvetica', 'B', 12);
-        $this->Image('assets/backend/img/pengenumroh.png', 5, 3, 37, 20);
-        $this->SetX(102);
+        $this->Image('assets/backend/img/qubagift.png', 5, 4, 37, 20);
+        $this->SetX(110);
         $this->SetFont('Poppins-Regular', '', 9);
-        $this->Cell(40, 16, 'pengenumroh@gmail.com', 0, 0);
+        $this->Cell(40, 16, 'qubagift@gmail.com', 0, 0);
         $this->SetX(121);
-        $this->Cell(40, 26, '089602984422', 0, 0);
+        $this->Cell(40, 26, '081290399933', 0, 1);
         $style = array('width' => 0.5, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0));
 
-        $this->Line(4, 27, 145, 27, $style);
+        // $this->SetY(18);
+        // $this->SetX(34);
+        // $this->SetFont('Poppins-Regular', '', 8);
+        // $this->Cell(40, 16, 'Jl. Mahoni Raya No 13, Sukmajaya, Depok, Jawa Barat', 0, 0);
+
+        $this->Line(4, 26, 145, 26, $style);
         $this->Ln(5);
     }
 }
 
-class Pu_invoice extends CI_Controller
+class Qbg_invoice extends CI_Controller
 {
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('backend/M_pu_invoice');
-        // $this->load->model('backend/M_notifikasi');
+        $this->load->model('backend/M_qbg_invoice');
+        $this->load->model('backend/M_notifikasi');
         $this->M_login->getsecurity();
         date_default_timezone_set('Asia/Jakarta');
     }
@@ -66,9 +79,7 @@ class Pu_invoice extends CI_Controller
         ($akses->view_level == 'N' ? redirect('auth') : '');
         $data['add'] = $akses->add_level;
 
-        // $data['notif'] = $this->M_notifikasi->pending_notification();
-
-        $data['title'] = "backend/pu_invoice/pu_invoice_list";
+        $data['title'] = "backend/qbg_invoice/qbg_invoice_list";
         $data['titleview'] = "Data Invoice";
         $this->load->view('backend/home', $data);
     }
@@ -86,7 +97,7 @@ class Pu_invoice extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $list = $this->M_pu_invoice->get_datatables();
+        $list = $this->M_qbg_invoice->get_datatables();
         $data = array();
         $no = $_POST['start'];
 
@@ -100,10 +111,10 @@ class Pu_invoice extends CI_Controller
         foreach ($list as $field) {
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
-            $action_read = ($read == 'Y') ? '<a href="pu_invoice/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
-            $action_edit = ($edit == 'Y') ? '<a href="pu_invoice/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
+            $action_read = ($read == 'Y') ? '<a href="qbg_invoice/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
+            $action_edit = ($edit == 'Y') ? '<a href="qbg_invoice/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
-            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="pu_invoice/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
+            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="qbg_invoice/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
             $action = $action_read . $action_edit . $action_delete . $action_print;
 
@@ -124,8 +135,8 @@ class Pu_invoice extends CI_Controller
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_pu_invoice->count_all(),
-            "recordsFiltered" => $this->M_pu_invoice->count_filtered(),
+            "recordsTotal" => $this->M_qbg_invoice->count_all(),
+            "recordsFiltered" => $this->M_qbg_invoice->count_filtered(),
             "data" => $data,
         );
         //output dalam format JSON
@@ -137,10 +148,10 @@ class Pu_invoice extends CI_Controller
     {
         // $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = $id;
-        $data['invoice'] = $this->M_pu_invoice->getInvoiceData($id);
-        $data['rekening'] = $this->db->get_where('pu_rek_invoice', ['invoice_id' => $id])->result_array();
-        $data['detail'] = $this->db->get_where('pu_detail_invoice', ['invoice_id' => $id])->result_array();
-        $data['title'] = 'backend/pu_invoice/pu_invoice_read';
+        $data['invoice'] = $this->M_qbg_invoice->getInvoiceData($id);
+        $data['rekening'] = $this->db->get_where('qbg_rek_invoice', ['invoice_id' => $id])->result_array();
+        $data['detail'] = $this->db->get_where('qbg_detail_invoice', ['invoice_id' => $id])->result_array();
+        $data['title'] = 'backend/qbg_invoice/qbg_invoice_read';
         $data['title_view'] = 'Prepayment';
         $this->load->view('backend/home', $data);
     }
@@ -149,9 +160,9 @@ class Pu_invoice extends CI_Controller
     public function add_form()
     {
         $data['id'] = 0;
-        $data['title'] = 'backend/pu_invoice/pu_invoice_form';
+        $data['title'] = 'backend/qbg_invoice/qbg_invoice_form';
         $data['title_view'] = 'Invoice Form';
-        $data['rek_options'] = $this->M_pu_invoice->options()->result();
+        $data['rek_options'] = $this->M_qbg_invoice->options()->result();
         // $data['notif'] = $this->M_notifikasi->pending_notification();
         $this->load->view('backend/home', $data);
     }
@@ -161,7 +172,7 @@ class Pu_invoice extends CI_Controller
     {
         $date = $this->input->post('date');
 
-        $kode = $this->M_pu_invoice->max_kode($date)->row();
+        $kode = $this->M_qbg_invoice->max_kode($date)->row();
 
         if (empty($kode->kode_invoice)) {
             $no_urut = 1;
@@ -172,33 +183,32 @@ class Pu_invoice extends CI_Controller
         $urutan = str_pad($no_urut, 4, "0", STR_PAD_LEFT);
         $year = substr($date, 8, 2);
         $month = substr($date, 3, 2);
-        $data = 'INVPU' . $year . $month . $urutan;
+        $data = 'INVQB' . $year . $month . $urutan;
         echo json_encode($data);
     }
 
     // UNTUK MENAMPILKAN FORM EDIT
     function edit_form($id)
     {
-        // $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = $id;
         $data['aksi'] = 'update';
         $data['title_view'] = "Edit Data Invoice";
-        $data['title'] = 'backend/pu_invoice/pu_invoice_form';
-        $data['rek_options'] = $this->M_pu_invoice->options()->result();
+        $data['title'] = 'backend/qbg_invoice/qbg_invoice_form';
+        $data['rek_options'] = $this->M_qbg_invoice->options()->result();
         $this->load->view('backend/home', $data);
     }
 
     function edit_data($id)
     {
-        $data['master'] = $this->M_pu_invoice->get_by_id($id);
-        $data['rek_invoice'] = $this->db->get_where('pu_rek_invoice', ['invoice_id' => $id])->result_array();
-        $data['detail_invoice'] = $this->db->get_where('pu_detail_invoice', ['invoice_id' => $id])->result_array();
+        $data['master'] = $this->M_qbg_invoice->get_by_id($id);
+        $data['rek_invoice'] = $this->db->get_where('qbg_rek_invoice', ['invoice_id' => $id])->result_array();
+        $data['detail_invoice'] = $this->db->get_where('qbg_detail_invoice', ['invoice_id' => $id])->result_array();
         echo json_encode($data);
     }
 
     function read_detail($id)
     {
-        $data = $this->M_pu_invoice->get_by_id_detail($id);
+        $data = $this->M_qbg_invoice->get_by_id_detail($id);
         echo json_encode($data);
     }
 
@@ -208,7 +218,7 @@ class Pu_invoice extends CI_Controller
         // INSERT KODE PREPAYMENT SAAT SUBMIT
         $date = $this->input->post('tgl_invoice');
 
-        $kode = $this->M_pu_invoice->max_kode($date)->row();
+        $kode = $this->M_qbg_invoice->max_kode($date)->row();
 
         if (empty($kode->kode_invoice)) {
             $no_urut = 1;
@@ -220,7 +230,7 @@ class Pu_invoice extends CI_Controller
         $year = substr($date, 8, 2);
         $month = substr($date, 3, 2);
 
-        $kode_invoice = 'INVPU' . $year . $month . $urutan;
+        $kode_invoice = 'INVQB' . $year . $month . $urutan;
 
         $data = array(
             'tgl_invoice' => date('Y-m-d', strtotime($this->input->post('tgl_invoice'))),
@@ -230,7 +240,6 @@ class Pu_invoice extends CI_Controller
             'ctc_nomor' => $this->input->post('ctc_nomor'),
             'ctc2_nama' => $this->input->post('ctc2_nama'),
             'ctc2_nomor' => $this->input->post('ctc2_nomor'),
-            'ctc2_email' => $this->input->post('ctc2_email'),
             'ctc2_alamat' => $this->input->post('ctc2_alamat'),
             'created_at' => date('Y-m-d H:i:s')
         );
@@ -242,7 +251,7 @@ class Pu_invoice extends CI_Controller
             $data['diskon'] = $this->input->post('diskon');
         }
 
-        $inserted = $this->M_pu_invoice->save($data);
+        $inserted = $this->M_qbg_invoice->save($data);
 
         if ($inserted) {
             // INISIASI VARIABEL INPUT DETAIL PREPAYMENT
@@ -256,7 +265,7 @@ class Pu_invoice extends CI_Controller
                     'no_rek' => $no_rek[$i]
                 );
             }
-            $this->M_pu_invoice->save_detail($data2);
+            $this->M_qbg_invoice->save_detail($data2);
         }
 
         if ($inserted) {
@@ -278,7 +287,7 @@ class Pu_invoice extends CI_Controller
                         'total' => $total[$i]
                     );
                 }
-                $this->M_pu_invoice->save_detail2($data3);
+                $this->M_qbg_invoice->save_detail2($data3);
             }
         }
 
@@ -291,7 +300,7 @@ class Pu_invoice extends CI_Controller
         // INSERT KODE PREPAYMENT SAAT SUBMIT
         $date = $this->input->post('tgl_invoice');
 
-        $kode = $this->M_pu_invoice->max_kode($date)->row();
+        $kode = $this->M_qbg_invoice->max_kode($date)->row();
 
         if (empty($kode->kode_invoice)) {
             $no_urut = 1;
@@ -303,7 +312,7 @@ class Pu_invoice extends CI_Controller
         $year = substr($date, 8, 2);
         $month = substr($date, 3, 2);
 
-        $kode_invoice = 'INVPU' . $year . $month . $urutan;
+        $kode_invoice = 'INVQB' . $year . $month . $urutan;
 
         $data = array(
             'tgl_invoice' => date('Y-m-d', strtotime($this->input->post('tgl_invoice'))),
@@ -312,7 +321,6 @@ class Pu_invoice extends CI_Controller
             'ctc_nama' => $this->input->post('ctc_nama'),
             'ctc_nomor' => $this->input->post('ctc_nomor'),
             'ctc2_nama' => $this->input->post('ctc2_nama'),
-            'ctc2_email' => $this->input->post('ctc2_email'),
             'ctc2_nomor' => $this->input->post('ctc2_nomor'),
             'ctc2_alamat' => $this->input->post('ctc2_alamat'),
             'created_at' => date('Y-m-d H:i:s')
@@ -334,14 +342,14 @@ class Pu_invoice extends CI_Controller
         $satuan = $this->input->post('satuan[]');
         $harga = preg_replace('/\D/', '', $this->input->post('harga[]'));
         $total = preg_replace('/\D/', '', $this->input->post('total[]'));
-        if ($this->db->update('pu_invoice', $data, ['id' => $this->input->post('id')])) {
+        if ($this->db->update('qbg_invoice', $data, ['id' => $this->input->post('id')])) {
             // UNTUK MENGHAPUS ROW YANG TELAH DIDELETE
             $deletedRows = json_decode($this->input->post('deleted_rows'), true);
             if (!empty($deletedRows)) {
                 foreach ($deletedRows as $delRows) {
                     // Hapus row dari database berdasarkan ID
                     $this->db->where('id', $delRows);
-                    $this->db->delete('pu_detail_invoice');
+                    $this->db->delete('qbg_detail_invoice');
                 }
             }
 
@@ -359,7 +367,7 @@ class Pu_invoice extends CI_Controller
                     'total' => $total[$i]
                 );
                 // Menggunakan db->replace untuk memasukkan atau menggantikan data
-                $this->db->replace('pu_detail_invoice', $data2[$i - 1]);
+                $this->db->replace('qbg_detail_invoice', $data2[$i - 1]);
             }
 
             // UNTUK MENGHAPUS REKENING
@@ -368,7 +376,7 @@ class Pu_invoice extends CI_Controller
                 foreach ($deletedRekRows as $delRekRow) {
                     // Hapus row dari database berdasarkan ID
                     $this->db->where('id', $delRekRow);
-                    $this->db->delete('pu_rek_invoice');
+                    $this->db->delete('qbg_rek_invoice');
                 }
             }
 
@@ -386,7 +394,7 @@ class Pu_invoice extends CI_Controller
                     'no_rek' => $no_rek[$i]
                 );
                 // Menggunakan db->replace untuk memasukkan atau menggantikan data
-                $this->db->replace('pu_rek_invoice', $data3[$i - 1]);
+                $this->db->replace('qbg_rek_invoice', $data3[$i - 1]);
             }
         }
         echo json_encode(array("status" => TRUE));
@@ -395,7 +403,7 @@ class Pu_invoice extends CI_Controller
     // MENGHAPUS DATA
     function delete($id)
     {
-        $this->M_pu_invoice->delete($id);
+        $this->M_qbg_invoice->delete($id);
         echo json_encode(array("status" => TRUE));
     }
 
@@ -452,9 +460,9 @@ class Pu_invoice extends CI_Controller
     public function generate_pdf($id)
     {
         // INISIAI VARIABLE
-        $invoice = $this->M_pu_invoice->get_by_id($id);
-        $invoice_details = $this->M_pu_invoice->get_detail($id);
-        $invoice_rek = $this->M_pu_invoice->get_rek($id);
+        $invoice = $this->M_qbg_invoice->get_by_id($id);
+        $invoice_details = $this->M_qbg_invoice->get_detail($id);
+        $invoice_rek = $this->M_qbg_invoice->get_rek($id);
 
         // Initialize the TCPDF object
         $t_cpdf2 = new t_cpdf2('P', 'mm', 'A5', true, 'UTF-8', false);
@@ -462,7 +470,7 @@ class Pu_invoice extends CI_Controller
         // Set document properties
         $t_cpdf2->SetCreator(PDF_CREATOR);
         $t_cpdf2->SetAuthor('Author Name');
-        $t_cpdf2->SetTitle('Invoice Pengenumroh PDF');
+        $t_cpdf2->SetTitle('Invoice ByMoment PDF');
 
         $t_cpdf2->SetMargins(15, 28, 15); // Margin kiri, atas (untuk header), kanan
         // $t_cpdf2->SetHeaderMargin(30);    // Jarak antara header dan konten
@@ -498,6 +506,20 @@ class Pu_invoice extends CI_Controller
         $t_cpdf2->Cell(19, 5, ': ' . date('d/m/Y', strtotime($invoice->tgl_tempo)), 0, 0);
 
         $t_cpdf2->SetFont('Poppins-Regular', '', 10);
+        $t_cpdf2->SetY($t_cpdf2->GetY() + 7);
+        $t_cpdf2->SetX(4);
+        $t_cpdf2->Cell(0, 0, 'Email', 0, 0);
+        $t_cpdf2->SetX(23);
+        $t_cpdf2->Cell(0, 0, ': ' . $invoice->ctc2_email, 0, 0);
+
+        $t_cpdf2->SetFont('Poppins-Regular', '', 10);
+        $t_cpdf2->SetY($t_cpdf2->GetY() + 6);
+        $t_cpdf2->SetX(4);
+        $t_cpdf2->Cell(75, 0, 'Telepon', 0, 0);
+        $t_cpdf2->SetX(23);
+        $t_cpdf2->Cell(0, 0, ': ' . $invoice->ctc2_nomor, 0, 0);
+
+        $t_cpdf2->SetFont('Poppins-Regular', '', 10);
         $t_cpdf2->SetY($t_cpdf2->GetY() + 6);
         $t_cpdf2->SetX(4);
         $t_cpdf2->Cell(0, 0, 'Alamat', 0, 0);
@@ -510,8 +532,8 @@ class Pu_invoice extends CI_Controller
 
         $t_cpdf2->SetY($t_cpdf2->GetY() + 2);
         // HEADER DETAIL PEMESANAN
-        $t_cpdf2->SetFont('Poppins-Regular', '', 11);
-        $t_cpdf2->SetFillColor(252, 118, 19);
+        $t_cpdf2->SetFont('Helvetica', '', 11);
+        $t_cpdf2->SetFillColor(0, 190, 99);
         $t_cpdf2->SetTextColor(255, 255, 255);
         $t_cpdf2->SetX(5);
         $t_cpdf2->Cell(140, 10, 'Detail Pemesanan', 0, 1, 'L', true);
@@ -566,8 +588,8 @@ EOD;
         $table2 .= '</tr>';
         $table2 .= '<tr style="border: none;">';
         $table2 .= '<td colspan="2" style="border: none;"></td>';
-        $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center"> <b>Total</b></td>';
-        $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center"> ' . 'Rp. ' . number_format($total, 0, ',', '.') . '</td>';
+        $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center;"> <b>Total</b></td>';
+        $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center;"> ' . 'Rp. ' . number_format($total, 0, ',', '.') . '</td>';
         $table2 .= '</tr>';
         $table2 .=  <<<EOD
             <tbody>
@@ -614,8 +636,15 @@ EOD;
 
         $t_cpdf2->writeHTMLCell(0, 0, 4, $t_cpdf2->GetY(), $catatan, 0, 1, false, true, 'L', true);
 
+        $t_cpdf2->setY($t_cpdf2->GetY() + 3);
+        $t_cpdf2->SetX(97);
+        $t_cpdf2->SetFont('Poppins-Bold', '', 10);
+        $t_cpdf2->Cell(26, 10, 'Terima Kasih, ', 0, 0);
+        $t_cpdf2->SetFont('Poppins-Regular', '', 10);
+        $t_cpdf2->Cell(19, 10, 'By Moment', 0, 1);
+
         // Output PDF (tampilkan di browser)
-        $t_cpdf2->Output('Invoice Pengenumroh.pdf', 'I'); // 'I' untuk menampilkan di browser
+        $t_cpdf2->Output('Invoice ByMoment.pdf', 'I'); // 'I' untuk menampilkan di browser
     }
 
     function payment()

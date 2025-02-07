@@ -24,9 +24,7 @@
                                     <th>No</th>
                                     <th style="width: 120px;">Action</th>
                                     <th>Nama</th>
-                                    <th>Divisi</th>
-                                    <th>Jabatan</th>
-                                    <th>Dibuat</th>
+                                    <th>Initial</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -37,9 +35,7 @@
                                     <th>No</th>
                                     <th style="width: 120px;">Action</th>
                                     <th>Nama</th>
-                                    <th>Divisi</th>
-                                    <th>Jabatan</th>
-                                    <th>Dibuat</th>
+                                    <th>Initial</th>
                                 </tr>
                             </tfoot>
                         </table>

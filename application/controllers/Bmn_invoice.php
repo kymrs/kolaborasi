@@ -342,7 +342,7 @@ class Bmn_invoice extends CI_Controller
         $satuan = $this->input->post('satuan[]');
         $harga = preg_replace('/\D/', '', $this->input->post('harga[]'));
         $total = preg_replace('/\D/', '', $this->input->post('total[]'));
-        if ($this->db->update('bmn_invoice', $data)) {
+        if ($this->db->update('bmn_invoice', $data, ['id' => $this->input->post('id')])) {
             // UNTUK MENGHAPUS ROW YANG TELAH DIDELETE
             $deletedRows = json_decode($this->input->post('deleted_rows'), true);
             if (!empty($deletedRows)) {

@@ -37,7 +37,7 @@
             dataType: "json",
             success: function(data) {
                 // $('.pu-notif').text(1).css('display', 'inline-block');
-                // console.log(data);
+                console.log(data);
                 // Update elemen notifikasi dengan data baru
                 $.each(data.notif_pending, function(key, value) {
                     if (value > 0) {

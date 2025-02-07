@@ -726,7 +726,6 @@ class Swi_reimbust extends CI_Controller
         $id_user = $this->session->userdata('id_user');
 
         $data_user = $this->db->get_where('tbl_data_user', ['id_user' => $id_user])->row_array();
-        $approval = $this->M_swi_reimbust->approval($this->session->userdata('id_user'));
 
         $departemen = $data_user['divisi'];
         $jabatan = $data_user['jabatan'];
@@ -756,6 +755,15 @@ class Swi_reimbust extends CI_Controller
             }
         }
 
+        // MENCARI SIAPA YANG AKAN MELAKUKAN APPROVAL PERMINTAAN
+        $id_menu = $this->db->select('id_menu')
+            ->where('link', $this->router->fetch_class())
+            ->get('tbl_submenu')
+            ->row();
+
+        $app = $this->db->select('app_id, app2_id, app4_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
+        $id = $this->session->userdata('id_user');
+
         // Inisialisasi data untuk tabel reimbust
         $data1 = array(
             'kode_reimbust' => $kode_reimbust,
@@ -770,12 +778,12 @@ class Swi_reimbust extends CI_Controller
             'no_rek' => $no_rek,
             'app_name' => $this->db->select('name')
                 ->from('tbl_data_user')
-                ->where('id_user', $approval->app_id)
+                ->where('id_user', $app->app_id)
                 ->get()
                 ->row('name'),
             'app2_name' => $this->db->select('name')
                 ->from('tbl_data_user')
-                ->where('id_user', $approval->app2_id)
+                ->where('id_user', $app->app2_id)
                 ->get()
                 ->row('name'),
             'created_at' =>  date('Y-m-d H:i:s')

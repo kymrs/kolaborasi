@@ -17,6 +17,8 @@ class Menu extends CI_Controller
 		$akses = $this->M_app->hak_akses($this->session->userdata('id_level'), $this->router->fetch_class());
 		($akses->view_level == 'N' ? redirect('auth') : '');
 		$data['add'] = $akses->add_level;
+		$data['menus'] = $this->db->select('id_menu, nama_menu')->from('tbl_menu')->get()->result();
+		$data['approvals'] = $this->db->select('id_user, fullname')->from('tbl_user')->where('app', 'Y')->get()->result_object();
 		$data['title'] = "backend/menu";
 		$data['titleview'] = "Data Menu";
 		$this->load->view('backend/home', $data);

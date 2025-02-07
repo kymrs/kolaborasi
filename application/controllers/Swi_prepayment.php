@@ -224,7 +224,12 @@ class Swi_prepayment extends CI_Controller
         $kode_prepayment = 'P' . $year . $month . $urutan;
 
         // MENCARI SIAPA YANG AKAN MELAKUKAN APPROVAL PERMINTAAN
-        $approval = $this->M_swi_prepayment->approval($this->session->userdata('id_user'));
+        $id_menu = $this->db->select('id_menu')
+            ->where('link', $this->router->fetch_class())
+            ->get('tbl_submenu')
+            ->row();
+
+        $app = $this->db->select('app_id, app2_id, app4_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
         $id = $this->session->userdata('id_user');
 
         // CHECK APAKAH MENGINPUT YANG SUDAH ADA ATAU YANG BARU (REKENING)
@@ -254,12 +259,12 @@ class Swi_prepayment extends CI_Controller
                 ->row('jabatan'),
             'app_name' => $this->db->select('name')
                 ->from('tbl_data_user')
-                ->where('id_user', $approval->app_id)
+                ->where('id_user', $app->app_id)
                 ->get()
                 ->row('name'),
             'app2_name' => $this->db->select('name')
                 ->from('tbl_data_user')
-                ->where('id_user', $approval->app2_id)
+                ->where('id_user', $app->app2_id)
                 ->get()
                 ->row('name'),
             'created_at' => date('Y-m-d H:i:s')
