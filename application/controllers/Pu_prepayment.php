@@ -249,8 +249,14 @@ class Pu_prepayment extends CI_Controller
         $kode_prepayment = 'P' . $year . $month . $urutan;
 
         // MENCARI SIAPA YANG AKAN MELAKUKAN APPROVAL PERMINTAAN
-        $approval = $this->M_pu_prepayment->approval($this->session->userdata('id_user'));
+        $id_menu = $this->db->select('id_menu')
+            ->where('link', $this->router->fetch_class())
+            ->get('tbl_submenu')
+            ->row();
+
         $id = $this->session->userdata('id_user');
+
+        $app = $this->db->select('app_id, app2_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
 
         // CHECK APAKAH MENGINPUT YANG SUDAH ADA ATAU YANG BARU (REKENING)
         if (!empty($_POST['nama_rek'])) {
@@ -277,16 +283,16 @@ class Pu_prepayment extends CI_Controller
                 ->where('id_user', $id)
                 ->get()
                 ->row('jabatan'),
-            'app_name' => $this->db->select('name')
-                ->from('tbl_data_user')
-                ->where('id_user', $approval->app_id)
+            'app_name' => $this->db->select('fullname')
+                ->from('tbl_user')
+                ->where('id_user', $app->app_id)
                 ->get()
-                ->row('name'),
-            'app2_name' => $this->db->select('name')
-                ->from('tbl_data_user')
-                ->where('id_user', $approval->app2_id)
+                ->row('fullname'),
+            'app2_name' => $this->db->select('fullname')
+                ->from('tbl_user')
+                ->where('id_user', $app->app2_id)
                 ->get()
-                ->row('name'),
+                ->row('fullname'),
             'created_at' => date('Y-m-d H:i:s')
         );
 

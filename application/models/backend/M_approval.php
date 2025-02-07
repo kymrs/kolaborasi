@@ -6,10 +6,10 @@ if (!defined('BASEPATH'))
 class M_approval extends CI_Model
 {
     var $id = 'id';
-    var $table = 'tbl_data_user'; //nama tabel dari database
-    var $column_order = array(null, null, 'name', 'divisi', 'jabatan', 'created_at');
-    var $column_search = array('name', 'divisi', 'jabatan', 'created_at'); //field yang diizin untuk pencarian 
-    var $order = array('id_user' => 'desc'); // default order 
+    var $table = 'tbl_approval'; //nama tabel dari database
+    var $column_order = array(null, null, 'sub_name', 'id_menu', 'app_id', 'app2_id', 'app3_id', 'app4_id');
+    var $column_search = array('sub_name', 'id_menu', 'app_id', 'app2_id', 'app3_id', 'app4_id'); //field yang diizin untuk pencarian 
+    var $order = array('id' => 'desc'); // default order 
 
     public function __construct()
     {
@@ -87,7 +87,7 @@ class M_approval extends CI_Model
 
     public function delete_id($id)
     {
-        $this->db->delete('tbl_data_user', ['id_user' => $id]);
+        $this->db->delete('tbl_approval', ['id' => $id]);
         return true;
     }
 }

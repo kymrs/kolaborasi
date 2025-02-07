@@ -93,10 +93,59 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="modal-footer text-right">
-                    <button type="submit" class="btn btn-primary aksi">Save</button>
-                </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="sub_name">Nama</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="sub_name" name="sub_name">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="app_id">Approval Pertama</label>
+                        <div class="col-sm-10">
+                            <select class="form-control app_id" id="app_id" name="app_id">
+                                <option value="" selected disabled>Pilih opsi...</option>
+                                <?php foreach ($approvals as $approval) { ?>
+                                    <option value="<?= $approval->id_user ?>"><?= $approval->fullname ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="app2_id">Approval Kedua</label>
+                        <div class="col-sm-10">
+                            <select class="form-control app2_id" id="app2_id" name="app2_id">
+                                <option value="" selected disabled>Pilih opsi...</option>
+                                <?php foreach ($approvals as $approval) { ?>
+                                    <option value="<?= $approval->id_user ?>"><?= $approval->fullname ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="app3_id">Approval HC</label>
+                        <div class="col-sm-10">
+                            <select class="form-control app3_id" id="app3_id" name="app3_id">
+                                <option value="" selected disabled>Pilih opsi...</option>
+                                <?php foreach ($approvals as $approval) { ?>
+                                    <option value="<?= $approval->id_user ?>"><?= $approval->fullname ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="app4_id">Approval Captain</label>
+                        <div class="col-sm-10">
+                            <select class="form-control app4_id" id="app4_id" name="app4_id">
+                                <option value="" selected disabled>Pilih opsi...</option>
+                                <?php foreach ($approvals as $approval) { ?>
+                                    <option value="<?= $approval->id_user ?>"><?= $approval->fullname ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer text-right">
+                        <button type="submit" class="btn btn-primary aksi">Save</button>
+                    </div>
             </form>
         </div>
     </div>
@@ -108,6 +157,20 @@
 <script type="text/javascript">
     var table;
     $(document).ready(function() {
+        $('.name').select2();
+        $('.app_id').select2({
+            width: '100%'
+        });
+        $('.app2_id').select2({
+            width: '100%'
+        });
+        $('.app3_id').select2({
+            width: '100%'
+        });
+        $('.app4_id').select2({
+            width: '100%'
+        });
+
         table = $('#table').DataTable({
             "responsive": true,
             "processing": true,
@@ -188,6 +251,11 @@
         $('#modal-default').modal('show');
         $('.card-title').text('Add Menu');
         $('.aksi').text('Save');
+        $('#sub_name').val('');
+        $('#app_id').val('').trigger('change');
+        $('#app2_id').val('').trigger('change');
+        $('#app3_id').val('').trigger('change');
+        $('#app4_id').val('').trigger('change');
 
         $.ajax({
             url: "<?php echo site_url('menu/get_max') ?>",
@@ -217,17 +285,23 @@
             type: "GET",
             dataType: "JSON",
             success: function(data) {
-                $('[name="id"]').val(data.id_menu);
-                $('[name="menu"]').val(data.nama_menu);
-                $('[name="link"]').val(data.link);
-                $('[name="icon"]').val(data.icon);
-                $('[name="urutan"]').val(data.urutan).prop('readonly', false);
+                console.log(data);
+                $('[name="id"]').val(data['menu']['id_menu']);
+                $('[name="menu"]').val(data['menu']['nama_menu']);
+                $('[name="link"]').val(data['menu']['link']);
+                $('[name="icon"]').val(data['menu']['icon']);
+                $('[name="urutan"]').val(data['menu']['urutan']).prop('readonly', false);
                 var elements = $('[name="aktif"]');
                 for (i = 0; i < elements.length; i++) {
-                    if (elements[i].value == data.is_active) {
+                    if (elements[i].value == data['menu']['is_active']) {
                         elements[i].checked = true;
                     }
                 }
+                $('#sub_name').val(data['approval']['sub_name']);
+                $('#app_id').val(data['approval']['app_id']).trigger('change');
+                $('#app2_id').val(data['approval']['app2_id']).trigger('change');
+                $('#app3_id').val(data['approval']['app3_id']).trigger('change');
+                $('#app4_id').val(data['approval']['app4_id']).trigger('change');
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 alert('Error get data from ajax');

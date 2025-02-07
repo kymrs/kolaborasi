@@ -760,6 +760,14 @@ class Pu_reimbust extends CI_Controller
             }
         }
 
+        // MENCARI SIAPA YANG AKAN MELAKUKAN APPROVAL PERMINTAAN
+        $id_menu = $this->db->select('id_menu')
+            ->where('link', $this->router->fetch_class())
+            ->get('tbl_submenu')
+            ->row();
+
+        $app = $this->db->select('app_id, app2_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
+
         // Inisialisasi data untuk tabel reimbust
         $data1 = array(
             'kode_reimbust' => $kode_reimbust,
@@ -774,12 +782,12 @@ class Pu_reimbust extends CI_Controller
             'no_rek' => $no_rek,
             'app_name' => $this->db->select('name')
                 ->from('tbl_data_user')
-                ->where('id_user', $approval->app_id)
+                ->where('id_user', $app->app_id)
                 ->get()
                 ->row('name'),
             'app2_name' => $this->db->select('name')
                 ->from('tbl_data_user')
-                ->where('id_user', $approval->app2_id)
+                ->where('id_user', $app->app2_id)
                 ->get()
                 ->row('name'),
             'created_at' =>  date('Y-m-d H:i:s')

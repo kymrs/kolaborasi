@@ -19,36 +19,22 @@
                             <div class="col-md-6">
                                 <!-- Second Set of Fields -->
                                 <div class="form-group row">
-                                    <label class="col-sm-4" for="name">Nama</label>
+                                    <label class="col-sm-4" for="sub_name">Nama</label>
                                     <div class="col-sm-7">
-                                        <select class="form-control name" name="name" id="name">
+                                        <input type="text" class="form-control" id="sub_name" name="sub_name">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4" for="menu">Menu</label>
+                                    <div class="col-sm-7">
+                                        <select class="form-control" id="menu" name="menu">
                                             <option value="" selected disabled>Pilih opsi...</option>
-                                            <?php foreach ($users as $user) { ?>
-                                                <option value="<?= $user->id_user ?>"><?= $user->fullname ?></option>
+                                            <?php foreach ($menus as $menu) { ?>
+                                                <option value="<?= $menu->id_menu ?>"><?= $menu->nama_menu ?></option>
                                             <?php } ?>
                                         </select>
                                     </div>
                                 </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-4" for="divisi">Divisi</label>
-                                    <div class="col-sm-7">
-                                        <select class="form-control" id="divisi" name="divisi">
-                                            <option value="" selected disabled>Pilih opsi...</option>
-                                            <option value="Operational">OPERATIONAL</option>
-                                            <option value="Finance">FINANCE</option>
-                                            <option value="HC & GA">HC & GA</option>
-                                            <option value="IT">IT</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-4" for="jabatan">Jabatan</label>
-                                    <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="jabatan" name="jabatan">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
                                 <div class="form-group row">
                                     <label class="col-sm-4" for="app_id">Approval Pertama</label>
                                     <div class="col-sm-7">
@@ -60,6 +46,8 @@
                                         </select>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="col-md-6">
                                 <div class="form-group row">
                                     <label class="col-sm-4" for="app2_id">Approval Kedua</label>
                                     <div class="col-sm-7">
@@ -142,14 +130,13 @@
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
-                    // console.log(data);
-                    $('#name').val(data['master']['id_user']).trigger('change');
-                    $('#divisi').val(data['master']['divisi']).trigger('change');
-                    $('#jabatan').val(data['master']['jabatan']).trigger('change');
-                    $('#app_id').val(data['master']['app_id']).trigger('change');
-                    $('#app2_id').val(data['master']['app2_id']).trigger('change');
-                    $('#app3_id').val(data['master']['app3_id']).trigger('change');
-                    $('#app4_id').val(data['master']['app4_id']).trigger('change');
+                    console.log(data);
+                    $('#sub_name').val(data['sub_name']);
+                    $('#menu').val(data['id_menu']).trigger('change');
+                    $('#app_id').val(data['app_id']).trigger('change');
+                    $('#app2_id').val(data['app2_id']).trigger('change');
+                    $('#app3_id').val(data['app3_id']).trigger('change');
+                    $('#app4_id').val(data['app4_id']).trigger('change');
                     // console.log(data);
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
