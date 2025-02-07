@@ -30,7 +30,7 @@ class Pu_invoice extends CI_Controller
     {
         parent::__construct();
         $this->load->model('backend/M_pu_invoice');
-        $this->load->model('backend/M_notifikasi');
+        // $this->load->model('backend/M_notifikasi');
         $this->M_login->getsecurity();
         date_default_timezone_set('Asia/Jakarta');
     }
@@ -66,6 +66,7 @@ class Pu_invoice extends CI_Controller
         ($akses->view_level == 'N' ? redirect('auth') : '');
         $data['add'] = $akses->add_level;
 
+        // $data['notif'] = $this->M_notifikasi->pending_notification();
 
         $data['title'] = "backend/pu_invoice/pu_invoice_list";
         $data['titleview'] = "Data Invoice";
@@ -178,6 +179,7 @@ class Pu_invoice extends CI_Controller
     // UNTUK MENAMPILKAN FORM EDIT
     function edit_form($id)
     {
+        // $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = $id;
         $data['aksi'] = 'update';
         $data['title_view'] = "Edit Data Invoice";

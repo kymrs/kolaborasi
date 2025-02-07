@@ -1,3 +1,96 @@
+<?php
+$sub_bisnis = $this->db->select('id_menu, nama_menu, sub_image')
+    ->where('sub_image !=', null)
+    ->where('sub_color !=', null)
+    ->get('tbl_menu')
+    ->result_array();
+
+$user = $this->db->select('core')
+    ->where('id_user', $this->session->userdata('id_user'))
+    ->get('tbl_user')
+    ->row_array();
+
+$core = $user['core'] ?? ''; // Default kosong kalau core tidak ada
+$core_array = explode(',', $core);
+?>
+<style>
+    /* Membuat checkbox lebih besar dan cantik */
+    input[type="checkbox"] {
+        display: none;
+    }
+
+    /* Styling untuk label checkbox */
+    input[type="checkbox"]+label {
+        position: relative;
+        padding-left: 30px;
+        /* Memberikan ruang untuk kotak checkbox */
+        cursor: pointer;
+        font-size: 16px;
+        color: #333;
+        display: inline-block;
+        line-height: 22px;
+    }
+
+    /* Kotak checkbox custom */
+    input[type="checkbox"]+label:before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 2px;
+        width: 18px;
+        height: 18px;
+        border: 2px solid #ccc;
+        border-radius: 4px;
+        background-color: #fff;
+        transition: all 0.3s ease;
+    }
+
+    /* Style untuk checkbox yang terpilih (checked) */
+    input[type="checkbox"]:checked+label:before {
+        border-color: #1B2136;
+        background-color: #1B2136;
+    }
+
+    /* Memberikan efek centang (checkmark) */
+    input[type="checkbox"]:checked+label:after {
+        content: "\2713";
+        /* Unicode untuk tanda centang */
+        position: absolute;
+        left: 4px;
+        top: 0px;
+        font-size: 14px;
+        color: #fff;
+    }
+
+    /* Hover efek saat mouse berada di atas label */
+    input[type="checkbox"]+label:hover {
+        color: #1B2136;
+    }
+
+    /* modal */
+    .modal-input {
+        background-color: rgb(36, 44, 73);
+        color: white;
+        border: none;
+        padding: 5px 15px;
+        font-size: 14px;
+        border-radius: 5px;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.15), -4px 4px 6px rgba(0, 0, 0, 0.15), 4px 4px 6px rgba(0, 0, 0, 0.15);
+        /* Bayangan bawah dan kiri-kanan */
+        cursor: pointer;
+        transition: all 0.055s ease;
+    }
+
+    .modal-input:hover {
+        scale: 1.020;
+    }
+
+    .modal-input:active {
+        transform: translateY(2px);
+        box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1), -2px 2px 6px rgba(0, 0, 0, 0.1), 2px 2px 6px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
 <div class="container-fluid">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"><?= $title_view ?></h1>
@@ -40,18 +133,9 @@
                                 <div class="form-group row">
                                     <label for="core" class="col-sm-4 col-form-label">Core</label>
                                     <div class="col-sm-8">
-                                        <select class="form-control" id="core" name="core">
-                                            <option value="" selected disabled>No Selected</option>
-                                            <option value="all">All</option>
-                                            <option value="kps">KPS</option>
-                                            <option value="pu">pengenumroh</option>
-                                            <option value="swa">selebaswarna</option>
-                                            <option value="swi">sobatwisata</option>
-                                            <option value="bmn">by.momemnt</option>
-                                            <option value="qbg">qubagift</option>
-                                            <option value="ctz">carstensz</option>
-                                            <option value="mac">mobileautocare</option>
-                                        </select>
+                                        <button type="button" class="modal-input" data-toggle="modal" data-target="#coreModal">
+                                            Piih Core
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -161,6 +245,30 @@
                             </div>
                         </div>
 
+                        <!-- Layanan Modal -->
+                        <div class="modal fade" id="coreModal" tabindex="-1" aria-labelledby="coreModal" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="coreModal">Pilih Core</h5>
+                                        <button type="button" data-dismiss="modal" aria-label="Close" style="background-color: #fff; border: none">
+                                            <span>&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <?php foreach ($sub_bisnis as $data) : ?>
+                                            <div>
+                                                <input type="checkbox" name="core[]" id="<?= $data['id_menu'] ?>" style="cursor: pointer" value="<?= $data['id_menu'] ?>"><label for="<?= $data['id_menu'] ?>" style="margin-left: 3px; margin-right: 10px; cursor: pointer; font-size: 1rem"><?= $data['nama_menu'] ?></label>
+                                            </div>
+                                        <?php endforeach ?>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-primary" data-dismiss="modal">Simpan</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <input type="hidden" name="id" id="id" value="<?= $id ?>">
                         <?php if (!empty($aksi)) { ?>
                             <input type="hidden" name="aksi" id="aksi" value="<?= $aksi ?>">
@@ -201,7 +309,6 @@
                     moment.locale('id');
                     $('#hidden_id').val(data.user.id_user);
                     $('#password').prop('readonly', true);
-                    $('#core').val(data.user.core);
                     $('#username').val(data.user.username);
                     $('#fullname').val(data.user.fullname);
                     $('#password').val(data.user.password);
@@ -213,6 +320,17 @@
                     $('#app2_id').val(data.approval.app2_id);
                     $('#app3_id').val(data.approval.app3_id);
                     $('#app4_id').val(data.approval.app4_id);
+
+                    var coreData = data.user.core; // Misal data ini didapat dari API atau sumber lainnya
+
+                    // Pisahkan data core menjadi array
+                    var coreArray = coreData.split(',');
+
+                    // Tandai checkbox yang sesuai dengan ID menu
+                    coreArray.forEach(function(coreId) {
+                        // Tandai checkbox yang sesuai dengan ID-nya
+                        $('#' + coreId).prop('checked', true);
+                    });
 
                     //APPEND NEW PASSWORD
                     $('.password-field').append(`
@@ -240,7 +358,21 @@
         $("#form").submit(function(e) {
             e.preventDefault();
             var $form = $(this);
+
+            // Validasi jika core tidak ada yang dicentang
+            if ($('input[name="core[]"]:checked').length === 0) {
+                Swal.fire({
+                    position: 'center',
+                    icon: 'error',
+                    title: 'Silakan pilih setidaknya 1 core data!',
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+                return false; // Hentikan submit jika tidak ada yang dicentang
+            }
+
             if (!$form.valid()) return false;
+
             var url = (id == 0) ? "<?php echo site_url('user/add') ?>" : "<?php echo site_url('user/update') ?>";
 
             $.ajax({
@@ -306,6 +438,7 @@
                 }
             });
         });
+
 
         $("#form").validate({
             rules: {

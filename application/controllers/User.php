@@ -10,13 +10,13 @@ class User extends CI_Controller
 		$this->load->model('backend/M_user');
 		$this->load->model('backend/M_approval');
 		$this->load->model('backend/M_level');
-		$this->load->model('backend/M_notifikasi');
+		// $this->load->model('backend/M_notifikasi');
 		$this->M_login->getsecurity();
 	}
 
 	function index()
 	{
-
+		// $data['notif'] = $this->M_notifikasi->pending_notification();
 		$akses = $this->M_app->hak_akses($this->session->userdata('id_level'), $this->router->fetch_class());
 		($akses->view_level == 'N' ? redirect('auth') : '');
 		$data['add'] = $akses->add_level;
@@ -73,7 +73,6 @@ class User extends CI_Controller
 	{
 		$data['id'] = $id;
 		$this->load->model('backend/M_notifikasi');
-
 		$data['title_view'] = "Edit User Form";
 		$data['aksi'] = 'update';
 		$data['users'] = $this->db->select('id_user, fullname')->from('tbl_user')->get()->result_object();
@@ -144,12 +143,14 @@ class User extends CI_Controller
 			$img = '';
 		}
 
+		$core = implode(',', $this->input->post('core'));
+
 		$data = array(
 			'username' => $this->input->post('username'),
 			'fullname' => $this->input->post('fullname'),
 			'password' => md5($this->input->post('password')),
 			'image' => $img,
-			'core' => $this->input->post('core'),
+			'core' => $core,
 			'id_level' => $this->input->post('level'),
 			'is_active' => $this->input->post('aktif'),
 		);
@@ -199,7 +200,7 @@ class User extends CI_Controller
 		$data2 = array(
 			'username' => $this->input->post('username'),
 			'fullname' => $this->input->post('fullname'),
-			'core' => $this->input->post('core'),
+			'core' => implode(',', $this->input->post('core')),
 			'id_level' => $this->input->post('level'),
 			'is_active' => $this->input->post('aktif')
 		);
@@ -207,14 +208,12 @@ class User extends CI_Controller
 		if (!empty($_POST['new_password'])) {
 			$data2['password'] = md5($this->input->post('new_password'));
 		}
-		// $data3 = array('password' => md5($this->input->post('password')));
 
 		// PENGECEKAN FILE UPLOAD
 		$max_size = 3072 * 1024; // Maksimum ukuran file: 3MB
 		$allowed_types = array('image/jpg', 'image/jpeg', 'image/png');
 
 		if (!empty($_FILES['image']['name'])) {
-
 			if ($_FILES['image']['size'] > $max_size) {
 				echo json_encode(array("status" => FALSE, "error" => "size"));
 				return;
@@ -233,7 +232,7 @@ class User extends CI_Controller
 				$img = $data['upload_data']['file_name']; //set file name ke variable image
 			}
 			$data = array_merge($data2, array('image' => $img));
-			$pict = $this->M_user->get_by_id($this->input->post('hidden_id'));
+			$pict = $this->db->get_where('tbl_user', ['id_user' => $this->input->post('hidden_id')])->row();
 			$path = './assets/backend/img/user/' . $pict->image;
 			if (is_file($path)) {
 				unlink($path);
@@ -244,11 +243,11 @@ class User extends CI_Controller
 
 		$this->db->where('id_user', $this->input->post('hidden_id'));
 
-		// // UPDATE APPROVAL
-
+		// UPDATE APPROVAL
 		if ($this->db->update('tbl_user', $data)) {
+			// Persiapkan data untuk tabel `tbl_data_user`
 			$data5 = array(
-				'id_user' => $this->input->post('hidden_id'), // Primary key harus disertakan
+				'id_user' => $this->input->post('hidden_id'),
 				'name' => $this->input->post('fullname'),
 				'divisi' => $this->input->post('divisi'),
 				'jabatan' => $this->input->post('jabatan'),
@@ -279,6 +278,7 @@ class User extends CI_Controller
 			echo json_encode(array("status" => FALSE, "error" => "user"));
 		}
 	}
+
 
 	function get_id($id)
 	{

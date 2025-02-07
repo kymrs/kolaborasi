@@ -1,6 +1,6 @@
 <?php
 $type = 'TrueType';
-$name = 'Poppins-Regular';
+$name = 'poppins-regular';
 $desc = array('Ascent' => 1050, 'Descent' => -350, 'CapHeight' => 697, 'Flags' => 32, 'FontBBox' => '[-48 -270 1051 962]', 'ItalicAngle' => 0, 'StemV' => 70, 'MissingWidth' => 500);
 $up = -75;
 $ut = 50;

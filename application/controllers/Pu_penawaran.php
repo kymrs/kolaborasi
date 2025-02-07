@@ -18,6 +18,7 @@ class Pu_penawaran extends CI_Controller
 
     public function index()
     {
+        // $data['notif'] = $this->M_notifikasi->pending_notification();
 
         $akses = $this->M_app->hak_akses($this->session->userdata('id_level'), $this->router->fetch_class());
         ($akses->view_level == 'N' ? redirect('auth') : '');
@@ -90,6 +91,7 @@ class Pu_penawaran extends CI_Controller
 
     public function read_form()
     {
+        // $data['notif'] = $this->M_notifikasi->pending_notification();
 
         $kode = $this->uri->segment(3);
         // var_dump($kode);
@@ -129,6 +131,7 @@ class Pu_penawaran extends CI_Controller
 
     public function add_form()
     {
+        // $data['notif'] = $this->M_notifikasi->pending_notification();
 
         $data['id'] = 0;
         $data['title'] = 'backend/pu_penawaran/pu_penawaran_form';
@@ -141,6 +144,7 @@ class Pu_penawaran extends CI_Controller
 
     function edit_form($id)
     {
+        // $data['notif'] = $this->M_notifikasi->pending_notification();
 
         $data['id'] = $id;
         $data['aksi'] = 'update';
@@ -617,7 +621,7 @@ class Pu_penawaran extends CI_Controller
         $t_cpdf->AddPage();
 
         // Pilih font untuk isi
-        $t_cpdf->SetFont('Poppins-Bold', '', 24);
+        $t_cpdf->SetFont('poppins-bold', '', 24);
 
         // Margin setup
         $left_margin = 10;
@@ -628,7 +632,7 @@ class Pu_penawaran extends CI_Controller
         $t_cpdf->Cell(0, 10, 'PENAWARAN', 0, 1, 'L');
 
         // Name and title (Creative Director)
-        $t_cpdf->SetFont('Poppins-Regular', '', 9);
+        $t_cpdf->SetFont('poppins-regular', '', 9);
         $t_cpdf->Cell(38, 5, 'No', 0, 0,);
         $t_cpdf->cell(5, 5, ':', 0, 0);
         $t_cpdf->Cell(50, 5, $penawaran->no_pelayanan, 0, 1);
@@ -680,7 +684,7 @@ class Pu_penawaran extends CI_Controller
         $t_cpdf->Ln(5); // SPASI
 
         // HEADER LAYANAN
-        $t_cpdf->SetFont('Poppins-Regular', '', 11);
+        $t_cpdf->SetFont('poppins-regular', '', 11);
         $t_cpdf->SetFillColor(252, 118, 19);
         $t_cpdf->SetTextColor(255, 255, 255);
         $t_cpdf->Cell(0, 10, 'LAYANAN', 0, 1, 'L', true);
@@ -691,7 +695,7 @@ class Pu_penawaran extends CI_Controller
         $t_cpdf->Ln(2);
 
         // Konten text (justify)
-        $t_cpdf->SetFont('Poppins-Regular', '', 9);
+        $t_cpdf->SetFont('poppins-regular', '', 9);
 
         // HEADER DESKRIPSI
         $t_cpdf->Cell(100, 5, 'Deskripsi :', 0, 0);
@@ -766,7 +770,7 @@ class Pu_penawaran extends CI_Controller
         $t_cpdf->Sety($useY + 5);
 
         // HEADER LAYANAN TERMASUK DAN TIDAK TERMASUK
-        $t_cpdf->SetFont('Poppins-Regular', '', 9);
+        $t_cpdf->SetFont('poppins-regular', '', 9);
         $t_cpdf->Cell(100, 5, 'Layanan Termasuk:', 0, 0, 'L'); // Header kiri
         $trmskY = $t_cpdf->GetY();
 
@@ -782,7 +786,7 @@ class Pu_penawaran extends CI_Controller
         $maxRows = max(count($data_layanan_termasuk), count($data_layanan_tidak_termasuk));
 
         // Menampilkan data layanan secara sejajar
-        $t_cpdf->SetFont('Poppins-Regular', '', 9); // Atur font
+        $t_cpdf->SetFont('poppins-regular', '', 9); // Atur font
         for ($i = 0; $i < $maxRows; $i++) {
             // Kolom Layanan Termasuk
             if (isset($data_layanan_termasuk[$i])) {
@@ -805,7 +809,7 @@ class Pu_penawaran extends CI_Controller
 
         // Jika tidak ada layanan
         if (empty($data_layanan_termasuk) && empty($data_layanan_tidak_termasuk)) {
-            $t_cpdf->SetFont('Poppins-Regular', 'I', 9); // Font miring untuk pesan kosong
+            $t_cpdf->SetFont('poppins-regular', 'I', 9); // Font miring untuk pesan kosong
             $t_cpdf->Cell(0, 5, 'Tidak ada layanan tersedia.', 0, 1, 'C');
         }
 
@@ -815,7 +819,7 @@ class Pu_penawaran extends CI_Controller
 
         // KONTEN HOTEL DAN PENERBANGAN
         foreach ($hotels as $hotel) {
-            $t_cpdf->SetFont('Poppins-Regular', '', 9);
+            $t_cpdf->SetFont('poppins-regular', '', 9);
             $t_cpdf->SetX(100); // Pindahkan posisi ke kolom kanan
             $t_cpdf->Cell(25, 5, 'Hotel ' . $hotel->kota, 0, 0,);
             $t_cpdf->SetFont('ZapfDingbats');
@@ -828,7 +832,7 @@ class Pu_penawaran extends CI_Controller
                 }
             }
             $t_cpdf->cell(15, 5, $stars, 0, 0);
-            $t_cpdf->SetFont('Poppins-Regular', '', 9);
+            $t_cpdf->SetFont('poppins-regular', '', 9);
             $t_cpdf->cell(3, 5, ':', 0, 0);
             $t_cpdf->Cell(40, 5, $hotel->nama_hotel, 0, 1);
         }
@@ -846,7 +850,7 @@ class Pu_penawaran extends CI_Controller
         $t_cpdf->Ln(2); // Spasi antara paragraf
 
         // HEADER LAYANAN PASTI
-        $t_cpdf->SetFont('Poppins-Regular', '', 11);
+        $t_cpdf->SetFont('poppins-regular', '', 11);
         $t_cpdf->SetFillColor(252, 118, 19);
         $t_cpdf->SetTextColor(255, 255, 255);
         $t_cpdf->Cell(0, 10, 'HARGA PAKET', 0, 1, 'L', true);
@@ -856,10 +860,10 @@ class Pu_penawaran extends CI_Controller
         $t_cpdf->Ln(1);
 
         // Konten text (justify)
-        $t_cpdf->SetFont('Poppins-Regular', '', 9);
+        $t_cpdf->SetFont('poppins-regular', '', 9);
 
         // Name and title (Creative Director)
-        $t_cpdf->SetFont('Poppins-Regular', 'B', 13);
+        $t_cpdf->SetFont('poppins-regular', 'B', 13);
 
         // Format nilai menjadi Rupiah
         $pkt_quad = 'Rp ' . number_format($penawaran->pkt_quad, 0, ',', '.');
@@ -888,7 +892,7 @@ class Pu_penawaran extends CI_Controller
         $t_cpdf->SetY($trmskY + 3);
 
         // HEADER LAYANAN PASTI
-        $t_cpdf->SetFont('Poppins-Regular', '', 11);
+        $t_cpdf->SetFont('poppins-regular', '', 11);
         $t_cpdf->SetFillColor(252, 118, 19);
         $t_cpdf->SetTextColor(255, 255, 255);
         $t_cpdf->Cell(0, 10, 'LAYANAN PASTI', 0, 1, 'L', true);
@@ -898,7 +902,7 @@ class Pu_penawaran extends CI_Controller
         $t_cpdf->Ln(1);
 
         // Konten text (justify)
-        $t_cpdf->SetFont('Poppins-Regular', '', 9);
+        $t_cpdf->SetFont('poppins-regular', '', 9);
 
         // LAYANAN PASTI
         $t_cpdf->Cell(100, 5, '1. Konsultasi Gratis', 0, 0);
@@ -945,7 +949,7 @@ EOD;
         $t_cpdf->writeHTML($tbl, true, false, false, false, '');
 
         // Output PDF (tampilkan di browser)
-        $t_cpdf->Output('example.t_cpdf', 'I'); // 'I' untuk menampilkan di browser
+        $t_cpdf->Output('Penawaran', 'I'); // 'I' untuk menampilkan di browser
     }
 
     // PRINTOUT FPDF
@@ -966,7 +970,7 @@ EOD;
         $pdf->SetY(50); // Ganti 50 dengan jumlah yang Anda inginkan
 
         // Pilih font untuk isi
-        $pdf->SetFont('Poppins-Regular', 'B', 12);
+        $pdf->SetFont('poppins-regular', 'B', 12);
 
         // Margin setup
         $left_margin = 10;
@@ -977,16 +981,16 @@ EOD;
         $pdf->Cell(0, 10, 'TO:', 0, 1, 'L');
 
         // Name and title (Creative Director)
-        $pdf->SetFont('Poppins-Regular', 'B', 12);
+        $pdf->SetFont('poppins-regular', 'B', 12);
         $pdf->Cell(0, 10, 'NAME SURNAME', 0, 1, 'L');
-        $pdf->SetFont('Poppins-Regular', '', 10);
+        $pdf->SetFont('poppins-regular', '', 10);
         $pdf->Cell(0, 10, 'Creative Director', 0, 1, 'L');
 
         // Spasi antara bagian atas dan konten
         $pdf->Ln(5);
 
         // Konten text (justify)
-        $pdf->SetFont('Poppins-Regular', '', 10);
+        $pdf->SetFont('poppins-regular', '', 10);
 
         // Mengatur lebar untuk konten agar justify bisa bekerja
         $content_width = 190;  // Misal, lebar halaman adalah 210, jadi margin kiri 10 dan margin kanan 10
@@ -1011,9 +1015,9 @@ EOD;
         $pdf->Ln(20);
 
         // Bagian Nama kedua dan jabatan (Account Manager)
-        $pdf->SetFont('Poppins-Regular', 'B', 12);
+        $pdf->SetFont('poppins-regular', 'B', 12);
         $pdf->Cell(0, 10, 'NAME SURNAME', 0, 1, 'L');
-        $pdf->SetFont('Poppins-Regular', '', 10);
+        $pdf->SetFont('poppins-regular', '', 10);
         $pdf->Cell(0, 10, 'Account Manager', 0, 1, 'L');
 
         $pdf->AddPage();

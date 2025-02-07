@@ -75,6 +75,29 @@
                         </div>
                     </div>
                     <div class="form-group row">
+                        <label for="aktif" class="col-sm-2 col-form-label">Core</label>
+                        <div class="col-sm-10 form-inline row ml-1">
+                            <div class="custom-control custom-radio col-sm-2">
+                                <input class="custom-control-input" type="checkbox" id="coreCheckbox" name="aktif" value="Y" style="cursor: pointer;">
+                                <label for="coreCheckbox" class="custom-control-label" style="cursor: pointer;">Yes</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="core" style="display: none;">
+                        <div class="form-group row">
+                            <label for="fullname" class="col-sm-2 col-form-label">Logo</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="sub_image" name="sub_image" placeholder="Logo">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="fullname" class="col-sm-2 col-form-label">Warna</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="sub_color" name="sub_color" placeholder="Kode Warna">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
                         <label for="fullname" class="col-sm-2 col-form-label">Order</label>
                         <div class="col-sm-10">
                             <input type="number" class="form-control" id="urutan" name="urutan" placeholder="Order Number">
@@ -155,6 +178,15 @@
 <?php $this->load->view('template/script'); ?>
 
 <script type="text/javascript">
+    $('#coreCheckbox').on('change', function() {
+        if ($(this).is(':checked')) {
+            $('#core').show(); // Menampilkan elemen dengan ID core
+        } else {
+            $('#core').hide(); // Menyembunyikan elemen dengan ID core
+        }
+    });
+
+
     var table;
     $(document).ready(function() {
         $('.name').select2();
@@ -251,11 +283,7 @@
         $('#modal-default').modal('show');
         $('.card-title').text('Add Menu');
         $('.aksi').text('Save');
-        $('#sub_name').val('');
-        $('#app_id').val('').trigger('change');
-        $('#app2_id').val('').trigger('change');
-        $('#app3_id').val('').trigger('change');
-        $('#app4_id').val('').trigger('change');
+        $('#core').hide();
 
         $.ajax({
             url: "<?php echo site_url('menu/get_max') ?>",
