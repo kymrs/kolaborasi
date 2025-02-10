@@ -327,7 +327,6 @@ class Swi_invoice extends CI_Controller
                     $this->db->delete('swi_detail_invoice');
                 }
             }
-
             //MELAKUKAN REPLACE DATA LAMA DENGAN YANG BARU
             for ($i = 1; $i <= count($_POST['item']); $i++) {
                 // Set id menjadi NULL jika id_detail tidak ada atau kosong

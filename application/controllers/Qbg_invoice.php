@@ -187,6 +187,15 @@ class Qbg_invoice extends CI_Controller
         echo json_encode($data);
     }
 
+    public function getAllProducts()
+    {
+        $this->load->database();
+        $query = $this->db->get('qbg_produk');  // Ganti 'produk' dengan nama tabel lo
+        $result = $query->result_array();
+        echo json_encode($result);
+    }
+
+
     // UNTUK MENAMPILKAN FORM EDIT
     function edit_form($id)
     {
@@ -270,17 +279,17 @@ class Qbg_invoice extends CI_Controller
 
         if ($inserted) {
             // INISIASI VARIABEL INPUT DETAIL PREPAYMENT
-            $deskripsi = $this->input->post('deskripsi[]');
+            $kode_produk = $this->input->post('kode_produk[]');
             $jumlah = preg_replace('/\D/', '', $this->input->post('jumlah[]'));
             $harga = preg_replace('/\D/', '', $this->input->post('harga[]'));
             $satuan = $this->input->post('satuan[]');
             $total = preg_replace('/\D/', '', $this->input->post('total[]'));
             //PERULANGAN UNTUK INSER QUERY DETAIL PREPAYMENT
-            if (!empty($deskripsi) && !empty($jumlah) && !empty($satuan) && !empty($harga) && !empty($total)) {
-                for ($i = 1; $i <= count($deskripsi); $i++) {
+            if (!empty($kode_produk) && !empty($jumlah) && !empty($satuan) && !empty($harga) && !empty($total)) {
+                for ($i = 1; $i <= count($kode_produk); $i++) {
                     $data3[] = array(
                         'invoice_id' => $inserted,
-                        'deskripsi' => $deskripsi[$i],
+                        'kode_produk' => $kode_produk[$i],
                         'jumlah' => $jumlah[$i],
                         'satuan' => $satuan[$i],
                         'harga' => $harga[$i],
@@ -337,9 +346,7 @@ class Qbg_invoice extends CI_Controller
             //MELAKUKAN REPLACE DATA LAMA DENGAN YANG BARU
             for ($i = 1; $i <= count($_POST['deskripsi']); $i++) {
                 // Set id menjadi NULL jika id_detail tidak ada atau kosong
-                $id_invoice = !empty($id_detail[$i]) ? $id_detail[$i] : NULL;
                 $data2[] = array(
-                    'id' => $id_invoice,
                     'invoice_id' => $this->input->post('id'),
                     'deskripsi' => $deskripsi[$i],
                     'jumlah' => $jumlah[$i],
