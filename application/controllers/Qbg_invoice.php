@@ -297,7 +297,26 @@ class Qbg_invoice extends CI_Controller
     // UPDATE DATA
     public function update()
     {
+        // INSERT KODE PREPAYMENT SAAT SUBMIT
+        $date = $this->input->post('tgl_invoice');
+
+        $kode = $this->M_qbg_invoice->max_kode($date)->row();
+
+        if (empty($kode->kode_invoice)) {
+            $no_urut = 1;
+        } else {
+            $bln = substr($kode->kode_invoice, 5, 2);
+            $no_urut = substr($kode->kode_invoice, 10) + 1;
+        }
+        $urutan = str_pad($no_urut, 4, "0", STR_PAD_LEFT);
+        $year = substr($date, 8, 2);
+        $month = substr($date, 3, 2);
+
+        $kode_invoice = 'INVQB' . $year . $month . $urutan;
+
         $data = array(
+            'tgl_invoice' => date('Y-m-d', strtotime($this->input->post('tgl_invoice'))),
+            'kode_invoice' => $kode_invoice,
             'tgl_tempo' => date('Y-m-d', strtotime($this->input->post('tgl_tempo'))),
             'ctc_nama' => $this->input->post('ctc_nama'),
             'ctc_nomor' => $this->input->post('ctc_nomor'),
@@ -451,11 +470,11 @@ class Qbg_invoice extends CI_Controller
         // Set document properties
         $t_cpdf2->SetCreator(PDF_CREATOR);
         $t_cpdf2->SetAuthor('Author Name');
-        $t_cpdf2->SetTitle('Invoice QubaGift PDF');
+        $t_cpdf2->SetTitle('Invoice Qubagift PDF');
 
         $t_cpdf2->SetMargins(15, 28, 15); // Margin kiri, atas (untuk header), kanan
         // $t_cpdf2->SetHeaderMargin(30);    // Jarak antara header dan konten
-        $t_cpdf2->SetAutoPageBreak(true, 30); // Penanganan otomatis margin bawah
+        $t_cpdf2->SetAutoPageBreak(true, 15); // Penanganan otomatis margin bawah
 
         // Add a new page
         $t_cpdf2->AddPage();
@@ -622,10 +641,10 @@ EOD;
         $t_cpdf2->SetFont('Poppins-Bold', '', 10);
         $t_cpdf2->Cell(26, 10, 'Terima Kasih, ', 0, 0);
         $t_cpdf2->SetFont('Poppins-Regular', '', 10);
-        $t_cpdf2->Cell(19, 10, '', 0, 1);
+        $t_cpdf2->Cell(19, 10, 'Qubagift', 0, 1);
 
         // Output PDF (tampilkan di browser)
-        $t_cpdf2->Output('Invoice QubaGift.pdf', 'I'); // 'I' untuk menampilkan di browser
+        $t_cpdf2->Output('Invoice Qubagift.pdf', 'I'); // 'I' untuk menampilkan di browser
     }
 
     function payment()

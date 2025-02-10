@@ -561,7 +561,7 @@
                     <td class="row-number">${rowCount}</td>
                     <td>
                         <input type="text" class="form-control" name="deskripsi[${rowCount}]" value="" placeholder="Deskripsi" /></td>
-                        <input type="hidden" id="hidden_id${rowCount}" name="hidden_id[${rowCount}]" value="">
+                        <input type="text" id="hidden_id${rowCount}" name="hidden_id[${rowCount}]" value="">
                         <input type="hidden" name="hidden_invoiceId[${rowCount}]" id="hidden_invoiceId${rowCount}" value="">
                     <td>
                         <input type="text" class="form-control jumlah" id="jumlah-${rowCount}" name="jumlah[${rowCount}]" value="" placeholder="Jumlah">
@@ -824,9 +824,10 @@
                             <tr id="row-${index + 1}">
                                 <td class="row-number">${index + 1}</td>
                                 <td>
-                                    <input type="text" class="form-control" name="deskripsi[${index + 1}]" value="${data['detail_invoice'][index]['deskripsi']}" placeholder="Deskripsi" /></td>
+                                    <input type="text" class="form-control" name="deskripsi[${index + 1}]" value="${data['detail_invoice'][index]['deskripsi']}" placeholder="Deskripsi" />
                                     <input type="hidden" id="hidden_id${index + 1}" name="hidden_id[${index + 1}]" value="${data['detail_invoice'][index]['id']}">
                                     <input type="hidden" name="hidden_invoiceId[${index + 1}]" id="hidden_invoiceId${index + 1}" value="${data['detail_invoice'][index]['invoice_id']}">
+                                </td>
                                 <td>
                                     <input type="text" class="form-control jumlah" id="jumlah-${index + 1}" name="jumlah[${index + 1}]" value="${data['detail_invoice'][index]['jumlah']}" placeholder="Jumlah" style="margin-left: 10px">
                                 </td>

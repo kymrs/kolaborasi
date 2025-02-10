@@ -39,7 +39,8 @@ class Submenu extends CI_Controller
 			$row[] = $field->link;
 			$row[] = $field->icon;
 			$mn = $this->M_menu->get_by_id($field->id_menu);
-			$row[] = $mn['menu']->nama_menu;
+			// var_dump($mn);
+			$row[] = $mn->nama_menu;
 			$row[] = ($field->is_active == 'Y' ? 'Yes' : 'No');
 			$row[] = $field->urutan;
 

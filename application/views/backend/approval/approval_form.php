@@ -19,7 +19,7 @@
                             <div class="col-md-6">
                                 <!-- Second Set of Fields -->
                                 <div class="form-group row">
-                                    <label class="col-sm-4" for="sub_name">Nama</label>
+                                    <label class="col-sm-4" for="sub_name">Sub Name</label>
                                     <div class="col-sm-7">
                                         <input type="text" class="form-control" id="sub_name" name="sub_name">
                                     </div>
