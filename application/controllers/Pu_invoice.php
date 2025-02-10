@@ -466,7 +466,7 @@ class Pu_invoice extends CI_Controller
 
         $t_cpdf2->SetMargins(15, 28, 15); // Margin kiri, atas (untuk header), kanan
         // $t_cpdf2->SetHeaderMargin(30);    // Jarak antara header dan konten
-        $t_cpdf2->SetAutoPageBreak(true, 30); // Penanganan otomatis margin bawah
+        $t_cpdf2->SetAutoPageBreak(true, 15); // Penanganan otomatis margin bawah
 
         // Add a new page
         $t_cpdf2->AddPage();

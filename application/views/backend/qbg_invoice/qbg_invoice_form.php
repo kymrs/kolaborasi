@@ -554,270 +554,255 @@
         }
 
         function addRow() {
-            $.ajax({
-                url: "<?= base_url('qbg_invoice/getAllProducts'); ?>",
-                type: "GET",
-                dataType: "json",
-                success: function(data) {
-                    rowCount++;
+            rowCount++;
+            const row = `
+                <tr id="row-${rowCount}">
+                    <td class="row-number">${rowCount}</td>
+                    <td>
+                        <input type="text" class="form-control" name="deskripsi[${rowCount}]" value="" placeholder="Deskripsi" /></td>
+                        <input type="hidden" id="hidden_id${rowCount}" name="hidden_id[${rowCount}]" value="">
+                        <input type="hidden" name="hidden_invoiceId[${rowCount}]" id="hidden_invoiceId${rowCount}" value="">
+                    <td>
+                        <input type="text" class="form-control jumlah" id="jumlah-${rowCount}" name="jumlah[${rowCount}]" value="" placeholder="Jumlah">
+                    </td>
+                    <td>
+                        <input type="text" class="form-control" id="satuan-${rowCount}" name="satuan[${rowCount}]" value="" placeholder="Satuan">
+                    </td>
+                    <td>
+                        <input type="text" class="form-control harga" id="harga-${rowCount}" name="harga[${rowCount}]" value="" placeholder="Harga" />
+                    </td>
+                    <td>
+                        <input type="text" class="form-control total" id="total-${rowCount}" name="total[${rowCount}]" value="" placeholder="Total" />
+                    </td>
 
-                    let options = "";
-                    $.each(data, function(index, item) {
-                        options += `<option value="${item.kode_produk}">${item.nama_produk}</option>`;
-                    });
+                    <td><span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span></td>
+                </tr>
+                `;
+            $('#input-container').append(row);
+            // Tambahkan format ke input nominal yang baru
+            formatJumlahInput(`#nominal-${rowCount}`);
+            updateSubmitButtonState(); // Perbarui status tombol submit
+            //checkDeleteButtonState(); // Cek tombol delete setelah baris ditambahkan
 
-                    const row = `
-                        <tr id="row-${rowCount}">
-                            <td class="row-number">${rowCount}</td>
-                            <td>
-                            <select class="form-control" name="produk[${rowCount}]" id="produk">
-                                <option selected hidden value="">Pilih Produk</option>
-                                ${options}
-                            </select>
-                            </td>
-                            <input type="hidden" id="hidden_id${rowCount}" name="hidden_id[${rowCount}]" value="">
-                            <input type="hidden" name="hidden_invoiceId[${rowCount}]" id="hidden_invoiceId${rowCount}" value="">
-                            <td>
-                            <input type="text" class="form-control jumlah" id="jumlah-${rowCount}" name="jumlah[${rowCount}]" value="" placeholder="Jumlah">
-                            </td>
-                            <td>
-                            <input type="text" class="form-control" id="satuan-${rowCount}" name="satuan[${rowCount}]" value="" placeholder="Satuan">
-                            </td>
-                            <td>
-                            <input type="text" class="form-control harga" id="harga-${rowCount}" name="harga[${rowCount}]" value="" placeholder="Harga" />
-                            </td>
-                            <td>
-                            <input type="text" class="form-control total" id="total-${rowCount}" name="total[${rowCount}]" value="" placeholder="Total" />
-                            </td>
-                            <td><span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span></td>
-                        </tr>
-                        `;
-
-                    $('#input-container').append(row);
-                    // Tambahkan format ke input nominal yang baru
-                    formatJumlahInput(`#nominal-${rowCount}`);
-                    updateSubmitButtonState(); // Perbarui status tombol submit
-                    //checkDeleteButtonState(); // Cek tombol delete setelah baris ditambahkan
-
-                    // Hitung total nominal setelah baris baru ditambahkan
-                    calculateTotalNominal();
-
-                    $('.harga, .total, .jumlah').on('input', function() {
-                        // Ambil nilai input
-                        let value = $(this).val();
-
-                        // Hapus semua karakter yang bukan angka
-                        value = value.replace(/[^0-9]/g, '');
-
-                        // Format ke Rupiah
-                        let formatted = new Intl.NumberFormat('id-ID').format(value);
-
-                        // Set nilai input dengan format Rupiah
-                        $(this).val(formatted);
-                    });
-
-                    //VALIDASI ROW YANG TELAH DI APPEND
-                    $("#form").validate().settings.rules[`produk[${rowCount}]`] = {
-                        required: true
-                    };
-                    $("#form").validate().settings.rules[`jumlah[${rowCount}]`] = {
-                        required: true
-                    };
-                    $("#form").validate().settings.rules[`satuan[${rowCount}]`] = {
-                        required: true
-                    };
-                    $("#form").validate().settings.rules[`harga[${rowCount}]`] = {
-                        required: true
-                    };
-                    $("#form").validate().settings.rules[`total[${rowCount}]`] = {
-                        required: true
-                    };
-                }
-            });
-        }
-
-        // MENGHAPUS ROW
-        function deleteRow(id) {
-            // Simpan ID dari row yang dihapus
-            const rowId = $(`#row-${id}`).find('input:hidden[id^="hidden_id"]').val();
-            if (rowId) {
-                deletedRows.push(rowId);
-            }
-
-            // console.log(rowId);
-
-            $(`#row-${id}`).remove();
-            // Reorder rows and update row numbers
-            reorderRows();
-            updateSubmitButtonState(); // Perbarui status tombol 
-            //checkDeleteButtonState(); // Cek tombol delete setelah baris dihapus
-
-            // Hitung total nominal setelah baris dihapus
+            // Hitung total nominal setelah baris baru ditambahkan
             calculateTotalNominal();
-        }
 
-        // MENGHAPUS REKENING
-        function deleteRekRow(id) {
-            // Simpan ID dari row yang dihapus
-            const rowRekId = $(`#rek-${id}`).find('input:hidden[id^="hidden_rekId"]').val();
-            if (rowRekId) {
-                deletedRekRows.push(rowRekId);
-            }
+            $('.harga, .total, .jumlah').on('input', function() {
+                // Ambil nilai input
+                let value = $(this).val();
 
-            console.log(rowRekId);
+                // Hapus semua karakter yang bukan angka
+                value = value.replace(/[^0-9]/g, '');
 
-            $(`#rek-${id}`).remove();
-            // Reorder rows and update row numbers
-            reorderRekRows();
-        }
+                // Format ke Rupiah
+                let formatted = new Intl.NumberFormat('id-ID').format(value);
 
-        // REORDER DETAIL INVOICE
-        function reorderRows() {
-            $('#input-container tr').each(function(index) {
-                //INISIASI VARIABLE UNTUK reorderRows
-                const newRowNumber = index + 1;
-                const produkValue = $(this).find('input[name^="produk"]').val();
-                const satuanValue = $(this).find('input[name^="satuan"]').val();
-                const jumlahValue = $(this).find('input[name^="jumlah"]').val();
-                const hargaValue = $(this).find('input[name^="harga"]').val();
-                const totalValue = $(this).find('input[name^="total"]').val();
-                const hiddenInvoiceIdValue = $(this).find('input[name^="hidden_invoiceId"]').val();
-                const hiddenIdValue = $(this).find('input[name^="hidden_id"]').val();
-
-                $(this).attr('id', `row-${newRowNumber}`);
-                $(this).find('.row-number').text(newRowNumber);
-                $(this).find('select[name^="produk"]').attr('name', `produk[${newRowNumber}]`).attr('placeholder', `Deskripsi`).val(produkValue);
-                $(this).find('input[name^="jumlah"]').attr('name', `jumlah[${newRowNumber}]`).attr('id', `jumlah-${newRowNumber}`).attr('placeholder', `Jumlah`).val(jumlahValue);
-                $(this).find('input[name^="satuan"]').attr('name', `satuan[${newRowNumber}]`).attr('id', `satuan-${newRowNumber}`).attr('placeholder', 'Satuan').val(satuanValue);
-                $(this).find('input[name^="harga"]').attr('name', `harga[${newRowNumber}]`).attr('id', `harga-${newRowNumber}`).attr('placeholder', `Harga`).val(hargaValue);
-                $(this).find('input[name^="total"]').attr('name', `total[${newRowNumber}]`).attr('id', `total-${newRowNumber}`).attr('placeholder', `Total`).val(totalValue);
-                $(this).find('input[name^="hidden_invoiceId"]').attr('name', `hidden_invoiceId[${newRowNumber}]`).attr('id', `hidden_invoiceId${newRowNumber}`).val(hiddenInvoiceIdValue);
-                $(this).find('input[name^=hidden_id]').attr('name', `hidden_id[${newRowNumber}]`).attr('id', `hidden_id[${newRowNumber}]`).val(hiddenIdValue);
-                $(this).find('.delete-btn').attr('data-id', newRowNumber).text('Delete');
+                // Set nilai input dengan format Rupiah
+                $(this).val(formatted);
             });
-            rowCount = $('#input-container tr').length; // Update rowCount to the current number of rows
+
+            //VALIDASI ROW YANG TELAH DI APPEND
+            $("#form").validate().settings.rules[`produk[${rowCount}]`] = {
+                required: true
+            };
+            $("#form").validate().settings.rules[`jumlah[${rowCount}]`] = {
+                required: true
+            };
+            $("#form").validate().settings.rules[`satuan[${rowCount}]`] = {
+                required: true
+            };
+            $("#form").validate().settings.rules[`harga[${rowCount}]`] = {
+                required: true
+            };
+            $("#form").validate().settings.rules[`total[${rowCount}]`] = {
+                required: true
+            };
+        }
+    });
+    }
+
+    // MENGHAPUS ROW
+    function deleteRow(id) {
+        // Simpan ID dari row yang dihapus
+        const rowId = $(`#row-${id}`).find('input:hidden[id^="hidden_id"]').val();
+        if (rowId) {
+            deletedRows.push(rowId);
         }
 
-        // REORDER NOMOR REKENING
-        function reorderRekRows() {
-            $('#rek-table tbody tr').each(function(index) {
-                const newRekRowNumber = index + 1;
-                const hiddenRekIdValue = $(this).find('input[name^="hidden_rekId"]').val();
-                const namaBankValue = $(this).find('input[name^="nama_bank"]').val();
-                const noRekValue = $(this).find('input[name^="no_rek"]').val();
+        // console.log(rowId);
 
-                $(this).attr('id', `rek-${newRekRowNumber}`);
-                $(this).find('.rek-number').text(newRekRowNumber);
-                $(this).find('input[name^="nama_bank"]').attr('name', `nama_bank[${newRekRowNumber}]`).attr('id', `nama_bank-${newRekRowNumber}`).attr('placeholder', `Nama Bank...`).val(namaBankValue);
-                $(this).find('input[name^="no_rek"]').attr('name', `no_rek[${newRekRowNumber}]`).attr('id', `no_rek-${newRekRowNumber}`).attr('placeholder', `Nomor Rekening...`).val(noRekValue);
-                $(this).find('input[name^="hidden_rekId"]').attr('name', `hidden_rekId[${newRekRowNumber}]`).attr('id', `hidden_rekId${newRekRowNumber}`).val(hiddenRekIdValue);
-                $(this).find('.rek-delete').attr('data-id', newRekRowNumber).text('Delete');
-            });
-            rowRekCount = $('#rek-table tbody tr').length;
+        $(`#row-${id}`).remove();
+        // Reorder rows and update row numbers
+        reorderRows();
+        updateSubmitButtonState(); // Perbarui status tombol 
+        //checkDeleteButtonState(); // Cek tombol delete setelah baris dihapus
+
+        // Hitung total nominal setelah baris dihapus
+        calculateTotalNominal();
+    }
+
+    // MENGHAPUS REKENING
+    function deleteRekRow(id) {
+        // Simpan ID dari row yang dihapus
+        const rowRekId = $(`#rek-${id}`).find('input:hidden[id^="hidden_rekId"]').val();
+        if (rowRekId) {
+            deletedRekRows.push(rowRekId);
         }
 
-        // BUTTON ADD ROW DETAIL TRANSAKSI
-        $('#add-row').click(function() {
-            addRow();
+        console.log(rowRekId);
+
+        $(`#rek-${id}`).remove();
+        // Reorder rows and update row numbers
+        reorderRekRows();
+    }
+
+    // REORDER DETAIL INVOICE
+    function reorderRows() {
+        $('#input-container tr').each(function(index) {
+            //INISIASI VARIABLE UNTUK reorderRows
+            const newRowNumber = index + 1;
+            const produkValue = $(this).find('input[name^="produk"]').val();
+            const satuanValue = $(this).find('input[name^="satuan"]').val();
+            const jumlahValue = $(this).find('input[name^="jumlah"]').val();
+            const hargaValue = $(this).find('input[name^="harga"]').val();
+            const totalValue = $(this).find('input[name^="total"]').val();
+            const hiddenInvoiceIdValue = $(this).find('input[name^="hidden_invoiceId"]').val();
+            const hiddenIdValue = $(this).find('input[name^="hidden_id"]').val();
+
+            $(this).attr('id', `row-${newRowNumber}`);
+            $(this).find('.row-number').text(newRowNumber);
+            $(this).find('select[name^="produk"]').attr('name', `produk[${newRowNumber}]`).attr('placeholder', `Deskripsi`).val(produkValue);
+            $(this).find('input[name^="jumlah"]').attr('name', `jumlah[${newRowNumber}]`).attr('id', `jumlah-${newRowNumber}`).attr('placeholder', `Jumlah`).val(jumlahValue);
+            $(this).find('input[name^="satuan"]').attr('name', `satuan[${newRowNumber}]`).attr('id', `satuan-${newRowNumber}`).attr('placeholder', 'Satuan').val(satuanValue);
+            $(this).find('input[name^="harga"]').attr('name', `harga[${newRowNumber}]`).attr('id', `harga-${newRowNumber}`).attr('placeholder', `Harga`).val(hargaValue);
+            $(this).find('input[name^="total"]').attr('name', `total[${newRowNumber}]`).attr('id', `total-${newRowNumber}`).attr('placeholder', `Total`).val(totalValue);
+            $(this).find('input[name^="hidden_invoiceId"]').attr('name', `hidden_invoiceId[${newRowNumber}]`).attr('id', `hidden_invoiceId${newRowNumber}`).val(hiddenInvoiceIdValue);
+            $(this).find('input[name^=hidden_id]').attr('name', `hidden_id[${newRowNumber}]`).attr('id', `hidden_id[${newRowNumber}]`).val(hiddenIdValue);
+            $(this).find('.delete-btn').attr('data-id', newRowNumber).text('Delete');
         });
+        rowCount = $('#input-container tr').length; // Update rowCount to the current number of rows
+    }
 
-        // BUTTON ADD ROW NOMOR REKENING
-        $('#btn-rek').click(function() {
-            var bank = $('#nama_bank').val();
-            var rek = $('#nomor_rekening').val();
-            addRekRow(bank, rek);
-            $('#nama_bank').val('');
-            $('#nomor_rekening').val('');
+    // REORDER NOMOR REKENING
+    function reorderRekRows() {
+        $('#rek-table tbody tr').each(function(index) {
+            const newRekRowNumber = index + 1;
+            const hiddenRekIdValue = $(this).find('input[name^="hidden_rekId"]').val();
+            const namaBankValue = $(this).find('input[name^="nama_bank"]').val();
+            const noRekValue = $(this).find('input[name^="no_rek"]').val();
+
+            $(this).attr('id', `rek-${newRekRowNumber}`);
+            $(this).find('.rek-number').text(newRekRowNumber);
+            $(this).find('input[name^="nama_bank"]').attr('name', `nama_bank[${newRekRowNumber}]`).attr('id', `nama_bank-${newRekRowNumber}`).attr('placeholder', `Nama Bank...`).val(namaBankValue);
+            $(this).find('input[name^="no_rek"]').attr('name', `no_rek[${newRekRowNumber}]`).attr('id', `no_rek-${newRekRowNumber}`).attr('placeholder', `Nomor Rekening...`).val(noRekValue);
+            $(this).find('input[name^="hidden_rekId"]').attr('name', `hidden_rekId[${newRekRowNumber}]`).attr('id', `hidden_rekId${newRekRowNumber}`).val(hiddenRekIdValue);
+            $(this).find('.rek-delete').attr('data-id', newRekRowNumber).text('Delete');
         });
+        rowRekCount = $('#rek-table tbody tr').length;
+    }
 
-        // SELECT ADD ROW NOMOR REKENING
-        $('#rekening').change(function() {
-            // Ambil elemen yang dipilih
-            var selectedOption = $(this).find(':selected');
+    // BUTTON ADD ROW DETAIL TRANSAKSI
+    $('#add-row').click(function() {
+        addRow();
+    });
 
-            // Ambil nilai atribut data
-            var bank = selectedOption.data('bank');
-            var rek = selectedOption.data('rek');
+    // BUTTON ADD ROW NOMOR REKENING
+    $('#btn-rek').click(function() {
+        var bank = $('#nama_bank').val();
+        var rek = $('#nomor_rekening').val();
+        addRekRow(bank, rek);
+        $('#nama_bank').val('');
+        $('#nomor_rekening').val('');
+    });
 
-            addRekRow(bank, rek);
-            // // Cetak ke konsol untuk memastikan
-            // console.log('Bank:', bank);
-            // console.log('Rekening:', rek);
-        });
+    // SELECT ADD ROW NOMOR REKENING
+    $('#rekening').change(function() {
+        // Ambil elemen yang dipilih
+        var selectedOption = $(this).find(':selected');
 
-        function updateSubmitButtonState() {
-            const rowCount = $('#input-container tr').length;
-            if (rowCount > 0) {
-                $('.aksi').prop('disabled', false); // Enable submit button
-            } else {
-                $('.aksi').prop('disabled', true); // Disable submit button
-            }
-        }
+        // Ambil nilai atribut data
+        var bank = selectedOption.data('bank');
+        var rek = selectedOption.data('rek');
 
-        // BUTTON HAPUS TRANSAKSI INVOICE
-        $(document).on('click', '.delete-btn', function() {
-            const id = $(this).data('id');
-            deleteRow(id);
-        });
+        addRekRow(bank, rek);
+        // // Cetak ke konsol untuk memastikan
+        // console.log('Bank:', bank);
+        // console.log('Rekening:', rek);
+    });
 
-        // BUTTON HAPUS NOMOR REKENING
-        $(document).on('click', '.rek-delete', function() {
-            const rowId = $(this).data('id');
-            // console.log(rowId);
-            deleteRekRow(rowId);
-            reorderRekRows();
-        });
-
-        $('#form').submit(function(event) {
-            // Tambahkan array deletedRows ke dalam form data sebelum submit
-            $('<input>').attr({
-                type: 'hidden',
-                name: 'deleted_rows',
-                value: JSON.stringify(deletedRows)
-            }).appendTo('#form');
-
-            $('<input>').attr({
-                type: 'hidden',
-                name: 'deletedRekRows',
-                value: JSON.stringify(deletedRekRows)
-            }).appendTo('#form');
-
-            // Lanjutkan dengan submit form
-        });
-
-        // MENGISI FORM UPDATE
-        if (id == 0) {
-            $('.aksi').append('<span class="front front-aksi">Save</span>');
+    function updateSubmitButtonState() {
+        const rowCount = $('#input-container tr').length;
+        if (rowCount > 0) {
+            $('.aksi').prop('disabled', false); // Enable submit button
         } else {
-            $('.aksi').append('<span class="front front-aksi">Update</span>');
-            $("select option[value='']").hide();
-            $.ajax({
-                url: "<?php echo site_url('qbg_invoice/edit_data') ?>/" + id,
-                type: "GET",
-                dataType: "JSON",
-                success: function(data) {
-                    console.log(data);
-                    //SET VALUE DATA MASTER PREPAYMENT
-                    $('#id').val(data['master']['id']);
-                    let dateParts = data['master']['tgl_invoice'].split('-'); // Pisahkan berdasarkan "-"
-                    let formattedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`; // Susun jadi DD-MM-YYYY
-                    $('#tgl_invoice').val(formattedDate); // Masukkan ke input
-                    $('#kode_invoice').val(data['master']['kode_invoice']);
-                    $('#tgl_tempo').val(data['master']['tgl_tempo']);
-                    $('#ctc_nama').val(data['master']['ctc_nama']);
-                    $('#ctc_nomor').val(data['master']['ctc_nomor']);
-                    $('#diskon').val(data['master']['diskon']);
-                    $('#ctc2_nama').val(data['master']['ctc2_nama']);
-                    $('#ctc2_email').val(data['master']['ctc2_email']);
-                    $('#ctc2_nomor').val(data['master']['ctc2_nomor']);
-                    $('#ctc2_alamat').val(data['master']['ctc2_alamat']);
-                    quill.clipboard.dangerouslyPasteHTML(data['master']['keterangan']);
-                    //APPEND DATA pu_rek_invoice DETAIL PREPAYMENT
-                    // console.log(data['rek_invoice']);
-                    if (aksi == 'update') {
-                        // Rekening
-                        $(data['rek_invoice']).each(function(index) {
-                            const row = `
+            $('.aksi').prop('disabled', true); // Disable submit button
+        }
+    }
+
+    // BUTTON HAPUS TRANSAKSI INVOICE
+    $(document).on('click', '.delete-btn', function() {
+        const id = $(this).data('id');
+        deleteRow(id);
+    });
+
+    // BUTTON HAPUS NOMOR REKENING
+    $(document).on('click', '.rek-delete', function() {
+        const rowId = $(this).data('id');
+        // console.log(rowId);
+        deleteRekRow(rowId);
+        reorderRekRows();
+    });
+
+    $('#form').submit(function(event) {
+        // Tambahkan array deletedRows ke dalam form data sebelum submit
+        $('<input>').attr({
+            type: 'hidden',
+            name: 'deleted_rows',
+            value: JSON.stringify(deletedRows)
+        }).appendTo('#form');
+
+        $('<input>').attr({
+            type: 'hidden',
+            name: 'deletedRekRows',
+            value: JSON.stringify(deletedRekRows)
+        }).appendTo('#form');
+
+        // Lanjutkan dengan submit form
+    });
+
+    // MENGISI FORM UPDATE
+    if (id == 0) {
+        $('.aksi').append('<span class="front front-aksi">Save</span>');
+    } else {
+        $('.aksi').append('<span class="front front-aksi">Update</span>');
+        $("select option[value='']").hide();
+        $.ajax({
+            url: "<?php echo site_url('qbg_invoice/edit_data') ?>/" + id,
+            type: "GET",
+            dataType: "JSON",
+            success: function(data) {
+                console.log(data);
+                //SET VALUE DATA MASTER PREPAYMENT
+                $('#id').val(data['master']['id']);
+                let dateParts = data['master']['tgl_invoice'].split('-'); // Pisahkan berdasarkan "-"
+                let formattedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`; // Susun jadi DD-MM-YYYY
+                $('#tgl_invoice').val(formattedDate); // Masukkan ke input
+                $('#kode_invoice').val(data['master']['kode_invoice']);
+                $('#tgl_tempo').val(data['master']['tgl_tempo']);
+                $('#ctc_nama').val(data['master']['ctc_nama']);
+                $('#ctc_nomor').val(data['master']['ctc_nomor']);
+                $('#diskon').val(data['master']['diskon']);
+                $('#ctc2_nama').val(data['master']['ctc2_nama']);
+                $('#ctc2_email').val(data['master']['ctc2_email']);
+                $('#ctc2_nomor').val(data['master']['ctc2_nomor']);
+                $('#ctc2_alamat').val(data['master']['ctc2_alamat']);
+                quill.clipboard.dangerouslyPasteHTML(data['master']['keterangan']);
+                //APPEND DATA pu_rek_invoice DETAIL PREPAYMENT
+                // console.log(data['rek_invoice']);
+                if (aksi == 'update') {
+                    // Rekening
+                    $(data['rek_invoice']).each(function(index) {
+                        const row = `
                             <tr id="rek-${index + 1}">
                                 <td class="rek-number">${index + 1}</td>
                                 <td>
@@ -828,21 +813,22 @@
                                 <td><button type="button" class="btn rek-delete btn-danger" data-id="${index + 1}">Delete</button></td>
                             </tr>
                             `;
-                            $('#rek-table tbody').append(row);
-                            rowRekCount = index + 1;
-                        });
+                        $('#rek-table tbody').append(row);
+                        rowRekCount = index + 1;
+                    });
 
-                        // Detail pemesanan
-                        $(data['detail_invoice']).each(function(index) {
-                            const hargaFormatted = data['detail_invoice'][index]['harga'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-                            const totalFormatted = data['detail_invoice'][index]['total'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-                            const row = `
+                    // Detail pemesanan
+                    $(data['detail_invoice']).each(function(index) {
+                        const hargaFormatted = data['detail_invoice'][index]['harga'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                        const totalFormatted = data['detail_invoice'][index]['total'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                        const row = `
                             <tr id="row-${index + 1}">
                                 <td class="row-number">${index + 1}</td>
                                 <td>
-                                    <input type="text" class="form-control" name="deskripsi[${index + 1}]" value="${data['detail_invoice'][index]['deskripsi']}" placeholder="Deskripsi" /></td>
+                                    <input type="text" class="form-control" name="deskripsi[${index + 1}]" value="${data['detail_invoice'][index]['deskripsi']}" placeholder="Deskripsi" />
                                     <input type="hidden" id="hidden_id${index + 1}" name="hidden_id[${index + 1}]" value="${data['detail_invoice'][index]['id']}">
                                     <input type="hidden" name="hidden_invoiceId[${index + 1}]" id="hidden_invoiceId${index + 1}" value="${data['detail_invoice'][index]['invoice_id']}">
+                                </td>
                                 <td>
                                     <input type="text" class="form-control jumlah" id="jumlah-${index + 1}" name="jumlah[${index + 1}]" value="${data['detail_invoice'][index]['jumlah']}" placeholder="Jumlah" style="margin-left: 10px">
                                 </td>
@@ -859,40 +845,40 @@
                                 <td><span class="btn delete-btn btn-danger" data-id="${index + 1}">Delete</span></td>
                             </tr>
                             `;
-                            $('#input-container').append(row);
-                            rowCount = index + 1;
-                        });
-                    }
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    alert('Error get data from ajax');
+                        $('#input-container').append(row);
+                        rowCount = index + 1;
+                    });
                 }
-            });
-        }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert('Error get data from ajax');
+            }
+        });
+    }
 
-        // UNTUK TAMPILAN READ ONLY
-        if (aksi == "read") {
-            $('.aksi').hide();
-            $('#id').prop('readonly', true);
-            $('#tgl_invoice').prop('disabled', true);
-            $('#nama').prop('readonly', true);
-            // $('#jabatan').prop('disabled', true);
-            // $('#divisi').prop('disabled', true);
-            $('#prepayment').prop('readonly', true);
-            $('#tujuan').prop('readonly', true);
-            $('#total_nominal_row').attr('colspan', 3);
-            $('#add-row').toggle();
-            $('th:last-child').remove();
+    // UNTUK TAMPILAN READ ONLY
+    if (aksi == "read") {
+        $('.aksi').hide();
+        $('#id').prop('readonly', true);
+        $('#tgl_invoice').prop('disabled', true);
+        $('#nama').prop('readonly', true);
+        // $('#jabatan').prop('disabled', true);
+        // $('#divisi').prop('disabled', true);
+        $('#prepayment').prop('readonly', true);
+        $('#tujuan').prop('readonly', true);
+        $('#total_nominal_row').attr('colspan', 3);
+        $('#add-row').toggle();
+        $('th:last-child').remove();
 
-            $.ajax({
-                url: "<?php echo site_url('qbg_invoice/read_detail/') ?>" + id,
-                type: "GET",
-                dataType: "JSON",
-                success: function(data) {
-                    $(data).each(function(index) {
-                        //Nilai nominal diformat menggunakan pemisah ribuan sebelum dimasukkan ke dalam elemen input.
-                        const nominalReadFormatted = data[index]['nominal'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-                        const row = `
+        $.ajax({
+            url: "<?php echo site_url('qbg_invoice/read_detail/') ?>" + id,
+            type: "GET",
+            dataType: "JSON",
+            success: function(data) {
+                $(data).each(function(index) {
+                    //Nilai nominal diformat menggunakan pemisah ribuan sebelum dimasukkan ke dalam elemen input.
+                    const nominalReadFormatted = data[index]['nominal'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                    const row = `
                         <tr id="row-${index}">
                             <td class="row-number">${index + 1}</td>
                             <td><input readonly type="text" class="form-control" name="rincian[${index}]" value="${data[index]['rincian']}" /></td>
@@ -900,140 +886,140 @@
                             <td><input readonly type="text" class="form-control" name="keterangan[${index}]" value="${data[index]['keterangan']}" /></td>
                         </tr>
                         `;
-                        $('#input-container').append(row);
-                    });
-                }
-            });
+                    $('#input-container').append(row);
+                });
+            }
+        });
+    }
+
+    // INSERT ATAU UPDATE
+    $("#form").submit(function(e) {
+        e.preventDefault();
+        var $form = $(this);
+        if (!$form.valid()) return false;
+        var url;
+        if (id == 0) {
+            url = "<?php echo site_url('qbg_invoice/add') ?>";
+        } else {
+            url = "<?php echo site_url('qbg_invoice/update') ?>";
         }
 
-        // INSERT ATAU UPDATE
-        $("#form").submit(function(e) {
-            e.preventDefault();
-            var $form = $(this);
-            if (!$form.valid()) return false;
-            var url;
-            if (id == 0) {
-                url = "<?php echo site_url('qbg_invoice/add') ?>";
-            } else {
-                url = "<?php echo site_url('qbg_invoice/update') ?>";
-            }
+        // Tampilkan loading
+        $('#loading').show();
 
-            // Tampilkan loading
-            $('#loading').show();
+        $('.aksi').prop('disabled', true);
 
-            $('.aksi').prop('disabled', true);
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: $('#form').serialize(),
+            dataType: "JSON",
+            success: function(data) {
+                console.log(data);
+                // Sembunyikan loading saat respons diterima
+                $('#loading').hide();
 
-            $.ajax({
-                url: url,
-                type: "POST",
-                data: $('#form').serialize(),
-                dataType: "JSON",
-                success: function(data) {
-                    console.log(data);
-                    // Sembunyikan loading saat respons diterima
-                    $('#loading').hide();
-
-                    if (data.status) //if success close modal and reload ajax table
-                    {
-                        Swal.fire({
-                            position: 'center',
-                            icon: 'success',
-                            title: 'Your data has been saved',
-                            showConfirmButton: false,
-                            timer: 1500
-                        }).then((result) => {
-                            checkNotifications();
-                            location.href = "<?= base_url('qbg_invoice') ?>";
-                        })
-                    }
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    // Sembunyikan loading saat respons diterima
-                    $('#loading').hide();
-
+                if (data.status) //if success close modal and reload ajax table
+                {
                     Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Error adding / updating data: ' + textStatus
-                    });
+                        position: 'center',
+                        icon: 'success',
+                        title: 'Your data has been saved',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then((result) => {
+                        checkNotifications();
+                        location.href = "<?= base_url('qbg_invoice') ?>";
+                    })
                 }
-            });
-        });
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                // Sembunyikan loading saat respons diterima
+                $('#loading').hide();
 
-        $("#form").validate({
-            rules: {
-                tgl_invoice: {
-                    required: true,
-                },
-                kode_invoice: {
-                    required: true,
-                },
-                tgl_tempo: {
-                    required: true,
-                },
-                ctc_nama: {
-                    required: true,
-                },
-                ctc_nomor: {
-                    required: true,
-                },
-                ctc2_nama: {
-                    required: true,
-                },
-                ctc2_nomor: {
-                    required: true,
-                },
-                ctc2_alamat: {
-                    required: true,
-                },
-                diskon: {
-                    max: 100,
-                }
-            },
-            messages: {
-                tgl_invoice: {
-                    required: "Tanggal Invoice is required",
-                },
-                kode_invoice: {
-                    required: "Kode Invoice is required",
-                },
-                tgl_tempo: {
-                    required: "Tanggal Tempo is required",
-                },
-                ctc_nama: {
-                    required: "Contact Nama is required",
-                },
-                ctc_nomor: {
-                    required: "Contact Nomor is required",
-                },
-                ctc2_nama: {
-                    required: "Contact Nama is required",
-                },
-                ctc2_nomor: {
-                    required: "Contact Nomor is required",
-                },
-                ctc2_alamat: {
-                    required: "Contact Nomor is required",
-                },
-                diskon: {
-                    max: "Diskon tidak boleh melibihi 100",
-                }
-            },
-            errorPlacement: function(error, element) {
-                if (element.parent().hasClass('input-group')) {
-                    error.insertAfter(element.parent());
-                } else {
-                    error.insertAfter(element);
-                }
-            },
-            highlight: function(element) {
-                $(element).addClass('is-invalid'); // Tambahkan kelas untuk menandai input tidak valid
-            },
-            unhighlight: function(element) {
-                $(element).removeClass('is-invalid'); // Hapus kelas jika input valid
-            },
-            focusInvalid: false, // Disable auto-focus on the first invalid field
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error adding / updating data: ' + textStatus
+                });
+            }
         });
+    });
+
+    $("#form").validate({
+    rules: {
+        tgl_invoice: {
+            required: true,
+        },
+        kode_invoice: {
+            required: true,
+        },
+        tgl_tempo: {
+            required: true,
+        },
+        ctc_nama: {
+            required: true,
+        },
+        ctc_nomor: {
+            required: true,
+        },
+        ctc2_nama: {
+            required: true,
+        },
+        ctc2_nomor: {
+            required: true,
+        },
+        ctc2_alamat: {
+            required: true,
+        },
+        diskon: {
+            max: 100,
+        }
+    },
+    messages: {
+        tgl_invoice: {
+            required: "Tanggal Invoice is required",
+        },
+        kode_invoice: {
+            required: "Kode Invoice is required",
+        },
+        tgl_tempo: {
+            required: "Tanggal Tempo is required",
+        },
+        ctc_nama: {
+            required: "Contact Nama is required",
+        },
+        ctc_nomor: {
+            required: "Contact Nomor is required",
+        },
+        ctc2_nama: {
+            required: "Contact Nama is required",
+        },
+        ctc2_nomor: {
+            required: "Contact Nomor is required",
+        },
+        ctc2_alamat: {
+            required: "Contact Nomor is required",
+        },
+        diskon: {
+            max: "Diskon tidak boleh melibihi 100",
+        }
+    },
+    errorPlacement: function(error, element) {
+        if (element.parent().hasClass('input-group')) {
+            error.insertAfter(element.parent());
+        } else {
+            error.insertAfter(element);
+        }
+    },
+    highlight: function(element) {
+        $(element).addClass('is-invalid'); // Tambahkan kelas untuk menandai input tidak valid
+    },
+    unhighlight: function(element) {
+        $(element).removeClass('is-invalid'); // Hapus kelas jika input valid
+    },
+    focusInvalid: false, // Disable auto-focus on the first invalid field
+    });
 
 
     })

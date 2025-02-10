@@ -105,10 +105,9 @@ class M_menu extends CI_Model
 
     public function get_by_id($id)
     {
-        $this->db->from($this->table);
-        $this->db->where('id_menu', $id);
-        $query = $this->db->get();
-        return $query->row();
+        $data['menu'] = $this->db->from($this->table)->where('id_menu', $id)->get()->row();
+        $data['approval'] = $this->db->from('tbl_approval')->where('id_menu', $id)->get()->row();
+        return $data;
     }
 
     public function get_max()
@@ -128,7 +127,7 @@ class M_menu extends CI_Model
 
     public function save2($data2)
     {
-        $this->db->insert('tbl_approval', $data2);
-        return $this->db->insert_id();
+        $this->db->replace('tbl_approval', $data2);
+        // return $this->db->insert_id();
     }
 }

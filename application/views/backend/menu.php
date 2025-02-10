@@ -313,7 +313,7 @@
             type: "GET",
             dataType: "JSON",
             success: function(data) {
-                // console.log(data);
+                console.log(data);
                 $('[name="id"]').val(data['menu']['id_menu']);
                 $('[name="menu"]').val(data['menu']['nama_menu']);
                 $('[name="link"]').val(data['menu']['link']);
