@@ -105,10 +105,10 @@ class M_menu extends CI_Model
 
     public function get_by_id($id)
     {
-        $data['menu'] = $this->db->from($this->table)->where('id_menu', $id)->get()->row();
-
-        $data['approval'] = $this->db->select()->from('tbl_approval')->where('id_menu', $id)->get()->row();
-        return $data;
+        $this->db->from($this->table);
+        $this->db->where('id_menu', $id);
+        $query = $this->db->get();
+        return $query->row();
     }
 
     public function get_max()

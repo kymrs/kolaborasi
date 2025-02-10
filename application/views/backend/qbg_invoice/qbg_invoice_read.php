@@ -27,7 +27,7 @@
                     </div>
                 </div>
                 <div class="right-side">
-                    <div class="email">qubahgift@gmail.com</div>
+                    <div class="email">qubagift@gmail.com</div>
                     <div class="noHP">081290399933</div>
                 </div>
             </header>
@@ -129,7 +129,7 @@
                     </div>
                 </div>
                 <div class="" style="text-align: right;">
-                    <p><b>Terima Kasih</b>, By Moment</p>
+                    <p><b>Terima Kasih</b>, QubaGift</p>
                 </div>
             </main>
         </div>
