@@ -72,7 +72,28 @@ class Menu extends CI_Controller
 			'urutan' => $this->input->post('urutan'),
 			'is_active' => $this->input->post('aktif'),
 		);
-		$this->M_menu->save($data);
+		$menu_id = $this->M_menu->save($data);
+
+		if (!empty($this->input->post('app_id'))) {
+			$data2['app_id'] = $this->input->post('app_id');
+		}
+		if (!empty($this->input->post('app2_id'))) {
+			$data2['app2_id'] = $this->input->post('app2_id');
+		}
+		if (!empty($this->input->post('app3_id'))) {
+			$data2['app3_id'] = $this->input->post('app3_id');
+		}
+		if (!empty($this->input->post('app4_id'))) {
+			$data2['app4_id'] = $this->input->post('app4_id');
+		}
+		if (!empty($this->input->post('sub_name'))) {
+			$data2['sub_name'] = $this->input->post('sub_name');
+			$data2['id_menu'] = $menu_id;
+
+			//Melakukan penginputan
+			$this->M_menu->save2($data2);
+		}
+
 		echo json_encode(array("status" => TRUE));
 	}
 
@@ -89,6 +110,28 @@ class Menu extends CI_Controller
 		);
 		$this->db->where('id_menu', $this->input->post('id'));
 		$this->db->update('tbl_menu', $data);
+
+		if (!empty($this->input->post('app_id'))) {
+			$data2['app_id'] = $this->input->post('app_id');
+		}
+		if (!empty($this->input->post('app2_id'))) {
+			$data2['app2_id'] = $this->input->post('app2_id');
+		}
+		if (!empty($this->input->post('app3_id'))) {
+			$data2['app3_id'] = $this->input->post('app3_id');
+		}
+		if (!empty($this->input->post('app4_id'))) {
+			$data2['app4_id'] = $this->input->post('app4_id');
+		}
+		if (!empty($this->input->post('sub_name'))) {
+			$data2['sub_name'] = $this->input->post('sub_name');
+			$data2['id_menu'] = $this->input->post('id');
+
+			//Melakukan pengupdatan
+			$this->db->where('id_menu', $this->input->post('id'));
+			$this->db->update('tbl_approval', $data2);
+		}
+
 		echo json_encode(array("status" => TRUE));
 	}
 
