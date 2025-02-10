@@ -1,11 +1,3 @@
-<style>
-    #appFilter {
-        border: 1px solid #ccc;
-        padding: 5px;
-        border-radius: 4px;
-    }
-</style>
-
 <div class="container-fluid">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"><?= $titleview ?></h1>
@@ -20,16 +12,6 @@
                             <i class="fa fa-plus"></i>&nbsp;Add Data
                         </a>
                     <?php } ?>
-                    <div class="d-flex align-items-center">
-                        <label for="appFilter" class="mr-2 mb-0">Filter:</label>
-                        <select id="appFilter" name="appFilter" class="form-control form-control-sm">
-                            <!-- <option value="" selected>Show all....</option> -->
-                            <option value="on-process" selected>On-Process</option>
-                            <option value="approved">Approved</option>
-                            <option value="revised">Revised</option>
-                            <option value="rejected">Rejected</option>
-                        </select>
-                    </div>
                 </div>
                 <!-- NAV TABS -->
                 <!-- <ul class="nav nav-tabs">
