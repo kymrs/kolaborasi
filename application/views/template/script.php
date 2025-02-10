@@ -31,6 +31,7 @@
     });
 
     function checkNotifications() {
+
         $.ajax({
             url: "<?= base_url('notifikasi/get_pending_notifications') ?>",
             type: "GET",
@@ -43,6 +44,7 @@
                     if (value > 0) {
                         // Jika ada notifikasi baru, tampilkan jumlah notifikasi
                         $('#' + key + '-notif').text(value).css('display', 'inline-block');
+                        console.log('#' + key + '-notif = ' + value);
                     } else {
                         // Sembunyikan notifikasi jika tidak ada
                         $('#' + key + '-notif').hide();
