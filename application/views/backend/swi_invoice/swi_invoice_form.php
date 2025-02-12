@@ -21,11 +21,11 @@
     }
 
     .front-add {
-        background-color: #10b53c;
+        background-color: #242C49;
     }
 
     .front-aksi {
-        background-color: #0075FF;
+        background-color: #242C49;
     }
 
 
@@ -43,6 +43,17 @@
 
     .rekening-text {
         margin-bottom: -2px;
+    }
+
+    .header-table-transaksi {
+        background-color: rgb(36, 44, 73);
+        color: white;
+    }
+
+    .header-table-transaksi th {
+        border: 1px solid rgb(255, 255, 255, 0.2);
+        font-weight: 400;
+        text-align: center;
     }
 
     /* Mengubah gaya dropdown */
@@ -69,10 +80,6 @@
         transform: translateY(20%);
     }
 
-    .colomn-kanan {
-        height: 20px;
-    }
-
     @media (min-width: 768px) {
 
         .tujuan-field,
@@ -88,6 +95,7 @@
         }
 
         .colomn-kanan {
+            overflow-x: scroll;
             height: auto;
         }
 
@@ -103,7 +111,7 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header text-right">
-                    <a class="btn btn-secondary btn-sm" href="<?= base_url('swi_invoice') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+                    <a class="btn btn-sm" style="background-color: #242C49; color: white" href="<?= base_url('swi_invoice') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
                     <form id="form">
@@ -126,7 +134,28 @@
                                         <input type="text" class="form-control" id="kode_invoice" name="kode_invoice" readonly placeholder="Kode Invoice">
                                     </div>
                                 </div>
-                                <h4 class="section-title">PAYMENT INFO :</h4>
+                                <div class="form-group row mb-3">
+                                    <label class="col-sm-4 col-form-label">Contact To</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" id="ctc_to" name="ctc_to" placeholder="Contact To">
+                                    </div>
+                                </div>
+                                <div class="form-group row mb-3">
+                                    <label class="col-sm-4 col-form-label">Contact Address</label>
+                                    <div class="col-sm-8">
+                                        <textarea name="ctc_address" id="ctc_address" class="form-control" placeholder="Contact Address"></textarea>
+                                    </div>
+                                </div>
+                                <div class="form-group row mb-3">
+                                    <label class="col-sm-4 col-form-label">Tax</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" id="tax" name="tax" placeholder="Rp.">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- SEBELAH KANAN -->
+                            <div class="col-md-6 colomn-kanan">
                                 <div class="form-group row">
                                     <label class="col-sm-4 col-form-label">No Rekening</label>
                                     <div class="col-sm-8">
@@ -139,10 +168,12 @@
                                             <select class="js-example-basic-single" id="rekening" name="rekening">
                                                 <option value="" selected disabled>Pilih rekening tujuan</option>
                                                 <?php foreach ($rek_options as $option) { ?>
-                                                    <option data-bank="<?= $option->nama_bank ?>" data-rek="<?= $option->no_rek ?>" value=""><?= $option->nama_bank . '-' . $option->no_rek ?></option>
+                                                    <option data-pengaju="<?= $option->nama_rek ?>" data-bank="<?= $option->nama_bank ?>" data-rek="<?= $option->no_rek ?>" value=""><?= $option->nama_rek . '-' . $option->nama_bank . '-' . $option->no_rek ?></option>
                                                 <?php } ?>
                                             </select>
                                             <div class="input-group rekening-text">
+                                                <input type="text" class="form-control col-sm-4" style="font-size: 13px;" id="nama_rek" name="nama_rek" placeholder="Nama Pengaju">&nbsp;
+                                                <span class="py-2">-</span>&nbsp;
                                                 <input type="text" class="form-control col-sm-4" style="font-size: 13px;" id="nama_bank" name="nama_bank" placeholder="Nama Bank">&nbsp;
                                                 <span class="py-2">-</span>&nbsp;
                                                 <input type="text" class="form-control col-sm-6" style="font-size: 13px;" id="nomor_rekening" name="nomor_rekening" placeholder="No Rekening">
@@ -151,10 +182,11 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-sm-12">
+                                    <div class="col-sm-12" style="overflow-x: scroll">
                                         <table id="rek-table" class=" table table-bordered">
                                             <thead>
                                                 <th>No</th>
+                                                <th class="col-sm-4">Nama Pengaju</th>
                                                 <th class="col-sm-4">Nama Bank</th>
                                                 <th class="col-sm-8">No Rekening</th>
                                                 <th>Delete</th>
@@ -165,41 +197,18 @@
                                         </table>
                                     </div>
                                 </div>
-                            </div>
-
-                            <!-- SEBELAH KANAN -->
-                            <div class="col-md-6 colomn-kanan">
-                                <div class="form-group row">
-                                    <label class="col-sm-4 col-form-label">Contact From</label>
-                                    <div class="col-sm-8">
-                                        <input type="text" class="form-control" id="ctc_from" name="ctc_from" placeholder="Contact From">
-                                    </div>
-                                </div>
-                                <div class="form-group row mb-3">
-                                    <label class="col-sm-4 col-form-label">Contact To</label>
-                                    <div class="col-sm-8">
-                                        <input type="text" class="form-control" id="ctc_to" name="ctc_to" placeholder="Contact To">
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-4 col-form-label">Address</label>
-                                    <div class="col-sm-7">
-                                        <textarea name="ctc_address" id="ctc_address" class="form-control" placeholder="Address" rows="3">Kp. Tunggilis, Desa/Kelurahan Situsari, Kec. Cileungsi, Kab. Bogor, Provinsi Jawa Barat, Kode Pos: 16820</textarea>
-                                    </div>
-                                </div>
                                 <input type="hidden" class="form-control" id="total_akhir" name="total_akhir" placeholder="Contact To">
                             </div>
                         </div>
 
-                        <h4 class="section-title">KETERANGAN ITEMS :</h4>
                         <!-- BUTTON TAMBAH FORM -->
                         <div class="mt-4">
-                            <button type="button" class="btn-special btn-success btn-sm" id="add-row" style="background-color: green;"><span class="front front-add"><i class="fa fa-plus" aria-hidden="true"></i> Add</span></button>
+                            <button type="button" class="btn-special btn-sm" id="add-row" style="background-color:rgb(51, 65, 112);"><span class="front front-add"><i class="fa fa-plus" aria-hidden="true"></i> Add</span></button>
                         </div>
                         <!-- TABLE INPUT -->
                         <div class="mt-3 mb-3" style="overflow-x: scroll;">
                             <table class="table table-bordered table-hover">
-                                <thead class="thead-dark">
+                                <thead class="header-table-transaksi">
                                     <tr>
                                         <th scope="col" class="text-center">No</th>
                                         <th scope="col">Item</th>
@@ -228,9 +237,9 @@
                         <?php } ?>
                         <?php if ($id == 0) { ?>
                             <input type="hidden" name="kode" id="kode" value="">
-                            <button type="submit" class="btn-special btn-sm aksi" style="background-color: #1f558f;" disabled></button>
+                            <button type="submit" class="btn-special btn-sm aksi" style="background-color: rgb(51, 65, 112);" disabled></button>
                         <?php } else { ?>
-                            <button type="submit" class="btn-special btn-sm aksi" style="background-color: #1f558f;"></button>
+                            <button type="submit" class="btn-special btn-sm aksi" style="background-color: rgb(51, 65, 112);"></button>
                         <?php } ?>
                         <!-- END PENENTUAN UPDATE ATAU ADD -->
                     </form>
@@ -356,6 +365,33 @@
     });
 
     $(document).ready(function() {
+        $('#tax').on('keyup', function(e) {
+            let value = $(this).val().replace(/[^,\d]/g, ''); // Hanya angka dan koma yang diperbolehkan
+            if (value) {
+                $(this).val(formatRupiah(value));
+            } else {
+                $(this).val('');
+            }
+        });
+
+    });
+
+    function formatRupiah(angka) {
+        let numberString = angka.replace(/[^,\d]/g, '').toString(),
+            split = numberString.split(','),
+            sisa = split[0].length % 3,
+            rupiah = split[0].substr(0, sisa),
+            ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+        if (ribuan) {
+            let separator = sisa ? '.' : '';
+            rupiah += separator + ribuan.join('.');
+        }
+        return split[1] !== undefined ? rupiah + ',' + split[1] : rupiah;
+    }
+
+
+    $(document).ready(function() {
         // Event ketika tanggal diubah
         $('#tgl_invoice, #tgl_tempo').on('change', function() {
             let tglInvoice = $('#tgl_invoice').val(); // Ambil nilai tanggal invoice
@@ -470,19 +506,23 @@
         let rowRekCount = 0;
 
         //ADD ROW NOMOR REKENING
-        function addRekRow(bank, rek) {
+        function addRekRow(pengaju, bank, rek) {
             // Ambil nilai dari input
+            const namaPengaju = pengaju;
             const namaBank = bank;
             const nomorRekening = rek;
 
             rowRekCount++;
-            if (namaBank != '' && nomorRekening != '') {
+            if (namaPengaju != '' && namaBank != '' && nomorRekening != '') {
                 const rekRow = `
                 <tr id="rek-${rowRekCount}">
                     <td class="rek-number">${rowRekCount}</td>
                     <td>
-                    <input name="nama_bank[${rowRekCount}]" id="nama_bank-${rowRekCount}" value="${namaBank}" style="border: none; pointer-events: none; color: #666">
+                    <input name="nama_rek[${rowRekCount}]" id="nama_rek-${rowRekCount}" value="${namaPengaju}" style="border: none; pointer-events: none; color: #666">
                     <input type="hidden" id="hidden_rekId${rowRekCount}" name="hidden_rekId[${rowRekCount}]" value="">
+                    </td>
+                    <td>
+                    <input name="nama_bank[${rowRekCount}]" id="nama_bank-${rowRekCount}" value="${namaBank}" style="border: none; pointer-events: none; color: #666">
                     </td>
                     <td><input name="no_rek[${rowRekCount}]" id="no_rek-${rowRekCount}" value="${nomorRekening}" style="border: none; pointer-events: none; color: #666"></td>
                     <td><button type="button" class="btn rek-delete btn-danger" data-id="${rowRekCount}">Delete</button></td>
@@ -515,7 +555,7 @@
                         <input type="text" class="form-control total" id="total-${rowCount}" name="total[${rowCount}]" value="" placeholder="Total" />
                     </td>
 
-                    <td><span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span></td>
+                    <td><span class="btn delete-btn" style="background-color: red; color: white" data-id="${rowCount}">Delete</span></td>
                 </tr>
                 `;
             $('#input-container').append(row);
@@ -646,9 +686,11 @@
 
         // BUTTON ADD ROW NOMOR REKENING
         $('#btn-rek').click(function() {
+            var pengaju = $('#nama_rek').val();
             var bank = $('#nama_bank').val();
             var rek = $('#nomor_rekening').val();
-            addRekRow(bank, rek);
+            addRekRow(pengaju, bank, rek);
+            $('#nama_rek').val('');
             $('#nama_bank').val('');
             $('#nomor_rekening').val('');
         });
@@ -659,10 +701,11 @@
             var selectedOption = $(this).find(':selected');
 
             // Ambil nilai atribut data
+            var pengaju = selectedOption.data('pengaju');
             var bank = selectedOption.data('bank');
             var rek = selectedOption.data('rek');
 
-            addRekRow(bank, rek);
+            addRekRow(pengaju, bank, rek);
             // // Cetak ke konsol untuk memastikan
             // console.log('Bank:', bank);
             // console.log('Rekening:', rek);
@@ -746,9 +789,9 @@
                     $('#id').val(data['master']['id']);
                     $('#tgl_invoice').val(data['master']['tgl_invoice']);
                     $('#kode_invoice').val(data['master']['kode_invoice']);
-                    $('#ctc_from').val(data['master']['ctc_from']);
                     $('#ctc_to').val(data['master']['ctc_to']);
                     $('#ctc_address').val(data['master']['ctc_address']);
+                    $('#tax').val(formatRupiah(data['master']['tax']));
 
                     //APPEND DATA swi_rek_invoice DETAIL PREPAYMENT
                     console.log(data['rek_invoice']);
@@ -759,8 +802,11 @@
                             <tr id="rek-${index + 1}">
                                 <td class="rek-number">${index + 1}</td>
                                 <td>
-                                <input name="nama_bank[${index+1}]" id="nama_bank-${index + 1}" value="${data['rek_invoice'][index]['nama_bank']}" style="border: none; pointer-events: none; color: #666">
+                                <input name="nama_rek[${index+1}]" id="nama_rek-${index + 1}" value="${data['rek_invoice'][index]['nama_rek']}" style="border: none; pointer-events: none; color: #666">
                                 <input type="hidden" id="hidden_rekId${index + 1}" name="hidden_rekId[${index + 1}]" value="${data['rek_invoice'][index]['id']}">
+                                </td>
+                                <td>
+                                <input name="nama_bank[${index+1}]" id="nama_bank-${index + 1}" value="${data['rek_invoice'][index]['nama_bank']}" style="border: none; pointer-events: none; color: #666">
                                 </td>
                                 <td><input name="no_rek[${index+1}]" id="no_rek-${index + 1}" value="${data['rek_invoice'][index]['no_rek']}" style="border: none; pointer-events: none; color: #666"></td>
                                 <td><button type="button" class="btn rek-delete btn-danger" data-id="${index + 1}">Delete</button></td>
@@ -890,27 +936,15 @@
                 kode_invoice: {
                     required: true,
                 },
-                tgl_tempo: {
+                ctc_to: {
                     required: true,
                 },
-                ctc_nama1: {
+                ctc_address: {
                     required: true,
                 },
-                ctc_nomor1: {
+                tax: {
                     required: true,
                 },
-                ctc_nama2: {
-                    required: true,
-                },
-                ctc_nomor2: {
-                    required: true,
-                },
-                ctc_alamat: {
-                    required: true,
-                },
-                diskon: {
-                    max: 100,
-                }
             },
             messages: {
                 tgl_invoice: {
@@ -919,27 +953,15 @@
                 kode_invoice: {
                     required: "Kode Invoice is required",
                 },
-                tgl_tempo: {
-                    required: "Tanggal Tempo is required",
+                ctc_to: {
+                    required: "Contact To is required",
                 },
-                ctc_nama1: {
-                    required: "Contact Nama is required",
+                ctc_address: {
+                    required: "Address is required",
                 },
-                ctc_nomor1: {
-                    required: "Contact Nomor is required",
+                tax: {
+                    required: "Tax is required",
                 },
-                ctc_nama2: {
-                    required: "Contact Nama is required",
-                },
-                ctc_nomor2: {
-                    required: "Contact Nomor is required",
-                },
-                ctc_alamat: {
-                    required: "Contact Nomor is required",
-                },
-                diskon: {
-                    max: "Diskon tidak boleh melibihi 100",
-                }
             },
             errorPlacement: function(error, element) {
                 if (element.parent().hasClass('input-group')) {

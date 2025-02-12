@@ -247,10 +247,10 @@ class Swi_invoice extends CI_Controller
         $data = array(
             'kode_invoice' => $kode_invoice,
             'tgl_invoice' => date('Y-m-d', strtotime($this->input->post('tgl_invoice'))),
-            'ctc_from' => $this->input->post('ctc_from'),
             'ctc_to' => $this->input->post('ctc_to'),
             'ctc_address' => $this->input->post('ctc_address'),
-            'total' => preg_replace('/\D/', '', $this->input->post('total_akhir[]')),
+            'tax' => preg_replace('/\D/', '', $this->input->post('tax')),
+            'total' => preg_replace('/\D/', '', $this->input->post('total_akhir')),
             'created_at' => date('Y-m-d H:i:s')
         );
 
@@ -258,12 +258,14 @@ class Swi_invoice extends CI_Controller
 
         if ($inserted) {
             // INISIASI VARIABEL INPUT DETAIL PREPAYMENT
+            $nama_rek = $this->input->post('nama_rek[]');
             $nama_bank = $this->input->post('nama_bank[]');
             $no_rek = $this->input->post('no_rek[]');
             //PERULANGAN UNTUK INSER QUERY DETAIL PREPAYMENT
-            for ($i = 1; $i <= count($nama_bank); $i++) {
+            for ($i = 1; $i <= count($nama_rek); $i++) {
                 $data2[] = array(
                     'invoice_id' => $inserted,
+                    'nama_rek' => $nama_rek[$i],
                     'nama_bank' => $nama_bank[$i],
                     'no_rek' => $no_rek[$i]
                 );
@@ -302,9 +304,9 @@ class Swi_invoice extends CI_Controller
     {
         $data = array(
             'tgl_invoice' => date('Y-m-d', strtotime($this->input->post('tgl_invoice'))),
-            'ctc_from' => $this->input->post('ctc_from'),
             'ctc_to' => $this->input->post('ctc_to'),
             'ctc_address' => $this->input->post('ctc_address'),
+            'tax' => preg_replace('/\D/', '', $this->input->post('tax')),
             'total' => preg_replace('/\D/', '', $this->input->post('total_akhir')),
             'created_at' => date('Y-m-d H:i:s')
         );
@@ -356,6 +358,7 @@ class Swi_invoice extends CI_Controller
 
             // MELAKUKAN REPLACE DATA REKENING
             $id_rek = $this->input->post('hidden_rekId[]');
+            $nama_rek = $this->input->post('nama_rek[]');
             $nama_bank = $this->input->post('nama_bank[]');
             $no_rek = $this->input->post('no_rek[]');
             for ($i = 1; $i <= count($_POST['nama_bank']); $i++) {
@@ -364,6 +367,7 @@ class Swi_invoice extends CI_Controller
                 $data3[] = array(
                     'id' => $id_rekening,
                     'invoice_id' => $this->input->post('id'),
+                    'nama_rek' => $nama_rek[$i],
                     'nama_bank' => $nama_bank[$i],
                     'no_rek' => $no_rek[$i]
                 );
@@ -444,7 +448,7 @@ class Swi_invoice extends CI_Controller
         // Set document properties
         $t_cpdf2->SetCreator(PDF_CREATOR);
         $t_cpdf2->SetAuthor('Author Name');
-        $t_cpdf2->SetTitle('Penawaran PDF');
+        $t_cpdf2->SetTitle('Invoice - ' . $invoice->kode_invoice);
 
         // Set margin agar gambar memenuhi halaman
         $t_cpdf2->SetMargins(0, 0, 0); // Margin ke 0
@@ -476,7 +480,7 @@ class Swi_invoice extends CI_Controller
         // Kolom kedua (Tgl)
         $t_cpdf2->SetX(160);
         $t_cpdf2->Cell(9, 5, 'Tgl :', 0, 0, 'L');
-        $t_cpdf2->Cell(40, 5, $invoice->tgl_invoice, 0, 1, 'L');
+        $t_cpdf2->Cell(40, 5, date('d M Y', strtotime($invoice->tgl_invoice)), 0, 1, 'L');
 
         $t_cpdf2->SetY(45);
         $t_cpdf2->SetX(7);
@@ -484,14 +488,14 @@ class Swi_invoice extends CI_Controller
         $t_cpdf2->Cell(0, 7, 'FROM', 0, 1, 'L');
         $t_cpdf2->SetFont('poppins-regular', '', 10);
         $t_cpdf2->SetX(7);
-        $t_cpdf2->Cell(0, 7, $invoice->ctc_from, 0, 1, 'L');
+        $t_cpdf2->Cell(0, 7, 'Sobat Wisata', 0, 1, 'L');
 
         $t_cpdf2->SetY(45);
-        $t_cpdf2->SetX(55);
+        $t_cpdf2->SetX(80);
         $t_cpdf2->SetFont('poppins-regular', 'B', 10);
         $t_cpdf2->Cell(0, 7, 'TO', 0, 1, 'L');
         $t_cpdf2->SetFont('poppins-regular', '', 10);
-        $t_cpdf2->SetX(55);
+        $t_cpdf2->SetX(80);
         $t_cpdf2->Cell(0, 7, $invoice->ctc_to, 0, 1, 'L');
 
         $t_cpdf2->SetY(63);
@@ -501,25 +505,34 @@ class Swi_invoice extends CI_Controller
         $t_cpdf2->SetFont('poppins-regular', '', 10);
         $t_cpdf2->SetX(7);
         // MultiCell untuk teks panjang
-        $t_cpdf2->MultiCell(60, 7, $invoice->ctc_address, 0, 'L');
+        $t_cpdf2->MultiCell(65, 7, 'Kp. Tunggilis RT 001 RW 007, Desa/Kelurahan Situsari, Kec. Cileungsi, Kab. Bogor, Provinsi Jawa Barat, Kode Pos: 16820', 0, 'L');
+
+        $t_cpdf2->SetY(63);
+        $t_cpdf2->SetX(80);
+        $t_cpdf2->SetFont('poppins-regular', 'B', 10);
+        $t_cpdf2->Cell(0, 7, 'Address', 0, 1, 'L');
+        $t_cpdf2->SetFont('poppins-regular', '', 10);
+        $t_cpdf2->SetX(80);
+        // MultiCell untuk teks panjang
+        $t_cpdf2->MultiCell(65, 7, $invoice->ctc_address, 0, 'L');
 
         // Table
         // Geser posisi vertikal ke tengah halaman (atur sesuai kebutuhan)
-        $t_cpdf2->SetY(123);  // Ini buat vertikal, ubah 100 biar lebih pas
+        $t_cpdf2->SetY(117);  // Ini buat vertikal, ubah 100 biar lebih pas
         $t_cpdf2->SetX(18);  // Ini buat vertikal, ubah 100 biar lebih pas
 
         // Geser posisi horizontal (atur tengah secara manual)
         $html = '<table border="1" cellpadding="5" cellspacing="0" style="margin-left:auto; margin-right:auto; width: 90%;">  
-    <thead>
-        <tr style="background-color:#f2f2f2; display: none">
-            <th>Item</th>
-            <th>Qty</th>
-            <th>Day</th>
-            <th>Price</th>
-            <th>Total</th>
-        </tr>
-    </thead>
-    <tbody>';
+            <thead>
+                <tr style="background-color:#f2f2f2; display: none">
+                    <th>Item</th>
+                    <th>Qty</th>
+                    <th>Day</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>';
 
         // Looping data dari database
         foreach ($invoice_details as $data) {
@@ -538,27 +551,56 @@ class Swi_invoice extends CI_Controller
         $t_cpdf2->writeHTML($html, true, false, true, false, '');
 
         $t_cpdf2->SetY(190);
-        $t_cpdf2->SetX(135);
+        $t_cpdf2->SetX(130);
         $t_cpdf2->SetFont('poppins-regular', 'B', 10);
         $t_cpdf2->Cell(0, 7, 'TOTAL', 0, 1, 'L');
+        $t_cpdf2->SetFont('poppins-regular', '', 10);
         $t_cpdf2->SetY(190);
         $t_cpdf2->SetX(164);
+        $t_cpdf2->Cell(0, 7, 'Rp. ' . number_format($invoice->total, 0, ',', '.'), 0, 1, 'L');
+
+        $t_cpdf2->SetY(198);
+        $t_cpdf2->SetX(130);
+        $t_cpdf2->SetFont('poppins-regular', 'B', 10);
+        $t_cpdf2->Cell(0, 7, 'TAX', 0, 1, 'L');
         $t_cpdf2->SetFont('poppins-regular', '', 10);
-        $t_cpdf2->Cell(0, 7, number_format($invoice->total, 0, ',', '.'), 0, 1, 'L');
-        $t_cpdf2->SetY(195);
+        $t_cpdf2->SetY(198);
+        $t_cpdf2->SetX(164);
+        $t_cpdf2->Cell(0, 7, $invoice->tax ? 'Rp. ' . number_format($invoice->tax, 0, ',', '.') : 'Rp. -', 0, 1, 'L');
+
+        $grand_total = $invoice->total + $invoice->tax;
+
+        $t_cpdf2->SetY(206);
+        $t_cpdf2->SetX(130);
+        $t_cpdf2->SetFont('poppins-regular', 'B', 10);
+        $t_cpdf2->Cell(0, 7, 'GRAND TOTAL', 0, 1, 'L');
+        $t_cpdf2->SetFont('poppins-regular', '', 10);
+        $t_cpdf2->SetY(206);
+        $t_cpdf2->SetX(164);
+        $t_cpdf2->Cell(0, 7, 'Rp. ' . number_format($grand_total, 0, ',', '.'), 0, 1, 'L');
+
+        $t_cpdf2->SetY(230);
+        $t_cpdf2->SetX(143);
+        $t_cpdf2->SetFont('poppins-regular', 'B', 10);
+        $t_cpdf2->Cell(0, 7, 'Rahmat Kurniawan', 0, 1, 'L');
+        $t_cpdf2->SetY(237);
+        $t_cpdf2->SetX(151);
+        $t_cpdf2->Cell(0, 7, 'Head Unit', 0, 1, 'L');
+
+        $t_cpdf2->SetY(191);
         $t_cpdf2->SetX(20);
         $t_cpdf2->SetFont('poppins-regular', 'B', 10);
         $t_cpdf2->Cell(0, 7, 'BANK DETAILS', 0, 1, 'L');
 
-        $t_cpdf2->SetY(203);  // Ini buat vertikal, ubah 100 biar lebih pas
-        $t_cpdf2->SetX(20);  // Ini buat vertikal, ubah 100 biar lebih pas
+        $t_cpdf2->SetY(198);
+        $t_cpdf2->SetX(20);
 
         $t_cpdf2->SetFont('poppins-regular', '', 10);
         // Geser posisi horizontal (atur tengah secara manual)
         $html = '<table border="1" cellpadding="3" cellspacing="0" style="margin-left:auto; margin-right:auto; width: 90%;">  
     <thead>
         <tr style="background-color:#f2f2f2; display: none">
-            <th>Item</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>';
@@ -571,6 +613,9 @@ class Swi_invoice extends CI_Controller
             $html .= '<tr>
                         <td style="width: 35%">' . $data->no_rek . '</td>
                     </tr>';
+            $html .= '<tr>
+                        <td style="width: 35%">' . $data->nama_rek . '</td>
+                    </tr>';
         }
 
         $html .= '</tbody></table>';
@@ -578,13 +623,13 @@ class Swi_invoice extends CI_Controller
         // Tampilkan di PDF
         $t_cpdf2->writeHTML($html, true, false, true, false, '');
 
-        $t_cpdf2->SetY(230);
-        $t_cpdf2->SetX(19);
-        $t_cpdf2->SetFont('poppins-regular', '', 10);
-        $t_cpdf2->Cell(0, 7, ' PT. Quick Project Indonesia', 0, 1, 'L');
+        // $t_cpdf2->SetY(230);
+        // $t_cpdf2->SetX(19);
+        // $t_cpdf2->SetFont('poppins-regular', '', 10);
+        // $t_cpdf2->Cell(0, 7, ' PT. Quick Project Indonesia', 0, 1, 'L');
 
         // Output file
-        $t_cpdf2->Output('penawaran.pdf', 'I');
+        $t_cpdf2->Output('Invoice sobatwisata-' . $invoice->kode_invoice . '.pdf', 'I');
     }
 
     // QUERY UNTUK INPUT TANDA TANGAN

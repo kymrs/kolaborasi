@@ -95,7 +95,7 @@ class M_swi_invoice extends CI_Model
 
     public function getInvoiceData($id)
     {
-        $this->db->select('tgl_invoice, kode_invoice, ctc_from, ctc_to, ctc_address, total');
+        $this->db->select('tgl_invoice, kode_invoice, ctc_to, ctc_address, total, tax');
         $this->db->from('swi_invoice');
         $this->db->where('id', $id);
         $data = $this->db->get()->row_array();
@@ -112,16 +112,6 @@ class M_swi_invoice extends CI_Model
         $this->db->from('swi_invoice');
         $query = $this->db->get();
         return $query;
-    }
-
-    // UNTUK QUERY MENENTUKAN SIAPA YANG MELAKUKAN APPROVAL
-    public function approval($id)
-    {
-        $this->db->select('app_id, app2_id');
-        $this->db->from('tbl_data_user');
-        $this->db->where('id_user', $id);
-        $query = $this->db->get();
-        return $query->row();
     }
 
     // UNTUK QUERY INSERT DATA PREPAYMENT
@@ -164,6 +154,6 @@ class M_swi_invoice extends CI_Model
     // OPSI REKENING
     public function options()
     {
-        return $this->db->distinct()->select('nama_bank, no_rek')->from('swi_rek_invoice')->get();
+        return $this->db->distinct()->select('nama_rek, nama_bank, no_rek')->from('swi_rek_invoice')->get();
     }
 }

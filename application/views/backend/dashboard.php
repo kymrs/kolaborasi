@@ -25,7 +25,7 @@
             ?>
                 <div class="col-xl-3 col-md-6 mb-4">
                     <!-- Card with hover effect and clickable action -->
-                    <a href="" target="_blank" class="card shadow h-100 py-4 text-decoration-none" style="border-left: 5px solid #<?= $data['sub_color'] ?>">
+                    <a href="#" class="card shadow h-100 py-4 text-decoration-none" style="border-left: 5px solid #<?= $data['sub_color'] ?>">
                         <div class="card-body">
                             <div class="d-flex justify-content-center">
                                 <!-- Image inside card, properly scaled and responsive -->
