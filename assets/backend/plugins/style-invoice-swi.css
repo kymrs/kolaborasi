@@ -1,5 +1,5 @@
 .container .canvas-bg-swi {
-    width: 595px;
+    width: 620px;
     /* min-height: 842px; */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     border-radius: 4px;
@@ -83,10 +83,11 @@
 .data-content .from-to-group {
     margin-left: 20px;
     display: flex;
-    width: 40%;
+    width: 50%;
     justify-content: space-between;
     color: #111;
 }
+
 
 .data-content .from-to-group h4 {
     font-size: 1.1rem;
@@ -100,9 +101,15 @@
 
 .data-content .address {
     margin-left: 20px;
-    color: #111;
-    width: 35%;
+    color: #111; 
+    width: 81%;
+    display: flex;
     margin-top: 5px;
+}
+
+.data-content .address .address-right {
+    position: relative;
+    left: 52px;
 }
 
 .data-content .address h4 {
@@ -112,6 +119,7 @@
 
 .data-content .address p {
     font-size: 0.9rem;
+    width: 200px;
 }
 
 /* Table Data */
@@ -161,12 +169,21 @@
     font-size: 0.8rem;
 }
 
+.table-data .total table {
+    float: right;
+}
+
+.table-data .total table tr td:nth-child(1) {
+    padding-right: 35px;
+    font-weight: bold;
+}
+
 /* Bank Details */
 .bank-details {
     width: 50%;
     margin-left: 45px;
     color: #111;
-    height: 250px;
+    padding-bottom: 100px;
 }
 
 .bank-details h4 {
@@ -194,67 +211,7 @@
     width: 90%;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* Media Queries */
-@media (max-width: 1080px) {
-    .container .canvas-bg-swi {
-        width: 550px;
-        /* min-height: 770px; */
-    }
-
-    .btn-back {
-        right: 100px;
-    }
-
-    .header .ellipse .ellipse-content h1{
-        font-weight: bold;
-        font-size: 1.6rem;
-    }
-    .header .ellipse .ellipse-content table tr td{
-        font-size: 0.7rem;
-    }
-
-    .data-content {
-        top: 160px;
-    }
-
-}
-
 @media (max-width: 936px) {
     .container .canvas-bg-swi {
         width: 500px;
@@ -271,6 +228,18 @@
 
     .data-content {
         top: 140px;
+    }
+
+    .data-content .from-to-group {
+        width: 55%;
+    }
+
+    .data-content .address .address-right {
+        left: 33px;
+    }
+
+    .data-content .address p {
+        width: 184px;
     }
 }
 
@@ -290,6 +259,22 @@
 
     .data-content {
         top: 130px;
+    }
+
+    .data-content .from-to-group {
+        width: 58%;
+    }
+
+    .data-content .address {
+        width: 90%;
+    }
+
+    .data-content .address .address-right {
+        left: 19px;
+    }
+
+    .data-content .address p {
+        width: 184px;
     }
 }
 
@@ -329,11 +314,23 @@
     }
     
     .data-content .from-to-group p {
-        font-size: 0.7rem;
+        font-size: 0.6rem;
     }
     
+    .data-content .from-to-group {
+        width: 60%;
+    }
+
     .data-content .address {
-        margin-top: 0;
+        width: 98%;
+    }
+
+    .data-content .address .address-right {
+        left: 50px;
+    }
+
+    .data-content .address p {
+        width: 120px;
     }
     
     .data-content .address h4 {
@@ -342,7 +339,7 @@
     }
     
     .data-content .address p {
-        font-size: 0.7rem;
+        font-size: 0.6rem;
     }
 
     .table-data {
@@ -362,14 +359,14 @@
         min-height: 50px;
     }
     
-    .table-data .total {
+    .table-data .total table {
         font-size: 0.7rem;
     }
 
     /* Bank Details */
     .bank-details {
+        padding-bottom: 60px;
         margin-left: 20px;
-        height: 190px;
     }
 
     .bank-details h4 {

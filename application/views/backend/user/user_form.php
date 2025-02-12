@@ -256,6 +256,7 @@ $core_array = explode(',', $core);
                                         </button>
                                     </div>
                                     <div class="modal-body">
+                                        <button id="checkAll" type="button" style="margin-bottom: 10px; cursor: pointer; border-radius: 5px; background-color: #242d4a; outline: none; color: white">All</button>
                                         <?php foreach ($sub_bisnis as $data) : ?>
                                             <div>
                                                 <input type="checkbox" name="core[]" id="<?= $data['id_menu'] ?>" style="cursor: pointer" value="<?= $data['id_menu'] ?>"><label for="<?= $data['id_menu'] ?>" style="margin-left: 3px; margin-right: 10px; cursor: pointer; font-size: 1rem"><?= $data['nama_menu'] ?></label>
@@ -289,6 +290,13 @@ $core_array = explode(',', $core);
 
 <script>
     $(document).ready(function() {
+        let isChecked = false; // Flag buat toggle
+
+        $('#checkAll').on('click', function() {
+            isChecked = !isChecked; // Balik status
+            $('input[name="core[]"]').prop('checked', isChecked);
+        });
+
         var id = $('#id').val();
         var aksi = $('#aksi').val();
         var kode = $('#kode').val();

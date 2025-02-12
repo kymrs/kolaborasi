@@ -39,7 +39,7 @@
                 <div class="from-to-group">
                     <div class="from">
                         <h4>FROM</h4>
-                        <p><?= $invoice['ctc_from'] ?></p>
+                        <p>Sobat Wisata</p>
                     </div>
                     <div class="to">
                         <h4>TO</h4>
@@ -47,8 +47,14 @@
                     </div>
                 </div>
                 <div class="address">
-                    <h4>ADDRESS</h4>
-                    <p><?= $invoice['ctc_address'] ?></p>
+                    <div class="address-left">
+                        <h4>ADDRESS</h4>
+                        <p>Kp. Tunggilis RT 001 RW 007, Desa/Kelurahan Situsari, Kec. Cileungsi, Kab. Bogor, Provinsi Jawa Barat, Kode Pos: 16820</p>
+                    </div>
+                    <div class="address-right">
+                        <h4>ADDRESS</h4>
+                        <p><?= $invoice['ctc_address'] ?></p>
+                    </div>
                 </div>
             </div>
             <div class="table-data">
@@ -71,18 +77,32 @@
                     <?php endforeach ?>
                 </div>
                 <div class="total">
-                    <span style="float: right;"><?= 'Rp. ' . number_format($invoice['total'], 0, ',', '.') ?></span>
-                    <span style="float: right; margin-right: 50px; font-weight: bold">TOTAL</span>
-                    <div style="clear: both"></div>
+                    <table>
+                        <tr>
+                            <td>TOTAL</td>
+                            <td><?= 'Rp. ' . number_format($invoice['total'], 0, ',', '.') ?></td>
+                        </tr>
+                        <tr>
+                            <td>TAX</td>
+                            <td><?= 'Rp. ' . number_format($invoice['tax'], 0, ',', '.') ?></td>
+                        </tr>
+                        <?php
+                        $grand_total = $invoice['total'] + $invoice['tax'];
+                        ?>
+                        <tr>
+                            <td>GRAND TOTAL</td>
+                            <td><?= 'Rp. ' . number_format($grand_total, 0, ',', '.') ?></td>
+                        </tr>
+                    </table>
                 </div>
             </div>
             <div class="bank-details">
                 <h4>BANK DETAILS</h4>
                 <?php foreach ($rekening as $data) : ?>
                     <p><?= $data['nama_bank'] ?></p>
-                    <p style="margin-bottom: 5px;"><?= $data['no_rek'] ?></p>
+                    <p><?= $data['no_rek'] ?></p>
+                    <p style="margin-bottom: 5px;"><?= $data['nama_rek'] ?></p>
                 <?php endforeach ?>
-                <p> PT. Quick Project Indonesia</p>
             </div>
             <div class="footer">
                 <img src="<?= base_url('assets/backend/img/footer-invoice-swi.png') ?>" alt="footer">
