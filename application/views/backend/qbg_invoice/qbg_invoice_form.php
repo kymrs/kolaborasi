@@ -553,71 +553,87 @@
             }
         }
 
-        // ADD Row Detail Invoice
         function addRow() {
-            rowCount++;
-            const row = `
-                <tr id="row-${rowCount}">
-                    <td class="row-number">${rowCount}</td>
-                    <td>
-                        <input type="text" class="form-control" name="deskripsi[${rowCount}]" value="" placeholder="Deskripsi" /></td>
-                        <input type="text" id="hidden_id${rowCount}" name="hidden_id[${rowCount}]" value="">
-                        <input type="hidden" name="hidden_invoiceId[${rowCount}]" id="hidden_invoiceId${rowCount}" value="">
-                    <td>
-                        <input type="text" class="form-control jumlah" id="jumlah-${rowCount}" name="jumlah[${rowCount}]" value="" placeholder="Jumlah">
-                    </td>
-                    <td>
-                        <input type="text" class="form-control" id="satuan-${rowCount}" name="satuan[${rowCount}]" value="" placeholder="Satuan">
-                    </td>
-                    <td>
-                        <input type="text" class="form-control harga" id="harga-${rowCount}" name="harga[${rowCount}]" value="" placeholder="Harga" />
-                    </td>
-                    <td>
-                        <input type="text" class="form-control total" id="total-${rowCount}" name="total[${rowCount}]" value="" placeholder="Total" />
-                    </td>
+            $.ajax({
+                url: "<?= base_url('qbg_invoice/getAllProducts'); ?>",
+                type: "GET",
+                dataType: "json",
+                success: function(data) {
+                    rowCount++;
 
-                    <td><span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span></td>
-                </tr>
-                `;
-            $('#input-container').append(row);
-            // Tambahkan format ke input nominal yang baru
-            formatJumlahInput(`#nominal-${rowCount}`);
-            updateSubmitButtonState(); // Perbarui status tombol submit
-            //checkDeleteButtonState(); // Cek tombol delete setelah baris ditambahkan
+                    let options = "";
+                    $.each(data, function(index, item) {
+                        options += `<option value="${item.kode_produk}">${item.nama_produk}</option>`;
+                    });
 
-            // Hitung total nominal setelah baris baru ditambahkan
-            calculateTotalNominal();
+                    const row = `
+                        <tr id="row-${rowCount}">
+                            <td class="row-number">${rowCount}</td>
+                            <td>
+                            <select class="form-control" name="produk[${rowCount}]" id="produk">
+                                <option selected hidden value="">Pilih Produk</option>
+                                ${options}
+                            </select>
+                            </td>
+                            <input type="hidden" id="hidden_id${rowCount}" name="hidden_id[${rowCount}]" value="">
+                            <input type="hidden" name="hidden_invoiceId[${rowCount}]" id="hidden_invoiceId${rowCount}" value="">
+                            <td>
+                            <input type="text" class="form-control jumlah" id="jumlah-${rowCount}" name="jumlah[${rowCount}]" value="" placeholder="Jumlah">
+                            </td>
+                            <td>
+                            <input type="text" class="form-control" id="satuan-${rowCount}" name="satuan[${rowCount}]" value="" placeholder="Satuan">
+                            </td>
+                            <td>
+                            <input type="text" class="form-control harga" id="harga-${rowCount}" name="harga[${rowCount}]" value="" placeholder="Harga" />
+                            </td>
+                            <td>
+                            <input type="text" class="form-control total" id="total-${rowCount}" name="total[${rowCount}]" value="" placeholder="Total" />
+                            </td>
+                            <td><span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span></td>
+                        </tr>
+                        `;
 
-            $('.harga, .total, .jumlah').on('input', function() {
-                // Ambil nilai input
-                let value = $(this).val();
+                    $('#input-container').append(row);
+                    // Tambahkan format ke input nominal yang baru
+                    formatJumlahInput(`#nominal-${rowCount}`);
+                    updateSubmitButtonState(); // Perbarui status tombol submit
+                    //checkDeleteButtonState(); // Cek tombol delete setelah baris ditambahkan
 
-                // Hapus semua karakter yang bukan angka
-                value = value.replace(/[^0-9]/g, '');
+                    // Hitung total nominal setelah baris baru ditambahkan
+                    calculateTotalNominal();
 
-                // Format ke Rupiah
-                let formatted = new Intl.NumberFormat('id-ID').format(value);
+                    $('.harga, .total, .jumlah').on('input', function() {
+                        // Ambil nilai input
+                        let value = $(this).val();
 
-                // Set nilai input dengan format Rupiah
-                $(this).val(formatted);
+                        // Hapus semua karakter yang bukan angka
+                        value = value.replace(/[^0-9]/g, '');
+
+                        // Format ke Rupiah
+                        let formatted = new Intl.NumberFormat('id-ID').format(value);
+
+                        // Set nilai input dengan format Rupiah
+                        $(this).val(formatted);
+                    });
+
+                    //VALIDASI ROW YANG TELAH DI APPEND
+                    $("#form").validate().settings.rules[`produk[${rowCount}]`] = {
+                        required: true
+                    };
+                    $("#form").validate().settings.rules[`jumlah[${rowCount}]`] = {
+                        required: true
+                    };
+                    $("#form").validate().settings.rules[`satuan[${rowCount}]`] = {
+                        required: true
+                    };
+                    $("#form").validate().settings.rules[`harga[${rowCount}]`] = {
+                        required: true
+                    };
+                    $("#form").validate().settings.rules[`total[${rowCount}]`] = {
+                        required: true
+                    };
+                }
             });
-
-            //VALIDASI ROW YANG TELAH DI APPEND
-            $("#form").validate().settings.rules[`deskripsi[${rowCount}]`] = {
-                required: true
-            };
-            $("#form").validate().settings.rules[`jumlah[${rowCount}]`] = {
-                required: true
-            };
-            $("#form").validate().settings.rules[`satuan[${rowCount}]`] = {
-                required: true
-            };
-            $("#form").validate().settings.rules[`harga[${rowCount}]`] = {
-                required: true
-            };
-            $("#form").validate().settings.rules[`total[${rowCount}]`] = {
-                required: true
-            };
         }
 
         // MENGHAPUS ROW
@@ -660,7 +676,7 @@
             $('#input-container tr').each(function(index) {
                 //INISIASI VARIABLE UNTUK reorderRows
                 const newRowNumber = index + 1;
-                const deskripsiValue = $(this).find('input[name^="deskripsi"]').val();
+                const produkValue = $(this).find('input[name^="produk"]').val();
                 const satuanValue = $(this).find('input[name^="satuan"]').val();
                 const jumlahValue = $(this).find('input[name^="jumlah"]').val();
                 const hargaValue = $(this).find('input[name^="harga"]').val();
@@ -670,7 +686,7 @@
 
                 $(this).attr('id', `row-${newRowNumber}`);
                 $(this).find('.row-number').text(newRowNumber);
-                $(this).find('input[name^="deskripsi"]').attr('name', `deskripsi[${newRowNumber}]`).attr('placeholder', `Deskripsi`).val(deskripsiValue);
+                $(this).find('select[name^="produk"]').attr('name', `produk[${newRowNumber}]`).attr('placeholder', `Deskripsi`).val(produkValue);
                 $(this).find('input[name^="jumlah"]').attr('name', `jumlah[${newRowNumber}]`).attr('id', `jumlah-${newRowNumber}`).attr('placeholder', `Jumlah`).val(jumlahValue);
                 $(this).find('input[name^="satuan"]').attr('name', `satuan[${newRowNumber}]`).attr('id', `satuan-${newRowNumber}`).attr('placeholder', 'Satuan').val(satuanValue);
                 $(this).find('input[name^="harga"]').attr('name', `harga[${newRowNumber}]`).attr('id', `harga-${newRowNumber}`).attr('placeholder', `Harga`).val(hargaValue);
