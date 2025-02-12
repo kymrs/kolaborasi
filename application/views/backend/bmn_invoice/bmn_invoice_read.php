@@ -19,6 +19,7 @@
     <div class="container">
         <div class="canvas">
             <a class="btn btn-secondary btn-sm" onclick="history.back()" style="float: right"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+            <a class="btn btn-info btn-sm" id="send_email" style="float: right; margin-right: 10px"><i class="fas fa-envelope"></i>&nbsp;&nbsp;Send Email</a>
             <hr class="line-header">
             <header>
                 <div class="left-side">
@@ -133,8 +134,61 @@
                 </div>
             </main>
         </div>
-
     </div>
 
-    <?php $this->load->view('template/footer'); ?>
     <?php $this->load->view('template/script'); ?>
+    <script>
+        $(document).ready(function() {
+            $('#send_email').on('click', function(e) {
+                e.preventDefault();
+
+                let email = "<?= $invoice['ctc2_email'] ?>"; // Ambil email dari PHP
+
+                Swal.fire({
+                    title: 'Apakah anda ingin mengirim email ke:',
+                    html: `<strong>${email}</strong>`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'YA',
+                    cancelButtonText: 'TIDAK',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Tampilkan loading spinner
+                        const loadingSwal = Swal.fire({
+                            title: 'Sedang mengirim email...',
+                            html: 'Harap tunggu sebentar',
+                            didOpen: () => {
+                                Swal.showLoading(); // Menampilkan spinner loading
+                            },
+                            allowOutsideClick: false, // Jangan biarkan swal ditutup saat loading
+                        });
+
+                        // Kirim data email ke controller via AJAX
+                        $.ajax({
+                            url: "<?= base_url('bmn_invoice/send_email') ?>",
+                            type: "POST",
+                            data: {
+                                email: email
+                            },
+                            success: function(response) {
+                                loadingSwal.close(); // Tutup loading spinner
+                                console.log(response); // Lihat apa yang dikembalikan dari controller
+                                Swal.fire('Terkirim!', 'Email berhasil dikirim.', 'success');
+                            },
+                            error: function() {
+                                loadingSwal.close(); // Tutup loading spinner
+                                Swal.fire('Error!', 'Terjadi kesalahan saat mengirim email.', 'error');
+                            }
+                        });
+
+                    } else {
+                        Swal.fire('Dibatalkan', 'Pengiriman email dibatalkan.', 'info');
+                    }
+                });
+            });
+
+        });
+    </script>
+
+    <?php $this->load->view('template/footer'); ?>

@@ -241,6 +241,7 @@ class Bmn_invoice extends CI_Controller
             'ctc2_nama' => $this->input->post('ctc2_nama'),
             'ctc2_nomor' => $this->input->post('ctc2_nomor'),
             'ctc2_alamat' => $this->input->post('ctc2_alamat'),
+            'ctc2_email' => $this->input->post('ctc2_email'),
             'created_at' => date('Y-m-d H:i:s')
         );
 
@@ -323,6 +324,7 @@ class Bmn_invoice extends CI_Controller
             'ctc2_nama' => $this->input->post('ctc2_nama'),
             'ctc2_nomor' => $this->input->post('ctc2_nomor'),
             'ctc2_alamat' => $this->input->post('ctc2_alamat'),
+            'ctc2_email' => $this->input->post('ctc2_email'),
             'created_at' => date('Y-m-d H:i:s')
         );
 
@@ -407,53 +409,40 @@ class Bmn_invoice extends CI_Controller
         echo json_encode(array("status" => TRUE));
     }
 
-    //APPROVE DATA
-    public function approve()
+    public function send_email()
     {
-        $data = array(
-            'app_keterangan' => $this->input->post('app_keterangan'),
-            'app_status' => $this->input->post('app_status'),
-            'app_date' => date('Y-m-d H:i:s'),
-        );
+        $this->load->library('email');
+        $email = $this->input->post('email'); // Ambil data email yang dikirim
 
-        // UPDATE STATUS DEKLARASI
-        if ($this->input->post('app_status') === 'revised') {
-            $data['status'] = 'revised';
-        } elseif ($this->input->post('app_status') === 'approved') {
-            $data['status'] = 'on-process';
-        } elseif ($this->input->post('app_status') === 'rejected') {
-            $data['status'] = 'rejected';
+        if ($email) {
+            $config = [
+                'protocol'  => 'smtp',
+                'smtp_host' => 'ssl://smtp.googlemail.com',
+                'smtp_user' => 'kymrs5105@gmail.com',
+                'smtp_pass' => 'icjy jmlm vjxx bvee',
+                'smtp_port' => 465,
+                'mailtype'  => 'html',
+                'charset'   => 'utf-8',
+                'newline'   => "\r\n"
+            ];
+
+            $this->email->initialize($config);
+
+            $this->email->from('kymrs5105@gmail.com', 'Rizky Saputra');
+            $this->email->to($email);
+
+            $this->email->subject('Invoice by.moment');
+            $this->email->message('Test');
+
+            if ($this->email->send()) {
+                echo json_encode(array("status" => TRUE, "message" => "Email berhasil dikirim."));
+            } else {
+                // Cek errornya
+                echo json_encode(array("status" => FALSE, "message" => $this->email->print_debugger()));
+            }
+        } else {
+            echo json_encode(array("status" => FALSE, "message" => "Email tidak ditemukan."));
         }
-
-        //UPDATE APPROVAL PERTAMA
-        $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_prepayment_pu', $data);
-
-        echo json_encode(array("status" => TRUE));
-    }
-
-    function approve2()
-    {
-        $data = array(
-            'app2_keterangan' => $this->input->post('app2_keterangan'),
-            'app2_status' => $this->input->post('app2_status'),
-            'app2_date' => date('Y-m-d H:i:s'),
-        );
-
-        // UPDATE STATUS DEKLARASI
-        if ($this->input->post('app2_status') === 'revised') {
-            $data['status'] = 'revised';
-        } elseif ($this->input->post('app2_status') === 'approved') {
-            $data['status'] = 'approved';
-        } elseif ($this->input->post('app2_status') === 'rejected') {
-            $data['status'] = 'rejected';
-        }
-
-        // UPDATE APPROVAL 2
-        $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_prepayment_pu', $data);
-
-        echo json_encode(array("status" => TRUE));
     }
 
     // PRINTOUT TCPDF
