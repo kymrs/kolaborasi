@@ -65,27 +65,24 @@ class User extends CI_Controller
 		$data['title'] = 'backend/user/user_form';
 		$data['users'] = $this->db->select('id_user, fullname')->from('tbl_user')->get()->result_object();
 		$data['userlevels'] = $this->db->select('id_level, nama_level')->from('tbl_userlevel')->get()->result_object();
-		$data['approvals'] = $this->db->select('id_user, fullname')->from('tbl_user')->where('app', 'Y')->get()->result_object();
 		$this->load->view('backend/home', $data);
 	}
 
 	function edit_form($id)
 	{
 		$data['id'] = $id;
-		$this->load->model('backend/M_notifikasi');
 		$data['title_view'] = "Edit User Form";
 		$data['aksi'] = 'update';
 		$data['users'] = $this->db->select('id_user, fullname')->from('tbl_user')->get()->result_object();
 		$data['userlevels'] = $this->db->select('id_level, nama_level')->from('tbl_userlevel')->get()->result_object();
-		$data['approvals'] = $this->db->select('id_user, fullname')->from('tbl_user')->where('app', 'Y')->get()->result_object();
 		$data['title'] = 'backend/user/user_form';
 		$this->load->view('backend/home', $data);
 	}
 
 	function edit_data($id)
 	{
-		$data['approval'] = $this->db->get_where('tbl_data_user', ['id_user' => $id])->row_array();
 		$data['user'] = $this->db->get_where('tbl_user', ['id_user' => $id])->row_array();
+		$data['detail'] = $this->db->get_where('tbl_data_user', ['id_user' => $id])->row_array();
 		echo json_encode($data);
 	}
 
@@ -99,11 +96,7 @@ class User extends CI_Controller
 		}
 
 		if ($this->M_user->delete_id($id)) {
-			if ($this->M_approval->delete_id($id)) {
-				echo json_encode(array("status" => TRUE));
-			} else {
-				echo json_encode(array("status" => FALSE, "error" => "approval"));
-			}
+			echo json_encode(array("status" => TRUE));
 		} else {
 			# GAGAL MENHAPUS DATA USER DAN APPROVAL
 			echo json_encode(array("status" => FALSE, "error" => "user"));
@@ -155,43 +148,36 @@ class User extends CI_Controller
 			'is_active' => $this->input->post('aktif'),
 		);
 
-		// $insert = $this->M_user->save($data);
+		// Mulai transaksi
+		// $this->db->trans_start();
 
-		// ADD APPROVAL
-		if ($insert = $this->M_user->save($data)) {
-			// var_dump($insert);
+		$insert = $this->M_user->save($data);
+
+		if ($insert) {
 			$data2 = array(
 				'id_user' => $insert,
 				'name' => $this->input->post('fullname'),
 				'divisi' => $this->input->post('divisi'),
 				'jabatan' => $this->input->post('jabatan'),
-				'app_id' => $this->input->post('app_id'),
-				'app2_id' => $this->input->post('app2_id'),
 			);
 
-			// MENGECEK APAKAH APP3 TERISI
-			if (!empty($this->input->post('app3_id'))) {
-				$data2['app3_id'] = $this->input->post('app3_id');
-			}
-
-			// MENGECEK APAKAH APP4 TERISI
-			if (!empty($this->input->post('app4_id'))) {
-				$data2['app4_id'] = $this->input->post('app4_id');
-			}
-
-			// $insert2 = $this->M_approval->save($data2);
-			// var_dump($insert2);
-
-			if ($this->M_approval->save($data2)) {
+			if ($this->M_user->save2($data2)) {
+				// Jika semua query berhasil, commit transaksi
+				// $this->db->trans_complete();
 				echo json_encode(array("status" => TRUE));
 			} else {
-				// MENGEMBALIKAN ERROR INPUT APPROVAL
-				echo json_encode(array("status" => FALSE, "error" => "approval"));
+				// Jika save2 gagal, rollback transaksi
+				// $this->db->trans_rollback();
+				echo json_encode(array("status" => FALSE, "error" => "data_user"));
 			}
 		} else {
-			// MENGEMBALIKAN ERROR INPUT USER
+			// Jika save gagal, rollback transaksi
+			// $this->db->trans_rollback();
 			echo json_encode(array("status" => FALSE, "error" => "user"));
 		}
+
+		// Pastikan transaksi selesai
+		// $this->db->trans_complete();
 	}
 
 	function update()
@@ -202,7 +188,7 @@ class User extends CI_Controller
 			'fullname' => $this->input->post('fullname'),
 			'core' => implode(',', $this->input->post('core')),
 			'id_level' => $this->input->post('level'),
-			'is_active' => $this->input->post('aktif')
+			'is_active' => $this->input->post('aktif'),
 		);
 
 		if (!empty($_POST['new_password'])) {
@@ -241,42 +227,31 @@ class User extends CI_Controller
 			$data = $data2;
 		}
 
+		$data3 = array(
+			'divisi' => $this->input->post('divisi'),
+			'jabatan' => $this->input->post('jabatan'),
+		);
+
+		$this->db->trans_start();
+
 		$this->db->where('id_user', $this->input->post('hidden_id'));
 
-		// UPDATE APPROVAL
+		// MENGEMBALIKAN NILAI
 		if ($this->db->update('tbl_user', $data)) {
-			// Persiapkan data untuk tabel `tbl_data_user`
-			$data5 = array(
-				'id_user' => $this->input->post('hidden_id'),
-				'name' => $this->input->post('fullname'),
-				'divisi' => $this->input->post('divisi'),
-				'jabatan' => $this->input->post('jabatan'),
-				'app_id' => $this->input->post('app_id'),
-				'app2_id' => $this->input->post('app2_id'),
-				'updated_at' => date('Y-m-d H:i:s')
-			);
-
-			// MENGECEK APAKAH APP3 TERISI
-			if (!empty($this->input->post('app3_id'))) {
-				$data5['app3_id'] = $this->input->post('app3_id');
-			}
-
-			// MENGECEK APAKAH APP4 TERISI
-			if (!empty($this->input->post('app4_id'))) {
-				$data5['app4_id'] = $this->input->post('app4_id');
-			}
-
-			// Mengganti update dengan replace
-			if ($this->db->replace('tbl_data_user', $data5)) {
+			if ($this->db->where('id_user', $this->input->post('hidden_id'))->update('tbl_data_user', $data3)) {
+				$this->db->trans_complete();
 				echo json_encode(array("status" => TRUE));
 			} else {
-				// GAGAL REPLACE APPROVAL
-				echo json_encode(array("status" => FALSE, "error" => "approval"));
+				$this->db->trans_rollback();
+				echo json_encode(array("status" => False, "error" => "data_user"));
 			}
 		} else {
 			// GAGAL UPDATE USER
+			$this->db->trans_rollback();
 			echo json_encode(array("status" => FALSE, "error" => "user"));
 		}
+
+		$this->db->trans_complete();
 	}
 
 

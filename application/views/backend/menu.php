@@ -183,56 +183,65 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group row">
-                        <label class="col-sm-2 col-form-label" for="sub_name">Nama</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="sub_name" name="sub_name">
+
+                    <!-- CHECKBOX APPROVAL FIELD -->
+                    <div class="input-group col-sm-7 mb-3">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">
+                                <input type="checkbox" id="check-field" name="check-field" aria-label="Checkbox for following text input">
+                            </div>
+                        </div>
+                        <input type="text" class="form-control" aria-label="Text input with checkbox" value="Approvals" readonly>
+                    </div>
+
+                    <div class="approval-field">
+                        <!-- APPROVAL FIELD -->
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label" for="app_id">Approval Pertama</label>
+                            <div class="col-sm-10">
+                                <select class="form-control app_id" id="app_id" name="app_id">
+                                    <option value="" selected disabled>Pilih opsi...</option>
+                                    <?php foreach ($approvals as $approval) { ?>
+                                        <option value="<?= $approval->id_user ?>"><?= $approval->fullname ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label" for="app2_id">Approval Kedua</label>
+                            <div class="col-sm-10">
+                                <select class="form-control app2_id" id="app2_id" name="app2_id">
+                                    <option value="" selected disabled>Pilih opsi...</option>
+                                    <?php foreach ($approvals as $approval) { ?>
+                                        <option value="<?= $approval->id_user ?>"><?= $approval->fullname ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label" for="app3_id">Approval HC</label>
+                            <div class="col-sm-10">
+                                <select class="form-control app3_id" id="app3_id" name="app3_id">
+                                    <option value="" selected disabled>Pilih opsi...</option>
+                                    <?php foreach ($approvals as $approval) { ?>
+                                        <option value="<?= $approval->id_user ?>"><?= $approval->fullname ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label" for="app4_id">Approval Captain</label>
+                            <div class="col-sm-10">
+                                <select class="form-control app4_id" id="app4_id" name="app4_id">
+                                    <option value="" selected disabled>Pilih opsi...</option>
+                                    <?php foreach ($approvals as $approval) { ?>
+                                        <option value="<?= $approval->id_user ?>"><?= $approval->fullname ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
                         </div>
                     </div>
-                    <div class="form-group row">
-                        <label class="col-sm-2 col-form-label" for="app_id">Approval Pertama</label>
-                        <div class="col-sm-10">
-                            <select class="form-control app_id" id="app_id" name="app_id">
-                                <option value="" selected disabled>Pilih opsi...</option>
-                                <?php foreach ($approvals as $approval) { ?>
-                                    <option value="<?= $approval->id_user ?>"><?= $approval->fullname ?></option>
-                                <?php } ?>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-sm-2 col-form-label" for="app2_id">Approval Kedua</label>
-                        <div class="col-sm-10">
-                            <select class="form-control app2_id" id="app2_id" name="app2_id">
-                                <option value="" selected disabled>Pilih opsi...</option>
-                                <?php foreach ($approvals as $approval) { ?>
-                                    <option value="<?= $approval->id_user ?>"><?= $approval->fullname ?></option>
-                                <?php } ?>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-sm-2 col-form-label" for="app3_id">Approval HC</label>
-                        <div class="col-sm-10">
-                            <select class="form-control app3_id" id="app3_id" name="app3_id">
-                                <option value="" selected disabled>Pilih opsi...</option>
-                                <?php foreach ($approvals as $approval) { ?>
-                                    <option value="<?= $approval->id_user ?>"><?= $approval->fullname ?></option>
-                                <?php } ?>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-sm-2 col-form-label" for="app4_id">Approval Captain</label>
-                        <div class="col-sm-10">
-                            <select class="form-control app4_id" id="app4_id" name="app4_id">
-                                <option value="" selected disabled>Pilih opsi...</option>
-                                <?php foreach ($approvals as $approval) { ?>
-                                    <option value="<?= $approval->id_user ?>"><?= $approval->fullname ?></option>
-                                <?php } ?>
-                            </select>
-                        </div>
-                    </div>
+
                     <div class="modal-footer text-right">
                         <button type="submit" class="btn btn-primary aksi">Save</button>
                     </div>
@@ -256,6 +265,20 @@
 
     var table;
     $(document).ready(function() {
+
+        $('.approval-field').hide();
+        // CHECK FIELD
+        $('#check-field').on('click', function() {
+            if ($('#check-field').is(':checked')) {
+                $('.approval-field').show();
+            } else {
+                $('.approval-field').hide();
+                $('#app_id').val('').trigger('change');
+                $('#app2_id').val('').trigger('change');
+                $('#app3_id').val('').trigger('change');
+                $('#app4_id').val('').trigger('change');
+            }
+        });
 
         $('#myModal').on('shown.bs.modal', function() {
             $('.name, .app_id, .app2_id, .app3_id, .app4_id').select2({
@@ -394,6 +417,8 @@
                     $('#app3_id').val('').trigger('change');
                     $('#app4_id').val('').trigger('change');
                 } else {
+                    $('#check-field').prop('checked', true);
+                    $('.approval-field').show();
                     $('#sub_name').val(data['approval']['sub_name']);
                     $('#app_id').val(data['approval']['app_id']).trigger('change');
                     $('#app2_id').val(data['approval']['app2_id']).trigger('change');

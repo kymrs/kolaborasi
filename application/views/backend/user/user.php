@@ -157,11 +157,12 @@
                                     showConfirmButton: false,
                                     timer: 1500
                                 });
-                            } else if (response.error === "approval") {
+                            }
+                            if (response.error === "data_user") {
                                 Swal.fire({
                                     position: 'center',
                                     icon: 'error',
-                                    title: 'Failed to delete approval!',
+                                    title: 'Failed to delete user!',
                                     showConfirmButton: false,
                                     timer: 1500
                                 });

@@ -74,9 +74,7 @@ class Menu extends CI_Controller
 		);
 		$menu_id = $this->M_menu->save($data);
 
-		if (!empty($this->input->post('app_id'))) {
-			$data2['app_id'] = $this->input->post('app_id');
-		}
+
 		if (!empty($this->input->post('app2_id'))) {
 			$data2['app2_id'] = $this->input->post('app2_id');
 		}
@@ -86,8 +84,9 @@ class Menu extends CI_Controller
 		if (!empty($this->input->post('app4_id'))) {
 			$data2['app4_id'] = $this->input->post('app4_id');
 		}
-		if (!empty($this->input->post('sub_name'))) {
-			$data2['sub_name'] = $this->input->post('sub_name');
+		if (!empty($this->input->post('app_id'))) {
+			$data2['app_id'] = $this->input->post('app_id');
+			$data2['sub_name'] = $this->input->post('menu');
 			$data2['id_menu'] = $menu_id;
 
 			//Melakukan penginputan
@@ -103,8 +102,8 @@ class Menu extends CI_Controller
 			'nama_menu' => $this->input->post('menu'),
 			'link' => $this->input->post('link'),
 			'icon' => $this->input->post('icon'),
-			// 'sub_image' => $this->input->post('sub_image'),
-			// 'sub_color' => $this->input->post('sub_color'),
+			'sub_image' => $this->input->post('sub_image'),
+			'sub_color' => $this->input->post('sub_color'),
 			'urutan' => $this->input->post('urutan'),
 			'is_active' => $this->input->post('aktif'),
 		);
@@ -119,9 +118,6 @@ class Menu extends CI_Controller
 		$id_menu = ($id_menu) ? $id_menu->id : null;
 
 
-		if (!empty($this->input->post('app_id'))) {
-			$data2['app_id'] = $this->input->post('app_id');
-		}
 		if (!empty($this->input->post('app2_id'))) {
 			$data2['app2_id'] = $this->input->post('app2_id');
 		}
@@ -131,8 +127,9 @@ class Menu extends CI_Controller
 		if (!empty($this->input->post('app4_id'))) {
 			$data2['app4_id'] = $this->input->post('app4_id');
 		}
-		if (!empty($this->input->post('sub_name'))) {
-			$data2['sub_name'] = $this->input->post('sub_name');
+		if (!empty($this->input->post('app_id'))) {
+			$data2['app_id'] = $this->input->post('app_id');
+			$data2['sub_name'] = $this->input->post('menu');
 			$data2['id_menu'] = $this->input->post('id');
 			$data2['id'] = $id_menu;
 
