@@ -31,18 +31,20 @@
     });
 
     function checkNotifications() {
+
         $.ajax({
             url: "<?= base_url('notifikasi/get_pending_notifications') ?>",
             type: "GET",
             dataType: "json",
             success: function(data) {
                 // $('.pu-notif').text(1).css('display', 'inline-block');
-                // console.log(data);
+                console.log(data);
                 // Update elemen notifikasi dengan data baru
                 $.each(data.notif_pending, function(key, value) {
                     if (value > 0) {
                         // Jika ada notifikasi baru, tampilkan jumlah notifikasi
                         $('#' + key + '-notif').text(value).css('display', 'inline-block');
+                        console.log('#' + key + '-notif = ' + value);
                     } else {
                         // Sembunyikan notifikasi jika tidak ada
                         $('#' + key + '-notif').hide();

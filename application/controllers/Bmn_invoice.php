@@ -20,9 +20,9 @@ class T_cpdf2 extends TCPDf
         // Logo
         $this->SetFont('helvetica', 'B', 12);
         $this->Image('assets/backend/img/bymoment.png', 5, 4, 37, 20);
-        $this->SetX(80);
+        $this->SetX(117);
         $this->SetFont('Poppins-Regular', '', 9);
-        $this->Cell(40, 16, 'bymomentweddingplanner@gmail.com', 0, 0);
+        $this->Cell(40, 16, 'cs@bymoment.id', 0, 0);
         $this->SetX(121);
         $this->Cell(40, 26, '0812-90700033', 0, 1);
         $style = array('width' => 0.5, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0));

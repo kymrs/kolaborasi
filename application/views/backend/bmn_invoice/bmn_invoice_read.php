@@ -27,7 +27,7 @@
                     </div>
                 </div>
                 <div class="right-side">
-                    <div class="email">bymomentweddingplanner@gmail.com</div>
+                    <div class="email">cs@bymoment.id</div>
                     <div class="noHP">0812-90700033</div>
                 </div>
             </header>

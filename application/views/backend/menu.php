@@ -1,3 +1,70 @@
+<style>
+    /* Efek hover pada opsi dropdown Select2 */
+    .select2-container--bootstrap4 .select2-results__option--highlighted[aria-selected] {
+        background-color: #007bff !important;
+        /* Warna biru Bootstrap */
+        color: white !important;
+    }
+
+    /* Efek hover pada opsi yang belum dipilih */
+    .select2-container--bootstrap4 .select2-results__option:hover {
+        background-color: #007bff !important;
+        color: white !important;
+        transition: background-color 0.2s;
+    }
+
+    .select2-container--bootstrap4 .select2-selection {
+        border: 1px solid #ced4da !important;
+        /* Warna border standar Bootstrap */
+        border-radius: 0.25rem !important;
+        /* Sesuai form-control Bootstrap */
+        height: calc(2.25rem + 2px) !important;
+        /* Tinggi standar */
+        padding: 0.375rem 0.75rem !important;
+    }
+
+    .select2-container--bootstrap4 .select2-selection__rendered {
+        line-height: 1.5 !important;
+        padding-left: 0 !important;
+    }
+
+    .select2-container--bootstrap4 .select2-selection__arrow {
+        height: 100% !important;
+        right: 10px !important;
+    }
+
+    @media (max-width: 576px) {
+
+        /* Untuk tampilan mobile */
+        .form-group.row {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.row label {
+            margin-bottom: 5px;
+        }
+
+        .form-group.row .col-sm-10 {
+            width: 100%;
+        }
+    }
+
+    @media (min-width: 576px) {
+
+        /* Untuk tampilan desktop */
+        .form-group.row {
+            display: flex;
+            align-items: center;
+            /* Sejajarkan label dan input */
+        }
+
+        .form-group.row label {
+            text-align: right;
+            /* Agar label sejajar dengan input */
+        }
+    }
+</style>
 <div class="container-fluid">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"><?= $titleview ?></h1>
@@ -44,7 +111,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="modal-default">
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog">
         <div class="modal-content">
             <form id="form">
@@ -189,18 +256,13 @@
 
     var table;
     $(document).ready(function() {
-        $('.name').select2();
-        $('.app_id').select2({
-            width: '100%'
-        });
-        $('.app2_id').select2({
-            width: '100%'
-        });
-        $('.app3_id').select2({
-            width: '100%'
-        });
-        $('.app4_id').select2({
-            width: '100%'
+
+        $('#myModal').on('shown.bs.modal', function() {
+            $('.name, .app_id, .app2_id, .app3_id, .app4_id').select2({
+                dropdownParent: $('#myModal .modal-content'),
+                theme: 'bootstrap4',
+                width: '100%'
+            });
         });
 
         table = $('#table').DataTable({
@@ -256,7 +318,7 @@
                 success: function(data) {
                     if (data.status) //if success close modal and reload ajax table
                     {
-                        $('#modal-default').modal('hide');
+                        $('#myModal').modal('hide');
                         Swal.fire({
                             position: 'top-end',
                             icon: 'success',
@@ -280,7 +342,7 @@
         $('#form')[0].reset();
         var validator = $("#form").validate();
         validator.resetForm();
-        $('#modal-default').modal('show');
+        $('#myModal').modal('show');
         $('.card-title').text('Add Menu');
         $('.aksi').text('Save');
         $('#core').hide();
@@ -304,7 +366,7 @@
         var validator = $("#form").validate();
         validator.resetForm();
         $('.form-control').removeClass('error');
-        $('#modal-default').modal('show');
+        $('#myModal').modal('show');
         $('.card-title').text('Edit Data Menu');
         $('.aksi').text('Update');
 

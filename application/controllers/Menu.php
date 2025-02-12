@@ -110,6 +110,14 @@ class Menu extends CI_Controller
 		);
 		$this->db->where('id_menu', $this->input->post('id'));
 		$this->db->update('tbl_menu', $data);
+		$id_menu = $this->db->select('id')
+			->from('tbl_approval')
+			->where('id_menu', $this->input->post('id'))
+			->get()
+			->row();
+
+		$id_menu = ($id_menu) ? $id_menu->id : null;
+
 
 		if (!empty($this->input->post('app_id'))) {
 			$data2['app_id'] = $this->input->post('app_id');
@@ -126,10 +134,11 @@ class Menu extends CI_Controller
 		if (!empty($this->input->post('sub_name'))) {
 			$data2['sub_name'] = $this->input->post('sub_name');
 			$data2['id_menu'] = $this->input->post('id');
+			$data2['id'] = $id_menu;
 
 			//Melakukan pengupdatan
-			$this->db->where('id_menu', $this->input->post('id'));
-			$this->db->update('tbl_approval', $data2);
+			// $this->db->where('id_menu', $this->input->post('id'));
+			$this->db->replace('tbl_approval', $data2);
 		}
 
 		echo json_encode(array("status" => TRUE));
