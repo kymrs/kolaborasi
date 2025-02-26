@@ -237,7 +237,14 @@ class Datadeklarasi_sw extends CI_Controller
             ->get('tbl_submenu')
             ->row();
 
-        $app = $this->db->select('app_id, app2_id, app4_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
+        $valid = true;
+        $confirm = $this->db->select('app_id, app2_id, app4_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->num_rows();
+        if ($confirm > 0) {
+            $app = $this->db->select('app_id, app2_id, app4_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
+        } else {
+            echo json_encode(array("status" => FALSE, "error" => "Approval Belum Ditentukan, Mohon untuk menghubungi admin."));
+            $valid = false;
+        }
         $id = $this->session->userdata('id_user');
 
         $data = array(
@@ -270,14 +277,12 @@ class Datadeklarasi_sw extends CI_Controller
             'created_at' => date('Y-m-d H:i:s')
         );
 
-        // BILA YANG MEMBUAT PREPAYMENT DAPAT MENGAPPROVE SENDIRI
-        // if ($approval->app_id == $this->session->userdata('id_user')) {
-        //     $data['app_status'] = 'approved';
-        //     $data['app_date'] = date('Y-m-d H:i:s');
-        // }
-
-        $this->M_datadeklarasi_sw->save($data);
-        echo json_encode(array("status" => TRUE));
+        if ($valid) {
+            $this->M_datadeklarasi_sw->save($data);
+            echo json_encode(array("status" => TRUE));
+        } else {
+            echo json_encode(array("status" => FALSE));
+        }
     }
 
     public function update()

@@ -254,7 +254,15 @@ class Prepayment_kps extends CI_Controller
             ->get('tbl_submenu')
             ->row();
 
-        $app = $this->db->select('app_id, app2_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
+        $valid = true;
+        $confirm = $this->db->select('app_id, app2_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
+        if (!empty($confirm) && $confirm->app_id != null) {
+            $app = $this->db->select('app_id, app2_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
+        } else {
+            echo json_encode(array("status" => FALSE, "error" => "Approval Belum Ditentukan, Mohon untuk menghubungi admin."));
+            exit();
+            $valid = false;
+        }
         $id = $this->session->userdata('id_user');
 
         // CHECK APAKAH MENGINPUT YANG SUDAH ADA ATAU YANG BARU (REKENING)
@@ -295,7 +303,9 @@ class Prepayment_kps extends CI_Controller
             'created_at' => date('Y-m-d H:i:s')
         );
 
-        $inserted = $this->M_prepayment_kps->save($data);
+        if ($valid) {
+            $inserted = $this->M_prepayment_kps->save($data);
+        }
 
         if ($inserted) {
             // INISIASI VARIABEL INPUT DETAIL PREPAYMENT
@@ -485,15 +495,15 @@ class Prepayment_kps extends CI_Controller
 
         $pdf->Ln(17);
         $pdf->SetFont('Poppins-Regular', '', 12);
-        $pdf->Cell(30, 10, 'Divisi', 0, 0);
-        $pdf->Cell(5, 10, ':', 0, 0);
-        $pdf->Cell(50, 10, $data['master']->divisi, 0, 1);
+        // $pdf->Cell(30, 10, 'Divisi', 0, 0);
+        // $pdf->Cell(5, 10, ':', 0, 0);
+        // $pdf->Cell(50, 10, $data['master']->divisi, 0, 1);
 
         // $pdf->SetX(46); // Tetap di posisi yang sama untuk elemen lainnya
         $pdf->Cell(30, 10, 'Prepayment', 0, 0);
         $pdf->Cell(5, 10, ':', 0, 0);
         $pdf->Cell(50, 10, $data['master']->prepayment, 0, 1);
-        $pdf->Ln(8);
+        $pdf->Ln(7);
 
         // Form Title
         $pdf->SetFont('Poppins-Bold', '', 14);
@@ -510,9 +520,9 @@ class Prepayment_kps extends CI_Controller
         $pdf->Cell(5, 10, ':', 0, 0);
         $pdf->Cell(50, 10, $data['user'], 0, 1);
 
-        $pdf->Cell(30, 10, 'Jabatan', 0, 0);
-        $pdf->Cell(5, 10, ':', 0, 0);
-        $pdf->Cell(50, 10, $data['master']->jabatan, 0, 1);
+        // $pdf->Cell(30, 10, 'Jabatan', 0, 0);
+        // $pdf->Cell(5, 10, ':', 0, 0);
+        // $pdf->Cell(50, 10, $data['master']->jabatan, 0, 1);
 
         $pdf->Cell(60, 10, 'Dengan ini bermaksud mengajukan prepayment untuk :', 0, 1);
 

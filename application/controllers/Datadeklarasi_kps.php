@@ -226,7 +226,15 @@ class Datadeklarasi_kps extends CI_Controller
             ->get('tbl_submenu')
             ->row();
 
-        $app = $this->db->select('app_id, app2_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
+        $valid = true;
+        $confirm = $this->db->select('app_id, app2_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
+        if (!empty($confirm) && $confirm->app_id != null) {
+            $app = $this->db->select('app_id, app2_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
+        } else {
+            echo json_encode(array("status" => FALSE, "error" => "Approval Belum Ditentukan, Mohon untuk menghubungi admin."));
+            exit();
+            $valid = false;
+        }
         $id = $this->session->userdata('id_user');
 
         $data = array(
@@ -254,8 +262,12 @@ class Datadeklarasi_kps extends CI_Controller
             'created_at' => date('Y-m-d H:i:s')
         );
 
-        $this->M_datadeklarasi_kps->save($data);
-        echo json_encode(array("status" => TRUE));
+        if ($valid) {
+            $this->M_datadeklarasi_kps->save($data);
+            echo json_encode(array("status" => TRUE));
+        } else {
+            echo json_encode(array("status" => FALSE));
+        }
     }
 
     public function update()
@@ -394,8 +406,8 @@ class Datadeklarasi_kps extends CI_Controller
         $pdf->Cell(60, 10, ': ' . $formatted_date, 0, 1);
         $pdf->Cell(40, 10, 'Nama', 0, 0);
         $pdf->Cell(60, 10, ': ' . $data['user'], 0, 1);
-        $pdf->Cell(40, 10, 'Jabatan', 0, 0);
-        $pdf->Cell(60, 10, ': ' . $data['master']->jabatan, 0, 1);
+        // $pdf->Cell(40, 10, 'Jabatan', 0, 0);
+        // $pdf->Cell(60, 10, ': ' . $data['master']->jabatan, 0, 1);
 
         $pdf->Ln(1);
         $pdf->SetFont('Poppins-Regular', '', 12);

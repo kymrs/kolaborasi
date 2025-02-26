@@ -118,9 +118,17 @@ class M_rekapitulasi_qbg extends CI_Model
         // Order functionality
         if (isset($_POST['order'])) {
             $this->db->order_by($this->column_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
-        } else if (isset($this->order)) {
-            $order = $this->order;
-            $this->db->order_by(key($order), $order[key($order)]);
+        } else {
+            if (isset($_POST['tab'])) {
+                if ($_POST['tab'] == 'pelaporan') {
+                    $this->db->order_by('tgl_pengajuan', 'DESC');
+                } elseif ($_POST['tab'] == 'reimbust') {
+                    $this->db->order_by('qbg_reimbust.tgl_pengajuan', 'DESC');
+                }
+            } else {
+                // Default sorting jika tidak ada `tab`
+                $this->db->order_by('tgl_pengajuan', 'DESC');
+            }
         }
     }
 

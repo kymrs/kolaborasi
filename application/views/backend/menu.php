@@ -1,4 +1,68 @@
 <style>
+    :root {
+        --checked-color: #28a745;
+        /* Warna hijau saat aktif */
+        --unchecked-color: #ddd;
+        /* Warna default */
+    }
+
+    .core-check,
+    .approval-check {
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+        background-color: var(--unchecked-color);
+        color: black;
+        width: 45px;
+        text-align: center;
+        border-radius: 5px;
+        position: relative;
+    }
+
+    /* Saat checkbox aktif */
+    .core-check[data-checked="true"],
+    .approval-check[data-checked="true"] {
+        background-color: var(--checked-color);
+        color: white;
+        transform: scale(1.1);
+    }
+
+    /* Animasi ikon */
+    .fa-icon {
+        transition: opacity 0.2s ease, transform 0.3s ease;
+        position: absolute;
+    }
+
+    .fa-minus {
+        opacity: 0;
+        transform: rotate(-90deg);
+    }
+
+    .core-check[data-checked="true"] .fa-plus,
+    .approval-check[data-checked="true"] .fa-plus {
+        opacity: 0;
+        transform: rotate(90deg);
+    }
+
+    .core-check[data-checked="true"] .fa-minus,
+    .approval-check[data-checked="true"] .fa-minus {
+        opacity: 1;
+        transform: rotate(0deg);
+    }
+
+    /* Animasi input text */
+    .input-check,
+    .input-check2 {
+        transition: background-color 0.3s ease, transform 0.3s ease, border 0.3s ease;
+        border: 2.5px solid var(--unchecked-color);
+    }
+
+    .input-check[data-checked="true"],
+    .input-check2[data-checked="true"] {
+        background-color: #e6f9e6;
+        transform: scale(1.1);
+        border: 2.5px solid var(--checked-color);
+    }
+
     /* Efek hover pada opsi dropdown Select2 */
     .select2-container--bootstrap4 .select2-results__option--highlighted[aria-selected] {
         background-color: #007bff !important;
@@ -32,6 +96,19 @@
         height: 100% !important;
         right: 10px !important;
     }
+
+    .approval-field {
+        width: 75%;
+        margin: auto;
+        border: 2px solid #ccc;
+        /* Warna abu-abu */
+        padding: 15px;
+        border-radius: 5px;
+        /* Opsional: Membuat sudut border melengkung */
+        /* background-color: #f9f9f9; */
+        /* Opsional: Memberikan warna latar belakang */
+    }
+
 
     @media (max-width: 576px) {
 
@@ -142,29 +219,6 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="aktif" class="col-sm-2 col-form-label">Core</label>
-                        <div class="col-sm-10 form-inline row ml-1">
-                            <div class="custom-control custom-radio col-sm-2">
-                                <input class="custom-control-input" type="checkbox" id="coreCheckbox" name="aktif" value="Y" style="cursor: pointer;">
-                                <label for="coreCheckbox" class="custom-control-label" style="cursor: pointer;">Yes</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="core" style="display: none;">
-                        <div class="form-group row">
-                            <label for="fullname" class="col-sm-2 col-form-label">Logo</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" id="sub_image" name="sub_image" placeholder="Logo">
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="fullname" class="col-sm-2 col-form-label">Warna</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" id="sub_color" name="sub_color" placeholder="Kode Warna">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group row">
                         <label for="fullname" class="col-sm-2 col-form-label">Order</label>
                         <div class="col-sm-10">
                             <input type="number" class="form-control" id="urutan" name="urutan" placeholder="Order Number">
@@ -183,56 +237,98 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group row">
-                        <label class="col-sm-2 col-form-label" for="sub_name">Nama</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="sub_name" name="sub_name">
+
+                    <!-- CHECKBOX CORE FIELD -->
+                    <div class="input-group col-sm-7 mb-3">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text core-check" data-checked="false">
+                                <input type="checkbox" id="check-field" name="check-field" hidden>
+                                <i class="fa-icon fas fa-plus"></i>
+                                <i class="fa-icon fas fa-minus"></i>
+                            </div>
+                        </div>
+                        <input type="text" class="form-control input-check" value="Core Field" readonly data-checked="false">
+                    </div>
+
+                    <div class="core-field">
+                        <div class="form-group row">
+                            <label for="fullname" class="col-sm-2 col-form-label">Logo</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="sub_image" name="sub_image" placeholder="Logo">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="fullname" class="col-sm-2 col-form-label">Warna</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="sub_color" name="sub_color" placeholder="Kode Warna">
+                            </div>
                         </div>
                     </div>
-                    <div class="form-group row">
-                        <label class="col-sm-2 col-form-label" for="app_id">Approval Pertama</label>
-                        <div class="col-sm-10">
-                            <select class="form-control app_id" id="app_id" name="app_id">
-                                <option value="" selected disabled>Pilih opsi...</option>
-                                <?php foreach ($approvals as $approval) { ?>
-                                    <option value="<?= $approval->id_user ?>"><?= $approval->fullname ?></option>
-                                <?php } ?>
-                            </select>
+
+                    <!-- CHECKBOX APPROVAL FIELD -->
+                    <div class="input-group col-sm-7 mb-3">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text approval-check" data-checked="false">
+                                <input type="checkbox" id="check-field2" name="check-field2" hidden>
+                                <i class="fa-icon fas fa-plus"></i>
+                                <i class="fa-icon fas fa-minus"></i>
+                            </div>
+                        </div>
+                        <input type="text" class="form-control input-check2" aria-label="Text input with checkbox" value="Approvals" readonly>
+                    </div>
+
+                    <div class="approval-field">
+                        <!-- APPROVAL FIELD -->
+                        <div class="form-group">
+                            <label class="col-sm-12 col-form-label" for="app_id">Approval Pertama</label>
+                            <div class="col-sm-12">
+                                <select class="form-control app_id" id="app_id" name="app_id">
+                                    <option value="" selected disabled>Pilih opsi...</option>
+                                    <?php foreach ($approvals as $approval) { ?>
+                                        <option value="<?= $approval->id_user ?>"><?= $approval->fullname ?></option>
+                                    <?php } ?>
+                                    <option value="null">Kosong</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-12 col-form-label" for="app2_id">Approval Kedua</label>
+                            <div class="col-sm-12">
+                                <select class="form-control app2_id" id="app2_id" name="app2_id">
+                                    <option value="" selected disabled>Pilih opsi...</option>
+                                    <?php foreach ($approvals as $approval) { ?>
+                                        <option value="<?= $approval->id_user ?>"><?= $approval->fullname ?></option>
+                                    <?php } ?>
+                                    <option value="null">Kosong</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-12 col-form-label" for="app3_id">Approval HC</label>
+                            <div class="col-sm-12">
+                                <select class="form-control app3_id" id="app3_id" name="app3_id">
+                                    <option value="" selected disabled>Pilih opsi...</option>
+                                    <?php foreach ($approvals as $approval) { ?>
+                                        <option value="<?= $approval->id_user ?>"><?= $approval->fullname ?></option>
+                                    <?php } ?>
+                                    <option value="null">Kosong</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-12 col-form-label" for="app4_id">Approval Captain</label>
+                            <div class="col-sm-12">
+                                <select class="form-control app4_id" id="app4_id" name="app4_id">
+                                    <option value="" selected disabled>Pilih opsi...</option>
+                                    <?php foreach ($approvals as $approval) { ?>
+                                        <option value="<?= $approval->id_user ?>"><?= $approval->fullname ?></option>
+                                    <?php } ?>
+                                    <option value="null">Kosong</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
-                    <div class="form-group row">
-                        <label class="col-sm-2 col-form-label" for="app2_id">Approval Kedua</label>
-                        <div class="col-sm-10">
-                            <select class="form-control app2_id" id="app2_id" name="app2_id">
-                                <option value="" selected disabled>Pilih opsi...</option>
-                                <?php foreach ($approvals as $approval) { ?>
-                                    <option value="<?= $approval->id_user ?>"><?= $approval->fullname ?></option>
-                                <?php } ?>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-sm-2 col-form-label" for="app3_id">Approval HC</label>
-                        <div class="col-sm-10">
-                            <select class="form-control app3_id" id="app3_id" name="app3_id">
-                                <option value="" selected disabled>Pilih opsi...</option>
-                                <?php foreach ($approvals as $approval) { ?>
-                                    <option value="<?= $approval->id_user ?>"><?= $approval->fullname ?></option>
-                                <?php } ?>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-sm-2 col-form-label" for="app4_id">Approval Captain</label>
-                        <div class="col-sm-10">
-                            <select class="form-control app4_id" id="app4_id" name="app4_id">
-                                <option value="" selected disabled>Pilih opsi...</option>
-                                <?php foreach ($approvals as $approval) { ?>
-                                    <option value="<?= $approval->id_user ?>"><?= $approval->fullname ?></option>
-                                <?php } ?>
-                            </select>
-                        </div>
-                    </div>
+
                     <div class="modal-footer text-right">
                         <button type="submit" class="btn btn-primary aksi">Save</button>
                     </div>
@@ -245,17 +341,57 @@
 <?php $this->load->view('template/script'); ?>
 
 <script type="text/javascript">
-    $('#coreCheckbox').on('change', function() {
-        if ($(this).is(':checked')) {
-            $('#core').show(); // Menampilkan elemen dengan ID core
-        } else {
-            $('#core').hide(); // Menyembunyikan elemen dengan ID core
-        }
-    });
-
-
     var table;
     $(document).ready(function() {
+        $(".input-check").attr("data-checked", false);
+        $('.approval-field').hide();
+        $('.core-field').hide();
+
+        // CHECK CORE FIELD
+        $(".core-check").click(function() {
+            let checkbox = $("#check-field");
+            let isChecked = checkbox.prop("checked");
+
+            // Toggle checkbox state
+            checkbox.prop("checked", !isChecked);
+            $(this).attr("data-checked", !isChecked);
+            $(".input-check").attr("data-checked", !isChecked);
+
+            // Animasi tampil/sembunyi core-field dengan fade
+            $(".core-field").fadeToggle(300);
+
+            // Animasi tampil/sembunyi core-field
+            if (!isChecked) {
+                $(".core-field").show();
+            } else {
+                $(".core-field").hide();
+                // $("#sub_image, #sub_color").val(''); // Reset input
+            }
+        });
+
+        // CHECK APPROVAL FIELD
+        $('.approval-check').on('click', function() {
+            let checkbox = $("#check-field2");
+            let isChecked = checkbox.prop("checked");
+
+            // Toggle checkbox state
+            checkbox.prop("checked", !isChecked);
+            $(this).attr("data-checked", !isChecked);
+            $(".input-check2").attr("data-checked", !isChecked);
+
+            // Animasi tampil/sembunyi core-field dengan fade
+            $(".approval-field").fadeToggle(300);
+
+            if (!isChecked) {
+                $('.approval-field').show();
+            } else {
+                $('.approval-field').hide();
+                // $('#app_id').val('').trigger('change');
+                // $('#app2_id').val('').trigger('change');
+                // $('#app3_id').val('').trigger('change');
+                // $('#app4_id').val('').trigger('change');
+            }
+        });
 
         $('#myModal').on('shown.bs.modal', function() {
             $('.name, .app_id, .app2_id, .app3_id, .app4_id').select2({
@@ -345,7 +481,23 @@
         $('#myModal').modal('show');
         $('.card-title').text('Add Menu');
         $('.aksi').text('Save');
-        $('#core').hide();
+        //CORE
+        $('.core-field').hide();
+        $(".core-check").attr("data-checked", false);
+        $(".input-check").attr("data-checked", false);
+        $('#check-field').prop('checked', false)
+        $('.core-field').hide();
+        $('#sub_image').val('');
+        $('#sub_color').val('');
+        //APPROVAL
+        $(".approval-check").attr("data-checked", false);
+        $(".input-check2").attr("data-checked", false);
+        $('#check-field2').prop('checked', false)
+        $('.approval-field').hide();
+        $('#app_id').val('').trigger('change');
+        $('#app2_id').val('').trigger('change');
+        $('#app3_id').val('').trigger('change');
+        $('#app4_id').val('').trigger('change');
 
         $.ajax({
             url: "<?php echo site_url('menu/get_max') ?>",
@@ -375,7 +527,7 @@
             type: "GET",
             dataType: "JSON",
             success: function(data) {
-                console.log(data);
+                // console.log(data);
                 $('[name="id"]').val(data['menu']['id_menu']);
                 $('[name="menu"]').val(data['menu']['nama_menu']);
                 $('[name="link"]').val(data['menu']['link']);
@@ -387,14 +539,37 @@
                         elements[i].checked = true;
                     }
                 }
-                if (data['approval'] == null) {
-                    $('#sub_name').val('');
+
+                if (data.menu.sub_image == null) {
+                    $(".core-check").attr("data-checked", false);
+                    $(".input-check").attr("data-checked", false);
+                    $('#check-field').prop('checked', false)
+                    $('.core-field').hide();
+                    $('#sub_image').val('');
+                    $('#sub_color').val('');
+                } else {
+                    $(".core-check").attr("data-checked", true);
+                    $(".input-check").attr("data-checked", true);
+                    $('#check-field').prop('checked', true)
+                    $('.core-field').show();
+                    $('#sub_image').val(data.menu.sub_image);
+                    $('#sub_color').val(data.menu.sub_color);
+                }
+
+                if (data['approval'] == null || data['approval']['app_id'] == null) {
+                    $(".approval-check").attr("data-checked", false);
+                    $(".input-check2").attr("data-checked", false);
+                    $('#check-field2').prop('checked', false)
+                    $('.approval-field').hide();
                     $('#app_id').val('').trigger('change');
                     $('#app2_id').val('').trigger('change');
                     $('#app3_id').val('').trigger('change');
                     $('#app4_id').val('').trigger('change');
                 } else {
-                    $('#sub_name').val(data['approval']['sub_name']);
+                    $(".approval-check").attr("data-checked", true);
+                    $(".input-check2").attr("data-checked", true);
+                    $('#check-field2').prop('checked', true)
+                    $('.approval-field').show();
                     $('#app_id').val(data['approval']['app_id']).trigger('change');
                     $('#app2_id').val(data['approval']['app2_id']).trigger('change');
                     $('#app3_id').val(data['approval']['app3_id']).trigger('change');

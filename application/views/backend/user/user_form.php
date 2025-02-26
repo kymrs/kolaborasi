@@ -131,6 +131,26 @@ $core_array = explode(',', $core);
                                     <!-- FIELD NEW PASSWORD -->
                                 </div>
                                 <div class="form-group row">
+                                    <input type="hidden" id="id_user" name="id_user" value="">
+
+                                    <label class="col-sm-4" for="divisi">Divisi</label>
+                                    <div class="col-sm-8">
+                                        <select class="form-control" id="divisi" name="divisi">
+                                            <option value="" selected disabled>Pilih opsi...</option>
+                                            <option value="Operational">OPERATIONAL</option>
+                                            <option value="Finance">FINANCE</option>
+                                            <option value="HC & GA">HC & GA</option>
+                                            <option value="IT">IT</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4" for="jabatan">Jabatan</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" id="jabatan" name="jabatan">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
                                     <label for="core" class="col-sm-4 col-form-label">Core</label>
                                     <div class="col-sm-8">
                                         <button type="button" class="modal-input" data-toggle="modal" data-target="#coreModal">
@@ -168,78 +188,6 @@ $core_array = explode(',', $core);
                                             <input class="custom-control-input" type="radio" id="customRadio2" name="aktif" value="N" checked>
                                             <label for="customRadio2" class="custom-control-label">No</label>
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- FIELD APPROVAL -->
-                            <div style="width: 100%; margin: 15px 20px 30px; height: 0.9px; background-color: rgba(0,0,0,0.2); text-align: center"></div>
-                            <div class="col-md-6">
-                                <!-- First Set of Fields -->
-                                <div class="form-group row">
-                                    <input type="hidden" id="id_user" name="id_user" value="">
-
-                                    <label class="col-sm-4" for="divisi">Divisi</label>
-                                    <div class="col-sm-8">
-                                        <select class="form-control" id="divisi" name="divisi">
-                                            <option value="" selected disabled>Pilih opsi...</option>
-                                            <option value="Operational">OPERATIONAL</option>
-                                            <option value="Finance">FINANCE</option>
-                                            <option value="HC & GA">HC & GA</option>
-                                            <option value="IT">IT</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-4" for="jabatan">Jabatan</label>
-                                    <div class="col-sm-8">
-                                        <input type="text" class="form-control" id="jabatan" name="jabatan">
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-4" for="app_id">Approval Pertama</label>
-                                    <div class="col-sm-8">
-                                        <select class="form-control app_id" id="app_id" name="app_id">
-                                            <option value="" selected disabled>Pilih opsi...</option>
-                                            <?php foreach ($approvals as $approval) { ?>
-                                                <option value="<?= $approval->id_user ?>"><?= $approval->fullname ?></option>
-                                            <?php } ?>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group row">
-                                    <label class="col-sm-4" for="app2_id">Approval Kedua</label>
-                                    <div class="col-sm-8">
-                                        <select class="form-control app2_id" id="app2_id" name="app2_id">
-                                            <option value="" selected disabled>Pilih opsi...</option>
-                                            <?php foreach ($approvals as $approval) { ?>
-                                                <option value="<?= $approval->id_user ?>"><?= $approval->fullname ?></option>
-                                            <?php } ?>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-4" for="app3_id">Approval HC</label>
-                                    <div class="col-sm-8">
-                                        <select class="form-control app3_id" id="app3_id" name="app3_id">
-                                            <option value="" selected disabled>Pilih opsi...</option>
-                                            <?php foreach ($approvals as $approval) { ?>
-                                                <option value="<?= $approval->id_user ?>"><?= $approval->fullname ?></option>
-                                            <?php } ?>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-4" for="app4_id">Approval Captain</label>
-                                    <div class="col-sm-8">
-                                        <select class="form-control app4_id" id="app4_id" name="app4_id">
-                                            <option value="" selected disabled>Pilih opsi...</option>
-                                            <?php foreach ($approvals as $approval) { ?>
-                                                <option value="<?= $approval->id_user ?>"><?= $approval->fullname ?></option>
-                                            <?php } ?>
-                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -322,12 +270,8 @@ $core_array = explode(',', $core);
                     $('#password').val(data.user.password);
                     $('#level').val(data.user.id_level);
                     $('#no_rek').val(data.user.no_rek);
-                    $('#divisi').val(data.approval.divisi);
-                    $('#jabatan').val(data.approval.jabatan);
-                    $('#app_id').val(data.approval.app_id);
-                    $('#app2_id').val(data.approval.app2_id);
-                    $('#app3_id').val(data.approval.app3_id);
-                    $('#app4_id').val(data.approval.app4_id);
+                    $('#divisi').val(data.detail.divisi);
+                    $('#jabatan').val(data.detail.jabatan);
 
                     var coreData = data.user.core; // Misal data ini didapat dari API atau sumber lainnya
 
@@ -392,7 +336,7 @@ $core_array = explode(',', $core);
                 dataType: "JSON",
                 success: function(data) {
                     console.log(data);
-                    if (data.status) {
+                    if (data) {
                         Swal.fire({
                             position: 'center',
                             icon: 'success',
@@ -411,11 +355,11 @@ $core_array = explode(',', $core);
                                 showConfirmButton: false,
                                 timer: 1500
                             });
-                        } else if (data.error === "approval") {
+                        } else if (data.error === "data_user") {
                             Swal.fire({
                                 position: 'center',
                                 icon: 'error',
-                                title: 'Failed to save approval!',
+                                title: 'Failed to save user!',
                                 showConfirmButton: false,
                                 timer: 1500
                             });

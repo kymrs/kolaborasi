@@ -70,9 +70,24 @@ class M_user extends CI_Model
 
     public function delete_id($id)
     {
+        $this->db->trans_start();
+
         $this->db->where('id_user', $id);
         $this->db->delete($this->table);
-        return true;
+
+        $this->db->where('id_user', $id);
+        $this->db->delete('tbl_data_user');
+
+        $this->db->trans_complete();
+
+        if ($this->db->trans_status() === FALSE) {
+            // Jika ada kesalahan, rollback
+            $this->db->trans_rollback();
+            return false;
+        } else {
+            // Jika berhasil, commit
+            return true;
+        }
     }
 
     public function get_by_id($id)
@@ -86,6 +101,12 @@ class M_user extends CI_Model
     public function save($data)
     {
         $this->db->insert($this->table, $data);
+        return $this->db->insert_id();
+    }
+
+    public function save2($data2)
+    {
+        $this->db->insert('tbl_data_user', $data2);
         return $this->db->insert_id();
     }
 }
