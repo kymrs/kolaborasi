@@ -35,27 +35,26 @@
             <main>
                 <div class="invoice">
                     <h3>INVOICE</h3>
-                    <?php $result = substr($invoice['kode_invoice'], 0, 5) . substr($invoice['kode_invoice'], 7); ?>
-                    <p>No. Invoice : <?= $result; ?></p>
+                    <p>No. Invoice : <?= $invoice['kode_invoice']; ?></p>
                 </div>
                 <div class="header-content">
                     <div class="left-side">
                         <h2>Kepada Yth.</h2>
-                        <h1><?= $invoice['ctc2_nama'] ?></h1>
+                        <h1><?= $invoice['nama_customer'] ?></h1>
                         <div style="display: flex; gap: 5px;">
                             <label for="">Email</label>
                             <span style="margin-left: 28px;">:</span>
-                            <p class="alamat"><?= $invoice['ctc2_email'] ?></p>
+                            <p class="email"><?= $invoice['email_customer'] ? $invoice['email_customer'] : '-' ?></p>
                         </div>
                         <div style="display: flex; gap: 5px;">
                             <label for="">Telepon</label>
                             <span style="margin-left: 10px;">:</span>
-                            <p class="alamat"><?= $invoice['ctc2_nomor'] ?></p>
+                            <p class="nomor"><?= $invoice['nomor_customer'] ?></p>
                         </div>
                         <div style="display: flex; gap: 5px;">
                             <label for="">Alamat</label>
                             <span style="margin-left: 14px;">:</span>
-                            <p class="alamat"><?= $invoice['ctc2_alamat'] ?></p>
+                            <p class="alamat"><?= $invoice['alamat_customer'] ?></p>
                         </div>
                     </div>
                     <div class="right-side">
@@ -79,23 +78,16 @@
                     </div>
                     <table>
                         <tr>
-                            <th>DESKRIPSI</th>
+                            <th>PRODUK</th>
                             <th>JUMLAH</th>
                             <th>HARGA</th>
                             <th>TOTAL</th>
                         </tr>
-                        <?php
-                        $total = 0; // Inisialisasi variabel total
-                        $diskon = $invoice['diskon'];
-                        foreach ($detail as $data) :
-                            if ($diskon != 0) {
-                                $total += $data['total'] - ($data['total'] * $diskon / 100);
-                            } else {
-                                $total += $data['total']; // Tambahkan harga ke total
-                            }
-                        ?>
+                        <?php foreach ($detail as $data) : ?>
+                            <!-- Mengambil data produk berdasarkan kode produk -->
+                            <?php $produk = $this->db->select('nama_produk, berat, satuan')->where('kode_produk', $data['kode_produk'])->get('qbg_produk')->row_array(); ?>
                             <tr>
-                                <td><?= $data['deskripsi'] ?></td>
+                                <td><?= $produk['nama_produk'] . ' ' . $produk['berat'] . ' ' . $produk['satuan'] ?></td>
                                 <td class="jumlah"><?= $data['jumlah'] ?></td>
                                 <td class="harga"><?= "Rp. " . number_format($data['harga'], 0, ',', '.') ?></td>
                                 <td class="total"><?= "Rp. " . number_format($data['total'], 0, ',', '.') ?></td>
@@ -103,13 +95,18 @@
                         <?php endforeach; ?>
                         <tr>
                             <td colspan="2" style="border-left-color: #fff; border-bottom-color: #fff"></td>
-                            <td style="text-align: center;">Diskon</td>
-                            <td style="text-align: center"><?= $invoice['diskon'] ?>%</td>
+                            <td style="text-align: center;">Biaya Pengiriman</td>
+                            <td style="text-align: center"><?= "Rp. " . number_format($invoice['ongkir'], 0, ',', '.') ?></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" style="border-left-color: #fff; border-bottom-color: #fff"></td>
+                            <td style="text-align: center;">Potongan Harga</td>
+                            <td style="text-align: center"><?= "Rp. -" . number_format($invoice['potongan_harga'], 0, ',', '.') ?></td>
                         </tr>
                         <tr>
                             <td colspan="2" style="border-left-color: #fff; border-bottom-color: #fff"></td>
                             <th>Total</th>
-                            <td style="text-align: center"><?= "Rp. " . number_format($total, 0, ',', '.') ?></td>
+                            <td style="text-align: center"><?= "Rp. " . number_format($invoice['grand_total'], 0, ',', '.') ?></td>
                         </tr>
                     </table>
                 </div>

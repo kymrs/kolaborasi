@@ -19,10 +19,8 @@ class M_ctz_mom extends CI_Model
     private function _get_datatables_query()
     {
 
+        $this->db->where('user', $this->session->userdata('fullname'));
         $this->db->from($this->table);
-        if ($this->session->userdata('core') != "all") {
-            $this->db->where('user', $this->session->userdata('fullname'));
-        }
 
         $i = 0;
 

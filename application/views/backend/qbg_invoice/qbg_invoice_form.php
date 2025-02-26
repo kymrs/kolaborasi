@@ -21,11 +21,11 @@
     }
 
     .front-add {
-        background-color: #10b53c;
+        background-color: #242D4A;
     }
 
     .front-aksi {
-        background-color: #0075FF;
+        background-color: #242D4A;
     }
 
 
@@ -73,6 +73,86 @@
         height: 20px;
     }
 
+    .table-produk {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .table-produk td {
+        border: 1px solid rgba(26, 32, 53, 0.1);
+    }
+
+    .table-produk tbody tr {
+        transition: 200ms;
+    }
+
+    .table-produk tbody tr:hover {
+        background-color: rgba(234, 236, 244, 0.5);
+    }
+
+    .table-produk thead {
+        background-color: rgb(36, 44, 73);
+        color: white;
+    }
+
+    .table-produk thead th {
+        border: 1px solid rgb(255, 255, 255, 0.2);
+        font-weight: 400;
+        text-align: center;
+    }
+
+    .table-produk tbody tr td:nth-child(4) {
+        width: 240px;
+    }
+
+    .btn-style {
+        background-color: rgb(36, 44, 73);
+        color: white;
+        border: none;
+        padding: 7px 23px;
+        font-size: 12px;
+        border-radius: 5px;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.15), -4px 4px 6px rgba(0, 0, 0, 0.15), 4px 4px 6px rgba(0, 0, 0, 0.15);
+        /* Bayangan bawah dan kiri-kanan */
+        cursor: pointer;
+        transition: all 0.055s ease;
+        margin-bottom: 5px;
+        position: relative;
+        bottom: -2px;
+    }
+
+    .btn-style:hover {
+        scale: 1.020;
+    }
+
+    .btn-style:active {
+        transform: translateY(2px);
+        box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1), -2px 2px 6px rgba(0, 0, 0, 0.1), 2px 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-delete {
+        background-color: #DC0808;
+        position: relative;
+        top: 1px;
+    }
+
+    /* Table Produk Modal Style */
+    #produkModal table tbody tr {
+        transition: 250ms;
+    }
+
+
+    #produkModal table tbody tr:hover {
+        background-color: rgba(49, 55, 78, 0.94);
+        color: white;
+        scale: 0.990;
+        cursor: pointer;
+    }
+
+    #produkModal table tbody tr:active {
+        background-color: rgb(36, 44, 73);
+        scale: 0.980;
+    }
+
     @media (min-width: 768px) {
 
         .tujuan-field,
@@ -103,18 +183,17 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header text-right">
-                    <a class="btn btn-secondary btn-sm" href="<?= base_url('qbg_invoice') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+                    <a class="btn btn-primary btn-sm" href="<?= base_url('qbg_invoice') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
                     <form id="form">
                         <div class="row">
                             <div class="col-md-6">
-                                <h4 class="section-title">FROM :</h4>
                                 <div class="form-group row">
                                     <label class="col-sm-4 col-form-label">Tanggal Invoice</label>
                                     <div class="col-sm-8">
                                         <div class="input-group date">
-                                            <input type="text" class="form-control" name="tgl_invoice" id="tgl_invoice" placeholder="DD-MM-YYYY" autocomplete="off" readonly style="cursor: pointer">
+                                            <input type="text" class="form-control" name="tgl_invoice" id="tgl_invoice" placeholder="DD-MM-YYYY" autocomplete="off" readonly style="cursor: pointer; background-color: #fff">
                                             <div class="input-group-append">
                                                 <div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
                                             </div>
@@ -124,14 +203,14 @@
                                 <div class="form-group row">
                                     <label class="col-sm-4 col-form-label">Kode Invoice</label>
                                     <div class="col-sm-8">
-                                        <input type="text" class="form-control" id="kode_invoice" name="kode_invoice" readonly placeholder="Kode Invoice">
+                                        <input type="text" class="form-control" id="kode_invoice" name="kode_invoice" readonly placeholder="Kode Invoice" style="cursor: not-allowed;">
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-4 col-form-label">Tanggal Jatuh Tempo</label>
                                     <div class="col-sm-8">
                                         <div class="input-group date">
-                                            <input type="text" class="form-control" name="tgl_tempo" id="tgl_tempo" placeholder="DD-MM-YYYY" autocomplete="off" readonly style="cursor: pointer">
+                                            <input type="text" class="form-control" name="tgl_tempo" id="tgl_tempo" placeholder="DD-MM-YYYY" autocomplete="off" readonly style="cursor: pointer; background-color: #fff">
                                             <div class="input-group-append">
                                                 <div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
                                             </div>
@@ -139,27 +218,60 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-sm-4 col-form-label">Contact Nama</label>
+                                    <label class="col-sm-4 col-form-label">Nama Customer</label>
                                     <div class="col-sm-8">
-                                        <input type="text" class="form-control" id="ctc_nama" name="ctc_nama" placeholder="Contact Nama">
+                                        <input type="text" class="form-control" id="nama_customer" name="nama_customer" placeholder="Nama Customer">
                                     </div>
                                 </div>
-                                <div class="form-group row mb-3">
-                                    <label class="col-sm-4 col-form-label">Contact Nomor</label>
-                                    <div class="col-sm-8">
-                                        <input type="text" class="form-control" id="ctc_nomor" name="ctc_nomor" placeholder="Contact Nomor">
-                                    </div>
-                                </div>
-                                <h4 class="section-title">PAYMENT INFO :</h4>
                                 <div class="form-group row">
-                                    <label class="col-sm-4 col-form-label">Diskon</label>
-                                    <div class="col-sm-4">
-                                        <input type="text" class="form-control" id="diskon" name="diskon" placeholder="Diskon %">
+                                    <label class="col-sm-4 col-form-label">Nomor Customer</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" id="nomor_customer" name="nomor_customer" placeholder="Nomor Customer">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label">Email Customer</label>
+                                    <div class="col-sm-8">
+                                        <input type="email" class="form-control" id="email_customer" name="email_customer" placeholder="Email Customer">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label">Alamat Customer</label>
+                                    <div class="col-sm-8">
+                                        <textarea class="form-control" id="alamat_customer" name="alamat_customer" rows="3" placeholder="Alamat Customer"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- SEBELAH KANAN -->
+                            <div class="col-md-6 colomn-kanan">
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label">Harga Produk</label>
+                                    <div class="col-sm-7">
+                                        <select name="jenis_harga" id="jenis_harga" class="form-control" style="cursor: pointer;">
+                                            <option value="" hidden>Pilih Harga</option>
+                                            <option value="qubagift">QubaGift</option>
+                                            <option value="reseller">Reseller</option>
+                                            <option value="distributor">Distributor</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label">Biaya Pengiriman</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="ongkir" name="ongkir" placeholder="Biaya Pengiriman">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label">Potongan Harga</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="potongan_harga" name="potongan_harga" placeholder="Potongan Harga">
+                                        <input type="hidden" class="form-control" id="total_akhir" name="total_akhir">
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-4 col-form-label">No Rekening</label>
-                                    <div class="col-sm-8">
+                                    <div class="col-sm-7">
                                         <div class="input-group mb-3">
                                             <!-- RADIO BUTTON UNTUK PEMILIHAN INPUTAN REKENING -->
                                             <div class="form-check form-check-inline" style="margin-bottom: 5px;">
@@ -196,51 +308,20 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- SEBELAH KANAN -->
-                            <div class="col-md-6 colomn-kanan">
-                                <h4>INVOICE TO:</h4>
-                                <div class="form-group row">
-                                    <label class="col-sm-4 col-form-label">Contact Nama</label>
-                                    <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="ctc2_nama" name="ctc2_nama" placeholder="Contact Nama">
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-4 col-form-label">Contact Nomor</label>
-                                    <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="ctc2_nomor" name="ctc2_nomor" placeholder="Contact Nomor">
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-4 col-form-label">Email</label>
-                                    <div class="col-sm-7">
-                                        <input type="email" class="form-control" id="ctc2_email" name="ctc2_email" placeholder="Email">
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-4 col-form-label">Contact Alamat</label>
-                                    <div class="col-sm-7">
-                                        <textarea class="form-control" id="ctc2_alamat" name="ctc2_alamat" rows="2" placeholder="Contact Alamat"></textarea>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
 
-                        <h4 class="section-title">KETERANGAN ITEMS :</h4>
                         <!-- BUTTON TAMBAH FORM -->
                         <div class="mt-4">
-                            <button type="button" class="btn-special btn-success btn-sm" id="add-row" style="background-color: green;"><span class="front front-add"><i class="fa fa-plus" aria-hidden="true"></i> Add</span></button>
+                            <button disabled type="button" class="btn-special btn-sm" id="add-row" style="background-color:rgb(53, 65, 107);"><span class="front front-add"><i class="fa fa-plus" aria-hidden="true"></i> Add</span></button>
                         </div>
                         <!-- TABLE INPUT -->
                         <div class="mt-3 mb-3" style="overflow-x: scroll;">
-                            <table class="table table-bordered table-hover">
-                                <thead class="thead-dark">
+                            <table class="table table-bordered table-hover table-produk" id="table-transaksi">
+                                <thead>
                                     <tr>
                                         <th scope="col" class="text-center">No</th>
-                                        <th scope="col">Deskripsi</th>
+                                        <th scope="col">Produk</th>
                                         <th scope="col">Jumlah</th>
-                                        <th scope="col">Satuan</th>
                                         <th scope="col">Harga</th>
                                         <th scope="col">Total</th>
                                         <th scope="col" class="text-center">Action</th>
@@ -267,6 +348,48 @@
                             <p>Loading...</p>
                         </div>
 
+                        <!-- Modal Data Table Produk -->
+                        <div class="modal fade" id="produkModal" tabindex="-1" aria-labelledby="produkModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="produkModalLabel">Pilih Data Produk</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span style="position: relative; bottom: 5px" aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <table id="produk-table" class="table table-bordered table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>No</th>
+                                                    <th>Kode Produk</th>
+                                                    <th>Nama Produk</th>
+                                                    <th>Stok Akhir</th>
+                                                    <th>Harga Qubagift</th>
+                                                    <th>Harga Reseller</th>
+                                                    <th>Harga Distributor</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <th>No</th>
+                                                    <th>Kode Produk</th>
+                                                    <th>Nama Produk</th>
+                                                    <th>Stok Akhir</th>
+                                                    <th>Harga Qubagift</th>
+                                                    <th>Harga Reseller</th>
+                                                    <th>Harga Distributor</th>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- PENENTUAN UPDATE ATAU ADD -->
                         <input type="hidden" name="id" id="id" value="<?= $id ?>">
                         <?php if (!empty($aksi)) { ?>
@@ -274,9 +397,9 @@
                         <?php } ?>
                         <?php if ($id == 0) { ?>
                             <input type="hidden" name="kode" id="kode" value="">
-                            <button type="submit" class="btn-special btn-sm aksi" style="background-color: #1f558f;" disabled></button>
+                            <button type="submit" class="btn-special btn-sm aksi" style="background-color: #242D4A;" disabled></button>
                         <?php } else { ?>
-                            <button type="submit" class="btn-special btn-sm aksi" style="background-color: #1f558f;"></button>
+                            <button type="submit" class="btn-special btn-sm aksi" style="background-color: #242D4A;"></button>
                         <?php } ?>
                         <!-- END PENENTUAN UPDATE ATAU ADD -->
                     </form>
@@ -343,6 +466,224 @@
         ['clean']
     ];
 
+    // untuk menghilangkan data produk pada saat data di klik / dipilih
+    $('#produkModal table tbody').on('click', 'tr', function() {
+        $(this).fadeOut(function() {
+            $(this).remove(); // Setelah fadeOut, hapus elemen tr
+        });
+    });
+
+
+    // Jika opsi harga belum di pilih, maka tombol add detail tidak bisa di klik
+    $(document).ready(function() {
+        $('#jenis_harga').on('change', function() {
+            if ($(this).val().trim() !== '' || aksi != 'update') {
+                $('#add-row').prop('disabled', false); // Menghilangkan disabled
+                $(this).css({
+                    'background-color': '#EAECF4',
+                    'pointer-events': 'none'
+                });
+            } else {
+                $('#add-row').prop('disabled', true); // Mengaktifkan kembali disabled jika belum dipilih
+            }
+        });
+        if ($('#jenis_harga').val() === 'qubagift') {
+            alert('sip')
+        }
+    });
+
+    // untuk menghitung seluruh total produk, dan disimpan ke input total akhir
+    function calculateTotalNominal() {
+        let total = 0;
+        $('.total').each(function() {
+            let value = $(this).val().replace(/[^\d]/g, ''); // Buang karakter selain angka
+            value = parseInt(value) || 0; // Konversi ke integer
+            total += value;
+        });
+
+        $('#total_akhir').val(total); // Format ke rupiah (ribuan)
+    }
+
+    // untuk memastikan inputan email customer dan jumlah tidak bisa mengetikan selain angka
+    $(document).on('input', '#nomor_customer, .jumlah', function() {
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
+
+    // agar inputan ongkir dan potongan harga menjadi format rupiah
+    $(document).on('input', '#ongkir, #potongan_harga', function() {
+        let value = this.value.replace(/[^0-9]/g, ''); // Hanya angka
+        if (value) {
+            this.value = formatRupiah(value, 'Rp. ');
+        } else {
+            this.value = '';
+        }
+    });
+
+    function formatRupiah(angka, prefix) {
+        let numberString = angka.replace(/[^,\d]/g, '').toString(),
+            split = numberString.split(','),
+            sisa = split[0].length % 3,
+            rupiah = split[0].substr(0, sisa),
+            ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+        if (ribuan) {
+            let separator = sisa ? '.' : '';
+            rupiah += separator + ribuan.join('.');
+        }
+
+        return prefix + rupiah;
+    }
+
+
+    // Variabel untuk menyimpan rowCount
+    var currentRowCount;
+
+    // Event listener untuk tombol modal produk
+    $(document).on('click', '[id^=produk-modal]', function() {
+        currentRowCount = $(this).data('id');
+    });
+
+    // Data table produk
+
+    // METHOD POST MENAMPILKAN DATA KE DATA TABLE
+    $(document).ready(function() {
+        var table = $('#produk-table').DataTable({
+            responsive: true,
+            autoWidth: false,
+            processing: true,
+            serverSide: true,
+            order: [],
+            ajax: {
+                url: "<?php echo site_url('qbg_invoice/get_list2') ?>",
+                type: "POST"
+            },
+            columnDefs: [{
+                    targets: [],
+                    className: 'dt-head-nowrap'
+                },
+                {
+                    targets: [],
+                    className: 'dt-body-nowrap'
+                },
+                {
+                    targets: [0, 1],
+                    orderable: false
+                }
+            ],
+            language: {
+                emptyTable: "Belum ada data produk tersedia."
+            }
+        });
+
+
+        // Variabel untuk menyimpan rowCount
+        var currentRowCount;
+
+        // Event listener untuk tombol modal deklarasi
+        $(document).on('click', '[id^=produk-modal]', function() {
+            currentRowCount = $(this).data('id');
+        });
+
+        // Event listener untuk baris tabel dalam modal
+        $('#produk-table tbody').on('click', 'tr', function() {
+            console.log(currentRowCount)
+            let data = table.row(this).data();
+
+            // jika stok tidak kosong jalankan, jika kosong, tampilkan swal
+            if (data[3] != 0) {
+
+                $('#produk-modal' + currentRowCount).text(`${data[2]} (${data[3]})`);
+
+                $('#kode_produk' + currentRowCount).val(data[1]);
+
+                if ($('#kode_produk' + currentRowCount).val() !== '') {
+                    $('#jumlah' + currentRowCount).prop('readonly', false).attr({
+                        'data-stok': data[3],
+                        'data-produk': data[2]
+                    });
+
+                    // Set initial harga berdasarkan pilihan awal
+                    var selectedOption = $('#jenis_harga').val();
+                    var harga;
+
+                    if (selectedOption === 'qubagift') {
+                        harga = data[4]; // Ganti dengan data yang sesuai
+                    } else if (selectedOption === 'reseller') {
+                        harga = data[5]; // Ganti dengan data yang sesuai
+                    } else if (selectedOption === 'distributor') {
+                        harga = data[6]; // Ganti dengan data yang sesuai
+                    }
+
+                    // Set harga ke input dengan ID yang sesuai saat halaman pertama kali dimuat
+                    $('#harga' + currentRowCount).val(harga);
+
+                    // Update harga saat opsi dropdown berubah
+                    $('#jenis_harga').on('change', function() {
+                        selectedOption = $(this).val();
+
+                        if (selectedOption === 'qubagift') {
+                            harga = data[4];
+                        } else if (selectedOption === 'reseller') {
+                            harga = data[5];
+                        } else if (selectedOption === 'distributor') {
+                            harga = data[6];
+                        }
+
+                        $('#harga' + currentRowCount).val(harga);
+                    });
+                }
+            } else {
+                Swal.fire({
+                    icon: 'warning',
+                    title: `Stok Habis`,
+                    text: `Untuk Produk : ${data[2]}`, // Tampilkan semua pesan
+                    confirmButtonColor: '#242c49',
+                    confirmButtonText: 'OK'
+                });
+            }
+            // Tutup modal setelah data dipilih
+            $('#produkModal').modal('hide');
+        });
+    });
+
+    // Untuk memastikan value dari jumlah tidak lebih dari stok akhir
+    $('#table-transaksi').on('click', 'input.jumlah', function() {
+        // Ambil data-id dari input yang sedang diklik
+        let dataId = $(this).data('id');
+
+        $(`#jumlah${dataId}`).on('input', function() {
+            let maxVal = $(this).data('stok'); // Batas maksimal angka
+            let jumlah = parseFloat($(this).val()) || 0;
+            let produk = $(this).data('produk'); // Batas maksimal angka
+
+            if (jumlah > maxVal) {
+                $(this).val(maxVal);
+                jumlah = maxVal;
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: `Stok Hanya Tersedia : ${maxVal}`,
+                    text: `Untuk Produk : ${produk}`, // Tampilkan semua pesan
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#242c49'
+                });
+
+            } else if (jumlah == 0) {
+                jumlah = 1;
+            }
+
+            // Bersihkan harga dari karakter non-angka atau titik
+            let harga = $('#harga' + dataId).val().replace(/[^0-9]/g, '') || 0;
+
+            // Hitung total: harga × jumlah
+            let total = harga * jumlah;
+
+            // Format total menjadi dua angka desimal dengan tanda ribuan
+            $('#total' + dataId).val('Rp. ' + total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
+            calculateTotalNominal()
+        });
+    });
+
     const quill = new Quill('#catatan', {
         modules: {
             toolbar: toolbarOptions
@@ -357,31 +698,6 @@
         // Set it to hidden input
         document.getElementById("catatan_item").value = catatanItem;
     };
-
-    $(document).ready(function() {
-        $('#ctc_nomor').on('input', function() {
-            // Ambil nilai input
-            let value = $(this).val();
-
-            // Hapus semua karakter yang bukan angka
-            $(this).val(value.replace(/[^0-9]/g, ''));
-        });
-        $('#ctc2_nomor').on('input', function() {
-            // Ambil nilai input
-            let value = $(this).val();
-
-            // Hapus semua karakter yang bukan angka
-            $(this).val(value.replace(/[^0-9]/g, ''));
-        });
-        $('#diskon').on('input', function() {
-            // Ambil nilai input
-            let value = $(this).val();
-
-            // Hapus semua karakter yang bukan angka
-            $(this).val(value.replace(/[^0-9]/g, ''));
-        });
-    });
-
 
     $('#tgl_invoice').datepicker({
         dateFormat: 'dd-mm-yy',
@@ -405,7 +721,6 @@
                 },
                 dataType: "JSON",
                 success: function(data) {
-                    console.log(data);
                     $('#kode_invoice').val(data.toUpperCase());
                     $('#kode').val(data);
                 },
@@ -432,6 +747,7 @@
                         icon: 'error',
                         title: 'Kesalahan',
                         text: 'Tanggal tempo tidak boleh mundur dari tanggal invoice!',
+                        confirmButtonColor: '#242c49'
                     });
 
                     // Reset input tanggal
@@ -510,20 +826,7 @@
                 // Pastikan elemen hidden dengan ID yang benar diperbarui
                 const hiddenId = `#hidden_${$(this).attr('id').replace('nominal-', 'nominal')}`;
                 $(hiddenId).val(cleanValue);
-
-                // Hitung total nominal setelah nilai berubah
-                calculateTotalNominal();
             });
-        }
-
-        function calculateTotalNominal() {
-            let total = 0;
-            $('input[name^="hidden_nominal"]').each(function() {
-                let value = parseInt($(this).val()) || 0; // Parse as integer, default to 0 if invalid
-                total += value;
-            });
-            $('#total_nominal_view').text(total.toLocaleString()); // Format total dengan pemisah ribuan
-            $('#total_nominal').val(total);
         }
 
         //MENAMBAH FORM INPUTAN DI ADD FORM
@@ -554,86 +857,55 @@
         }
 
         function addRow() {
-            $.ajax({
-                url: "<?= base_url('qbg_invoice/getAllProducts'); ?>",
-                type: "GET",
-                dataType: "json",
-                success: function(data) {
-                    rowCount++;
+            rowCount++;
 
-                    let options = "";
-                    $.each(data, function(index, item) {
-                        options += `<option value="${item.kode_produk}">${item.nama_produk}</option>`;
-                    });
+            const row = `
+                <tr id="row-${rowCount}">
+                    <td class="row-number">${rowCount}</td>
+                        <input type="hidden" id="hidden_id" name="hidden_id[${rowCount}]" value="${rowCount}">
+                        <input type="hidden" name="hidden_invoiceId[${rowCount}]" id="hidden_invoiceId${rowCount}" value="${rowCount}">
+                    <td>
+                        <div class="btn btn-primary btn-lg btn-block btn-sm btn-style produk-modal" data-toggle="modal" data-target="#produkModal" data-id="${rowCount}" id="produk-modal${rowCount}">Pilih Produk</div>
+                        <input type="hidden" id="kode_produk${rowCount}" name="kode_produk[${rowCount}]" value="">
+                    </td>
+                    <td>
+                        <input type="text" class="form-control jumlah" id="jumlah${rowCount}" name="jumlah[${rowCount}]" value="" placeholder="Jumlah" data-id="${rowCount}" data-stok="" data-produk="" readonly autocomplete="off">
+                    </td>
+                    <td>
+                        <input type="text" class="form-control" id="harga${rowCount}" name="harga[${rowCount}]" value="" placeholder="Harga" readonly>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control total" id="total${rowCount}" name="total[${rowCount}]" placeholder="Total" readonly>
+                    </td>
+                        <td><span class="btn delete-btn btn-danger btn-delete" data-id="${rowCount}">Delete</span></td>
+                    </tr>
+                `;
+            $('#input-container').append(row);
 
-                    const row = `
-                        <tr id="row-${rowCount}">
-                            <td class="row-number">${rowCount}</td>
-                            <td>
-                            <select class="form-control" name="produk[${rowCount}]" id="produk">
-                                <option selected hidden value="">Pilih Produk</option>
-                                ${options}
-                            </select>
-                            </td>
-                            <input type="hidden" id="hidden_id${rowCount}" name="hidden_id[${rowCount}]" value="">
-                            <input type="hidden" name="hidden_invoiceId[${rowCount}]" id="hidden_invoiceId${rowCount}" value="">
-                            <td>
-                            <input type="text" class="form-control jumlah" id="jumlah-${rowCount}" name="jumlah[${rowCount}]" value="" placeholder="Jumlah">
-                            </td>
-                            <td>
-                            <input type="text" class="form-control" id="satuan-${rowCount}" name="satuan[${rowCount}]" value="" placeholder="Satuan">
-                            </td>
-                            <td>
-                            <input type="text" class="form-control harga" id="harga-${rowCount}" name="harga[${rowCount}]" value="" placeholder="Harga" />
-                            </td>
-                            <td>
-                            <input type="text" class="form-control total" id="total-${rowCount}" name="total[${rowCount}]" value="" placeholder="Total" />
-                            </td>
-                            <td><span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span></td>
-                        </tr>
-                        `;
+            // Tambahkan format ke input nominal yang baru
+            formatJumlahInput(`#nominal-${rowCount}`);
+            updateSubmitButtonState(); // Perbarui status tombol submit
+            //checkDeleteButtonState(); // Cek tombol delete setelah baris ditambahkan
 
-                    $('#input-container').append(row);
-                    // Tambahkan format ke input nominal yang baru
-                    formatJumlahInput(`#nominal-${rowCount}`);
-                    updateSubmitButtonState(); // Perbarui status tombol submit
-                    //checkDeleteButtonState(); // Cek tombol delete setelah baris ditambahkan
+            // Hitung total nominal setelah baris baru ditambahkan
+            calculateTotalNominal();
 
-                    // Hitung total nominal setelah baris baru ditambahkan
-                    calculateTotalNominal();
-
-                    $('.harga, .total, .jumlah').on('input', function() {
-                        // Ambil nilai input
-                        let value = $(this).val();
-
-                        // Hapus semua karakter yang bukan angka
-                        value = value.replace(/[^0-9]/g, '');
-
-                        // Format ke Rupiah
-                        let formatted = new Intl.NumberFormat('id-ID').format(value);
-
-                        // Set nilai input dengan format Rupiah
-                        $(this).val(formatted);
-                    });
-
-                    //VALIDASI ROW YANG TELAH DI APPEND
-                    $("#form").validate().settings.rules[`produk[${rowCount}]`] = {
-                        required: true
-                    };
-                    $("#form").validate().settings.rules[`jumlah[${rowCount}]`] = {
-                        required: true
-                    };
-                    $("#form").validate().settings.rules[`satuan[${rowCount}]`] = {
-                        required: true
-                    };
-                    $("#form").validate().settings.rules[`harga[${rowCount}]`] = {
-                        required: true
-                    };
-                    $("#form").validate().settings.rules[`total[${rowCount}]`] = {
-                        required: true
-                    };
-                }
-            });
+            //VALIDASI ROW YANG TELAH DI APPEND
+            $("#form").validate().settings.rules[`produk[${rowCount}]`] = {
+                required: true
+            };
+            $("#form").validate().settings.rules[`jumlah[${rowCount}]`] = {
+                required: true
+            };
+            $("#form").validate().settings.rules[`harga[${rowCount}]`] = {
+                required: true
+            };
+            $("#form").validate().settings.rules[`harga[${rowCount}]`] = {
+                required: true
+            };
+            $("#form").validate().settings.rules[`total[${rowCount}]`] = {
+                required: true
+            };
         }
 
         // MENGHAPUS ROW
@@ -644,7 +916,7 @@
                 deletedRows.push(rowId);
             }
 
-            // console.log(rowId);
+            console.log(rowId);
 
             $(`#row-${id}`).remove();
             // Reorder rows and update row numbers
@@ -664,8 +936,6 @@
                 deletedRekRows.push(rowRekId);
             }
 
-            console.log(rowRekId);
-
             $(`#rek-${id}`).remove();
             // Reorder rows and update row numbers
             reorderRekRows();
@@ -676,23 +946,23 @@
             $('#input-container tr').each(function(index) {
                 //INISIASI VARIABLE UNTUK reorderRows
                 const newRowNumber = index + 1;
-                const produkValue = $(this).find('input[name^="produk"]').val();
-                const satuanValue = $(this).find('input[name^="satuan"]').val();
-                const jumlahValue = $(this).find('input[name^="jumlah"]').val();
+                const kodeProdukValue = $(this).find('input[name^="kode_produk"]').val();
                 const hargaValue = $(this).find('input[name^="harga"]').val();
+                const jumlahValue = $(this).find('input[name^="jumlah"]').val();
                 const totalValue = $(this).find('input[name^="total"]').val();
                 const hiddenInvoiceIdValue = $(this).find('input[name^="hidden_invoiceId"]').val();
                 const hiddenIdValue = $(this).find('input[name^="hidden_id"]').val();
 
                 $(this).attr('id', `row-${newRowNumber}`);
                 $(this).find('.row-number').text(newRowNumber);
-                $(this).find('select[name^="produk"]').attr('name', `produk[${newRowNumber}]`).attr('placeholder', `Deskripsi`).val(produkValue);
-                $(this).find('input[name^="jumlah"]').attr('name', `jumlah[${newRowNumber}]`).attr('id', `jumlah-${newRowNumber}`).attr('placeholder', `Jumlah`).val(jumlahValue);
-                $(this).find('input[name^="satuan"]').attr('name', `satuan[${newRowNumber}]`).attr('id', `satuan-${newRowNumber}`).attr('placeholder', 'Satuan').val(satuanValue);
-                $(this).find('input[name^="harga"]').attr('name', `harga[${newRowNumber}]`).attr('id', `harga-${newRowNumber}`).attr('placeholder', `Harga`).val(hargaValue);
-                $(this).find('input[name^="total"]').attr('name', `total[${newRowNumber}]`).attr('id', `total-${newRowNumber}`).attr('placeholder', `Total`).val(totalValue);
+                $(this).find('input[name^="kode_produk"]').attr('name', `kode_produk[${newRowNumber}]`).attr('id', `kode_produk${newRowNumber}`).val(kodeProdukValue);
+                $(this).find('input[name^="jumlah"]').attr('name', `jumlah[${newRowNumber}]`).attr('id', `jumlah${newRowNumber}`).attr('placeholder', `Jumlah`).attr('data-id', newRowNumber).val(jumlahValue);
+                $(this).find('input[name^="harga"]').attr('name', `harga[${newRowNumber}]`).attr('id', `harga${newRowNumber}`).attr('placeholder', 'Harga').val(hargaValue);
+                $(this).find('input[name^="total"]').attr('name', `total[${newRowNumber}]`).attr('id', `total${newRowNumber}`).attr('placeholder', `Total`).val(totalValue);
                 $(this).find('input[name^="hidden_invoiceId"]').attr('name', `hidden_invoiceId[${newRowNumber}]`).attr('id', `hidden_invoiceId${newRowNumber}`).val(hiddenInvoiceIdValue);
-                $(this).find('input[name^=hidden_id]').attr('name', `hidden_id[${newRowNumber}]`).attr('id', `hidden_id[${newRowNumber}]`).val(hiddenIdValue);
+                $(this).find('input[name^=hidden_id]').attr('name', `hidden_id[${newRowNumber}]`).attr('id', `hidden_id`).val(hiddenIdValue);
+                // <div class="btn btn-primary btn-lg btn-block btn-sm btn-style produk-modal" data-toggle="modal" data-target="#produkModal" data-id="${rowCount}" id="produk-modal${rowCount}">Pilih Produk</div>
+                $(this).find('.produk-modal').attr('data-id', `${newRowNumber}`).attr('id', `produk-modal${newRowNumber}`);
                 $(this).find('.delete-btn').attr('data-id', newRowNumber).text('Delete');
             });
             rowCount = $('#input-container tr').length; // Update rowCount to the current number of rows
@@ -740,9 +1010,6 @@
             var rek = selectedOption.data('rek');
 
             addRekRow(bank, rek);
-            // // Cetak ke konsol untuk memastikan
-            // console.log('Bank:', bank);
-            // console.log('Rekening:', rek);
         });
 
         function updateSubmitButtonState() {
@@ -796,23 +1063,24 @@
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
-                    console.log(data);
-                    //SET VALUE DATA MASTER PREPAYMENT
+                    //SET VALUE DATA MASTER INVOICE
                     $('#id').val(data['master']['id']);
                     let dateParts = data['master']['tgl_invoice'].split('-'); // Pisahkan berdasarkan "-"
                     let formattedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`; // Susun jadi DD-MM-YYYY
                     $('#tgl_invoice').val(formattedDate); // Masukkan ke input
                     $('#kode_invoice').val(data['master']['kode_invoice']);
                     $('#tgl_tempo').val(data['master']['tgl_tempo']);
-                    $('#ctc_nama').val(data['master']['ctc_nama']);
-                    $('#ctc_nomor').val(data['master']['ctc_nomor']);
-                    $('#diskon').val(data['master']['diskon']);
-                    $('#ctc2_nama').val(data['master']['ctc2_nama']);
-                    $('#ctc2_email').val(data['master']['ctc2_email']);
-                    $('#ctc2_nomor').val(data['master']['ctc2_nomor']);
-                    $('#ctc2_alamat').val(data['master']['ctc2_alamat']);
+                    $('#nama_customer').val(data['master']['nama_customer']);
+                    $('#nomor_customer').val(data['master']['nomor_customer']);
+                    $('#email_customer').val(data['master']['email_customer']);
+                    $('#alamat_customer').val(data['master']['alamat_customer']);
+                    $('#jenis_harga').val(data['master']['jenis_harga']).trigger('change');
+                    $('#total_akhir').val(data['master']['total']);
+                    $('#ongkir').val('Rp. ' + data['master']['ongkir'].replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
+                    $('#potongan_harga').val('Rp. ' + data['master']['potongan_harga'].replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
+
                     quill.clipboard.dangerouslyPasteHTML(data['master']['keterangan']);
-                    //APPEND DATA pu_rek_invoice DETAIL PREPAYMENT
+                    //APPEND DATA pu_rek_invoice DETAIL INVOICE
                     // console.log(data['rek_invoice']);
                     if (aksi == 'update') {
                         // Rekening
@@ -834,30 +1102,29 @@
 
                         // Detail pemesanan
                         $(data['detail_invoice']).each(function(index) {
-                            const hargaFormatted = data['detail_invoice'][index]['harga'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-                            const totalFormatted = data['detail_invoice'][index]['total'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                            const hargaFormatted = 'Rp. ' + data['detail_invoice'][index]['harga'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                            const totalFormatted = 'Rp. ' + data['detail_invoice'][index]['total'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
                             const row = `
                             <tr id="row-${index + 1}">
                                 <td class="row-number">${index + 1}</td>
                                 <td>
-                                    <input type="text" class="form-control" name="deskripsi[${index + 1}]" value="${data['detail_invoice'][index]['deskripsi']}" placeholder="Deskripsi" />
-                                    <input type="hidden" id="hidden_id${index + 1}" name="hidden_id[${index + 1}]" value="${data['detail_invoice'][index]['id']}">
+                                    <div class="btn btn-primary btn-lg btn-block btn-sm btn-style produk-modal" data-toggle="modal" data-target="#produkModal" data-id="${index + 1}" id="produk-modal${index + 1}">${data['detail_invoice'][index]['nama_produk']} ${data['detail_invoice'][index]['berat']} ${data['detail_invoice'][index]['satuan']} (${data['detail_invoice'][index]['stok_akhir']})</div>
+                                    <input type="text" id="kode_produk${index + 1}" name="kode_produk[${index + 1}]" value="${data['detail_invoice'][index]['kode_produk']}">
+
+                                    <input type="hidden" id="hidden_id" name="hidden_id[${index + 1}]" value="${data['detail_invoice'][index]['id']}">
                                     <input type="hidden" name="hidden_invoiceId[${index + 1}]" id="hidden_invoiceId${index + 1}" value="${data['detail_invoice'][index]['invoice_id']}">
                                 </td>
                                 <td>
-                                    <input type="text" class="form-control jumlah" id="jumlah-${index + 1}" name="jumlah[${index + 1}]" value="${data['detail_invoice'][index]['jumlah']}" placeholder="Jumlah" style="margin-left: 10px">
+                                    <input type="text" class="form-control jumlah" id="jumlah${index + 1}" name="jumlah[${index + 1}]" value="${data['detail_invoice'][index]['jumlah']}" data-id="${index + 1}" data-stok="${data['detail_invoice'][index]['stok_akhir']}" data-produk="${data['detail_invoice'][index]['nama_produk']} ${data['detail_invoice'][index]['berat']} ${data['detail_invoice'][index]['satuan']}" autocomplete="off">
                                 </td>
                                 <td>
-                                    <input type="text" class="form-control" id="satuan-${index + 1}" name="satuan[${index + 1}]" value="${data['detail_invoice'][index]['satuan']}" placeholder="Satuan">
+                                    <input type="text" class="form-control" id="harga${index + 1}" name="harga[${index + 1}]" value="${hargaFormatted}" readonly>
                                 </td>
                                 <td>
-                                    <input type="text" class="form-control harga" id="harga-${index + 1}" name="harga[${index + 1}]" value="${hargaFormatted}" placeholder="Harga" />
+                                    <input type="text" class="form-control total" id="total${index + 1}" name="total[${index + 1}]" value="${totalFormatted}" readonly>
                                 </td>
-                                <td>
-                                    <input type="text" class="form-control total" id="total-${index + 1}" name="total[${index + 1}]" value="${totalFormatted}" placeholder="Harga" />
-                                </td>
-
-                                <td><span class="btn delete-btn btn-danger" data-id="${index + 1}">Delete</span></td>
+                                    <td><span class="btn delete-btn btn-danger btn-delete" data-id="${index + 1}">Delete</span></td>
+                                </tr>
                             </tr>
                             `;
                             $('#input-container').append(row);
@@ -871,47 +1138,26 @@
             });
         }
 
-        // UNTUK TAMPILAN READ ONLY
-        if (aksi == "read") {
-            $('.aksi').hide();
-            $('#id').prop('readonly', true);
-            $('#tgl_invoice').prop('disabled', true);
-            $('#nama').prop('readonly', true);
-            // $('#jabatan').prop('disabled', true);
-            // $('#divisi').prop('disabled', true);
-            $('#prepayment').prop('readonly', true);
-            $('#tujuan').prop('readonly', true);
-            $('#total_nominal_row').attr('colspan', 3);
-            $('#add-row').toggle();
-            $('th:last-child').remove();
-
-            $.ajax({
-                url: "<?php echo site_url('qbg_invoice/read_detail/') ?>" + id,
-                type: "GET",
-                dataType: "JSON",
-                success: function(data) {
-                    $(data).each(function(index) {
-                        //Nilai nominal diformat menggunakan pemisah ribuan sebelum dimasukkan ke dalam elemen input.
-                        const nominalReadFormatted = data[index]['nominal'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-                        const row = `
-                        <tr id="row-${index}">
-                            <td class="row-number">${index + 1}</td>
-                            <td><input readonly type="text" class="form-control" name="rincian[${index}]" value="${data[index]['rincian']}" /></td>
-                            <td><input readonly type="text" class="form-control" name="nominal[${index}]" value="${nominalReadFormatted}" /></td>
-                            <td><input readonly type="text" class="form-control" name="keterangan[${index}]" value="${data[index]['keterangan']}" /></td>
-                        </tr>
-                        `;
-                        $('#input-container').append(row);
-                    });
-                }
-            });
-        }
-
-        // INSERT ATAU UPDATE
         $("#form").submit(function(e) {
             e.preventDefault();
             var $form = $(this);
             if (!$form.valid()) return false;
+
+            // Cek opsi jenis_harga dan total_akhir
+            let selectedOption = $('#jenis_harga').val();
+            let totalAkhir = parseFloat($('#total_akhir').val()) || 0;
+
+            if (selectedOption === 'reseller' && totalAkhir < 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Total Tidak Memenuhi Syarat',
+                    text: 'Total harus minimal Rp. 1.500.000 untuk memilih harga Reseller.',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#242c49'
+                });
+                return false; // Hentikan proses submit
+            }
+
             var url;
             if (id == 0) {
                 url = "<?php echo site_url('qbg_invoice/add') ?>";
@@ -921,8 +1167,7 @@
 
             // Tampilkan loading
             $('#loading').show();
-
-            $('.aksi').prop('disabled', true);
+            // $('.aksi').prop('disabled', true);
 
             $.ajax({
                 url: url,
@@ -930,22 +1175,21 @@
                 data: $('#form').serialize(),
                 dataType: "JSON",
                 success: function(data) {
-                    console.log(data);
                     // Sembunyikan loading saat respons diterima
                     $('#loading').hide();
 
-                    if (data.status) //if success close modal and reload ajax table
-                    {
+                    if (data.status) {
                         Swal.fire({
                             position: 'center',
                             icon: 'success',
                             title: 'Your data has been saved',
+                            confirmButtonColor: '#242c49',
                             showConfirmButton: false,
                             timer: 1500
                         }).then((result) => {
                             checkNotifications();
                             location.href = "<?= base_url('qbg_invoice') ?>";
-                        })
+                        });
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
@@ -955,11 +1199,13 @@
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
+                        confirmButtonColor: '#242c49',
                         text: 'Error adding / updating data: ' + textStatus
                     });
                 }
             });
         });
+
 
         $("#form").validate({
             rules: {
@@ -972,23 +1218,23 @@
                 tgl_tempo: {
                     required: true,
                 },
-                ctc_nama: {
+                nama_customer: {
                     required: true,
                 },
-                ctc_nomor: {
+                nomor_customer: {
                     required: true,
                 },
-                ctc2_nama: {
+                email_customer: {
                     required: true,
                 },
-                ctc2_nomor: {
+                alamat_customer: {
                     required: true,
                 },
-                ctc2_alamat: {
+                ongkir: {
                     required: true,
                 },
-                diskon: {
-                    max: 100,
+                potongan_harga: {
+                    required: true,
                 }
             },
             messages: {
@@ -1001,23 +1247,23 @@
                 tgl_tempo: {
                     required: "Tanggal Tempo is required",
                 },
-                ctc_nama: {
-                    required: "Contact Nama is required",
+                nama_customer: {
+                    required: "Nama Customer is required",
                 },
-                ctc_nomor: {
-                    required: "Contact Nomor is required",
+                nomor_customer: {
+                    required: "Nomor Customer is required",
                 },
-                ctc2_nama: {
-                    required: "Contact Nama is required",
+                email_customer: {
+                    required: "Email Customer is required",
                 },
-                ctc2_nomor: {
-                    required: "Contact Nomor is required",
+                alamat_customer: {
+                    required: "Alamat Customer is required",
                 },
-                ctc2_alamat: {
-                    required: "Contact Nomor is required",
+                ongkir: {
+                    required: "Biaya Pengiriman is required",
                 },
-                diskon: {
-                    max: "Diskon tidak boleh melibihi 100",
+                potongan_harga: {
+                    required: "Potongan Harga is required",
                 }
             },
             errorPlacement: function(error, element) {

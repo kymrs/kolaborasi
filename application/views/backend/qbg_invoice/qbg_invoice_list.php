@@ -36,6 +36,7 @@
                                 <th>Nama Tujuan</th>
                                 <th>Alamat Tujuan</th>
                                 <th>Tanggal Tempo</th>
+                                <th>Dibuat Pada</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -49,6 +50,7 @@
                                 <th>Nama Tujuan</th>
                                 <th>Alamat Tujuan</th>
                                 <th>Tanggal Tempo</th>
+                                <th>Dibuat Pada</th>
                             </tr>
                         </tfoot>
                     </table>
@@ -130,7 +132,7 @@
                     "className": 'dt-head-nowrap'
                 },
                 {
-                    "targets": [1],
+                    "targets": [1, 4, 5, 7],
                     "className": 'dt-body-nowrap'
                 }, {
                     "targets": [0, 1],

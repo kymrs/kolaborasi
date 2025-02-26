@@ -47,14 +47,12 @@ class Qbg_produk extends CI_Controller
             $row[] = $field->nama_produk;
             $row[] = $field->berat;
             $row[] = ucwords($field->satuan);
-            $query = $this->db->select('stok_akhir')->where('kode_produk', $field->kode_produk)->get('qbg_stok')->row();
-            $stok_akhir = $query->stok_akhir;
-            $row[] = $stok_akhir;
-            $row[] = 'Rp. ' . number_format($field->harga_qubagift, 0, ',', '.');;
-            $row[] = 'Rp. ' . number_format($field->harga_reseller, 0, ',', '.');;
-            $row[] = 'Rp. ' . number_format($field->harga_distributor, 0, ',', '.');;
-            $row[] = date("d-m-Y | H:i:s", strtotime($field->created_at));
-            $row[] = $field->updated_at ? date("d-m-Y | H:i:s", strtotime($field->updated_at)) : '-';
+            $row[] = $field->stok_akhir;
+            $row[] = 'Rp. ' . number_format($field->harga_qubagift, 0, ',', '.');
+            $row[] = 'Rp. ' . number_format($field->harga_reseller, 0, ',', '.');
+            $row[] = 'Rp. ' . number_format($field->harga_distributor, 0, ',', '.');
+            $row[] = $field->updated_at ? date("d-m-Y | H:i:s", strtotime($field->updated_at)) . ' (' . $field->updated_by . ')' : '-';
+
             $data[] = $row;
         }
 
@@ -100,11 +98,9 @@ class Qbg_produk extends CI_Controller
 
     function get_stok_kode($kode)
     {
-        $stok = $this->db->get_where('qbg_stok', ['kode_produk' => $kode])->row();
         $produk = $this->db->get_where('qbg_produk', ['kode_produk' => $kode])->row();
 
         $data = [
-            'stok' => $stok,
             'produk' => $produk
         ];
 
@@ -131,17 +127,21 @@ class Qbg_produk extends CI_Controller
             'nama_produk' => $this->input->post('nama_produk'),
             'berat' => $this->input->post('berat'),
             'satuan' => $this->input->post('satuan'),
-            'harga_qubagift' => $this->input->post('harga_qubagift'),
-            'harga_reseller' => $this->input->post('harga_reseller'),
-            'harga_distributor' => $this->input->post('harga_distributor')
+            'stok_akhir' => $this->input->post('stok'),
+            'harga_qubagift' => preg_replace('/\D/', '', $this->input->post('harga_qubagift')),
+            'harga_reseller' => preg_replace('/\D/', '', $this->input->post('harga_reseller')),
+            'harga_distributor' => preg_replace('/\D/', '', $this->input->post('harga_distributor')),
+            'created_by' => $this->session->userdata('id_user')
         );
 
         $this->M_qbg_produk->save($data);
 
         $data2 = [
             'kode_produk' => $kode_produk,
-            'stok_awal' => $this->input->post('stok'),
-            'stok_akhir' => $this->input->post('stok')
+            'jumlah' => $this->input->post('stok'),
+            'jenis_transaksi' => 'masuk',
+            'keterangan' => 'penambahan produk',
+            'created_by' => $this->session->userdata('id_user')
         ];
 
         $this->db->insert('qbg_stok', $data2);
@@ -155,33 +155,72 @@ class Qbg_produk extends CI_Controller
             'nama_produk' => $this->input->post('nama_produk'),
             'berat' => $this->input->post('berat'),
             'satuan' => $this->input->post('satuan'),
-            'harga_qubagift' => $this->input->post('harga_qubagift'),
-            'harga_reseller' => $this->input->post('harga_reseller'),
-            'harga_distributor' => $this->input->post('harga_distributor'),
-            'updated_at' => date('Y-m-d H:i:s')
+            'harga_qubagift' => preg_replace('/\D/', '', $this->input->post('harga_qubagift')),
+            'harga_reseller' => preg_replace('/\D/', '', $this->input->post('harga_reseller')),
+            'harga_distributor' => preg_replace('/\D/', '', $this->input->post('harga_distributor')),
+            'updated_at' => date('Y-m-d H:i:s'),
+            'updated_by' => $this->session->userdata('id_user')
         );
 
         $this->db->where('id', $this->input->post('id'));
         $this->db->update('qbg_produk', $data);
 
+        $kode_produk = $this->input->post('kode_produk');
+        $tambah_stok_baru = $this->input->post('tambah_stok');
+        $kurangi_stok_baru = $this->input->post('kurangi_stok');
+
+        $query = $this->db->select('stok_akhir')
+            ->where('kode_produk', $kode_produk)
+            ->order_by('id', 'DESC')
+            ->limit(1)
+            ->get('qbg_produk')
+            ->row();
+
+        $total = 0;
+
+        $data2 = [
+            'updated_at' => date('Y-m-d H:i:s'),
+            'updated_by' => $this->session->userdata('id_user')
+        ];
+
         if ($this->input->post('tambah_stok')) {
-            $kode_produk = $this->input->post('kode_produk');
-            $stok_baru = $this->input->post('tambah_stok');
-
-            $query = $this->db->select('stok_akhir')
-                ->where('kode_produk', $kode_produk) // Perbaikan where
-                ->get('qbg_stok')
-                ->row();
-
             if ($query) {
-                $stok_akhir = $query->stok_akhir; // Akses sebagai objek
-                $total = $stok_akhir + $stok_baru;
+                $stok_akhir = $query->stok_akhir;
+                $total = $stok_akhir + $tambah_stok_baru;
 
-                // Update stok
-                $this->db->update('qbg_stok', ['stok_akhir' => $total], ['kode_produk' => $kode_produk]);
+                $data2 = [
+                    'kode_produk' => $kode_produk,
+                    'jumlah' => $this->input->post('tambah_stok'),
+                    'jenis_transaksi' => 'masuk',
+                    'keterangan' => 'penambahan stok',
+                    'created_by' => $this->session->userdata('id_user')
+                ];
+
+                // Insert stok baru
+                $this->db->insert('qbg_stok', $data2);
+                $this->db->update('qbg_produk', ['stok_akhir' => $total], ['kode_produk' => $kode_produk]);
             }
         } else if ($this->input->post('kurangi_stok')) {
-            var_dump('kurang');
+            if ($query) {
+                $stok_akhir = $query->stok_akhir;
+                $total = $stok_akhir - $kurangi_stok_baru;
+
+                if ($total < 0) {
+                    $total = 0;
+                }
+
+                $data2 = [
+                    'kode_produk' => $kode_produk,
+                    'jumlah' => $this->input->post('kurangi_stok'),
+                    'jenis_transaksi' => 'keluar',
+                    'keterangan' => 'pengurangan stok',
+                    'created_by' => $this->session->userdata('id_user')
+                ];
+
+                // Insert stok baru
+                $this->db->insert('qbg_stok', $data2);
+                $this->db->update('qbg_produk', ['stok_akhir' => $total], ['kode_produk' => $kode_produk]);
+            }
         }
 
         echo json_encode(array("status" => TRUE));
@@ -189,6 +228,13 @@ class Qbg_produk extends CI_Controller
 
     function delete($id)
     {
+        // ambil data kode produk pada tabel produk
+        $query = $this->db->select('kode_produk')->where('id', $id)->get('qbg_produk')->row();
+
+        // hapus data stok dari tabel stok berdasarkan kode produk
+        $this->db->delete('qbg_stok', ['kode_produk' => $query->kode_produk]);
+
+        // hapus data master
         $this->M_qbg_produk->delete($id);
         echo json_encode(array("status" => TRUE));
     }

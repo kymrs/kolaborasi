@@ -7,7 +7,7 @@ class M_qbg_produk extends CI_Model
 {
     var $id = 'id';
     var $table = 'qbg_produk'; //nama tabel dari database
-    var $column_order = array(null, null, 'kode_produk', 'nama_produk', 'satuan', 'created_at');
+    var $column_order = array(null, null, 'kode_produk', 'nama_produk', 'berat', 'satuan', 'harga_qubagift', 'harga_reseller', 'harga_distributor', 'created_at');
     var $column_search = array('kode_produk', 'nama_produk', 'satuan', 'created_at'); //field yang diizin untuk pencarian 
     var $order = array('id' => 'asc'); // default order 
 

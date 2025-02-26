@@ -18,18 +18,18 @@ class T_cpdf2 extends TCPDf
         // $this->Rect(3.5, 23, 142, 4.5, 'F'); // Mengisi kotak di area header
 
         // Logo
-        $this->SetFont('helvetica', 'B', 12);
-        $this->Image('assets/backend/img/qubagift.png', 5, 4, 37, 20);
-        $this->SetX(110);
-        $this->SetFont('Poppins-Regular', '', 9);
-        $this->Cell(40, 16, 'qubagift@gmail.com', 0, 0);
+        $this->SetFont('Helvetica', 'B', 12);
+        $this->Image('assets/backend/img/qubagift.png', 2, 2, 37, 22);
+        $this->SetX(113);
+        $this->SetFont('Helvetica', '', 9);
+        $this->Cell(40, 22, 'qubagift@gmail.com', 0, 0);
         $this->SetX(121);
-        $this->Cell(40, 26, '081290399933', 0, 1);
+        $this->Cell(40, 31, '081290399933', 0, 1);
         $style = array('width' => 0.5, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0));
 
         // $this->SetY(18);
         // $this->SetX(34);
-        // $this->SetFont('Poppins-Regular', '', 8);
+        // $this->SetFont('Helvetica', '', 8);
         // $this->Cell(40, 16, 'Jl. Mahoni Raya No 13, Sukmajaya, Depok, Jawa Barat', 0, 0);
 
         $this->Line(4, 26, 145, 26, $style);
@@ -124,11 +124,12 @@ class Qbg_invoice extends CI_Controller
             $row[] = $action;
 
             $row[] = $this->tgl_indo(date("Y-m-j", strtotime($field->tgl_invoice)));
-            $kode_invoice = substr($field->kode_invoice, 0, 5) . substr($field->kode_invoice, 7, 6);
+            $kode_invoice = $field->kode_invoice;
             $row[] = strtoupper($kode_invoice);
-            $row[] = $field->ctc2_nama;
-            $row[] = $field->ctc2_alamat;
+            $row[] = $field->nama_customer;
+            $row[] = $field->alamat_customer;
             $row[] = $this->tgl_indo(date("Y-m-j", strtotime($field->tgl_tempo)));
+            $row[] = date("d-m-Y | H:i:s", strtotime($field->created_at));
 
             $data[] = $row;
         }
@@ -137,6 +138,38 @@ class Qbg_invoice extends CI_Controller
             "draw" => $_POST['draw'],
             "recordsTotal" => $this->M_qbg_invoice->count_all(),
             "recordsFiltered" => $this->M_qbg_invoice->count_filtered(),
+            "data" => $data,
+        );
+        //output dalam format JSON
+        echo json_encode($output);
+    }
+
+    // get list deklarasi
+    function get_list2()
+    {
+        $list = $this->M_qbg_invoice->get_datatables2();
+        $data = array();
+        $no = $_POST['start'];
+
+        //LOOPING DATATABLES
+        foreach ($list as $field) {
+
+            $no++;
+            $row = array();
+            $row[] = $no;
+            $row[] = $field->kode_produk;
+            $row[] = $field->nama_produk . ' ' . $field->berat . ' ' . $field->satuan;
+            $row[] = $field->stok_akhir;
+            $row[] = 'Rp. ' . number_format($field->harga_qubagift, 0, ',', '.');
+            $row[] = 'Rp. ' . number_format($field->harga_reseller, 0, ',', '.');
+            $row[] = 'Rp. ' . number_format($field->harga_distributor, 0, ',', '.');
+            $data[] = $row;
+        }
+
+        $output = array(
+            "draw" => $_POST['draw'],
+            "recordsTotal" => $this->M_qbg_invoice->count_all2(),
+            "recordsFiltered" => $this->M_qbg_invoice->count_filtered2(),
             "data" => $data,
         );
         //output dalam format JSON
@@ -177,23 +210,23 @@ class Qbg_invoice extends CI_Controller
         if (empty($kode->kode_invoice)) {
             $no_urut = 1;
         } else {
-            $bln = substr($kode->kode_invoice, 5, 2);
-            $no_urut = substr($kode->kode_invoice, 10) + 1;
+            $bln = substr($kode->kode_invoice, 3, 2);
+            $no_urut = substr($kode->kode_invoice, 7) + 1;
         }
-        $urutan = str_pad($no_urut, 4, "0", STR_PAD_LEFT);
+        $urutan = str_pad($no_urut, 3, "0", STR_PAD_LEFT);
         $year = substr($date, 8, 2);
         $month = substr($date, 3, 2);
-        $data = 'INVQB' . $year . $month . $urutan;
+        $data = 'Q' . $year . $month . $urutan;
         echo json_encode($data);
     }
 
-    public function getAllProducts()
-    {
-        $this->load->database();
-        $query = $this->db->get('qbg_produk');  // Ganti 'produk' dengan nama tabel lo
-        $result = $query->result_array();
-        echo json_encode($result);
-    }
+    // public function getAllProducts()
+    // {
+    //     $this->load->database();
+    //     $query = $this->db->get('qbg_produk');  // Ganti 'produk' dengan nama tabel lo
+    //     $result = $query->result_array();
+    //     echo json_encode($result);
+    // }
 
 
     // UNTUK MENAMPILKAN FORM EDIT
@@ -211,9 +244,17 @@ class Qbg_invoice extends CI_Controller
     {
         $data['master'] = $this->M_qbg_invoice->get_by_id($id);
         $data['rek_invoice'] = $this->db->get_where('qbg_rek_invoice', ['invoice_id' => $id])->result_array();
-        $data['detail_invoice'] = $this->db->get_where('qbg_detail_invoice', ['invoice_id' => $id])->result_array();
+
+        // Join detail invoice dengan qbg_produk
+        $this->db->select('d.*, p.nama_produk, p.berat, p.satuan, p.stok_akhir');
+        $this->db->from('qbg_detail_invoice d');
+        $this->db->join('qbg_produk p', 'd.kode_produk = p.kode_produk', 'left');
+        $this->db->where('d.invoice_id', $id);
+        $data['detail_invoice'] = $this->db->get()->result_array();
+
         echo json_encode($data);
     }
+
 
     function read_detail($id)
     {
@@ -232,38 +273,55 @@ class Qbg_invoice extends CI_Controller
         if (empty($kode->kode_invoice)) {
             $no_urut = 1;
         } else {
-            $bln = substr($kode->kode_invoice, 5, 2);
-            $no_urut = substr($kode->kode_invoice, 10) + 1;
+            $bln = substr($kode->kode_invoice, 3, 2);
+            $no_urut = substr($kode->kode_invoice, 7) + 1;
         }
-        $urutan = str_pad($no_urut, 4, "0", STR_PAD_LEFT);
+        $urutan = str_pad($no_urut, 3, "0", STR_PAD_LEFT);
         $year = substr($date, 8, 2);
         $month = substr($date, 3, 2);
 
-        $kode_invoice = 'INVQB' . $year . $month . $urutan;
+        $kode_invoice = 'Q' . $year . $month . $urutan;
+
+        $total_akhir = $this->input->post('total_akhir');
 
         $data = array(
             'tgl_invoice' => date('Y-m-d', strtotime($this->input->post('tgl_invoice'))),
             'kode_invoice' => $kode_invoice,
             'tgl_tempo' => date('Y-m-d', strtotime($this->input->post('tgl_tempo'))),
-            'ctc_nama' => $this->input->post('ctc_nama'),
-            'ctc_nomor' => $this->input->post('ctc_nomor'),
-            'ctc2_nama' => $this->input->post('ctc2_nama'),
-            'ctc2_nomor' => $this->input->post('ctc2_nomor'),
-            'ctc2_alamat' => $this->input->post('ctc2_alamat'),
-            'created_at' => date('Y-m-d H:i:s')
+            'nama_customer' => $this->input->post('nama_customer'),
+            'nomor_customer' => $this->input->post('nomor_customer'),
+            'email_customer' => $this->input->post('email_customer'),
+            'alamat_customer' => $this->input->post('alamat_customer'),
+            'jenis_harga' => $this->input->post('jenis_harga'),
+            'total' => $total_akhir,
+            'created_at' => date('Y-m-d H:i:s'),
+            'created_by' => $this->session->userdata('id_level')
         );
+
+        $ongkir = preg_replace('/\D/', '', $this->input->post('ongkir'));
+        if (!empty($ongkir || $ongkir == 0)) {
+
+            $total_akhir_ongkir = $total_akhir +  $ongkir;
+            $data['ongkir'] = $ongkir;
+        }
+
+        $potongan_harga = preg_replace('/\D/', '', $this->input->post('potongan_harga'));
+        if (!empty($potongan_harga || $potongan_harga == 0)) {
+            $data['potongan_harga'] = $potongan_harga;
+
+            $data['grand_total'] = $total_akhir_ongkir - $potongan_harga;
+        } else {
+            $data['grand_total'] = $total_akhir_ongkir;
+        }
 
         if (!empty($_POST['catatan_item'])) {
             $data['keterangan'] = $this->input->post('catatan_item');
-        }
-        if (!empty($_POST['diskon'])) {
-            $data['diskon'] = $this->input->post('diskon');
         }
 
         $inserted = $this->M_qbg_invoice->save($data);
 
         if ($inserted) {
-            // INISIASI VARIABEL INPUT DETAIL PREPAYMENT
+            // save data rekening
             $nama_bank = $this->input->post('nama_bank[]');
             $no_rek = $this->input->post('no_rek[]');
             //PERULANGAN UNTUK INSER QUERY DETAIL PREPAYMENT
@@ -278,98 +336,151 @@ class Qbg_invoice extends CI_Controller
         }
 
         if ($inserted) {
-            // INISIASI VARIABEL INPUT DETAIL PREPAYMENT
+            // Ambil data produk dari form
             $kode_produk = $this->input->post('kode_produk[]');
-            $jumlah = preg_replace('/\D/', '', $this->input->post('jumlah[]'));
-            $harga = preg_replace('/\D/', '', $this->input->post('harga[]'));
-            $satuan = $this->input->post('satuan[]');
+            $jumlah = $this->input->post('jumlah[]');
             $total = preg_replace('/\D/', '', $this->input->post('total[]'));
-            //PERULANGAN UNTUK INSER QUERY DETAIL PREPAYMENT
-            if (!empty($kode_produk) && !empty($jumlah) && !empty($satuan) && !empty($harga) && !empty($total)) {
-                for ($i = 1; $i <= count($kode_produk); $i++) {
-                    $data3[] = array(
-                        'invoice_id' => $inserted,
+            $harga = preg_replace('/\D/', '', $this->input->post('harga[]'));
+
+            // Perulangan untuk insert ke tabel stok dan detail prepayment
+            if (!empty($kode_produk) && !empty($jumlah) && !empty($total) && !empty($harga)) {
+                $data3 = [];
+
+                for ($i = 1; $i <= count($kode_produk); $i++) { // Pakai $i = 0 karena array index mulai dari 0
+                    // Simpan detail invoice dulu
+                    $data3[] = [
+                        'invoice_id'  => $inserted,
                         'kode_produk' => $kode_produk[$i],
-                        'jumlah' => $jumlah[$i],
-                        'satuan' => $satuan[$i],
-                        'harga' => $harga[$i],
-                        'total' => $total[$i]
-                    );
+                        'jumlah'      => $jumlah[$i],
+                        'harga'       => $harga[$i],
+                        'total'       => $total[$i]
+                    ];
                 }
+
+                // Insert detail invoice ke database (batch insert supaya lebih efisien)
                 $this->M_qbg_invoice->save_detail2($data3);
+
+                foreach ($kode_produk as $i => $kode) {
+                    // Ambil stok terakhir
+                    $stok_sebelumnya = $this->db->select('stok_akhir')
+                        ->where('kode_produk', $kode)
+                        ->order_by('id', 'DESC')
+                        ->limit(1)
+                        ->get('qbg_produk')
+                        ->row();
+
+                    $stok_awal = $stok_sebelumnya ? $stok_sebelumnya->stok_akhir : 0;
+                    $stok_akhir = $stok_awal - $jumlah[$i];
+
+                    // Insert transaksi stok baru
+                    $this->db->insert('qbg_stok', [
+                        'kode_produk'       => $kode,
+                        'jenis_transaksi'   => 'keluar',
+                        'jumlah'            => $jumlah[$i],
+                        'keterangan'        => 'penjualan (' . $kode_invoice . ')',
+                        'created_by'        => $this->session->userdata('id_user')
+                    ]);
+
+                    // Update stok akhir di table produk
+                    $this->db->update('qbg_produk', ['stok_akhir' => $stok_akhir], ['kode_produk' => $kode]);
+                }
             }
         }
-
         echo json_encode(array("status" => TRUE));
     }
 
     // UPDATE DATA
     public function update()
     {
-        // INSERT KODE PREPAYMENT SAAT SUBMIT
-        $date = $this->input->post('tgl_invoice');
-
-        $kode = $this->M_qbg_invoice->max_kode($date)->row();
-
-        if (empty($kode->kode_invoice)) {
-            $no_urut = 1;
-        } else {
-            $bln = substr($kode->kode_invoice, 5, 2);
-            $no_urut = substr($kode->kode_invoice, 10) + 1;
-        }
-        $urutan = str_pad($no_urut, 4, "0", STR_PAD_LEFT);
-        $year = substr($date, 8, 2);
-        $month = substr($date, 3, 2);
-
-        $kode_invoice = 'INVQB' . $year . $month . $urutan;
+        $total_akhir = $this->input->post('total_akhir');
 
         $data = array(
             'tgl_invoice' => date('Y-m-d', strtotime($this->input->post('tgl_invoice'))),
-            'kode_invoice' => $kode_invoice,
             'tgl_tempo' => date('Y-m-d', strtotime($this->input->post('tgl_tempo'))),
-            'ctc_nama' => $this->input->post('ctc_nama'),
-            'ctc_nomor' => $this->input->post('ctc_nomor'),
-            'ctc2_nama' => $this->input->post('ctc2_nama'),
-            'ctc2_nomor' => $this->input->post('ctc2_nomor'),
-            'ctc2_alamat' => $this->input->post('ctc2_alamat'),
-            'created_at' => date('Y-m-d H:i:s')
+            'nama_customer' => $this->input->post('nama_customer'),
+            'nomor_customer' => $this->input->post('nomor_customer'),
+            'email_customer' => $this->input->post('email_customer'),
+            'alamat_customer' => $this->input->post('alamat_customer'),
+            'jenis_harga' => $this->input->post('jenis_harga'),
+            'total' => $total_akhir,
+            'updated_at' => date('Y-m-d H:i:s'),
+            'updated_by' => $this->session->userdata('id_level')
         );
+
+        $ongkir = preg_replace('/\D/', '', $this->input->post('ongkir'));
+        if (!empty($ongkir || $ongkir == 0)) {
+
+            $total_akhir_ongkir = $total_akhir +  $ongkir;
+            $data['ongkir'] = $ongkir;
+        }
+
+        $potongan_harga = preg_replace('/\D/', '', $this->input->post('potongan_harga'));
+        if (!empty($potongan_harga || $potongan_harga == 0)) {
+            $data['potongan_harga'] = $potongan_harga;
+
+            $data['grand_total'] = $total_akhir_ongkir - $potongan_harga;
+        } else {
+            $data['grand_total'] = $total_akhir_ongkir;
+        }
 
         if (!empty($_POST['catatan_item'])) {
             $data['keterangan'] = $this->input->post('catatan_item');
         }
 
-        if (!empty($_POST['diskon'])) {
-            $data['diskon'] = $this->input->post('diskon');
-        }
-
-        //UPDATE DETAIL PREPAYMENT
-        $id_detail = $this->input->post('hidden_id[]');
+        // UPDATE DETAIL PRODUK
         // $invoice_id = $this->input->post('hidden_invoiceId[]');
-        $deskripsi = $this->input->post('deskripsi[]');
-        $jumlah = preg_replace('/\D/', '', $this->input->post('jumlah[]'));
-        $satuan = $this->input->post('satuan[]');
+        $id_detail = $this->input->post('hidden_id[]');
+        $kode_produk = $this->input->post('kode_produk[]');
+        $jumlah = $this->input->post('jumlah[]');
         $harga = preg_replace('/\D/', '', $this->input->post('harga[]'));
         $total = preg_replace('/\D/', '', $this->input->post('total[]'));
+
         if ($this->db->update('qbg_invoice', $data, ['id' => $this->input->post('id')])) {
+
             // UNTUK MENGHAPUS ROW YANG TELAH DIDELETE
             $deletedRows = json_decode($this->input->post('deleted_rows'), true);
             if (!empty($deletedRows)) {
                 foreach ($deletedRows as $delRows) {
-                    // Hapus row dari database berdasarkan ID
-                    $this->db->where('id', $delRows);
-                    $this->db->delete('qbg_detail_invoice');
+                    // Ambil kode_produk berdasarkan ID yang dihapus
+                    $query = $this->db->select('kode_produk')->where('id', $delRows)->get('qbg_detail_invoice')->row_array();
+
+
+                    if ($query) { // Cek apakah data ditemukan
+                        $kode_produk = $query['kode_produk'];
+
+                        // Hapus data pada detail invoice
+                        $this->db->where('id', $delRows);
+                        $this->db->delete('qbg_detail_invoice');
+
+                        // // Cari ID terbesar (data terakhir) yang memiliki kode_produk ini
+                        // $lastStok = $this->db->select('id, stok_akhir')
+                        //     ->where('kode_produk', $kode_produk)
+                        //     ->get('qbg_produk')
+                        //     ->row_array();
+
+                        // $this->db->where('kode_produk', $kode_produk);
+                        // $this->db->set('stok_akhir', $lastStok['stok_akhir']);
+                        // $this->db->update('qbg_produk');
+
+                        // if ($lastStok) {
+                        //     // Hapus hanya stok dengan ID terbesar
+                        //     $this->db->where('id', $lastStok['id']);
+                        //     $this->db->delete('qbg_stok');
+                        // }
+                    }
                 }
             }
 
-            //MELAKUKAN REPLACE DATA LAMA DENGAN YANG BARU
-            for ($i = 1; $i <= count($_POST['deskripsi']); $i++) {
+
+            // MELAKUKAN REPLACE DATA LAMA DENGAN YANG BARU
+            for ($i = 1; $i <= count($_POST['kode_produk']); $i++) {
                 // Set id menjadi NULL jika id_detail tidak ada atau kosong
+                $id_invoice = !empty($id_detail[$i]) ? $id_detail[$i] : NULL;
                 $data2[] = array(
+                    'id' => $id_invoice,
                     'invoice_id' => $this->input->post('id'),
-                    'deskripsi' => $deskripsi[$i],
+                    'kode_produk' => $kode_produk[$i],
                     'jumlah' => $jumlah[$i],
-                    'satuan' => $satuan[$i],
                     'harga' => $harga[$i],
                     'total' => $total[$i]
                 );
@@ -404,6 +515,7 @@ class Qbg_invoice extends CI_Controller
                 $this->db->replace('qbg_rek_invoice', $data3[$i - 1]);
             }
         }
+
         echo json_encode(array("status" => TRUE));
     }
 
@@ -481,7 +593,7 @@ class Qbg_invoice extends CI_Controller
 
         $t_cpdf2->SetMargins(15, 28, 15); // Margin kiri, atas (untuk header), kanan
         // $t_cpdf2->SetHeaderMargin(30);    // Jarak antara header dan konten
-        $t_cpdf2->SetAutoPageBreak(true, 15); // Penanganan otomatis margin bawah
+        $t_cpdf2->SetAutoPageBreak(true, 20); // Penanganan otomatis margin bawah
 
         // Add a new page
         $t_cpdf2->AddPage();
@@ -489,44 +601,44 @@ class Qbg_invoice extends CI_Controller
         $t_cpdf2->SetY(30);
 
         // Pilih font untuk isi
-        $t_cpdf2->SetFont('Poppins-Bold', '', 22);
+        $t_cpdf2->SetFont('Helvetica', 'B', 22);
 
-        $t_cpdf2->SetX(57);
+        $t_cpdf2->SetX(58);
         $t_cpdf2->Cell(100, 10, 'INVOICE', 0, 1, 'L');
 
-        $t_cpdf2->SetFont('Poppins-Regular', '', 11);
-        $t_cpdf2->SetX(48);
-        $t_cpdf2->Cell(19, 4, 'No. Invoice : ' . $invoice->kode_invoice, 0, 0, 'L');
+        $t_cpdf2->SetFont('Helvetica', '', 11);
+        $t_cpdf2->SetX(53.5);
+        $t_cpdf2->Cell(19, 8, 'No. Invoice : ' . $invoice->kode_invoice, 0, 0, 'L');
 
-        $t_cpdf2->SetY($t_cpdf2->GetY());
+        $t_cpdf2->SetY($t_cpdf2->GetY() + 5);
         $t_cpdf2->SetX(4);
-        $t_cpdf2->SetFont('Poppins-Regular', '', 10);
-        $t_cpdf2->Cell(74, 20, 'Kepada Yth.', 0, 0);
-        $t_cpdf2->Cell(45, 20, 'Tanggal Invoice', 0, 0);
+        $t_cpdf2->SetFont('Helvetica', '', 10);
+        $t_cpdf2->Cell(82, 20, 'Kepada Yth.', 0, 0);
+        $t_cpdf2->Cell(36, 20, 'Tanggal Invoice', 0, 0);
         $t_cpdf2->Cell(19, 20, ': ' . date('d/m/Y', strtotime($invoice->tgl_invoice)), 0, 0);
-        $t_cpdf2->SetY($t_cpdf2->GetY() + 13);
+        $t_cpdf2->SetY($t_cpdf2->GetY() + 14);
         $t_cpdf2->SetX(4);
-        $t_cpdf2->SetFont('Poppins-Bold', '', 14);
-        $t_cpdf2->Cell(74, 5, $invoice->ctc2_nama, 0, 0);
-        $t_cpdf2->SetFont('Poppins-Regular', '', 10);
-        $t_cpdf2->Cell(45, 5, 'Tanggal Jatuh Tempo', 0, 0);
+        $t_cpdf2->SetFont('Helvetica', '', 14);
+        $t_cpdf2->Cell(82, 7, $invoice->nama_customer, 0, 0);
+        $t_cpdf2->SetFont('Helvetica', '', 10);
+        $t_cpdf2->Cell(36, 5, 'Tanggal Jatuh Tempo', 0, 0);
         $t_cpdf2->Cell(19, 5, ': ' . date('d/m/Y', strtotime($invoice->tgl_tempo)), 0, 0);
 
-        $t_cpdf2->SetFont('Poppins-Regular', '', 10);
-        $t_cpdf2->SetY($t_cpdf2->GetY() + 7);
+        $t_cpdf2->SetFont('Helvetica', '', 10);
+        $t_cpdf2->SetY($t_cpdf2->GetY() + 9);
         $t_cpdf2->SetX(4);
         $t_cpdf2->Cell(0, 0, 'Email', 0, 0);
         $t_cpdf2->SetX(23);
-        $t_cpdf2->Cell(0, 0, ': ' . $invoice->ctc2_email, 0, 0);
+        $t_cpdf2->Cell(0, 0, ': ' . ($invoice->email_customer ?: '-'), 0, 0);
 
-        $t_cpdf2->SetFont('Poppins-Regular', '', 10);
+        $t_cpdf2->SetFont('Helvetica', '', 10);
         $t_cpdf2->SetY($t_cpdf2->GetY() + 6);
         $t_cpdf2->SetX(4);
         $t_cpdf2->Cell(75, 0, 'Telepon', 0, 0);
         $t_cpdf2->SetX(23);
-        $t_cpdf2->Cell(0, 0, ': ' . $invoice->ctc2_nomor, 0, 0);
+        $t_cpdf2->Cell(0, 0, ': ' . $invoice->nomor_customer, 0, 0);
 
-        $t_cpdf2->SetFont('Poppins-Regular', '', 10);
+        $t_cpdf2->SetFont('Helvetica', '', 10);
         $t_cpdf2->SetY($t_cpdf2->GetY() + 6);
         $t_cpdf2->SetX(4);
         $t_cpdf2->Cell(0, 0, 'Alamat', 0, 0);
@@ -535,11 +647,11 @@ class Qbg_invoice extends CI_Controller
         $t_cpdf2->Cell(0, 0, ':', 0, 0);
         $t_cpdf2->SetY($t_cpdf2->GetY());
         $t_cpdf2->SetX(24.5);
-        $t_cpdf2->MultiCell(58, 0, $invoice->ctc2_alamat, 0, 'L');
+        $t_cpdf2->MultiCell(58, 0, $invoice->alamat_customer, 0, 'L');
 
-        $t_cpdf2->SetY($t_cpdf2->GetY() + 2);
+        $t_cpdf2->SetY($t_cpdf2->GetY() + 4);
         // HEADER DETAIL PEMESANAN
-        $t_cpdf2->SetFont('Helvetica', '', 11);
+        $t_cpdf2->SetFont('Helvetica', '', 10);
         $t_cpdf2->SetFillColor(0, 190, 99);
         $t_cpdf2->SetTextColor(255, 255, 255);
         $t_cpdf2->SetX(5);
@@ -550,8 +662,8 @@ class Qbg_invoice extends CI_Controller
         <table border="1" cellpadding="3">
             <thead>
                 <tr>
-                    <th align="center" width="30%"><b>DESKRIPSI</b></th>
-                    <th align="center" width="20%"><b>JUMLAH</b></th>
+                    <th align="center" width="35%"><b>PRODUK</b></th>
+                    <th align="center" width="15%"><b>JUMLAH</b></th>
                     <th align="center" width="25%"><b>HARGA</b></th>
                     <th align="center" width="25%"><b>TOTAL</b></th>
                 </tr>
@@ -559,9 +671,11 @@ class Qbg_invoice extends CI_Controller
             <tbody>
     EOD;
         foreach ($invoice_details as $detail) {
+            $produk = $this->db->select('nama_produk, berat, satuan')->where('kode_produk', $detail->kode_produk)->get('qbg_produk')->row_array();
+
             $tbl .= '<tr>';
-            $tbl .= '<td width="30%">' . $detail->deskripsi . '</td>';
-            $tbl .= '<td width="20%" style="text-align: center">' . $detail->jumlah . '</td>';
+            $tbl .= '<td width="35%">' . $produk['nama_produk'] . ' ' . $produk['berat'] . ' ' . $produk['satuan'] . '</td>';
+            $tbl .= '<td width="15%" style="text-align: center">' . $detail->jumlah . '</td>';
             $tbl .= '<td width="25%" style="text-align: center">' . 'Rp. ' . number_format($detail->harga, 0, ',', '.') . '</td>';
             $tbl .= '<td width="25%" style="text-align: center">' . 'Rp. ' . number_format($detail->total, 0, ',', '.') . '</td>';
             $tbl .= '</tr>';
@@ -574,29 +688,24 @@ EOD;
         $t_cpdf2->writeHTMLCell(142, 0, 4, $t_cpdf2->GetY() + 4, $tbl, 0, 1, false, true, 'L', true);
 
         $table2 = <<<EOD
-            <table>
+            <table cellpadding="3">
             <tbody>
             EOD;
 
-        $total = 0;
-        $diskon = $invoice->diskon;
-        foreach ($invoice_details as $detail) {
-            if ($diskon != 0) {
-                $total += $detail->total - ($detail->total * $diskon / 100);
-            } else {
-                $total += $detail->total;
-            }
-        }
-
         $table2 .= '<tr style="border: none;">';
         $table2 .= '<td colspan="2"></td>';
-        $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center"> Diskon</td>';
-        $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center"> ' . $invoice->diskon .  '%</td>';
+        $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center">Biaya Pengiriman</td>';
+        $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center;"> ' . 'Rp. ' . number_format($invoice->ongkir, 0, ',', '.') . '</td>';
+        $table2 .= '</tr>';
+        $table2 .= '<tr style="border: none;">';
+        $table2 .= '<td colspan="2"></td>';
+        $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center">Potongan Harga</td>';
+        $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center;"> ' . 'Rp. -' . number_format($invoice->potongan_harga, 0, ',', '.') . '</td>';
         $table2 .= '</tr>';
         $table2 .= '<tr style="border: none;">';
         $table2 .= '<td colspan="2" style="border: none;"></td>';
         $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center;"> <b>Total</b></td>';
-        $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center;"> ' . 'Rp. ' . number_format($total, 0, ',', '.') . '</td>';
+        $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center;"> ' . 'Rp. ' . number_format($invoice->total, 0, ',', '.') . '</td>';
         $table2 .= '</tr>';
         $table2 .=  <<<EOD
             <tbody>
@@ -607,7 +716,7 @@ EOD;
 
         $t_cpdf2->SetY($t_cpdf2->GetY() + 1);
         $t_cpdf2->SetX(4);
-        $t_cpdf2->SetFont('Poppins-Bold', '', 11);
+        $t_cpdf2->SetFont('Helvetica', '', 11);
         $t_cpdf2->Cell(14, 9, 'Metode Pembayaran', 0, 1);
         $list = <<<EOD
         <ol>
@@ -619,7 +728,7 @@ EOD;
         $list .= <<<EOD
         </ol>
         EOD;
-        $t_cpdf2->SetFont('Poppins-Regular', '', 10);
+        $t_cpdf2->SetFont('Helvetica', '', 10);
         $y = $t_cpdf2->GetY();
         $x = -4;
         $t_cpdf2->writeHTMLCell(0, 0, $x, $y, $list, 0, 1, false, true, 'L', true);
@@ -627,31 +736,31 @@ EOD;
         $t_cpdf2->SetY($t_cpdf2->GetY() - 1);
         $t_cpdf2->SetX(4);
 
-        $t_cpdf2->SetFont('Poppins-Bold', '', 11);
+        $t_cpdf2->SetFont('Helvetica', '', 10);
         $t_cpdf2->Cell(19, 9, 'Atas Nama : PT. Kolaborasi Para Sahabat', 0, 1);
 
         $t_cpdf2->setY($t_cpdf2->GetY());
         $t_cpdf2->SetX(4);
 
-        $t_cpdf2->SetFont('Poppins-Regular', '', 10);
+        $t_cpdf2->SetFont('Helvetica', '', 10);
         $t_cpdf2->Cell(19, 9, 'Catatan :', 0, 1);
         if ($invoice->keterangan != '') {
             $catatan = $invoice->keterangan;
         } else {
-            $catatan = '';
+            $catatan = '-';
         }
 
         $t_cpdf2->writeHTMLCell(0, 0, 4, $t_cpdf2->GetY(), $catatan, 0, 1, false, true, 'L', true);
 
         $t_cpdf2->setY($t_cpdf2->GetY() + 3);
-        $t_cpdf2->SetX(97);
-        $t_cpdf2->SetFont('Poppins-Bold', '', 10);
-        $t_cpdf2->Cell(26, 10, 'Terima Kasih, ', 0, 0);
-        $t_cpdf2->SetFont('Poppins-Regular', '', 10);
+        $t_cpdf2->SetX(106);
+        $t_cpdf2->SetFont('Helvetica', '', 10);
+        $t_cpdf2->Cell(22.5, 10, 'Terima Kasih, ', 0, 0);
+        $t_cpdf2->SetFont('Helvetica', '', 10);
         $t_cpdf2->Cell(19, 10, 'Qubagift', 0, 1);
 
         // Output PDF (tampilkan di browser)
-        $t_cpdf2->Output('Invoice Qubagift.pdf', 'I'); // 'I' untuk menampilkan di browser
+        $t_cpdf2->Output('Invoice Qubagift - ' . $invoice->kode_invoice . '.pdf', 'I'); // 'I' untuk menampilkan di browser
     }
 
     function payment()

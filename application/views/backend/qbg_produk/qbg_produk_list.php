@@ -42,7 +42,7 @@
                     <!-- Added padding for spacing -->
                     <div class="table-responsive">
                         <!-- Table wrapper -->
-                        <table id="layanan-table" class="table table-bordered table-striped display nowrap w-100 mb-4">
+                        <table id="produk-table" class="table table-bordered table-striped display nowrap w-100 mb-4">
                             <!-- Added margin-bottom -->
                             <thead>
                                 <tr>
@@ -56,8 +56,8 @@
                                     <th>Harga QubaGift</th>
                                     <th>Harga Reseller</th>
                                     <th>Harga Distributor</th>
-                                    <th>Dibuat Pada</th>
-                                    <th>Diubah Pada</th>
+                                    <!-- <th>Stok Diubah</th> -->
+                                    <th>Produk Diubah</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -75,8 +75,8 @@
                                     <th>Harga QubaGift</th>
                                     <th>Harga Reseller</th>
                                     <th>Harga Distributor</th>
-                                    <th>Dibuat Pada</th>
-                                    <th>Diubah Pada</th>
+                                    <!-- <th>Stok Diubah</th> -->
+                                    <th>Produk Diubah</th>
                                 </tr>
                             </tfoot>
                         </table>
@@ -214,15 +214,23 @@
 
 <script type="text/javascript">
     $(document).ready(function() {
+        // memastikan agar user tidak mengetikan selain angka
+        $('#berat, #stok').on('input', function() {
+            $(this).val($(this).val().replace(/[^0-9]/g, ''));
+        });
+
+        // untuk memilih opsi tambah atau kurangi produk
         $('input[name="stok_option"]').on('change', function() {
             $('#save-button').css('display', 'flex');
             if ($('#tambah-stok').is(':checked')) {
                 $('#tambah-stok-container').css('display', 'flex');
                 $('#kurangi-stok-container').css('display', 'none');
+                $('#tambah_stok').focus();
                 $('#save-button').html('Tambah Stok');
             } else if ($('#kurangi-stok').is(':checked')) {
                 $('#kurangi-stok-container').css('display', 'flex');
                 $('#tambah-stok-container').css('display', 'none');
+                $('#kurangi_stok').focus();
                 $('#save-button').html('Kurangi Stok');
             }
         });
@@ -230,7 +238,7 @@
 
     var table;
     $(document).ready(function() {
-        table = $('#layanan-table').DataTable({
+        table = $('#produk-table').DataTable({
             "responsive": true,
             "scrollX": true,
             "processing": true,
@@ -338,6 +346,10 @@
     function add_data() {
         method = 'add';
         $('#modalform')[0].reset();
+        $('#stok_awal').css('display', '');
+        $('#modal-default').modal('show');
+        $('.card-title').text('Tambah Data Produk');
+        $('.aksi').text('Save');
         var validator = $("#modalform").validate();
         validator.resetForm();
     };
@@ -352,34 +364,63 @@
         $('#add_btn').click();
     }
 
-    function edit_data(id) {
-        method = 'update';
-        $('#modalform')[0].reset();
-        var validator = $("#modalform").validate();
-        validator.resetForm();
-        $('.form-control').removeClass('error');
-        $('#stok_awal').css('display', 'none');
-        $('#modal-default').modal('show');
-        $('.card-title').text('Edit Data Produk');
-        $('.aksi').text('Update');
-        $.ajax({
-            url: "<?php echo site_url('qbg_produk/get_id/') ?>/" + id,
-            type: "GET",
-            dataType: "JSON",
-            success: function(data) {
-                $('[name="id"]').val(data.id);
-                $('[name="nama_produk"]').val(data.nama_produk);
-                $('[name="berat"]').val(data.berat);
-                $('[name="satuan"]').val(data.satuan);
-                $('[name="harga_qubagift"]').val(data.harga_qubagift);
-                $('[name="harga_reseller"]').val(data.harga_reseller);
-                $('[name="harga_distributor"]').val(data.harga_distributor);
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                alert('Error get data from ajax');
+    // untuk menjadikan format rupiah pada inputan harga
+    $(document).ready(function() {
+        function formatRupiah(angka, prefix) {
+            let number_string = angka.replace(/[^,\d]/g, ''),
+                split = number_string.split(','),
+                sisa = split[0].length % 3,
+                rupiah = split[0].substr(0, sisa),
+                ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+            if (ribuan) {
+                let separator = sisa ? '.' : '';
+                rupiah += separator + ribuan.join('.');
+            }
+
+            rupiah = split[1] !== undefined ? rupiah + ',' + split[1] : rupiah;
+            return prefix === undefined ? rupiah : (rupiah ? 'Rp ' + rupiah : '');
+        }
+
+        $('#berat, #stok, #harga_qubagift, #harga_reseller, #harga_distributor').on('input', function() {
+            if ($(this).attr('id').includes('harga')) {
+                $(this).val(formatRupiah($(this).val(), 'Rp '));
+            } else {
+                $(this).val($(this).val().replace(/[^0-9]/g, ''));
             }
         });
-    };
+
+        // function edit data yang sudah berformat rupiah pada inputan harga
+        window.edit_data = function(id) {
+            method = 'update';
+            $('#modalform')[0].reset();
+            var validator = $("#modalform").validate();
+            validator.resetForm();
+            $('.form-control').removeClass('error');
+            $('#stok_awal').css('display', 'none');
+            $('#modal-default').modal('show');
+            $('.card-title').text('Edit Data Produk');
+            $('.aksi').text('Update');
+            $.ajax({
+                url: "<?php echo site_url('qbg_produk/get_id/') ?>/" + id,
+                type: "GET",
+                dataType: "JSON",
+                success: function(data) {
+                    $('[name="id"]').val(data.id);
+                    $('[name="nama_produk"]').val(data.nama_produk);
+                    $('[name="berat"]').val(data.berat);
+                    $('[name="satuan"]').val(data.satuan);
+                    $('[name="harga_qubagift"]').val(formatRupiah(data.harga_qubagift.toString(), 'Rp '));
+                    $('[name="harga_reseller"]').val(formatRupiah(data.harga_reseller.toString(), 'Rp '));
+                    $('[name="harga_distributor"]').val(formatRupiah(data.harga_distributor.toString(), 'Rp '));
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    alert('Error get data from ajax');
+                }
+            });
+        };
+    });
+
 
     function edit_stok(kode) {
         method = 'update';
@@ -398,7 +439,7 @@
             success: function(data) {
                 $('[name="kode_produk"]').val(data.produk.kode_produk);
                 $('#produk-info').html(data.produk.nama_produk + " " + data.produk.berat + " " + data.produk.satuan);
-                $('#stok-info').html(data.stok.stok_akhir);
+                $('#stok-info').html(data.produk.stok_akhir);
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 alert('Error get data from ajax');

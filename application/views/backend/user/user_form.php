@@ -1,5 +1,5 @@
 <?php
-$sub_bisnis = $this->db->select('id_menu, nama_menu, sub_image')
+$sub_bisnis = $this->db->select('urutan, nama_menu, sub_image')
     ->where('sub_image !=', null)
     ->where('sub_color !=', null)
     ->get('tbl_menu')
@@ -259,7 +259,7 @@ $core_array = explode(',', $core);
                                         <button id="checkAll" type="button" style="margin-bottom: 10px; cursor: pointer; border-radius: 5px; background-color: #242d4a; outline: none; color: white">All</button>
                                         <?php foreach ($sub_bisnis as $data) : ?>
                                             <div>
-                                                <input type="checkbox" name="core[]" id="<?= $data['id_menu'] ?>" style="cursor: pointer" value="<?= $data['id_menu'] ?>"><label for="<?= $data['id_menu'] ?>" style="margin-left: 3px; margin-right: 10px; cursor: pointer; font-size: 1rem"><?= $data['nama_menu'] ?></label>
+                                                <input type="checkbox" name="core[]" id="<?= $data['urutan'] ?>" style="cursor: pointer" value="<?= $data['urutan'] ?>"><label for="<?= $data['urutan'] ?>" style="margin-left: 3px; margin-right: 10px; cursor: pointer; font-size: 1rem"><?= $data['nama_menu'] ?></label>
                                             </div>
                                         <?php endforeach ?>
                                     </div>
