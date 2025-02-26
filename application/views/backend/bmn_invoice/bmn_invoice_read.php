@@ -13,13 +13,62 @@
         padding: 3px 7px;
         color: #fff;
     }
+
+    .watermark {
+        border: 4px solid rgb(69, 87, 123);
+        display: inline-block;
+        border-radius: 50%;
+        color: rgb(69, 87, 123);
+        background-color: transparent;
+        opacity: 0.3;
+        box-sizing: border-box;
+        position: absolute;
+        /* transform: scale(1.5) rotate(-30deg); */
+        transform: none !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    @media (max-width: 576px) {
+
+        /* Untuk tampilan mobile */
+        .watermark {
+            font-size: 2rem;
+            padding: 10px 20px;
+            left: 25%;
+            top: 56%;
+            /* Perbesar watermark */
+            width: 160px;
+            /* Atur ukuran box */
+            height: 80px;
+        }
+    }
+
+    @media (min-width: 576px) {
+
+        /* Untuk tampilan desktop */
+        .watermark {
+            font-size: 25px;
+            padding: 20px 50px;
+            left: 78%;
+            top: 80%;
+            /* Perbesar watermark */
+            width: 80px;
+            /* Atur ukuran box */
+            height: 80px;
+        }
+    }
 </style>
 
 <body>
     <div class="container">
         <div class="canvas">
             <a class="btn btn-secondary btn-sm" onclick="history.back()" style="float: right"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
-            <a class="btn btn-info btn-sm" id="send_email" style="float: right; margin-right: 10px"><i class="fas fa-envelope"></i>&nbsp;&nbsp;Send Email</a>
+            <!-- FITUR PAYMENT -->
+            <a class="btn btn-success btn-sm mr-2" id="paymentBtn" data-toggle="modal" style="float: right;" data-target="#paymentModal"><i class="fas fa-money-bill"></i>&nbsp;Payment</a>
+            <!-- FITUR SEND EMAIL -->
+            <!-- <a class="btn btn-info btn-sm" id="send_email" data-id="<?= $id ?>" style="float: right; margin-right: 10px"><i class="fas fa-envelope"></i>&nbsp;&nbsp;Send Email</a> -->
             <hr class="line-header">
             <header>
                 <div class="left-side">
@@ -74,7 +123,10 @@
                         </table>
                     </div>
                 </div>
-                <div class="detail-pemesanan">
+                <div class="detail-pemesanan" style="position: relative;">
+                    <?php if ($status == 1) { ?>
+                        <div class="watermark">LUNAS</div>
+                    <?php } ?>
                     <div class="header">
                         Detail Pemesanan :
                     </div>
@@ -89,11 +141,7 @@
                         $total = 0; // Inisialisasi variabel total
                         $diskon = $invoice['diskon'];
                         foreach ($detail as $data) :
-                            if ($diskon != 0) {
-                                $total += $data['total'] - ($data['total'] * $diskon / 100);
-                            } else {
-                                $total += $data['total']; // Tambahkan harga ke total
-                            }
+                            $total += $data['total']; // Tambahkan harga ke total
                         ?>
                             <tr>
                                 <td><?= $data['deskripsi'] ?></td>
@@ -103,20 +151,24 @@
                             </tr>
                         <?php endforeach; ?>
                         <tr>
-                            <td colspan="2" style="border-left-color: #fff; border-bottom-color: #fff"></td>
-                            <td style="text-align: center;">Diskon</td>
-                            <td style="text-align: center"><?= $invoice['diskon'] ?>%</td>
+                            <?php if ($diskon != 0 || $diskon == '') { ?>
+                                <td colspan="2" style="border-left-color: #fff; border-bottom-color: #fff"></td>
+                                <td style="text-align: center;">Diskon</td>
+                                <td style="text-align: center"><?= "Rp. " . number_format($invoice['diskon'], 0, ',', '.') ?></td>
+                            <?php } ?>
                         </tr>
                         <tr>
                             <td colspan="2" style="border-left-color: #fff; border-bottom-color: #fff"></td>
                             <th>Total</th>
-                            <td style="text-align: center"><?= "Rp. " . number_format($total, 0, ',', '.') ?></td>
+                            <td style="text-align: center"><?= "Rp. " . number_format($total - $invoice['diskon'], 0, ',', '.') ?></td>
                         </tr>
                     </table>
                 </div>
                 <div class="metode-pembayaran">
                     <p>Metode Pembayaran</p>
                     <ol>
+                        <li>Bank : BCA <br> No. Rekening : 7131720452 </li>
+                        <li>Bank : BSI <br> No. Rekening : 7215671498 </li>
                         <?php foreach ($rekening as $data) : ?>
                             <li>Bank : <?= $data['nama_bank'] ?> <br> No. Rekening : <?= $data['no_rek'] ?> </li>
                         <?php endforeach ?>
@@ -136,6 +188,47 @@
         </div>
     </div>
 
+    <!-- Modal Payment -->
+    <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                        <i class="fas fa-check-circle"></i> Payment
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="paymentForm" action="">
+                        <!-- <div class="form-group">
+                            <label style="font-size: 107%;"><span style="font-weight: bold">No Rekening</span> <span style="margin-left: 20px;">:</span> <span id="no_rek"></span></label> <br> -->
+                        <!-- <label style="font-size: 107%;"><span style="font-weight: bold">Jenis Rekening</span> <span style="margin-left: 5px;">:</span> <span id="jenis_rek"></span></label> -->
+                        <!-- </div> -->
+                        <div class="form-group">
+                            <label for="payment_status">Status <span class="text-danger">*</span></label>
+                            <select id="payment_status" name="payment_status" class="form-control" style="cursor: pointer;" required>
+                                <option selected disabled>Choose status...</option>
+                                <option value="1">Lunas</option>
+                                <option value="0">Belum Lunas</option>
+                            </select>
+                            <input type="hidden" id="hidden_id" value="<?php echo $id ?>" name="id">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                <i class="fas fa-times"></i> Close
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <?php $this->load->view('template/script'); ?>
     <script>
         $(document).ready(function() {
@@ -143,6 +236,7 @@
                 e.preventDefault();
 
                 let email = "<?= $invoice['ctc2_email'] ?>"; // Ambil email dari PHP
+                let id = $(this).data('id');
 
                 Swal.fire({
                     title: 'Apakah anda ingin mengirim email ke:',
@@ -169,7 +263,8 @@
                             url: "<?= base_url('bmn_invoice/send_email') ?>",
                             type: "POST",
                             data: {
-                                email: email
+                                email: email,
+                                id: id
                             },
                             success: function(response) {
                                 loadingSwal.close(); // Tutup loading spinner
@@ -184,6 +279,58 @@
 
                     } else {
                         Swal.fire('Dibatalkan', 'Pengiriman email dibatalkan.', 'info');
+                    }
+                });
+            });
+
+
+            $('#paymentBtn').click(function() {
+                $('#paymentForm').attr('action', '<?= site_url('bmn_invoice/payment') ?>');
+                const id = $('#hidden_id').val();
+
+                $.ajax({
+                    url: "<?php echo site_url('bmn_invoice/edit_data') ?>/" + id,
+                    type: "GET",
+                    dataType: "JSON",
+                    success: function(data) {
+                        console.log(data);
+                        // $('#jenis_rek').html(data['master']['jenis_rek'] ? data['master']['jenis_rek'] : '-');
+                        // $('#no_rek').html(data['master']['no_rek'] ? data['master']['no_rek'] : '-');
+                        $('#payment_status').val(data['master']['payment_status']);
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert('Error get data from ajax');
+                    }
+                });
+            });
+
+            // PAYMENT
+            $('#paymentForm').submit(function(e) {
+                e.preventDefault();
+                var url = $(this).attr('action');
+                // MENGINPUT PAYMENT
+                $.ajax({
+                    url: url, // Mengambil action dari form
+                    type: "POST",
+                    data: $(this).serialize(), // Mengambil semua data dari form
+                    dataType: "JSON",
+                    success: function(data) {
+                        console.log(data);
+                        if (data.status) //if success close modal and reload ajax table
+                        {
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'success',
+                                title: 'Your data has been saved',
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then((result) => {
+                                window.history.back(); // Kembali ke halaman sebelumnya
+                            })
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert('Error adding / update data');
                     }
                 });
             });

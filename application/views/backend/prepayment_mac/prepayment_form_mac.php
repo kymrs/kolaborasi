@@ -215,8 +215,8 @@
 <script>
     $('#tgl_prepayment').datepicker({
         dateFormat: 'dd-mm-yy',
-        minDate: new Date(),
-        maxDate: new Date(),
+        // minDate: new Date(),
+        // maxDate: new Date(),
 
         // MENGENERATE KODE PREPAYMENT SETELAH PILIH TANGGAL
         onSelect: function(dateText) {
@@ -580,6 +580,16 @@
                             checkNotifications();
                             location.href = "<?= base_url('prepayment_mac') ?>";
                         })
+                    } else {
+                        // Sembunyikan loading saat respons diterima
+                        $('#loading').hide();
+
+                        // Tampilkan pesan kesalahan
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: data.error
+                        });
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {

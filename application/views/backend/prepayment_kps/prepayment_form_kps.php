@@ -580,6 +580,16 @@
                             checkNotifications();
                             location.href = "<?= base_url('prepayment_kps') ?>";
                         })
+                    } else {
+                        // Sembunyikan loading saat respons diterima
+                        $('#loading').hide();
+
+                        // Tampilkan pesan kesalahan
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: data.error
+                        });
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {

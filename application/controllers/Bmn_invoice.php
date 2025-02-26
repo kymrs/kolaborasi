@@ -9,14 +9,6 @@ class T_cpdf2 extends TCPDf
     // Page header
     function Header()
     {
-        // Warna latar belakang header (RGB)
-        // $this->SetFillColor(176, 210, 219); // Warna abu-abu terang
-        // $this->Rect(3.5, 0, 142, 4.5, 'F'); // Mengisi kotak di area header
-        // $this->SetFillColor(69, 87, 123); // Warna abu-abu terang
-        // $this->Rect(3.5, 4.5, 142, 18.5, 'F'); // Mengisi kotak di area header
-        // $this->SetFillColor(176, 210, 219); // Warna abu-abu terang
-        // $this->Rect(3.5, 23, 142, 4.5, 'F'); // Mengisi kotak di area header
-
         // Logo
         $this->SetFont('helvetica', 'B', 12);
         $this->Image('assets/backend/img/bymoment.png', 5, 4, 37, 20);
@@ -26,11 +18,6 @@ class T_cpdf2 extends TCPDf
         $this->SetX(121);
         $this->Cell(40, 26, '0812-90700033', 0, 1);
         $style = array('width' => 0.5, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0));
-
-        // $this->SetY(18);
-        // $this->SetX(34);
-        // $this->SetFont('Poppins-Regular', '', 8);
-        // $this->Cell(40, 16, 'Jl. Mahoni Raya No 13, Sukmajaya, Depok, Jawa Barat', 0, 0);
 
         $this->Line(4, 26, 145, 26, $style);
         $this->Ln(5);
@@ -149,6 +136,7 @@ class Bmn_invoice extends CI_Controller
         // $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = $id;
         $data['invoice'] = $this->M_bmn_invoice->getInvoiceData($id);
+        $data['status'] = $this->M_bmn_invoice->get_by_id($id)->payment_status;
         $data['rekening'] = $this->db->get_where('bmn_rek_invoice', ['invoice_id' => $id])->result_array();
         $data['detail'] = $this->db->get_where('bmn_detail_invoice', ['invoice_id' => $id])->result_array();
         $data['title'] = 'backend/bmn_invoice/bmn_invoice_read';
@@ -249,16 +237,17 @@ class Bmn_invoice extends CI_Controller
             $data['keterangan'] = $this->input->post('catatan_item');
         }
         if (!empty($_POST['diskon'])) {
-            $data['diskon'] = $this->input->post('diskon');
+            $data['diskon'] = preg_replace('/\D/', '', $this->input->post('diskon'));
         }
 
         $inserted = $this->M_bmn_invoice->save($data);
 
-        if ($inserted) {
-            // INISIASI VARIABEL INPUT DETAIL PREPAYMENT
-            $nama_bank = $this->input->post('nama_bank[]');
-            $no_rek = $this->input->post('no_rek[]');
-            //PERULANGAN UNTUK INSER QUERY DETAIL PREPAYMENT
+        // INISIASI VARIABEL INPUT Nomor Rekening Bank
+
+        $nama_bank = $this->input->post('nama_bank[]');
+        $no_rek = $this->input->post('no_rek[]');
+        if (!empty($no_rek)) {
+            //PERULANGAN UNTUK INSER QUERY Nomor Rekening Bank
             for ($i = 1; $i <= count($nama_bank); $i++) {
                 $data2[] = array(
                     'invoice_id' => $inserted,
@@ -270,13 +259,13 @@ class Bmn_invoice extends CI_Controller
         }
 
         if ($inserted) {
-            // INISIASI VARIABEL INPUT DETAIL PREPAYMENT
+            // INISIASI VARIABEL INPUT DETAIL INVOICE
             $deskripsi = $this->input->post('deskripsi[]');
             $jumlah = preg_replace('/\D/', '', $this->input->post('jumlah[]'));
             $harga = preg_replace('/\D/', '', $this->input->post('harga[]'));
             $satuan = $this->input->post('satuan[]');
             $total = preg_replace('/\D/', '', $this->input->post('total[]'));
-            //PERULANGAN UNTUK INSER QUERY DETAIL PREPAYMENT
+            //PERULANGAN UNTUK INSER QUERY DETAIL INVOICE
             if (!empty($deskripsi) && !empty($jumlah) && !empty($satuan) && !empty($harga) && !empty($total)) {
                 for ($i = 1; $i <= count($deskripsi); $i++) {
                     $data3[] = array(
@@ -333,7 +322,9 @@ class Bmn_invoice extends CI_Controller
         }
 
         if (!empty($_POST['diskon'])) {
-            $data['diskon'] = $this->input->post('diskon');
+            $data['diskon'] = preg_replace('/\D/', '', $this->input->post('diskon'));
+        } else {
+            $data['diskon'] = 0;
         }
 
         //UPDATE DETAIL PREPAYMENT
@@ -386,17 +377,19 @@ class Bmn_invoice extends CI_Controller
             $id_rek = $this->input->post('hidden_rekId[]');
             $nama_bank = $this->input->post('nama_bank[]');
             $no_rek = $this->input->post('no_rek[]');
-            for ($i = 1; $i <= count($_POST['nama_bank']); $i++) {
-                // Set id menjadi NULL jika id_rek tidak ada atau kosong
-                $id_rekening = !empty($id_rek[$i]) ? $id_rek[$i] : NULL;
-                $data3[] = array(
-                    'id' => $id_rekening,
-                    'invoice_id' => $this->input->post('id'),
-                    'nama_bank' => $nama_bank[$i],
-                    'no_rek' => $no_rek[$i]
-                );
-                // Menggunakan db->replace untuk memasukkan atau menggantikan data
-                $this->db->replace('bmn_rek_invoice', $data3[$i - 1]);
+            if (!empty($no_rek)) {
+                for ($i = 1; $i <= count($_POST['nama_bank']); $i++) {
+                    // Set id menjadi NULL jika id_rek tidak ada atau kosong
+                    $id_rekening = !empty($id_rek[$i]) ? $id_rek[$i] : NULL;
+                    $data3[] = array(
+                        'id' => $id_rekening,
+                        'invoice_id' => $this->input->post('id'),
+                        'nama_bank' => $nama_bank[$i],
+                        'no_rek' => $no_rek[$i]
+                    );
+                    // Menggunakan db->replace untuk memasukkan atau menggantikan data
+                    $this->db->replace('bmn_rek_invoice', $data3[$i - 1]);
+                }
             }
         }
         echo json_encode(array("status" => TRUE));
@@ -412,14 +405,17 @@ class Bmn_invoice extends CI_Controller
     public function send_email()
     {
         $this->load->library('email');
-        $email = $this->input->post('email'); // Ambil data email yang dikirim
+        $this->load->library('tcpdf'); // Pastikan TCPDF sudah di-load
+        $email = $this->input->post('email'); // Ambil email tujuan
+        $id = $this->input->post('id');
 
         if ($email) {
+            // Konfigurasi email
             $config = [
                 'protocol'  => 'smtp',
                 'smtp_host' => 'ssl://smtp.googlemail.com',
-                'smtp_user' => 'kymrs5105@gmail.com',
-                'smtp_pass' => 'icjy jmlm vjxx bvee',
+                'smtp_user' => 'audricafabiano@gmail.com',
+                'smtp_pass' => 'rxhr ylvy dgwg lwgl',
                 'smtp_port' => 465,
                 'mailtype'  => 'html',
                 'charset'   => 'utf-8',
@@ -428,218 +424,53 @@ class Bmn_invoice extends CI_Controller
 
             $this->email->initialize($config);
 
-            $this->email->from('kymrs5105@gmail.com', 'Rizky Saputra');
-            $this->email->to($email);
+            $data['id'] = $id;
+            $data['sub'] = 'bmn';
+            $data['output'] = 'save';
+            $this->load->library('tcpdf_invoice'); // Sesuaikan dengan nama file library
+            $pdf_content = $this->tcpdf_invoice->generateInvoice($data); // Gunakan nama yang benar
 
+            // Simpan PDF sementara
+            $pdf_path = FCPATH . 'assets/backend/uploads/Invoice ByMoment.pdf'; // Simpan di folder uploads
+
+            // **2. Kirim email dengan lampiran PDF**
+            $this->email->from('audricafabiano@gmail.com', 'Audrica Ewaldo');
+            $this->email->to($email);
             $this->email->subject('Invoice by.moment');
-            $this->email->message('Test');
+            $this->email->message('Terlampir invoice Anda dalam format PDF.');
+
+            // **3. Attach PDF**
+            $this->email->attach($pdf_path);
 
             if ($this->email->send()) {
-                echo json_encode(array("status" => TRUE, "message" => "Email berhasil dikirim."));
+                echo json_encode(array("status" => TRUE, "message" => "Email berhasil dikirim dengan PDF."));
             } else {
-                // Cek errornya
                 echo json_encode(array("status" => FALSE, "message" => $this->email->print_debugger()));
             }
+
+            // **4. Hapus file setelah dikirim agar tidak menumpuk**
+            unlink($pdf_path);
         } else {
             echo json_encode(array("status" => FALSE, "message" => "Email tidak ditemukan."));
         }
     }
 
+
     // PRINTOUT TCPDF
     public function generate_pdf($id)
     {
-        // INISIAI VARIABLE
-        $invoice = $this->M_bmn_invoice->get_by_id($id);
-        $invoice_details = $this->M_bmn_invoice->get_detail($id);
-        $invoice_rek = $this->M_bmn_invoice->get_rek($id);
-
-        // Initialize the TCPDF object
-        $t_cpdf2 = new t_cpdf2('P', 'mm', 'A5', true, 'UTF-8', false);
-
-        // Set document properties
-        $t_cpdf2->SetCreator(PDF_CREATOR);
-        $t_cpdf2->SetAuthor('Author Name');
-        $t_cpdf2->SetTitle('Invoice ByMoment PDF');
-
-        $t_cpdf2->SetMargins(15, 28, 15); // Margin kiri, atas (untuk header), kanan
-        // $t_cpdf2->SetHeaderMargin(30);    // Jarak antara header dan konten
-        $t_cpdf2->SetAutoPageBreak(true, 15); // Penanganan otomatis margin bawah
-
-        // Add a new page
-        $t_cpdf2->AddPage();
-
-        $t_cpdf2->SetY(30);
-
-        // Pilih font untuk isi
-        $t_cpdf2->SetFont('Poppins-Bold', '', 22);
-
-        $t_cpdf2->SetX(57);
-        $t_cpdf2->Cell(100, 10, 'INVOICE', 0, 1, 'L');
-
-        $t_cpdf2->SetFont('Poppins-Regular', '', 11);
-        $t_cpdf2->SetX(48);
-        $t_cpdf2->Cell(19, 4, 'No. Invoice : ' . $invoice->kode_invoice, 0, 0, 'L');
-
-        $t_cpdf2->SetY($t_cpdf2->GetY());
-        $t_cpdf2->SetX(4);
-        $t_cpdf2->SetFont('Poppins-Regular', '', 10);
-        $t_cpdf2->Cell(74, 20, 'Kepada Yth.', 0, 0);
-        $t_cpdf2->Cell(45, 20, 'Tanggal Invoice', 0, 0);
-        $t_cpdf2->Cell(19, 20, ': ' . date('d/m/Y', strtotime($invoice->tgl_invoice)), 0, 0);
-        $t_cpdf2->SetY($t_cpdf2->GetY() + 13);
-        $t_cpdf2->SetX(4);
-        $t_cpdf2->SetFont('Poppins-Bold', '', 14);
-        $t_cpdf2->Cell(74, 5, $invoice->ctc2_nama, 0, 0);
-        $t_cpdf2->SetFont('Poppins-Regular', '', 10);
-        $t_cpdf2->Cell(45, 5, 'Tanggal Jatuh Tempo', 0, 0);
-        $t_cpdf2->Cell(19, 5, ': ' . date('d/m/Y', strtotime($invoice->tgl_tempo)), 0, 0);
-
-        $t_cpdf2->SetFont('Poppins-Regular', '', 10);
-        $t_cpdf2->SetY($t_cpdf2->GetY() + 7);
-        $t_cpdf2->SetX(4);
-        $t_cpdf2->Cell(0, 0, 'Email', 0, 0);
-        $t_cpdf2->SetX(23);
-        $t_cpdf2->Cell(0, 0, ': ' . $invoice->ctc2_email, 0, 0);
-
-        $t_cpdf2->SetFont('Poppins-Regular', '', 10);
-        $t_cpdf2->SetY($t_cpdf2->GetY() + 6);
-        $t_cpdf2->SetX(4);
-        $t_cpdf2->Cell(75, 0, 'Telepon', 0, 0);
-        $t_cpdf2->SetX(23);
-        $t_cpdf2->Cell(0, 0, ': ' . $invoice->ctc2_nomor, 0, 0);
-
-        $t_cpdf2->SetFont('Poppins-Regular', '', 10);
-        $t_cpdf2->SetY($t_cpdf2->GetY() + 6);
-        $t_cpdf2->SetX(4);
-        $t_cpdf2->Cell(0, 0, 'Alamat', 0, 0);
-        $t_cpdf2->SetY($t_cpdf2->GetY());
-        $t_cpdf2->SetX(23);
-        $t_cpdf2->Cell(0, 0, ':', 0, 0);
-        $t_cpdf2->SetY($t_cpdf2->GetY());
-        $t_cpdf2->SetX(24.5);
-        $t_cpdf2->MultiCell(58, 0, $invoice->ctc2_alamat, 0, 'L');
-
-        $t_cpdf2->SetY($t_cpdf2->GetY() + 2);
-        // HEADER DETAIL PEMESANAN
-        $t_cpdf2->SetFont('Helvetica', '', 11);
-        $t_cpdf2->SetFillColor(69, 87, 123);
-        $t_cpdf2->SetTextColor(255, 255, 255);
-        $t_cpdf2->SetX(5);
-        $t_cpdf2->Cell(140, 10, 'Detail Pemesanan', 0, 1, 'L', true);
-        $t_cpdf2->SetTextColor(0, 0, 0);
-
-        $tbl = <<<EOD
-        <table border="1" cellpadding="3">
-            <thead>
-                <tr>
-                    <th align="center" width="30%"><b>DESKRIPSI</b></th>
-                    <th align="center" width="20%"><b>JUMLAH</b></th>
-                    <th align="center" width="25%"><b>HARGA</b></th>
-                    <th align="center" width="25%"><b>TOTAL</b></th>
-                </tr>
-            </thead>
-            <tbody>
-    EOD;
-        foreach ($invoice_details as $detail) {
-            $tbl .= '<tr>';
-            $tbl .= '<td width="30%">' . $detail->deskripsi . '</td>';
-            $tbl .= '<td width="20%" style="text-align: center">' . $detail->jumlah . '</td>';
-            $tbl .= '<td width="25%" style="text-align: center">' . 'Rp. ' . number_format($detail->harga, 0, ',', '.') . '</td>';
-            $tbl .= '<td width="25%" style="text-align: center">' . 'Rp. ' . number_format($detail->total, 0, ',', '.') . '</td>';
-            $tbl .= '</tr>';
-        }
-        $tbl .= <<<EOD
-    </tbody>
-</table>
-EOD;
-
-        $t_cpdf2->writeHTMLCell(142, 0, 4, $t_cpdf2->GetY() + 4, $tbl, 0, 1, false, true, 'L', true);
-
-        $table2 = <<<EOD
-            <table>
-            <tbody>
-            EOD;
-
-        $total = 0;
-        $diskon = $invoice->diskon;
-        foreach ($invoice_details as $detail) {
-            if ($diskon != 0) {
-                $total += $detail->total - ($detail->total * $diskon / 100);
-            } else {
-                $total += $detail->total;
-            }
-        }
-
-        $table2 .= '<tr style="border: none;">';
-        $table2 .= '<td colspan="2"></td>';
-        $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center"> Diskon</td>';
-        $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center"> ' . $invoice->diskon .  '%</td>';
-        $table2 .= '</tr>';
-        $table2 .= '<tr style="border: none;">';
-        $table2 .= '<td colspan="2" style="border: none;"></td>';
-        $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center;"> <b>Total</b></td>';
-        $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center;"> ' . 'Rp. ' . number_format($total, 0, ',', '.') . '</td>';
-        $table2 .= '</tr>';
-        $table2 .=  <<<EOD
-            <tbody>
-            </table>
-        EOD;
-
-        $t_cpdf2->writeHTMLCell(142, 0, 4, $t_cpdf2->GetY(), $table2, 0, 1, false, true, 'L', true);
-
-        $t_cpdf2->SetY($t_cpdf2->GetY() + 1);
-        $t_cpdf2->SetX(4);
-        $t_cpdf2->SetFont('Poppins-Bold', '', 11);
-        $t_cpdf2->Cell(14, 9, 'Metode Pembayaran', 0, 1);
-        $list = <<<EOD
-        <ol>
-        EOD;
-
-        foreach ($invoice_rek as $rek) {
-            $list .= '<li>Bank : ' . $rek->nama_bank . '<br>No. Rekening : ' . $rek->no_rek . '</li>';
-        }
-        $list .= <<<EOD
-        </ol>
-        EOD;
-        $t_cpdf2->SetFont('Poppins-Regular', '', 10);
-        $y = $t_cpdf2->GetY();
-        $x = -4;
-        $t_cpdf2->writeHTMLCell(0, 0, $x, $y, $list, 0, 1, false, true, 'L', true);
-
-        $t_cpdf2->SetY($t_cpdf2->GetY() - 1);
-        $t_cpdf2->SetX(4);
-
-        $t_cpdf2->SetFont('Poppins-Bold', '', 11);
-        $t_cpdf2->Cell(19, 9, 'Atas Nama : PT. Kolaborasi Para Sahabat', 0, 1);
-
-        $t_cpdf2->setY($t_cpdf2->GetY());
-        $t_cpdf2->SetX(4);
-
-        $t_cpdf2->SetFont('Poppins-Regular', '', 10);
-        $t_cpdf2->Cell(19, 9, 'Catatan :', 0, 1);
-        if ($invoice->keterangan != '') {
-            $catatan = $invoice->keterangan;
-        } else {
-            $catatan = '';
-        }
-
-        $t_cpdf2->writeHTMLCell(0, 0, 4, $t_cpdf2->GetY(), $catatan, 0, 1, false, true, 'L', true);
-
-        $t_cpdf2->setY($t_cpdf2->GetY() + 3);
-        $t_cpdf2->SetX(97);
-        $t_cpdf2->SetFont('Poppins-Bold', '', 10);
-        $t_cpdf2->Cell(26, 10, 'Terima Kasih, ', 0, 0);
-        $t_cpdf2->SetFont('Poppins-Regular', '', 10);
-        $t_cpdf2->Cell(19, 10, 'By Moment', 0, 1);
-
-        // Output PDF (tampilkan di browser)
-        $t_cpdf2->Output('Invoice ByMoment.pdf', 'I'); // 'I' untuk menampilkan di browser
+        $data['id'] = $id;
+        $data['sub'] = 'bmn';
+        $data['output'] = 'view';
+        $data['status'] = $this->M_bmn_invoice->get_by_id($id)->payment_status;
+        $this->load->library('tcpdf_invoice'); // Sesuaikan dengan nama file library
+        $this->tcpdf_invoice->generateInvoice($data); // Gunakan nama yang benar
     }
 
     function payment()
     {
         $this->db->where('id', $this->input->post('id'));
-        $this->db->update('tbl_prepayment_pu', ['payment_status' => $this->input->post('payment_status')]);
+        $this->db->update('bmn_invoice', ['payment_status' => $this->input->post('payment_status')]);
 
         echo json_encode(array("status" => TRUE));
     }

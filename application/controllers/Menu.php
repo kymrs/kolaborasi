@@ -67,30 +67,40 @@ class Menu extends CI_Controller
 			'nama_menu' => $this->input->post('menu'),
 			'link' => $this->input->post('link'),
 			'icon' => $this->input->post('icon'),
-			'sub_image' => $this->input->post('sub_image'),
-			'sub_color' => $this->input->post('sub_color'),
 			'urutan' => $this->input->post('urutan'),
 			'is_active' => $this->input->post('aktif'),
 		);
+
+		$check_core = $this->input->post('check-field');
+		$sub_image = $this->input->post('sub_image');
+		$sub_color = $this->input->post('sub_color');
+
+		if (!empty($check_core)) {
+			$data['sub_image'] = $sub_image;
+			$data['sub_color'] = $sub_color;
+		}
+
+		$check_approval = $this->input->post('check-field2');
 		$menu_id = $this->M_menu->save($data);
 
+		if (!empty($check_approval)) {
+			if (!empty($this->input->post('app2_id'))) {
+				$data2['app2_id'] = $this->input->post('app2_id');
+			}
+			if (!empty($this->input->post('app3_id'))) {
+				$data2['app3_id'] = $this->input->post('app3_id');
+			}
+			if (!empty($this->input->post('app4_id'))) {
+				$data2['app4_id'] = $this->input->post('app4_id');
+			}
+			if (!empty($this->input->post('app_id'))) {
+				$data2['app_id'] = $this->input->post('app_id');
+				$data2['sub_name'] = $this->input->post('menu');
+				$data2['id_menu'] = $menu_id;
 
-		if (!empty($this->input->post('app2_id'))) {
-			$data2['app2_id'] = $this->input->post('app2_id');
-		}
-		if (!empty($this->input->post('app3_id'))) {
-			$data2['app3_id'] = $this->input->post('app3_id');
-		}
-		if (!empty($this->input->post('app4_id'))) {
-			$data2['app4_id'] = $this->input->post('app4_id');
-		}
-		if (!empty($this->input->post('app_id'))) {
-			$data2['app_id'] = $this->input->post('app_id');
-			$data2['sub_name'] = $this->input->post('menu');
-			$data2['id_menu'] = $menu_id;
-
-			//Melakukan penginputan
-			$this->M_menu->save2($data2);
+				//Melakukan penginputan
+				$this->M_menu->save2($data2);
+			}
 		}
 
 		echo json_encode(array("status" => TRUE));
@@ -102,41 +112,60 @@ class Menu extends CI_Controller
 			'nama_menu' => $this->input->post('menu'),
 			'link' => $this->input->post('link'),
 			'icon' => $this->input->post('icon'),
-			'sub_image' => $this->input->post('sub_image'),
-			'sub_color' => $this->input->post('sub_color'),
 			'urutan' => $this->input->post('urutan'),
 			'is_active' => $this->input->post('aktif'),
 		);
+
+		$check_core = $this->input->post('check-field');
+		$sub_image = $this->input->post('sub_image');
+		$sub_color = $this->input->post('sub_color');
+
+		if (!empty($check_core)) {
+			$data['sub_image'] = $sub_image;
+			$data['sub_color'] = $sub_color;
+		}
+		// NULL BILA UNCHECK
+		// else {
+		// 	$data['sub_image'] = null;
+		// 	$data['sub_color'] = null;
+		// }
+
 		$this->db->where('id_menu', $this->input->post('id'));
 		$this->db->update('tbl_menu', $data);
-		$id_menu = $this->db->select('id')
+		$id_approval = $this->db->select('id')
 			->from('tbl_approval')
 			->where('id_menu', $this->input->post('id'))
 			->get()
 			->row();
 
-		$id_menu = ($id_menu) ? $id_menu->id : null;
+		$id_approval = ($id_approval) ? $id_approval->id : null;
 
+		$check_approval = $this->input->post('check-field2');
 
-		if (!empty($this->input->post('app2_id'))) {
-			$data2['app2_id'] = $this->input->post('app2_id');
-		}
-		if (!empty($this->input->post('app3_id'))) {
-			$data2['app3_id'] = $this->input->post('app3_id');
-		}
-		if (!empty($this->input->post('app4_id'))) {
-			$data2['app4_id'] = $this->input->post('app4_id');
-		}
-		if (!empty($this->input->post('app_id'))) {
-			$data2['app_id'] = $this->input->post('app_id');
-			$data2['sub_name'] = $this->input->post('menu');
-			$data2['id_menu'] = $this->input->post('id');
-			$data2['id'] = $id_menu;
+		if (!empty($check_approval)) {
+			if (!empty($this->input->post('app2_id'))) {
+				$data2['app2_id'] = $this->input->post('app2_id') != 'null' ? $this->input->post('app2_id') : null;
+			}
+			if (!empty($this->input->post('app3_id'))) {
+				$data2['app3_id'] = $this->input->post('app3_id') != 'null' ? $this->input->post('app3_id') : null;
+			}
+			if (!empty($this->input->post('app4_id'))) {
+				$data2['app4_id'] = $this->input->post('app4_id') != 'null' ? $this->input->post('app4_id') : null;
+			}
+			if (!empty($this->input->post('app_id'))) {
+				$data2['app_id'] = $this->input->post('app_id') != 'null' ? $this->input->post('app_id') : null;
+				$data2['sub_name'] = $this->input->post('menu');
+				$data2['id_menu'] = $this->input->post('id');
+				$data2['id'] = $id_approval;
 
-			//Melakukan pengupdatan
-			// $this->db->where('id_menu', $this->input->post('id'));
-			$this->db->replace('tbl_approval', $data2);
+				$this->db->replace('tbl_approval', $data2);
+			}
 		}
+		// MENGHAPUS APPROVAL
+		// else {
+		// 	$this->db->where('id', $id_approval);
+		// 	$this->db->delete('tbl_approval');
+		// }
 
 		echo json_encode(array("status" => TRUE));
 	}

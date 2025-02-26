@@ -88,8 +88,8 @@
 <script>
     $('#tgl_deklarasi').datepicker({
         dateFormat: 'dd-mm-yy',
-        // minDate: new Date(),
-        // maxDate: new Date(),
+        minDate: new Date(),
+        maxDate: new Date(),
 
         // MENGENERATE KODE DEKLARASI SETELAH PILIH TANGGAL
         onSelect: function(dateText) {
@@ -199,6 +199,16 @@
                         }).then((result) => {
                             location.href = "<?= base_url('datadeklarasi_ctz') ?>";
                         })
+                    } else {
+                        // Sembunyikan loading saat respons diterima
+                        $('#loading').hide();
+
+                        // Tampilkan pesan kesalahan
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: data.error
+                        });
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {

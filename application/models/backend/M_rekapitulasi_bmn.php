@@ -34,12 +34,6 @@ class M_rekapitulasi_bmn extends CI_Model
                 $this->db->join('bmn_reimbust_detail', 'bmn_reimbust.id = bmn_reimbust_detail.reimbust_id', 'left');
                 $this->db->join('tbl_data_user', 'bmn_prepayment.id_user = tbl_data_user.id_user', 'left');
 
-                // $this->db->group_start();
-                // $this->db->where('bmn_prepayment.payment_status', 'paid');
-                // $this->db->where('bmn_reimbust.kode_prepayment IS NULL');
-                // $this->db->or_where('bmn_reimbust.payment_status', 'paid');
-                // $this->db->group_end();
-
                 $this->db->group_start();
                 $this->db->group_start();
                 $this->db->where('bmn_prepayment.payment_status', 'paid');
@@ -75,9 +69,8 @@ class M_rekapitulasi_bmn extends CI_Model
                     $this->db->group_end();
                 }
 
-
-
                 $this->db->group_by(array('bmn_prepayment.id', 'bmn_prepayment.kode_prepayment'));
+                // $this->db->order_by('tgl_pengajuan', 'DESC');
             } elseif ($_POST['tab'] == 'reimbust') {
                 // Column order for "reimbust" tab
                 $this->column_order = array(null, 'kode_prepayment', 'bmn_reimbust.kode_reimbust', 'name', 'tujuan', 'bmn_reimbust.tgl_pengajuan', 'total_jumlah_detail');
@@ -101,6 +94,7 @@ class M_rekapitulasi_bmn extends CI_Model
                 }
 
                 $this->db->group_by('bmn_reimbust.id, bmn_reimbust.kode_reimbust, bmn_reimbust.tgl_pengajuan');
+                // $this->db->order_by('bmn_reimbust.tgl_pengajuan', 'DESC');
             }
         }
 
@@ -124,9 +118,17 @@ class M_rekapitulasi_bmn extends CI_Model
         // Order functionality
         if (isset($_POST['order'])) {
             $this->db->order_by($this->column_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
-        } else if (isset($this->order)) {
-            $order = $this->order;
-            $this->db->order_by(key($order), $order[key($order)]);
+        } else {
+            if (isset($_POST['tab'])) {
+                if ($_POST['tab'] == 'pelaporan') {
+                    $this->db->order_by('tgl_pengajuan', 'DESC');
+                } elseif ($_POST['tab'] == 'reimbust') {
+                    $this->db->order_by('bmn_reimbust.tgl_pengajuan', 'DESC');
+                }
+            } else {
+                // Default sorting jika tidak ada `tab`
+                $this->db->order_by('tgl_pengajuan', 'DESC');
+            }
         }
     }
 

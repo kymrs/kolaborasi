@@ -1,6 +1,8 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
+require_once FCPATH . 'vendor/autoload.php';
+
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
 
@@ -91,19 +93,15 @@ class Pu_penawaran extends CI_Controller
 
     public function read_form()
     {
-        // $data['notif'] = $this->M_notifikasi->pending_notification();
-
         $kode = $this->uri->segment(3);
-        // var_dump($kode);
-        $data['penawaran'] = $this->M_pu_penawaran->getPenawaran($kode);
 
+        $data['penawaran'] = $this->M_pu_penawaran->getPenawaran($kode);
         $data['layanan_termasuk'] = $this->M_pu_penawaran->getLayananTermasuk($kode);
         $data['layanan_tidak_termasuk'] = $this->M_pu_penawaran->getLayananTidakTermasuk($kode);
 
         $getPenawaran = $this->db->get_where('pu_penawaran', ['no_arsip' => $kode])->row_array();
         $no_pelayanan = $getPenawaran['no_pelayanan'];
         $data['rundown'] = $this->M_pu_penawaran->getRundown($no_pelayanan);
-
         $data['hotel'] = $this->M_pu_penawaran->getHotel($kode);
 
         if ($data['penawaran'] == null) {
@@ -111,18 +109,15 @@ class Pu_penawaran extends CI_Controller
         } else {
             $no_arsip = $data['penawaran']['no_arsip'];
 
-            // Create a QR code instance with the data you want to encode
-            $qrCode = new QrCode('https://arsip.pengenumroh.com/' . $no_arsip);
-
-            // Create the writer for PNG format
+            // Generate QR code using Endroid QR Code v4.x
+            $qrCode = QrCode::create('https://arsip.pengenumroh.com/' . $no_arsip);
             $writer = new PngWriter();
+            $result = $writer->write($qrCode);
 
-            // Generate the QR code and get it as a Data URI (base64 encoded)
-            $result = $writer->write($qrCode)->getDataUri();
+            // Convert QR code to base64 image
+            $data['qr_code'] = $result->getDataUri();
 
-            // Pass the base64 QR code data to the view
-            $data['qr_code'] = $result;
-
+            // Pass data to view
             $data['title'] = 'backend/pu_penawaran/pu_penawaran_read';
             $data['title_view'] = 'Prepayment';
             $this->load->view('backend/home', $data);

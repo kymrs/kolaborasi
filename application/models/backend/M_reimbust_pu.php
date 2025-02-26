@@ -395,6 +395,12 @@ class M_reimbust_pu extends CI_Model
         return $this->db->insert_id();
     }
 
+    // OPSI REKENING
+    public function options($id)
+    {
+        return $this->db->distinct()->select('no_rek')->where('id_user', $id)->from('tbl_reimbust_pu')->get();
+    }
+
     public function delete($id)
     {
         // Ambil data tbl_reimbust_detail berdasarkan reimbust_id

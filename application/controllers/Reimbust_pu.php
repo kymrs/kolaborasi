@@ -295,11 +295,14 @@ class Reimbust_pu extends CI_Controller
 
     public function add_form()
     {
-        $data['notif'] = $this->M_notifikasi->pending_notification();
+        // INISIASI
+        $id_user = $this->session->userdata('id_user');
+
         $data['id'] = 0;
         $data['aksi'] = 'add';
         $data['title_view'] = "Reimbust Form";
         $data['title'] = 'backend/reimbust_pu/reimbust_form_pu';
+        $data['rek_options'] = $this->M_reimbust_pu->options($id_user)->result_array();
         $this->load->view('backend/home', $data);
     }
 
@@ -624,11 +627,15 @@ class Reimbust_pu extends CI_Controller
 
     function edit_form($id)
     {
+        // INISIASI
+        $id_user = $this->session->userdata('id_user');
+
         $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = $id;
         $data['aksi'] = 'update';
         $data['title_view'] = "Edit Reimbust";
         $data['title'] = 'backend/reimbust_pu/reimbust_form_pu';
+        $data['rek_options'] = $this->M_reimbust_pu->options($id_user)->result_array();
         $this->load->view('backend/home', $data);
     }
 
@@ -715,7 +722,6 @@ class Reimbust_pu extends CI_Controller
         $id_user = $this->session->userdata('id_user');
 
         $data_user = $this->db->get_where('tbl_data_user', ['id_user' => $id_user])->row_array();
-        $approval = $this->M_reimbust_pu->approval($this->session->userdata('id_user'));
 
         $departemen = $data_user['divisi'];
         $jabatan = $data_user['jabatan'];
@@ -723,6 +729,13 @@ class Reimbust_pu extends CI_Controller
         // Flag untuk menandai apakah ada file yang lebih dari 3 MB
         $valid = true;
         $allowed_types = ['image/jpeg', 'image/jpg', 'image/png']; // Tipe file yang diizinkan
+
+        // CHECK APAKAH MENGINPUT YANG SUDAH ADA ATAU YANG BARU (REKENING)
+        if (!empty($_POST['nama_rek'])) {
+            $no_rek = $this->input->post('nama_rek') . "-" . $this->input->post('nama_bank') . "-" . $this->input->post('nomor_rekening');
+        } else {
+            $no_rek = $this->input->post('rekening');
+        }
 
         // PERULANGAN UNTUK CEK UKURAN FILE
         for ($i = 1; $i <= count($pemakaian); $i++) {
@@ -745,6 +758,19 @@ class Reimbust_pu extends CI_Controller
             }
         }
 
+        $id_menu = $this->db->select('id_menu')
+            ->where('link', $this->router->fetch_class())
+            ->get('tbl_submenu')
+            ->row();
+
+        $confirm = $this->db->select('app_id, app2_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->num_rows();
+        if ($confirm > 0) {
+            $app = $this->db->select('app_id, app2_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
+        } else {
+            echo json_encode(array("status" => FALSE, "error" => "Approval Belum Ditentukan, Mohon untuk menghubungi admin."));
+            $valid = false;
+        }
+
         // Inisialisasi data untuk tabel reimbust
         $data1 = array(
             'kode_reimbust' => $kode_reimbust,
@@ -756,14 +782,15 @@ class Reimbust_pu extends CI_Controller
             'tgl_pengajuan' => date('Y-m-d', strtotime($this->input->post('tgl_pengajuan'))),
             'tujuan' => $this->input->post('tujuan'),
             'jumlah_prepayment' => $this->input->post('jumlah_prepayment'),
+            'no_rek' => $no_rek,
             'app_name' => $this->db->select('name')
                 ->from('tbl_data_user')
-                ->where('id_user', $approval->app_id)
+                ->where('id_user', $app->app_id)
                 ->get()
                 ->row('name'),
             'app2_name' => $this->db->select('name')
                 ->from('tbl_data_user')
-                ->where('id_user', $approval->app2_id)
+                ->where('id_user', $app->app2_id)
                 ->get()
                 ->row('name'),
             'created_at' =>  date('Y-m-d H:i:s')
@@ -829,6 +856,13 @@ class Reimbust_pu extends CI_Controller
     {
         $this->load->library('upload');
 
+        // CHECK APAKAH MENGINPUT YANG SUDAH ADA ATAU YANG BARU (REKENING)
+        if (!empty($_POST['nama_rek'])) {
+            $no_rek = $this->input->post('nama_rek') . "-" . $this->input->post('nama_bank') . "-" . $this->input->post('nomor_rekening');
+        } else {
+            $no_rek = $this->input->post('rekening');
+        }
+
         $data = array(
             'sifat_pelaporan' => $this->input->post('sifat_pelaporan'),
             'tgl_pengajuan' => date('Y-m-d', strtotime($this->input->post('tgl_pengajuan'))),
@@ -837,6 +871,7 @@ class Reimbust_pu extends CI_Controller
             'jumlah_prepayment' => $this->input->post('jumlah_prepayment'),
             'kode_prepayment' => $this->input->post('kode_prepayment'),
             'app_status' => 'waiting',
+            'no_rek' => $no_rek,
             'app_date' => null,
             'app_keterangan' => null,
             'app2_status' => 'waiting',

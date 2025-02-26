@@ -419,10 +419,10 @@ class Reimbust_kps extends CI_Controller
         // Add some data with adjusted column widths
         Row($pdf, 10, array('NAMA', ':', $data['user']), $widths, false);
         $pdf->Ln(-3);
-        Row($pdf, 10, array('JABATAN', ':', $data['master']->jabatan), $widths, false);
-        $pdf->Ln(-3);
-        Row($pdf, 10, array('DEPARTEMEN', ':', $data['master']->departemen), $widths, false);
-        $pdf->Ln(-3);
+        // Row($pdf, 10, array('JABATAN', ':', $data['master']->jabatan), $widths, false);
+        // $pdf->Ln(-3);
+        // Row($pdf, 10, array('DEPARTEMEN', ':', $data['master']->departemen), $widths, false);
+        // $pdf->Ln(-3);
         Row($pdf, 10, array('SIFAT PELAPORAN', ':', $data['master']->sifat_pelaporan), $widths, false);
         $pdf->Ln(-3);
         Row($pdf, 10, array('TANGGAL', ':', $formatted_date), $widths, false);
@@ -765,7 +765,14 @@ class Reimbust_kps extends CI_Controller
             ->get('tbl_submenu')
             ->row();
 
-        $app = $this->db->select('app_id, app2_id, app4_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
+        $confirm = $this->db->select('app_id, app2_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
+        if (!empty($confirm) && $confirm->app_id != null) {
+            $app = $this->db->select('app_id, app2_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
+        } else {
+            echo json_encode(array("status" => FALSE, "error" => "Approval Belum Ditentukan, Mohon untuk menghubungi admin."));
+            exit();
+            $valid = false;
+        }
 
         // Inisialisasi data untuk tabel reimbust
         $data1 = array(

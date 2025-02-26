@@ -229,7 +229,14 @@ class Swi_prepayment extends CI_Controller
             ->get('tbl_submenu')
             ->row();
 
-        $app = $this->db->select('app_id, app2_id, app4_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
+        $valid = true;
+        $confirm = $this->db->select('app_id, app2_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->num_rows();
+        if ($confirm > 0) {
+            $app = $this->db->select('app_id, app2_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
+        } else {
+            echo json_encode(array("status" => FALSE, "error" => "Approval Belum Ditentukan, Mohon untuk menghubungi admin."));
+            $valid = false;
+        }
         $id = $this->session->userdata('id_user');
 
         // CHECK APAKAH MENGINPUT YANG SUDAH ADA ATAU YANG BARU (REKENING)
@@ -257,20 +264,22 @@ class Swi_prepayment extends CI_Controller
                 ->where('id_user', $id)
                 ->get()
                 ->row('jabatan'),
-            'app_name' => $this->db->select('name')
-                ->from('tbl_data_user')
+            'app_name' => $this->db->select('fullname')
+                ->from('tbl_user')
                 ->where('id_user', $app->app_id)
                 ->get()
-                ->row('name'),
-            'app2_name' => $this->db->select('name')
-                ->from('tbl_data_user')
+                ->row('fullname'),
+            'app2_name' => $this->db->select('fullname')
+                ->from('tbl_user')
                 ->where('id_user', $app->app2_id)
                 ->get()
-                ->row('name'),
+                ->row('fullname'),
             'created_at' => date('Y-m-d H:i:s')
         );
 
-        $inserted = $this->M_swi_prepayment->save($data);
+        if ($valid) {
+            $inserted = $this->M_swi_prepayment->save($data);
+        }
 
         if ($inserted) {
             // INISIASI VARIABEL INPUT DETAIL PREPAYMENT

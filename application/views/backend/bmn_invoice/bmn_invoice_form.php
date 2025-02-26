@@ -153,8 +153,8 @@
                                 <h4 class="section-title">PAYMENT INFO :</h4>
                                 <div class="form-group row">
                                     <label class="col-sm-4 col-form-label">Diskon</label>
-                                    <div class="col-sm-4">
-                                        <input type="text" class="form-control" id="diskon" name="diskon" placeholder="Diskon %">
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" id="diskon" name="diskon" placeholder="Diskon">
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -588,20 +588,6 @@
             // Hitung total nominal setelah baris baru ditambahkan
             calculateTotalNominal();
 
-            $('.harga, .total, .jumlah').on('input', function() {
-                // Ambil nilai input
-                let value = $(this).val();
-
-                // Hapus semua karakter yang bukan angka
-                value = value.replace(/[^0-9]/g, '');
-
-                // Format ke Rupiah
-                let formatted = new Intl.NumberFormat('id-ID').format(value);
-
-                // Set nilai input dengan format Rupiah
-                $(this).val(formatted);
-            });
-
             //VALIDASI ROW YANG TELAH DI APPEND
             $("#form").validate().settings.rules[`deskripsi[${rowCount}]`] = {
                 required: true
@@ -619,6 +605,30 @@
                 required: true
             };
         }
+
+        // Event delegation untuk elemen yang dibuat secara dinamis
+        $(document).on('input', '.harga , .total, #diskon', function() {
+            let value = $(this).val().replace(/[^,\d]/g, '');
+            let parts = value.split(',');
+            let integerPart = parts[0];
+
+            // Format tampilan dengan pemisah ribuan
+            integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+            // Set nilai yang diformat ke input
+            $(this).val(parts[1] !== undefined ? integerPart + ',' + parts[1] : integerPart);
+
+            // Hapus semua pemisah ribuan untuk pengiriman ke server
+            let cleanValue = value.replace(/\./g, '');
+
+            // Pastikan elemen hidden dengan ID yang benar diperbarui
+            const hiddenId = `#hidden_${$(this).attr('id').replace('harga-', 'harga').replace('total-', 'total')}`;
+            $(hiddenId).val(cleanValue);
+
+            // Hitung total harga setelah nilai berubah
+            calculateTotalNominal();
+        });
+
 
         // MENGHAPUS ROW
         function deleteRow(id) {
@@ -790,7 +800,7 @@
                     $('#tgl_tempo').val(data['master']['tgl_tempo']);
                     $('#ctc_nama').val(data['master']['ctc_nama']);
                     $('#ctc_nomor').val(data['master']['ctc_nomor']);
-                    $('#diskon').val(data['master']['diskon']);
+                    $('#diskon').val(data['master']['diskon'].replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
                     $('#ctc2_nama').val(data['master']['ctc2_nama']);
                     $('#ctc2_email').val(data['master']['ctc2_email']);
                     $('#ctc2_nomor').val(data['master']['ctc2_nomor']);
@@ -970,9 +980,9 @@
                 ctc2_alamat: {
                     required: true,
                 },
-                diskon: {
-                    max: 100,
-                }
+                // diskon: {
+                //     max: 100,
+                // }
             },
             messages: {
                 tgl_invoice: {
@@ -999,9 +1009,9 @@
                 ctc2_alamat: {
                     required: "Contact Nomor is required",
                 },
-                diskon: {
-                    max: "Diskon tidak boleh melibihi 100",
-                }
+                // diskon: {
+                //     max: "Diskon tidak boleh melibihi 100",
+                // }
             },
             errorPlacement: function(error, element) {
                 if (element.parent().hasClass('input-group')) {

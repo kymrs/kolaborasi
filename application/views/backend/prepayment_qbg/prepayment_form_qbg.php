@@ -589,6 +589,16 @@
                             checkNotifications();
                             location.href = "<?= base_url('prepayment_qbg') ?>";
                         })
+                    } else {
+                        // Sembunyikan loading saat respons diterima
+                        $('#loading').hide();
+
+                        // Tampilkan pesan kesalahan
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: data.error
+                        });
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
