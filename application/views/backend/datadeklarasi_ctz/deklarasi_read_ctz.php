@@ -24,7 +24,7 @@
         }
 
         .header .logo {
-            width: 140px;
+            width: 260px;
             position: relative;
             bottom: 50px;
         }
@@ -32,7 +32,7 @@
         .header .title {
             width: 100%;
             position: relative;
-            bottom: 90px;
+            bottom: 30px;
         }
 
         .header .title h1 {

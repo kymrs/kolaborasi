@@ -41,7 +41,7 @@ class Pu_tanda_terima extends CI_Controller
 			$row[] = $field->nama_penerima;
 			$row[] = $field->barang;
 			$row[] = $field->qty;
-			$row[] = ($field->foto != '' ? '<img src="' . site_url("assets/backend/document/tanda_terima_pu/") . $field->foto  . '" height="40px" width="40px">' : '');
+			$row[] = ($field->foto != '' ? '<img src="' . site_url("assets/backend/document/pu_tanda_terima/") . $field->foto  . '" height="40px" width="40px">' : '');
 
 			$data[] = $row;
 		}
@@ -70,7 +70,7 @@ class Pu_tanda_terima extends CI_Controller
 
 	function add()
 	{
-		$config['upload_path'] = "./assets/backend/document/tanda_terima_pu";
+		$config['upload_path'] = "./assets/backend/document/pu_tanda_terima";
 		$config['allowed_types'] = 'gif|jpg|png';
 		$this->load->library('upload', $config); //call library upload 
 		if ($this->upload->do_upload("image")) { //upload file
@@ -114,7 +114,7 @@ class Pu_tanda_terima extends CI_Controller
 		);
 
 		if (!empty($_FILES['image']['name'])) {
-			$config['upload_path'] = "./assets/backend/document/tanda_terima_pu";
+			$config['upload_path'] = "./assets/backend/document/pu_tanda_terima";
 			$config['allowed_types'] = 'gif|jpg|png';
 			$this->load->library('upload', $config); //call library upload 
 			if ($this->upload->do_upload("image")) { //upload file
@@ -197,7 +197,7 @@ class Pu_tanda_terima extends CI_Controller
 		$pdf->AddPage();
 
 		// Header image
-		$pdf->Image(base_url('') . '/assets/backend/img/header.png', 10, 10, 190, 33); // Adjust position and size as needed
+		$pdf->Image(base_url('') . '/assets/backend/img/header.png', 20, 5, 190, 40); // Adjust position and size as needed
 
 		// Set top margin below the header image, and bottom margin above the footer
 		$pdf->SetMargins(10, 45); // Set top margin below the header image
@@ -232,30 +232,12 @@ class Pu_tanda_terima extends CI_Controller
 
 		// Insert image for Bukti Serah Terima, center it
 		$posisi = $pdf->GetPageWidth() / 2 - 20;
-		$pdf->Image('assets/backend/document/tanda_terima_pu/' . $query->foto, $posisi, $pdf->GetY(), 40, 0);
+		$foto = $query->foto ? $query->foto : 'default.png';
+		$pdf->Image('assets/backend/document/pu_tanda_terima/' . $foto, $posisi, $pdf->GetY(), 40, 0);
 
 		// Add Watermark if "foto" is not empty
-		if (!empty($query->foto)) {
-			$text = 'Diterima';
-			$x = $pdf->GetPageWidth() / 2 - 35;
-			$y = 120;
-			$angle = 30;
-
-			$pdf->SetTextColor(255, 140, 0);
-			$pdf->SetAlpha(0.25);
-			$pdf->SetFont('Courier', '', 40);
-
-			$pdf->StartTransform();
-			$pdf->Rotate($angle, $x, $y);
-
-			$pdf->SetDrawColor(255, 140, 0);
-			$pdf->SetLineWidth(1);
-			$pdf->Rect($x - 11, $y - 28, 90, 45);
-
-			$pdf->Text($x, $y, $text);
-			$pdf->StopTransform();
-
-			$pdf->SetTextColor(0, 0, 0); // Reset text color
+		if (!empty($foto)) {
+			$pdf->Image('assets/backend/img/watermark-tandaterima.png', $pdf->GetPageWidth() / 2 - 45, $pdf->GetY(), 100, 0);
 		}
 
 		// Footer image

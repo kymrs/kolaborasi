@@ -32,7 +32,7 @@
             height: 150px;
             display: flex;
             align-items: center;
-            width: 160px;
+            width: 260px;
             position: relative;
             left: 20px;
         }

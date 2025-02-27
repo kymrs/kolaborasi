@@ -373,7 +373,7 @@ class Qbg_invoice extends CI_Controller
                     $stok_akhir = $stok_awal - $jumlah[$i];
 
                     // Insert transaksi stok baru
-                    $this->db->insert('qbg_stok', [
+                    $this->db->insert('qbg_transaksi', [
                         'kode_produk'       => $kode,
                         'jenis_transaksi'   => 'keluar',
                         'jumlah'            => $jumlah[$i],
@@ -465,55 +465,58 @@ class Qbg_invoice extends CI_Controller
                         // if ($lastStok) {
                         //     // Hapus hanya stok dengan ID terbesar
                         //     $this->db->where('id', $lastStok['id']);
-                        //     $this->db->delete('qbg_stok');
+                        //     $this->db->delete('qbg_transaksi');
                         // }
                     }
                 }
             }
 
+            if (!isset($_POST['kode_produk']) || !is_array($_POST['kode_produk'])) {
+                die("Error: Data kode_produk tidak ditemukan atau bukan array.");
+            }
+            $kode_produk = $_POST['kode_produk']; // Pastikan ini array
+
 
             // MELAKUKAN REPLACE DATA LAMA DENGAN YANG BARU
             for ($i = 1; $i <= count($_POST['kode_produk']); $i++) {
-                // Set id menjadi NULL jika id_detail tidak ada atau kosong
                 $id_invoice = !empty($id_detail[$i]) ? $id_detail[$i] : NULL;
                 $data2[] = array(
                     'id' => $id_invoice,
                     'invoice_id' => $this->input->post('id'),
-                    'kode_produk' => $kode_produk[$i],
-                    'jumlah' => $jumlah[$i],
-                    'harga' => $harga[$i],
-                    'total' => $total[$i]
+                    'kode_produk' => $kode_produk[$i] ?? '',
+                    'jumlah' => $jumlah[$i] ?? 0,
+                    'harga' => $harga[$i] ?? 0,
+                    'total' => $total[$i] ?? 0
                 );
-                // Menggunakan db->replace untuk memasukkan atau menggantikan data
                 $this->db->replace('qbg_detail_invoice', $data2[$i - 1]);
             }
 
             // UNTUK MENGHAPUS REKENING
-            $deletedRekRows = json_decode($this->input->post('deletedRekRows'), true);
-            if (!empty($deletedRekRows)) {
-                foreach ($deletedRekRows as $delRekRow) {
-                    // Hapus row dari database berdasarkan ID
-                    $this->db->where('id', $delRekRow);
-                    $this->db->delete('qbg_rek_invoice');
-                }
-            }
+            // $deletedRekRows = json_decode($this->input->post('deletedRekRows'), true);
+            // if (!empty($deletedRekRows)) {
+            //     foreach ($deletedRekRows as $delRekRow) {
+            //         // Hapus row dari database berdasarkan ID
+            //         $this->db->where('id', $delRekRow);
+            //         $this->db->delete('qbg_rek_invoice');
+            //     }
+            // }
 
-            // MELAKUKAN REPLACE DATA REKENING
-            $id_rek = $this->input->post('hidden_rekId[]');
-            $nama_bank = $this->input->post('nama_bank[]');
-            $no_rek = $this->input->post('no_rek[]');
-            for ($i = 1; $i <= count($_POST['nama_bank']); $i++) {
-                // Set id menjadi NULL jika id_rek tidak ada atau kosong
-                $id_rekening = !empty($id_rek[$i]) ? $id_rek[$i] : NULL;
-                $data3[] = array(
-                    'id' => $id_rekening,
-                    'invoice_id' => $this->input->post('id'),
-                    'nama_bank' => $nama_bank[$i],
-                    'no_rek' => $no_rek[$i]
-                );
-                // Menggunakan db->replace untuk memasukkan atau menggantikan data
-                $this->db->replace('qbg_rek_invoice', $data3[$i - 1]);
-            }
+            // // MELAKUKAN REPLACE DATA REKENING
+            // $id_rek = $this->input->post('hidden_rekId[]');
+            // $nama_bank = $this->input->post('nama_bank[]');
+            // $no_rek = $this->input->post('no_rek[]');
+            // for ($i = 1; $i <= count($_POST['nama_bank']); $i++) {
+            //     // Set id menjadi NULL jika id_rek tidak ada atau kosong
+            //     $id_rekening = !empty($id_rek[$i]) ? $id_rek[$i] : NULL;
+            //     $data3[] = array(
+            //         'id' => $id_rekening,
+            //         'invoice_id' => $this->input->post('id'),
+            //         'nama_bank' => $nama_bank[$i],
+            //         'no_rek' => $no_rek[$i]
+            //     );
+            //     // Menggunakan db->replace untuk memasukkan atau menggantikan data
+            //     $this->db->replace('qbg_rek_invoice', $data3[$i - 1]);
+            // }
         }
 
         echo json_encode(array("status" => TRUE));

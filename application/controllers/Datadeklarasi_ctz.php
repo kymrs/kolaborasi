@@ -388,7 +388,7 @@ class Datadeklarasi_ctz extends CI_Controller
         $pdf->AddPage('P', 'Letter');
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/carstensz.png', 15, 8, 35, 25);
+        $pdf->Image(base_url('') . '/assets/backend/img/carstensz.png', 15, 16, 60, 15);
 
         // Title of the form
         $pdf->Ln(25);

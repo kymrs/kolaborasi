@@ -1110,7 +1110,7 @@
                                 <td>
                                     <div class="btn btn-primary btn-lg btn-block btn-sm btn-style produk-modal" data-toggle="modal" data-target="#produkModal" data-id="${index + 1}" id="produk-modal${index + 1}">${data['detail_invoice'][index]['nama_produk']} ${data['detail_invoice'][index]['berat']} ${data['detail_invoice'][index]['satuan']} (${data['detail_invoice'][index]['stok_akhir']})</div>
                                     <input type="text" id="kode_produk${index + 1}" name="kode_produk[${index + 1}]" value="${data['detail_invoice'][index]['kode_produk']}">
-
+                                    ${data['detail_invoice'][index]['id']}
                                     <input type="hidden" id="hidden_id" name="hidden_id[${index + 1}]" value="${data['detail_invoice'][index]['id']}">
                                     <input type="hidden" name="hidden_invoiceId[${index + 1}]" id="hidden_invoiceId${index + 1}" value="${data['detail_invoice'][index]['invoice_id']}">
                                 </td>

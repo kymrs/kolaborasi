@@ -335,7 +335,7 @@ class Reimbust_ctz extends CI_Controller
         $pdf->SetAutoPageBreak(true, 5); // Margin bawah 15mm
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/carstensz.png', 15, 8, 35, 25);
+        $pdf->Image(base_url('') . '/assets/backend/img/carstensz.png', 13, 13, 60, 15);
 
         // Set font
         $pdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php');

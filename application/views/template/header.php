@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="<?= base_url() ?>assets/backend/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
     <link rel="stylesheet" href="<?= base_url() ?>assets/backend/plugins/sb2/vendor/datatables-bs4/css/dataTables.bootstrap4.min.css">
     <link rel="stylesheet" href="<?= base_url() ?>assets/backend/plugins/sb2/vendor/datatables-responsive/css/responsive.bootstrap4.min.css">
-    <link rel="stylesheet" href="<?= base_url() ?>assets/frontend/plugins/star-rating/dist/star-rating.css">
+    <!-- <link rel="stylesheet" href="<?= base_url() ?>assets/frontend/plugins/star-rating/dist/star-rating.css"> -->
     <link rel="stylesheet" href="<?= base_url() ?>assets/backend/plugins/style.css">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>

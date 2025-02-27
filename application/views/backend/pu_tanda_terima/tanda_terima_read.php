@@ -92,8 +92,6 @@
 <body>
     <div class="container">
         <div class="d-flex justify-content-end mb-3" style="margin-right: 19px">
-            <a class="btn btn-danger btn-sm mr-2" id="pdf" onclick="return pdf(<?= $data->id ?>)"><i class="fas fa-file-pdf"></i>&nbsp;PDF</a>
-            <a class="btn btn-primary btn-sm mr-2" id="print" onclick="return print_data(<?= $data->id ?>)"><i class="fas fa-print"></i>&nbsp;Print</a>
             <a class="btn btn-secondary btn-sm" onclick="history.back()"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
         </div>
         <div class="form-container">
@@ -159,7 +157,11 @@
             </table>
             <div class="serah-terima">
                 <p class="lead">Bukti Serah Terima:</p>
-                <img src="<?= base_url() ?>/assets/backend/document/tanda_terima_pu/<?= $data->foto ?>" height="300px">
+                <?php if ($data->foto == '' || $data->foto == null) : ?>
+                    <h2 style="font-style: italic;">Foto Tidak Tersedia</h2>
+                <?php else : ?>
+                    <img src="<?= base_url() ?>/assets/backend/document/pu_tanda_terima/<?= $data->foto ?>" height="300px">
+                <?php endif ?>
                 <h1>PENGENUMROH.COM</h1>
                 <h2>YOUR TRUSTED UMRAH & HAJJ MARKETPLACE</h2>
             </div>

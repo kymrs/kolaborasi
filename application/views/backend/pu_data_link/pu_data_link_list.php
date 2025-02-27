@@ -100,12 +100,6 @@
                     <div class="modal-body">
                         <input type="hidden" name="id" />
                         <div class="form-group row">
-                            <label for="" class="col-sm-3 col-form-label">Kode Crew</label>
-                            <div class="col-sm-9">
-                                <input type="text" class="form-control" id="id" name="id" placeholder="Kode Crew" required>
-                            </div>
-                        </div>
-                        <div class="form-group row">
                             <label for="" class="col-sm-3 col-form-label">Nama</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control" id="nama_crew" name="nama_crew" placeholder="Nama Crew" required>
@@ -140,12 +134,6 @@
                     <!-- /.card-header -->
                     <div class="modal-body">
                         <input type="hidden" name="id" />
-                        <div class="form-group row">
-                            <label for="" class="col-sm-3 col-form-label">Kode</label>
-                            <div class="col-sm-9">
-                                <input type="text" class="form-control" id="id_member" name="id_member" placeholder="Kode Member" required>
-                            </div>
-                        </div>
                         <div class="form-group row">
                             <label for="" class="col-sm-3 col-form-label">Nama</label>
                             <div class="col-sm-9">
@@ -336,7 +324,6 @@
     function add_data_crew() {
         method = 'add';
         $('#modalformcrew')[0].reset();
-        $('[name="id"]').prop('readonly', false);
         $('.card-title').text('Tambah Data Crew');
         var validator = $("#modalformcrew").validate();
         validator.resetForm();
@@ -345,7 +332,6 @@
     function add_data_member() {
         method = 'add';
         $('#modalformmember')[0].reset();
-        $('[name="id_member"]').prop('readonly', false);
         $('.card-title').text('Tambah Data Member');
         var validator = $("#modalformmember").validate();
         validator.resetForm();
@@ -394,14 +380,12 @@
         $('.form-control').removeClass('error');
         $('#modal-defaultmember').modal('show');
         $('.card-title').text('Edit Data Member');
-        $('[name="id_member"]').prop('readonly', true);
         $('.aksi').text('Update');
         $.ajax({
             url: "<?php echo site_url('pu_data_link/get_IdMember/') ?>" + idMember,
             type: "GET",
             dataType: "JSON",
             success: function(data) {
-                $('[name="id_member"]').val(data.idMember);
                 $('[name="nama_member"]').val(data.namaMember);
             },
             error: function(jqXHR, textStatus, errorThrown) {

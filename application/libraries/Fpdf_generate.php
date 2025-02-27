@@ -10,11 +10,6 @@ class Fpdf_generate extends FPDF
     //          Normal, Multiply, Screen, Overlay, Darken, Lighten, ColorDodge, ColorBurn,
     //          HardLight, SoftLight, Difference, Exclusion, Hue, Saturation, Color, Luminosity
 
-    function StartTransform()
-    {
-        //save the current graphic state
-        $this->_out('q');
-    }
 
     function ScaleX($s_x, $x = '', $y = '')
     {

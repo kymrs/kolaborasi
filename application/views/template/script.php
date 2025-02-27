@@ -18,8 +18,6 @@
 <script src="<?= base_url() ?>assets/backend/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
 <!-- Swal -->
 <script src="<?= base_url() ?>assets/backend/plugins/sweetalert/sweetalert2.all.min.js"></script>
-<!-- Star Rating -->
-<script src="<?= base_url() ?>assets/frontend/plugins/star-rating/dist/star-rating.js"></script>
 <!-- SELECT2 -->
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <!-- ChartJS -->

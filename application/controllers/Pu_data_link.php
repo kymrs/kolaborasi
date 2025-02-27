@@ -140,7 +140,7 @@ class Pu_data_link extends CI_Controller
 	function get_idMember($idMember)
 	{
 		// Path file JSON
-		$file_path = FCPATH . '';
+		$file_path = FCPATH . $this->data_path_member;
 
 		if (file_exists($file_path)) {
 			$json_data = file_get_contents($file_path);
@@ -163,13 +163,12 @@ class Pu_data_link extends CI_Controller
 	public function addCrew()
 	{
 		// Ambil input dari form atau AJAX
-		$id = $this->input->post('id'); // Data id
 		$nama = ucwords($this->input->post('nama_crew'));
 		$noHP = $this->input->post('no_hp'); // Data noHP
 
 		// Pastikan data tidak kosong
-		if (empty($nama) || empty($noHP) || empty($id)) {
-			echo json_encode(['status' => 'error', 'message' => 'id, Nama dan noHP harus diisi']);
+		if (empty($nama) || empty($noHP)) {
+			echo json_encode(['status' => 'error', 'message' => 'Nama dan noHP harus diisi']);
 			return;
 		}
 
@@ -180,12 +179,23 @@ class Pu_data_link extends CI_Controller
 		$existing_data = [];
 		if (file_exists($file_path)) {
 			$file_content = file_get_contents($file_path);
-			$existing_data = json_decode($file_content, true); // Decode JSON ke array
+			$existing_data = json_decode($file_content, true) ?? []; // Decode JSON ke array
+		}
+
+		// Ambil ID terakhir dan buat ID baru
+		if (!empty($existing_data)) {
+			$lastCrew = end($existing_data);
+			preg_match('/PU(\d+)/', $lastCrew['id'], $matches);
+			$lastIdNumber = isset($matches[1]) ? intval($matches[1]) : 0;
+			$newIdNumber = $lastIdNumber + 1;
+			$newId = sprintf("PU%04d", $newIdNumber); // Format jadi "PU0008"
+		} else {
+			$newId = "PU0001"; // Kalau data kosong, mulai dari PU0001
 		}
 
 		// Tambahkan data baru ke array existing_data
 		$new_data = [
-			'id' => $id,
+			'id' => $newId,
 			'nama' => $nama,
 			'noHP' => (int)$noHP // Pastikan noHP menjadi integer
 		];
@@ -196,21 +206,21 @@ class Pu_data_link extends CI_Controller
 
 		// Simpan data ke file data.json
 		if (file_put_contents($file_path, $json_data)) {
-			echo json_encode(['status' => 'success', 'message' => 'Data berhasil disimpan']);
+			echo json_encode(['status' => 'success', 'message' => 'Data berhasil disimpan', 'id' => $newId]);
 		} else {
 			echo json_encode(['status' => 'error', 'message' => 'Gagal menyimpan data']);
 		}
 	}
 
+
 	public function addMember()
 	{
 		// Ambil input dari form atau AJAX
 		$nama = $this->input->post('nama_member'); // Data nama
-		$idMember = $this->input->post('id_member'); // Data idMember
 
 		// Pastikan data tidak kosong
-		if (empty($nama) || empty($idMember)) {
-			echo json_encode(['status' => 'error', 'message' => 'Nama dan idMember harus diisi']);
+		if (empty($nama)) {
+			echo json_encode(['status' => 'error', 'message' => 'Nama harus diisi']);
 			return;
 		}
 
@@ -221,12 +231,21 @@ class Pu_data_link extends CI_Controller
 		$existing_data = [];
 		if (file_exists($file_path)) {
 			$file_content = file_get_contents($file_path);
-			$existing_data = json_decode($file_content, true); // Decode JSON ke array
+			$existing_data = json_decode($file_content, true) ?? []; // Decode JSON ke array
+		}
+
+		// Ambil ID terakhir dan buat ID baru
+		if (!empty($existing_data)) {
+			$lastMember = end($existing_data);
+			$lastId = intval(substr($lastMember['idMember'], 2)); // Ambil angka dari 'PUxxxx'
+			$newId = 'PU' . str_pad($lastId + 1, 4, '0', STR_PAD_LEFT); // Format jadi 'PU0006', 'PU0007', dst
+		} else {
+			$newId = 'PU0000'; // Kalau data kosong, mulai dari PU0000
 		}
 
 		// Tambahkan data baru ke array existing_data
 		$new_data = [
-			'idMember' => $idMember,
+			'idMember' => $newId,
 			'namaMember' => $nama
 		];
 		$existing_data[] = $new_data;
@@ -236,7 +255,7 @@ class Pu_data_link extends CI_Controller
 
 		// Simpan data ke file data.json
 		if (file_put_contents($file_path, $json_data)) {
-			echo json_encode(['status' => 'success', 'message' => 'Data berhasil disimpan']);
+			echo json_encode(['status' => 'success', 'message' => 'Data berhasil disimpan', 'idMember' => $newId]);
 		} else {
 			echo json_encode(['status' => 'error', 'message' => 'Gagal menyimpan data']);
 		}

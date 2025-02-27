@@ -144,7 +144,7 @@ class Qbg_produk extends CI_Controller
             'created_by' => $this->session->userdata('id_user')
         ];
 
-        $this->db->insert('qbg_stok', $data2);
+        $this->db->insert('qbg_transaksi', $data2);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -197,7 +197,7 @@ class Qbg_produk extends CI_Controller
                 ];
 
                 // Insert stok baru
-                $this->db->insert('qbg_stok', $data2);
+                $this->db->insert('qbg_transaksi', $data2);
                 $this->db->update('qbg_produk', ['stok_akhir' => $total], ['kode_produk' => $kode_produk]);
             }
         } else if ($this->input->post('kurangi_stok')) {
@@ -218,7 +218,7 @@ class Qbg_produk extends CI_Controller
                 ];
 
                 // Insert stok baru
-                $this->db->insert('qbg_stok', $data2);
+                $this->db->insert('qbg_transaksi', $data2);
                 $this->db->update('qbg_produk', ['stok_akhir' => $total], ['kode_produk' => $kode_produk]);
             }
         }
@@ -232,7 +232,7 @@ class Qbg_produk extends CI_Controller
         $query = $this->db->select('kode_produk')->where('id', $id)->get('qbg_produk')->row();
 
         // hapus data stok dari tabel stok berdasarkan kode produk
-        $this->db->delete('qbg_stok', ['kode_produk' => $query->kode_produk]);
+        $this->db->delete('qbg_transaksi', ['kode_produk' => $query->kode_produk]);
 
         // hapus data master
         $this->M_qbg_produk->delete($id);

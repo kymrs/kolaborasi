@@ -493,7 +493,7 @@ class Prepayment_ctz extends CI_Controller
         $pdf->AddPage('P', 'Letter');
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/carstensz.png', 11.5, 3, 35, 25);
+        $pdf->Image(base_url('') . '/assets/backend/img/carstensz.png', 12, 7, 60, 15);
 
         $pdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php');
         $pdf->AddFont('Poppins-Bold', '', 'Poppins-Bold.php');
