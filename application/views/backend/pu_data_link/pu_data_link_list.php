@@ -272,7 +272,7 @@
                     showConfirmButton: false,
                     timer: 1500
                 });
-                document.location.href = 'pu_data_link';
+                // document.location.href = 'pu_data_link';
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 alert('Error adding / update data');
@@ -308,7 +308,7 @@
                     showConfirmButton: false,
                     timer: 1500
                 });
-                document.location.href = 'pu_data_link';
+                // document.location.href = 'pu_data_link';
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 alert('Error adding / update data');

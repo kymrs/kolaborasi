@@ -165,6 +165,7 @@
 
         .table-transaksi {
             overflow-x: scroll;
+            background-color: #fff;
         }
 
         .colomn-kanan {
@@ -474,23 +475,27 @@
     });
 
 
-    // Jika opsi harga belum di pilih, maka tombol add detail tidak bisa di klik
     $(document).ready(function() {
+        let firstChange = false;
+        let removedElement; // Variabel untuk menyimpan elemen yang dihapus
+
         $('#jenis_harga').on('change', function() {
-            if ($(this).val().trim() !== '' || aksi != 'update') {
+            if ($(this).val().trim() !== '') {
                 $('#add-row').prop('disabled', false); // Menghilangkan disabled
-                $(this).css({
-                    'background-color': '#EAECF4',
-                    'pointer-events': 'none'
-                });
+                if (firstChange) {
+                    $('#add-row').prop('disabled', false); // Menghilangkan disabled
+
+                    $('#input-container tr').remove(); // Hapus dan simpan elemen
+                }
+                firstChange = true;
             } else {
                 $('#add-row').prop('disabled', true); // Mengaktifkan kembali disabled jika belum dipilih
+                firstChange = false;
             }
         });
-        if ($('#jenis_harga').val() === 'qubagift') {
-            alert('sip')
-        }
     });
+
+
 
     // untuk menghitung seluruh total produk, dan disimpan ke input total akhir
     function calculateTotalNominal() {

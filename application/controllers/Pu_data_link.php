@@ -4,8 +4,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
 class Pu_data_link extends CI_Controller
 {
 
-	private $data_path_crew = '../linkgroup/link.pengenumroh/data-crew.json';
-	private $data_path_member = '../linkgroup/link.pengenumroh/data-member.json';
+	private $data_path_crew = 'https://puuu.naufalandriana.com/data-crew.json';
+	private $data_path_member = 'https://puuu.naufalandriana.com/data-member.json';
 
 	function __construct()
 	{
@@ -116,46 +116,69 @@ class Pu_data_link extends CI_Controller
 
 	function get_id($id)
 	{
-		// Path file JSON
-		$file_path = FCPATH . $this->data_path_crew;
+		// Path file JSON (URL)
+		$file_path = $this->data_path_crew;
 
-		if (file_exists($file_path)) {
-			$json_data = file_get_contents($file_path);
-			$data = json_decode($json_data, true); // Mengubah JSON menjadi array
+		// Ambil data JSON dari URL
+		$json_data = @file_get_contents($file_path);
 
-			// Cari data berdasarkan id
-			$result = array_filter($data, function ($crew) use ($id) {
-				return $crew['id'] == $id;
-			});
-
-			// Mengembalikan hasil pertama jika ditemukan
-			$data = reset($result);
-		} else {
-			$data = null; // Jika file JSON tidak ditemukan
+		// Cek apakah berhasil mengambil data
+		if ($json_data === false) {
+			echo json_encode(["error" => "Gagal mengambil data JSON"]);
+			return;
 		}
+
+		// Decode JSON ke array
+		$data = json_decode($json_data, true);
+
+		// Cek apakah JSON valid
+		if ($data === null) {
+			echo json_encode(["error" => "Format JSON tidak valid"]);
+			return;
+		}
+
+		// Cari data berdasarkan id
+		$result = array_filter($data, function ($crew) use ($id) {
+			return $crew['id'] == $id;
+		});
+
+		// Ambil hasil pertama atau null jika tidak ada
+		$data = reset($result) ?: null;
 
 		echo json_encode($data);
 	}
 
+
 	function get_idMember($idMember)
 	{
-		// Path file JSON
-		$file_path = FCPATH . $this->data_path_member;
+		// Path file JSON (URL)
+		$file_path = $this->data_path_member;
 
-		if (file_exists($file_path)) {
-			$json_data = file_get_contents($file_path);
-			$data = json_decode($json_data, true); // Mengubah JSON menjadi array
+		// Ambil data JSON dari URL
+		$json_data = @file_get_contents($file_path);
 
-			// Cari data berdasarkan idMember
-			$result = array_filter($data, function ($crew) use ($idMember) {
-				return $crew['idMember'] == $idMember;
-			});
-
-			// Mengembalikan hasil pertama jika ditemukan
-			$data = reset($result);
-		} else {
-			$data = null; // Jika file JSON tidak ditemukan
+		// Cek apakah berhasil mengambil data
+		if ($json_data === false) {
+			echo json_encode(["error" => "Gagal mengambil data JSON"]);
+			return;
 		}
+
+		// Decode JSON ke array
+		$data = json_decode($json_data, true);
+
+		// Cek apakah JSON valid
+		if ($data === null) {
+			echo json_encode(["error" => "Format JSON tidak valid"]);
+			return;
+		}
+
+		// Cari data berdasarkan idMember
+		$result = array_filter($data, function ($member) use ($idMember) {
+			return $member['idMember'] == $idMember;
+		});
+
+		// Ambil hasil pertama atau null jika tidak ada
+		$data = reset($result) ?: null;
 
 		echo json_encode($data);
 	}
@@ -164,7 +187,7 @@ class Pu_data_link extends CI_Controller
 	{
 		// Ambil input dari form atau AJAX
 		$nama = ucwords($this->input->post('nama_crew'));
-		$noHP = $this->input->post('no_hp'); // Data noHP
+		$noHP = $this->input->post('no_hp');
 
 		// Pastikan data tidak kosong
 		if (empty($nama) || empty($noHP)) {
@@ -172,231 +195,176 @@ class Pu_data_link extends CI_Controller
 			return;
 		}
 
-		// Path file data.json
-		$file_path = FCPATH . $this->data_path_crew; // Sesuaikan dengan lokasi file
-
-		// Baca data yang sudah ada di data.json
-		$existing_data = [];
-		if (file_exists($file_path)) {
-			$file_content = file_get_contents($file_path);
-			$existing_data = json_decode($file_content, true) ?? []; // Decode JSON ke array
-		}
-
-		// Ambil ID terakhir dan buat ID baru
-		if (!empty($existing_data)) {
-			$lastCrew = end($existing_data);
-			preg_match('/PU(\d+)/', $lastCrew['id'], $matches);
-			$lastIdNumber = isset($matches[1]) ? intval($matches[1]) : 0;
-			$newIdNumber = $lastIdNumber + 1;
-			$newId = sprintf("PU%04d", $newIdNumber); // Format jadi "PU0008"
-		} else {
-			$newId = "PU0001"; // Kalau data kosong, mulai dari PU0001
-		}
-
-		// Tambahkan data baru ke array existing_data
-		$new_data = [
-			'id' => $newId,
+		// Data yang mau dikirim ke API
+		$data = [
 			'nama' => $nama,
-			'noHP' => (int)$noHP // Pastikan noHP menjadi integer
+			'noHP' => $noHP
 		];
-		$existing_data[] = $new_data;
 
-		// Encode data ke format JSON
-		$json_data = json_encode($existing_data, JSON_PRETTY_PRINT);
+		$api_url = "https://puuu.naufalandriana.com/api/addCrew.php"; // API yang kita buat
 
-		// Simpan data ke file data.json
-		if (file_put_contents($file_path, $json_data)) {
-			echo json_encode(['status' => 'success', 'message' => 'Data berhasil disimpan', 'id' => $newId]);
-		} else {
-			echo json_encode(['status' => 'error', 'message' => 'Gagal menyimpan data']);
-		}
+		// Setup cURL
+		$ch = curl_init($api_url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_POST, true);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+		curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
+
+		// Eksekusi request
+		$response = curl_exec($ch);
+		curl_close($ch);
+
+		// Kirim response ke frontend
+		echo $response;
 	}
-
 
 	public function addMember()
 	{
-		// Ambil input dari form atau AJAX
-		$nama = $this->input->post('nama_member'); // Data nama
+		$nama = $this->input->post('nama_member');
 
-		// Pastikan data tidak kosong
 		if (empty($nama)) {
 			echo json_encode(['status' => 'error', 'message' => 'Nama harus diisi']);
 			return;
 		}
 
-		// Path file data.json
-		$file_path = FCPATH . $this->data_path_member; // Sesuaikan dengan lokasi file
+		// Kirim data ke API di puuu.https://puuu.naufalandriana.com/
+		$url = "https://puuu.naufalandriana.com/api/addMember.php";
+		$postData = json_encode(['nama_member' => $nama]);
 
-		// Baca data yang sudah ada di data.json
-		$existing_data = [];
-		if (file_exists($file_path)) {
-			$file_content = file_get_contents($file_path);
-			$existing_data = json_decode($file_content, true) ?? []; // Decode JSON ke array
-		}
+		$ch = curl_init($url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, [
+			'Content-Type: application/json'
+		]);
 
-		// Ambil ID terakhir dan buat ID baru
-		if (!empty($existing_data)) {
-			$lastMember = end($existing_data);
-			$lastId = intval(substr($lastMember['idMember'], 2)); // Ambil angka dari 'PUxxxx'
-			$newId = 'PU' . str_pad($lastId + 1, 4, '0', STR_PAD_LEFT); // Format jadi 'PU0006', 'PU0007', dst
-		} else {
-			$newId = 'PU0000'; // Kalau data kosong, mulai dari PU0000
-		}
+		$response = curl_exec($ch);
+		curl_close($ch);
 
-		// Tambahkan data baru ke array existing_data
-		$new_data = [
-			'idMember' => $newId,
-			'namaMember' => $nama
-		];
-		$existing_data[] = $new_data;
-
-		// Encode data ke format JSON
-		$json_data = json_encode($existing_data, JSON_PRETTY_PRINT);
-
-		// Simpan data ke file data.json
-		if (file_put_contents($file_path, $json_data)) {
-			echo json_encode(['status' => 'success', 'message' => 'Data berhasil disimpan', 'idMember' => $newId]);
-		} else {
-			echo json_encode(['status' => 'error', 'message' => 'Gagal menyimpan data']);
-		}
+		echo $response;
 	}
 
 	public function updateCrew()
 	{
-		// Lokasi file JSON
-		$file_path = FCPATH . $this->data_path_crew;
+		$id = $this->input->post('id');
+		$no_hp = $this->input->post('no_hp');
+		$nama_crew = ucwords($this->input->post('nama_crew'));
 
-		// Pastikan file JSON ada
-		if (!file_exists($file_path)) {
-			echo json_encode(['status' => FALSE, 'message' => 'File JSON tidak ditemukan']);
+		if (empty($id) || empty($no_hp)) {
+			echo json_encode(['status' => false, 'message' => 'ID dan No HP harus diisi']);
 			return;
 		}
 
-		// Ambil data dari file JSON
-		$json_content = file_get_contents($file_path);
-		$data_crew = json_decode($json_content, true);
+		// Kirim data ke API di puuu.https://puuu.naufalandriana.com/
+		$url = "https://puuu.naufalandriana.com/api/updateCrew.php";
+		$postData = json_encode(['id' => $id, 'no_hp' => $no_hp, 'nama_crew' => $nama_crew]);
 
-		// Input no_hp dari form
-		$id = $this->input->post('id');
-		$no_hp = $this->input->post('no_hp');
+		$ch = curl_init($url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, [
+			'Content-Type: application/json'
+		]);
 
-		// Data yang diupdate
-		$nama_crew = ucwords($this->input->post('nama_crew'));
+		$response = curl_exec($ch);
+		curl_close($ch);
 
-		// Cari dan update data berdasarkan no_hp
-		$updated = false;
-		foreach ($data_crew as &$crew) {
-			if ($crew['id'] == $id) {
-				$crew['noHP'] = $no_hp;
-				$crew['nama'] = $nama_crew;
-				$updated = true;
-				break;
-			}
-		}
-
-		if ($updated) {
-			// Tulis kembali data ke file JSON
-			if (file_put_contents($file_path, json_encode($data_crew, JSON_PRETTY_PRINT))) {
-				echo json_encode(['status' => TRUE, 'message' => 'Data berhasil diperbarui']);
-			} else {
-				echo json_encode(['status' => FALSE, 'message' => 'Gagal menyimpan ke file JSON']);
-			}
-		} else {
-			echo json_encode(['status' => FALSE, 'message' => 'Data tidak ditemukan']);
-		}
+		echo $response;
 	}
 
 	public function updateMember()
 	{
-		// Lokasi file JSON
-		$file_path = FCPATH . $this->data_path_member;
+		$idMember = $this->input->post('id_member');
+		$nama_member = ucwords($this->input->post('nama_member'));
 
-		// Pastikan file JSON ada
-		if (!file_exists($file_path)) {
-			echo json_encode(['status' => FALSE, 'message' => 'File JSON tidak ditemukan']);
+		if (empty($idMember) || empty($nama_member)) {
+			echo json_encode(['status' => false, 'message' => 'ID Member dan Nama harus diisi']);
 			return;
 		}
 
-		// Ambil data dari file JSON
-		$json_content = file_get_contents($file_path);
-		$data_member = json_decode($json_content, true);
+		$url = "https://puuu.naufalandriana.com/api/updateMember.php";
+		$postData = json_encode(['id_member' => $idMember, 'nama_member' => $nama_member]);
 
-		// Input no_hp dari form
-		$idMember = $this->input->post('id_member');
+		$ch = curl_init($url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, [
+			'Content-Type: application/json'
+		]);
 
-		// Data yang diupdate
-		$nama_member = ucwords($this->input->post('nama_member'));
+		$response = curl_exec($ch);
+		curl_close($ch);
 
-		// Cari dan update data berdasarkan no_hp
-		$updated = false;
-		foreach ($data_member as &$member) {
-			if ($member['idMember'] == $idMember) {
-				$member['namaMember'] = $nama_member;
-				$updated = true;
-				break;
-			}
-		}
-
-		if ($updated) {
-			// Tulis kembali data ke file JSON
-			if (file_put_contents($file_path, json_encode($data_member, JSON_PRETTY_PRINT))) {
-				echo json_encode(['status' => TRUE, 'message' => 'Data berhasil diperbarui']);
-			} else {
-				echo json_encode(['status' => FALSE, 'message' => 'Gagal menyimpan ke file JSON']);
-			}
-		} else {
-			echo json_encode(['status' => FALSE, 'message' => 'Data tidak ditemukan']);
-		}
+		echo $response;
 	}
 
 
-	function delete($id)
+	public function delete($id)
 	{
-		$file_path = FCPATH . $this->data_path_crew;
+		$file_path = $this->data_path_crew;
 
-		if (file_exists($file_path)) {
-			$json_data = file_get_contents($file_path);
-			$data = json_decode($json_data, true); // Mengubah JSON menjadi array
+		// Cek kalau file belum ada, buat file kosong dulu
+		if (!file_exists($file_path)) {
+			file_put_contents($file_path, json_encode([])); // Buat file kosong dengan array kosong
+		}
 
-			// Cari dan hapus data berdasarkan id
-			$updated_data = array_filter($data, function ($crew) use ($id) {
-				return $crew['id'] != $id;
-			});
+		// Ambil data dari JSON
+		$json_data = file_get_contents($file_path);
+		$data = json_decode($json_data, true) ?? [];
 
+		// Cari dan hapus data berdasarkan ID
+		$updated_data = array_filter($data, function ($crew) use ($id) {
+			return $crew['id'] != $id;
+		});
+
+		// Cek apakah ada perubahan data
+		if (count($updated_data) < count($data)) {
 			// Simpan kembali data setelah dihapus
-			if (count($updated_data) < count($data)) {
-				file_put_contents($file_path, json_encode(array_values($updated_data), JSON_PRETTY_PRINT));
-				echo json_encode(array("status" => TRUE));
+			if (file_put_contents($file_path, json_encode(array_values($updated_data), JSON_PRETTY_PRINT))) {
+				echo json_encode(["status" => TRUE, "message" => "Data berhasil dihapus."]);
 			} else {
-				echo json_encode(array("status" => FALSE, "message" => "Data tidak ditemukan."));
+				echo json_encode(["status" => FALSE, "message" => "Gagal menyimpan perubahan ke file JSON."]);
 			}
 		} else {
-			echo json_encode(array("status" => FALSE, "message" => "File tidak ditemukan."));
+			echo json_encode(["status" => FALSE, "message" => "Data tidak ditemukan."]);
 		}
 	}
 
-	function deleteMember($idMember)
+	public function deleteMember($idMember)
 	{
-		$file_path = FCPATH . $this->data_path_member;
+		$file_path = $this->data_path_member;
 
-		if (file_exists($file_path)) {
-			$json_data = file_get_contents($file_path);
-			$data = json_decode($json_data, true); // Mengubah JSON menjadi array
+		// Ambil data dari URL JSON
+		$json_data = file_get_contents($file_path);
+		if ($json_data === false) {
+			echo json_encode(["status" => FALSE, "message" => "Gagal mengambil data dari server."]);
+			return;
+		}
 
-			// Cari dan hapus data berdasarkan idMember
-			$updated_data = array_filter($data, function ($member) use ($idMember) {
-				return $member['idMember'] != $idMember;
-			});
+		$data = json_decode($json_data, true);
+		if ($data === null) {
+			echo json_encode(["status" => FALSE, "message" => "Format JSON tidak valid."]);
+			return;
+		}
 
+		// Cari dan hapus data berdasarkan idMember
+		$updated_data = array_filter($data, function ($member) use ($idMember) {
+			return $member['idMember'] != $idMember;
+		});
+
+		if (count($updated_data) < count($data)) {
 			// Simpan kembali data setelah dihapus
-			if (count($updated_data) < count($data)) {
-				file_put_contents($file_path, json_encode(array_values($updated_data), JSON_PRETTY_PRINT));
-				echo json_encode(array("status" => TRUE));
+			$result = file_put_contents($file_path, json_encode(array_values($updated_data), JSON_PRETTY_PRINT));
+			if ($result !== false) {
+				echo json_encode(["status" => TRUE, "message" => "Data berhasil dihapus."]);
 			} else {
-				echo json_encode(array("status" => FALSE, "message" => "Data tidak ditemukan."));
+				echo json_encode(["status" => FALSE, "message" => "Gagal menyimpan perubahan."]);
 			}
 		} else {
-			echo json_encode(array("status" => FALSE, "message" => "File tidak ditemukan."));
+			echo json_encode(["status" => FALSE, "message" => "Data tidak ditemukan."]);
 		}
 	}
 }
