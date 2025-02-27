@@ -12,11 +12,11 @@
 	},
 	"require": {
 		"php": ">=5.3.7",
-		"phpoffice/phpspreadsheet": "^1.28",
+		"phpoffice/phpspreadsheet": "*",
 		"phpmailer/phpmailer": "^6.9",
 		"mpdf/mpdf": "^8.2",
-		"endroid/qr-code": "^4.6",
-		"dasprid/enum": "^1.0"
+		"dompdf/dompdf": "^3.0",
+		"endroid/qr-code": "^4.6"
 	},
 	"suggest": {
 		"paragonie/random_compat": "Provides better randomness in PHP 5.x"
@@ -36,5 +36,10 @@
 	"require-dev": {
 		"mikey179/vfsstream": "1.6.*",
 		"phpunit/phpunit": "4.* || 5.* || 9.*"
-	}
+	},
+	"autoload": {
+    "psr-4": {
+        "App\\": "application/"
+    }
+}
 }

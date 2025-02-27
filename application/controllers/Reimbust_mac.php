@@ -419,10 +419,10 @@ class reimbust_mac extends CI_Controller
         // Add some data with adjusted column widths
         Row($pdf, 10, array('NAMA', ':', $data['user']), $widths, false);
         $pdf->Ln(-3);
-        Row($pdf, 10, array('JABATAN', ':', $data['master']->jabatan), $widths, false);
-        $pdf->Ln(-3);
-        Row($pdf, 10, array('DEPARTEMEN', ':', $data['master']->departemen), $widths, false);
-        $pdf->Ln(-3);
+        // Row($pdf, 10, array('JABATAN', ':', $data['master']->jabatan), $widths, false);
+        // $pdf->Ln(-3);
+        // Row($pdf, 10, array('DEPARTEMEN', ':', $data['master']->departemen), $widths, false);
+        // $pdf->Ln(-3);
         Row($pdf, 10, array('SIFAT PELAPORAN', ':', $data['master']->sifat_pelaporan), $widths, false);
         $pdf->Ln(-3);
         Row($pdf, 10, array('TANGGAL', ':', $formatted_date), $widths, false);

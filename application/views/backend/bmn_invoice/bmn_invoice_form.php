@@ -405,7 +405,7 @@
                 },
                 dataType: "JSON",
                 success: function(data) {
-                    console.log(data);
+                    // console.log(data);
                     $('#kode_invoice').val(data.toUpperCase());
                     $('#kode').val(data);
                 },
@@ -658,7 +658,7 @@
                 deletedRekRows.push(rowRekId);
             }
 
-            console.log(rowRekId);
+            // console.log(rowRekId);
 
             $(`#rek-${id}`).remove();
             // Reorder rows and update row numbers
@@ -734,9 +734,6 @@
             var rek = selectedOption.data('rek');
 
             addRekRow(bank, rek);
-            // // Cetak ke konsol untuk memastikan
-            // console.log('Bank:', bank);
-            // console.log('Rekening:', rek);
         });
 
         function updateSubmitButtonState() {
@@ -790,7 +787,7 @@
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
-                    console.log(data);
+                    // console.log(data);
                     //SET VALUE DATA MASTER PREPAYMENT
                     $('#id').val(data['master']['id']);
                     let dateParts = data['master']['tgl_invoice'].split('-'); // Pisahkan berdasarkan "-"
@@ -923,7 +920,7 @@
                 data: $('#form').serialize(),
                 dataType: "JSON",
                 success: function(data) {
-                    console.log(data);
+                    // console.log(data);
                     // Sembunyikan loading saat respons diterima
                     $('#loading').hide();
 

@@ -53,10 +53,6 @@ class Bmn_invoice extends CI_Controller
         );
         $pecahkan = explode('-', $tanggal);
 
-        // variabel pecahkan 0 = tanggal
-        // variabel pecahkan 1 = bulan
-        // variabel pecahkan 2 = tahun
-
         return $pecahkan[2] . ' ' . $bulan[(int)$pecahkan[1]] . ' ' . $pecahkan[0];
     }
 
@@ -78,12 +74,14 @@ class Bmn_invoice extends CI_Controller
 
     function get_list()
     {
+        $id_user = $this->session->userdata('id_user');
+
         // INISIAI VARIABLE YANG DIBUTUHKAN
-        $fullname = $this->db->select('name')
-            ->from('tbl_data_user')
-            ->where('id_user', $this->session->userdata('id_user'))
+        $name = $this->db->select('username')
+            ->from('tbl_user')
+            ->where('id_user', $id_user)
             ->get()
-            ->row('name');
+            ->row('username');
         $list = $this->M_bmn_invoice->get_datatables();
         $data = array();
         $no = $_POST['start'];
@@ -103,7 +101,15 @@ class Bmn_invoice extends CI_Controller
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
             $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="bmn_invoice/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
-            $action = $action_read . $action_edit . $action_delete . $action_print;
+            if ($name == 'eko') {
+                $action = $action_read . $action_edit . $action_delete . $action_print;
+            } elseif ($field->id_user == $id_user) {
+                $action = $action_read . $action_edit . $action_delete . $action_print;
+            } else {
+                $action = $action_read . $action_print;
+            }
+
+            $status = $field->payment_status == 1 ? 'Lunas' : 'Belum Lunas';
 
             $no++;
             $row = array();
@@ -115,6 +121,7 @@ class Bmn_invoice extends CI_Controller
             $row[] = strtoupper($kode_invoice);
             $row[] = $field->ctc2_nama;
             $row[] = $field->ctc2_alamat;
+            $row[] = $status;
             $row[] = $this->tgl_indo(date("Y-m-j", strtotime($field->tgl_tempo)));
 
             $data[] = $row;
@@ -135,6 +142,12 @@ class Bmn_invoice extends CI_Controller
     {
         // $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = $id;
+        $data['id_user'] = $this->session->userdata('id_user');
+        $data['name'] = $this->db->select('username')
+            ->from('tbl_user')
+            ->where('id_user', $data['id_user'])
+            ->get()
+            ->row('username');
         $data['invoice'] = $this->M_bmn_invoice->getInvoiceData($id);
         $data['status'] = $this->M_bmn_invoice->get_by_id($id)->payment_status;
         $data['rekening'] = $this->db->get_where('bmn_rek_invoice', ['invoice_id' => $id])->result_array();
@@ -203,6 +216,8 @@ class Bmn_invoice extends CI_Controller
     // MENAMBAHKAN DATA
     public function add()
     {
+        $id_user = $this->session->userdata('id_user');
+
         // INSERT KODE PREPAYMENT SAAT SUBMIT
         $date = $this->input->post('tgl_invoice');
 
@@ -221,6 +236,7 @@ class Bmn_invoice extends CI_Controller
         $kode_invoice = 'INVBM' . $year . $month . $urutan;
 
         $data = array(
+            'id_user' => $id_user,
             'tgl_invoice' => date('Y-m-d', strtotime($this->input->post('tgl_invoice'))),
             'kode_invoice' => $kode_invoice,
             'tgl_tempo' => date('Y-m-d', strtotime($this->input->post('tgl_tempo'))),

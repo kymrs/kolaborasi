@@ -406,8 +406,8 @@ class Datadeklarasi_ctz extends CI_Controller
         $pdf->Cell(60, 10, ': ' . $formatted_date, 0, 1);
         $pdf->Cell(40, 10, 'Nama', 0, 0);
         $pdf->Cell(60, 10, ': ' . $data['user'], 0, 1);
-        $pdf->Cell(40, 10, 'Jabatan', 0, 0);
-        $pdf->Cell(60, 10, ': ' . $data['master']->jabatan, 0, 1);
+        // $pdf->Cell(40, 10, 'Jabatan', 0, 0);
+        // $pdf->Cell(60, 10, ': ' . $data['master']->jabatan, 0, 1);
 
         $pdf->Ln(1);
         $pdf->SetFont('Poppins-Regular', '', 12);

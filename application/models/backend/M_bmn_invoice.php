@@ -9,13 +9,14 @@ class M_bmn_invoice extends CI_Model
     var $id = 'id';
     var $table = 'bmn_invoice';
     var $table2 = 'bmn_rek_invoice';
-    var $column_order = array(null, null, 'tgl_invoice', 'kode_invoice', 'tgl_tempo', 'ctc2_nama', 'ctc2_alamat');
-    var $column_search = array('tgl_invoice', 'kode_invoice', 'tgl_tempo', 'ctc2_nama', 'ctc2_alamat'); //field yang diizin untuk pencarian
+    var $column_order = array(null, null, 'id_user', 'tgl_invoice', 'kode_invoice', 'tgl_tempo', 'ctc2_nama', 'ctc2_alamat', 'payment_status');
+    var $column_search = array('id_user', 'tgl_invoice', 'kode_invoice', 'tgl_tempo', 'ctc2_nama', 'ctc2_alamat', 'payment_status'); //field yang diizin untuk pencarian
     var $order = array('id' => 'desc');
 
     // UNTUK QUERY DATA TABLE
     function _get_datatables_query()
     {
+        $id_user = $this->session->userdata('id_user');
         $this->db->select('*'); // Memilih kolom dari kedua tabel
         $this->db->from($this->table);
         // $this->db->join('tbl_data_user', 'tbl_data_user.id_user = bmn_invoice.id_user', 'left'); // JOIN dengan tabel tbl_user
@@ -95,7 +96,7 @@ class M_bmn_invoice extends CI_Model
 
     public function getInvoiceData($id)
     {
-        $this->db->select('tgl_invoice, kode_invoice, diskon, tgl_tempo, ctc_nama, ctc_nomor, ctc2_nama, ctc2_nomor, ctc2_email, ctc2_alamat, keterangan');
+        $this->db->select('id_user, tgl_invoice, kode_invoice, diskon, tgl_tempo, ctc_nama, ctc_nomor, ctc2_nama, ctc2_nomor, ctc2_email, ctc2_alamat, keterangan');
         $this->db->from('bmn_invoice');
         $this->db->where('id', $id);
         $data = $this->db->get()->row_array();

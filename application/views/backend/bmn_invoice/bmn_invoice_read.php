@@ -66,7 +66,9 @@
         <div class="canvas">
             <a class="btn btn-secondary btn-sm" onclick="history.back()" style="float: right"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
             <!-- FITUR PAYMENT -->
-            <a class="btn btn-success btn-sm mr-2" id="paymentBtn" data-toggle="modal" style="float: right;" data-target="#paymentModal"><i class="fas fa-money-bill"></i>&nbsp;Payment</a>
+            <?php if ($name == 'eko' || $invoice['id_user'] == $id_user) { ?>
+                <a class="btn btn-success btn-sm mr-2" id="paymentBtn" data-toggle="modal" style="float: right;" data-target="#paymentModal"><i class="fas fa-money-bill"></i>&nbsp;Payment</a>
+            <?php } ?>
             <!-- FITUR SEND EMAIL -->
             <!-- <a class="btn btn-info btn-sm" id="send_email" data-id="<?= $id ?>" style="float: right; margin-right: 10px"><i class="fas fa-envelope"></i>&nbsp;&nbsp;Send Email</a> -->
             <hr class="line-header">
