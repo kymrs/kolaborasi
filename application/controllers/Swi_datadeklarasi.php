@@ -201,7 +201,21 @@ class Swi_datadeklarasi extends CI_Controller
             ->get('tbl_submenu')
             ->row();
 
-        $app = $this->db->select('app_id, app2_id, app4_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
+        // MENCARI SIAPA YANG AKAN MELAKUKAN APPROVAL PERMINTAAN
+        $id_menu = $this->db->select('id_menu')
+            ->where('link', $this->router->fetch_class())
+            ->get('tbl_submenu')
+            ->row();
+
+        $valid = true;
+        $confirm = $this->db->select('app_id, app2_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
+        if (!empty($confirm) && $confirm->app_id != null) {
+            $app = $this->db->select('app_id, app2_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
+        } else {
+            echo json_encode(array("status" => FALSE, "error" => "Approval Belum Ditentukan, Mohon untuk menghubungi admin."));
+            exit();
+            $valid = false;
+        }
         $id = $this->session->userdata('id_user');
 
         $data = array(
@@ -229,7 +243,13 @@ class Swi_datadeklarasi extends CI_Controller
             'created_at' => date('Y-m-d H:i:s')
         );
 
-        $this->M_swi_datadeklarasi->save($data);
+        if ($valid) {
+            $this->M_swi_datadeklarasi->save($data);
+            echo json_encode(array("status" => TRUE));
+        } else {
+            echo json_encode(array("status" => FALSE));
+        }
+
         echo json_encode(array("status" => TRUE));
     }
 

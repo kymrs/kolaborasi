@@ -230,11 +230,12 @@ class Swi_prepayment extends CI_Controller
             ->row();
 
         $valid = true;
-        $confirm = $this->db->select('app_id, app2_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->num_rows();
-        if ($confirm > 0) {
+        $confirm = $this->db->select('app_id, app2_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
+        if (!empty($confirm) && $confirm->app_id != null) {
             $app = $this->db->select('app_id, app2_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
         } else {
             echo json_encode(array("status" => FALSE, "error" => "Approval Belum Ditentukan, Mohon untuk menghubungi admin."));
+            exit();
             $valid = false;
         }
         $id = $this->session->userdata('id_user');

@@ -163,11 +163,11 @@
                         <div class="header-field">
                             <img src="<?= base_url('assets/backend/img/bymoment.png') ?>" alt="" class="logo">
                             <table>
-                                <tr>
+                                <!-- <tr>
                                     <td style="font-weight: bold;">Divisi</td>
                                     <td>:</td>
                                     <td id="divisiTxt">tess</td>
-                                </tr>
+                                </tr> -->
                                 <tr>
                                     <td style="font-weight: bold;">Prepayment</td>
                                     <td>:</td>
@@ -191,11 +191,11 @@
                                 <td>:</td>
                                 <td class="line" id="namaTxt">tess</td>
                             </tr>
-                            <tr>
+                            <!-- <tr>
                                 <td>Jabatan</td>
                                 <td>:</td>
                                 <td class="line" id="jabatanTxt">tess</td>
-                            </tr>
+                            </tr> -->
                             <tr>
                                 <td colspan="3">Dengan ini bermaksud mengajukan prepayment untuk :</td>
                             </tr>

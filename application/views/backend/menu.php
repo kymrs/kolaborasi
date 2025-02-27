@@ -97,23 +97,23 @@
         right: 10px !important;
     }
 
-    .approval-field {
+    /* .approval-field {
         width: 75%;
         margin: auto;
-        border: 2px solid #ccc;
-        /* Warna abu-abu */
-        padding: 15px;
-        border-radius: 5px;
-        /* Opsional: Membuat sudut border melengkung */
-        /* background-color: #f9f9f9; */
-        /* Opsional: Memberikan warna latar belakang */
-    }
+        border: 2px solid #ccc; */
+    /* Warna abu-abu */
+    /* padding: 15px;
+        border-radius: 5px; */
+    /* Opsional: Membuat sudut border melengkung */
+    /* background-color: #f9f9f9; */
+    /* Opsional: Memberikan warna latar belakang */
+    /* } */
 
 
     @media (max-width: 576px) {
 
         /* Untuk tampilan mobile */
-        .form-group.row {
+        /* .form-group.row {
             display: flex;
             flex-direction: column;
         }
@@ -124,22 +124,22 @@
 
         .form-group.row .col-sm-10 {
             width: 100%;
-        }
+        } */
     }
 
     @media (min-width: 576px) {
 
         /* Untuk tampilan desktop */
-        .form-group.row {
+        /* .form-group.row {
             display: flex;
-            align-items: center;
-            /* Sejajarkan label dan input */
-        }
+            align-items: center; */
+        /* Sejajarkan label dan input */
+        /* }
 
         .form-group.row label {
-            text-align: right;
-            /* Agar label sejajar dengan input */
-        }
+            text-align: right; */
+        /* Agar label sejajar dengan input */
+        /* } */
     }
 </style>
 <div class="container-fluid">
@@ -279,51 +279,51 @@
 
                     <div class="approval-field">
                         <!-- APPROVAL FIELD -->
-                        <div class="form-group">
-                            <label class="col-sm-12 col-form-label" for="app_id">Approval Pertama</label>
-                            <div class="col-sm-12">
+                        <div class="form-group row">
+                            <label class="col-sm-5 col-form-label" for="app_id">Approval Pertama</label>
+                            <div class="col-sm-7">
                                 <select class="form-control app_id" id="app_id" name="app_id">
                                     <option value="" selected disabled>Pilih opsi...</option>
                                     <?php foreach ($approvals as $approval) { ?>
                                         <option value="<?= $approval->id_user ?>"><?= $approval->fullname ?></option>
                                     <?php } ?>
-                                    <option value="null">Kosong</option>
+                                    <option value="null">-</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label class="col-sm-12 col-form-label" for="app2_id">Approval Kedua</label>
-                            <div class="col-sm-12">
+                        <div class="form-group row">
+                            <label class="col-sm-5 col-form-label" for="app2_id">Approval Kedua</label>
+                            <div class="col-sm-7">
                                 <select class="form-control app2_id" id="app2_id" name="app2_id">
                                     <option value="" selected disabled>Pilih opsi...</option>
                                     <?php foreach ($approvals as $approval) { ?>
                                         <option value="<?= $approval->id_user ?>"><?= $approval->fullname ?></option>
                                     <?php } ?>
-                                    <option value="null">Kosong</option>
+                                    <option value="null">-</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label class="col-sm-12 col-form-label" for="app3_id">Approval HC</label>
-                            <div class="col-sm-12">
+                        <div class="form-group row">
+                            <label class="col-sm-5 col-form-label" for="app3_id">Approval HC</label>
+                            <div class="col-sm-7">
                                 <select class="form-control app3_id" id="app3_id" name="app3_id">
                                     <option value="" selected disabled>Pilih opsi...</option>
                                     <?php foreach ($approvals as $approval) { ?>
                                         <option value="<?= $approval->id_user ?>"><?= $approval->fullname ?></option>
                                     <?php } ?>
-                                    <option value="null">Kosong</option>
+                                    <option value="null">-</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label class="col-sm-12 col-form-label" for="app4_id">Approval Captain</label>
-                            <div class="col-sm-12">
+                        <div class="form-group row">
+                            <label class="col-sm-5 col-form-label" for="app4_id">Approval Captain</label>
+                            <div class="col-sm-7">
                                 <select class="form-control app4_id" id="app4_id" name="app4_id">
                                     <option value="" selected disabled>Pilih opsi...</option>
                                     <?php foreach ($approvals as $approval) { ?>
                                         <option value="<?= $approval->id_user ?>"><?= $approval->fullname ?></option>
                                     <?php } ?>
-                                    <option value="null">Kosong</option>
+                                    <option value="null">-</option>
                                 </select>
                             </div>
                         </div>

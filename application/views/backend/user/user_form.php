@@ -137,6 +137,7 @@ $core_array = explode(',', $core);
                                     <div class="col-sm-8">
                                         <select class="form-control" id="divisi" name="divisi">
                                             <option value="" selected disabled>Pilih opsi...</option>
+                                            <option value="-">-</option>
                                             <option value="Operational">OPERATIONAL</option>
                                             <option value="Finance">FINANCE</option>
                                             <option value="HC & GA">HC & GA</option>
@@ -147,7 +148,7 @@ $core_array = explode(',', $core);
                                 <div class="form-group row">
                                     <label class="col-sm-4" for="jabatan">Jabatan</label>
                                     <div class="col-sm-8">
-                                        <input type="text" class="form-control" id="jabatan" name="jabatan">
+                                        <input type="text" value="-" class="form-control" id="jabatan" name="jabatan">
                                     </div>
                                 </div>
                                 <div class="form-group row">

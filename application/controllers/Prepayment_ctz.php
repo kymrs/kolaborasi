@@ -500,9 +500,9 @@ class Prepayment_ctz extends CI_Controller
 
         $pdf->Ln(17);
         $pdf->SetFont('Poppins-Regular', '', 12);
-        $pdf->Cell(30, 10, 'Divisi', 0, 0);
-        $pdf->Cell(5, 10, ':', 0, 0);
-        $pdf->Cell(50, 10, $data['master']->divisi, 0, 1);
+        // $pdf->Cell(30, 10, 'Divisi', 0, 0);
+        // $pdf->Cell(5, 10, ':', 0, 0);
+        // $pdf->Cell(50, 10, $data['master']->divisi, 0, 1);
 
         // $pdf->SetX(46); // Tetap di posisi yang sama untuk elemen lainnya
         $pdf->Cell(30, 10, 'Prepayment', 0, 0);
@@ -525,9 +525,9 @@ class Prepayment_ctz extends CI_Controller
         $pdf->Cell(5, 10, ':', 0, 0);
         $pdf->Cell(50, 10, $data['user'], 0, 1);
 
-        $pdf->Cell(30, 10, 'Jabatan', 0, 0);
-        $pdf->Cell(5, 10, ':', 0, 0);
-        $pdf->Cell(50, 10, $data['master']->jabatan, 0, 1);
+        // $pdf->Cell(30, 10, 'Jabatan', 0, 0);
+        // $pdf->Cell(5, 10, ':', 0, 0);
+        // $pdf->Cell(50, 10, $data['master']->jabatan, 0, 1);
 
         $pdf->Cell(60, 10, 'Dengan ini bermaksud mengajukan prepayment untuk :', 0, 1);
 

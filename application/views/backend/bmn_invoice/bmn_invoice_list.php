@@ -13,17 +13,6 @@
                         </a>
                     <?php } ?>
                 </div>
-                <!-- NAV TABS -->
-                <!-- <ul class="nav nav-tabs">
-                    <li class="nav-item">
-                        <a class="nav-link active" id="personalTab" href="#" data-tab="personal">User</a>
-                    </li>
-                    <?php if ($approval > 0) { ?>
-                        <li class="nav-item">
-                            <a class="nav-link" id="employeeTab" href="#" data-tab="employee">Approval</a>
-                        </li>
-                    <?php } ?>
-                </ul> -->
 
                 <div class="card-body">
                     <table id="table" class="table table-bordered table-striped" style="width: 100%;">
@@ -35,6 +24,7 @@
                                 <th>Kode Invoice</th>
                                 <th>Nama Tujuan</th>
                                 <th>Alamat Tujuan</th>
+                                <th>Status</th>
                                 <th>Tanggal Tempo</th>
                             </tr>
                         </thead>
@@ -48,6 +38,7 @@
                                 <th>Kode Invoice</th>
                                 <th>Nama Tujuan</th>
                                 <th>Alamat Tujuan</th>
+                                <th>Status</th>
                                 <th>Tanggal Tempo</th>
                             </tr>
                         </tfoot>
@@ -126,7 +117,7 @@
             //     "infoFiltered": ""
             // },
             "columnDefs": [{
-                    "targets": [2, 3, 4, 6],
+                    "targets": [2, 3, 4, 5, 6, 7],
                     "className": 'dt-head-nowrap'
                 },
                 {
