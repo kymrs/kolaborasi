@@ -1,0 +1,184 @@
+.container .canvas-bg-sml {
+    width: 65%;
+    /* min-height: 842px; */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    margin: 30px auto;
+    position: relative;
+    background-color: #fff;
+    color: #222;
+    padding: 0 3.5%;
+    font-size: 85%;
+}
+
+/* Header */
+
+.canvas-bg-sml header {
+    height: clamp(60px, 7vw, 100px);
+    /* height: 100px; */
+    padding: 0;
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid black;
+    justify-content: space-between;
+}
+
+.canvas-bg-sml header .col {
+    padding: 0;
+}
+
+.canvas-bg-sml header .col:nth-child(1) {
+    width: 50%;
+}
+
+.canvas-bg-sml header .col:nth-child(1) .logo {
+    width: 75%;
+}
+
+.canvas-bg-sml header .col:nth-child(1) .logo img {
+    width: 100%;
+}
+
+.canvas-bg-sml header .col:nth-child(2) {
+    text-align: right;
+    width: 50%;
+}
+
+.canvas-bg-sml header .col:nth-child(2) h1 {
+    font-size: clamp(17px, 2vw, 30px);
+    margin-right: 4%;
+    font-weight: bold;
+}
+
+/* Content */
+.canvas-bg-sml .content {
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+    margin: 25px 0;
+}
+
+.canvas-bg-sml .content .col {
+    padding: 0;
+}
+
+.canvas-bg-sml .content .col:nth-child(1){
+    width: 50%;
+}
+
+.canvas-bg-sml .content .col:nth-child(1) p{
+    font-weight: bold;
+    padding: 0;
+    margin: 0;
+}
+
+.canvas-bg-sml .content .col:nth-child(1) p:nth-child(1){
+    margin-bottom: 15px;
+}
+
+.canvas-bg-sml .content .col:nth-child(1) p:nth-child(4){
+    font-weight: normal;
+}
+
+.canvas-bg-sml .content .col:nth-child(2){
+    width: 50%;
+}
+
+.canvas-bg-sml .content .col:nth-child(2) table{
+    float: right;
+    position: relative;
+    bottom: 1px;
+}
+
+.canvas-bg-sml .content .col:nth-child(2) table tr td:nth-child(1){
+    font-weight: bold;
+}
+
+.canvas-bg-sml .content .col:nth-child(2) table tr td:nth-child(2){
+    padding-left: 20px;
+    padding-right: 5px;
+}
+
+/* Table Transaksi */
+.canvas-bg-sml .table-transaksi {
+    padding-bottom: 75px;
+}
+
+.canvas-bg-sml .table-transaksi table {
+    width: 100%;
+}
+
+.canvas-bg-sml .table-transaksi table tr th,
+.canvas-bg-sml .table-transaksi table tr td{
+    text-align: center;
+}
+
+.canvas-bg-sml .table-transaksi table tr td:nth-child(5) {
+    text-align: right;
+}
+
+.canvas-bg-sml .table-transaksi table tr,
+.canvas-bg-sml .table-transaksi table td,
+.canvas-bg-sml .table-transaksi table th {
+    border: 2px solid #222;
+}
+
+/* Payment */
+.canvas-bg-sml .payment p {
+    margin: 0;
+    font-weight: bold;
+}
+
+/* Approval */
+.canvas-bg-sml .approval {
+    background-color: red;
+}
+
+
+/* Media Queries */
+@media (max-width: 1140px) {
+    .container .canvas-bg-sml {
+        width: 80%;
+        font-size: 80%;
+    }
+}
+
+@media (max-width: 936px) {
+    .container .canvas-bg-sml {
+        width: 93%;
+    }
+
+    .canvas-bg-sml .content .col:nth-child(2) table tr td:nth-child(2){
+        padding-left: 15px;
+        padding-right: 3px;
+    }
+}
+
+@media (max-width: 767px) {
+    .container .canvas-bg-sml {
+        width: 95%;
+        font-size: 72%;
+    }
+
+    .canvas-bg-sml .content .col:nth-child(2) table tr td:nth-child(2){
+        padding-left: 10px;
+        padding-right: 2px;
+    }
+}
+
+@media (max-width: 546px) {
+    .container .canvas-bg-sml {
+        width: 97%;
+        font-size: 55%;
+    }
+
+    .canvas-bg-sml .content .col:nth-child(2) table tr td:nth-child(2){
+        padding-left: 6px;
+        padding-right: 2px;
+    }
+
+    .canvas-bg-sml .content .col:nth-child(1){
+        padding-right: 15px;
+    }
+}

@@ -148,11 +148,11 @@
             //     "infoFiltered": ""
             // },
             "columnDefs": [{
-                    "targets": [2, 3, 7, 9],
+                    "targets": [2, 3, 7, 8, 9],
                     "className": 'dt-head-nowrap'
                 },
                 {
-                    "targets": [1, 3, 4, 6, 8, 9, 10],
+                    "targets": [1, 3, 4, 6, 8, 9],
                     "className": 'dt-body-nowrap'
                 }, {
                     "targets": [0, 1],

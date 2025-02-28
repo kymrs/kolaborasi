@@ -32,7 +32,7 @@
             height: 150px;
             display: flex;
             align-items: center;
-            width: 200px;
+            width: 280px;
         }
 
         .header .logo img {
@@ -42,7 +42,7 @@
         .header h1,
         .header h2 {
             font-size: 24px;
-            margin-right: 150px;
+            margin-right: 180px;
             font-weight: bold;
         }
 
@@ -162,7 +162,7 @@
             <!-- Header -->
             <div class="header">
                 <div class="logo">
-                    <img src="<?= base_url() ?>assets/backend/img/sebelaswarna.png" alt="Logo">
+                    <img src="<?= base_url() ?>assets/backend/img/sml.png" alt="Logo">
                 </div>
                 <div class="title">
                     <h1>FORM PELAPORAN / REIMBUST</h1>
@@ -178,7 +178,7 @@
                         <td>:</td>
                         <td id="nama"></td>
                     </tr>
-                    <tr>
+                    <!-- <tr>
                         <td>JABATAN</td>
                         <td>:</td>
                         <td id="jabatan"></td>
@@ -187,7 +187,7 @@
                         <td>DEPARTEMEN</td>
                         <td>:</td>
                         <td id="departemen"></td>
-                    </tr>
+                    </tr> -->
                     <tr>
                         <td>SIFAT PELAPORAN</td>
                         <td>:</td>
@@ -637,7 +637,7 @@
                         if (kwitansi) {
                             // Jika data kwitansi ada, lanjutkan dengan membuka modal
                             modal.css("display", "block");
-                            modalImg.attr('src', `<?= base_url() ?>/assets/backend/document/reimbust/kwitansi_sw/${kwitansi}`);
+                            modalImg.attr('src', `<?= base_url() ?>/assets/backend/document/reimbust/kwitansi_sml/${kwitansi}`);
                             // captionText.text('Deskripsi gambar Anda di sini'); // Ubah dengan deskripsi gambar
                         }
                     });
@@ -877,30 +877,6 @@
                     }
                 });
             });
-
-            // Example: Load data into the form fields and tables
-            // $('#divisiCol').text('Finance');
-            // $('#prepaymentCol').text('001234');
-            // $('#tanggal').text('29 August 2024');
-            // $('#nama').text('Rakha Rizki');
-            // $('#jabatan').text('Software Developer');
-            // $('#tujuan').text('Project Development');
-
-            // Example: Append rows to the rincian table
-            // $('#input-container').append(`
-            //     <tr>
-            //         <td>Consultation Fees</td>
-            //         <td>Rp. 5,000,000</td>
-            //         <td>Consulting on project scope</td>
-            //     </tr>
-            //     <tr>
-            //         <td>Development Tools</td>
-            //         <td>Rp. 3,000,000</td>
-            //         <td>Purchase of software licenses</td>
-            //     </tr>
-            // `);
-
-            // $('#keterangan').append(`<span class="form-control-plaintext">*Berikut ini merupakan catatan keterangan prepayment.</span>`);
         });
     </script>
 </body>
