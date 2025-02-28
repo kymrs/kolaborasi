@@ -485,10 +485,10 @@ class Sml_invoice extends CI_Controller
         $t_cpdf2->Cell(50, 6, ': ' . $invoice->kode_invoice, 0, 1);
         $t_cpdf2->SetX(129);
         $t_cpdf2->Cell(30, 6, 'Tanggal', 0, 0);
-        $t_cpdf2->Cell(50, 6, ': ' . $invoice->tgl_invoice, 0, 1);
+        $t_cpdf2->Cell(50, 6, ': ' . date('d-m-Y', strtotime($invoice->tgl_invoice)), 0, 1);
         $t_cpdf2->SetX(129);
         $t_cpdf2->Cell(30, 6, 'Jatuh Tempo', 0, 0);
-        $t_cpdf2->Cell(50, 6, ': ' . $invoice->tgl_tempo, 0, 1);
+        $t_cpdf2->Cell(50, 6, ': ' . date('d-m-Y', strtotime($invoice->tgl_tempo)), 0, 1);
         $t_cpdf2->SetX(129);
         $t_cpdf2->Cell(30, 6, 'Metode', 0, 0);
         $t_cpdf2->Cell(50, 6, ': ' . $invoice->metode, 0, 1);
@@ -526,16 +526,16 @@ class Sml_invoice extends CI_Controller
 
         // Total
         $t_cpdf2->SetFont('helvetica', 'B', 10);
-        if ($invoice->tax > 0) {
+        if ($invoice->tax > 0 || $invoice->tax != null) {
             $t_cpdf2->Cell(130, 6, 'PPN', 1, 0, 'R');
             $t_cpdf2->Cell(44, 6, number_format($invoice->tax, 0, ',', '.'), 1, 1, 'R');
         }
-        if ($invoice->diskon > 0) {
+        if ($invoice->diskon > 0 || $invoice->diskon != null) {
             $t_cpdf2->Cell(130, 6, 'Diskon', 1, 0, 'R');
             $t_cpdf2->Cell(44, 6, number_format($invoice->diskon, 0, ',', '.'), 1, 1, 'R');
         }
         $t_cpdf2->Cell(130, 6, 'Total', 1, 0, 'R');
-        $t_cpdf2->Cell(44, 6, number_format($grand_total, 0, ',', '.'), 1, 1, 'R');
+        $t_cpdf2->Cell(44, 6, number_format($grand_total + $invoice->tax - $invoice->diskon, 0, ',', '.'), 1, 1, 'R');
 
         // Informasi Transfer
         $t_cpdf2->Ln(10);
