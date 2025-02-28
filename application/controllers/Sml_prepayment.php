@@ -121,18 +121,19 @@ class Sml_prepayment extends CI_Controller
             $row = array();
             $row[] = $no;
             $row[] = $action;
+
             if ($field->payment_status == 'paid') {
                 $row[] = '<div class="text-center"><i class="fas fa-check" style="color: green;"></i></div>'; // Ikon checklist hijau di tengah
             } else if ($field->payment_status == 'unpaid') {
                 $row[] = '<div class="text-center"><i class="fas fa-times" style="color: red;"></i></div>'; // Ikon unchecklist merah di tengah
             }
+
             $row[] = strtoupper($field->kode_prepayment);
             $row[] = $field->name;
             $row[] = strtoupper($field->divisi);
             $row[] = strtoupper($field->jabatan);
             $row[] = $this->tgl_indo(date("Y-m-j", strtotime($field->tgl_prepayment)));
             $row[] = $formatted_nominal;
-            // $row[] = $field->tujuan;
             $row[] = $status;
 
             $data[] = $row;
@@ -521,7 +522,7 @@ class Sml_prepayment extends CI_Controller
         $pdf->AddPage('P', 'Letter');
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/sml.png', 8, 10, 40, 30);
+        $pdf->Image(base_url('') . '/assets/backend/img/sml.png', 11, 12, 49, 16);
 
         $pdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php');
         $pdf->AddFont('Poppins-Bold', '', 'Poppins-Bold.php');
@@ -529,9 +530,9 @@ class Sml_prepayment extends CI_Controller
         // Pindahkan posisi sedikit ke bawah dan tetap sejajar
         $pdf->Ln(27);
         $pdf->SetFont('Poppins-Regular', '', 12);
-        $pdf->Cell(30, 10, 'Divisi', 0, 0);
+        $pdf->Cell(30, 10, 'Prepayment', 0, 0);
         $pdf->Cell(5, 10, ':', 0, 0);
-        $pdf->Cell(50, 10, $data['master']->divisi, 0, 1);
+        $pdf->Cell(50, 10, $data['master']->prepayment, 0, 1);
 
         // Form Title
         $pdf->SetFont('Poppins-Bold', '', 14);
@@ -548,9 +549,9 @@ class Sml_prepayment extends CI_Controller
         $pdf->Cell(5, 10, ':', 0, 0);
         $pdf->Cell(50, 10, $data['user'], 0, 1);
 
-        $pdf->Cell(30, 10, 'Jabatan', 0, 0);
-        $pdf->Cell(5, 10, ':', 0, 0);
-        $pdf->Cell(50, 10, $data['master']->jabatan, 0, 1);
+        // $pdf->Cell(30, 10, 'Jabatan', 0, 0);
+        // $pdf->Cell(5, 10, ':', 0, 0);
+        // $pdf->Cell(50, 10, $data['master']->jabatan, 0, 1);
 
         $pdf->Cell(60, 10, 'Dengan ini bermaksud mengajukan prepayment untuk :', 0, 1);
 

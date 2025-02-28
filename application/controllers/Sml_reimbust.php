@@ -156,26 +156,26 @@ class Sml_reimbust extends CI_Controller
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             if ($field->app_name == $fullname) {
-                $action = '<a href="datadeklarasi_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                                <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="sml_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                                <a class="btn btn-success btn-circle btn-sm" href="sml_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app2_name == $fullname) {
-                $action = '<a href="datadeklarasi_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
-                                <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="sml_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
+                                <a class="btn btn-success btn-circle btn-sm" href="sml_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif (in_array($field->status, ['rejected', 'approved'])) {
-                $action = '<a href="datadeklarasi_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="sml_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                <a class="btn btn-success btn-circle btn-sm" href="sml_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app_status == 'revised' || $field->app2_status == 'revised') {
-                $action = '<a href="datadeklarasi_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                    <a href="datadeklarasi_sw/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
-                    <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="sml_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                    <a href="sml_datadeklarasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
+                    <a class="btn btn-success btn-circle btn-sm" href="sml_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app_status == 'approved') {
-                $action = '<a href="datadeklarasi_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                            <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="sml_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                            <a class="btn btn-success btn-circle btn-sm" href="sml_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } else {
-                $action = '<a href="datadeklarasi_sw/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                        <a href="datadeklarasi_sw/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
+                $action = '<a href="sml_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                        <a href="sml_datadeklarasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
 			            <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
-                        <a class="btn btn-success btn-circle btn-sm" href="datadeklarasi_sw/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                        <a class="btn btn-success btn-circle btn-sm" href="sml_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             }
 
             $no++;
@@ -288,7 +288,7 @@ class Sml_reimbust extends CI_Controller
             ->row('name');
         $data['id'] = $id;
         $data['title_view'] = "Data Reimbust";
-        $data['title'] = 'backend/sml_reimbust/reimbust_read_sw';
+        $data['title'] = 'backend/sml_reimbust/sml_reimbust_read';
         $this->db->select('kwitansi');
         $this->db->where('reimbust_id', $id);
         $data['kwitansi'] = $this->db->get('tbl_reimbust_detail')->result_array();
@@ -337,7 +337,7 @@ class Sml_reimbust extends CI_Controller
         $pdf->SetAutoPageBreak(true, 5); // Margin bawah 15mm
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/sml.png', 10, 5, 45, 30);
+        $pdf->Image(base_url('') . '/assets/backend/img/sml.png', 10, 12, 49, 16);
 
         // Set font
         $pdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php');
@@ -421,10 +421,10 @@ class Sml_reimbust extends CI_Controller
         // Add some data with adjusted column widths
         Row($pdf, 10, array('NAMA', ':', $data['user']), $widths, false);
         $pdf->Ln(-3);
-        Row($pdf, 10, array('JABATAN', ':', $data['master']->jabatan), $widths, false);
-        $pdf->Ln(-3);
-        Row($pdf, 10, array('DEPARTEMEN', ':', $data['master']->departemen), $widths, false);
-        $pdf->Ln(-3);
+        // Row($pdf, 10, array('JABATAN', ':', $data['master']->jabatan), $widths, false);
+        // $pdf->Ln(-3);
+        // Row($pdf, 10, array('DEPARTEMEN', ':', $data['master']->departemen), $widths, false);
+        // $pdf->Ln(-3);
         Row($pdf, 10, array('SIFAT PELAPORAN', ':', $data['master']->sifat_pelaporan), $widths, false);
         $pdf->Ln(-3);
         Row($pdf, 10, array('TANGGAL', ':', $formatted_date), $widths, false);
@@ -619,7 +619,7 @@ class Sml_reimbust extends CI_Controller
             if ($deklarasiRecord) {
                 // Mengambil ID dari record yang ditemukan
                 $deklarasiId = $deklarasiRecord['id']; // Pastikan 'id' adalah nama kolom yang sesuai
-                $redirect_url = site_url('datadeklarasi_sw/read_form/' . $deklarasiId);
+                $redirect_url = site_url('sml_datadeklarasi/read_form/' . $deklarasiId);
 
                 $response = array(
                     'status' => 'success',

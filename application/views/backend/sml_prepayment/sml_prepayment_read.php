@@ -26,9 +26,9 @@
         }
 
         .header .logo {
-            width: 160px;
+            width: 210px;
             position: relative;
-            right: 17px;
+            bottom: 25px;
         }
 
         .header h1 {
@@ -163,10 +163,15 @@
                         <div class="header-field">
                             <img src="<?= base_url('assets/backend/img/sml.png') ?>" alt="" class="logo">
                             <table>
-                                <tr>
+                                <!-- <tr>
                                     <td style="font-weight: bold;">Divisi</td>
                                     <td>:</td>
-                                    <td id="divisiTxt">tess</td>
+                                    <td id="divisiTxt"></td>
+                                </tr> -->
+                                <tr>
+                                    <td style="font-weight: bold;">Prepayment</td>
+                                    <td>:</td>
+                                    <td id="prepaymentTxt"></td>
                                 </tr>
                             </table>
                         </div>
@@ -179,18 +184,18 @@
                             <tr>
                                 <td>Tanggal</td>
                                 <td>:</td>
-                                <td class="line" id="tanggalTxt">tess</td>
+                                <td class="line" id="tanggalTxt"></td>
                             </tr>
                             <tr>
                                 <td>Nama</td>
                                 <td>:</td>
-                                <td class="line" id="namaTxt">tess</td>
+                                <td class="line" id="namaTxt"></td>
                             </tr>
-                            <tr>
+                            <!-- <tr>
                                 <td>Jabatan</td>
                                 <td>:</td>
-                                <td class="line" id="jabatanTxt">tess</td>
-                            </tr>
+                                <td class="line" id="jabatanTxt"></td>
+                            </tr> -->
                             <tr>
                                 <td colspan="3">Dengan ini bermaksud mengajukan prepayment untuk :</td>
                             </tr>
@@ -484,6 +489,7 @@
                 // console.log(data);
                 // DATA PREPAYMENT
                 $('#divisiTxt').text(data['master']['divisi']);
+                $('#prepaymentTxt').text(data['master']['prepayment']);
                 $('#tanggalTxt').text(moment(data['master']['tgl_prepayment']).format('D MMMM YYYY'));
                 $('#namaTxt').text(data['nama']);
                 $('#jabatanTxt').text(data['master']['jabatan']);

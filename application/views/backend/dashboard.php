@@ -12,7 +12,7 @@
         $core_array = explode(',', $core);
 
         // Ambil data dari tbl_menu
-        $item = $this->db->select('urutan, sub_image, sub_color')
+        $item = $this->db->select('id_menu, sub_image, sub_color')
             ->where('sub_image !=', null)
             ->where('sub_color !=', null)
             ->order_by('urutan', 'ASC') // Mengurutkan berdasarkan kolom urutan secara ascending
@@ -22,9 +22,9 @@
 
         <!-- Card -->
         <?php foreach ($item as $data) : ?>
-            <?php if (in_array($data['urutan'], $core_array)) : // Cek apakah id_menu ada di dalam core_array 
+            <?php if (in_array($data['id_menu'], $core_array)) : // Cek apakah id_menu ada di dalam core_array 
             ?>
-                <div class="col-xl-3 col-md-6 mb-4">
+                <div class="col-xl-3 col-md-6 mb-4" style="height: 244px;">
                     <!-- Card with hover effect and clickable action -->
                     <a href="#" class="card shadow h-100 py-4 text-decoration-none" style="border-left: 5px solid #<?= $data['sub_color'] ?>">
                         <div class="card-body">
