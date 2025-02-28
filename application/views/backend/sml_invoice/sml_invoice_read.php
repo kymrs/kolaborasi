@@ -72,20 +72,6 @@
                         <td style="padding-right: 5px;">24.000.000</td>
                     </tr>
                     <tr>
-                        <td>1</td>
-                        <td>FIF Bandung FIF Sorong</td>
-                        <td>B 2423 KIL</td>
-                        <td>Xenia X</td>
-                        <td style="padding-right: 5px;">24.000.000</td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>FIF Bandung FIF Sorong</td>
-                        <td>B 2423 KIL</td>
-                        <td>Xenia X</td>
-                        <td style="padding-right: 5px;">24.000.000</td>
-                    </tr>
-                    <tr>
                         <td style="border-color: white"></td>
                         <td style="border-color: white"></td>
                         <td style="background-color: white; position: relative; top: 5px"></td>
@@ -127,12 +113,16 @@
                         <td>PT. SAHABAT MULTI LOGISTIK</td>
                     </tr>
                     <tr>
-                        <td></td>
+                        <td>
+                            <img src="<?= base_url('assets/backend/img/capsml.png') ?>" alt="" class="cap">
+                            <img src="<?= base_url('assets/backend/img/ttdsml.png') ?>" alt="" class="ttd">
+                        </td>
                     </tr>
                     <tr>
                         <td>M. Charles Manalu</td>
                     </tr>
                 </table>
+                <div style="clear: both"></div>
             </div>
         </div>
     </div>
