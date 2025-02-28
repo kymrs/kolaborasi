@@ -134,6 +134,17 @@
                                         <input type="text" class="form-control" id="kode_invoice" name="kode_invoice" readonly placeholder="Kode Invoice">
                                     </div>
                                 </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label">Tanggal Jatuh Tempo</label>
+                                    <div class="col-sm-8">
+                                        <div class="input-group date">
+                                            <input type="text" class="form-control" name="tgl_tempo" id="tgl_tempo" placeholder="DD-MM-YYYY" autocomplete="off" readonly style="cursor: pointer">
+                                            <div class="input-group-append">
+                                                <div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="form-group row mb-3">
                                     <label class="col-sm-4 col-form-label">Contact To</label>
                                     <div class="col-sm-8">
@@ -152,6 +163,18 @@
                                         <input type="text" class="form-control" id="tax" name="tax" placeholder="Rp.">
                                     </div>
                                 </div>
+                                <div class="form-group row mb-3">
+                                    <label class="col-sm-4 col-form-label">Diskon</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" id="diskon" name="diskon" placeholder="Rp.">
+                                    </div>
+                                </div>
+                                <div class="form-group row mb-3">
+                                    <label class="col-sm-4 col-form-label">Metode</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" id="metode" name="metode" placeholder="Metode Pembayaran">
+                                    </div>
+                                </div>
                             </div>
 
                             <!-- SEBELAH KANAN -->
@@ -167,9 +190,7 @@
                                             </div>
                                             <select class="js-example-basic-single" id="rekening" name="rekening">
                                                 <option value="" selected disabled>Pilih rekening tujuan</option>
-                                                <?php foreach ($rek_options as $option) { ?>
-                                                    <option data-pengaju="<?= $option->nama_rek ?>" data-bank="<?= $option->nama_bank ?>" data-rek="<?= $option->no_rek ?>" value=""><?= $option->nama_rek . '-' . $option->nama_bank . '-' . $option->no_rek ?></option>
-                                                <?php } ?>
+
                                             </select>
                                             <div class="input-group rekening-text">
                                                 <input type="text" class="form-control col-sm-4" style="font-size: 13px;" id="nama_rek" name="nama_rek" placeholder="Nama Pengaju">&nbsp;
@@ -212,9 +233,8 @@
                                     <tr>
                                         <th scope="col" class="text-center">No</th>
                                         <th scope="col">Item</th>
-                                        <th scope="col">Qty</th>
-                                        <th scope="col">Day</th>
-                                        <th scope="col">Price</th>
+                                        <th scope="col">Nopol</th>
+                                        <th scope="col">Tipe</th>
                                         <th scope="col">Total</th>
                                         <th scope="col" class="text-center">Action</th>
                                     </tr>
@@ -222,6 +242,11 @@
                                 <tbody id="input-container">
                                     <!-- CONTAINER INPUTAN -->
                                 </tbody>
+                                <tr class="font-weight-bold">
+                                    <td colspan="5" id="total_nominal_row" class="text-right">Total</td>
+                                    <td id="total_nominal_view"></td>
+                                    <input type="hidden" id="total_nominal" name="total_nominal" value="">
+                                </tr>
                             </table>
                         </div>
 
@@ -373,6 +398,14 @@
                 $(this).val('');
             }
         });
+        $('#diskon').on('keyup', function(e) {
+            let value = $(this).val().replace(/[^,\d]/g, ''); // Hanya angka dan koma yang diperbolehkan
+            if (value) {
+                $(this).val(formatRupiah(value));
+            } else {
+                $(this).val('');
+            }
+        });
 
     });
 
@@ -467,7 +500,7 @@
         });
 
         // Tambahkan fungsi untuk memformat input nominal memiliki titik
-        function formatQtyInput(selector) {
+        function formatnopolInput(selector) {
             $(document).on('input', selector, function() {
                 let value = $(this).val().replace(/[^,\d]/g, '');
                 let parts = value.split(',');
@@ -482,8 +515,11 @@
                 // Hapus semua pemisah ribuan untuk pengiriman ke server
                 let cleanValue = value.replace(/\./g, '');
 
+                console.log(cleanValue);
+
                 // Pastikan elemen hidden dengan ID yang benar diperbarui
-                const hiddenId = `#hidden_${$(this).attr('id').replace('nominal-', 'nominal')}`;
+                const hiddenId = `#hidden_${$(this).attr('id').replace('total-', 'nominal')}`;
+                console.log(hiddenId);
                 $(hiddenId).val(cleanValue);
 
                 // Hitung total nominal setelah nilai berubah
@@ -543,55 +579,38 @@
                         <input type="hidden" id="hidden_id${rowCount}" name="hidden_id[${rowCount}]" value="">
                         <input type="hidden" name="hidden_invoiceId[${rowCount}]" id="hidden_invoiceId${rowCount}" value="">
                     <td>
-                        <input type="text" class="form-control qty" id="qty-${rowCount}" name="qty[${rowCount}]" value="" placeholder="Qty">
+                        <input type="text" class="form-control nopol" id="nopol-${rowCount}" name="nopol[${rowCount}]" value="" placeholder="nopol">
                     </td>
                     <td>
-                        <input type="text" class="form-control" id="day-${rowCount}" name="day[${rowCount}]" value="" placeholder="Day">
+                        <input type="text" class="form-control tipe" id="tipe-${rowCount}" name="tipe[${rowCount}]" value="" placeholder="tipe" />
                     </td>
                     <td>
-                        <input type="text" class="form-control price" id="price-${rowCount}" name="price[${rowCount}]" value="" placeholder="Price" />
+                        <input type="text" class="form-control total" id="total-${rowCount}" name="total[${rowCount}]" value="" placeholder="Total"/>
+                        <input type="hidden" id="hidden_nominal${rowCount}" name="hidden_nominal[${rowCount}]" value="">
                     </td>
-                    <td>
-                        <input type="text" class="form-control total" id="total-${rowCount}" name="total[${rowCount}]" value="" placeholder="Total" />
-                    </td>
-
                     <td><span class="btn delete-btn" style="background-color: red; color: white" data-id="${rowCount}">Delete</span></td>
                 </tr>
                 `;
             $('#input-container').append(row);
             // Tambahkan format ke input nominal yang baru
-            formatQtyInput(`#nominal-${rowCount}`);
+            formatnopolInput(`#total-${rowCount}`);
             updateSubmitButtonState(); // Perbarui status tombol submit
             //checkDeleteButtonState(); // Cek tombol delete setelah baris ditambahkan
 
             // Hitung total nominal setelah baris baru ditambahkan
             calculateTotalNominal();
 
-            $('.price, .total').on('input', function() {
-                // Ambil nilai input
-                let value = $(this).val();
-
-                // Hapus semua karakter yang bukan angka
-                value = value.replace(/[^0-9]/g, '');
-
-                // Format ke Rupiah
-                let formatted = new Intl.NumberFormat('id-ID').format(value);
-
-                // Set nilai input dengan format Rupiah
-                $(this).val(formatted);
-            });
-
             //VALIDASI ROW YANG TELAH DI APPEND
             $("#form").validate().settings.rules[`item[${rowCount}]`] = {
                 required: true
             };
-            $("#form").validate().settings.rules[`qty[${rowCount}]`] = {
+            $("#form").validate().settings.rules[`nopol[${rowCount}]`] = {
                 required: true
             };
             $("#form").validate().settings.rules[`day[${rowCount}]`] = {
                 required: true
             };
-            $("#form").validate().settings.rules[`price[${rowCount}]`] = {
+            $("#form").validate().settings.rules[`tipe[${rowCount}]`] = {
                 required: true
             };
             $("#form").validate().settings.rules[`total[${rowCount}]`] = {
@@ -640,20 +659,20 @@
                 //INISIASI VARIABLE UNTUK reorderRows
                 const newRowNumber = index + 1;
                 const itemValue = $(this).find('input[name^="item"]').val();
-                const dayValue = $(this).find('input[name^="day"]').val();
-                const qtyValue = $(this).find('input[name^="qty"]').val();
-                const priceValue = $(this).find('input[name^="price"]').val();
+                const nopolValue = $(this).find('input[name^="nopol"]').val();
+                const tipeValue = $(this).find('input[name^="tipe"]').val();
                 const totalValue = $(this).find('input[name^="total"]').val();
+                const hiddenNominalValue = $(this).find('input[name^="hidden_nominal"]').val();
                 const hiddenInvoiceIdValue = $(this).find('input[name^="hidden_invoiceId"]').val();
                 const hiddenIdValue = $(this).find('input[name^="hidden_id"]').val();
 
                 $(this).attr('id', `row-${newRowNumber}`);
                 $(this).find('.row-number').text(newRowNumber);
                 $(this).find('input[name^="item"]').attr('name', `item[${newRowNumber}]`).attr('placeholder', `Item`).val(itemValue);
-                $(this).find('input[name^="qty"]').attr('name', `qty[${newRowNumber}]`).attr('id', `qty-${newRowNumber}`).attr('placeholder', `Qty`).val(qtyValue);
-                $(this).find('input[name^="day"]').attr('name', `day[${newRowNumber}]`).attr('id', `day-${newRowNumber}`).attr('placeholder', 'Day').val(dayValue);
-                $(this).find('input[name^="price"]').attr('name', `price[${newRowNumber}]`).attr('id', `price-${newRowNumber}`).attr('placeholder', `Price`).val(priceValue);
+                $(this).find('input[name^="nopol"]').attr('name', `nopol[${newRowNumber}]`).attr('id', `nopol-${newRowNumber}`).attr('placeholder', `nopol`).val(nopolValue);
+                $(this).find('input[name^="tipe"]').attr('name', `tipe[${newRowNumber}]`).attr('id', `tipe-${newRowNumber}`).attr('placeholder', `tipe`).val(tipeValue);
                 $(this).find('input[name^="total"]').attr('name', `total[${newRowNumber}]`).attr('id', `total-${newRowNumber}`).attr('placeholder', `Total`).val(totalValue);
+                $(this).find('input[name^="hidden_nominal"]').attr('name', `hidden_nominal[${newRowNumber}]`).attr('id', `hidden_nominal${newRowNumber}`).val(hiddenNominalValue);
                 $(this).find('input[name^="hidden_invoiceId"]').attr('name', `hidden_invoiceId[${newRowNumber}]`).attr('id', `hidden_invoiceId${newRowNumber}`).val(hiddenInvoiceIdValue);
                 $(this).find('input[name^=hidden_id]').attr('name', `hidden_id[${newRowNumber}]`).attr('id', `hidden_id[${newRowNumber}]`).val(hiddenIdValue);
                 $(this).find('.delete-btn').attr('data-id', newRowNumber).text('Delete');
@@ -785,13 +804,29 @@
                 dataType: "JSON",
                 success: function(data) {
                     console.log(data);
-                    //SET VALUE DATA MASTER PREPAYMENT
+                    let total_nominal = 0;
+                    for (let index = 0; index < data['detail_invoice'].length; index++) {
+                        total_nominal += parseInt(data['detail_invoice'][index]['total'], 10);
+                    }
+                    console.log(total_nominal);
+                    // SET VALUE DATA MASTER PREPAYMENT
                     $('#id').val(data['master']['id']);
                     $('#tgl_invoice').val(data['master']['tgl_invoice']);
+                    $('#tgl_tempo').val(data['master']['tgl_tempo']);
                     $('#kode_invoice').val(data['master']['kode_invoice']);
                     $('#ctc_to').val(data['master']['ctc_to']);
                     $('#ctc_address').val(data['master']['ctc_address']);
                     $('#tax').val(formatRupiah(data['master']['tax']));
+                    $('#metode').val(data['master']['metode']);
+                    $('#diskon').val(formatRupiah(data['master']['diskon']));
+                    // if (data['master']['total'] == null) {
+                    $('#total_nominal_view').text(total_nominal.toLocaleString());
+                    $('#total_nominal').val(total_nominal);
+                    // } else {
+                    //     total_nominal = parseInt(data['master']['total_nominal'], 10);
+                    //     $('#total_nominal_view').text(total_nominal.toLocaleString());
+                    //     $('#total_nominal').val(data['master']['total_nominal']);
+                    // }
 
                     //APPEND DATA swi_rek_invoice DETAIL PREPAYMENT
                     console.log(data['rek_invoice']);
@@ -818,26 +853,24 @@
 
                         // Detail pemesanan
                         $(data['detail_invoice']).each(function(index) {
-                            const priceFormatted = data['detail_invoice'][index]['price'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                            const tipeFormatted = data['detail_invoice'][index]['tipe'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
                             const totalFormatted = data['detail_invoice'][index]['total'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
                             const row = `
                             <tr id="row-${index + 1}">
                                 <td class="row-number">${index + 1}</td>
                                 <td>
-                                    <input type="text" class="form-control" name="item[${index + 1}]" value="${data['detail_invoice'][index]['item']}" placeholder="Item" /></td>
+                                    <input type="text" class="form-control" name="item[${index + 1}]" value="${data['detail_invoice'][index]['deskripsi']}" placeholder="Item" /></td>
                                     <input type="hidden" id="hidden_id${index + 1}" name="hidden_id[${index + 1}]" value="${data['detail_invoice'][index]['id']}">
                                     <input type="hidden" name="hidden_invoiceId[${index + 1}]" id="hidden_invoiceId${index + 1}" value="${data['detail_invoice'][index]['invoice_id']}">
                                 <td>
-                                    <input type="text" class="form-control qty" id="qty-${index + 1}" name="qty[${index + 1}]" value="${data['detail_invoice'][index]['qty']}" placeholder="Qty" style="margin-left: 10px">
+                                    <input type="text" class="form-control nopol" id="nopol-${index + 1}" name="nopol[${index + 1}]" value="${data['detail_invoice'][index]['nopol']}" placeholder="nopol">
                                 </td>
                                 <td>
-                                    <input type="text" class="form-control" id="day-${index + 1}" name="day[${index + 1}]" value="${data['detail_invoice'][index]['day']}" placeholder="Day">
-                                </td>
-                                <td>
-                                    <input type="text" class="form-control price" id="price-${index + 1}" name="price[${index + 1}]" value="${priceFormatted}" placeholder="Price" />
+                                    <input type="text" class="form-control tipe" id="tipe-${index + 1}" name="tipe[${index + 1}]" value="${tipeFormatted}" placeholder="tipe" />
                                 </td>
                                 <td>
                                     <input type="text" class="form-control total" id="total-${index + 1}" name="total[${index + 1}]" value="${totalFormatted}" placeholder="Total" />
+                                    <input type="hidden" id="hidden_nominal${index + 1}" name="hidden_nominal[${index + 1}]" value="${data['detail_invoice'][index]['total']}">
                                 </td>
 
                                 <td><span class="btn delete-btn btn-danger" data-id="${index + 1}">Delete</span></td>
@@ -852,7 +885,7 @@
                                 'pointer-events': 'none'
                             });
 
-                            $('.price, .total').on('input', function() {
+                            $('.tipe, .total').on('input', function() {
                                 // Ambil nilai input
                                 let value = $(this).val();
 

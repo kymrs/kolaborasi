@@ -4,25 +4,34 @@ defined('BASEPATH') or exit('No direct script access allowed');
 // Memuat file TCPDF dari folder third_party
 require_once(APPPATH . 'third_party/TCPDF-main/tcpdf.php');
 
-class T_cpdf2 extends TCPDf
+class T_cpdf2 extends TCPDF
 {
+    public function __construct($orientation = 'P', $unit = 'mm', $format = 'A4', $unicode = true, $encoding = 'UTF-8', $diskcache = false)
+    {
+        parent::__construct($orientation, $unit, $format, $unicode, $encoding, $diskcache);
+    }
+
     // Page header
     function Header()
     {
         // Logo
-        $this->SetFont('helvetica', 'B', 12);
-        $this->Image('assets/backend/img/sml.png', 5, 4, 37, 20);
-        $this->SetX(117);
-        $this->SetFont('Poppins-Regular', '', 9);
-        $this->Cell(40, 16, 'cs@bymoment.id', 0, 0);
-        $this->SetX(121);
-        $this->Cell(40, 26, '0812-90700033', 0, 1);
-        $style = array('width' => 0.5, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0));
+        $this->Image('assets/backend/img/sml.png', 15, 8, 60, 20); // Menyesuaikan posisi logo
+        $this->SetY(10); // Menyesuaikan posisi Y setelah logo
 
-        $this->Line(4, 26, 145, 26, $style);
-        $this->Ln(5);
+        // Font Header
+        $this->SetFont('helvetica', 'B', 12);
+
+        // Geser ke kanan agar lebih rapi
+        $this->SetX(173);
+        $this->Cell(0, 16, 'INVOICE', 0, 0, 'L');
+
+        // Garis bawah
+        $this->SetLineWidth(0.5);
+        $this->Line(10, 30, 200, 30); // Diperpanjang agar sejajar dengan margin halaman A4
+        $this->Ln(8); // Beri jarak ke konten utama
     }
 }
+
 
 class Sml_invoice extends CI_Controller
 {
@@ -119,8 +128,8 @@ class Sml_invoice extends CI_Controller
             $row[] = $this->tgl_indo(date("Y-m-j", strtotime($field->tgl_invoice)));
             $kode_invoice = substr($field->kode_invoice, 0, 5) . substr($field->kode_invoice, 7, 6);
             $row[] = strtoupper($kode_invoice);
-            $row[] = $field->ctc2_nama;
-            $row[] = $field->ctc2_alamat;
+            $row[] = $field->ctc_to;
+            $row[] = $field->ctc_address;
             $row[] = $status;
             $row[] = $this->tgl_indo(date("Y-m-j", strtotime($field->tgl_tempo)));
 
@@ -150,8 +159,8 @@ class Sml_invoice extends CI_Controller
             ->row('username');
         $data['invoice'] = $this->M_sml_invoice->getInvoiceData($id);
         $data['status'] = $this->M_sml_invoice->get_by_id($id)->payment_status;
-        $data['rekening'] = $this->db->get_where('bmn_rek_invoice', ['invoice_id' => $id])->result_array();
-        $data['detail'] = $this->db->get_where('bmn_detail_invoice', ['invoice_id' => $id])->result_array();
+        $data['rekening'] = $this->db->get_where('sml_rek_invoice', ['invoice_id' => $id])->result_array();
+        $data['detail'] = $this->db->get_where('sml_detail_invoice', ['invoice_id' => $id])->result_array();
         $data['title'] = 'backend/sml_invoice/sml_invoice_read';
         $data['title_view'] = 'Prepayment';
         $this->load->view('backend/home', $data);
@@ -202,8 +211,8 @@ class Sml_invoice extends CI_Controller
     function edit_data($id)
     {
         $data['master'] = $this->M_sml_invoice->get_by_id($id);
-        $data['rek_invoice'] = $this->db->get_where('bmn_rek_invoice', ['invoice_id' => $id])->result_array();
-        $data['detail_invoice'] = $this->db->get_where('bmn_detail_invoice', ['invoice_id' => $id])->result_array();
+        $data['rek_invoice'] = $this->db->get_where('sml_rek_invoice', ['invoice_id' => $id])->result_array();
+        $data['detail_invoice'] = $this->db->get_where('sml_detail_invoice', ['invoice_id' => $id])->result_array();
         echo json_encode($data);
     }
 
@@ -217,7 +226,6 @@ class Sml_invoice extends CI_Controller
     public function add()
     {
         $id_user = $this->session->userdata('id_user');
-
         // INSERT KODE PREPAYMENT SAAT SUBMIT
         $date = $this->input->post('tgl_invoice');
 
@@ -226,70 +234,67 @@ class Sml_invoice extends CI_Controller
         if (empty($kode->kode_invoice)) {
             $no_urut = 1;
         } else {
-            $bln = substr($kode->kode_invoice, 5, 2);
-            $no_urut = substr($kode->kode_invoice, 10) + 1;
+            $bln = substr($kode->kode_invoice, 3, 2);
+            $no_urut = substr($kode->kode_invoice, 7) + 1;
         }
-        $urutan = str_pad($no_urut, 4, "0", STR_PAD_LEFT);
+        $urutan = str_pad($no_urut, 3, "0", STR_PAD_LEFT);
         $year = substr($date, 8, 2);
         $month = substr($date, 3, 2);
 
-        $kode_invoice = 'INVBM' . $year . $month . $urutan;
+        $kode_invoice = 'S' . $year . $month . $urutan;
 
         $data = array(
+            'kode_invoice' => $kode_invoice,
             'id_user' => $id_user,
             'tgl_invoice' => date('Y-m-d', strtotime($this->input->post('tgl_invoice'))),
-            'kode_invoice' => $kode_invoice,
             'tgl_tempo' => date('Y-m-d', strtotime($this->input->post('tgl_tempo'))),
-            'ctc_nama' => $this->input->post('ctc_nama'),
-            'ctc_nomor' => $this->input->post('ctc_nomor'),
-            'ctc2_nama' => $this->input->post('ctc2_nama'),
-            'ctc2_nomor' => $this->input->post('ctc2_nomor'),
-            'ctc2_alamat' => $this->input->post('ctc2_alamat'),
-            'ctc2_email' => $this->input->post('ctc2_email'),
+            'ctc_to' => $this->input->post('ctc_to'),
+            'ctc_address' => $this->input->post('ctc_address'),
+            'metode' => $this->input->post('metode'),
+            'tax' => preg_replace('/\D/', '', $this->input->post('tax')),
+            'total' => preg_replace('/\D/', '', $this->input->post('total_nominal')),
             'created_at' => date('Y-m-d H:i:s')
         );
 
-        if (!empty($_POST['catatan_item'])) {
-            $data['keterangan'] = $this->input->post('catatan_item');
-        }
-        if (!empty($_POST['diskon'])) {
-            $data['diskon'] = preg_replace('/\D/', '', $this->input->post('diskon'));
+        if (!empty($this->input->post('diskon'))) {
+            $data['diskon'] = $this->input->post('diskon');
         }
 
         $inserted = $this->M_sml_invoice->save($data);
 
-        // INISIASI VARIABEL INPUT Nomor Rekening Bank
-
-        $nama_bank = $this->input->post('nama_bank[]');
-        $no_rek = $this->input->post('no_rek[]');
-        if (!empty($no_rek)) {
-            //PERULANGAN UNTUK INSER QUERY Nomor Rekening Bank
-            for ($i = 1; $i <= count($nama_bank); $i++) {
-                $data2[] = array(
-                    'invoice_id' => $inserted,
-                    'nama_bank' => $nama_bank[$i],
-                    'no_rek' => $no_rek[$i]
-                );
+        if ($inserted) {
+            // INISIASI VARIABEL INPUT DETAIL PREPAYMENT
+            // $nama_rek = $this->input->post('nama_rek[]');
+            $nama_bank = $this->input->post('nama_bank[]');
+            $no_rek = $this->input->post('no_rek[]');
+            if (!empty($no_rek)) {
+                //PERULANGAN UNTUK INSER QUERY DETAIL PREPAYMENT
+                for ($i = 1; $i <= count($nama_bank); $i++) {
+                    $data2[] = array(
+                        'invoice_id' => $inserted,
+                        // 'nama_rek' => $nama_rek[$i],
+                        'nama_bank' => $nama_bank[$i],
+                        'no_rek' => $no_rek[$i]
+                    );
+                }
+                $this->M_sml_invoice->save_detail($data2);
             }
-            $this->M_sml_invoice->save_detail($data2);
         }
 
         if ($inserted) {
-            // INISIASI VARIABEL INPUT DETAIL INVOICE
-            $deskripsi = $this->input->post('deskripsi[]');
-            $jumlah = preg_replace('/\D/', '', $this->input->post('jumlah[]'));
-            $harga = preg_replace('/\D/', '', $this->input->post('harga[]'));
-            $satuan = $this->input->post('satuan[]');
+            // INISIASI VARIABEL INPUT DETAIL PREPAYMENT
+            $item = $this->input->post('item[]');
+            $nopol = $this->input->post('nopol[]');
+            $tipe = $this->input->post('tipe[]');
             $total = preg_replace('/\D/', '', $this->input->post('total[]'));
-            //PERULANGAN UNTUK INSER QUERY DETAIL INVOICE
-            if (!empty($deskripsi) && !empty($jumlah) && !empty($satuan) && !empty($harga) && !empty($total)) {
-                for ($i = 1; $i <= count($deskripsi); $i++) {
+            //PERULANGAN UNTUK INSER QUERY DETAIL PREPAYMENT
+            if (!empty($item)) {
+                for ($i = 1; $i <= count($item); $i++) {
                     $data3[] = array(
                         'invoice_id' => $inserted,
-                        'deskripsi' => $deskripsi[$i],
-                        'jumlah' => $jumlah[$i],
-                        'satuan' => $satuan[$i],
-                        'harga' => $harga[$i],
+                        'deskripsi' => $item[$i],
+                        'nopol' => $nopol[$i],
+                        'tipe' => $tipe[$i],
                         'total' => $total[$i]
                     );
                 }
@@ -303,53 +308,23 @@ class Sml_invoice extends CI_Controller
     // UPDATE DATA
     public function update()
     {
-        // INSERT KODE PREPAYMENT SAAT SUBMIT
-        $date = $this->input->post('tgl_invoice');
-
-        $kode = $this->M_sml_invoice->max_kode($date)->row();
-
-        if (empty($kode->kode_invoice)) {
-            $no_urut = 1;
-        } else {
-            $bln = substr($kode->kode_invoice, 5, 2);
-            $no_urut = substr($kode->kode_invoice, 10) + 1;
-        }
-        $urutan = str_pad($no_urut, 4, "0", STR_PAD_LEFT);
-        $year = substr($date, 8, 2);
-        $month = substr($date, 3, 2);
-
-        $kode_invoice = 'INVBM' . $year . $month . $urutan;
-
         $data = array(
             'tgl_invoice' => date('Y-m-d', strtotime($this->input->post('tgl_invoice'))),
-            'kode_invoice' => $kode_invoice,
             'tgl_tempo' => date('Y-m-d', strtotime($this->input->post('tgl_tempo'))),
-            'ctc_nama' => $this->input->post('ctc_nama'),
-            'ctc_nomor' => $this->input->post('ctc_nomor'),
-            'ctc2_nama' => $this->input->post('ctc2_nama'),
-            'ctc2_nomor' => $this->input->post('ctc2_nomor'),
-            'ctc2_alamat' => $this->input->post('ctc2_alamat'),
-            'ctc2_email' => $this->input->post('ctc2_email'),
+            'ctc_to' => $this->input->post('ctc_to'),
+            'ctc_address' => $this->input->post('ctc_address'),
+            'metode' => $this->input->post('metode'),
+            'tax' => preg_replace('/\D/', '', $this->input->post('tax')),
+            'total' => preg_replace('/\D/', '', $this->input->post('total_nominal')),
             'created_at' => date('Y-m-d H:i:s')
         );
-
-        if (!empty($_POST['catatan_item'])) {
-            $data['keterangan'] = $this->input->post('catatan_item');
-        }
-
-        if (!empty($_POST['diskon'])) {
-            $data['diskon'] = preg_replace('/\D/', '', $this->input->post('diskon'));
-        } else {
-            $data['diskon'] = 0;
-        }
 
         //UPDATE DETAIL PREPAYMENT
         $id_detail = $this->input->post('hidden_id[]');
         // $invoice_id = $this->input->post('hidden_invoiceId[]');
-        $deskripsi = $this->input->post('deskripsi[]');
-        $jumlah = preg_replace('/\D/', '', $this->input->post('jumlah[]'));
-        $satuan = $this->input->post('satuan[]');
-        $harga = preg_replace('/\D/', '', $this->input->post('harga[]'));
+        $item = $this->input->post('item[]');
+        $nopol = $this->input->post('nopol[]');
+        $tipe = $this->input->post('tipe[]');
         $total = preg_replace('/\D/', '', $this->input->post('total[]'));
         if ($this->db->update('sml_invoice', $data, ['id' => $this->input->post('id')])) {
             // UNTUK MENGHAPUS ROW YANG TELAH DIDELETE
@@ -358,25 +333,23 @@ class Sml_invoice extends CI_Controller
                 foreach ($deletedRows as $delRows) {
                     // Hapus row dari database berdasarkan ID
                     $this->db->where('id', $delRows);
-                    $this->db->delete('bmn_detail_invoice');
+                    $this->db->delete('sml_detail_invoice');
                 }
             }
-
             //MELAKUKAN REPLACE DATA LAMA DENGAN YANG BARU
-            for ($i = 1; $i <= count($_POST['deskripsi']); $i++) {
+            for ($i = 1; $i <= count($_POST['item']); $i++) {
                 // Set id menjadi NULL jika id_detail tidak ada atau kosong
                 $id_invoice = !empty($id_detail[$i]) ? $id_detail[$i] : NULL;
                 $data2[] = array(
                     'id' => $id_invoice,
                     'invoice_id' => $this->input->post('id'),
-                    'deskripsi' => $deskripsi[$i],
-                    'jumlah' => $jumlah[$i],
-                    'satuan' => $satuan[$i],
-                    'harga' => $harga[$i],
+                    'deskripsi' => $item[$i],
+                    'nopol' => $nopol[$i],
+                    'tipe' => $tipe[$i],
                     'total' => $total[$i]
                 );
                 // Menggunakan db->replace untuk memasukkan atau menggantikan data
-                $this->db->replace('bmn_detail_invoice', $data2[$i - 1]);
+                $this->db->replace('sml_detail_invoice', $data2[$i - 1]);
             }
 
             // UNTUK MENGHAPUS REKENING
@@ -385,26 +358,28 @@ class Sml_invoice extends CI_Controller
                 foreach ($deletedRekRows as $delRekRow) {
                     // Hapus row dari database berdasarkan ID
                     $this->db->where('id', $delRekRow);
-                    $this->db->delete('bmn_rek_invoice');
+                    $this->db->delete('sml_rek_invoice');
                 }
             }
 
             // MELAKUKAN REPLACE DATA REKENING
             $id_rek = $this->input->post('hidden_rekId[]');
+            // $nama_rek = $this->input->post('nama_rek[]');
             $nama_bank = $this->input->post('nama_bank[]');
             $no_rek = $this->input->post('no_rek[]');
-            if (!empty($no_rek)) {
+            if (!empty($nama_bank)) {
                 for ($i = 1; $i <= count($_POST['nama_bank']); $i++) {
                     // Set id menjadi NULL jika id_rek tidak ada atau kosong
                     $id_rekening = !empty($id_rek[$i]) ? $id_rek[$i] : NULL;
                     $data3[] = array(
                         'id' => $id_rekening,
                         'invoice_id' => $this->input->post('id'),
+                        // 'nama_rek' => $nama_rek[$i],
                         'nama_bank' => $nama_bank[$i],
                         'no_rek' => $no_rek[$i]
                     );
                     // Menggunakan db->replace untuk memasukkan atau menggantikan data
-                    $this->db->replace('bmn_rek_invoice', $data3[$i - 1]);
+                    $this->db->replace('sml_rek_invoice', $data3[$i - 1]);
                 }
             }
         }
@@ -490,52 +465,77 @@ class Sml_invoice extends CI_Controller
         $t_cpdf2->SetAuthor('Author Name');
         $t_cpdf2->SetTitle('Invoice Pengenumroh PDF');
 
-        $t_cpdf2->SetMargins(15, 28, 15); // Margin kiri, atas (untuk header), kanan
+        $t_cpdf2->SetMargins(15, 40, 15); // Margin kiri, atas (untuk header), kanan
         // $t_cpdf2->SetHeaderMargin(30);    // Jarak antara header dan konten
         $t_cpdf2->SetAutoPageBreak(true, 15); // Penanganan otomatis margin bawah
 
         $t_cpdf2->AddPage();
         $t_cpdf2->SetFont('helvetica', '', 10);
 
+        // Informasi alamat
+        $t_cpdf2->SetFont('helvetica', 'B');
+        $t_cpdf2->Cell(40, 6, 'Jl. Kp. Tunggilis RT 001 RW 007', 0, 1);
+        $t_cpdf2->SetFont('helvetica', 'B', 10);
+        $t_cpdf2->Cell(0, 6, 'Situsari Kec. Cileungsi Kab. Bogor', 0, 0);
+
         // Informasi Invoice
-        $t_cpdf2->Cell(40, 6, 'No. Invoice :', 0, 0);
-        $t_cpdf2->Cell(50, 6, $invoice->kode_invoice, 0, 1);
-        $t_cpdf2->Cell(40, 6, 'Tanggal :', 0, 0);
-        $t_cpdf2->Cell(50, 6, $invoice->tgl_invoice, 0, 1);
-        $t_cpdf2->Cell(40, 6, 'Jatuh Tempo :', 0, 0);
-        $t_cpdf2->Cell(50, 6, $invoice->tgl_tempo, 0, 1);
-        $t_cpdf2->Ln(5);
+        $t_cpdf2->SetY($t_cpdf2->getY() - 6.5);
+        $t_cpdf2->SetX(129);
+        $t_cpdf2->Cell(30, 6, 'No. Invoice', 0, 0);
+        $t_cpdf2->Cell(50, 6, ': ' . $invoice->kode_invoice, 0, 1);
+        $t_cpdf2->SetX(129);
+        $t_cpdf2->Cell(30, 6, 'Tanggal', 0, 0);
+        $t_cpdf2->Cell(50, 6, ': ' . $invoice->tgl_invoice, 0, 1);
+        $t_cpdf2->SetX(129);
+        $t_cpdf2->Cell(30, 6, 'Jatuh Tempo', 0, 0);
+        $t_cpdf2->Cell(50, 6, ': ' . $invoice->tgl_tempo, 0, 1);
+        $t_cpdf2->SetX(129);
+        $t_cpdf2->Cell(30, 6, 'Metode', 0, 0);
+        $t_cpdf2->Cell(50, 6, ': ' . $invoice->metode, 0, 1);
+        // $t_cpdf2->Ln(5);
 
         // Informasi Penerima
+        $t_cpdf2->SetFont('helvetica', 'B');
+        $t_cpdf2->SetY($t_cpdf2->getY() - 6.5);
         $t_cpdf2->Cell(40, 6, 'Ditujukan Kepada:', 0, 1);
         $t_cpdf2->SetFont('helvetica', 'B', 10);
-        $t_cpdf2->Cell(0, 6, $invoice->ctc2_nama, 0, 1);
+        $t_cpdf2->Cell(0, 6, 'PT. MANDIRI CIPTA SEJAHTERA', 0, 1);
         $t_cpdf2->SetFont('helvetica', '', 10);
-        $t_cpdf2->MultiCell(0, 6, $invoice->ctc2_alamat, 0, 'L');
+        $t_cpdf2->MultiCell(0, 6, 'Ruko Niaga Citra Grand Blok R9 3-6', 0, 'L');
         $t_cpdf2->Ln(5);
 
         // Tabel Detail Barang
         $t_cpdf2->SetFont('helvetica', 'B', 10);
         $t_cpdf2->Cell(10, 6, 'No.', 1, 0, 'C');
-        $t_cpdf2->Cell(80, 6, 'Deskripsi', 1, 0, 'C');
-        $t_cpdf2->Cell(40, 6, 'Nopol', 1, 0, 'C');
-        $t_cpdf2->Cell(40, 6, 'Total', 1, 1, 'C');
+        $t_cpdf2->Cell(65, 6, 'Deskripsi', 1, 0, 'C');
+        $t_cpdf2->Cell(25, 6, 'Nopol', 1, 0, 'C');
+        $t_cpdf2->Cell(30, 6, 'Tipe', 1, 0, 'C');
+        $t_cpdf2->Cell(44, 6, 'Total', 1, 1, 'C');
 
         $t_cpdf2->SetFont('helvetica', '', 10);
         $no = 1;
         $grand_total = 0;
         foreach ($invoice_details as $item) {
             $t_cpdf2->Cell(10, 6, $no++, 1, 0, 'C');
-            $t_cpdf2->Cell(80, 6, $item->deskripsi, 1, 0, 'L');
-            $t_cpdf2->Cell(40, 6, $item->jumlah, 1, 0, 'C');
-            $t_cpdf2->Cell(40, 6, number_format($item->total, 0, ',', '.'), 1, 1, 'R');
+            $t_cpdf2->Cell(65, 6, $item->deskripsi, 1, 0, 'L');
+            $t_cpdf2->Cell(25, 6, $item->nopol, 1, 0, 'C');
+            $t_cpdf2->Cell(30, 6, $item->tipe, 1, 0, 'C');
+            $t_cpdf2->Cell(44, 6, number_format($item->total, 0, ',', '.'), 1, 1, 'R');
             $grand_total += $item->total;
         }
 
         // Total
         $t_cpdf2->SetFont('helvetica', 'B', 10);
+        if ($invoice->tax > 0) {
+            $t_cpdf2->Cell(130, 6, 'PPN', 1, 0, 'R');
+            $t_cpdf2->Cell(44, 6, number_format($invoice->tax, 0, ',', '.'), 1, 1, 'R');
+        }
+        if ($invoice->diskon > 0) {
+            $t_cpdf2->Cell(130, 6, 'Diskon', 1, 0, 'R');
+            $t_cpdf2->Cell(44, 6, number_format($invoice->diskon, 0, ',', '.'), 1, 1, 'R');
+        }
         $t_cpdf2->Cell(130, 6, 'Total', 1, 0, 'R');
-        $t_cpdf2->Cell(40, 6, number_format($grand_total, 0, ',', '.'), 1, 1, 'R');
+        $t_cpdf2->Cell(44, 6, number_format($grand_total, 0, ',', '.'), 1, 1, 'R');
 
         // Informasi Transfer
         $t_cpdf2->Ln(10);
@@ -548,9 +548,13 @@ class Sml_invoice extends CI_Controller
 
         // Footer
         $t_cpdf2->Ln(10);
-        $t_cpdf2->Cell(0, 6, 'PT. SAHABAT MULTI LOGISTIK', 0, 1, 'C');
-        $t_cpdf2->Ln(10);
-        $t_cpdf2->Cell(0, 6, 'M. Charles Manalu', 0, 1, 'R');
+        $t_cpdf2->SetX(136);
+        $t_cpdf2->Cell(0, 6, 'PT. SAHABAT MULTI LOGISTIK', 0, 1, 'L');
+        $t_cpdf2->Image('assets/backend/img/cap.jpg', $t_cpdf2->getX() + 125, $t_cpdf2->getY() + 5, 18, 16);
+        $t_cpdf2->Image('assets/backend/img/ttdmcm.png', $t_cpdf2->getX() + 135, $t_cpdf2->getY() + 5, 30, 20);
+        $t_cpdf2->Ln(26);
+        $t_cpdf2->SetX(148);
+        $t_cpdf2->Cell(0, 6, 'M. Charles Manalu', 0, 1, 'L');
 
         // Output PDF
         if ($output == 'view') {
