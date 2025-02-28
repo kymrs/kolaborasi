@@ -550,49 +550,49 @@ class Swi_invoice extends CI_Controller
         // Tampilkan di PDF
         $t_cpdf2->writeHTML($html, true, false, true, false, '');
 
-        $t_cpdf2->SetY(190);
+        $t_cpdf2->SetY(180);
         $t_cpdf2->SetX(130);
         $t_cpdf2->SetFont('poppins-regular', 'B', 10);
         $t_cpdf2->Cell(0, 7, 'TOTAL', 0, 1, 'L');
         $t_cpdf2->SetFont('poppins-regular', '', 10);
-        $t_cpdf2->SetY(190);
+        $t_cpdf2->SetY(180);
         $t_cpdf2->SetX(164);
         $t_cpdf2->Cell(0, 7, 'Rp. ' . number_format($invoice->total, 0, ',', '.'), 0, 1, 'L');
 
-        $t_cpdf2->SetY(198);
+        $t_cpdf2->SetY(189);
         $t_cpdf2->SetX(130);
         $t_cpdf2->SetFont('poppins-regular', 'B', 10);
         $t_cpdf2->Cell(0, 7, 'TAX', 0, 1, 'L');
         $t_cpdf2->SetFont('poppins-regular', '', 10);
-        $t_cpdf2->SetY(198);
+        $t_cpdf2->SetY(189);
         $t_cpdf2->SetX(164);
         $t_cpdf2->Cell(0, 7, $invoice->tax ? 'Rp. ' . number_format($invoice->tax, 0, ',', '.') : 'Rp. -', 0, 1, 'L');
 
         $grand_total = $invoice->total + $invoice->tax;
 
-        $t_cpdf2->SetY(206);
+        $t_cpdf2->SetY(198);
         $t_cpdf2->SetX(130);
         $t_cpdf2->SetFont('poppins-regular', 'B', 10);
         $t_cpdf2->Cell(0, 7, 'GRAND TOTAL', 0, 1, 'L');
         $t_cpdf2->SetFont('poppins-regular', '', 10);
-        $t_cpdf2->SetY(206);
+        $t_cpdf2->SetY(198);
         $t_cpdf2->SetX(164);
         $t_cpdf2->Cell(0, 7, 'Rp. ' . number_format($grand_total, 0, ',', '.'), 0, 1, 'L');
 
-        $t_cpdf2->SetY(230);
+        $t_cpdf2->SetY(238);
         $t_cpdf2->SetX(143);
         $t_cpdf2->SetFont('poppins-regular', 'B', 10);
         $t_cpdf2->Cell(0, 7, 'Rahmat Kurniawan', 0, 1, 'L');
-        $t_cpdf2->SetY(237);
+        $t_cpdf2->SetY(245);
         $t_cpdf2->SetX(151);
         $t_cpdf2->Cell(0, 7, 'Head Unit', 0, 1, 'L');
 
-        $t_cpdf2->SetY(191);
+        $t_cpdf2->SetY(180);
         $t_cpdf2->SetX(20);
         $t_cpdf2->SetFont('poppins-regular', 'B', 10);
         $t_cpdf2->Cell(0, 7, 'BANK DETAILS', 0, 1, 'L');
 
-        $t_cpdf2->SetY(198);
+        $t_cpdf2->SetY(188);
         $t_cpdf2->SetX(20);
 
         $t_cpdf2->SetFont('poppins-regular', '', 10);
@@ -623,37 +623,9 @@ class Swi_invoice extends CI_Controller
         // Tampilkan di PDF
         $t_cpdf2->writeHTML($html, true, false, true, false, '');
 
-        // $t_cpdf2->SetY(230);
-        // $t_cpdf2->SetX(19);
-        // $t_cpdf2->SetFont('poppins-regular', '', 10);
-        // $t_cpdf2->Cell(0, 7, ' PT. Quick Project Indonesia', 0, 1, 'L');
-
         // Output file
         $t_cpdf2->Output('Invoice sobatwisata-' . $invoice->kode_invoice . '.pdf', 'I');
     }
-
-    // QUERY UNTUK INPUT TANDA TANGAN
-    // function signature()
-    // {
-    //     // Ambil data dari request
-    //     $img = $this->input->post('imgBase64');
-
-    //     // Decode base64
-    //     $img = str_replace('data:image/png;base64,', '', $img)
-    //     $img = str_replace(' ', '+', $img);
-    //     $data = base64_decode($img);
-
-    //     // Tentukan lokasi dan nama file
-    //     $fileName = uniqid() . '.png';
-    //     $filePath = './assets/backend/img/signatures/' . $fileName;
-
-    //     // Simpan file ke server
-    //     if (file_put_contents($filePath, $data)) {
-    //         echo json_encode(['status' => 'success', 'fileName' => $fileName]);
-    //     } else {
-    //         echo json_encode(['status' => 'error']);
-    //     }
-    // }
 
     function payment()
     {
