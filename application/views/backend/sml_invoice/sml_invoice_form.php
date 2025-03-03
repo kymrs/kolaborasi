@@ -975,9 +975,9 @@
                 ctc_address: {
                     required: true,
                 },
-                tax: {
-                    required: true,
-                },
+                // tax: {
+                //     required: true,
+                // },
             },
             messages: {
                 tgl_invoice: {
@@ -992,9 +992,9 @@
                 ctc_address: {
                     required: "Address is required",
                 },
-                tax: {
-                    required: "Tax is required",
-                },
+                // tax: {
+                //     required: "Tax is required",
+                // },
             },
             errorPlacement: function(error, element) {
                 if (element.parent().hasClass('input-group')) {

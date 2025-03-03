@@ -158,6 +158,7 @@ class Sml_invoice extends CI_Controller
             ->get()
             ->row('username');
         $data['invoice'] = $this->M_sml_invoice->getInvoiceData($id);
+        $data['details'] = $this->M_sml_invoice->get_detail($id);
         $data['status'] = $this->M_sml_invoice->get_by_id($id)->payment_status;
         $data['rekening'] = $this->db->get_where('sml_rek_invoice', ['invoice_id' => $id])->result_array();
         $data['detail'] = $this->db->get_where('sml_detail_invoice', ['invoice_id' => $id])->result_array();
@@ -251,13 +252,16 @@ class Sml_invoice extends CI_Controller
             'ctc_to' => $this->input->post('ctc_to'),
             'ctc_address' => $this->input->post('ctc_address'),
             'metode' => $this->input->post('metode'),
-            'tax' => preg_replace('/\D/', '', $this->input->post('tax')),
             'total' => preg_replace('/\D/', '', $this->input->post('total_nominal')),
             'created_at' => date('Y-m-d H:i:s')
         );
 
+        if (!empty($this->input->post('tax'))) {
+            $data['tax'] = preg_replace('/\D/', '', $this->input->post('tax'));
+        }
+
         if (!empty($this->input->post('diskon'))) {
-            $data['diskon'] = $this->input->post('diskon');
+            $data['diskon'] = preg_replace('/\D/', '', $this->input->post('diskon'));
         }
 
         $inserted = $this->M_sml_invoice->save($data);
@@ -318,6 +322,18 @@ class Sml_invoice extends CI_Controller
             'total' => preg_replace('/\D/', '', $this->input->post('total_nominal')),
             'created_at' => date('Y-m-d H:i:s')
         );
+
+        if (!empty($this->input->post('tax'))) {
+            $data['tax'] = preg_replace('/\D/', '', $this->input->post('tax'));
+        } else {
+            $data['tax'] = 0;
+        }
+
+        if (!empty($this->input->post('diskon'))) {
+            $data['diskon'] = preg_replace('/\D/', '', $this->input->post('diskon'));
+        } else {
+            $data['diskon'] = 0;
+        }
 
         //UPDATE DETAIL PREPAYMENT
         $id_detail = $this->input->post('hidden_id[]');
@@ -526,11 +542,11 @@ class Sml_invoice extends CI_Controller
 
         // Total
         $t_cpdf2->SetFont('helvetica', 'B', 10);
-        if ($invoice->tax > 0 || $invoice->tax != null) {
+        if ($invoice->tax > 0) {
             $t_cpdf2->Cell(130, 6, 'PPN', 1, 0, 'R');
             $t_cpdf2->Cell(44, 6, number_format($invoice->tax, 0, ',', '.'), 1, 1, 'R');
         }
-        if ($invoice->diskon > 0 || $invoice->diskon != null) {
+        if ($invoice->diskon > 0) {
             $t_cpdf2->Cell(130, 6, 'Diskon', 1, 0, 'R');
             $t_cpdf2->Cell(44, 6, number_format($invoice->diskon, 0, ',', '.'), 1, 1, 'R');
         }
@@ -551,7 +567,7 @@ class Sml_invoice extends CI_Controller
         $t_cpdf2->SetX(136);
         $t_cpdf2->Cell(0, 6, 'PT. SAHABAT MULTI LOGISTIK', 0, 1, 'L');
         $t_cpdf2->Image('assets/backend/img/cap.jpg', $t_cpdf2->getX() + 125, $t_cpdf2->getY() + 5, 18, 16);
-        $t_cpdf2->Image('assets/backend/img/ttdmcm.png', $t_cpdf2->getX() + 135, $t_cpdf2->getY() + 5, 30, 20);
+        $t_cpdf2->Image('assets/backend/img/ttdsml.png', $t_cpdf2->getX() + 135, $t_cpdf2->getY() + 5, 30, 20);
         $t_cpdf2->Ln(26);
         $t_cpdf2->SetX(148);
         $t_cpdf2->Cell(0, 6, 'M. Charles Manalu', 0, 1, 'L');

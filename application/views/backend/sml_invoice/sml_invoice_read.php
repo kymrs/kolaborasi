@@ -34,22 +34,22 @@
                         <tr>
                             <td>No. Invoice</td>
                             <td>:</td>
-                            <td>SML2025020005</td>
+                            <td><?= $invoice['kode_invoice'] ?></td>
                         </tr>
                         <tr>
                             <td>Tanggal</td>
                             <td>:</td>
-                            <td>20/02/2025</td>
+                            <td><?= date('d-m-Y', strtotime($invoice['tgl_invoice'])) ?></td>
                         </tr>
                         <tr>
                             <td>Jatuh Tempo</td>
                             <td>:</td>
-                            <td>27/02/2025</td>
+                            <td><?= date('d-m-Y', strtotime($invoice['tgl_tempo'])) ?></td>
                         </tr>
                         <tr>
                             <td>Metode</td>
                             <td>:</td>
-                            <td>Transfer</td>
+                            <td><?= $invoice['metode'] ?></td>
                         </tr>
                     </table>
                     <div style="clear: both"></div>
@@ -57,47 +57,50 @@
             </div>
             <div class="table-transaksi">
                 <table>
-                    <tr>
-                        <th>No.</th>
-                        <th>Deskripsi</th>
-                        <th>Nopol</th>
-                        <th>Tipe</th>
-                        <th>Total</th>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>FIF Bandung FIF Sorong</td>
-                        <td>B 2423 KIL</td>
-                        <td>Xenia X</td>
-                        <td style="padding-right: 5px;">24.000.000</td>
-                    </tr>
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Deskripsi</th>
+                            <th>Nopol</th>
+                            <th>Tipe</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($details as $detail) { ?>
+                            <tr>
+                                <td>1</td>
+                                <td><?= $detail->deskripsi ?></td>
+                                <td><?= $detail->nopol ?></td>
+                                <td><?= $detail->tipe ?></td>
+                                <td style="padding-right: 5px;"><?= number_format($detail->total, 0, ',', '.') ?></td>
+                            </tr>
+                        <?php } ?>
+                    </tbody>
+                    <?php if ($invoice['tax'] > 0) { ?>
+                        <tr>
+                            <td style="border-color: white"></td>
+                            <td style="border-color: white"></td>
+                            <td style="background-color: white; position: relative; top: 5px"></td>
+                            <td>PPN</td>
+                            <td style="padding-right: 5px;"><?= number_format($invoice['tax'], 0, ',', '.') ?></td>
+                        </tr>
+                    <?php } ?>
+                    <?php if ($invoice['diskon']) { ?>
+                        <tr>
+                            <td style="border-color: white"></td>
+                            <td style="border-color: white"></td>
+                            <td style="background-color: white; position: relative; top: 5px"></td>
+                            <td>Diskon</td>
+                            <td style="padding-right: 5px;"><?= number_format($invoice['diskon'], 0, ',', '.') ?></td>
+                        </tr>
+                    <?php } ?>
                     <tr>
                         <td style="border-color: white"></td>
                         <td style="border-color: white"></td>
                         <td style="background-color: white; position: relative; top: 5px"></td>
                         <td>Total</td>
-                        <td style="padding-right: 5px;">41.400.000</td>
-                    </tr>
-                    <tr>
-                        <td style="border-color: white"></td>
-                        <td style="border-color: white"></td>
-                        <td style="background-color: white; position: relative; top: 5px"></td>
-                        <td>PPN</td>
-                        <td style="padding-right: 5px;">-</td>
-                    </tr>
-                    <tr>
-                        <td style="border-color: white"></td>
-                        <td style="border-color: white"></td>
-                        <td style="background-color: white; position: relative; top: 5px"></td>
-                        <td>Diskon</td>
-                        <td style="padding-right: 5px;">-</td>
-                    </tr>
-                    <tr>
-                        <td style="border-color: white"></td>
-                        <td style="border-color: white"></td>
-                        <td style="background-color: white; position: relative; top: 5px"></td>
-                        <td>Total</td>
-                        <td style="padding-right: 5px;">41.400.000</td>
+                        <td style="padding-right: 5px;"><?= number_format($invoice['total'] + $invoice['tax'] - $invoice['diskon'], 0, ',', '.') ?></td>
                     </tr>
                 </table>
             </div>

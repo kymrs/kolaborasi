@@ -96,7 +96,7 @@ class M_sml_invoice extends CI_Model
 
     public function getInvoiceData($id)
     {
-        $this->db->select('id_user, tgl_invoice, kode_invoice, diskon, tgl_tempo, ctc_nama, ctc_nomor, ctc2_nama, ctc2_nomor, ctc2_email, ctc2_alamat, keterangan');
+        $this->db->select('id_user, tgl_invoice, kode_invoice, metode, diskon, tgl_tempo, ctc_to, ctc_address, total, tax');
         $this->db->from('sml_invoice');
         $this->db->where('id', $id);
         $data = $this->db->get()->row_array();
