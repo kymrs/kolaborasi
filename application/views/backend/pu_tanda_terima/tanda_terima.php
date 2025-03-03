@@ -122,7 +122,7 @@
                     <div class="form-group row">
                         <label for="image" class="col-sm-3 col-form-label">Image</label>
                         <div class="col-sm-9">
-                            <input type="file" class="" id="image" name="image"> <br />
+                            <input type="file" class="" id="image" name="image"> <br /><br>
                             <img id="img_name" height="200px">
                         </div>
                     </div>
@@ -281,7 +281,7 @@
                     $('[name="barang"]').val(data.barang);
                     $('[name="qty"]').val(data.qty);
                     $('[name="keterangan"]').val(data.keterangan);
-                    $('#img_name').attr('src', '<?= base_url("assets/img/") ?>' + data.foto);
+                    $('#img_name').attr('src', '<?= base_url("assets/backend/document/pu_tanda_terima/") ?>' + data.foto);
                     $('#img_name').attr('hidden', false);
                 },
                 error: function(jqXHR, textStatus, errorThrown) {

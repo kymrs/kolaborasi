@@ -186,42 +186,49 @@ class Pu_tanda_terima extends CI_Controller
 	function pdf($id)
 	{
 		$this->load->library('Fpdf_generate');
-		$pdf = new Fpdf_generate('P', 'mm', 'A4');
+		$pdf = new Fpdf_generate('P', 'mm', 'A4'); // Panggil class PDF yang sudah dimodifikasi
 		$query = $this->M_pu_tanda_terima->get_by_id($id);
 
 		// Title and Alias for total pages
 		$pdf->SetTitle('Tanda Terima ' . $query->nomor);
 		$pdf->AliasNbPages();
 
-		// Add Header and Footer images on each page
+		// Tambahkan halaman pertama
 		$pdf->AddPage();
 
-		// Header image
-		$pdf->Image(base_url('') . '/assets/backend/img/header.png', 20, 5, 190, 40); // Adjust position and size as needed
-
-		// Set top margin below the header image, and bottom margin above the footer
-		$pdf->SetMargins(10, 45); // Set top margin below the header image
-		$pdf->SetAutoPageBreak(true, 40); // Set bottom margin above the footer image
+		// Set top margin di bawah header image, dan bottom margin di atas footer
+		$pdf->SetMargins(10, 55);
+		$pdf->SetAutoPageBreak(true, 50);
 
 		// Content
-		$pdf->Ln(45); // Move cursor down for main content after header image
+		$pdf->Ln(45);
 		$pdf->SetFont('Courier', '', 12);
-		$pdf->Cell(140, 10, 'Pengirim: ' . $query->nama_pengirim, 0, 0);
+		$pdf->Cell(28, 10, 'Pengirim', 0, 0);
+		$pdf->Cell(5, 10, ':', 0, 0);
+		$pdf->Cell(110, 10, $query->nama_pengirim, 0, 0);
 		$pdf->Cell(47, 10, date('d/m/Y', strtotime($query->tanggal)), 0, 1, 'R');
-		$pdf->Cell(140, 10, 'Kepada Yth: ' . $query->title . ' ' . $query->nama_penerima, 0, 0);
+		$pdf->Cell(140, 10, 'Kepada Yth : ' . $query->title . ' ' . $query->nama_penerima, 0, 0);
 		$pdf->Cell(50, 10, 'No: ' . $query->nomor, 0, 1, 'R');
-		$pdf->Ln(10);
+		$pdf->Ln(2);
 		$pdf->SetLineWidth(0.1);
-		$pdf->Line(10, 76, $pdf->GetPageWidth() - 10, 76);
-		$pdf->Line(10, 86, $pdf->GetPageWidth() - 10, 86);
+		$pdf->Line(10, 77, $pdf->GetPageWidth() - 10, 77);
+
+		// Add Watermark if "foto" is not empty
+		$pdf->Image('assets/backend/img/watermark-tandaterima.png', $pdf->GetPageWidth() / 3 - 1, 80, 75, 0);
 
 		// Table Content
 		$pdf->SetFont('Courier', 'B', 12);
 		$pdf->Cell(140, 10, 'Uraian', 0, 0, 'L');
 		$pdf->Cell(50, 10, 'Jumlah', 0, 1, 'L');
+		$pdf->Line(10, 87, $pdf->GetPageWidth() - 10, 87);
 		$pdf->SetFont('Courier', '', 12);
 		$pdf->Cell(140, 10, $query->barang, 0, 0, 'L');
 		$pdf->Cell(50, 10, $query->qty, 0, 1, 'L');
+		$pdf->Line(10, 97, $pdf->GetPageWidth() - 10, 97);
+		$pdf->SetFont('Courier', 'B', 12);
+		$pdf->Cell(50, 10, 'Rincian', 0, 1, 'L');
+
+		$pdf->SetFont('Courier', '', 12);
 		$list = explode("\n", $query->keterangan);
 		foreach ($list as $item) {
 			$pdf->Cell(0, 10, $item, 0, 1, 'L');
@@ -234,15 +241,6 @@ class Pu_tanda_terima extends CI_Controller
 		$posisi = $pdf->GetPageWidth() / 2 - 20;
 		$foto = $query->foto ? $query->foto : 'default.png';
 		$pdf->Image('assets/backend/document/pu_tanda_terima/' . $foto, $posisi, $pdf->GetY(), 40, 0);
-
-		// Add Watermark if "foto" is not empty
-		if (!empty($foto)) {
-			$pdf->Image('assets/backend/img/watermark-tandaterima.png', $pdf->GetPageWidth() / 2 - 45, $pdf->GetY(), 100, 0);
-		}
-
-		// Footer image
-		$footerY = $pdf->GetPageHeight() - 30; // Set footer position near the bottom of the page
-		// $pdf->Image('assets/backend/img/footer.png', 10, $footerY, 190, 5); // Adjust position and size as needed
 
 		// Output PDF
 		$pdf->Output();

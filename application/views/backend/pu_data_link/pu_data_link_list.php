@@ -25,6 +25,7 @@
                                     <th>Kode Crew</th>
                                     <th>Nama Crew</th>
                                     <th>No Handphone</th>
+                                    <th>Link</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -37,6 +38,7 @@
                                     <th>Kode Crew</th>
                                     <th>Nama Crew</th>
                                     <th>No Handphone</th>
+                                    <th>Link</th>
                                 </tr>
                             </tfoot>
                         </table>
@@ -65,6 +67,7 @@
                                     <th style="width: 120px;">Action</th>
                                     <th>Kode Member</th>
                                     <th>Nama Member</th>
+                                    <th>Link</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -76,6 +79,7 @@
                                     <th style="width: 120px;">Action</th>
                                     <th>Kode Member</th>
                                     <th>Nama Member</th>
+                                    <th>Link</th>
                                 </tr>
                             </tfoot>
                         </table>
@@ -138,6 +142,7 @@
                             <label for="" class="col-sm-3 col-form-label">Nama</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control" id="nama_member" name="nama_member" placeholder="Nama Member" required>
+                                <input type="hidden" class="form-control" id="id_member" name="id_member" placeholder="Nama Member" required>
                             </div>
                         </div>
                     </div>
@@ -387,6 +392,7 @@
             dataType: "JSON",
             success: function(data) {
                 $('[name="nama_member"]').val(data.namaMember);
+                $('[name="id_member"]').val(data.idMember);
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 alert('Error get data from ajax');

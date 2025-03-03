@@ -4,8 +4,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
 class M_pu_data_link extends CI_Model
 {
     // URL file JSON yang digunakan
-    private $file_path_crew = 'https://puuu.naufalandriana.com/data-crew.json';
-    private $file_path_member = 'https://puuu.naufalandriana.com/data-member.json';
+    private $file_path_crew = 'https://link.pengenumroh.com/data-crew.json';
+    private $file_path_member = 'https://link.pengenumroh.com/data-member.json';
 
     public function __construct()
     {

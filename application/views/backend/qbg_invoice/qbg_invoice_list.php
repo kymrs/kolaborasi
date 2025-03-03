@@ -12,18 +12,17 @@
                             <i class="fa fa-plus"></i>&nbsp;Add Data
                         </a>
                     <?php } ?>
+
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item">
+                            <select id="filter_status" class="form-control" style="cursor: pointer;">
+                                <option value="unpaid" selected>Unpaid</option>
+                                <option value="paid">Paid</option>
+                            </select>
+                        </li>
+                    </ul>
                 </div>
                 <!-- NAV TABS -->
-                <!-- <ul class="nav nav-tabs">
-                    <li class="nav-item">
-                        <a class="nav-link active" id="personalTab" href="#" data-tab="personal">User</a>
-                    </li>
-                    <?php if ($approval > 0) { ?>
-                        <li class="nav-item">
-                            <a class="nav-link" id="employeeTab" href="#" data-tab="employee">Approval</a>
-                        </li>
-                    <?php } ?>
-                </ul> -->
 
                 <div class="card-body">
                     <table id="table" class="table table-bordered table-striped" style="width: 100%;">
@@ -69,6 +68,35 @@
     // METHOD POST MENAMPILKAN DATA KE DATA TABLE
     $(document).ready(function() {
 
+        table = $('#table').DataTable({
+            "responsive": false,
+            "scrollX": true,
+            "processing": true,
+            "serverSide": true,
+            "order": [],
+            "ajax": {
+                "url": "<?php echo site_url('qbg_invoice/get_list') ?>",
+                "type": "POST",
+                "data": function(d) {
+                    d.status = $('#filter_status').val(); // Tambahkan parameter status ke permintaan server
+                }
+            },
+            // "language": {
+            //     "infoFiltered": ""
+            // },
+            "columnDefs": [{
+                    "targets": [2, 3, 4, 6],
+                    "className": 'dt-head-nowrap'
+                },
+                {
+                    "targets": [1, 4, 5, 7],
+                    "className": 'dt-body-nowrap'
+                }, {
+                    "targets": [0, 1],
+                    "orderable": false,
+                },
+            ]
+        });
 
         // Set active tab on page load
         const activeTab = sessionStorage.getItem('activeTab');
@@ -91,7 +119,7 @@
         }
 
         $('.collapse-item').on('click', function(e) {
-            localStorage.removeItem('appFilterStatus'); // Hapus filter yang tersimpan
+            localStorage.removeItem('filterStatus'); // Hapus filter yang tersimpan
             localStorage.removeItem('activeTab'); // Hapus filter yang tersimpan
         })
 
@@ -105,48 +133,16 @@
         });
 
         // Cek apakah ada nilai filter yang tersimpan di localStorage
-        var savedFilter = localStorage.getItem('appFilterStatus');
+        var savedFilter = localStorage.getItem('filterStatus');
         if (savedFilter) {
-            $('#appFilter').val(savedFilter).change(); // Set filter dengan nilai yang tersimpan
+            $('#filter_status').val(savedFilter).change(); // Set filter dengan nilai yang tersimpan
         }
 
-        table = $('#table').DataTable({
-            "responsive": false,
-            "scrollX": true,
-            "processing": true,
-            "serverSide": true,
-            "order": [],
-            "ajax": {
-                "url": "<?php echo site_url('qbg_invoice/get_list') ?>",
-                "type": "POST",
-                "data": function(d) {
-                    d.status = $('#appFilter').val(); // Tambahkan parameter status ke permintaan server
-                    d.tab = $('.nav-tabs .nav-link.active').data('tab'); // Tambahkan parameter tab ke permintaan server
-                }
-            },
-            // "language": {
-            //     "infoFiltered": ""
-            // },
-            "columnDefs": [{
-                    "targets": [2, 3, 4, 6],
-                    "className": 'dt-head-nowrap'
-                },
-                {
-                    "targets": [1, 4, 5, 7],
-                    "className": 'dt-body-nowrap'
-                }, {
-                    "targets": [0, 1],
-                    "orderable": false,
-                },
-            ]
-        });
-
         // Simpan nilai filter ke localStorage setiap kali berubah
-        $('#appFilter').on('change', function() {
-            localStorage.setItem('appFilterStatus', $(this).val());
+        $('#filter_status').on('change', function() {
+            localStorage.setItem('filterStatus', $(this).val());
             table.ajax.reload(); // Muat ulang DataTables dengan filter baru
         });
-
         // Event listener untuk nav tabs
         // $('.nav-tabs a').on('click', function(e) {
         //     e.preventDefault();

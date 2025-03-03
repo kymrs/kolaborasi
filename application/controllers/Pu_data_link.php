@@ -4,8 +4,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
 class Pu_data_link extends CI_Controller
 {
 
-	private $data_path_crew = 'https://puuu.naufalandriana.com/data-crew.json';
-	private $data_path_member = 'https://puuu.naufalandriana.com/data-member.json';
+	private $data_path_crew = 'https://link.pengenumroh.com/data-crew.json';
+	private $data_path_member = 'https://link.pengenumroh.com/data-member.json';
 
 	function __construct()
 	{
@@ -53,6 +53,7 @@ class Pu_data_link extends CI_Controller
 				$row[] = isset($crew['id']) ? $crew['id'] : '';  // Kolom id
 				$row[] = isset($crew['nama']) ? $crew['nama'] : '';  // Kolom nama
 				$row[] = isset($crew['noHP']) ? $crew['noHP'] : '';  // Kolom noHP
+				$row[] = '<a target="_blank" href="https://link.pengenumroh.com/?ref=' . $crew['id'] . '">' . 'Kunjungi</a>';
 
 				$data[] = $row;
 			}
@@ -97,6 +98,7 @@ class Pu_data_link extends CI_Controller
 				$row[] = $action;
 				$row[] = $member['idMember'] ?? '';
 				$row[] = $member['namaMember'] ?? '';
+				$row[] = '<a target="_blank" href="https://link.pengenumroh.com/?mb=' . $member['idMember'] . '">' . 'Kunjungi</a>';
 
 				$data[] = $row;
 			}
@@ -201,7 +203,7 @@ class Pu_data_link extends CI_Controller
 			'noHP' => $noHP
 		];
 
-		$api_url = "https://puuu.naufalandriana.com/api/addCrew.php"; // API yang kita buat
+		$api_url = "https://link.pengenumroh.com/api/addCrew.php"; // API yang kita buat
 
 		// Setup cURL
 		$ch = curl_init($api_url);
@@ -227,8 +229,8 @@ class Pu_data_link extends CI_Controller
 			return;
 		}
 
-		// Kirim data ke API di puuu.https://puuu.naufalandriana.com/
-		$url = "https://puuu.naufalandriana.com/api/addMember.php";
+		// Kirim data ke API
+		$url = "https://link.pengenumroh.com/api/addMember.php";
 		$postData = json_encode(['nama_member' => $nama]);
 
 		$ch = curl_init($url);
@@ -256,8 +258,8 @@ class Pu_data_link extends CI_Controller
 			return;
 		}
 
-		// Kirim data ke API di puuu.https://puuu.naufalandriana.com/
-		$url = "https://puuu.naufalandriana.com/api/updateCrew.php";
+		// Kirim data ke API
+		$url = "https://link.pengenumroh.com/api/updateCrew.php";
 		$postData = json_encode(['id' => $id, 'no_hp' => $no_hp, 'nama_crew' => $nama_crew]);
 
 		$ch = curl_init($url);
@@ -284,7 +286,7 @@ class Pu_data_link extends CI_Controller
 			return;
 		}
 
-		$url = "https://puuu.naufalandriana.com/api/updateMember.php";
+		$url = "https://link.pengenumroh.com/api/updateMember.php";
 		$postData = json_encode(['id_member' => $idMember, 'nama_member' => $nama_member]);
 
 		$ch = curl_init($url);
@@ -304,67 +306,47 @@ class Pu_data_link extends CI_Controller
 
 	public function delete($id)
 	{
-		$file_path = $this->data_path_crew;
+		$api_url = "https://link.pengenumroh.com/api/deleteCrew.php";
 
-		// Cek kalau file belum ada, buat file kosong dulu
-		if (!file_exists($file_path)) {
-			file_put_contents($file_path, json_encode([])); // Buat file kosong dengan array kosong
-		}
+		// Kirim data ke API untuk hapus berdasarkan ID
+		$ch = curl_init($api_url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+		curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(["id" => $id]));
+		curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
 
-		// Ambil data dari JSON
-		$json_data = file_get_contents($file_path);
-		$data = json_decode($json_data, true) ?? [];
+		$response = curl_exec($ch);
+		$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		curl_close($ch);
 
-		// Cari dan hapus data berdasarkan ID
-		$updated_data = array_filter($data, function ($crew) use ($id) {
-			return $crew['id'] != $id;
-		});
-
-		// Cek apakah ada perubahan data
-		if (count($updated_data) < count($data)) {
-			// Simpan kembali data setelah dihapus
-			if (file_put_contents($file_path, json_encode(array_values($updated_data), JSON_PRETTY_PRINT))) {
-				echo json_encode(["status" => TRUE, "message" => "Data berhasil dihapus."]);
-			} else {
-				echo json_encode(["status" => FALSE, "message" => "Gagal menyimpan perubahan ke file JSON."]);
-			}
+		// Cek respons dari API
+		if ($http_code == 200) {
+			echo json_encode(["status" => TRUE, "message" => "Data berhasil dihapus."]);
 		} else {
-			echo json_encode(["status" => FALSE, "message" => "Data tidak ditemukan."]);
+			echo json_encode(["status" => FALSE, "message" => "Gagal menghapus data di server."]);
 		}
 	}
 
 	public function deleteMember($idMember)
 	{
-		$file_path = $this->data_path_member;
+		$api_url = "https://link.pengenumroh.com/api/deleteMember.php";
 
-		// Ambil data dari URL JSON
-		$json_data = file_get_contents($file_path);
-		if ($json_data === false) {
-			echo json_encode(["status" => FALSE, "message" => "Gagal mengambil data dari server."]);
-			return;
-		}
+		// Kirim data ke API untuk hapus berdasarkan ID Member
+		$ch = curl_init($api_url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+		curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(["idMember" => $idMember]));
+		curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
 
-		$data = json_decode($json_data, true);
-		if ($data === null) {
-			echo json_encode(["status" => FALSE, "message" => "Format JSON tidak valid."]);
-			return;
-		}
+		$response = curl_exec($ch);
+		$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		curl_close($ch);
 
-		// Cari dan hapus data berdasarkan idMember
-		$updated_data = array_filter($data, function ($member) use ($idMember) {
-			return $member['idMember'] != $idMember;
-		});
-
-		if (count($updated_data) < count($data)) {
-			// Simpan kembali data setelah dihapus
-			$result = file_put_contents($file_path, json_encode(array_values($updated_data), JSON_PRETTY_PRINT));
-			if ($result !== false) {
-				echo json_encode(["status" => TRUE, "message" => "Data berhasil dihapus."]);
-			} else {
-				echo json_encode(["status" => FALSE, "message" => "Gagal menyimpan perubahan."]);
-			}
+		// Cek respons dari API
+		if ($http_code == 200) {
+			echo json_encode(["status" => TRUE, "message" => "Data member berhasil dihapus."]);
 		} else {
-			echo json_encode(["status" => FALSE, "message" => "Data tidak ditemukan."]);
+			echo json_encode(["status" => FALSE, "message" => "Gagal menghapus data member di server."]);
 		}
 	}
 }

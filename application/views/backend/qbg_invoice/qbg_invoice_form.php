@@ -476,21 +476,16 @@
 
 
     $(document).ready(function() {
-        let firstChange = false;
-        let removedElement; // Variabel untuk menyimpan elemen yang dihapus
 
         $('#jenis_harga').on('change', function() {
             if ($(this).val().trim() !== '') {
                 $('#add-row').prop('disabled', false); // Menghilangkan disabled
-                if (firstChange) {
-                    $('#add-row').prop('disabled', false); // Menghilangkan disabled
-
-                    $('#input-container tr').remove(); // Hapus dan simpan elemen
-                }
-                firstChange = true;
+                $(this).css({
+                    'background-color': '#EAECF4',
+                    'pointer-events': 'none'
+                });
             } else {
                 $('#add-row').prop('disabled', true); // Mengaktifkan kembali disabled jika belum dipilih
-                firstChange = false;
             }
         });
     });

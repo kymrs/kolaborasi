@@ -20,29 +20,24 @@ class M_qbg_invoice extends CI_Model
     var $order2 = array('id' => 'desc'); // default order 
 
     // UNTUK QUERY DATA TABLE
-    function _get_datatables_query()
+    private function _get_datatables_query($status = 'unpaid')
     {
-        $this->db->select('*'); // Memilih kolom dari kedua tabel
+        $this->db->where('payment_status', $status); // Pakai status dari parameter
+        $this->db->select();
         $this->db->from($this->table);
-        // $this->db->join('tbl_data_user', 'tbl_data_user.id_user = qbg_invoice.id_user', 'left'); // JOIN dengan tabel tbl_user
 
         $i = 0;
-
-        foreach ($this->column_search as $item) // looping awal
-        {
-            if ($_POST['search']['value']) // jika datatable mengirimkan pencarian dengan metode POST
-            {
-
-                if ($i === 0) // looping awal
-                {
+        foreach ($this->column_search as $item) {
+            if ($_POST['search']['value']) {
+                if ($i === 0) {
                     $this->db->group_start();
                     $this->db->like($item, $_POST['search']['value']);
                 } else {
                     $this->db->or_like($item, $_POST['search']['value']);
                 }
-
-                if (count($this->column_search) - 1 == $i)
+                if (count($this->column_search) - 1 == $i) {
                     $this->db->group_end();
+                }
             }
             $i++;
         }
@@ -56,9 +51,9 @@ class M_qbg_invoice extends CI_Model
     }
 
     // UNTUK MENAMPILKAN HASIL QUERY KE DATA TABLES
-    function get_datatables()
+    function get_datatables($status)
     {
-        $this->_get_datatables_query();
+        $this->_get_datatables_query($status);
         if ($_POST['length'] != -1)
             $this->db->limit($_POST['length'], $_POST['start']);
         $query = $this->db->get();
@@ -227,11 +222,44 @@ class M_qbg_invoice extends CI_Model
         $this->db->where('invoice_id', $id);
         $this->db->delete('qbg_rek_invoice');
 
-        // Hapus data detail
+        // Ambil data kode produk dan jumlah berdasarkan id pada tabel detail invoice
+        $query = $this->db->select('kode_produk, jumlah')
+            ->where('invoice_id', $id) // Perbaikan: id_invoice, bukan id
+            ->get('qbg_detail_invoice')
+            ->result_array();
+
+        foreach ($query as $row) {
+            $kode_produk = $row['kode_produk'];
+            $jumlah = $row['jumlah'];
+
+            // Ambil stok terakhir dari tabel produk
+            $query2 = $this->db->select('stok_akhir')
+                ->where('kode_produk', $kode_produk)
+                ->get('qbg_produk')
+                ->row_array();
+
+            if ($query2) { // Pastikan data produk ada
+                $stok_akhir = $query2['stok_akhir'];
+                $total = $stok_akhir + $jumlah;
+
+                // Update stok di tabel produk
+                $this->db->where('kode_produk', $kode_produk);
+                $this->db->update('qbg_produk', ['stok_akhir' => $total]); // Perbaikan di kolom yang diupdate
+            }
+        }
+
+        // Hapus data detail invoice
         $this->db->where('invoice_id', $id);
         $this->db->delete('qbg_detail_invoice');
 
-        // Hapus data master
+        // Ambil data kode invoice pada tabel invoice
+        $query3 = $this->db->select('kode_invoice')->where('id', $id)->row_array();
+        $kode_invoice = $query3['kode_invoice'];
+
+        $this->db->where('keterangan', $kode_invoice);
+        $this->db->delete('qbg_transaksi');
+
+        // Hapus data master invoice
         $this->db->where($this->id, $id);
         $this->db->delete($this->table);
     }

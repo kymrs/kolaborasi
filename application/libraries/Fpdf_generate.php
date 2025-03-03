@@ -10,6 +10,11 @@ class Fpdf_generate extends FPDF
     //          Normal, Multiply, Screen, Overlay, Darken, Lighten, ColorDodge, ColorBurn,
     //          HardLight, SoftLight, Difference, Exclusion, Hue, Saturation, Color, Luminosity
 
+    function Header()
+    {
+        // Tambahkan gambar background ke setiap halaman
+        $this->Image(base_url('assets/backend/img/background-pu.png'), 0, 0, $this->GetPageWidth(), $this->GetPageHeight());
+    }
 
     function ScaleX($s_x, $x = '', $y = '')
     {
