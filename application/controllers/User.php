@@ -146,6 +146,7 @@ class User extends CI_Controller
 			'core' => $core,
 			'id_level' => $this->input->post('level'),
 			'is_active' => $this->input->post('aktif'),
+			'app' => $this->input->post('app')
 		);
 
 		// Mulai transaksi
@@ -189,6 +190,7 @@ class User extends CI_Controller
 			'core' => implode(',', $this->input->post('core')),
 			'id_level' => $this->input->post('level'),
 			'is_active' => $this->input->post('aktif'),
+			'app' => $this->input->post('app')
 		);
 
 		if (!empty($_POST['new_password'])) {

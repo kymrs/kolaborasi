@@ -122,10 +122,12 @@
             <div class="container-main">
                 <div class="form-container">
                     <div class="d-flex justify-content-end mb-3">
-                        <?php if ($user->app_name == $app_name && !in_array($user->app2_status, ['revised', 'rejected']) && !in_array($user->status, ['approved'])) { ?>
+                        <?php if ($user->app_name == $app_name && $user->app4_status = 'approved' && !in_array($user->app2_status, ['rejected', 'revised']) && $user->status != 'approved') { ?>
                             <a class="btn btn-warning btn-sm mr-2" id="appBtn" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
-                        <?php } elseif ($user->app2_name == $app2_name && !in_array($user->app2_status, ['approved', 'rejected']) && $user->app_status == 'approved') { ?>
+                        <?php } elseif ($user->app2_name == $app2_name && !in_array($user->status, ['rejected', 'approved'])  && $user->app_status == 'approved') { ?>
                             <a class="btn btn-warning btn-sm mr-2" id="appBtn2" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
+                        <?php } elseif ($user->app4_name == $app_name && !in_array($user->app_status, ['rejected', 'revised']) && !in_array($user->app2_status, ['rejected', 'revised']) && $user->status != 'approved') { ?>
+                            <a class="btn btn-warning btn-sm mr-2" id="appBtn3" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
                         <?php } ?>
                         <a class="btn btn-secondary btn-sm" onclick="history.back()"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                     </div>
@@ -151,11 +153,11 @@
                                 <td>:</td>
                                 <td class="line" id="namaTxt"></td>
                             </tr>
-                            <tr>
+                            <!-- <tr>
                                 <td>Jabatan</td>
                                 <td>:</td>
                                 <td class="line" id="jabatanTxt"></td>
-                            </tr>
+                            </tr> -->
                             <tr>
                                 <td colspan="3">Telah/akan melakukan pembayaran kepada :</td>
                             </tr>
@@ -183,16 +185,19 @@
                         <table>
                             <tr>
                                 <td>Yang melakukan</td>
+                                <td>Memeriksa</td>
                                 <td>Mengetahui</td>
                                 <td>Menyetujui</td>
                             </tr>
                             <tr style="height: 75px">
                                 <td id="statusMelakukan"></td>
+                                <td id="statusMemeriksa"></td>
                                 <td id="statusMengetahui"></td>
                                 <td id="statusMenyetujui"></td>
                             </tr>
                             <tr>
                                 <td id="melakukan"></td>
+                                <td id="memeriksa"></td>
                                 <td id="mengetahui"></td>
                                 <td id="menyetujui"></td>
                             </tr>
@@ -353,6 +358,35 @@
 
         });
 
+        $('#appBtn3').click(function() {
+            $('#app_keterangan').attr('name', 'app4_keterangan').attr('id', 'app4_keterangan');
+            $('#app_status').attr('name', 'app4_status').attr('id', 'app4_status');
+            $('#approvalForm').attr('action', '<?= site_url('sml_datadeklarasi/approve3') ?>');
+
+            $.ajax({
+                url: "<?php echo site_url('sml_datadeklarasi/edit_data') ?>/" + id,
+                type: "GET",
+                dataType: "JSON",
+                success: function(data) {
+                    var nama2, date2, status2, keterangan2;
+                    if (data['master']['app4_status'] == 'waiting') {
+                        $('#app4_status').val();
+                        $('#app4_keterangan').val();
+                    } else {
+                        nama2 = data['master']['app4_name'];
+                        status2 = data['master']['app4_status'];
+                        keterangan2 = data['master']['app4_keterangan'];
+                        $('#app4_status').val(status2);
+                        $('#app2_keterangan').val(keterangan2);
+                        // $('#note_id').append(`<p>* ${keterangan2}</p>`);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    alert('Error get data from ajax');
+                }
+            });
+        });
+
         // Handle the approval button click event
         $('#confirmApproval').click(function() {
             const id = $('#hidden_id').val();
@@ -408,10 +442,12 @@
                 }
 
                 $('#melakukan').html(`<div class="signature-text text-center">${data['nama']}</div>`);
+                $('#memeriksa').html(`<div class="signature-text text-center">${data['master']['app4_name']}</div>`);
                 $('#mengetahui').html(`<div class="signature-text text-center">${data['master']['app_name']}</div>`);
                 $('#menyetujui').html(`<div class="signature-text text-center">${data['master']['app2_name']}</div>`);
                 $('#statusMelakukan').html(`<div class="signature-text text-center">CREATED<br><span>${data['master']['created_at']}</span></div>`);
                 $('#statusMengetahui').html(`<div class="signature-text text-center">${data['master']['app_status'].toUpperCase()}<br><span>${date}</span></div>`);
+                $('#statusMemeriksa').html(`<div class="signature-text text-center">${data['master']['app4_status'].toUpperCase()}<br><span>${date}</span></div>`);
                 $('#statusMenyetujui').html(`<div class="signature-text text-center">${data['master']['app2_status'].toUpperCase()}<br><span>${date2}</span></div>`);
 
                 $('#divisiCol').html(data['master']['divisi']);

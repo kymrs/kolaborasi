@@ -421,17 +421,17 @@
                 menu: {
                     required: true,
                 },
-                link: {
-                    required: true,
-                },
+                // link: {
+                //     required: true,
+                // },
             },
             messages: {
                 menu: {
                     required: "Menu is required",
                 },
-                link: {
-                    required: "Link is required",
-                },
+                // link: {
+                //     required: "Link is required",
+                // },
             },
         })
 

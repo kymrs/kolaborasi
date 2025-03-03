@@ -191,6 +191,19 @@ $core_array = explode(',', $core);
                                         </div>
                                     </div>
                                 </div>
+                                <div class="form-group row">
+                                    <label for="app" class="col-sm-4 col-form-label">Approval</label>
+                                    <div class="col-sm-8 form-inline row ml-1">
+                                        <div class="custom-control custom-radio col-sm-2">
+                                            <input class="custom-control-input" type="radio" id="customapp1" name="app" value="Y">
+                                            <label for="customapp1" class="custom-control-label">Yes</label>
+                                        </div>
+                                        <div class="custom-control custom-radio">
+                                            <input class="custom-control-input" type="radio" id="customapp2" name="app" value="N" checked>
+                                            <label for="customapp2" class="custom-control-label">No</label>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -300,6 +313,14 @@ $core_array = explode(',', $core);
                     } else {
                         $('#customRadio1').prop('checked', false);
                         $('#customRadio2').prop('checked', true);
+                    }
+
+                    if (data.user.app == 'Y') {
+                        $('#customapp1').prop('checked', true);
+                        $('#customapp2').prop('checked', false);
+                    } else {
+                        $('#customapp1').prop('checked', false);
+                        $('#customapp2').prop('checked', true);
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
