@@ -41,9 +41,7 @@ class Sml_prepayment extends CI_Controller
         $akses = $this->M_app->hak_akses($this->session->userdata('id_level'), $this->router->fetch_class());
         ($akses->view_level == 'N' ? redirect('auth') : '');
         $data['add'] = $akses->add_level;
-
-
-
+        $data['alias'] = $this->session->userdata('username');
         $data['title'] = "backend/sml_prepayment/sml_prepayment_list";
         $data['titleview'] = "Data Prepayment";
         $name = $this->db->select('name')
@@ -52,7 +50,7 @@ class Sml_prepayment extends CI_Controller
             ->get()
             ->row('name');
         $data['approval'] = $this->db->select('COUNT(*) as total_approval')
-            ->from('tbl_prepayment')
+            ->from('sml_prepayment')
             ->where('app_name', $name)
             ->or_where('app2_name', $name)
             ->or_where('app4_name', $name)
@@ -88,20 +86,12 @@ class Sml_prepayment extends CI_Controller
             $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="sml_prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
-            if ($field->app_name == $fullname && $field->id_user != $this->session->userdata('id_user')) {
-                $action = $action_read . $action_print;
-            } elseif ($field->id_user != $this->session->userdata('id_user') && $field->app2_name == $fullname) {
-                $action = $action_read . $action_print;
-            } elseif ($field->id_user != $this->session->userdata('id_user') && $field->app4_name == $fullname) {
-                $action = $action_read . $action_print;
-            } elseif (in_array($field->status, ['rejected', 'approved'])) {
-                $action = $action_read . $action_print;
-            } elseif ($field->app_status == 'revised' || $field->app2_status == 'revised' || $field->app4_status == 'revised') {
-                $action = $action_read . $action_edit . $action_print;
-            } elseif ($field->app4_status == 'approved') {
-                $action = $action_read . $action_print;
-            } else {
+            if (($field->id_user == $this->session->userdata('id_user') || $this->session->userdata('username') == 'eko') && !in_array($field->status, ['rejected', 'approved', 'revised'])) {
                 $action = $action_read . $action_edit . $action_delete . $action_print;
+            } elseif (($field->id_user == $this->session->userdata('id_user') || $this->session->userdata('username') == 'eko') && $field->status == 'revised') {
+                $action = $action_read . $action_edit . $action_print;
+            } else {
+                $action = $action_read . $action_print;
             }
 
             //MENENSTUKAN SATTSU PROGRESS PENGAJUAN PERMINTAAN
@@ -175,7 +165,8 @@ class Sml_prepayment extends CI_Controller
     {
         // INISIASI
         $id = $this->session->userdata('id_user');
-
+        $data['id_user'] = $id;
+        $data['id_pembuat'] = 0;
 
         $data['hak_akses'] = $this->session->userdata('id_level');
         $data['rek_options'] = $this->M_sml_prepayment->options($id)->result_array();
@@ -207,13 +198,13 @@ class Sml_prepayment extends CI_Controller
     function edit_form($id)
     {
         // INISIASI
-        $id_user = $this->session->userdata('id_user');
-
+        $data['id_user'] = $this->session->userdata('id_user');
+        $data['id_pembuat'] = $this->M_sml_prepayment->get_by_id($id)->id_user;
 
         $data['id'] = $id;
         $data['hak_akses'] = $this->session->userdata('id_level');
         $data['aksi'] = 'update';
-        $data['rek_options'] = $this->M_sml_prepayment->options($id_user)->result_array();
+        $data['rek_options'] = $this->M_sml_prepayment->options($data['id_user'])->result_array();
         $data['title_view'] = "Edit Data Prepayment";
         $data['title'] = 'backend/sml_prepayment/sml_prepayment_form';
         $this->load->view('backend/home', $data);
@@ -370,7 +361,7 @@ class Sml_prepayment extends CI_Controller
         $rincian = $this->input->post('rincian[]');
         $nominal = $this->input->post('hidden_nominal[]');
         $keterangan = $this->input->post('keterangan[]');
-        if ($this->db->update('tbl_prepayment', $data)) {
+        if ($this->db->update('sml_prepayment', $data)) {
             // UNTUK MENGHAPUS ROW YANG TELAH DIDELETE
             $deletedRows = json_decode($this->input->post('deleted_rows'), true);
             if (!empty($deletedRows)) {
@@ -427,7 +418,7 @@ class Sml_prepayment extends CI_Controller
 
         //UPDATE APPROVAL PERTAMA
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_prepayment', $data);
+        $this->db->update('sml_prepayment', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -451,7 +442,7 @@ class Sml_prepayment extends CI_Controller
 
         //UPDATE APPROVAL PERTAMA
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_prepayment', $data);
+        $this->db->update('sml_prepayment', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -475,7 +466,7 @@ class Sml_prepayment extends CI_Controller
 
         // UPDATE APPROVAL 2
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_prepayment', $data);
+        $this->db->update('sml_prepayment', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -624,7 +615,7 @@ class Sml_prepayment extends CI_Controller
 
         // Membuat header tabel
         $pdf->Cell(47.3, 8.5, 'Yang Melakukan', 1, 0, 'C');
-        $pdf->Cell(47.3, 8.5, 'Captain', 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, 'Memeriksa', 1, 0, 'C');
         $pdf->Cell(47.3, 8.5, 'Mengetahui', 1, 0, 'C');
         $pdf->Cell(47.3, 8.5, 'Menyetujui', 1, 1, 'C');
 
@@ -710,7 +701,7 @@ class Sml_prepayment extends CI_Controller
     function payment()
     {
         $this->db->where('id', $this->input->post('id'));
-        $this->db->update('tbl_prepayment', ['payment_status' => $this->input->post('payment_status')]);
+        $this->db->update('sml_prepayment', ['payment_status' => $this->input->post('payment_status')]);
 
         echo json_encode(array("status" => TRUE));
     }

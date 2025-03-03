@@ -23,6 +23,8 @@ class M_sml_prepayment extends CI_Model
         $this->db->join('tbl_data_user', 'tbl_data_user.id_user = sml_prepayment.id_user', 'left'); // JOIN dengan tabel tbl_user
 
         $i = 0;
+        $alias = $this->session->userdata('username');
+
 
         foreach ($this->column_search as $item) // looping awal
         {
@@ -61,10 +63,14 @@ class M_sml_prepayment extends CI_Model
 
             if ($_POST['status'] == 'on-process') {
                 // Conditions for 'on-process' status
-                $this->db->where('sml_prepayment.id_user =' . $id_user_logged_in . ' AND status = "on-process"')
-                    ->or_where('app4_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app4_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE)
-                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "waiting" AND app4_status = "approved" AND status != "rejected" AND status != "revised")', NULL, FALSE)
-                    ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
+                if ($alias != 'eko') {
+                    $this->db->where('sml_prepayment.id_user =' . $id_user_logged_in . ' AND status = "on-process"')
+                        ->or_where('app4_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app4_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE)
+                        ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "waiting" AND app4_status = "approved" AND status != "rejected" AND status != "revised")', NULL, FALSE)
+                        ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
+                } else {
+                    $this->db->where('status = "on-process"');
+                }
             } elseif ($_POST['status'] == 'approved') {
                 // Conditions for 'approved' status
                 $this->db->where('app2_status', 'approved')
@@ -72,10 +78,14 @@ class M_sml_prepayment extends CI_Model
                     ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status != "rejected")', NULL, FALSE)
                     ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "approved" AND app2_status != "rejected")', NULL, FALSE);
             } elseif ($_POST['status'] == 'revised') {
-                $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
-                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "revised")', NULL, FALSE)
-                    ->or_where('app4_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app4_status = "revised")', NULL, FALSE)
-                    ->or_where('sml_prepayment.id_user =' . $id_user_logged_in . ' AND (app4_status = "revised" OR app_status = "revised" OR app2_status = "revised")');
+                if ($alias != 'eko') {
+                    $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
+                        ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "revised")', NULL, FALSE)
+                        ->or_where('app4_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app4_status = "revised")', NULL, FALSE)
+                        ->or_where('sml_prepayment.id_user =' . $id_user_logged_in . ' AND (app4_status = "revised" OR app_status = "revised" OR app2_status = "revised")');
+                } else {
+                    $this->db->where('status = "revised"');
+                }
             } elseif ($_POST['status'] == 'rejected') {
                 $this->db->where('status', $_POST['status']);
             }
@@ -88,14 +98,16 @@ class M_sml_prepayment extends CI_Model
             if ($_POST['tab'] == 'personal') {
                 $this->db->where('sml_prepayment.id_user', $this->session->userdata('id_user'));
             } elseif ($_POST['tab'] == 'employee') {
-                $this->db->group_start()
-                    ->where('sml_prepayment.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-                    ->where('sml_prepayment.id_user !=', $this->session->userdata('id_user'))
-                    ->or_where('sml_prepayment.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && sml_prepayment.app_status = 'approved'", FALSE)
-                    ->where('sml_prepayment.id_user !=', $this->session->userdata('id_user'))
-                    ->or_where('sml_prepayment.app4_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-                    ->where('sml_prepayment.id_user !=', $this->session->userdata('id_user'))
-                    ->group_end();
+                if ($alias != 'eko') {
+                    $this->db->group_start()
+                        ->where('sml_prepayment.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                        ->where('sml_prepayment.id_user !=', $this->session->userdata('id_user'))
+                        ->or_where('sml_prepayment.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && sml_prepayment.app_status = 'approved'", FALSE)
+                        ->where('sml_prepayment.id_user !=', $this->session->userdata('id_user'))
+                        ->or_where('sml_prepayment.app4_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                        ->where('sml_prepayment.id_user !=', $this->session->userdata('id_user'))
+                        ->group_end();
+                }
             }
         }
 
@@ -133,25 +145,36 @@ class M_sml_prepayment extends CI_Model
         // Tambahkan pemfilteran berdasarkan status
         // Tambahkan kondisi jika id_user login sesuai dengan app2_name
         $id_user_logged_in = $this->session->userdata('id_user'); // Mengambil id_user dari sesi pengguna yang login
+        $alias = $this->session->userdata('username');
 
         if (!empty($_POST['status'])) {
             $this->db->group_start(); // Start grouping conditions
 
             if ($_POST['status'] == 'on-process') {
                 // Conditions for 'on-process' status
-                $this->db->where('app_status', 'waiting')
-                    ->where('app2_status', 'waiting')
-                    ->or_where('sml_prepayment.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
-                    ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
+                if ($alias != 'eko') {
+                    $this->db->where('sml_prepayment.id_user =' . $id_user_logged_in . ' AND status = "on-process"')
+                        ->or_where('app4_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app4_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE)
+                        ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "waiting" AND app4_status = "approved" AND status != "rejected" AND status != "revised")', NULL, FALSE)
+                        ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
+                } else {
+                    $this->db->where('status = "on-process"');
+                }
             } elseif ($_POST['status'] == 'approved') {
                 // Conditions for 'approved' status
-                $this->db->where('app_status', $_POST['status'])
-                    ->where('app2_status', 'approved')
-                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status != "rejected")', NULL, FALSE);
+                $this->db->where('app2_status', 'approved')
+                    ->or_where('app4_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app4_status = "approved" AND app2_status != "rejected")', NULL, FALSE)
+                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status != "rejected")', NULL, FALSE)
+                    ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "approved" AND app2_status != "rejected")', NULL, FALSE);
             } elseif ($_POST['status'] == 'revised') {
-                $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
-                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "revised")', NULL, FALSE)
-                    ->or_where('sml_prepayment.id_user =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
+                if ($alias != 'eko') {
+                    $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
+                        ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "revised")', NULL, FALSE)
+                        ->or_where('app4_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app4_status = "revised")', NULL, FALSE)
+                        ->or_where('sml_prepayment.id_user =' . $id_user_logged_in . ' AND (app4_status = "revised" OR app_status = "revised" OR app2_status = "revised")');
+                } else {
+                    $this->db->where('status = "revised"');
+                }
             } elseif ($_POST['status'] == 'rejected') {
                 $this->db->where('status', $_POST['status']);
             }
@@ -164,14 +187,16 @@ class M_sml_prepayment extends CI_Model
             if ($_POST['tab'] == 'personal') {
                 $this->db->where('sml_prepayment.id_user', $this->session->userdata('id_user'));
             } elseif ($_POST['tab'] == 'employee') {
-                $this->db->group_start()
-                    ->where('sml_prepayment.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-                    ->where('sml_prepayment.id_user !=', $this->session->userdata('id_user'))
-                    ->or_where('sml_prepayment.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && sml_prepayment.app_status = 'approved'", FALSE)
-                    ->where('sml_prepayment.id_user !=', $this->session->userdata('id_user'))
-                    ->or_where('sml_prepayment.app4_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-                    ->where('sml_prepayment.id_user !=', $this->session->userdata('id_user'))
-                    ->group_end();
+                if ($alias != 'eko') {
+                    $this->db->group_start()
+                        ->where('sml_prepayment.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                        ->where('sml_prepayment.id_user !=', $this->session->userdata('id_user'))
+                        ->or_where('sml_prepayment.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && sml_prepayment.app_status = 'approved'", FALSE)
+                        ->where('sml_prepayment.id_user !=', $this->session->userdata('id_user'))
+                        ->or_where('sml_prepayment.app4_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                        ->where('sml_prepayment.id_user !=', $this->session->userdata('id_user'))
+                        ->group_end();
+                }
             }
         }
         return $this->db->count_all_results();

@@ -245,7 +245,7 @@
                 <table>
                     <tr>
                         <td>Yang melakukan</td>
-                        <td>Captain</td>
+                        <td>Memeriksa</td>
                         <td>Mengetahui</td>
                         <td>Menyetujui</td>
                     </tr>

@@ -185,7 +185,7 @@
                 data: $('#form').serialize(),
                 dataType: "JSON",
                 success: function(data) {
-                    // console.log(data);
+                    console.log(data);
                     // Sembunyikan loading saat respons diterima
                     $('#loading').hide();
 
