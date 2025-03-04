@@ -1,12 +1,12 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Prepayment_bmn extends CI_Controller
+class Bmn_prepayment extends CI_Controller
 {
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('backend/M_prepayment_bmn');
+        $this->load->model('backend/M_bmn_prepayment');
         $this->load->model('backend/M_notifikasi');
         $this->M_login->getsecurity();
         date_default_timezone_set('Asia/Jakarta');
@@ -44,7 +44,7 @@ class Prepayment_bmn extends CI_Controller
         $data['add'] = $akses->add_level;
         $data['alias'] = $this->session->userdata('username');
 
-        $data['title'] = "backend/prepayment_bmn/prepayment_list_bmn";
+        $data['title'] = "backend/bmn_prepayment/bmn_prepayment_list";
         $data['titleview'] = "Data Prepayment";
         $name = $this->db->select('name')
             ->from('tbl_data_user')
@@ -62,7 +62,7 @@ class Prepayment_bmn extends CI_Controller
 
     public function get_pdf()
     {
-        $this->load->view('backend/prepayment_bmn/prepayment_pdf');
+        $this->load->view('backend/bmn_prepayment/prepayment_pdf');
     }
 
     function get_list()
@@ -73,7 +73,7 @@ class Prepayment_bmn extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $list = $this->M_prepayment_bmn->get_datatables();
+        $list = $this->M_bmn_prepayment->get_datatables();
         $data = array();
         $no = $_POST['start'];
 
@@ -87,13 +87,15 @@ class Prepayment_bmn extends CI_Controller
         foreach ($list as $field) {
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
-            $action_read = ($read == 'Y') ? '<a href="prepayment_bmn/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
-            $action_edit = ($edit == 'Y') ? '<a href="prepayment_bmn/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
+            $action_read = ($read == 'Y') ? '<a href="bmn_prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
+            $action_edit = ($edit == 'Y') ? '<a href="bmn_prepayment/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
-            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="prepayment_bmn/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
+            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="bmn_prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
-            if (($field->id_user == $this->session->userdata('id_user') || $this->session->userdata('username') == 'eko') && !in_array($field->status, ['rejected', 'approved', 'revised'])) {
+            if ($this->session->userdata('username') == 'eko') {
+                $action = $action_read . $action_edit . $action_delete . $action_print;
+            } elseif ($field->id_user == $this->session->userdata('id_user') && !in_array($field->status, ['rejected', 'approved', 'revised']) && $field->app_status == "waiting") {
                 $action = $action_read . $action_edit . $action_delete . $action_print;
             } elseif (($field->id_user == $this->session->userdata('id_user') || $this->session->userdata('username') == 'eko') && $field->status == 'revised') {
                 $action = $action_read . $action_edit . $action_print;
@@ -136,8 +138,8 @@ class Prepayment_bmn extends CI_Controller
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_prepayment_bmn->count_all(),
-            "recordsFiltered" => $this->M_prepayment_bmn->count_filtered(),
+            "recordsTotal" => $this->M_bmn_prepayment->count_all(),
+            "recordsFiltered" => $this->M_bmn_prepayment->count_filtered(),
             "data" => $data,
         );
         //output dalam format JSON
@@ -149,7 +151,7 @@ class Prepayment_bmn extends CI_Controller
     {
 
         $data['id'] = $id;
-        $data['user'] = $this->M_prepayment_bmn->get_by_id($id);
+        $data['user'] = $this->M_bmn_prepayment->get_by_id($id);
         $data['app_name'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $this->session->userdata('id_user'))
@@ -160,7 +162,7 @@ class Prepayment_bmn extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $data['title'] = 'backend/prepayment_bmn/prepayment_read_bmn';
+        $data['title'] = 'backend/bmn_prepayment/bmn_prepayment_read';
         $data['title_view'] = 'Prepayment';
         $this->load->view('backend/home', $data);
     }
@@ -173,9 +175,9 @@ class Prepayment_bmn extends CI_Controller
         $data['id_pembuat'] = 0;
 
         $data['id'] = 0;
-        $data['title'] = 'backend/prepayment_bmn/prepayment_form_bmn';
+        $data['title'] = 'backend/bmn_prepayment/bmn_prepayment_form';
         $data['title_view'] = 'Prepayment Form';
-        $data['rek_options'] = $this->M_prepayment_bmn->options($data['id_user'])->result_array();
+        $data['rek_options'] = $this->M_bmn_prepayment->options($data['id_user'])->result_array();
 
         $this->load->view('backend/home', $data);
     }
@@ -184,7 +186,7 @@ class Prepayment_bmn extends CI_Controller
     public function generate_kode()
     {
         $date = $this->input->post('date');
-        $kode = $this->M_prepayment_bmn->max_kode($date)->row();
+        $kode = $this->M_bmn_prepayment->max_kode($date)->row();
         if (empty($kode->kode_prepayment)) {
             $no_urut = 1;
         } else {
@@ -203,20 +205,20 @@ class Prepayment_bmn extends CI_Controller
     {
         // INISIASI
         $data['id_user'] = $this->session->userdata('id_user');
-        $data['id_pembuat'] = $this->M_prepayment_bmn->get_by_id($id)->id_user;
+        $data['id_pembuat'] = $this->M_bmn_prepayment->get_by_id($id)->id_user;
 
         $data['id'] = $id;
         $data['aksi'] = 'update';
         $data['title_view'] = "Edit Data Prepayment";
-        $data['rek_options'] = $this->M_prepayment_bmn->options($data['id_user'])->result_array();
-        $data['title'] = 'backend/prepayment_bmn/prepayment_form_bmn';
+        $data['rek_options'] = $this->M_bmn_prepayment->options($data['id_user'])->result_array();
+        $data['title'] = 'backend/bmn_prepayment/bmn_prepayment_form';
         $this->load->view('backend/home', $data);
     }
 
     function edit_data($id)
     {
-        $data['master'] = $this->M_prepayment_bmn->get_by_id($id);
-        $data['transaksi'] = $this->M_prepayment_bmn->get_by_id_detail($id);
+        $data['master'] = $this->M_bmn_prepayment->get_by_id($id);
+        $data['transaksi'] = $this->M_bmn_prepayment->get_by_id_detail($id);
         $data['nama'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $data['master']->id_user)
@@ -226,7 +228,7 @@ class Prepayment_bmn extends CI_Controller
 
     function read_detail($id)
     {
-        $data = $this->M_prepayment_bmn->get_by_id_detail($id);
+        $data = $this->M_bmn_prepayment->get_by_id_detail($id);
         echo json_encode($data);
     }
 
@@ -235,7 +237,7 @@ class Prepayment_bmn extends CI_Controller
     {
         // INSERT KODE PREPAYMENT SAAT SUBMIT
         $date = $this->input->post('tgl_prepayment');
-        $kode = $this->M_prepayment_bmn->max_kode($date)->row();
+        $kode = $this->M_bmn_prepayment->max_kode($date)->row();
         if (empty($kode->kode_prepayment)) {
             $no_urut = 1;
         } else {
@@ -303,7 +305,7 @@ class Prepayment_bmn extends CI_Controller
         );
 
         if ($valid) {
-            $inserted = $this->M_prepayment_bmn->save($data);
+            $inserted = $this->M_bmn_prepayment->save($data);
         }
 
 
@@ -321,7 +323,7 @@ class Prepayment_bmn extends CI_Controller
                     'keterangan' => $keterangan[$i]
                 );
             }
-            $this->M_prepayment_bmn->save_detail($data2);
+            $this->M_bmn_prepayment->save_detail($data2);
         }
         echo json_encode(array("status" => TRUE));
     }
@@ -391,8 +393,8 @@ class Prepayment_bmn extends CI_Controller
     // MENGHAPUS DATA
     function delete($id)
     {
-        $this->M_prepayment_bmn->delete($id);
-        $this->M_prepayment_bmn->delete_detail($id);
+        $this->M_bmn_prepayment->delete($id);
+        $this->M_bmn_prepayment->delete_detail($id);
         echo json_encode(array("status" => TRUE));
     }
 
@@ -451,8 +453,8 @@ class Prepayment_bmn extends CI_Controller
         $this->load->library('Fpdf_generate');
 
         // Load data from database based on $id
-        $data['master'] = $this->M_prepayment_bmn->get_by_id($id);
-        $data['transaksi'] = $this->M_prepayment_bmn->get_by_id_detail($id);
+        $data['master'] = $this->M_bmn_prepayment->get_by_id($id);
+        $data['transaksi'] = $this->M_bmn_prepayment->get_by_id_detail($id);
         $data['user'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $data['master']->id_user)

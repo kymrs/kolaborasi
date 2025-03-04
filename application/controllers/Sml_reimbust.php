@@ -65,7 +65,9 @@ class Sml_reimbust extends CI_Controller
             $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="sml_reimbust/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
-            if (($field->id_user == $this->session->userdata('id_user') || $this->session->userdata('username') == 'eko') && !in_array($field->status, ['rejected', 'approved', 'revised'])) {
+            if ($this->session->userdata('username') == 'eko') {
+                $action = $action_read . $action_edit . $action_delete . $action_print;
+            } elseif ($field->id_user == $this->session->userdata('id_user') && !in_array($field->status, ['rejected', 'approved', 'revised']) && $field->app_status == "waiting") {
                 $action = $action_read . $action_edit . $action_delete . $action_print;
             } elseif (($field->id_user == $this->session->userdata('id_user') || $this->session->userdata('username') == 'eko') && $field->status == 'revised') {
                 $action = $action_read . $action_edit . $action_print;
