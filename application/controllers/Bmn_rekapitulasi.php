@@ -5,12 +5,12 @@ setlocale(LC_ALL, 'id_ID');
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-class Rekapitulasi_bmn extends CI_Controller
+class Bmn_rekapitulasi extends CI_Controller
 {
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('backend/M_rekapitulasi_bmn');
+        $this->load->model('backend/M_bmn_rekapitulasi');
         $this->load->model('backend/M_notifikasi');
         $this->M_login->getsecurity();
         date_default_timezone_set('Asia/Jakarta');
@@ -47,9 +47,9 @@ class Rekapitulasi_bmn extends CI_Controller
         $akses = $this->M_app->hak_akses($this->session->userdata('id_level'), $this->router->fetch_class());
         ($akses->view_level == 'N' ? redirect('auth') : '');
         $data['add'] = $akses->add_level;
-        $data['total'] = $this->M_rekapitulasi_bmn->get_total_pengeluaran();
+        $data['total'] = $this->M_bmn_rekapitulasi->get_total_pengeluaran();
 
-        $data['title'] = "backend/rekapitulasi_bmn";
+        $data['title'] = "backend/bmn_rekapitulasi";
         $data['titleview'] = "Data Rekapitulasi By.moment";
         $this->load->view('backend/home', $data);
     }
@@ -57,7 +57,7 @@ class Rekapitulasi_bmn extends CI_Controller
     function get_list()
     {
         // INISIAI VARIABLE YANG DIBUTUHKAN
-        $list = $this->M_rekapitulasi_bmn->get_datatables();
+        $list = $this->M_bmn_rekapitulasi->get_datatables();
         $data = array();
         $no = $_POST['start'];
 
@@ -86,8 +86,8 @@ class Rekapitulasi_bmn extends CI_Controller
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_rekapitulasi_bmn->count_all(),
-            "recordsFiltered" => $this->M_rekapitulasi_bmn->count_filtered(),
+            "recordsTotal" => $this->M_bmn_rekapitulasi->count_all(),
+            "recordsFiltered" => $this->M_bmn_rekapitulasi->count_filtered(),
             "data" => $data,
         );
         //output dalam format JSON
@@ -96,7 +96,7 @@ class Rekapitulasi_bmn extends CI_Controller
 
     function get_total()
     {
-        $output = $this->M_rekapitulasi_bmn->get_total_pengeluaran();
+        $output = $this->M_bmn_rekapitulasi->get_total_pengeluaran();
 
         //output dalam format JSON
         echo json_encode($output);
@@ -109,8 +109,8 @@ class Rekapitulasi_bmn extends CI_Controller
         $tgl_akhir = $this->input->get('tgl_akhir');
 
         // Ambil data dari model
-        $prepayment = $this->M_rekapitulasi_bmn->get_data_prepayment($tgl_awal, $tgl_akhir);
-        $reimbust = $this->M_rekapitulasi_bmn->get_data_reimbust($tgl_awal, $tgl_akhir);
+        $prepayment = $this->M_bmn_rekapitulasi->get_data_prepayment($tgl_awal, $tgl_akhir);
+        $reimbust = $this->M_bmn_rekapitulasi->get_data_reimbust($tgl_awal, $tgl_akhir);
 
         // Inisialisasi Spreadsheet
         $spreadsheet = new Spreadsheet();

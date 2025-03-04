@@ -189,7 +189,7 @@
                 "serverSide": true,
                 "order": [],
                 "ajax": {
-                    "url": "<?php echo site_url('rekapitulasi_bmn/get_list') ?>",
+                    "url": "<?php echo site_url('bmn_rekapitulasi/get_list') ?>",
                     "type": "POST",
                     "data": function(d) {
                         let tgl_awal = $('#tgl_awal').val();
@@ -220,7 +220,7 @@
                 ],
                 "drawCallback": function(settings) {
                     $.ajax({
-                        "url": "<?php echo site_url('rekapitulasi_bmn/get_total') ?>",
+                        "url": "<?php echo site_url('bmn_rekapitulasi/get_total') ?>",
                         "type": "POST",
                         "data": {
                             "awal": $('#tgl_awal').val(),
@@ -345,6 +345,6 @@
         var tgl_akhir = $('#tgl_akhir').val();
 
         // // Arahkan ke URL controller untuk export Excel dengan parameter
-        window.location.href = "<?= site_url('rekapitulasi_bmn/export_excel'); ?>?tgl_awal=" + tgl_awal + "&tgl_akhir=" + tgl_akhir;
+        window.location.href = "<?= site_url('bmn_rekapitulasi/export_excel'); ?>?tgl_awal=" + tgl_awal + "&tgl_akhir=" + tgl_akhir;
     });
 </script>

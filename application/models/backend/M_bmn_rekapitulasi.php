@@ -3,7 +3,7 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-class M_rekapitulasi_bmn extends CI_Model
+class M_bmn_rekapitulasi extends CI_Model
 {
     var $id = 'id';
     var $table = 'bmn_reimbust';
