@@ -7,7 +7,7 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header text-right">
-                    <a class="btn btn-secondary btn-sm" href="<?= base_url('datadeklarasi_bmn') ?>">
+                    <a class="btn btn-secondary btn-sm" href="<?= base_url('bmn_datadeklarasi') ?>">
                         <i class="fas fa-chevron-left"></i>&nbsp;Back
                     </a>
                 </div>
@@ -101,7 +101,7 @@
                 $("#tgl_deklarasi-error").remove(); // Menghapus label error
             }
             $.ajax({
-                url: "<?php echo site_url('datadeklarasi_bmn/generate_kode') ?>",
+                url: "<?php echo site_url('bmn_datadeklarasi/generate_kode') ?>",
                 type: "POST",
                 data: {
                     "date": dateText
@@ -130,7 +130,7 @@
             $('.aksi').text('Update');
             $("select option[value='']").hide();
             $.ajax({
-                url: "<?php echo site_url('datadeklarasi_bmn/edit_data') ?>/" + id,
+                url: "<?php echo site_url('bmn_datadeklarasi/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -169,9 +169,9 @@
             if (!$form.valid()) return false;
             var url;
             if (id == 0) {
-                url = "<?php echo site_url('datadeklarasi_bmn/add') ?>";
+                url = "<?php echo site_url('bmn_datadeklarasi/add') ?>";
             } else {
-                url = "<?php echo site_url('datadeklarasi_bmn/update') ?>";
+                url = "<?php echo site_url('bmn_datadeklarasi/update') ?>";
             }
 
             // Tampilkan loading
@@ -197,7 +197,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then((result) => {
-                            location.href = "<?= base_url('datadeklarasi_bmn') ?>";
+                            location.href = "<?= base_url('bmn_datadeklarasi') ?>";
                         })
                     } else {
                         // Sembunyikan loading saat respons diterima

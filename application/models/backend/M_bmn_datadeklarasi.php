@@ -3,22 +3,26 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-class M_prepayment_bmn extends CI_Model
+class M_bmn_datadeklarasi extends CI_Model
 {
-    // INISIASI VARIABLE
     var $id = 'id';
-    var $table = 'bmn_prepayment';
-    var $table2 = 'bmn_prepayment_detail';
-    var $column_order = array(null, null, 'payment_status', 'kode_prepayment', 'name', 'divisi', 'jabatan', 'tgl_prepayment', 'prepayment', 'total_nominal', 'status');
-    var $column_search = array('payment_status', 'kode_prepayment', 'name', 'divisi', 'jabatan', 'tgl_prepayment', 'prepayment', 'total_nominal', 'status'); //field yang diizin untuk pencarian
-    var $order = array('id' => 'desc');
+    var $table = 'bmn_deklarasi'; //nama tabel dari database
+    var $column_order = array(null, null, 'kode_deklarasi', 'tgl_deklarasi', 'name', 'jabatan', 'nama_dibayar', 'tujuan', 'sebesar', 'status');
+    var $column_search = array('kode_deklarasi', 'tgl_deklarasi', 'name', 'jabatan', 'nama_dibayar', 'tujuan', 'sebesar', 'status'); //field yang diizin untuk pencarian 
+    var $order = array('id' => 'desc'); // default order 
 
-    // UNTUK QUERY DATA TABLE
-    function _get_datatables_query()
+    public function __construct()
     {
-        $this->db->select('bmn_prepayment.*, tbl_data_user.name'); // Memilih kolom dari kedua tabel
+        parent::__construct();
+    }
+
+    private function _get_datatables_query()
+    {
+
+        // $this->db->from($this->table);
+        $this->db->select('bmn_deklarasi.*, tbl_data_user.name');
         $this->db->from($this->table);
-        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = bmn_prepayment.id_user', 'left'); // JOIN dengan tabel tbl_user
+        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = bmn_deklarasi.id_pengaju', 'left');
 
         $i = 0;
         $alias = $this->session->userdata('username');
@@ -34,19 +38,18 @@ class M_prepayment_bmn extends CI_Model
                     if ($item == 'name') {
                         $this->db->like('tbl_data_user.' . $item, $_POST['search']['value']);
                     } else {
-                        $this->db->like('bmn_prepayment.' . $item, $_POST['search']['value']);
+                        $this->db->like('bmn_deklarasi.' . $item, $_POST['search']['value']);
                     }
                 } else {
                     if ($item == 'name') {
                         $this->db->or_like('tbl_data_user.' . $item, $_POST['search']['value']);
                     } else {
-                        $this->db->or_like('bmn_prepayment.' . $item, $_POST['search']['value']);
+                        $this->db->or_like('bmn_deklarasi.' . $item, $_POST['search']['value']);
                     }
                 }
 
-                if (count($this->column_search) - 1 == $i) {
+                if (count($this->column_search) - 1 == $i)
                     $this->db->group_end();
-                }
             }
             $i++;
         }
@@ -60,10 +63,10 @@ class M_prepayment_bmn extends CI_Model
 
             if ($_POST['status'] == 'on-process') {
                 // Conditions for 'on-process' status
-                if ($alias != 'eko') {
+                if ($alias != "eko") {
                     $this->db->where('app_status', 'waiting')
                         ->where('app2_status', 'waiting')
-                        ->or_where('bmn_prepayment.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
+                        ->or_where('bmn_deklarasi.id_pengaju =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
                         ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
                 } else {
                     $this->db->where('status = "on-process"');
@@ -74,10 +77,10 @@ class M_prepayment_bmn extends CI_Model
                     ->where('app2_status', 'approved')
                     ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status != "rejected")', NULL, FALSE);
             } elseif ($_POST['status'] == 'revised') {
-                if ($alias != 'eko') {
+                if ($alias != "eko") {
                     $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
                         ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "revised")', NULL, FALSE)
-                        ->or_where('bmn_prepayment.id_user =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
+                        ->or_where('bmn_deklarasi.id_pengaju =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
                 } else {
                     $this->db->where('status = "revised"');
                 }
@@ -91,14 +94,14 @@ class M_prepayment_bmn extends CI_Model
         // Tambahkan kondisi berdasarkan tab yang dipilih
         if (!empty($_POST['tab'])) {
             if ($_POST['tab'] == 'personal') {
-                $this->db->where('bmn_prepayment.id_user', $this->session->userdata('id_user'));
+                $this->db->where('bmn_deklarasi.id_pengaju', $this->session->userdata('id_user'));
             } elseif ($_POST['tab'] == 'employee') {
-                if ($alias != 'eko') {
+                if ($alias != "eko") {
                     $this->db->group_start()
-                        ->where('bmn_prepayment.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-                        ->where('bmn_prepayment.id_user !=', $this->session->userdata('id_user'))
-                        ->or_where('bmn_prepayment.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && bmn_prepayment.app_status = 'approved'", FALSE)
-                        ->where('bmn_prepayment.id_user !=', $this->session->userdata('id_user'))
+                        ->where('bmn_deklarasi.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                        ->where('bmn_deklarasi.id_pengaju !=', $this->session->userdata('id_user'))
+                        ->or_where('bmn_deklarasi.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && bmn_deklarasi.app_status = 'approved'", FALSE)
+                        ->where('bmn_deklarasi.id_pengaju !=', $this->session->userdata('id_user'))
                         ->group_end();
                 }
             }
@@ -112,7 +115,6 @@ class M_prepayment_bmn extends CI_Model
         }
     }
 
-    // UNTUK MENAMPILKAN HASIL QUERY KE DATA TABLES
     function get_datatables()
     {
         $this->_get_datatables_query();
@@ -131,10 +133,10 @@ class M_prepayment_bmn extends CI_Model
 
     public function count_all()
     {
-        $this->db->select('bmn_prepayment.*, tbl_data_user.name'); // Memilih kolom dari kedua tabel
+        $this->db->select('bmn_deklarasi.*, tbl_data_user.name');
         $this->db->from($this->table);
-        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = bmn_prepayment.id_user', 'left'); // JOIN dengan tabel tbl_user
-        // Tambahkan pemfilteran berdasarkan status
+        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = bmn_deklarasi.id_pengaju', 'left');
+
         // Tambahkan pemfilteran berdasarkan status
         // Tambahkan kondisi jika id_user login sesuai dengan app2_name
         $id_user_logged_in = $this->session->userdata('id_user'); // Mengambil id_user dari sesi pengguna yang login
@@ -145,10 +147,10 @@ class M_prepayment_bmn extends CI_Model
 
             if ($_POST['status'] == 'on-process') {
                 // Conditions for 'on-process' status
-                if ($alias != 'eko') {
+                if ($alias != "eko") {
                     $this->db->where('app_status', 'waiting')
                         ->where('app2_status', 'waiting')
-                        ->or_where('bmn_prepayment.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
+                        ->or_where('bmn_deklarasi.id_pengaju =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
                         ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
                 } else {
                     $this->db->where('status = "on-process"');
@@ -159,10 +161,10 @@ class M_prepayment_bmn extends CI_Model
                     ->where('app2_status', 'approved')
                     ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status != "rejected")', NULL, FALSE);
             } elseif ($_POST['status'] == 'revised') {
-                if ($alias != 'eko') {
+                if ($alias != "eko") {
                     $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
                         ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "revised")', NULL, FALSE)
-                        ->or_where('bmn_prepayment.id_user =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
+                        ->or_where('bmn_deklarasi.id_pengaju =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
                 } else {
                     $this->db->where('status = "revised"');
                 }
@@ -176,43 +178,35 @@ class M_prepayment_bmn extends CI_Model
         // Tambahkan kondisi berdasarkan tab yang dipilih
         if (!empty($_POST['tab'])) {
             if ($_POST['tab'] == 'personal') {
-                $this->db->where('bmn_prepayment.id_user', $this->session->userdata('id_user'));
+                $this->db->where('bmn_deklarasi.id_pengaju', $this->session->userdata('id_user'));
             } elseif ($_POST['tab'] == 'employee') {
-                if ($alias != 'eko') {
+                if ($alias != "eko") {
                     $this->db->group_start()
-                        ->where('bmn_prepayment.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-                        ->where('bmn_prepayment.id_user !=', $this->session->userdata('id_user'))
-                        ->or_where('bmn_prepayment.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && bmn_prepayment.app_status = 'approved'", FALSE)
-                        ->where('bmn_prepayment.id_user !=', $this->session->userdata('id_user'))
+                        ->where('bmn_deklarasi.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                        ->where('bmn_deklarasi.id_pengaju !=', $this->session->userdata('id_user'))
+                        ->or_where('bmn_deklarasi.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && bmn_deklarasi.app_status = 'approved'", FALSE)
+                        ->where('bmn_deklarasi.id_pengaju !=', $this->session->userdata('id_user'))
                         ->group_end();
                 }
             }
         }
+
         return $this->db->count_all_results();
     }
 
-    // GET BY ID TABLE PREPAYMENT MASTER
     public function get_by_id($id)
     {
         $this->db->where($this->id, $id);
         return $this->db->get($this->table)->row();
     }
 
-    // GET BY ID TABLE DETAIL PREPAYMENT TRANSAKSI
-    public function get_by_id_detail($id)
-    {
-        $this->db->where('prepayment_id', $id);
-        return $this->db->get($this->table2)->result_array();
-    }
-
-    // UNTUK QUERY MENGAMBIL KODE UNTUK DIGENERATE DI CONTROLLER
     public function max_kode($date)
     {
         $formatted_date = date('ym', strtotime($date));
-        $this->db->select('kode_prepayment');
-        $where = 'id=(SELECT max(id) FROM bmn_prepayment where SUBSTRING(kode_prepayment, 2, 4) = ' . $formatted_date . ')';
+        $this->db->select('kode_deklarasi');
+        $where = 'id=(SELECT max(id) FROM bmn_deklarasi where SUBSTRING(kode_deklarasi, 2, 4) = ' . $formatted_date . ')';
         $this->db->where($where);
-        $query = $this->db->get('bmn_prepayment');
+        $query = $this->db->get('bmn_deklarasi');
         return $query;
     }
 
@@ -226,37 +220,31 @@ class M_prepayment_bmn extends CI_Model
         return $query->row();
     }
 
-    // UNTUK QUERY INSERT DATA PREPAYMENT
     public function save($data)
     {
         $this->db->insert($this->table, $data);
         return $this->db->insert_id();
     }
 
-    // UNTUK QUERY INSERT DATA PREPAYMENT_DETAIL
-    public function save_detail($data)
+    public function mengetahui()
     {
-        $this->db->insert_batch($this->table2, $data);
-        return $this->db->insert_id();
+        $this->db->select('fullname');
+        $this->db->where('id_level', 3);
+        $query = $this->db->get('tbl_user');
+        return $query->result();
     }
 
-    // UNTUK QUERY DELETE DATA PREPAYMENT
+    public function menyetujui()
+    {
+        $this->db->select('fullname');
+        $this->db->where('id_level', 4);
+        $query = $this->db->get('tbl_user');
+        return $query->result();
+    }
+
     public function delete($id)
     {
         $this->db->where($this->id, $id);
         $this->db->delete($this->table);
-    }
-
-    // UNTUK QUERY DELETE DATA PREPAYMENT DETAIL BERBARENGAN DENGAN PREPAYMENT MASTER
-    public function delete_detail($id)
-    {
-        $this->db->where('prepayment_id', $id);
-        $this->db->delete($this->table2);
-    }
-
-    // OPSI REKENING
-    public function options($id)
-    {
-        return $this->db->distinct()->select('no_rek')->where('id_user', $id)->from('bmn_prepayment')->get();
     }
 }

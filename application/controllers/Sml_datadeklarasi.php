@@ -64,7 +64,9 @@ class Sml_datadeklarasi extends CI_Controller
             $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="sml_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
-            if (($field->id_pengaju == $this->session->userdata('id_user') || $this->session->userdata('username') == 'eko') && !in_array($field->status, ['rejected', 'approved', 'revised'])) {
+            if ($this->session->userdata('username') == 'eko') {
+                $action = $action_read . $action_edit . $action_delete . $action_print;
+            } elseif ($field->id_pengaju == $this->session->userdata('id_user') && !in_array($field->status, ['rejected', 'approved', 'revised']) && $field->app_status == "waiting") {
                 $action = $action_read . $action_edit . $action_delete . $action_print;
             } elseif (($field->id_pengaju == $this->session->userdata('id_user') || $this->session->userdata('username') == 'eko') && $field->status == 'revised') {
                 $action = $action_read . $action_edit . $action_print;
@@ -209,7 +211,7 @@ class Sml_datadeklarasi extends CI_Controller
 
         $valid = true;
         $confirm = $this->db->select('app_id, app2_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
-        if (!empty($confirm) && $confirm->app_id != null) {
+        if (!empty($confirm) && isset($confirm->app_id, $confirm->app2_id, $confirm->app4_id)) {
             $app = $this->db->select('app_id, app2_id, app4_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
         } else {
             echo json_encode(array("status" => FALSE, "error" => "Approval Belum Ditentukan, Mohon untuk menghubungi admin."));
