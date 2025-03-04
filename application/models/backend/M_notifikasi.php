@@ -16,7 +16,7 @@ class M_notifikasi extends CI_Model
         $swi_prepayment = $this->db->table_exists('swi_prepayment') ? $this->db->select('id')->from('swi_prepayment')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
         $prepayment_kps = $this->db->table_exists('kps_prepayment') ? $this->db->select('id')->from('kps_prepayment')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
         $prepayment_qbg = $this->db->table_exists('qbg_prepayment') ? $this->db->select('id')->from('qbg_prepayment')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
-        $prepayment_bmn = $this->db->table_exists('bmn_prepayment') ? $this->db->select('id')->from('bmn_prepayment')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
+        $bmn_prepayment = $this->db->table_exists('bmn_prepayment') ? $this->db->select('id')->from('bmn_prepayment')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
         $prepayment_mac = $this->db->table_exists('mac_prepayment') ? $this->db->select('id')->from('mac_prepayment')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
         $prepayment_ctz = $this->db->table_exists('ctz_prepayment') ? $this->db->select('id')->from('ctz_prepayment')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
 
@@ -26,7 +26,7 @@ class M_notifikasi extends CI_Model
         $reimbust_pu = $this->db->table_exists('tbl_reimbust_pu') ? $this->db->select('id')->from('tbl_reimbust_pu')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
         $swi_reimbust = $this->db->table_exists('swi_reimbust') ? $this->db->select('id')->from('swi_reimbust')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
         $reimbust_kps = $this->db->table_exists('kps_reimbust') ? $this->db->select('id')->from('kps_reimbust')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
-        $reimbust_bmn = $this->db->table_exists('bmn_reimbust') ? $this->db->select('id')->from('bmn_reimbust')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
+        $bmn_reimbust = $this->db->table_exists('bmn_reimbust') ? $this->db->select('id')->from('bmn_reimbust')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
         $reimbust_qbg = $this->db->table_exists('qbg_reimbust') ? $this->db->select('id')->from('qbg_reimbust')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
         $reimbust_mac = $this->db->table_exists('mac_reimbust') ? $this->db->select('id')->from('mac_reimbust')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
         $reimbust_ctz = $this->db->table_exists('ctz_reimbust') ? $this->db->select('id')->from('ctz_reimbust')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
@@ -37,7 +37,7 @@ class M_notifikasi extends CI_Model
         $datadeklarasi_pu = $this->db->table_exists('tbl_deklarasi_pu') ? $this->db->select('id')->from('tbl_deklarasi_pu')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
         $swi_datadeklarasi = $this->db->table_exists('swi_deklarasi') ? $this->db->select('id')->from('swi_deklarasi')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
         $deklarasi_kps = $this->db->table_exists('kps_deklarasi') ? $this->db->select('id')->from('kps_deklarasi')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
-        $deklarasi_bmn = $this->db->table_exists('bmn_deklarasi') ? $this->db->select('id')->from('bmn_deklarasi')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
+        $bmn_datadeklarasi = $this->db->table_exists('bmn_deklarasi') ? $this->db->select('id')->from('bmn_deklarasi')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
         $deklarasi_qbg = $this->db->table_exists('qbg_deklarasi') ? $this->db->select('id')->from('qbg_deklarasi')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
         $deklarasi_mac = $this->db->table_exists('mac_deklarasi') ? $this->db->select('id')->from('mac_deklarasi')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
         $deklarasi_ctz = $this->db->table_exists('ctz_deklarasi') ? $this->db->select('id')->from('ctz_deklarasi')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
@@ -56,7 +56,7 @@ class M_notifikasi extends CI_Model
             'prepayment_pu' => $prepayment_pu,
             'swi_prepayment' => $swi_prepayment,
             'prepayment_kps' => $prepayment_kps,
-            'prepayment_bmn' => $prepayment_bmn,
+            'bmn_prepayment' => $bmn_prepayment,
             'prepayment_qbg' => $prepayment_qbg,
             'prepayment_mac' => $prepayment_mac,
             'prepayment_ctz' => $prepayment_ctz,
@@ -65,7 +65,7 @@ class M_notifikasi extends CI_Model
             'reimbust_pu' => $reimbust_pu,
             'swi_reimbust' => $swi_reimbust,
             'reimbust_kps' => $reimbust_kps,
-            'reimbust_bmn' => $reimbust_bmn,
+            'bmn_reimbust' => $bmn_reimbust,
             'reimbust_qbg' => $reimbust_qbg,
             'reimbust_mac' => $reimbust_mac,
             'reimbust_ctz' => $reimbust_ctz,
@@ -74,7 +74,7 @@ class M_notifikasi extends CI_Model
             'datadeklarasi_pu' => $datadeklarasi_pu,
             'swi_datadeklarasi' => $swi_datadeklarasi,
             'datadeklarasi_kps' => $deklarasi_kps,
-            'datadeklarasi_bmn' => $deklarasi_bmn,
+            'bmn_datadeklarasi' => $bmn_datadeklarasi,
             'datadeklarasi_qbg' => $deklarasi_qbg,
             'datadeklarasi_mac' => $deklarasi_mac,
             'datadeklarasi_ctz' => $deklarasi_ctz,
@@ -91,7 +91,7 @@ class M_notifikasi extends CI_Model
             'sebelaswarna' => $prepayment_sw + $reimbust_sw + $datadeklarasi_sw,
             'KPS' => $prepayment_kps + $reimbust_kps + $deklarasi_kps,
             'sobatwisata' => $swi_prepayment + $swi_reimbust + $swi_datadeklarasi,
-            'bymoment' => $prepayment_bmn + $reimbust_bmn + $deklarasi_bmn,
+            'bymoment' => $bmn_prepayment + $bmn_reimbust + $bmn_datadeklarasi,
             'qubagift' => $prepayment_qbg + $reimbust_qbg + $deklarasi_qbg,
             'mobileautocare' => $prepayment_mac + $reimbust_mac + $deklarasi_mac,
             'carstensz' => $prepayment_ctz + $reimbust_ctz + $deklarasi_ctz,
