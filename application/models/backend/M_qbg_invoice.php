@@ -253,10 +253,10 @@ class M_qbg_invoice extends CI_Model
         $this->db->delete('qbg_detail_invoice');
 
         // Ambil data kode invoice pada tabel invoice
-        $query3 = $this->db->select('kode_invoice')->where('id', $id)->row_array();
+        $query3 = $this->db->select('kode_invoice')->where('id', $id)->get($this->table)->row_array();
         $kode_invoice = $query3['kode_invoice'];
 
-        $this->db->where('keterangan', $kode_invoice);
+        $this->db->where('keterangan', 'penjualan (' . $kode_invoice . ')');
         $this->db->delete('qbg_transaksi');
 
         // Hapus data master invoice

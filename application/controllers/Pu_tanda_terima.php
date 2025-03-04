@@ -1,6 +1,17 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
+require_once(APPPATH . 'third_party/fpdf/fpdf.php');
+
+class Fpdf_tanda_terima extends FPDF
+{
+	function Header()
+	{
+		// Tambahkan gambar background ke setiap halaman
+		$this->Image(base_url('assets/backend/img/background-pu.png'), 0, 0, $this->GetPageWidth(), $this->GetPageHeight());
+	}
+}
+
 class Pu_tanda_terima extends CI_Controller
 {
 
@@ -186,7 +197,7 @@ class Pu_tanda_terima extends CI_Controller
 	function pdf($id)
 	{
 		$this->load->library('Fpdf_generate');
-		$pdf = new Fpdf_generate('P', 'mm', 'A4'); // Panggil class PDF yang sudah dimodifikasi
+		$pdf = new Fpdf_tanda_terima('P', 'mm', 'A4'); // Panggil class PDF yang sudah dimodifikasi
 		$query = $this->M_pu_tanda_terima->get_by_id($id);
 
 		// Title and Alias for total pages
@@ -214,7 +225,7 @@ class Pu_tanda_terima extends CI_Controller
 		$pdf->Line(10, 77, $pdf->GetPageWidth() - 10, 77);
 
 		// Add Watermark if "foto" is not empty
-		$pdf->Image('assets/backend/img/watermark-tandaterima.png', $pdf->GetPageWidth() / 3 - 1, 80, 75, 0);
+		$pdf->Image('assets/backend/img/watermark-tandaterima.png', $pdf->GetPageWidth() / 3 - 1, 65, 75, 0);
 
 		// Table Content
 		$pdf->SetFont('Courier', 'B', 12);
