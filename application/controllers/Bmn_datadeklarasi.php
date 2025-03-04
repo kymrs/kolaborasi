@@ -114,7 +114,7 @@ class Bmn_datadeklarasi extends CI_Controller
             $row[] = strtoupper($field->kode_deklarasi);
             $row[] = $this->tgl_indo(date("Y-m-j", strtotime($field->tgl_deklarasi)));
             $row[] = $field->name;
-            $row[] = $field->jabatan;
+            // $row[] = $field->jabatan;
             $row[] = $field->nama_dibayar;
             $row[] = $field->tujuan;
             $row[] = 'Rp. ' . number_format($field->sebesar, 0, ',', '.');;

@@ -52,8 +52,8 @@
                                 <th>Status Pembayaran</th>
                                 <th>Kode Prepayment</th>
                                 <th>Nama</th>
-                                <th>Divisi</th>
-                                <th>Jabatan</th>
+                                <!-- <th>Divisi</th>
+                                <th>Jabatan</th> -->
                                 <th>Tanggal Pengajuan</th>
                                 <th>Prepayment</th>
                                 <th>Total Nominal</th>
@@ -69,8 +69,8 @@
                                 <th>Status Pembayaran</th>
                                 <th>Kode Prepayment</th>
                                 <th>Nama</th>
-                                <th>Divisi</th>
-                                <th>Jabatan</th>
+                                <!-- <th>Divisi</th>
+                                <th>Jabatan</th> -->
                                 <th>Tanggal Pengajuan</th>
                                 <th>Prepayment</th>
                                 <th>Total Nominal</th>
@@ -152,11 +152,11 @@
             //     "infoFiltered": ""
             // },
             "columnDefs": [{
-                    "targets": [2, 3, 7, 9],
+                    "targets": [2, 3, 4, 5, 6, 7],
                     "className": 'dt-head-nowrap'
                 },
                 {
-                    "targets": [1, 3, 4, 6, 8, 9, 10],
+                    "targets": [1, 2, 8],
                     "className": 'dt-body-nowrap'
                 }, {
                     "targets": [0, 1],

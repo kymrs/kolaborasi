@@ -47,7 +47,7 @@
                                     <th>Kode Deklarasi</th>
                                     <th>Tanggal</th>
                                     <th>Pengaju</th>
-                                    <th>Jabatan</th>
+                                    <!-- <th>Jabatan</th> -->
                                     <th>Penerima</th>
                                     <th>Tujuan</th>
                                     <th>Sebesar</th>
@@ -64,7 +64,7 @@
                                     <th>Kode Deklarasi</th>
                                     <th>Tanggal</th>
                                     <th>Pengaju</th>
-                                    <th>Jabatan</th>
+                                    <!-- <th>Jabatan</th> -->
                                     <th>Penerima</th>
                                     <th>Tujuan</th>
                                     <th>Sebesar</th>

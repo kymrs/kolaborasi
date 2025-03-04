@@ -93,8 +93,8 @@ class Bmn_reimbust extends CI_Controller
             }
             $row[] = strtoupper($field->kode_reimbust);
             $row[] = $field->name;
-            $row[] = $field->jabatan;
-            $row[] = $field->departemen;
+            // $row[] = $field->jabatan;
+            // $row[] = $field->departemen;
             $row[] = $field->sifat_pelaporan;
             // Array bulan bahasa Indonesia
             $bulanIndo = array(
@@ -176,7 +176,7 @@ class Bmn_reimbust extends CI_Controller
             $row[] = strtoupper($field->kode_deklarasi);
             $row[] = date("d M Y", strtotime($field->tgl_deklarasi));
             $row[] = $field->name;
-            $row[] = $field->jabatan;
+            // $row[] = $field->jabatan;
             $row[] = $field->nama_dibayar;
             $row[] = $field->tujuan;
             $row[] = 'Rp. ' . number_format($field->sebesar, 0, ',', '.');;
@@ -243,8 +243,8 @@ class Bmn_reimbust extends CI_Controller
             $row[] = $action;
             $row[] = strtoupper($field->kode_prepayment);
             $row[] = $field->name;
-            $row[] = strtoupper($field->divisi);
-            $row[] = strtoupper($field->jabatan);
+            // $row[] = strtoupper($field->divisi);
+            // $row[] = strtoupper($field->jabatan);
             $row[] = date("d M Y", strtotime($field->tgl_prepayment));
             $row[] = $field->prepayment;
             $row[] = $formatted_nominal;

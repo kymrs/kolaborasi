@@ -44,8 +44,8 @@
                                 <th>Status Pembayaran</th>
                                 <th>Kode Reimbust</th>
                                 <th>Nama</th>
-                                <th>Jabatan</th>
-                                <th>Departemen</th>
+                                <!-- <th>Jabatan</th>
+                                <th>Departemen</th> -->
                                 <th>Sifat Pelaporan</th>
                                 <th>Tanggal Pengajuan</th>
                                 <th>Tujuan</th>
@@ -62,8 +62,8 @@
                                 <th>Status Pembayaran</th>
                                 <th>Kode Reimbust</th>
                                 <th>Nama</th>
-                                <th>Jabatan</th>
-                                <th>Departemen</th>
+                                <!-- <th>Jabatan</th>
+                                <th>Departemen</th> -->
                                 <th>Sifat Pelaporan</th>
                                 <th>Tanggal Pengajuan</th>
                                 <th>Tujuan</th>
@@ -143,11 +143,11 @@
                 "infoFiltered": ""
             },
             "columnDefs": [{
-                    "targets": [2, 3, 7, 8, 10],
+                    "targets": [2, 3, 4, 5, 6, 7, 8],
                     "className": 'dt-head-nowrap'
                 },
                 {
-                    "targets": [1, 2, 3, 4, 5, 11],
+                    "targets": [1, 2, 3, 4, 5, 6, 7, 8],
                     "className": 'dt-body-nowrap'
                 }, {
                     "targets": [0, 1],

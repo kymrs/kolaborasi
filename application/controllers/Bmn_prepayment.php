@@ -125,8 +125,8 @@ class Bmn_prepayment extends CI_Controller
             }
             $row[] = strtoupper($field->kode_prepayment);
             $row[] = $field->name;
-            $row[] = strtoupper($field->divisi);
-            $row[] = strtoupper($field->jabatan);
+            // $row[] = strtoupper($field->divisi);
+            // $row[] = strtoupper($field->jabatan);
             $row[] = $this->tgl_indo(date("Y-m-j", strtotime($field->tgl_prepayment)));
             $row[] = $field->prepayment;
             $row[] = $formatted_nominal;
