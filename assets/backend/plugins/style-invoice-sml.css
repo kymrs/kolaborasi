@@ -164,11 +164,25 @@
     left: 15px;
 }
 
+/* button */
+.btn-back-sml {
+    float: right;
+    margin-right: 150px;
+}
+
+.btn-payment-sml {
+    float: right;
+}
+
 /* Media Queries */
 @media (max-width: 1140px) {
     .container .canvas-bg-sml {
         width: 80%;
         font-size: 80%;
+    }
+
+    .btn-back-sml {
+        margin-right: 100px;
     }
 }
 
@@ -180,6 +194,10 @@
     .canvas-bg-sml .content .col:nth-child(2) table tr td:nth-child(2){
         padding-left: 15px;
         padding-right: 3px;
+    }
+
+    .btn-back-sml {
+        margin-right: 50px;
     }
 }
 
@@ -208,5 +226,9 @@
 
     .canvas-bg-sml .content .col:nth-child(1){
         padding-right: 15px;
+    }
+
+    .btn-back-sml {
+        margin-right: 30px;
     }
 }
