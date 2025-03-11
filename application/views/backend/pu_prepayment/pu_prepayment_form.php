@@ -123,8 +123,12 @@
                                         <div class="input-group mb-3">
                                             <!-- RADIO BUTTON UNTUK PEMILIHAN INPUTAN REKENING -->
                                             <div class="form-check form-check-inline" style="margin-bottom: 5px;">
-                                                <input class="form-check-input" type="radio" name="radioNoLabel" id="exist" value="" aria-label="..." checked><label for="exist" style="margin-right: 14px; margin-top: 8px; cursor: pointer">Rekening terdaftar</label>
-                                                <input class="form-check-input" type="radio" name="radioNoLabel" id="new" value="" aria-label="..."><label for="new" style="margin-top: 8px; cursor: pointer">Rekening baru</label>
+                                                <?php if ($id_pembuat != $id_user && !empty($aksi)) { ?>
+                                                    <input class="form-check-input" type="radio" name="radioNoLabel" id="new" value="" aria-label="..." checked><label for="new" style="margin-top: 8px; cursor: pointer">Rekening</label>
+                                                <?php } else { ?>
+                                                    <input class="form-check-input" type="radio" name="radioNoLabel" id="exist" value="" aria-label="..." checked><label for="exist" style="margin-right: 14px; margin-top: 8px; cursor: pointer">Rekening terdaftar</label>
+                                                    <input class="form-check-input" type="radio" name="radioNoLabel" id="new" value="" aria-label="..."><label for="new" style="margin-top: 8px; cursor: pointer">Rekening baru</label>
+                                                <?php } ?>
                                             </div>
                                             <select class="js-example-basic-single" id="rekening" name="rekening">
                                                 <option value="" selected disabled>Pilih rekening tujuan</option>
@@ -478,6 +482,13 @@
                         $('#total_nominal_view').text(total_nominal.toLocaleString());
                         $('#total_nominal').val(data['master']['total_nominal']);
                     }
+                    var parts = data['master']['no_rek'].split("-"); // Pisahkan berdasarkan "-"
+
+                    if (parts.length === 3) {
+                        $("#nama_rek").val(parts[0]);
+                        $("#nama_bank").val(parts[1]);
+                        $("#nomor_rekening").val(parts[2]);
+                    }
 
                     //APPEND DATA TRANSAKSI DETAIL PREPAYMENT
                     if (aksi == 'update') {
@@ -603,6 +614,16 @@
                             checkNotifications();
                             location.href = "<?= base_url('pu_prepayment') ?>";
                         })
+                    } else {
+                        // Sembunyikan loading saat respons diterima
+                        $('#loading').hide();
+
+                        // Tampilkan pesan kesalahan
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: data.error
+                        });
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {

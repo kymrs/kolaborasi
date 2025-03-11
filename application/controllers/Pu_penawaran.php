@@ -751,7 +751,7 @@ class Pu_penawaran extends CI_Controller
         // KONTEN DESKRIPSI
         $body_text = $penawaran->deskripsi;
         $t_cpdf->Sety(91 + 4);
-        $t_cpdf->MultiCell($content_width, 4, $body_text, 0, 'J');  // 'J' digunakan untuk rata kiri dan kanan (justify)
+        $t_cpdf->MultiCell($content_width, 4, $body_text, 0, (strlen($body_text) < 50 ? 'L' : 'J'));  // 'J' digunakan untuk rata kiri dan kanan (justify)
 
         $deskripsiY = $t_cpdf->GetY();
 
@@ -945,79 +945,5 @@ EOD;
 
         // Output PDF (tampilkan di browser)
         $t_cpdf->Output('Penawaran', 'I'); // 'I' untuk menampilkan di browser
-    }
-
-    // PRINTOUT FPDF
-    public function generate_pdf()
-    {
-        $this->load->library('Fpdf_generate');
-
-        // Start FPDF
-        $pdf = new Pdf('P', 'mm', 'A4');
-        $pdf->SetTitle('Form Deklarasi');
-        $pdf->AddPage('P', 'Letter');
-
-        // Start FPDF
-        $pdf = new Pdf;
-        $pdf->AddPage();
-
-        // Mengatur posisi Y untuk menggeser seluruh konten ke bawah
-        $pdf->SetY(50); // Ganti 50 dengan jumlah yang Anda inginkan
-
-        // Pilih font untuk isi
-        $pdf->SetFont('poppins-regular', 'B', 12);
-
-        // Margin setup
-        $left_margin = 10;
-        $pdf->SetLeftMargin($left_margin);  // Mengatur margin kiri
-
-        // Bagian TO
-        $pdf->SetXY($left_margin, $pdf->GetY());
-        $pdf->Cell(0, 10, 'TO:', 0, 1, 'L');
-
-        // Name and title (Creative Director)
-        $pdf->SetFont('poppins-regular', 'B', 12);
-        $pdf->Cell(0, 10, 'NAME SURNAME', 0, 1, 'L');
-        $pdf->SetFont('poppins-regular', '', 10);
-        $pdf->Cell(0, 10, 'Creative Director', 0, 1, 'L');
-
-        // Spasi antara bagian atas dan konten
-        $pdf->Ln(5);
-
-        // Konten text (justify)
-        $pdf->SetFont('poppins-regular', '', 10);
-
-        // Mengatur lebar untuk konten agar justify bisa bekerja
-        $content_width = 190;  // Misal, lebar halaman adalah 210, jadi margin kiri 10 dan margin kanan 10
-
-        // Paragraf 1
-        $body_text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sit amet nisi sit amet nibh dignis sim elementum id suscipit leo. Sed ut condimentum diam. Sed ac nulla libero. Morbi ante ante inte rrdum luctus dictum ut, sollicitudin in mi. Donec aliquet lectus quis enim tempor ullamcorper pelle ntesque et neque posuere, gravida lacus molestie, pretium ex. Vivamus in justo ac ante lacinia pharetra.";
-        $pdf->MultiCell($content_width, 7, $body_text, 0, 'J');  // 'J' digunakan untuk rata kiri dan kanan (justify)
-
-        $pdf->Ln(5); // Spasi antara paragraf
-
-        // Paragraf 2
-        $body_text2 = "Donec ultrices lacinia arcu, eget faucibus quam rhoncus id. Sed convallis eros neque, quis effici tur erat euismod vel. Mauris consequat nunc quis tortor efficitur euismod. Curabitur posuere hendrerit semper nam dignissim sed tellus id fermentum.";
-        $pdf->MultiCell($content_width, 7, $body_text2, 0, 'J');
-
-        $pdf->Ln(5); // Spasi antara paragraf
-
-        // Paragraf 3
-        $body_text3 = "Phasellus id dui arcu nullam finibus nisl quis quam egestas blandit. Praesent eu leo justo nullam porta nisi non tempus lacinia. Quisque molestie nulla id volutpat congue.";
-        $pdf->MultiCell($content_width, 7, $body_text3, 0, 'J');
-
-        // Spasi antara konten dan signature
-        $pdf->Ln(20);
-
-        // Bagian Nama kedua dan jabatan (Account Manager)
-        $pdf->SetFont('poppins-regular', 'B', 12);
-        $pdf->Cell(0, 10, 'NAME SURNAME', 0, 1, 'L');
-        $pdf->SetFont('poppins-regular', '', 10);
-        $pdf->Cell(0, 10, 'Account Manager', 0, 1, 'L');
-
-        $pdf->AddPage();
-
-        // Output the PDF
-        $pdf->Output('I', 'Deklarasi.pdf');
     }
 }

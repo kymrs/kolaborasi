@@ -165,6 +165,6 @@ class M_bmn_invoice extends CI_Model
     // OPSI REKENING
     public function options()
     {
-        return $this->db->distinct()->select('nama_bank, no_rek')->from('bmn_rek_invoice')->get();
+        return $this->db->distinct()->select('nama, nama_bank, no_rek')->from('bmn_rek_invoice')->get();
     }
 }

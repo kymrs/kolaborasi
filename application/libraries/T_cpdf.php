@@ -11,7 +11,7 @@ class T_cpdf extends TCPDF
     {
         // Logo
         $this->SetFont('helvetica', 'B', 12);
-        $this->Image(base_url('assets\backend\img\Header.png'), 49, 5, 160, 30);
+        $this->Image(base_url('assets/backend/img/Header.png'), 49, 5, 160, 30);
         $this->Ln(5);
     }
 
@@ -24,7 +24,7 @@ class T_cpdf extends TCPDF
         $this->SetFont('helvetica', 'I', 8);
         // Page number
         // $this->Cell(0, 10, 'Page ' . $this->PageNo() . '/{nb}', 0, 0, 'C');
-        $this->Image(base_url('assets\backend\img\Footer.png'), 0, 280, 210, 5);
+        $this->Image(base_url('assets/backend/img/Footer.png'), 0, 280, 210, 5);
     }
 
     public function __construct()

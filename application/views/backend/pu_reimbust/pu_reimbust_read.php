@@ -184,7 +184,7 @@
                         <td>:</td>
                         <td id="nama"></td>
                     </tr>
-                    <tr>
+                    <!-- <tr>
                         <td>JABATAN</td>
                         <td>:</td>
                         <td id="jabatan"></td>
@@ -193,7 +193,7 @@
                         <td>DEPARTEMEN</td>
                         <td>:</td>
                         <td id="departemen"></td>
-                    </tr>
+                    </tr> -->
                     <tr>
                         <td>SIFAT PELAPORAN</td>
                         <td>:</td>

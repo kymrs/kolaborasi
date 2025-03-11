@@ -102,6 +102,15 @@ class Prepayment_pu extends CI_Controller
                 $action = $action_read . $action_print;
             }
 
+            //MENENSTUKAN SATTSU PROGRESS PENGAJUAN PERMINTAAN
+            if ($field->app_status == 'approved' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
+                $status = $field->status . ' (' . $field->app2_name . ')';
+            } elseif ($field->app_status == 'waiting' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
+                $status = $field->status . ' (' . $field->app_name . ')';
+            } else {
+                $status = $field->status;
+            }
+
 
             $formatted_nominal = number_format($field->total_nominal, 0, ',', '.');
             $no++;
@@ -121,7 +130,7 @@ class Prepayment_pu extends CI_Controller
             $row[] = $field->prepayment;
             $row[] = $formatted_nominal;
             // $row[] = $field->tujuan;
-            $row[] = $field->status;
+            $row[] = $status;
 
             $data[] = $row;
         }
@@ -193,13 +202,14 @@ class Prepayment_pu extends CI_Controller
     function edit_form($id)
     {
         // INISIASI
-        $id_user = $this->session->userdata('id_user');
+        $data['id_user'] = $this->session->userdata('id_user');
+        $data['id_pembuat'] = $this->M_prepayment_pu->get_by_id($id)->id_user;
 
         $data['id'] = $id;
         $data['aksi'] = 'update';
         $data['title_view'] = "Edit Data Prepayment";
         $data['title'] = 'backend/prepayment_pu/prepayment_form_pu';
-        $data['rek_options'] = $this->M_prepayment_pu->options($id_user)->result_array();
+        $data['rek_options'] = $this->M_prepayment_pu->options($data['id_user'])->result_array();
         $this->load->view('backend/home', $data);
     }
 

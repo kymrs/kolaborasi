@@ -29,9 +29,14 @@
                     <li class="nav-item">
                         <a class="nav-link active" id="personalTab" href="#" data-tab="personal">User</a>
                     </li>
-                    <?php if ($approval > 0 || $alias == 'eko') { ?>
+                    <?php if ($approval > 0) { ?>
                         <li class="nav-item">
                             <a class="nav-link" id="employeeTab" href="#" data-tab="employee">Approval</a>
+                        </li>
+                    <?php } ?>
+                    <?php if ($alias == 'eko') { ?>
+                        <li class="nav-item">
+                            <a class="nav-link" id="adminaTab" href="#" data-tab="admin">Admin</a>
                         </li>
                     <?php } ?>
                 </ul>
@@ -99,6 +104,9 @@
             $(`.nav-tabs .nav-link[data-tab="${activeTab}"]`).addClass('active');
             // console.log('labubu');
             // You can load content for the active tab here if needed
+        } else if (activeTab == 'admin') {
+            $('.nav-tabs .nav-link').removeClass('active');
+            $(`.nav-tabs .nav-link[data-tab="${activeTab}"]`).addClass('active');
         } else {
             // Default to the "User" tab if session storage is empty or approval tab doesn't exist
             $('.nav-tabs .nav-link').removeClass('active');
@@ -147,7 +155,7 @@
                     "className": 'dt-head-nowrap'
                 },
                 {
-                    "targets": [1, 2, 3, 4, 5, 6, 7, 8],
+                    "targets": [1, 2, 3, 4, 5, 6, 7, 8, 9],
                     "className": 'dt-body-nowrap'
                 }, {
                     "targets": [0, 1],

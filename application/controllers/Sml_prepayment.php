@@ -122,8 +122,8 @@ class Sml_prepayment extends CI_Controller
 
             $row[] = strtoupper($field->kode_prepayment);
             $row[] = $field->name;
-            $row[] = strtoupper($field->divisi);
-            $row[] = strtoupper($field->jabatan);
+            // $row[] = strtoupper($field->divisi);
+            // $row[] = strtoupper($field->jabatan);
             $row[] = $this->tgl_indo(date("Y-m-j", strtotime($field->tgl_prepayment)));
             $row[] = $formatted_nominal;
             $row[] = $status;
@@ -255,7 +255,7 @@ class Sml_prepayment extends CI_Controller
         $valid = true;
         $confirm = $this->db->select('app_id, app2_id, app4_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
         if (!empty($confirm) && isset($confirm->app_id, $confirm->app2_id, $confirm->app4_id)) {
-            $app = $this->db->select('app_id, app2_id, app4_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
+            $app = $confirm;
         } else {
             echo json_encode(array("status" => FALSE, "error" => "Approval Belum Ditentukan, Mohon untuk menghubungi admin."));
             exit();
@@ -274,6 +274,7 @@ class Sml_prepayment extends CI_Controller
             'kode_prepayment' => $kode_prepayment,
             'id_user' => $id,
             'tujuan' => $this->input->post('tujuan'),
+            'prepayment' => $this->input->post('prepayment'),
             'tgl_prepayment' => date('Y-m-d', strtotime($this->input->post('tgl_prepayment'))),
             'total_nominal' => $this->input->post('total_nominal'),
             'no_rek' => $no_rek,
@@ -341,6 +342,7 @@ class Sml_prepayment extends CI_Controller
         $data = array(
             'kode_prepayment' => $this->input->post('kode_prepayment'),
             'tujuan' => $this->input->post('tujuan'),
+            'prepayment' => $this->input->post('prepayment'),
             'tgl_prepayment' => date('Y-m-d', strtotime($this->input->post('tgl_prepayment'))),
             'total_nominal' => $this->input->post('total_nominal'),
             'no_rek' => $no_rek,
@@ -365,7 +367,8 @@ class Sml_prepayment extends CI_Controller
         $keterangan = $this->input->post('keterangan[]');
         if ($this->db->update('sml_prepayment', $data)) {
             // UNTUK MENGHAPUS ROW YANG TELAH DIDELETE
-            $deletedRows = json_decode($this->input->post('deleted_rows'), true);
+            $deletedRowsJson = $this->input->post('deleted_rows') ?? '[]';
+            $deletedRows = json_decode($deletedRowsJson, true);
             if (!empty($deletedRows)) {
                 foreach ($deletedRows as $id2) {
                     // Hapus row dari database berdasarkan ID

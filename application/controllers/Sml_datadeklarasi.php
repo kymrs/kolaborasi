@@ -92,7 +92,7 @@ class Sml_datadeklarasi extends CI_Controller
             $row[] = strtoupper($field->kode_deklarasi);
             $row[] = date("d M Y", strtotime($field->tgl_deklarasi));
             $row[] = $field->name;
-            $row[] = $field->jabatan;
+            // $row[] = $field->jabatan;
             $row[] = $field->nama_dibayar;
             $row[] = $field->tujuan;
             $row[] = 'Rp. ' . number_format($field->sebesar, 0, ',', '.');;
@@ -210,9 +210,9 @@ class Sml_datadeklarasi extends CI_Controller
             ->row();
 
         $valid = true;
-        $confirm = $this->db->select('app_id, app2_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
+        $confirm = $this->db->select('app_id, app2_id, app4_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
         if (!empty($confirm) && isset($confirm->app_id, $confirm->app2_id, $confirm->app4_id)) {
-            $app = $this->db->select('app_id, app2_id, app4_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
+            $app = $confirm;
         } else {
             echo json_encode(array("status" => FALSE, "error" => "Approval Belum Ditentukan, Mohon untuk menghubungi admin."));
             exit();
