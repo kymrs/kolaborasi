@@ -37,7 +37,7 @@ class T_cpdf2 extends TCPDf
     }
 }
 
-class Qbg_invoice extends CI_Controller
+class Qbg_invoicasdsade extends CI_Controller
 {
     public function __construct()
     {
@@ -254,31 +254,12 @@ class Qbg_invoice extends CI_Controller
         $data['master'] = $this->M_qbg_invoice->get_by_id($id);
         $data['rek_invoice'] = $this->db->get_where('qbg_rek_invoice', ['invoice_id' => $id])->result_array();
 
-        $this->db->select("
-                d.*, 
-                p.nama_produk, 
-                p.berat, 
-                p.satuan, 
-                p.stok_akhir,
-                ABS(
-                    COALESCE((SELECT sum(jumlah) FROM qbg_transaksi 
-                            WHERE jenis_transaksi = 'masuk' 
-                            AND kode_produk = d.kode_produk), 0) 
-                    - 
-                    COALESCE((SELECT SUM(jumlah) FROM qbg_transaksi 
-                            WHERE jenis_transaksi = 'keluar' 
-                            AND kode_produk = d.kode_produk 
-                            AND invoice_id != $id), 0)
-                ) AS stok_tersedia
-            ", FALSE);
+        // Join detail invoice dengan qbg_produk
+        $this->db->select('d.*, p.nama_produk, p.berat, p.satuan, p.stok_akhir');
         $this->db->from('qbg_detail_invoice d');
         $this->db->join('qbg_produk p', 'd.kode_produk = p.kode_produk', 'left');
         $this->db->where('d.invoice_id', $id);
-
-
-
         $data['detail_invoice'] = $this->db->get()->result_array();
-
 
         echo json_encode($data);
     }
@@ -310,6 +291,7 @@ class Qbg_invoice extends CI_Controller
 
         $kode_invoice = 'Q' . $year . $month . $urutan;
 
+        $total_akhir = $this->input->post('total_akhir');
 
         $data = array(
             'tgl_invoice' => date('Y-m-d', strtotime($this->input->post('tgl_invoice'))),
@@ -320,13 +302,10 @@ class Qbg_invoice extends CI_Controller
             'email_customer' => $this->input->post('email_customer'),
             'alamat_customer' => $this->input->post('alamat_customer'),
             'jenis_harga' => $this->input->post('jenis_harga'),
+            'total' => $total_akhir,
             'created_at' => date('Y-m-d H:i:s'),
             'created_by' => $this->session->userdata('id_level')
         );
-
-        $total_akhir = (int) $this->input->post('total_akhir');
-
-        $data['total'] = $total_akhir;
 
         $ongkir = preg_replace('/\D/', '', $this->input->post('ongkir'));
         if (!empty($ongkir || $ongkir == 0)) {
@@ -363,9 +342,7 @@ class Qbg_invoice extends CI_Controller
                 );
             }
             $this->M_qbg_invoice->save_detail($data2);
-        }
 
-        if ($inserted) {
             // Ambil data produk dari form
             $kode_produk = $this->input->post('kode_produk[]');
             $jumlah = $this->input->post('jumlah[]');
@@ -388,7 +365,7 @@ class Qbg_invoice extends CI_Controller
                 }
 
                 // Insert detail invoice ke database (batch insert supaya lebih efisien)
-                $detail_invoice_id = $this->M_qbg_invoice->save_detail2($data3);
+                $this->M_qbg_invoice->save_detail2($data3);
 
                 foreach ($kode_produk as $i => $kode) {
                     // Ambil stok terakhir
@@ -404,17 +381,16 @@ class Qbg_invoice extends CI_Controller
 
                     // Insert transaksi stok baru
                     $this->db->insert('qbg_transaksi', [
-                        'invoice_id' => $inserted,
-                        'detail_invoice_id' => $detail_invoice_id[$i - 1],
                         'kode_produk'       => $kode,
                         'jenis_transaksi'   => 'keluar',
                         'jumlah'            => $jumlah[$i],
                         'keterangan'        => 'penjualan (' . $kode_invoice . ')',
                         'created_by'        => $this->session->userdata('id_user')
                     ]);
-                    // $this->M_qbg_invoice->updateStokAwal($kode);
+
+                    // Update stok akhir di table produk
+                    $this->db->update('qbg_produk', ['stok_akhir' => $stok_akhir], ['kode_produk' => $kode]);
                 }
-                $this->M_qbg_invoice->updateStok();
             }
         }
         echo json_encode(array("status" => TRUE));
@@ -423,7 +399,8 @@ class Qbg_invoice extends CI_Controller
     // UPDATE DATA
     public function update()
     {
-        $total_akhir = (int) $this->input->post('total_akhir');
+        $total_akhir = $this->input->post('total_akhir');
+
         $data = array(
             'tgl_invoice' => date('Y-m-d', strtotime($this->input->post('tgl_invoice'))),
             'tgl_tempo' => date('Y-m-d', strtotime($this->input->post('tgl_tempo'))),
@@ -431,20 +408,20 @@ class Qbg_invoice extends CI_Controller
             'nomor_customer' => $this->input->post('nomor_customer'),
             'email_customer' => $this->input->post('email_customer'),
             'alamat_customer' => $this->input->post('alamat_customer'),
-            'total' => $total_akhir,
             'jenis_harga' => $this->input->post('jenis_harga'),
+            'total' => $total_akhir,
             'updated_at' => date('Y-m-d H:i:s'),
             'updated_by' => $this->session->userdata('id_level')
         );
 
-        $ongkir = (int) preg_replace('/\D/', '', $this->input->post('ongkir'));
+        $ongkir = preg_replace('/\D/', '', $this->input->post('ongkir'));
         if (!empty($ongkir || $ongkir == 0)) {
 
             $total_akhir_ongkir = $total_akhir +  $ongkir;
             $data['ongkir'] = $ongkir;
         }
 
-        $potongan_harga = (int) preg_replace('/\D/', '', $this->input->post('potongan_harga'));
+        $potongan_harga = preg_replace('/\D/', '', $this->input->post('potongan_harga'));
         if (!empty($potongan_harga || $potongan_harga == 0)) {
             $data['potongan_harga'] = $potongan_harga;
 
@@ -471,102 +448,82 @@ class Qbg_invoice extends CI_Controller
             $deletedRows = json_decode($this->input->post('deleted_rows'), true);
             if (!empty($deletedRows)) {
                 foreach ($deletedRows as $delRows) {
-                    // Hapus data pada detail invoice
-                    $this->db->where('id', $delRows);
-                    $this->db->delete('qbg_detail_invoice');
+                    // Ambil kode_produk berdasarkan ID yang dihapus
+                    $query = $this->db->select('kode_produk')->where('id', $delRows)->get('qbg_detail_invoice')->row_array();
 
-                    // Hapus data pada detail invoice
-                    $this->db->where('detail_invoice_id', $delRows);
-                    $this->db->delete('qbg_transaksi');
+
+                    if ($query) { // Cek apakah data ditemukan
+                        $kode_produk = $query['kode_produk'];
+
+                        // Hapus data pada detail invoice
+                        $this->db->where('id', $delRows);
+                        $this->db->delete('qbg_detail_invoice');
+
+                        // // Cari ID terbesar (data terakhir) yang memiliki kode_produk ini
+                        // $lastStok = $this->db->select('id, stok_akhir')
+                        //     ->where('kode_produk', $kode_produk)
+                        //     ->get('qbg_produk')
+                        //     ->row_array();
+
+                        // $this->db->where('kode_produk', $kode_produk);
+                        // $this->db->set('stok_akhir', $lastStok['stok_akhir']);
+                        // $this->db->update('qbg_produk');
+
+                        // if ($lastStok) {
+                        //     // Hapus hanya stok dengan ID terbesar
+                        //     $this->db->where('id', $lastStok['id']);
+                        //     $this->db->delete('qbg_transaksi');
+                        // }
+                    }
                 }
-                $this->M_qbg_invoice->updateStok();
             }
 
             if (!isset($_POST['kode_produk']) || !is_array($_POST['kode_produk'])) {
                 die("Error: Data kode_produk tidak ditemukan atau bukan array.");
             }
-
             $kode_produk = $_POST['kode_produk']; // Pastikan ini array
+
 
             // MELAKUKAN REPLACE DATA LAMA DENGAN YANG BARU
             for ($i = 1; $i <= count($_POST['kode_produk']); $i++) {
                 $id_invoice = !empty($id_detail[$i]) ? $id_detail[$i] : NULL;
-                $invoice_id = $this->input->post('id');
-                $kode = $kode_produk[$i] ?? '';
-                $jumlah_val = $jumlah[$i] ?? 0;
-                $harga_val = $harga[$i] ?? 0;
-                $total_val = $total[$i] ?? 0;
-
-                // Cek apakah data sudah ada di database
-                $this->db->where('id', $id_invoice);
-                $query = $this->db->get('qbg_detail_invoice');
-
-                if ($query->num_rows() > 0) {
-                    // Kalau ada, lakukan UPDATE
-                    $this->db->where('id', $id_invoice);
-                    $this->db->update('qbg_detail_invoice', [
-                        'invoice_id' => $invoice_id,
-                        'kode_produk' => $kode,
-                        'jumlah' => $jumlah_val,
-                        'harga' => $harga_val,
-                        'total' => $total_val
-                    ]);
-                    $this->db->where('detail_invoice_id', $id_invoice);
-                    $this->db->update('qbg_transaksi', [
-                        'kode_produk' => $kode,
-                        'jenis_transaksi' => 'keluar',
-                        'jumlah' => $jumlah_val
-                    ]);
-                } else {
-                    // Kalau belum ada, lakukan INSERT
-                    $this->db->insert('qbg_detail_invoice', [
-                        'invoice_id' => $invoice_id,
-                        'kode_produk' => $kode,
-                        'jumlah' => $jumlah_val,
-                        'harga' => $harga_val,
-                        'total' => $total_val
-                    ]);
-
-                    $detail_invoice_id = $this->db->insert_id();
-
-                    $this->db->insert('qbg_transaksi', [
-                        'detail_invoice_id' => $detail_invoice_id,
-                        'kode_produk' => $kode,
-                        'jenis_transaksi' => 'keluar',
-                        'jumlah' => $jumlah_val,
-                        'keterangan' => 'penjualan (' . $this->input->post('kode_invoice') . ')'
-                    ]);
-                }
-                $this->M_qbg_invoice->updateStok();
-                // $this->M_qbg_invoice->updateStokAwal($kode);
+                $data2[] = array(
+                    'id' => $id_invoice,
+                    'invoice_id' => $this->input->post('id'),
+                    'kode_produk' => $kode_produk[$i] ?? '',
+                    'jumlah' => $jumlah[$i] ?? 0,
+                    'harga' => $harga[$i] ?? 0,
+                    'total' => $total[$i] ?? 0
+                );
+                $this->db->replace('qbg_detail_invoice', $data2[$i - 1]);
             }
 
             // UNTUK MENGHAPUS REKENING
-            $deletedRekRows = json_decode($this->input->post('deletedRekRows'), true);
-            if (!empty($deletedRekRows)) {
-                foreach ($deletedRekRows as $delRekRow) {
-                    // Hapus row dari database berdasarkan ID
-                    $this->db->where('id', $delRekRow);
-                    $this->db->delete('qbg_rek_invoice');
-                }
-            }
+            // $deletedRekRows = json_decode($this->input->post('deletedRekRows'), true);
+            // if (!empty($deletedRekRows)) {
+            //     foreach ($deletedRekRows as $delRekRow) {
+            //         // Hapus row dari database berdasarkan ID
+            //         $this->db->where('id', $delRekRow);
+            //         $this->db->delete('qbg_rek_invoice');
+            //     }
+            // }
 
-            // MELAKUKAN REPLACE DATA REKENING
-            $id_rek = $this->input->post('hidden_rekId[]');
-            $nama_bank = $this->input->post('nama_bank[]');
-            $no_rek = $this->input->post('no_rek[]');
-            for ($i = 1; $i <= count($_POST['nama_bank']); $i++) {
-                // Set id menjadi NULL jika id_rek tidak ada atau kosong
-                $id_rekening = !empty($id_rek[$i]) ? $id_rek[$i] : NULL;
-                $data3[] = array(
-                    'id' => $id_rekening,
-                    'invoice_id' => $this->input->post('id'),
-                    'nama_bank' => $nama_bank[$i],
-                    'no_rek' => $no_rek[$i]
-                );
-                // Menggunakan db->replace untuk memasukkan atau menggantikan data
-                $this->db->replace('qbg_rek_invoice', $data3[$i - 1]);
-            }
+            // // MELAKUKAN REPLACE DATA REKENING
+            // $id_rek = $this->input->post('hidden_rekId[]');
+            // $nama_bank = $this->input->post('nama_bank[]');
+            // $no_rek = $this->input->post('no_rek[]');
+            // for ($i = 1; $i <= count($_POST['nama_bank']); $i++) {
+            //     // Set id menjadi NULL jika id_rek tidak ada atau kosong
+            //     $id_rekening = !empty($id_rek[$i]) ? $id_rek[$i] : NULL;
+            //     $data3[] = array(
+            //         'id' => $id_rekening,
+            //         'invoice_id' => $this->input->post('id'),
+            //         'nama_bank' => $nama_bank[$i],
+            //         'no_rek' => $no_rek[$i]
+            //     );
+            //     // Menggunakan db->replace untuk memasukkan atau menggantikan data
+            //     $this->db->replace('qbg_rek_invoice', $data3[$i - 1]);
+            // }
         }
 
         echo json_encode(array("status" => TRUE));

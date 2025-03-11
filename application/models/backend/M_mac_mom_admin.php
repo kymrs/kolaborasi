@@ -3,13 +3,13 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-class M_qbg_produk extends CI_Model
+class M_mac_mom_admin extends CI_Model
 {
     var $id = 'id';
-    var $table = 'qbg_produk'; //nama tabel dari database
-    var $column_order = array(null, null, 'kode_produk', 'nama_produk', 'berat', 'satuan', 'stok_akhir', 'harga_qubagift', 'harga_reseller', 'harga_distributor', 'updated_at');
-    var $column_search = array('kode_produk', 'nama_produk', 'satuan', 'stok_akhir'); //field yang diizin untuk pencarian 
-    var $order = array('id' => 'asc'); // default order 
+    var $table = 'mac_mom'; //nama tabel dari database
+    var $column_order = array(null, null, 'no_dok', 'user', 'agenda', 'date', 'start_time', 'end_time', 'lokasi', 'peserta');
+    var $column_search = array('no_dok', 'user', 'agenda', 'date', 'start_time', 'end_time', 'lokasi', 'peserta'); //field yang diizin untuk pencarian 
+    var $order = array('id' => 'desc'); // default order 
 
     public function __construct()
     {
@@ -28,23 +28,12 @@ class M_qbg_produk extends CI_Model
             if ($_POST['search']['value']) // jika datatable mengirimkan pencarian dengan metode POST
             {
 
-                foreach ($this->column_search as $item) // looping awal
+                if ($i === 0) // looping awal
                 {
-                    if ($_POST['search']['value']) // jika datatable mengirimkan pencarian dengan metode POST
-                    {
-
-                        if ($i === 0) // looping awal
-                        {
-                            $this->db->group_start();
-                            $this->db->like($item, $_POST['search']['value']);
-                        } else {
-                            $this->db->or_like($item, $_POST['search']['value']);
-                        }
-
-                        if (count($this->column_search) - 1 == $i)
-                            $this->db->group_end();
-                    }
-                    $i++;
+                    $this->db->group_start();
+                    $this->db->like($item, $_POST['search']['value']);
+                } else {
+                    $this->db->or_like($item, $_POST['search']['value']);
                 }
 
                 if (count($this->column_search) - 1 == $i)
@@ -80,6 +69,9 @@ class M_qbg_produk extends CI_Model
     public function count_all()
     {
         $this->db->from($this->table);
+        if ($this->session->userdata('core') != "all") {
+            $this->db->where('user', $this->session->userdata('fullname'));
+        }
         return $this->db->count_all_results();
     }
 
@@ -87,6 +79,15 @@ class M_qbg_produk extends CI_Model
     {
         $this->db->where($this->id, $id);
         return $this->db->get($this->table)->row();
+    }
+
+    public function max_kode()
+    {
+        $this->db->select('no_dok');
+        $where = 'id=(SELECT max(id) FROM mac_mom where SUBSTRING(no_dok, 4, 4) = ' . date('ym') . ')';
+        $this->db->where($where);
+        $query = $this->db->get('mac_mom');
+        return $query;
     }
 
     public function save($data)
@@ -99,18 +100,5 @@ class M_qbg_produk extends CI_Model
     {
         $this->db->where($this->id, $id);
         $this->db->delete($this->table);
-    }
-
-    public function max_kode()
-    {
-        // Ambil kode_produk terakhir
-        $this->db->select('kode_produk');
-        $this->db->order_by('kode_produk', 'DESC');
-        $query = $this->db->get('qbg_produk', 1);
-
-        if ($query->num_rows() > 0) {
-            return $query->row()->kode_produk;
-        }
-        return null; // jika tidak ada data
     }
 }

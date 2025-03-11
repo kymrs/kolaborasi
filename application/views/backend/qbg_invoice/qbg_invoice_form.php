@@ -302,7 +302,7 @@
                                                 <th class="col-sm-8">No Rekening</th>
                                                 <th>Delete</th>
                                             </thead>
-                                            <tbody>
+                                            <tbody class="tbody-rekening">
 
                                             </tbody>
                                         </table>
@@ -566,7 +566,7 @@
                     className: 'dt-body-nowrap'
                 },
                 {
-                    targets: [0, 1],
+                    targets: [0, 1, 2, 3, 4, 5, 6],
                     orderable: false
                 }
             ],
@@ -647,7 +647,7 @@
     });
 
     // Untuk memastikan value dari jumlah tidak lebih dari stok akhir
-    $('#table-transaksi').on('click', 'input.jumlah', function() {
+    $('#table-transaksi').on('click select', 'input.jumlah', function() {
         // Ambil data-id dari input yang sedang diklik
         let dataId = $(this).data('id');
 
@@ -862,11 +862,11 @@
             const row = `
                 <tr id="row-${rowCount}">
                     <td class="row-number">${rowCount}</td>
-                        <input type="hidden" id="hidden_id" name="hidden_id[${rowCount}]" value="${rowCount}">
-                        <input type="hidden" name="hidden_invoiceId[${rowCount}]" id="hidden_invoiceId${rowCount}" value="${rowCount}">
                     <td>
-                        <div class="btn btn-primary btn-lg btn-block btn-sm btn-style produk-modal" data-toggle="modal" data-target="#produkModal" data-id="${rowCount}" id="produk-modal${rowCount}">Pilih Produk</div>
-                        <input type="hidden" id="kode_produk${rowCount}" name="kode_produk[${rowCount}]" value="">
+                    <div class="btn btn-primary btn-lg btn-block btn-sm btn-style produk-modal" data-toggle="modal" data-target="#produkModal" data-id="${rowCount}" id="produk-modal${rowCount}">Pilih Produk</div>
+                    <input type="hidden" id="kode_produk${rowCount}" name="kode_produk[${rowCount}]" value="">
+                    <input type="hidden" id="hidden_id" name="hidden_id[${rowCount}]" value="">
+                    <input type="hidden" name="hidden_invoiceId[${rowCount}]" id="hidden_invoiceId${rowCount}" value="${id}">
                     </td>
                     <td>
                         <input type="text" class="form-control jumlah" id="jumlah${rowCount}" name="jumlah[${rowCount}]" value="" placeholder="Jumlah" data-id="${rowCount}" data-stok="" data-produk="" readonly autocomplete="off">
@@ -1108,14 +1108,13 @@
                             <tr id="row-${index + 1}">
                                 <td class="row-number">${index + 1}</td>
                                 <td>
-                                    <div class="btn btn-primary btn-lg btn-block btn-sm btn-style produk-modal" data-toggle="modal" data-target="#produkModal" data-id="${index + 1}" id="produk-modal${index + 1}">${data['detail_invoice'][index]['nama_produk']} ${data['detail_invoice'][index]['berat']} ${data['detail_invoice'][index]['satuan']} (${data['detail_invoice'][index]['stok_akhir']})</div>
-                                    <input type="text" id="kode_produk${index + 1}" name="kode_produk[${index + 1}]" value="${data['detail_invoice'][index]['kode_produk']}">
-                                    ${data['detail_invoice'][index]['id']}
+                                    <div class="btn btn-primary btn-lg btn-block btn-sm btn-style produk-modal" data-toggle="modal" data-target="#produkModal" data-id="${index + 1}" id="produk-modal${index + 1}">${data['detail_invoice'][index]['nama_produk']} ${data['detail_invoice'][index]['berat']} ${data['detail_invoice'][index]['satuan']} (${data['detail_invoice'][index]['stok_tersedia']})</div>
+                                    <input type="hidden" id="kode_produk${index + 1}" name="kode_produk[${index + 1}]" value="${data['detail_invoice'][index]['kode_produk']}">
                                     <input type="hidden" id="hidden_id" name="hidden_id[${index + 1}]" value="${data['detail_invoice'][index]['id']}">
                                     <input type="hidden" name="hidden_invoiceId[${index + 1}]" id="hidden_invoiceId${index + 1}" value="${data['detail_invoice'][index]['invoice_id']}">
                                 </td>
                                 <td>
-                                    <input type="text" class="form-control jumlah" id="jumlah${index + 1}" name="jumlah[${index + 1}]" value="${data['detail_invoice'][index]['jumlah']}" data-id="${index + 1}" data-stok="${data['detail_invoice'][index]['stok_akhir']}" data-produk="${data['detail_invoice'][index]['nama_produk']} ${data['detail_invoice'][index]['berat']} ${data['detail_invoice'][index]['satuan']}" autocomplete="off">
+                                    <input type="text" style="user-select: none;" class="form-control jumlah" id="jumlah${index + 1}" name="jumlah[${index + 1}]" value="${data['detail_invoice'][index]['jumlah']}" data-id="${index + 1}" data-stok="${data['detail_invoice'][index]['stok_tersedia']}" data-produk="${data['detail_invoice'][index]['nama_produk']} ${data['detail_invoice'][index]['berat']} ${data['detail_invoice'][index]['satuan']}" autocomplete="off">
                                 </td>
                                 <td>
                                     <input type="text" class="form-control" id="harga${index + 1}" name="harga[${index + 1}]" value="${hargaFormatted}" readonly>
@@ -1156,6 +1155,17 @@
                     confirmButtonColor: '#242c49'
                 });
                 return false; // Hentikan proses submit
+            }
+
+            if ($(".tbody-rekening").children().length === 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Data Rekening Kosong!',
+                    text: 'Silakan tambahkan minimal satu rekening sebelum submit.',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#242c49'
+                });
+                return false;
             }
 
             var url;

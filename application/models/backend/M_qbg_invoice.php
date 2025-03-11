@@ -9,8 +9,8 @@ class M_qbg_invoice extends CI_Model
     var $id = 'id';
     var $table = 'qbg_invoice';
     var $table2 = 'qbg_rek_invoice';
-    var $column_order = array(null, null, 'kode_invoice', 'nama_customer', 'nomor_customer', 'email');
-    var $column_search = array('kode_invoice', 'nama_customer', 'nomor_customer', 'email'); //field yang diizin untuk pencarian
+    var $column_order = array(null, null, 'tgl_invoice', 'kode_invoice', 'nama_customer', 'alamat_customer', 'tgl_tempo', 'created_at');
+    var $column_search = array('tgl_invoice', 'kode_invoice', 'nama_customer', 'alamat_customer', 'tgl_tempo', 'created_at'); //field yang diizin untuk pencarian
     var $order = array('id' => 'desc');
 
     // Deklarasi
@@ -79,6 +79,7 @@ class M_qbg_invoice extends CI_Model
 
         $this->db->select();
         $this->db->from($this->table3);
+        $this->db->order_by('kode_produk', 'ASC');
 
         $i = 0;
 
@@ -211,9 +212,161 @@ class M_qbg_invoice extends CI_Model
     // UNTUK QUERY INSERT DATA KE qbg_detail_invoice
     public function save_detail2($data)
     {
-        $this->db->insert_batch('qbg_detail_invoice', $data);
-        return $this->db->insert_id();
+        $inserted_ids = [];
+        foreach ($data as $row) {
+            $this->db->insert('qbg_detail_invoice', $row);
+            $inserted_ids[] = $this->db->insert_id();
+        }
+        return $inserted_ids;
     }
+
+
+    // public function updateStok()
+    // {
+    //     $this->db->select('kode_produk, 
+    //         SUM(CASE WHEN jenis_transaksi = "keluar" THEN jumlah ELSE 0 END) AS stok_keluar,
+    //         SUM(CASE WHEN jenis_transaksi = "masuk" THEN jumlah ELSE 0 END) AS stok_masuk,
+    //         SUM(CASE WHEN jenis_transaksi = "masuk" THEN jumlah ELSE 0 END) - 
+    //         SUM(CASE WHEN jenis_transaksi = "keluar" THEN jumlah ELSE 0 END) AS stok_akhir');
+    //     $this->db->from('qbg_transaksi');
+    //     $this->db->group_by('kode_produk');
+
+    //     $stok_produk = $this->db->get()->result_array(); // Ambil data dalam bentuk array
+
+    //     foreach ($stok_produk as $stok) {
+    //         $this->db->update('qbg_produk', ['stok_akhir' => $stok['stok_akhir']], ['kode_produk' => $stok['kode_produk']]);
+    //     }
+    // }
+
+    // public function updateStokAwal($kode_invoice)
+    // {
+    //     $this->db->select("
+    //         a.kode_produk,
+    //         SUBSTRING_INDEX(SUBSTRING_INDEX(a.keterangan, '(', -1), ')', 1) AS kode_invoice,
+    //         COALESCE((
+    //             SELECT SUM(
+    //                 CASE 
+    //                     WHEN t.jenis_transaksi = 'masuk' THEN t.jumlah 
+    //                     WHEN t.jenis_transaksi = 'keluar' THEN -t.jumlah 
+    //                     ELSE 0 
+    //                 END
+    //             ) 
+    //             FROM qbg_transaksi t
+    //             WHERE t.kode_produk = a.kode_produk 
+    //             AND t.created_at < a.created_at
+    //         ), 0) AS stok_awal,
+    //         a.jumlah AS stok_keluar,
+    //         (
+    //             COALESCE((
+    //                 SELECT SUM(
+    //                     CASE 
+    //                         WHEN t.jenis_transaksi = 'masuk' THEN t.jumlah 
+    //                         WHEN t.jenis_transaksi = 'keluar' THEN -t.jumlah 
+    //                         ELSE 0 
+    //                     END
+    //                 ) 
+    //                 FROM qbg_transaksi t
+    //                 WHERE t.kode_produk = a.kode_produk 
+    //                 AND t.created_at < a.created_at
+    //             ), 0) 
+    //             +
+    //             CASE 
+    //                 WHEN a.jenis_transaksi = 'masuk' THEN a.jumlah 
+    //                 WHEN a.jenis_transaksi = 'keluar' THEN -a.jumlah 
+    //                 ELSE 0 
+    //             END
+    //         ) AS stok_akhir
+    //     ", false); // `false` biar CI3 gak auto-escape alias query tetap sesuai
+
+    //     $this->db->from('qbg_transaksi a');
+    //     $this->db->join('qbg_produk b', 'a.kode_produk = b.kode_produk');
+    //     $this->db->join('qbg_invoice c', "SUBSTRING_INDEX(SUBSTRING_INDEX(a.keterangan, '(', -1), ')', 1) = c.kode_invoice", 'inner', false);
+
+    //     $this->db->where('c.payment_status', 'unpaid');
+    //     $this->db->like('a.keterangan', 'Penjualan');
+    //     $this->db->where('a.jenis_transaksi', 'keluar');
+    //     $this->db->where('kode_invoice', $kode_invoice);
+    //     $this->db->order_by('a.id', 'ASC');
+
+    //     $query = $this->db->get();
+
+    //     $data_transaksi = $query->row_array();
+
+    //     if (!empty($data_transaksi)) { // Cek apakah ada data
+    //         $this->db->trans_start(); // Mulai transaksi
+
+    //         foreach ($data_transaksi as $data) {
+    //             $this->db->where('kode_produk', $data['kode_produk']);
+    //             $this->db->update('qbg_produk', ['stok_awal' => $data['stok_awal']]);
+    //         }
+
+    //         $this->db->trans_complete(); // Selesaikan transaksi
+
+    //         if ($this->db->trans_status() === FALSE) {
+    //             return false; // Jika gagal, return false
+    //         }
+    //     }
+    // }
+
+    // public function updateStokAwal($kode_produk)
+    // {
+    //     // Ambil semua transaksi berdasarkan kode_produk, urutkan berdasarkan ID (transaksi paling lama ke terbaru)
+    //     $transaksi = $this->db->select('id, stok_awal, jumlah, jenis_transaksi')
+    //         ->where('kode_produk', $kode_produk)
+    //         ->order_by('id', 'ASC')
+    //         ->get('qbg_transaksi')
+    //         ->result();
+
+    //     $stok_sebelumnya = 0; // Default stok awal jika belum ada transaksi sebelumnya
+
+    //     foreach ($transaksi as $t) {
+    //         // Update stok awal untuk transaksi ini
+    //         $this->db->where('id', $t->id)
+    //             ->update('qbg_transaksi', ['stok_awal' => $stok_sebelumnya]);
+
+    //         // Hitung stok akhir untuk transaksi ini
+    //         if ($t->jenis_transaksi == 'masuk') {
+    //             $stok_sebelumnya += $t->jumlah; // Jika masuk, stok bertambah
+    //         } else {
+    //             $stok_sebelumnya -= $t->jumlah; // Jika keluar, stok berkurang
+    //         }
+    //     }
+    // }
+
+    public function updateStok()
+    {
+        // Ambil stok dari transaksi
+        $this->db->select('kode_produk, 
+        SUM(CASE WHEN jenis_transaksi = "keluar" THEN jumlah ELSE 0 END) AS stok_keluar,
+        SUM(CASE WHEN jenis_transaksi = "masuk" THEN jumlah ELSE 0 END) AS stok_masuk,
+        SUM(CASE WHEN jenis_transaksi = "masuk" THEN jumlah ELSE 0 END) - 
+        SUM(CASE WHEN jenis_transaksi = "keluar" THEN jumlah ELSE 0 END) AS stok_akhir');
+        $this->db->from('qbg_transaksi');
+        $this->db->group_by('kode_produk');
+
+        $stok_produk = $this->db->get()->result_array(); // Ambil data dalam bentuk array
+
+        if (!empty($stok_produk)) { // Cek apakah ada data
+            $this->db->trans_start(); // Mulai transaksi
+
+            foreach ($stok_produk as $stok) {
+                $this->db->where('kode_produk', $stok['kode_produk']);
+                $this->db->update('qbg_produk', ['stok_akhir' => $stok['stok_akhir']]);
+            }
+
+            $this->db->trans_complete(); // Selesaikan transaksi
+
+            if ($this->db->trans_status() === FALSE) {
+                return false; // Jika gagal, return false
+            }
+        }
+        return true; // Jika sukses, return true
+    }
+
+    // public function updateStokAwalByKodeInvoice($kode_invoice)
+    // {
+    //     $transaksi_unpaid = $this->getTransaksiUnpaid();
+    // }
 
     // UNTUK QUERY DELETE DATA PREPAYMENT
     public function delete($id)

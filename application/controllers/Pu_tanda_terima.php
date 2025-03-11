@@ -71,7 +71,7 @@ class Pu_tanda_terima extends CI_Controller
 	{
 		$data = $this->M_pu_tanda_terima->get_by_id($id);
 		$img = $data->foto;
-		$path = './assets/img/' . $img;
+		$path = './assets/backend/document/pu_tanda_terima/' . $img;
 		if (is_file($path)) {
 			unlink($path);
 		}

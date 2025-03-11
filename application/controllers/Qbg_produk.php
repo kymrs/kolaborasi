@@ -207,19 +207,19 @@ class Qbg_produk extends CI_Controller
 
                 if ($total < 0) {
                     $total = 0;
+                } else {
+                    $data2 = [
+                        'kode_produk' => $kode_produk,
+                        'jumlah' => $this->input->post('kurangi_stok'),
+                        'jenis_transaksi' => 'keluar',
+                        'keterangan' => 'pengurangan stok',
+                        'created_by' => $this->session->userdata('id_user')
+                    ];
+
+                    // Insert stok baru
+                    $this->db->insert('qbg_transaksi', $data2);
+                    $this->db->update('qbg_produk', ['stok_akhir' => $total], ['kode_produk' => $kode_produk]);
                 }
-
-                $data2 = [
-                    'kode_produk' => $kode_produk,
-                    'jumlah' => $this->input->post('kurangi_stok'),
-                    'jenis_transaksi' => 'keluar',
-                    'keterangan' => 'pengurangan stok',
-                    'created_by' => $this->session->userdata('id_user')
-                ];
-
-                // Insert stok baru
-                $this->db->insert('qbg_transaksi', $data2);
-                $this->db->update('qbg_produk', ['stok_akhir' => $total], ['kode_produk' => $kode_produk]);
             }
         }
 
