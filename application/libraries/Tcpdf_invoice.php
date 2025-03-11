@@ -216,11 +216,9 @@ EOD;
         $list = <<<EOD
         <ol>
         EOD;
-        $list .= '<li>Bank : ' . 'BCA' . '<br>No. Rekening : ' . '7131720452' . '</li>';
-        $list .= '<li>Bank : ' . 'BSI' . '<br>No. Rekening : ' . '7215671498' . '</li>';
 
         foreach ($invoice_rek as $rek) {
-            $list .= '<li>Bank : ' . $rek->nama_bank . '<br>No. Rekening : ' . $rek->no_rek . '</li>';
+            $list .= '<li>Nama : ' . $rek->nama . '<br>Bank : ' . $rek->nama_bank . '<br>No. Rekening : ' . $rek->no_rek . '</li>';
         }
         $list .= <<<EOD
         </ol>

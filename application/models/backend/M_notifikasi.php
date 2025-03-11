@@ -95,7 +95,7 @@ class M_notifikasi extends CI_Model
             'qubagift' => $prepayment_qbg + $reimbust_qbg + $deklarasi_qbg,
             'mobileautocare' => $prepayment_mac + $reimbust_mac + $deklarasi_mac,
             'carstensz' => $prepayment_ctz + $reimbust_ctz + $deklarasi_ctz,
-            'sobat multi logistik' => $sml_prepayment + $sml_reimbust + $sml_datadeklarasi
+            'samlog' => $sml_prepayment + $sml_reimbust + $sml_datadeklarasi
         ];
 
         return $data;

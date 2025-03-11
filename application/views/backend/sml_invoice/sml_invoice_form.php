@@ -190,7 +190,9 @@
                                             </div>
                                             <select class="js-example-basic-single" id="rekening" name="rekening">
                                                 <option value="" selected disabled>Pilih rekening tujuan</option>
-
+                                                <?php foreach ($rek_options as $option) { ?>
+                                                    <option data-pengaju="<?= $option->nama ?>" data-bank="<?= $option->nama_bank ?>" data-rek="<?= $option->no_rek ?>" value=""><?= $option->nama . '-' . $option->nama_bank . '-' . $option->no_rek ?></option>
+                                                <?php } ?>
                                             </select>
                                             <div class="input-group rekening-text">
                                                 <input type="text" class="form-control col-sm-4" style="font-size: 13px;" id="nama_rek" name="nama_rek" placeholder="Nama Pengaju">&nbsp;
@@ -685,12 +687,14 @@
             $('#rek-table tbody tr').each(function(index) {
                 const newRekRowNumber = index + 1;
                 const hiddenRekIdValue = $(this).find('input[name^="hidden_rekId"]').val();
+                const namaRekValue = $(this).find('input[name^="nama_rek"]').val();
                 const namaBankValue = $(this).find('input[name^="nama_bank"]').val();
                 const noRekValue = $(this).find('input[name^="no_rek"]').val();
 
                 $(this).attr('id', `rek-${newRekRowNumber}`);
                 $(this).find('.rek-number').text(newRekRowNumber);
-                $(this).find('input[name^="nama_bank"]').attr('name', `nama_bank[${newRekRowNumber}]`).attr('id', `nama_bank-${newRekRowNumber}`).attr('placeholder', `Nama Bank...`).val(namaBankValue);
+                $(this).find('input[name^="nama_rek"]').attr('name', `nama_rek[${newRekRowNumber}]`).attr('id', `nama_rek-${newRekRowNumber}`).attr('placeholder', `Nama...`).val(namaRekValue);
+                $(this).find('input[name^="nama_bank"]').attr('name', `nama_bank[${newRekRowNumber}]`).attr('id', `nama_bank-${newRekRowNumber}`).attr('placeholder', `Bank...`).val(namaBankValue);
                 $(this).find('input[name^="no_rek"]').attr('name', `no_rek[${newRekRowNumber}]`).attr('id', `no_rek-${newRekRowNumber}`).attr('placeholder', `Nomor Rekening...`).val(noRekValue);
                 $(this).find('input[name^="hidden_rekId"]').attr('name', `hidden_rekId[${newRekRowNumber}]`).attr('id', `hidden_rekId${newRekRowNumber}`).val(hiddenRekIdValue);
                 $(this).find('.rek-delete').attr('data-id', newRekRowNumber).text('Delete');
@@ -803,7 +807,7 @@
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
-                    console.log(data);
+                    // console.log(data);
                     let total_nominal = 0;
                     for (let index = 0; index < data['detail_invoice'].length; index++) {
                         total_nominal += parseInt(data['detail_invoice'][index]['total'], 10);
@@ -816,9 +820,13 @@
                     $('#kode_invoice').val(data['master']['kode_invoice']);
                     $('#ctc_to').val(data['master']['ctc_to']);
                     $('#ctc_address').val(data['master']['ctc_address']);
-                    $('#tax').val(formatRupiah(data['master']['tax']));
                     $('#metode').val(data['master']['metode']);
-                    $('#diskon').val(formatRupiah(data['master']['diskon']));
+                    if (data['master']['tax'] > 0) {
+                        $('#tax').val(formatRupiah(data['master']['tax']));
+                    }
+                    if (data['master']['tax'] > 0) {
+                        $('#diskon').val(formatRupiah(data['master']['diskon']));
+                    }
                     // if (data['master']['total'] == null) {
                     $('#total_nominal_view').text(total_nominal.toLocaleString());
                     $('#total_nominal').val(total_nominal);
@@ -837,7 +845,7 @@
                             <tr id="rek-${index + 1}">
                                 <td class="rek-number">${index + 1}</td>
                                 <td>
-                                <input name="nama_rek[${index+1}]" id="nama_rek-${index + 1}" value="${data['rek_invoice'][index]['nama_rek']}" style="border: none; pointer-events: none; color: #666">
+                                <input name="nama_rek[${index+1}]" id="nama_rek-${index + 1}" value="${data['rek_invoice'][index]['nama']}" style="border: none; pointer-events: none; color: #666">
                                 <input type="hidden" id="hidden_rekId${index + 1}" name="hidden_rekId[${index + 1}]" value="${data['rek_invoice'][index]['id']}">
                                 </td>
                                 <td>

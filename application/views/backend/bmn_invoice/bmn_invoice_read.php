@@ -169,10 +169,8 @@
                 <div class="metode-pembayaran">
                     <p>Metode Pembayaran</p>
                     <ol>
-                        <li>Bank : BCA <br> No. Rekening : 7131720452 </li>
-                        <li>Bank : BSI <br> No. Rekening : 7215671498 </li>
                         <?php foreach ($rekening as $data) : ?>
-                            <li>Bank : <?= $data['nama_bank'] ?> <br> No. Rekening : <?= $data['no_rek'] ?> </li>
+                            <li>Nama : <?= $data['nama'] ?> <br> Bank : <?= $data['nama_bank'] ?> <br> No. Rekening : <?= $data['no_rek'] ?> </li>
                         <?php endforeach ?>
                     </ol>
                     <p>Atas Nama : PT. Kolaborasi Para Sahabat </p>

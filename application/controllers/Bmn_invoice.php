@@ -259,7 +259,7 @@ class Bmn_invoice extends CI_Controller
         $inserted = $this->M_bmn_invoice->save($data);
 
         // INISIASI VARIABEL INPUT Nomor Rekening Bank
-
+        $nama_rek = $this->input->post('nama_rek[]');
         $nama_bank = $this->input->post('nama_bank[]');
         $no_rek = $this->input->post('no_rek[]');
         if (!empty($no_rek)) {
@@ -267,6 +267,7 @@ class Bmn_invoice extends CI_Controller
             for ($i = 1; $i <= count($nama_bank); $i++) {
                 $data2[] = array(
                     'invoice_id' => $inserted,
+                    'nama' => $nama_rek[$i],
                     'nama_bank' => $nama_bank[$i],
                     'no_rek' => $no_rek[$i]
                 );
@@ -391,6 +392,7 @@ class Bmn_invoice extends CI_Controller
 
             // MELAKUKAN REPLACE DATA REKENING
             $id_rek = $this->input->post('hidden_rekId[]');
+            $nama_rek = $this->input->post('nama_rek[]');
             $nama_bank = $this->input->post('nama_bank[]');
             $no_rek = $this->input->post('no_rek[]');
             if (!empty($no_rek)) {
@@ -400,6 +402,7 @@ class Bmn_invoice extends CI_Controller
                     $data3[] = array(
                         'id' => $id_rekening,
                         'invoice_id' => $this->input->post('id'),
+                        'nama' => $nama_rek[$i],
                         'nama_bank' => $nama_bank[$i],
                         'no_rek' => $no_rek[$i]
                     );

@@ -97,8 +97,8 @@ class Sml_reimbust extends CI_Controller
             }
             $row[] = strtoupper($field->kode_reimbust);
             $row[] = $field->name;
-            $row[] = $field->jabatan;
-            $row[] = $field->departemen;
+            // $row[] = $field->jabatan;
+            // $row[] = $field->departemen;
             $row[] = $field->sifat_pelaporan;
             // Array bulan bahasa Indonesia
             $bulanIndo = array(
@@ -709,9 +709,9 @@ class Sml_reimbust extends CI_Controller
             ->get('tbl_submenu')
             ->row();
 
-        $confirm = $this->db->select('app_id, app2_id, app4_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->num_rows();
-        if ($confirm > 0) {
-            $app = $this->db->select('app_id, app2_id, app4_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
+        $confirm = $this->db->select('app_id, app2_id, app4_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
+        if (!empty($confirm) && isset($confirm->app_id, $confirm->app2_id, $confirm->app4_id)) {
+            $app = $confirm;
         } else {
             echo json_encode(array("status" => FALSE, "error" => "Approval Belum Ditentukan, Mohon untuk menghubungi admin."));
             exit();

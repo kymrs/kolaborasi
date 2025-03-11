@@ -42,7 +42,20 @@
     }
 
     .rekening-text {
+        /* margin-left: 0px; */
         margin-bottom: -2px;
+    }
+
+    .rekening-text .rek_input {
+        font-size: 13px;
+        width: 40%;
+        display: inline-block;
+    }
+
+    .rekening-text .rek_input2 {
+        font-size: 13px;
+        width: 50%;
+        display: inline-block;
     }
 
     /* Mengubah gaya dropdown */
@@ -169,23 +182,29 @@
                                             <select class="js-example-basic-single" id="rekening" name="rekening">
                                                 <option value="" selected disabled>Pilih rekening tujuan</option>
                                                 <?php foreach ($rek_options as $option) { ?>
-                                                    <option data-bank="<?= $option->nama_bank ?>" data-rek="<?= $option->no_rek ?>" value=""><?= $option->nama_bank . '-' . $option->no_rek ?></option>
+                                                    <option data-nama="<?= $option->nama ?>" data-bank="<?= $option->nama_bank ?>" data-rek="<?= $option->no_rek ?>" value=""><?= $option->nama . '-' . $option->nama_bank . '-' . $option->no_rek ?></option>
                                                 <?php } ?>
                                             </select>
                                             <div class="input-group rekening-text">
-                                                <input type="text" class="form-control col-sm-4" style="font-size: 13px;" id="nama_bank" name="nama_bank" placeholder="Nama Bank">&nbsp;
-                                                <span class="py-2">-</span>&nbsp;
-                                                <input type="text" class="form-control col-sm-6" style="font-size: 13px;" id="nomor_rekening" name="nomor_rekening" placeholder="No Rekening">
-                                                <span class="py-2"></span>&nbsp;
+                                                <div class="row-sm mb-2" style="width: 100%;">
+                                                    <input type="text" class="form-control" id="nama_rek" name="nama_rek" placeholder="Nama" maxlength="20">
+                                                </div>
+                                                <!-- <div class="row" style="margin-left: 0px; background-color: red"> -->
+                                                <input type="text" class="form-control rek_input" style="border-radius: 5px" id="nama_bank" name="nama_bank" placeholder="Nama Bank">
+                                                &nbsp;<span class="py-2">-</span>&nbsp;
+                                                <input type="text" class="form-control rek_input2" style="border-radius: 5px" id="nomor_rekening" name="nomor_rekening" placeholder="No Rekening">
+                                                <!-- <span class="py-2"></span>&nbsp; -->
+                                                <!-- </div> -->
                                                 <button type="button" class="btn-primary" id="btn-rek" style="height: 33.5px; width: 40px"><i class="fa fa-plus" aria-hidden="true"></i></button>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-sm-12">
+                                    <div class="col-sm-12 table-responsive">
                                         <table id="rek-table" class=" table table-bordered">
                                             <thead>
                                                 <th>No</th>
-                                                <th class="col-sm-4">Nama Bank</th>
+                                                <th class="col-sm-2">Nama</th>
+                                                <th class="col-sm-2">Bank</th>
                                                 <th class="col-sm-8">No Rekening</th>
                                                 <th>Delete</th>
                                             </thead>
@@ -460,6 +479,15 @@
 
         $('.js-example-basic-single').select2();
 
+        document.getElementById("nama_rek").addEventListener("input", function(event) {
+            let words = this.value.trim().split(/\s+/); // Pisahkan kata berdasarkan spasi
+            if (words.length > 20) {
+                this.value = words.slice(0, 20).join(" "); // Batasi hanya 20 kata
+                event.preventDefault(); // Mencegah input tambahan
+            }
+        });
+
+
         // Fungsi untuk mengatur enabled/disabled elemen berdasarkan radio button yang dipilih
         function toggleInputs() {
             const isExistChecked = $('#exist').is(':checked');
@@ -469,10 +497,12 @@
                 $('#rekening').prop('disabled', false).show(); // Aktifkan dan tampilkan elemen asli
                 $('#rekening').next('.select2-container').show(); // Tampilkan elemen Select2
                 $('.input-group.rekening-text input[type="text"]').prop('disabled', true).parent().hide(); // Sembunyikan input fields
+                $('.input-group.rekening-text button[type="button"]').prop('disabled', true).parent().hide(); // Sembunyikan input fields
             } else {
                 $('#rekening').prop('disabled', true).hide(); // Nonaktifkan dan sembunyikan elemen asli
                 $('#rekening').next('.select2-container').hide(); // Sembunyikan elemen Select2
                 $('.input-group.rekening-text input[type="text"]').prop('disabled', false).parent().show(); // Tampilkan input fields
+                $('.input-group.rekening-text button[type="button"]').prop('disabled', false).parent().show(); // Tampilkan input fields
             }
         }
 
@@ -531,8 +561,9 @@
         let rowRekCount = 0;
 
         //ADD ROW NOMOR REKENING
-        function addRekRow(bank, rek) {
+        function addRekRow(nama, bank, rek) {
             // Ambil nilai dari input
+            const namaRek = nama;
             const namaBank = bank;
             const nomorRekening = rek;
 
@@ -541,6 +572,9 @@
                 const rekRow = `
                 <tr id="rek-${rowRekCount}">
                     <td class="rek-number">${rowRekCount}</td>
+                    <td>
+                    <input name="nama_rek[${rowRekCount}]" id="nama_rek-${rowRekCount}" value="${namaRek}" style="border: none; pointer-events: none; color: #666">
+                    </td>
                     <td>
                     <input name="nama_bank[${rowRekCount}]" id="nama_bank-${rowRekCount}" value="${namaBank}" style="border: none; pointer-events: none; color: #666">
                     <input type="hidden" id="hidden_rekId${rowRekCount}" name="hidden_rekId[${rowRekCount}]" value="">
@@ -697,12 +731,14 @@
             $('#rek-table tbody tr').each(function(index) {
                 const newRekRowNumber = index + 1;
                 const hiddenRekIdValue = $(this).find('input[name^="hidden_rekId"]').val();
+                const namaRekValue = $(this).find('input[name^="nama_rek"]').val();
                 const namaBankValue = $(this).find('input[name^="nama_bank"]').val();
                 const noRekValue = $(this).find('input[name^="no_rek"]').val();
 
                 $(this).attr('id', `rek-${newRekRowNumber}`);
                 $(this).find('.rek-number').text(newRekRowNumber);
-                $(this).find('input[name^="nama_bank"]').attr('name', `nama_bank[${newRekRowNumber}]`).attr('id', `nama_bank-${newRekRowNumber}`).attr('placeholder', `Nama Bank...`).val(namaBankValue);
+                $(this).find('input[name^="nama_rek"]').attr('name', `nama_rek[${newRekRowNumber}]`).attr('id', `nama_rek-${newRekRowNumber}`).attr('placeholder', `Nama...`).val(namaRekValue);
+                $(this).find('input[name^="nama_bank"]').attr('name', `nama_bank[${newRekRowNumber}]`).attr('id', `nama_bank-${newRekRowNumber}`).attr('placeholder', `Bank...`).val(namaBankValue);
                 $(this).find('input[name^="no_rek"]').attr('name', `no_rek[${newRekRowNumber}]`).attr('id', `no_rek-${newRekRowNumber}`).attr('placeholder', `Nomor Rekening...`).val(noRekValue);
                 $(this).find('input[name^="hidden_rekId"]').attr('name', `hidden_rekId[${newRekRowNumber}]`).attr('id', `hidden_rekId${newRekRowNumber}`).val(hiddenRekIdValue);
                 $(this).find('.rek-delete').attr('data-id', newRekRowNumber).text('Delete');
@@ -717,9 +753,11 @@
 
         // BUTTON ADD ROW NOMOR REKENING
         $('#btn-rek').click(function() {
+            var nama = $('#nama_rek').val();
             var bank = $('#nama_bank').val();
             var rek = $('#nomor_rekening').val();
-            addRekRow(bank, rek);
+            addRekRow(nama, bank, rek);
+            $('#nama_rek').val('');
             $('#nama_bank').val('');
             $('#nomor_rekening').val('');
         });
@@ -730,10 +768,11 @@
             var selectedOption = $(this).find(':selected');
 
             // Ambil nilai atribut data
+            var nama = selectedOption.data('nama');
             var bank = selectedOption.data('bank');
             var rek = selectedOption.data('rek');
 
-            addRekRow(bank, rek);
+            addRekRow(nama, bank, rek);
         });
 
         function updateSubmitButtonState() {
@@ -811,6 +850,9 @@
                             const row = `
                             <tr id="rek-${index + 1}">
                                 <td class="rek-number">${index + 1}</td>
+                                <td>
+                                <input name="nama_rek[${index+1}]" id="nama_rek-${index + 1}" value="${data['rek_invoice'][index]['nama']}" style="border: none; pointer-events: none; color: #666">
+                                </td>
                                 <td>
                                 <input name="nama_bank[${index+1}]" id="nama_bank-${index + 1}" value="${data['rek_invoice'][index]['nama_bank']}" style="border: none; pointer-events: none; color: #666">
                                 <input type="hidden" id="hidden_rekId${index + 1}" name="hidden_rekId[${index + 1}]" value="${data['rek_invoice'][index]['id']}">

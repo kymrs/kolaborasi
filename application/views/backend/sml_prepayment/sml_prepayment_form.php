@@ -150,6 +150,12 @@
                             <!-- SEBELAH KANAN -->
                             <div class="col-md-6">
                                 <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label prepayment-field">Prepayment</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="prepayment" name="prepayment" placeholder="Prepayment for....">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
                                     <label class="col-sm-4 col-form-label tujuan-field">Tujuan</label>
                                     <div class="col-sm-7">
                                         <textarea class="form-control" id="tujuan" name="tujuan" rows="2"></textarea>

@@ -268,7 +268,7 @@ class Sml_invoice extends CI_Controller
 
         if ($inserted) {
             // INISIASI VARIABEL INPUT DETAIL PREPAYMENT
-            // $nama_rek = $this->input->post('nama_rek[]');
+            $nama_rek = $this->input->post('nama_rek[]');
             $nama_bank = $this->input->post('nama_bank[]');
             $no_rek = $this->input->post('no_rek[]');
             if (!empty($no_rek)) {
@@ -276,7 +276,7 @@ class Sml_invoice extends CI_Controller
                 for ($i = 1; $i <= count($nama_bank); $i++) {
                     $data2[] = array(
                         'invoice_id' => $inserted,
-                        // 'nama_rek' => $nama_rek[$i],
+                        'nama' => $nama_rek[$i],
                         'nama_bank' => $nama_bank[$i],
                         'no_rek' => $no_rek[$i]
                     );
@@ -380,7 +380,7 @@ class Sml_invoice extends CI_Controller
 
             // MELAKUKAN REPLACE DATA REKENING
             $id_rek = $this->input->post('hidden_rekId[]');
-            // $nama_rek = $this->input->post('nama_rek[]');
+            $nama_rek = $this->input->post('nama_rek[]');
             $nama_bank = $this->input->post('nama_bank[]');
             $no_rek = $this->input->post('no_rek[]');
             if (!empty($nama_bank)) {
@@ -390,7 +390,7 @@ class Sml_invoice extends CI_Controller
                     $data3[] = array(
                         'id' => $id_rekening,
                         'invoice_id' => $this->input->post('id'),
-                        // 'nama_rek' => $nama_rek[$i],
+                        'nama' => $nama_rek[$i],
                         'nama_bank' => $nama_bank[$i],
                         'no_rek' => $no_rek[$i]
                     );
@@ -558,8 +558,21 @@ class Sml_invoice extends CI_Controller
         $t_cpdf2->SetFont('helvetica', 'B', 10);
         $t_cpdf2->Cell(0, 6, 'Pembayaran Transfer Melalui:', 0, 1);
         $t_cpdf2->SetFont('helvetica', '', 10);
-        $t_cpdf2->Cell(0, 6, 'BCA Cab. Cibodas', 0, 1);
-        $t_cpdf2->Cell(0, 6, 'No. Rekening : 7131720380', 0, 1);
+        $list = <<<EOD
+        <ol>
+        EOD;
+
+        foreach ($invoice_rek as $rek) {
+            $list .= '<li>Nama : ' . $rek->nama . '<br>Bank : ' . $rek->nama_bank . '<br>No. Rekening : ' . $rek->no_rek . '</li>';
+        }
+        $list .= <<<EOD
+        </ol>
+        EOD;
+        $t_cpdf2->SetFont('helvetica', '', 10);
+        $y = $t_cpdf2->GetY();
+        $x = 8;
+        $t_cpdf2->writeHTMLCell(0, 0, $x, $y, $list, 0, 1, false, true, 'L', true);
+        $t_cpdf2->SetFont('helvetica', 'B', 10);
         $t_cpdf2->Cell(0, 6, 'a/n PT. Sahabat Multi Logistik', 0, 1);
 
         // Footer
