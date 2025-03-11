@@ -109,7 +109,7 @@
         color: white;
         border: none;
         padding: 7px 23px;
-        font-size: 12px;
+        font-size: 13px;
         border-radius: 5px;
         box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.15), -4px 4px 6px rgba(0, 0, 0, 0.15), 4px 4px 6px rgba(0, 0, 0, 0.15);
         /* Bayangan bawah dan kiri-kanan */
@@ -118,6 +118,7 @@
         margin-bottom: 5px;
         position: relative;
         bottom: -2px;
+        width: 250px;
     }
 
     .btn-style:hover {
@@ -162,7 +163,6 @@
     }
 
     @media (max-width: 768px) {
-
         .table-transaksi {
             overflow-x: scroll;
             background-color: #fff;
@@ -172,6 +172,9 @@
             height: auto;
         }
 
+        .btn-style {
+            width: auto;
+        }
     }
 </style>
 
@@ -313,7 +316,7 @@
 
                         <!-- BUTTON TAMBAH FORM -->
                         <div class="mt-4">
-                            <button disabled type="button" class="btn-special btn-sm" id="add-row" style="background-color:rgb(53, 65, 107);"><span class="front front-add"><i class="fa fa-plus" aria-hidden="true"></i> Add</span></button>
+                            <button type="button" class="btn-special btn-sm" id="add-row" style="background-color:rgb(53, 65, 107);"><span class="front front-add"><i class="fa fa-plus" aria-hidden="true"></i> Add</span></button>
                         </div>
                         <!-- TABLE INPUT -->
                         <div class="mt-3 mb-3" style="overflow-x: scroll;">
@@ -490,7 +493,29 @@
         });
     });
 
+    $("#add-row").click(function() {
+        var jenisHarga = $("#jenis_harga").val();
 
+        if (jenisHarga === "") {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Oops...',
+                text: 'Silakan pilih jenis harga terlebih dahulu!',
+            });
+        } else {
+            // Aksi jika jenis_harga sudah dipilih
+            console.log("Lanjutkan aksi karena jenis harga sudah dipilih.");
+        }
+    });
+
+    // Enable tombol kalau user sudah memilih harga
+    $("#jenis_harga").change(function() {
+        if ($(this).val() !== "") {
+            $("#add-row").prop("disabled", false);
+        } else {
+            $("#add-row").prop("disabled", true);
+        }
+    });
 
     // untuk menghitung seluruh total produk, dan disimpan ke input total akhir
     function calculateTotalNominal() {
@@ -988,7 +1013,19 @@
 
         // BUTTON ADD ROW DETAIL TRANSAKSI
         $('#add-row').click(function() {
-            addRow();
+            var jenisHarga = $('#jenis_harga').val(); // Ambil nilai dari select
+
+            if (jenisHarga === '' || jenisHarga === null) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Oops!',
+                    confirmButtonColor: '#242c49',
+                    text: 'Silakan pilih harga produk terlebih dahulu!',
+                });
+                jenisHarga.css('backgroud-color', 'red');
+                return; // Stop eksekusi addRow()
+            }
+            addRow(); // Kalau jenis_harga sudah dipilih, baru eksekusi addRow()
         });
 
         // BUTTON ADD ROW NOMOR REKENING

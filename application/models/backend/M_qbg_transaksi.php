@@ -7,8 +7,8 @@ class M_qbg_transaksi extends CI_Model
 {
     var $id = 'id';
     var $table = 'qbg_transaksi'; //nama tabel dari database
-    var $column_order = array(null, null, 'kode_produk', 'berat', 'jenis_transaksi', 'jumlah', 'keterangan', 'created_at');
-    var $column_search = array('kode_produk', 'berat', 'jenis_transaksi', 'jumlah', 'keterangan', 'created_at'); //field yang diizin untuk pencarian 
+    var $column_order = array(null, 'kode_produk', 'nama_produk', 'berat', 'jenis_transaksi', 'jumlah', 'keterangan', 'created_at');
+    var $column_search = array('a.kode_produk', 'b.nama_produk', 'berat', 'jenis_transaksi', 'jumlah', 'keterangan', 'a.created_at'); //field yang diizin untuk pencarian 
     // var $order = array('id' => 'asc'); // default order 
 
     public function __construct()
