@@ -122,8 +122,12 @@
                                     <div class="col-sm-8">
                                         <div class="input-group mb-3">
                                             <div class="form-check form-check-inline" style="margin-bottom: 5px;">
-                                                <input class="form-check-input" type="radio" name="radioNoLabel" id="exist" value="" aria-label="..." checked><label for="exist" style="margin-right: 14px; margin-top: 8px; cursor: pointer">Rekening terdaftar</label>
-                                                <input class="form-check-input" type="radio" name="radioNoLabel" id="new" value="" aria-label="..."><label for="new" style="margin-top: 8px; cursor: pointer">Rekening baru</label>
+                                                <?php if ($id_pembuat != $id_user && !empty($aksi)) { ?>
+                                                    <input class="form-check-input" type="radio" name="radioNoLabel" id="new" value="" aria-label="..." checked><label for="new" style="margin-top: 8px; cursor: pointer">Rekening</label>
+                                                <?php } else { ?>
+                                                    <input class="form-check-input" type="radio" name="radioNoLabel" id="exist" value="" aria-label="..." checked><label for="exist" style="margin-right: 14px; margin-top: 8px; cursor: pointer">Rekening terdaftar</label>
+                                                    <input class="form-check-input" type="radio" name="radioNoLabel" id="new" value="" aria-label="..."><label for="new" style="margin-top: 8px; cursor: pointer">Rekening baru</label>
+                                                <?php } ?>
                                             </div>
                                             <select class="js-example-basic-single" id="rekening" name="rekening">
                                                 <option value="Pilih rekening tujuan" selected disabled>Pilih rekening tujuan</option>
@@ -452,7 +456,6 @@
                 success: function(data) {
                     // moment.locale('id')
                     let total_nominal = 0;
-                    // console.log(data);
                     for (let index = 0; index < data['transaksi'].length; index++) {
                         total_nominal += parseInt(data['transaksi'][index]['nominal'], 10);
                     }
@@ -462,6 +465,13 @@
                     $('#tgl_prepayment').val(moment(data['master']['tgl_prepayment']).format('DD-MM-YYYY'));
                     $('#nama').val(data['master']['nama']);
                     $('#rekening').val(data['master']['no_rek']).trigger('change');
+                    var parts = data['master']['no_rek'].split("-"); // Pisahkan berdasarkan "-"
+
+                    if (parts.length === 3) {
+                        $("#nama_rek").val(parts[0]);
+                        $("#nama_bank").val(parts[1]);
+                        $("#nomor_rekening").val(parts[2]);
+                    }
                     $('#prepayment').val(data['master']['prepayment']);
                     $('#tujuan').val(data['master']['tujuan']);
                     if (data['master']['total_nominal'] == null) {

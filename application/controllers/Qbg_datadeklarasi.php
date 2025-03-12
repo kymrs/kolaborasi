@@ -166,7 +166,6 @@ class Qbg_datadeklarasi extends CI_Controller
 
     function edit_form($id)
     {
-
         $data['id'] = $id;
         $data['id_user'] = $this->session->userdata('id_user');
         $data['id_pembuat'] = $this->M_qbg_datadeklarasi->get_by_id($id)->id_pengaju;

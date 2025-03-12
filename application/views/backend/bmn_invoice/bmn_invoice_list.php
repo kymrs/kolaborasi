@@ -117,7 +117,7 @@
             //     "infoFiltered": ""
             // },
             "columnDefs": [{
-                    "targets": [2, 3, 4, 5, 6, 7],
+                    "targets": [2, 3, 4, 5, 7],
                     "className": 'dt-head-nowrap'
                 },
                 {

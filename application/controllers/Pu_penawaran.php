@@ -622,8 +622,10 @@ class Pu_penawaran extends CI_Controller
         $left_margin = 10;
         $t_cpdf->SetLeftMargin($left_margin);  // Mengatur margin kiri
 
+        $margin_head = $t_cpdf->GetY() + 3;
+
         // Bagian TO
-        $t_cpdf->SetXY($left_margin, $t_cpdf->GetY());
+        $t_cpdf->SetXY($left_margin, $margin_head);
         $t_cpdf->Cell(0, 10, 'PENAWARAN', 0, 1, 'L');
 
         // Name and title (Creative Director)
@@ -669,12 +671,12 @@ class Pu_penawaran extends CI_Controller
         $result = $writer->write($qrCode)->getString();
 
         // Add QR Code image to PDF
-        $t_cpdf->Image('@' . $result, 140, 42, 32, 32); // Directly add the image from memory
+        $t_cpdf->Image('@' . $result, 140, 45, 32, 32); // Directly add the image from memory
 
         // Add favicon with white background
         $t_cpdf->SetFillColor(255, 255, 255); // RGB for white
-        $t_cpdf->Rect(153.5, 56, 5, 6, 'F');   // X, Y, Width, Height, 'F' for filled rectangle
-        $t_cpdf->Image('assets/backend/img/favicon-pu.png', 153.5, 56, 5, 6);
+        $t_cpdf->Rect(153.5, 59, 5, 6, 'F');   // X, Y, Width, Height, 'F' for filled rectangle
+        $t_cpdf->Image('assets/backend/img/favicon-pu.png', 153.5, 59, 5, 6);
 
         $t_cpdf->Ln(5); // SPASI
 
@@ -750,7 +752,7 @@ class Pu_penawaran extends CI_Controller
 
         // KONTEN DESKRIPSI
         $body_text = $penawaran->deskripsi;
-        $t_cpdf->Sety(91 + 4);
+        $t_cpdf->Sety(94 + 4);
         $t_cpdf->MultiCell($content_width, 4, $body_text, 0, (strlen($body_text) < 50 ? 'L' : 'J'));  // 'J' digunakan untuk rata kiri dan kanan (justify)
 
         $deskripsiY = $t_cpdf->GetY();
@@ -764,37 +766,37 @@ class Pu_penawaran extends CI_Controller
 
         $t_cpdf->Sety($useY + 5);
 
-        // HEADER LAYANAN TERMASUK DAN TIDAK TERMASUK
-        $t_cpdf->SetFont('poppins-regular', '', 9);
-        $t_cpdf->Cell(100, 5, 'Layanan Termasuk:', 0, 0, 'L'); // Header kiri
-        $trmskY = $t_cpdf->GetY();
-
-        $t_cpdf->SetX($right_column_x); // Pindahkan posisi ke kolom kanan
-        $t_cpdf->Cell(90, 5, 'Layanan Tidak Termasuk:', 0, 1, 'L'); // Header kanan
-
         // Ambil data layanan
         $kode = $penawaran->no_arsip; // Kode arsip dari penawaran
         $data_layanan_termasuk = $this->M_pu_penawaran->getLayananTermasuk($kode); // Data layanan termasuk
         $data_layanan_tidak_termasuk = $this->M_pu_penawaran->getLayananTidakTermasuk($kode); // Data layanan tidak termasuk
 
-        // Menentukan jumlah baris terbesar antara dua data
-        $maxRows = max(count($data_layanan_termasuk), count($data_layanan_tidak_termasuk));
-
+        // HEADER LAYANAN TERMASUK DAN TIDAK TERMASUK
+        $t_cpdf->SetFont('poppins-regular', '', 9);
+        $t_cpdf->Cell(100, 5, 'Layanan Termasuk:', 0, 1, 'L'); // Header kiri
+        $colomn_layanan_Y = $t_cpdf->GetY();
         // Menampilkan data layanan secara sejajar
         $t_cpdf->SetFont('poppins-regular', '', 9); // Atur font
-        for ($i = 0; $i < $maxRows; $i++) {
+        for ($i = 0; $i < count($data_layanan_termasuk); $i++) {
             // Kolom Layanan Termasuk
             if (isset($data_layanan_termasuk[$i])) {
                 $nomorTermasuk = $i + 1;
                 $t_cpdf->Cell(4, 5, $nomorTermasuk . '.', 0, 0, 'L'); // Nomor
-                $t_cpdf->Cell(106, 5, $data_layanan_termasuk[$i]['nama_layanan'], 0, 0, 'L'); // Nama layanan
+                $t_cpdf->Cell(106, 5, $data_layanan_termasuk[$i]['nama_layanan'], 0, 1, 'L'); // Nama layanan
             } else {
                 $t_cpdf->Cell(110, 5, '', 0, 0); // Kosongkan cell jika data habis
             }
+        }
+        $layanan_termasuk_Y = $t_cpdf->GetY();
 
+        $t_cpdf->SetY($colomn_layanan_Y - 5); // Pindahkan posisi ke kolom kanan
+        $t_cpdf->SetX($right_column_x); // Pindahkan posisi ke kolom kanan
+        $t_cpdf->Cell(90, 5, 'Layanan Tidak Termasuk:', 0, 1, 'L'); // Header kanan
+        for ($i = 0; $i < count($data_layanan_tidak_termasuk); $i++) {
             // Kolom Layanan Tidak Termasuk
             if (isset($data_layanan_tidak_termasuk[$i])) {
                 $nomorTidakTermasuk = $i + 1;
+                $t_cpdf->SetX($right_column_x); // Pindahkan posisi ke kolom kanan
                 $t_cpdf->Cell(4, 5, $nomorTidakTermasuk . '.', 0, 0, 'L'); // Nomor
                 $t_cpdf->Cell(100, 5, $data_layanan_tidak_termasuk[$i]['nama_layanan'], 0, 1, 'L'); // Nama layanan
             } else {
@@ -802,20 +804,12 @@ class Pu_penawaran extends CI_Controller
             }
         }
 
-        // Jika tidak ada layanan
-        if (empty($data_layanan_termasuk) && empty($data_layanan_tidak_termasuk)) {
-            $t_cpdf->SetFont('poppins-regular', 'I', 9); // Font miring untuk pesan kosong
-            $t_cpdf->Cell(0, 5, 'Tidak ada layanan tersedia.', 0, 1, 'C');
-        }
-
-        $trmskY = $t_cpdf->GetY();
-
-        $t_cpdf->Ln(5); // Spasi antara paragraf
+        $t_cpdf->Ln(3);
 
         // KONTEN HOTEL DAN PENERBANGAN
         foreach ($hotels as $hotel) {
             $t_cpdf->SetFont('poppins-regular', '', 9);
-            $t_cpdf->SetX(100); // Pindahkan posisi ke kolom kanan
+            $t_cpdf->SetX($right_column_x - 4);
             $t_cpdf->Cell(25, 5, 'Hotel ' . $hotel->kota, 0, 0,);
             $t_cpdf->SetFont('ZapfDingbats');
             $stars = '';
@@ -832,18 +826,27 @@ class Pu_penawaran extends CI_Controller
             $t_cpdf->Cell(40, 5, $hotel->nama_hotel, 0, 1);
         }
 
-        $t_cpdf->SetX(100); // Pindahkan posisi ke kolom kanan
+        $t_cpdf->SetX($right_column_x - 4);
         $t_cpdf->Cell(40, 5, 'Keberangkatan', 0, 0);
         $t_cpdf->Cell(3, 5, ':', 0, 0);
         $t_cpdf->Cell(40, 5, $penawaran->keberangkatan, 0, 1);
 
-        $t_cpdf->SetX(100); // Pindahkan posisi ke kolom kanan
+        $t_cpdf->SetX($right_column_x - 4);
         $t_cpdf->Cell(40, 5, 'Kepulangan', 0, 0);
         $t_cpdf->Cell(3, 5, ':', 0, 0);
         $t_cpdf->Cell(40, 5, $penawaran->kepulangan, 0, 1);
 
+        $layanan_tidak_termasuk_Y = $t_cpdf->GetY();
+
+        if ($layanan_termasuk_Y > $layanan_tidak_termasuk_Y) {
+            $colomn_y = $layanan_termasuk_Y;
+        } else {
+            $colomn_y = $layanan_tidak_termasuk_Y;
+        }
+
         $t_cpdf->Ln(2); // Spasi antara paragraf
 
+        $t_cpdf->SetY($colomn_y + 2);
         // HEADER LAYANAN PASTI
         $t_cpdf->SetFont('poppins-regular', '', 11);
         $t_cpdf->SetFillColor(252, 118, 19);
@@ -883,8 +886,11 @@ class Pu_penawaran extends CI_Controller
         $t_cpdf->Ln(1);
 
         $trmskY = $t_cpdf->GetY();
-
         $t_cpdf->SetY($trmskY + 3);
+        if ($trmskY > 215.78125) {
+            $t_cpdf->AddPage();
+            $t_cpdf->SetY($margin_head);
+        }
 
         // HEADER LAYANAN PASTI
         $t_cpdf->SetFont('poppins-regular', '', 11);
@@ -913,12 +919,15 @@ class Pu_penawaran extends CI_Controller
         // Add a new page
         $t_cpdf->AddPage();
 
-        // Awal dari tabel
-        $tbl = <<<EOD
+        // Set posisi awal
+        $t_cpdf->SetY($margin_head);
+
+        // Tambahkan header tabel
+        $html = <<<EOD
 <table border="1" cellpadding="4">
 <thead>
  <tr>
-  <th width="100" align="center">Hari</th>
+  <th width="100" align="center">Hari</th>  
   <th width="140" align="center">Tanggal</th>
   <th width="300" align="center">Kegiatan</th>
  </tr>
@@ -926,22 +935,39 @@ class Pu_penawaran extends CI_Controller
 <tbody>
 EOD;
 
-        // Looping melalui rundown untuk menambahkan baris dinamis
+        // Tambahkan setiap baris rundown
         foreach ($rundowns as $rundown) {
-            $tbl .= '<tr>';
-            $tbl .= '<td width="100" align="center">' . $rundown['hari'] . '</td>';
-            $tbl .= '<td width="140" align="center">' . $rundown['tanggal'] . '</td>';
-            $tbl .= '<td width="300">' . $rundown['kegiatan'] . '</td>';
-            $tbl .= '</tr>';
+            // Cek apakah posisi Y lebih dari batas auto page break
+            if ($t_cpdf->GetY() > ($t_cpdf->getPageHeight() - 40)) {
+                $t_cpdf->AddPage();
+
+                // Tambahkan ulang header tabel di halaman baru
+                $html .= <<<EOD
+        </tbody></table> <!-- Tutup tabel sebelum pindah halaman -->
+        <table border="1" cellpadding="4">
+        <thead>
+         <tr nobr="true">
+          <th width="100" align="center">Hari</th>  
+          <th width="140" align="center">Tanggal</th>
+          <th width="300" align="center">Kegiatan</th>
+         </tr>
+        </thead>
+        <tbody>
+        EOD;
+            }
+
+            $html .= '<tr nobr="true">';
+            $html .= '<td width="100" align="center">' . $rundown['hari'] . '</td>';
+            $html .= '<td width="140" align="center">' . $rundown['tanggal'] . '</td>';
+            $html .= '<td width="300">' . $rundown['kegiatan'] . '</td>';
+            $html .= '</tr>';
         }
 
-        // Akhir dari tabel
-        $tbl .= <<<EOD
-</tbody>
-</table>
-EOD;
-        $t_cpdf->Sety(38);
-        $t_cpdf->writeHTML($tbl, true, false, false, false, '');
+        // Tutup tabel dengan benar
+        $html .= '</tbody></table>';
+
+        // Cetak tabel ke PDF dengan writeHTMLCell agar border tidak terpotong
+        $t_cpdf->writeHTMLCell(0, 0, '', '', $html, 0, 1, false, true, '');
 
         // Output PDF (tampilkan di browser)
         $t_cpdf->Output('Penawaran', 'I'); // 'I' untuk menampilkan di browser
