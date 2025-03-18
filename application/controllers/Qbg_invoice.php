@@ -229,15 +229,6 @@ class Qbg_invoice extends CI_Controller
         echo json_encode($data);
     }
 
-    // public function getAllProducts()
-    // {
-    //     $this->load->database();
-    //     $query = $this->db->get('qbg_produk');  // Ganti 'produk' dengan nama tabel lo
-    //     $result = $query->result_array();
-    //     echo json_encode($result);
-    // }
-
-
     // UNTUK MENAMPILKAN FORM EDIT
     function edit_form($id)
     {
@@ -758,7 +749,7 @@ EOD;
         $table2 .= '<tr style="border: none;">';
         $table2 .= '<td colspan="2" style="border: none;"></td>';
         $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center;"> <b>Total</b></td>';
-        $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center;"> ' . 'Rp. ' . number_format($invoice->total, 0, ',', '.') . '</td>';
+        $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center;"> ' . 'Rp. ' . number_format($invoice->grand_total, 0, ',', '.') . '</td>';
         $table2 .= '</tr>';
         $table2 .=  <<<EOD
             <tbody>

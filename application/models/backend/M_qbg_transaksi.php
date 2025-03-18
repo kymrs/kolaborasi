@@ -7,9 +7,9 @@ class M_qbg_transaksi extends CI_Model
 {
     var $id = 'id';
     var $table = 'qbg_transaksi'; //nama tabel dari database
-    var $column_order = array(null, 'kode_produk', 'nama_produk', 'berat', 'jenis_transaksi', 'jumlah', 'keterangan', 'created_at');
+    var $column_order = array(null, 'a.kode_produk', 'b.nama_produk', 'berat', 'jenis_transaksi', 'jumlah', 'keterangan', 'a.created_at');
     var $column_search = array('a.kode_produk', 'b.nama_produk', 'berat', 'jenis_transaksi', 'jumlah', 'keterangan', 'a.created_at'); //field yang diizin untuk pencarian 
-    // var $order = array('id' => 'asc'); // default order 
+    var $order = array('id' => 'desc'); // default order 
 
     public function __construct()
     {
@@ -46,7 +46,6 @@ class M_qbg_transaksi extends CI_Model
 
         $this->db->from('qbg_transaksi a');
         $this->db->join('qbg_produk b', 'a.kode_produk = b.kode_produk');
-        $this->db->order_by('id', 'DESC');
 
         $i = 0;
 
@@ -109,22 +108,4 @@ class M_qbg_transaksi extends CI_Model
         $this->db->from($this->table);
         return $this->db->count_all_results();
     }
-
-    // public function get_by_id($id)
-    // {
-    //     $this->db->where($this->id, $id);
-    //     return $this->db->get($this->table)->row();
-    // }
-
-    // public function save($data)
-    // {
-    //     $this->db->insert($this->table, $data);
-    //     return $this->db->insert_id();
-    // }
-
-    // public function delete($id)
-    // {
-    //     $this->db->where($this->id, $id);
-    //     $this->db->delete($this->table);
-    // }
 }

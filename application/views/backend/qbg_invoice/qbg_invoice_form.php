@@ -1271,9 +1271,6 @@
                 nomor_customer: {
                     required: true,
                 },
-                email_customer: {
-                    required: true,
-                },
                 alamat_customer: {
                     required: true,
                 },
@@ -1299,9 +1296,6 @@
                 },
                 nomor_customer: {
                     required: "Nomor Customer is required",
-                },
-                email_customer: {
-                    required: "Email Customer is required",
                 },
                 alamat_customer: {
                     required: "Alamat Customer is required",

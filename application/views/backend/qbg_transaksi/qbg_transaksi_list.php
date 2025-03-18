@@ -39,6 +39,39 @@
         cursor: pointer;
     }
 
+    /* Styling box input Select2 */
+    .select2-container .select2-selection--single {
+        height: 38px;
+        /* Sama seperti form-control Bootstrap */
+        padding: 6px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 0.375rem;
+    }
+
+    /* Saat select2 dalam keadaan fokus */
+    .select2-container--default .select2-selection--single:focus,
+    .select2-container--default .select2-selection--single:hover {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    /* Styling dropdown Select2 */
+    .select2-container--default .select2-results__option {
+        padding: 10px;
+        font-size: 1rem;
+    }
+
+    /* Hover pada dropdown */
+    .select2-container--default .select2-results__option--highlighted {
+        background-color: #007bff;
+        color: white;
+    }
+
+    /* Styling placeholder */
+    .select2-container--default .select2-selection--single .select2-selection__placeholder {
+        color: #6c757d;
+    }
+
     @media (max-width: 1400px) {
 
         .transaksi-filter .tgl-awal,
@@ -47,7 +80,7 @@
         }
     }
 
-    @media (max-width: 1060px) {
+    @media (max-width: 1260px) {
         .transaksi-filter {
             display: block;
         }
@@ -64,11 +97,11 @@
                 <div class="card-header">
                     <div class="transaksi-filter">
                         <div class="col-custom">
-                            <label for="">Produk :</label>
+                            <label for="">Produk :</label><br>
                             <select id="kode_produk" class="form-control" style="cursor: pointer;">
                                 <option value="all" selected>All</option>
                                 <?php foreach ($produk as $data) : ?>
-                                    <option value="<?= $data['kode_produk'] ?>"><?= $data['nama_produk'] ?> (<?= $data['kode_produk'] ?>)</option>
+                                    <option value="<?= $data['kode_produk'] ?>"><?= $data['nama_produk'] . ' ' . $data['berat'] . ' ' . $data['satuan'] ?> </option>
                                 <?php endforeach ?>
                             </select>
                         </div>
@@ -154,6 +187,8 @@
 <?php $this->load->view('template/script'); ?>
 
 <script type="text/javascript">
+    $('#kode_produk').select2();
+
     $('#tgl_awal').on('click', function() {
         // console.log('berhasil');
         $('#tgl_awal').datepicker('setDate', null);
