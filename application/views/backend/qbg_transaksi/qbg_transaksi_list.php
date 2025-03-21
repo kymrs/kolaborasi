@@ -291,39 +291,15 @@
         });
     });
 
-    // Cek apakah ada nilai filter yang tersimpan di localStorage = kode produk
-    var savedKodeProduk = localStorage.getItem('kodeProdukStatus');
-    if (savedKodeProduk) {
-        $('#kode_produk').val(savedKodeProduk).change(); // Set filter dengan nilai yang tersimpan
-    }
-
-    // Simpan nilai filter ke localStorage setiap kali berubah
     $('#kode_produk').on('change', function() {
-        localStorage.setItem('kodeProdukStatus', $(this).val());
         table.ajax.reload(); // Muat ulang DataTables dengan filter baru
     });
 
-    // Cek apakah ada nilai filter yang tersimpan di localStorage = jenis transaksi
-    var jenisTransaksi = localStorage.getItem('jenisTransaksiStatus');
-    if (jenisTransaksi) {
-        $('#jenis_transaksi').val(jenisTransaksi).change(); // Set filter dengan nilai yang tersimpan
-    }
-
-    // Simpan nilai filter ke localStorage setiap kali berubah
     $('#jenis_transaksi').on('change', function() {
-        localStorage.setItem('jenisTransaksiStatus', $(this).val());
         table.ajax.reload(); // Muat ulang DataTables dengan filter baru
     });
 
-    // Cek apakah ada nilai filter yang tersimpan di localStorage = keterangan
-    var keterangan = localStorage.getItem('keteranganStatus');
-    if (keterangan) {
-        $('#keterangan').val(keterangan).change(); // Set filter dengan nilai yang tersimpan
-    }
-
-    // Simpan nilai filter ke localStorage setiap kali berubah
     $('#keterangan').on('change', function() {
-        localStorage.setItem('keteranganStatus', $(this).val());
         table.ajax.reload(); // Muat ulang DataTables dengan filter baru
     });
 </script>

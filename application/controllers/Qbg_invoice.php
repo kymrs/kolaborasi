@@ -19,12 +19,12 @@ class T_cpdf2 extends TCPDf
 
         // Logo
         $this->SetFont('Helvetica', 'B', 12);
-        $this->Image('assets/backend/img/qubagift.png', 2, 2, 37, 22);
-        $this->SetX(113);
-        $this->SetFont('Helvetica', '', 9);
-        $this->Cell(40, 22, 'qubagift@gmail.com', 0, 0);
-        $this->SetX(121);
-        $this->Cell(40, 31, '081290399933', 0, 1);
+        $this->Image('assets/backend/img/qubagift.png', 2, 4, 39, 23);
+        $this->SetX(165);
+        $this->SetFont('Helvetica', '', 11);
+        $this->Cell(40, 24, 'qubagift@gmail.com', 0, 0);
+        $this->SetX(174.5);
+        $this->Cell(40, 36, '081290399933', 0, 1);
         $style = array('width' => 0.5, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0));
 
         // $this->SetY(18);
@@ -32,7 +32,7 @@ class T_cpdf2 extends TCPDf
         // $this->SetFont('Helvetica', '', 8);
         // $this->Cell(40, 16, 'Jl. Mahoni Raya No 13, Sukmajaya, Depok, Jawa Barat', 0, 0);
 
-        $this->Line(4, 26, 145, 26, $style);
+        $this->Line(4, 29, 205, 29, $style);
         $this->Ln(5);
     }
 }
@@ -345,10 +345,12 @@ class Qbg_invoice extends CI_Controller
             // save data rekening
             $nama_bank = $this->input->post('nama_bank[]');
             $no_rek = $this->input->post('no_rek[]');
+            $atas_nama = $this->input->post('atas_nama[]');
             //PERULANGAN UNTUK INSER QUERY DETAIL PREPAYMENT
             for ($i = 1; $i <= count($nama_bank); $i++) {
                 $data2[] = array(
                     'invoice_id' => $inserted,
+                    'atas_nama' => $atas_nama[$i],
                     'nama_bank' => $nama_bank[$i],
                     'no_rek' => $no_rek[$i]
                 );
@@ -401,6 +403,7 @@ class Qbg_invoice extends CI_Controller
                         'jenis_transaksi'   => 'keluar',
                         'jumlah'            => $jumlah[$i],
                         'keterangan'        => 'penjualan (' . $kode_invoice . ')',
+                        'created_at'        =>  date('Y-m-d H:i:s'),
                         'created_by'        => $this->session->userdata('id_user')
                     ]);
                     // $this->M_qbg_invoice->updateStokAwal($kode);
@@ -522,10 +525,11 @@ class Qbg_invoice extends CI_Controller
 
                     $this->db->insert('qbg_transaksi', [
                         'detail_invoice_id' => $detail_invoice_id,
-                        'kode_produk' => $kode,
-                        'jenis_transaksi' => 'keluar',
-                        'jumlah' => $jumlah_val,
-                        'keterangan' => 'penjualan (' . $this->input->post('kode_invoice') . ')'
+                        'kode_produk'       => $kode,
+                        'jenis_transaksi'   => 'keluar',
+                        'jumlah'            => $jumlah_val,
+                        'created_at'        =>  date('Y-m-d H:i:s'),
+                        'keterangan'        => 'penjualan (' . $this->input->post('kode_invoice') . ')'
                     ]);
                 }
                 $this->M_qbg_invoice->updateStok();
@@ -546,12 +550,14 @@ class Qbg_invoice extends CI_Controller
             $id_rek = $this->input->post('hidden_rekId[]');
             $nama_bank = $this->input->post('nama_bank[]');
             $no_rek = $this->input->post('no_rek[]');
+            $atas_nama = $this->input->post('atas_nama[]');
             for ($i = 1; $i <= count($_POST['nama_bank']); $i++) {
                 // Set id menjadi NULL jika id_rek tidak ada atau kosong
                 $id_rekening = !empty($id_rek[$i]) ? $id_rek[$i] : NULL;
                 $data3[] = array(
                     'id' => $id_rekening,
                     'invoice_id' => $this->input->post('id'),
+                    'atas_nama' => $atas_nama[$i],
                     'nama_bank' => $nama_bank[$i],
                     'no_rek' => $no_rek[$i]
                 );
@@ -628,61 +634,61 @@ class Qbg_invoice extends CI_Controller
         $invoice_rek = $this->M_qbg_invoice->get_rek($id);
 
         // Initialize the TCPDF object
-        $t_cpdf2 = new t_cpdf2('P', 'mm', 'A5', true, 'UTF-8', false);
+        $t_cpdf2 = new t_cpdf2('P', 'mm', 'A4', true, 'UTF-8', false);
 
         // Set document properties
         $t_cpdf2->SetCreator(PDF_CREATOR);
         $t_cpdf2->SetAuthor('Author Name');
         $t_cpdf2->SetTitle('Invoice Qubagift PDF');
 
-        $t_cpdf2->SetMargins(15, 28, 15); // Margin kiri, atas (untuk header), kanan
+        $t_cpdf2->SetMargins(15, 35, 15); // Margin kiri, atas (untuk header), kanan
         // $t_cpdf2->SetHeaderMargin(30);    // Jarak antara header dan konten
         $t_cpdf2->SetAutoPageBreak(true, 20); // Penanganan otomatis margin bawah
 
         // Add a new page
         $t_cpdf2->AddPage();
 
-        $t_cpdf2->SetY(30);
+        $t_cpdf2->SetY(33);
 
         // Pilih font untuk isi
         $t_cpdf2->SetFont('Helvetica', 'B', 22);
 
-        $t_cpdf2->SetX(58);
+        $t_cpdf2->SetX(88);
         $t_cpdf2->Cell(100, 10, 'INVOICE', 0, 1, 'L');
 
         $t_cpdf2->SetFont('Helvetica', '', 11);
-        $t_cpdf2->SetX(53.5);
+        $t_cpdf2->SetX(83.5);
         $t_cpdf2->Cell(19, 8, 'No. Invoice : ' . $invoice->kode_invoice, 0, 0, 'L');
 
         $t_cpdf2->SetY($t_cpdf2->GetY() + 5);
         $t_cpdf2->SetX(4);
-        $t_cpdf2->SetFont('Helvetica', '', 10);
-        $t_cpdf2->Cell(82, 20, 'Kepada Yth.', 0, 0);
-        $t_cpdf2->Cell(36, 20, 'Tanggal Invoice', 0, 0);
+        $t_cpdf2->SetFont('Helvetica', '', 11);
+        $t_cpdf2->Cell(137, 20, 'Kepada Yth.', 0, 0);
+        $t_cpdf2->Cell(40, 20, 'Tanggal Invoice', 0, 0);
         $t_cpdf2->Cell(19, 20, ': ' . date('d/m/Y', strtotime($invoice->tgl_invoice)), 0, 0);
         $t_cpdf2->SetY($t_cpdf2->GetY() + 14);
         $t_cpdf2->SetX(4);
-        $t_cpdf2->SetFont('Helvetica', '', 14);
-        $t_cpdf2->Cell(82, 7, $invoice->nama_customer, 0, 0);
-        $t_cpdf2->SetFont('Helvetica', '', 10);
-        $t_cpdf2->Cell(36, 5, 'Tanggal Jatuh Tempo', 0, 0);
+        $t_cpdf2->SetFont('Helvetica', '', 16);
+        $t_cpdf2->Cell(137, 7, $invoice->nama_customer, 0, 0);
+        $t_cpdf2->SetFont('Helvetica', '', 11);
+        $t_cpdf2->Cell(40, 5, 'Tanggal Jatuh Tempo', 0, 0);
         $t_cpdf2->Cell(19, 5, ': ' . date('d/m/Y', strtotime($invoice->tgl_tempo)), 0, 0);
 
-        $t_cpdf2->SetFont('Helvetica', '', 10);
+        $t_cpdf2->SetFont('Helvetica', '', 11);
         $t_cpdf2->SetY($t_cpdf2->GetY() + 9);
         $t_cpdf2->SetX(4);
         $t_cpdf2->Cell(0, 0, 'Email', 0, 0);
         $t_cpdf2->SetX(23);
         $t_cpdf2->Cell(0, 0, ': ' . ($invoice->email_customer ?: '-'), 0, 0);
 
-        $t_cpdf2->SetFont('Helvetica', '', 10);
+        $t_cpdf2->SetFont('Helvetica', '', 11);
         $t_cpdf2->SetY($t_cpdf2->GetY() + 6);
         $t_cpdf2->SetX(4);
         $t_cpdf2->Cell(75, 0, 'Telepon', 0, 0);
         $t_cpdf2->SetX(23);
         $t_cpdf2->Cell(0, 0, ': ' . $invoice->nomor_customer, 0, 0);
 
-        $t_cpdf2->SetFont('Helvetica', '', 10);
+        $t_cpdf2->SetFont('Helvetica', '', 11);
         $t_cpdf2->SetY($t_cpdf2->GetY() + 6);
         $t_cpdf2->SetX(4);
         $t_cpdf2->Cell(0, 0, 'Alamat', 0, 0);
@@ -690,26 +696,26 @@ class Qbg_invoice extends CI_Controller
         $t_cpdf2->SetX(23);
         $t_cpdf2->Cell(0, 0, ':', 0, 0);
         $t_cpdf2->SetY($t_cpdf2->GetY());
-        $t_cpdf2->SetX(24.5);
+        $t_cpdf2->SetX(25);
         $t_cpdf2->MultiCell(58, 0, $invoice->alamat_customer, 0, 'L');
 
         $t_cpdf2->SetY($t_cpdf2->GetY() + 4);
         // HEADER DETAIL PEMESANAN
-        $t_cpdf2->SetFont('Helvetica', '', 10);
+        $t_cpdf2->SetFont('Helvetica', '', 12);
         $t_cpdf2->SetFillColor(0, 190, 99);
         $t_cpdf2->SetTextColor(255, 255, 255);
         $t_cpdf2->SetX(5);
-        $t_cpdf2->Cell(140, 10, 'Detail Pemesanan', 0, 1, 'L', true);
+        $t_cpdf2->Cell(200, 10, 'Detail Pemesanan', 0, 1, 'L', true);
         $t_cpdf2->SetTextColor(0, 0, 0);
 
         $tbl = <<<EOD
         <table border="1" cellpadding="3">
             <thead>
                 <tr>
-                    <th align="center" width="35%"><b>PRODUK</b></th>
-                    <th align="center" width="15%"><b>JUMLAH</b></th>
-                    <th align="center" width="25%"><b>HARGA</b></th>
-                    <th align="center" width="25%"><b>TOTAL</b></th>
+                    <th align="center" width="55%"><b>PRODUK</b></th>
+                    <th align="center" width="25%"><b>JUMLAH</b></th>
+                    <th align="center" width="30%"><b>HARGA</b></th>
+                    <th align="center" width="32.5%"><b>TOTAL</b></th>
                 </tr>
             </thead>
             <tbody>
@@ -718,10 +724,10 @@ class Qbg_invoice extends CI_Controller
             $produk = $this->db->select('nama_produk, berat, satuan')->where('kode_produk', $detail->kode_produk)->get('qbg_produk')->row_array();
 
             $tbl .= '<tr>';
-            $tbl .= '<td width="35%">' . $produk['nama_produk'] . ' ' . $produk['berat'] . ' ' . $produk['satuan'] . '</td>';
-            $tbl .= '<td width="15%" style="text-align: center">' . $detail->jumlah . '</td>';
-            $tbl .= '<td width="25%" style="text-align: center">' . 'Rp. ' . number_format($detail->harga, 0, ',', '.') . '</td>';
-            $tbl .= '<td width="25%" style="text-align: center">' . 'Rp. ' . number_format($detail->total, 0, ',', '.') . '</td>';
+            $tbl .= '<td width="55%">' . $produk['nama_produk'] . ' ' . $produk['berat'] . ' ' . $produk['satuan'] . '</td>';
+            $tbl .= '<td width="25%" style="text-align: center">' . $detail->jumlah . '</td>';
+            $tbl .= '<td width="30%" style="text-align: center">' . 'Rp. ' . number_format($detail->harga, 0, ',', '.') . '</td>';
+            $tbl .= '<td width="32.5%" style="text-align: center">' . 'Rp. ' . number_format($detail->total, 0, ',', '.') . '</td>';
             $tbl .= '</tr>';
         }
         $tbl .= <<<EOD
@@ -729,7 +735,7 @@ class Qbg_invoice extends CI_Controller
 </table>
 EOD;
 
-        $t_cpdf2->writeHTMLCell(142, 0, 4, $t_cpdf2->GetY() + 4, $tbl, 0, 1, false, true, 'L', true);
+        $t_cpdf2->writeHTMLCell(142.3, 0, 4, $t_cpdf2->GetY() + 4, $tbl, 0, 1, false, true, 'L', true);
 
         $table2 = <<<EOD
             <table cellpadding="3">
@@ -738,55 +744,51 @@ EOD;
 
         $table2 .= '<tr style="border: none;">';
         $table2 .= '<td colspan="2"></td>';
-        $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center">Biaya Pengiriman</td>';
-        $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center;"> ' . 'Rp. ' . number_format($invoice->ongkir, 0, ',', '.') . '</td>';
+        $table2 .= '<td width="18.7%" style="border: 1px solid black; text-align: center">Biaya Pengiriman</td>';
+        $table2 .= '<td width="20.3%" style="border: 1px solid black; text-align: center;"> ' . 'Rp. ' . number_format($invoice->ongkir, 0, ',', '.') . '</td>';
         $table2 .= '</tr>';
-        $table2 .= '<tr style="border: none;">';
-        $table2 .= '<td colspan="2"></td>';
-        $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center">Potongan Harga</td>';
-        $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center;"> ' . 'Rp. -' . number_format($invoice->potongan_harga, 0, ',', '.') . '</td>';
-        $table2 .= '</tr>';
+        if ($invoice->potongan_harga != 0) {
+            $table2 .= '<tr style="border: none;">';
+            $table2 .= '<td colspan="2"></td>';
+            $table2 .= '<td width="18.7%" style="border: 1px solid black; text-align: center">Potongan Harga</td>';
+            $table2 .= '<td width="20.3%" style="border: 1px solid black; text-align: center;"> ' . 'Rp. -' . number_format($invoice->potongan_harga, 0, ',', '.') . '</td>';
+            $table2 .= '</tr>';
+        }
         $table2 .= '<tr style="border: none;">';
         $table2 .= '<td colspan="2" style="border: none;"></td>';
-        $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center;"> <b>Total</b></td>';
-        $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center;"> ' . 'Rp. ' . number_format($invoice->grand_total, 0, ',', '.') . '</td>';
+        $table2 .= '<td width="18.7%" style="border: 1px solid black; text-align: center;"> <b>Total</b></td>';
+        $table2 .= '<td width="20.3%" style="border: 1px solid black; text-align: center;"> ' . 'Rp. ' . number_format($invoice->grand_total, 0, ',', '.') . '</td>';
         $table2 .= '</tr>';
         $table2 .=  <<<EOD
             <tbody>
             </table>
         EOD;
 
-        $t_cpdf2->writeHTMLCell(142, 0, 4, $t_cpdf2->GetY(), $table2, 0, 1, false, true, 'L', true);
+        $t_cpdf2->writeHTMLCell(226.6, 0, 4, $t_cpdf2->GetY(), $table2, 0, 1, false, true, 'L', true);
 
         $t_cpdf2->SetY($t_cpdf2->GetY() + 1);
         $t_cpdf2->SetX(4);
-        $t_cpdf2->SetFont('Helvetica', '', 11);
+        $t_cpdf2->SetFont('Helvetica', '', 12);
         $t_cpdf2->Cell(14, 9, 'Metode Pembayaran', 0, 1);
         $list = <<<EOD
         <ol>
         EOD;
 
         foreach ($invoice_rek as $rek) {
-            $list .= '<li>Bank : ' . $rek->nama_bank . '<br>No. Rekening : ' . $rek->no_rek . '</li>';
+            $list .= '<li>Bank : ' . $rek->nama_bank . '<br>No. Rekening : ' . $rek->no_rek . '<br>Atas Nama : <b>' . $rek->atas_nama .  '</b></li>';
         }
         $list .= <<<EOD
         </ol>
         EOD;
-        $t_cpdf2->SetFont('Helvetica', '', 10);
+        $t_cpdf2->SetFont('Helvetica', '', 12);
         $y = $t_cpdf2->GetY();
         $x = -4;
         $t_cpdf2->writeHTMLCell(0, 0, $x, $y, $list, 0, 1, false, true, 'L', true);
 
-        $t_cpdf2->SetY($t_cpdf2->GetY() - 1);
-        $t_cpdf2->SetX(4);
-
-        $t_cpdf2->SetFont('Helvetica', '', 10);
-        $t_cpdf2->Cell(19, 9, 'Atas Nama : PT. Kolaborasi Para Sahabat', 0, 1);
-
         $t_cpdf2->setY($t_cpdf2->GetY());
         $t_cpdf2->SetX(4);
 
-        $t_cpdf2->SetFont('Helvetica', '', 10);
+        $t_cpdf2->SetFont('Helvetica', '', 12);
         $t_cpdf2->Cell(19, 9, 'Catatan :', 0, 1);
         if ($invoice->keterangan != '') {
             $catatan = $invoice->keterangan;
@@ -797,11 +799,9 @@ EOD;
         $t_cpdf2->writeHTMLCell(0, 0, 4, $t_cpdf2->GetY(), $catatan, 0, 1, false, true, 'L', true);
 
         $t_cpdf2->setY($t_cpdf2->GetY() + 3);
-        $t_cpdf2->SetX(106);
-        $t_cpdf2->SetFont('Helvetica', '', 10);
-        $t_cpdf2->Cell(22.5, 10, 'Terima Kasih, ', 0, 0);
-        $t_cpdf2->SetFont('Helvetica', '', 10);
-        $t_cpdf2->Cell(19, 10, 'Qubagift', 0, 1);
+        $t_cpdf2->SetX(161);
+        $t_cpdf2->SetFont('Helvetica', '', 12);
+        $t_cpdf2->Cell(22.5, 10, 'Terima Kasih, Qubagift', 0, 0);
 
         // Output PDF (tampilkan di browser)
         $t_cpdf2->Output('Invoice Qubagift - ' . $invoice->kode_invoice . '.pdf', 'I'); // 'I' untuk menampilkan di browser

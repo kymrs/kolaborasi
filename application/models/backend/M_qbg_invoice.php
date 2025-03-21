@@ -420,6 +420,6 @@ class M_qbg_invoice extends CI_Model
     // OPSI REKENING
     public function options()
     {
-        return $this->db->distinct()->select('nama_bank, no_rek')->from('qbg_rek_invoice')->get();
+        return $this->db->distinct()->select('nama_bank, no_rek, atas_nama')->from('qbg_rek_invoice')->get();
     }
 }

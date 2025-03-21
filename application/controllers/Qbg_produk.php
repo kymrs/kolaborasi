@@ -9,7 +9,6 @@ class Qbg_produk extends CI_Controller
         parent::__construct();
         $this->load->model('backend/M_qbg_produk');
         $this->M_login->getsecurity();
-        $this->load->helper('date_helper');
         date_default_timezone_set('Asia/Jakarta');
     }
 
@@ -131,6 +130,7 @@ class Qbg_produk extends CI_Controller
             'harga_qubagift' => preg_replace('/\D/', '', $this->input->post('harga_qubagift')),
             'harga_reseller' => preg_replace('/\D/', '', $this->input->post('harga_reseller')),
             'harga_distributor' => preg_replace('/\D/', '', $this->input->post('harga_distributor')),
+            'created_at' =>  date('Y-m-d H:i:s'),
             'created_by' => $this->session->userdata('id_user')
         );
 
@@ -141,6 +141,7 @@ class Qbg_produk extends CI_Controller
             'jumlah' => $this->input->post('stok'),
             'jenis_transaksi' => 'masuk',
             'keterangan' => 'penambahan produk',
+            'created_at' =>  date('Y-m-d H:i:s'),
             'created_by' => $this->session->userdata('id_user')
         ];
 
@@ -193,6 +194,7 @@ class Qbg_produk extends CI_Controller
                     'jumlah' => $this->input->post('tambah_stok'),
                     'jenis_transaksi' => 'masuk',
                     'keterangan' => 'penambahan stok',
+                    'created_at' =>  date('Y-m-d H:i:s'),
                     'created_by' => $this->session->userdata('id_user')
                 ];
 
@@ -213,6 +215,7 @@ class Qbg_produk extends CI_Controller
                         'jumlah' => $this->input->post('kurangi_stok'),
                         'jenis_transaksi' => 'keluar',
                         'keterangan' => 'pengurangan stok',
+                        'created_at' =>  date('Y-m-d H:i:s'),
                         'created_by' => $this->session->userdata('id_user')
                     ];
 

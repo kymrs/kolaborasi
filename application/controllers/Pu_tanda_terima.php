@@ -254,6 +254,6 @@ class Pu_tanda_terima extends CI_Controller
 		$pdf->Image('assets/backend/document/pu_tanda_terima/' . $foto, $posisi, $pdf->GetY(), 40, 0);
 
 		// Output PDF
-		$pdf->Output();
+		$pdf->Output('I', 'Tanda Terima - ' . $query->nomor . '.pdf');
 	}
 }
