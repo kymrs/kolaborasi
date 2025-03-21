@@ -1,13 +1,13 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Qbg_datadeklarasi extends CI_Controller
+class Mac_datadeklarasi extends CI_Controller
 {
 
     function __construct()
     {
         parent::__construct();
-        $this->load->model('backend/M_qbg_datadeklarasi');
+        $this->load->model('backend/M_mac_datadeklarasi');
         $this->load->model('backend/M_notifikasi');
         $this->M_login->getsecurity();
         date_default_timezone_set('Asia/Jakarta');
@@ -45,8 +45,7 @@ class Qbg_datadeklarasi extends CI_Controller
         ($akses->view_level == 'N' ? redirect('auth') : '');
         $data['add'] = $akses->add_level;
         $data['alias'] = $this->session->userdata('username');
-
-        $data['title'] = "backend/qbg_datadeklarasi/qbg_deklarasi_list";
+        $data['title'] = "backend/mac_datadeklarasi/mac_deklarasi_list";
         $data['titleview'] = "Deklarasi";
         $name = $this->db->select('name')
             ->from('tbl_data_user')
@@ -54,7 +53,7 @@ class Qbg_datadeklarasi extends CI_Controller
             ->get()
             ->row('name');
         $data['approval'] = $this->db->select('COUNT(*) as total_approval')
-            ->from('qbg_deklarasi')
+            ->from('mac_deklarasi')
             ->where('app_name', $name)
             ->or_where('app2_name', $name)
             ->get()
@@ -70,7 +69,7 @@ class Qbg_datadeklarasi extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $list = $this->M_qbg_datadeklarasi->get_datatables();
+        $list = $this->M_mac_datadeklarasi->get_datatables();
         $data = array();
         $no = $_POST['start'];
 
@@ -83,10 +82,10 @@ class Qbg_datadeklarasi extends CI_Controller
         //LOOPING DATATABLES
         foreach ($list as $field) {
 
-            $action_read = ($read == 'Y') ? '<a href="qbg_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
-            $action_edit = ($edit == 'Y') ? '<a href="qbg_datadeklarasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
+            $action_read = ($read == 'Y') ? '<a href="mac_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
+            $action_edit = ($edit == 'Y') ? '<a href="mac_datadeklarasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
-            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="qbg_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
+            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="mac_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             if ($this->session->userdata('username') == 'eko') {
@@ -126,8 +125,8 @@ class Qbg_datadeklarasi extends CI_Controller
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_qbg_datadeklarasi->count_all(),
-            "recordsFiltered" => $this->M_qbg_datadeklarasi->count_filtered(),
+            "recordsTotal" => $this->M_mac_datadeklarasi->count_all(),
+            "recordsFiltered" => $this->M_mac_datadeklarasi->count_filtered(),
             "data" => $data,
         );
         //output dalam format JSON
@@ -137,7 +136,7 @@ class Qbg_datadeklarasi extends CI_Controller
     function read_form($id)
     {
         $data['id'] = $id;
-        $data['user'] = $this->M_qbg_datadeklarasi->get_by_id($id);
+        $data['user'] = $this->M_mac_datadeklarasi->get_by_id($id);
         $data['app_name'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $this->session->userdata('id_user'))
@@ -149,7 +148,7 @@ class Qbg_datadeklarasi extends CI_Controller
             ->get()
             ->row('name');
         $data['title_view'] = "Data Deklarasi";
-        $data['title'] = 'backend/qbg_datadeklarasi/qbg_deklarasi_read';
+        $data['title'] = 'backend/mac_datadeklarasi/mac_deklarasi_read';
         $this->load->view('backend/home', $data);
     }
 
@@ -160,7 +159,7 @@ class Qbg_datadeklarasi extends CI_Controller
         $data['id_pembuat'] = 0;
         $data['title_view'] = "Deklarasi Form";
         $data['aksi'] = 'update';
-        $data['title'] = 'backend/qbg_datadeklarasi/qbg_deklarasi_form';
+        $data['title'] = 'backend/mac_datadeklarasi/mac_deklarasi_form';
         $this->load->view('backend/home', $data);
     }
 
@@ -168,15 +167,15 @@ class Qbg_datadeklarasi extends CI_Controller
     {
         $data['id'] = $id;
         $data['id_user'] = $this->session->userdata('id_user');
-        $data['id_pembuat'] = $this->M_qbg_datadeklarasi->get_by_id($id)->id_pengaju;
+        $data['id_pembuat'] = $this->M_mac_datadeklarasi->get_by_id($id)->id_pengaju;
         $data['title_view'] = "Edit Data Deklarasi";
-        $data['title'] = 'backend/qbg_datadeklarasi/qbg_deklarasi_form';
+        $data['title'] = 'backend/mac_datadeklarasi/mac_deklarasi_form';
         $this->load->view('backend/home', $data);
     }
 
     function edit_data($id)
     {
-        $data['master'] = $this->M_qbg_datadeklarasi->get_by_id($id);
+        $data['master'] = $this->M_mac_datadeklarasi->get_by_id($id);
         $data['nama'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $data['master']->id_pengaju)
@@ -188,7 +187,7 @@ class Qbg_datadeklarasi extends CI_Controller
     public function generate_kode()
     {
         $date = $this->input->post('date');
-        $kode = $this->M_qbg_datadeklarasi->max_kode($date)->row();
+        $kode = $this->M_mac_datadeklarasi->max_kode($date)->row();
         if (empty($kode->kode_deklarasi)) {
             $no_urut = 1;
         } else {
@@ -206,7 +205,7 @@ class Qbg_datadeklarasi extends CI_Controller
     {
         // INSERT KODE DEKLARASI
         $date = $this->input->post('tgl_deklarasi');
-        $kode = $this->M_qbg_datadeklarasi->max_kode($date)->row();
+        $kode = $this->M_mac_datadeklarasi->max_kode($date)->row();
         if (empty($kode->kode_deklarasi)) {
             $no_urut = 1;
         } else {
@@ -226,7 +225,7 @@ class Qbg_datadeklarasi extends CI_Controller
 
         $valid = true;
         $confirm = $this->db->select('app_id, app2_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
-        if (!empty($confirm) && isset($confirm->app_id, $confirm->app2_id)) {
+        if (!empty($confirm->app_id) && isset($confirm->app_id, $confirm->app2_id)) {
             $app = $confirm;
         } else {
             echo json_encode(array("status" => FALSE, "error" => "Approval Belum Ditentukan, Mohon untuk menghubungi admin."));
@@ -261,7 +260,7 @@ class Qbg_datadeklarasi extends CI_Controller
         );
 
         if ($valid) {
-            $this->M_qbg_datadeklarasi->save($data);
+            $this->M_mac_datadeklarasi->save($data);
             echo json_encode(array("status" => TRUE));
         } else {
             echo json_encode(array("status" => FALSE));
@@ -284,13 +283,13 @@ class Qbg_datadeklarasi extends CI_Controller
             'status' => 'on-process'
         );
         $this->db->where('id', $this->input->post('id'));
-        $this->db->update('qbg_deklarasi', $data);
+        $this->db->update('mac_deklarasi', $data);
         echo json_encode(array("status" => TRUE));
     }
 
     function delete($id)
     {
-        $this->M_qbg_datadeklarasi->delete($id);
+        $this->M_mac_datadeklarasi->delete($id);
         echo json_encode(array("status" => TRUE));
     }
 
@@ -314,7 +313,7 @@ class Qbg_datadeklarasi extends CI_Controller
 
         //UPDATE APPROVAL PERTAMA
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('qbg_deklarasi', $data);
+        $this->db->update('mac_deklarasi', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -338,7 +337,7 @@ class Qbg_datadeklarasi extends CI_Controller
 
         // UPDATE APPROVAL 2
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('qbg_deklarasi', $data);
+        $this->db->update('mac_deklarasi', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -350,7 +349,7 @@ class Qbg_datadeklarasi extends CI_Controller
         $this->load->library('Fpdf_generate');
 
         // Load data from database based on $id
-        $data['master'] = $this->M_qbg_datadeklarasi->get_by_id($id);
+        $data['master'] = $this->M_mac_datadeklarasi->get_by_id($id);
         $data['user'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $data['master']->id_pengaju)
@@ -386,7 +385,7 @@ class Qbg_datadeklarasi extends CI_Controller
         $pdf->AddPage('P', 'Letter');
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/qubagift.png', 9, 8, 40, 25);
+        $pdf->Image(base_url('') . '/assets/backend/img/mobileautocare.png', 12, 8, 42, 23);
 
         // Title of the form
         $pdf->Ln(25);
@@ -478,6 +477,6 @@ class Qbg_datadeklarasi extends CI_Controller
         }
 
         // Output the PDF
-        $pdf->Output('I', 'Deklarasi_qubagift .pdf');
+        $pdf->Output('I', 'Deklarasi_MAC.pdf');
     }
 }

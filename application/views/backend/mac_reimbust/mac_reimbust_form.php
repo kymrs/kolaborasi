@@ -121,7 +121,7 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header text-right">
-                    <a class="btn btn-primary btn-sm btn-style" href="<?= base_url('swi_reimbust') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+                    <a class="btn btn-primary btn-sm btn-style" href="<?= base_url('mac_reimbust') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
                     <form id="form" enctype="multipart/form-data">
@@ -304,7 +304,7 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="deklarasiModalLabel">Data Deklarasi</h5>
-                                        <!-- <a style="position: relative; right: 75px" class="btn btn-primary btn-sm" href="<?= base_url('swi_datadeklarasi/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a> -->
+                                        <!-- <a style="position: relative; right: 75px" class="btn btn-primary btn-sm" href="<?= base_url('mac_datadeklarasi/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a> -->
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span style="position: relative; bottom: 5px" aria-hidden="true">&times;</span>
                                         </button>
@@ -351,7 +351,8 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="deklarasiModalLabel">Data Deklarasi</h5>
-                                        <a style="position: relative; right: 75px" class="btn btn-primary btn-sm" href="<?= base_url('swi_datadeklarasi/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a>
+                                        <a style="position: relative; right: 75px" class="btn btn-primary btn-sm" href="<?= base_url('mac
+                                        /add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span style="position: relative; bottom: 5px" aria-hidden="true">&times;</span>
                                         </button>
@@ -412,8 +413,8 @@
 <script>
     $('#tgl_pengajuan').datepicker({
         dateFormat: 'dd-mm-yy',
-        minDate: new Date(),
-        maxDate: new Date(),
+        // minDate: new Date(),
+        // maxDate: new Date(),
 
         // MENGENERATE KODE PREPAYMENT SETELAH PILIH TANGGAL
         onSelect: function(dateText) {
@@ -425,7 +426,7 @@
                 $("#tgl_pengajuan-error").remove(); // Menghapus label error
             }
             $.ajax({
-                url: "<?php echo site_url('swi_reimbust/generate_kode') ?>",
+                url: "<?php echo site_url('mac_reimbust/generate_kode') ?>",
                 type: "POST",
                 data: {
                     "date": dateText
@@ -480,6 +481,7 @@
 
     // METHOD POST MENAMPILKAN DATA KE DATA TABLE
     $(document).ready(function() {
+
         var table = $('#prepayment-table').DataTable({
             "responsive": true,
             "autoWidth": false,
@@ -487,7 +489,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('swi_reimbust/get_list3') ?>",
+                "url": "<?php echo site_url('mac_reimbust/get_list3') ?>",
                 "type": "POST",
                 "data": function(d) {
                     d.status = 'approved';
@@ -539,7 +541,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('swi_reimbust/get_list2') ?>",
+                "url": "<?php echo site_url('mac_reimbust/get_list2') ?>",
                 "type": "POST"
             },
             "columnDefs": [{
@@ -583,7 +585,6 @@
 
                 // Menghapus atribut required dari input file
                 $('#inputGroupFile01' + currentRowCount).removeAttr('required').val('');
-
 
                 $('#tgl_nota_' + currentRowCount).css({
                     'cursor': 'not-allowed',
@@ -633,7 +634,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('swi_datadeklarasi/get_list') ?>",
+                "url": "<?php echo site_url('mac_datadeklarasi/get_list') ?>",
                 "type": "POST"
             },
             "columnDefs": [{
@@ -651,37 +652,6 @@
             ]
         });
     });
-
-    // $('#tgl_pengajuan').datepicker({
-    //     dateFormat: 'dd-mm-yy',
-    //     // minDate: new Date(),
-
-    //     // MENGENERATE KODE PREPAYMENT SETELAH PILIH TANGGAL
-    //     onSelect: function(dateText) {
-    //         var date = $('#tgl_pengajuan').val();
-    //         var id = dateText;
-    //         $('#tgl_pengajuan').removeClass('is-invalid');
-
-    //         if ($("#tgl_pengajuan-error").length) {
-    //             $("#tgl_pengajuan-error").remove();
-    //         }
-    //         $.ajax({
-    //             url: "<?php echo site_url('swi_reimbust/generate_kode') ?>",
-    //             type: "POST",
-    //             data: {
-    //                 "date": dateText
-    //             },
-    //             dataType: "JSON",
-    //             success: function(data) {
-    //                 $('#kode_reimbust').val(data.toUpperCase());
-    //                 $('#kode').val(data);
-    //             },
-    //             error: function(error) {
-    //                 alert("error" + error);
-    //             }
-    //         });
-    //     }
-    // });
 
     $(document).ready(function() {
         var id = $('#id').val();
@@ -799,16 +769,6 @@
                 });
             });
 
-            // $(document).ready(function() {
-            //     $('.custom-file-input').on('change', function() {
-            //         if ($(this).val()) {
-            //             $(`#deklarasi-modal${rowCount}`).text('tes');
-            //         } else {
-            //             $(`#deklarasi${rowCount}`).css('display', 'block');
-            //         }
-            //     });
-            // });
-
             // Inisialisasi Datepicker pada elemen dengan id 'tgl_nota'
             $(document).on('focus', '.tgl_nota', function() {
                 $(this).datepicker({
@@ -920,22 +880,12 @@
             var sifatPelaporan = $(this).val();
 
             if (sifatPelaporan == 'Reimbust') {
-                // $('#tgl_pengajuan').val('');
-                // $('#kode_reimbust').val('');
-                // $('#nama').val('');
-                // $('#departemen').val('');
-                // $('#departemenPrepayment').val('');
-                // $('#jabatan').val('');
                 $('#tujuan').val('');
                 $('#jumlah_prepayment').val('');
                 $('#kode_prepayment_input').val('');
             } else if (sifatPelaporan != 'Reimbust' && sifatPelaporan != 'Pelaporan') {
                 $('#tgl_pengajuan').val('');
                 $('#kode_reimbust').val('');
-                // $('#nama').val('');
-                // $('#departemen').val('');
-                // $('#departemenPrepayment').val('');
-                // $('#jabatan').val('');
                 $('#tujuan').val('');
                 $('#jumlah_prepayment').val('');
             }
@@ -957,19 +907,6 @@
                         'readonly': false
                     }).css('cursor', 'pointer');
                     $('#tgl_pengajuan').css('pointer-events', 'auto');
-                    // $('#nama').prop({
-                    //     'disabled': false,
-                    //     'readonly': false
-                    // }).css('cursor', 'auto');
-                    // $('#departemen').prop('disabled', false).css({
-                    //     'cursor': 'pointer',
-                    //     'display': 'block'
-                    // });
-                    // $('#departemenPrepayment').prop('disabled', true).css('display', 'none');
-                    // $('#jabatan').prop({
-                    //     'disabled': false,
-                    //     'readonly': false
-                    // }).css('cursor', 'auto');
                     $('#tujuan').prop({
                         'disabled': false,
                         'readonly': false
@@ -994,25 +931,6 @@
                         'readonly': false
                     }).css('cursor', 'pointer');
                     $('#tgl_pengajuan').css('pointer-events', 'auto');
-                    // $('#nama').prop({
-                    //     'disabled': false,
-                    //     'readonly': true
-                    // }).css('cursor', 'not-allowed');
-                    // $('#departemen').prop({
-                    //     'disabled': false,
-                    //     'readonly': true
-                    // }).css('display', 'none');
-                    // $('#departemenPrepayment').prop({
-                    //     'disabled': false,
-                    //     'readonly': true
-                    // }).css({
-                    //     'display': 'block',
-                    //     'cursor': 'not-allowed'
-                    // });
-                    // $('#jabatan').prop({
-                    //     'disabled': false,
-                    //     'readonly': true
-                    // }).css('cursor', 'not-allowed');
                     $('#tujuan').prop({
                         'disabled': false,
                         'readonly': true
@@ -1020,10 +938,6 @@
                     $('#kode_prepayment').css({
                         'display': 'flex'
                     });
-                    // $('#status').prop({
-                    //     'disabled': false,
-                    //     'readonly': true
-                    // }).css('cursor', 'pointer');
                     $('#jumlah_prepayment').prop({
                         'disabled': false,
                         'readonly': true
@@ -1031,13 +945,6 @@
                 } else {
                     $('#pelaporan_button').css('display', 'none');
                     $('#parent_sifat_pelaporan').css('display', 'inline-block');
-                    // $('#nama').prop('disabled', true).css('cursor', 'not-allowed');
-                    // $('#departemen').prop('disabled', true).css({
-                    //     'cursor': 'not-allowed',
-                    //     'display': 'block'
-                    // });
-                    // $('#departemenPrepayment').prop('disabled', true).css('display', 'none');
-                    // $('#jabatan').prop('disabled', true).css('cursor', 'not-allowed');
                     $('#tgl_pengajuan').prop('disabled', true).css('cursor', 'not-allowed');
                     $('#tujuan').prop('disabled', true).css('cursor', 'not-allowed');
                     $('#status').prop('disabled', true).css('cursor', 'not-allowed');
@@ -1062,13 +969,6 @@
                         'pointer-events': 'none',
                         'background-color': '#EAECF4'
                     });
-                    // $('#nama').prop('readonly', false).css('cursor', 'auto');
-                    // $('#departemen').prop('disabled', false).css({
-                    //     'display': 'block',
-                    //     'cursor': 'pointer'
-                    // });
-                    // $('#departemenPrepayment').prop('disabled', true).css('display', 'none');
-                    // $('#jabatan').prop('readonly', false).css('cursor', 'auto');
                     $('#tujuan').prop('readonly', false).css('cursor', 'auto');
                     $('#status').prop('readonly', false).css('cursor', 'pointer');
                     $('#jumlah_prepayment').prop({
@@ -1092,25 +992,6 @@
                         'readonly': true
                     }).css('cursor', 'not-allowed');
                     $('#tgl_pengajuan').css('pointer-events', 'none');
-                    // $('#nama').prop({
-                    //     'disabled': false,
-                    //     'readonly': true
-                    // }).css('cursor', 'not-allowed');
-                    // $('#departemen').prop({
-                    //     'disabled': false,
-                    //     'readonly': true
-                    // }).css('display', 'none');
-                    // $('#departemenPrepayment').prop({
-                    //     'disabled': false,
-                    //     'readonly': true
-                    // }).css({
-                    //     'display': 'block',
-                    //     'cursor': 'not-allowed'
-                    // });
-                    // $('#jabatan').prop({
-                    //     'disabled': false,
-                    //     'readonly': true
-                    // }).css('cursor', 'not-allowed');
                     $('#tujuan').prop({
                         'disabled': false,
                         'readonly': true
@@ -1127,9 +1008,6 @@
                         'display': 'flex'
                     });
                 } else {
-                    // $('#nama').prop('readonly', true).css('cursor', 'not-allowed');
-                    // $('#departemen').prop('readonly', true).css('cursor', 'not-allowed');
-                    // $('#jabatan').prop('readonly', true).css('cursor', 'not-allowed');
                     $('#tgl_pengajuan').prop('readonly', true).css('cursor', 'not-allowed');
                     $('#tujuan').prop('readonly', true).css('cursor', 'not-allowed');
                     $('#status').prop('readonly', true).css('cursor', 'not-allowed');
@@ -1150,7 +1028,6 @@
                     $('#pelaporan_button').prop('disabled', true).css('display', 'none');
                 } else {
                     $('#pelaporan_button').css('display', 'none');
-                    // $('#departemen').prop('disabled', true).css('display', 'none');
                     $('input').prop('disabled', true).css('cursor', 'not-allowed');
                     $('select').prop('disabled', true).css('cursor', 'not-allowed');
                     $('textarea').prop('disabled', true).css('cursor', 'not-allowed');
@@ -1164,7 +1041,6 @@
         }, 01); // Memeriksa setiap detik
 
         // // Panggil change event secara manual untuk mengatur state awal saat halaman dimuat
-        // $('#sifat_pelaporan').trigger('change');
 
         if (id == 0) {
             $('.aksi').text('Save');
@@ -1176,7 +1052,7 @@
             $('#kode_reimbust').val(kode).prop('readonly', true).css('cursor', 'not-allowed');
             $("select option[value='']").hide();
             $.ajax({
-                url: "<?= site_url('swi_reimbust/edit_data') ?>/" + id,
+                url: "<?= site_url('mac_reimbust/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -1360,13 +1236,14 @@
                                         <div class="btn btn-primary btn-lg btn-block btn-sm openModal" data-kwitansi="${data['transaksi'][index]['kwitansi']}">Lihat Foto</div>
                                     </td>
                                     <td width="150" style="padding: 15px 10px">
-                                        <a href="<?= base_url() ?>swi_datadeklarasi/read_form/25" class="btn btn-primary btn-lg btn-block btn-sm" 
+                                        <a href="<?= base_url() ?>mac_datadeklarasi/read_form/25" class="btn btn-primary btn-lg btn-block btn-sm" 
                                             data-id="${index + 1}"
                                             data-deklarasi="${data['transaksi'][index]['deklarasi']}"
                                             id="deklarasi-modal${index + 1}">
                                             ${data['transaksi'][index]['deklarasi'] ? data['transaksi'][index]['deklarasi'] : 'Deklarasi'}
                                         </a>
                                         <input type="hidden" class="form-control" id="deklarasi${index + 1}" placeholder="Deklarasi ${index + 1}" name="deklarasi[${index + 1}]" autocomplete="off" value="${data['transaksi'][index]['deklarasi']}">
+                                        <input type="hidden" class="form-control deklarasi-old" id="deklarasi_old${index + 1}" placeholder="Deklarasi Old${index + 1}" name="deklarasi_old[${index + 1}]" autocomplete="off" value="${data['transaksi'][index]['deklarasi']}">
                                     </td>
                                     <td><span class="btn delete-btn btn-danger" data-id="${index + 1}" style="display: none">Delete</span></td>
                                 </tr>
@@ -1431,40 +1308,6 @@
             });
         }
 
-        // UNTUK TAMPILAN READ ONLY
-        if (aksi == "read") {
-            // $('.aksi').hide();
-            // $('#id').prop('readonly', true);
-            // $('#sifat_pelaporan').prop('disabled', true);
-            // $('#tgl_pengajuan').prop('disabled', true);
-            // $('#nama').prop('disabled', false);
-            // $('#departemen').prop('disabled', true);
-            // $('#jabatan').prop('disabled', true);
-            // $('#tujuan').prop('disabled', true);
-            // $('#status').prop('disabled', true);
-            // $('#jumlah_prepayment').prop('disabled', true);
-            // $('th:last-child').remove();
-
-            // $.ajax({
-            //     url: "<?php echo site_url('swi_reimbust/read_detail/') ?>" + id,
-            //     type: "GET",
-            //     dataType: "JSON",
-            //     success: function(data) {
-            //         $(data).each(function(index) {
-            //             //Nilai nominal diformat menggunakan pemisah ribuan sebelum dimasukkan ke dalam elemen input.
-            //             const nominalReadFormatted = data[index]['nominal'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-            //             const row = `
-            //             <tr id="row-${index}">
-            //                 <td class="row-number">${index + 1}</td>
-            //                 <td><input readonly type="text" class="form-control" name="sifat_pelaporan[${index}]" value="${data[index]['sifat_pelaporan']}"></td>
-            //             </tr>
-            //             `;
-            //             $('#input-container').append(row);
-            //         });
-            //     }
-            // });
-        }
-
         $("#form").submit(function(e) {
             e.preventDefault();
             var $form = $(this);
@@ -1472,9 +1315,9 @@
 
             var url;
             if (id == 0) {
-                url = "<?php echo site_url('swi_reimbust/add') ?>";
+                url = "<?php echo site_url('mac_reimbust/add') ?>";
             } else {
-                url = "<?php echo site_url('swi_reimbust/update') ?>";
+                url = "<?php echo site_url('mac_reimbust/update') ?>";
             }
 
             var formData = new FormData(this);
@@ -1504,10 +1347,9 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then((result) => {
-                            location.href = "<?= base_url('swi_reimbust') ?>";
+                            location.href = "<?= base_url('mac_reimbust') ?>";
                         });
                     } else {
-
                         // Sembunyikan loading saat respons diterima
                         $('#loading').hide();
 
@@ -1520,7 +1362,6 @@
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
-
                     // Sembunyikan loading saat respons diterima
                     $('#loading').hide();
 

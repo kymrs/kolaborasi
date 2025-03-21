@@ -8,7 +8,7 @@
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex justify-content-between align-items-center">
                     <?php if ($add == 'Y') { ?>
-                        <a class="btn btn-primary btn-sm" href="<?= base_url('swi_reimbust/add_form') ?>">
+                        <a class="btn btn-primary btn-sm" href="<?= base_url('mac_reimbust/add_form') ?>">
                             <i class="fa fa-plus"></i>&nbsp;Add Data
                         </a>
                     <?php } ?>
@@ -140,7 +140,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('swi_reimbust/get_list') ?>",
+                "url": "<?php echo site_url('mac_reimbust/get_list') ?>",
                 "type": "POST",
                 "data": function(d) {
                     d.status = $('#appFilter').val(); // Tambahkan parameter status ke permintaan server
@@ -155,7 +155,7 @@
                     "className": 'dt-head-nowrap'
                 },
                 {
-                    "targets": [1, 6, 9],
+                    "targets": [1, 9],
                     "className": 'dt-body-nowrap'
                 }, {
                     "targets": [0, 1],
@@ -193,7 +193,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: "<?php echo site_url('swi_reimbust/delete/') ?>" + id,
+                    url: "<?php echo site_url('mac_reimbust/delete/') ?>" + id,
                     type: "POST",
                     dataType: "JSON",
                     success: function(data) {
@@ -205,7 +205,7 @@
                                 showConfirmButton: false,
                                 timer: 1500
                             }).then(() => {
-                                location.href = "<?= base_url('swi_reimbust') ?>";
+                                location.href = "<?= base_url('mac_reimbust') ?>";
                             });
                         } else {
                             Swal.fire({
@@ -223,7 +223,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then(() => {
-                            location.href = "<?= base_url('swi_reimbust') ?>";
+                            location.href = "<?= base_url('mac_reimbust') ?>";
                         });
                     }
                 });

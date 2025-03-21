@@ -1,12 +1,12 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Swi_reimbust extends CI_Controller
+class Sw_reimbust extends CI_Controller
 {
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('backend/M_swi_reimbust');
+        $this->load->model('backend/M_sw_reimbust');
         $this->load->model('backend/M_notifikasi');
         $this->M_login->getsecurity();
         date_default_timezone_set('Asia/Jakarta');
@@ -19,7 +19,7 @@ class Swi_reimbust extends CI_Controller
         ($akses->view_level == 'N' ? redirect('auth') : '');
         $data['add'] = $akses->add_level;
         $data['alias'] = $this->session->userdata('username');
-        $data['title'] = "backend/swi_reimbust/swi_reimbust_list";
+        $data['title'] = "backend/sw_reimbust/sw_reimbust_list";
         $data['titleview'] = "Data Reimbust";
         $name = $this->db->select('name')
             ->from('tbl_data_user')
@@ -27,9 +27,10 @@ class Swi_reimbust extends CI_Controller
             ->get()
             ->row('name');
         $data['approval'] = $this->db->select('COUNT(*) as total_approval')
-            ->from('swi_reimbust')
+            ->from('tbl_reimbust')
             ->where('app_name', $name)
             ->or_where('app2_name', $name)
+            ->or_where('app4_name', $name)
             ->get()
             ->row('total_approval');
         $this->load->view('backend/home', $data);
@@ -44,7 +45,7 @@ class Swi_reimbust extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $list = $this->M_swi_reimbust->get_datatables();
+        $list = $this->M_sw_reimbust->get_datatables();
         $data = array();
         $no = $_POST['start'];
 
@@ -57,10 +58,10 @@ class Swi_reimbust extends CI_Controller
         foreach ($list as $field) {
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
-            $action_read = ($read == 'Y') ? '<a href="swi_reimbust/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
-            $action_edit = ($edit == 'Y') ? '<a href="swi_reimbust/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
+            $action_read = ($read == 'Y') ? '<a href="sw_reimbust/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
+            $action_edit = ($edit == 'Y') ? '<a href="sw_reimbust/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
-            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="swi_reimbust/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
+            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="sw_reimbust/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             if ($this->session->userdata('username') == 'eko') {
@@ -76,8 +77,10 @@ class Swi_reimbust extends CI_Controller
             //MENENSTUKAN SATTSU PROGRESS PENGAJUAN PERMINTAAN
             if ($field->app_status == 'approved' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
                 $status = $field->status . ' (' . $field->app2_name . ')';
-            } elseif ($field->app_status == 'waiting' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
+            } elseif ($field->app4_status == 'approved' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
                 $status = $field->status . ' (' . $field->app_name . ')';
+            } elseif ($field->app4_status == 'waiting' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
+                $status = $field->status . ' (' . $field->app4_name . ')';
             } else {
                 $status = $field->status;
             }
@@ -113,15 +116,16 @@ class Swi_reimbust extends CI_Controller
             );
             $row[] = date("d", strtotime($field->tgl_pengajuan)) . " " . $bulanIndo[date("n", strtotime($field->tgl_pengajuan))] . " " . date("Y", strtotime($field->tgl_pengajuan));
             $row[] = $field->tujuan;
-            $row[] = 'Rp. ' . number_format($field->jumlah_prepayment, 0, ',', '.');;
+            $row[] = 'Rp. ' . number_format($field->jumlah_prepayment, 0, ',', '.');
             $row[] = ucwords($status);
+
             $data[] = $row;
         }
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_swi_reimbust->count_all(),
-            "recordsFiltered" => $this->M_swi_reimbust->count_filtered(),
+            "recordsTotal" => $this->M_sw_reimbust->count_all(),
+            "recordsFiltered" => $this->M_sw_reimbust->count_filtered(),
             "data" => $data,
         );
         //output dalam format JSON
@@ -137,7 +141,7 @@ class Swi_reimbust extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $list = $this->M_swi_reimbust->get_datatables2();
+        $list = $this->M_sw_reimbust->get_datatables2();
         $data = array();
         $no = $_POST['start'];
 
@@ -146,26 +150,26 @@ class Swi_reimbust extends CI_Controller
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             if ($field->app_name == $fullname) {
-                $action = '<a href="swi_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                                <a class="btn btn-success btn-circle btn-sm" href="swi_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="sw_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                                <a class="btn btn-success btn-circle btn-sm" href="sw_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app2_name == $fullname) {
-                $action = '<a href="swi_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
-                                <a class="btn btn-success btn-circle btn-sm" href="swi_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="sw_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
+                                <a class="btn btn-success btn-circle btn-sm" href="sw_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif (in_array($field->status, ['rejected', 'approved'])) {
-                $action = '<a href="swi_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                <a class="btn btn-success btn-circle btn-sm" href="swi_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="sw_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                <a class="btn btn-success btn-circle btn-sm" href="sw_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app_status == 'revised' || $field->app2_status == 'revised') {
-                $action = '<a href="swi_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                    <a href="swi_datadeklarasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
-                    <a class="btn btn-success btn-circle btn-sm" href="swi_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="sw_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                    <a href="sw_datadeklarasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
+                    <a class="btn btn-success btn-circle btn-sm" href="sw_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app_status == 'approved') {
-                $action = '<a href="swi_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                            <a class="btn btn-success btn-circle btn-sm" href="swi_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="sw_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                            <a class="btn btn-success btn-circle btn-sm" href="sw_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } else {
-                $action = '<a href="swi_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                        <a href="swi_datadeklarasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
+                $action = '<a href="sw_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                        <a href="sw_datadeklarasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
 			            <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
-                        <a class="btn btn-success btn-circle btn-sm" href="swi_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                        <a class="btn btn-success btn-circle btn-sm" href="sw_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             }
 
             $no++;
@@ -186,15 +190,15 @@ class Swi_reimbust extends CI_Controller
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_swi_reimbust->count_all2(),
-            "recordsFiltered" => $this->M_swi_reimbust->count_filtered2(),
+            "recordsTotal" => $this->M_sw_reimbust->count_all2(),
+            "recordsFiltered" => $this->M_sw_reimbust->count_filtered2(),
             "data" => $data,
         );
         //output dalam format JSON
         echo json_encode($output);
     }
 
-    // get list swi_prepayment
+    // get list prepayment
     function get_list3()
     {
         // INISIAI VARIABLE YANG DIBUTUHKAN
@@ -203,7 +207,7 @@ class Swi_reimbust extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $list = $this->M_swi_reimbust->get_datatables3();
+        $list = $this->M_sw_reimbust->get_datatables3();
         $data = array();
         $no = $_POST['start'];
 
@@ -212,26 +216,26 @@ class Swi_reimbust extends CI_Controller
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             if ($field->app_name == $fullname) {
-                $action = '<a href="swi_prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                                <a class="btn btn-success btn-circle btn-sm" href="swi_prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="sw_prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                                <a class="btn btn-success btn-circle btn-sm" href="sw_prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app2_name == $fullname) {
-                $action = '<a href="swi_prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
-                                <a class="btn btn-success btn-circle btn-sm" href="swi_prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="sw_prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
+                                <a class="btn btn-success btn-circle btn-sm" href="sw_prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif (in_array($field->status, ['rejected', 'approved'])) {
-                $action = '<a href="swi_prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                <a class="btn btn-success btn-circle btn-sm" href="swi_prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="sw_prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                <a class="btn btn-success btn-circle btn-sm" href="sw_prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app_status == 'revised' || $field->app2_status == 'revised') {
-                $action = '<a href="swi_prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                    <a href="swi_prepayment/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
-                    <a class="btn btn-success btn-circle btn-sm" href="swi_prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="sw_prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                    <a href="sw_prepayment/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
+                    <a class="btn btn-success btn-circle btn-sm" href="sw_prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app_status == 'approved') {
-                $action = '<a href="swi_prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                            <a class="btn btn-success btn-circle btn-sm" href="swi_prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="sw_prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                            <a class="btn btn-success btn-circle btn-sm" href="sw_prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } else {
-                $action = '<a href="swi_prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                        <a href="swi_prepayment/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
+                $action = '<a href="sw_prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                        <a href="sw_prepayment/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
                         <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
-                        <a class="btn btn-success btn-circle btn-sm" href="swi_prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                        <a class="btn btn-success btn-circle btn-sm" href="sw_prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             }
 
 
@@ -245,18 +249,16 @@ class Swi_reimbust extends CI_Controller
             $row[] = strtoupper($field->divisi);
             $row[] = strtoupper($field->jabatan);
             $row[] = date("d M Y", strtotime($field->tgl_prepayment));
-            $row[] = $field->prepayment;
+            $row[] = $field->tujuan;
             $row[] = $formatted_nominal;
-            // $row[] = $field->tujuan;
-            $row[] = $field->status;
 
             $data[] = $row;
         }
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_swi_reimbust->count_all3(),
-            "recordsFiltered" => $this->M_swi_reimbust->count_filtered3(),
+            "recordsTotal" => $this->M_sw_reimbust->count_all3(),
+            "recordsFiltered" => $this->M_sw_reimbust->count_filtered3(),
             "data" => $data,
         );
         //output dalam format JSON
@@ -266,7 +268,7 @@ class Swi_reimbust extends CI_Controller
     function read_form($id)
     {
         $data['aksi'] = 'read';
-        $data['user'] = $this->M_swi_reimbust->get_by_id($id);
+        $data['user'] = $this->M_sw_reimbust->get_by_id($id);
         $data['app_name'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $this->session->userdata('id_user'))
@@ -279,10 +281,10 @@ class Swi_reimbust extends CI_Controller
             ->row('name');
         $data['id'] = $id;
         $data['title_view'] = "Data Reimbust";
-        $data['title'] = 'backend/swi_reimbust/swi_reimbust_read';
+        $data['title'] = 'backend/sw_reimbust/sw_reimbust_read';
         $this->db->select('kwitansi');
         $this->db->where('reimbust_id', $id);
-        $data['kwitansi'] = $this->db->get('swi_reimbust_detail')->result_array();
+        $data['kwitansi'] = $this->db->get('tbl_reimbust_detail')->result_array();
         $this->load->view('backend/home', $data);
     }
 
@@ -292,11 +294,12 @@ class Swi_reimbust extends CI_Controller
         $id_user = $this->session->userdata('id_user');
         $data['id_user'] = $id_user;
         $data['id_pembuat'] = 0;
+
         $data['id'] = 0;
         $data['aksi'] = 'add';
-        $data['rek_options'] = $this->M_swi_reimbust->options($id_user)->result_array();
+        $data['rek_options'] = $this->M_sw_reimbust->options($id_user)->result_array();
         $data['title_view'] = "Reimbust Form";
-        $data['title'] = 'backend/swi_reimbust/swi_reimbust_form';
+        $data['title'] = 'backend/sw_reimbust/sw_reimbust_form';
         $this->load->view('backend/home', $data);
     }
 
@@ -306,8 +309,8 @@ class Swi_reimbust extends CI_Controller
         $this->load->library('Fpdf_generate');
 
         // Load data from database based on $id
-        $data['master'] = $this->M_swi_reimbust->get_by_id($id);
-        $data['transaksi'] = $this->M_swi_reimbust->get_by_id_detail($id);
+        $data['master'] = $this->M_sw_reimbust->get_by_id($id);
+        $data['transaksi'] = $this->M_sw_reimbust->get_by_id_detail($id);
         $data['user'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $data['master']->id_user)
@@ -328,7 +331,7 @@ class Swi_reimbust extends CI_Controller
         $pdf->SetAutoPageBreak(true, 5); // Margin bawah 15mm
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/sobatwisata.png', 11, 5, 36, 25);
+        $pdf->Image(base_url('') . '/assets/backend/img/sebelaswarna.png', 10, 5, 45, 30);
 
         // Set font
         $pdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php');
@@ -338,7 +341,7 @@ class Swi_reimbust extends CI_Controller
 
         // Teks yang ingin ditampilkan
         $text1 = 'FORM PELAPORAN / REIMBUST';
-        $text2 = 'SOBATWISATA';
+        $text2 = 'SEBELASWARNA';
 
         // Menghitung lebar teks
         $textWidth1 = $pdf->GetStringWidth($text1);
@@ -412,10 +415,10 @@ class Swi_reimbust extends CI_Controller
         // Add some data with adjusted column widths
         Row($pdf, 10, array('NAMA', ':', $data['user']), $widths, false);
         $pdf->Ln(-3);
-        // Row($pdf, 10, array('JABATAN', ':', $data['master']->jabatan), $widths, false);
-        // $pdf->Ln(-3);
-        // Row($pdf, 10, array('DEPARTEMEN', ':', $data['master']->departemen), $widths, false);
-        // $pdf->Ln(-3);
+        Row($pdf, 10, array('JABATAN', ':', $data['master']->jabatan), $widths, false);
+        $pdf->Ln(-3);
+        Row($pdf, 10, array('DEPARTEMEN', ':', $data['master']->departemen), $widths, false);
+        $pdf->Ln(-3);
         Row($pdf, 10, array('SIFAT PELAPORAN', ':', $data['master']->sifat_pelaporan), $widths, false);
         $pdf->Ln(-3);
         Row($pdf, 10, array('TANGGAL', ':', $formatted_date), $widths, false);
@@ -428,6 +431,7 @@ class Swi_reimbust extends CI_Controller
         $jumlah_prepayment = number_format($data['master']->jumlah_prepayment, 0, ',', '.');
 
         // Add table headers
+        // Tambahkan "JUMLAH PREPAYMENT" dalam satu Cell
         $pdf->SetFont('Poppins-Regular', '', 9);
         $pdf->Cell(193, 7, 'No. Prepayment : ' . (!empty($data['master']->kode_prepayment) ? $data['master']->kode_prepayment : '-'), 0, 1, 'R');
 
@@ -488,7 +492,7 @@ class Swi_reimbust extends CI_Controller
             $pdf->Cell(33, 8.5, $row['deklarasi'] ? 'Ada' : '-', 1, 1, 'C');
         }
 
-        // Add total and remaining swi_prepayment
+        // Add total and remaining prepayment
         $pdf->SetFont('Poppins-Bold', '', 10);
         $pdf->Cell(259, 8.5, 'TOTAL PEMAKAIAN', 1, 0, 'L');
         $pdf->Cell(-1, 8.5, 'Rp. ' . number_format($totalJumlah, 0, ',', '.'), 0, 1, 'R');
@@ -498,113 +502,58 @@ class Swi_reimbust extends CI_Controller
         $pdf->Ln(10);
 
         $pdf->SetFont('Poppins-Regular', '', 10);
-        $pdf->Cell(50, 8.5, 'YANG MELAKUKAN', 1, 0, 'C');
-        $pdf->Cell(50, 8.5, 'MENGETAHUI', 1, 0, 'C');
-        $pdf->Cell(50, 8.5, 'MENYETUJUI', 1, 1, 'C');
+        // Membuat header tabel
+        $pdf->Cell(47.3, 8.5, 'Yang Melakukan', 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, 'Captain', 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, 'Mengetahui', 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, 'Menyetujui', 1, 1, 'C');
 
-        $pdf->Cell(50, 13.5, 'CREATED', 0, 0, 'C');
+        // Set font normal untuk konten tabel
+        $pdf->SetFont('Poppins-Regular', '', 10);
 
-        $x = $pdf->GetX();
-        $y = $pdf->GetY();
+        // Baris pemisah
+        $pdf->Cell(47.3, 5, '', 'LR', 0, 'C');
+        $pdf->Cell(47.3, 5, '', 0, 0, 'C');
+        $pdf->Cell(47.3, 5, '', 'L', 0, 'C');
+        $pdf->Cell(47.3, 5, '', 'LR', 1, 'C');
 
-        $pdf->SetXY($x + -50, $y + 0); // Menambahkan margin horizontal dan vertikal
-        $pdf->Cell(50, 18, '', 1, 0, 'C');
+        // Baris pertama (Status)
+        $pdf->Cell(47.3, 5, 'CREATED', 'LR', 0, 'C');
+        $pdf->Cell(47.3, 5, strtoupper($data['master']->app4_status), 'R', 0, 'C');
+        $pdf->Cell(47.3, 5, strtoupper($data['master']->app_status), 0, 0, 'C');
+        $pdf->Cell(47.3, 5, strtoupper($data['master']->app2_status), 'LR', 1, 'C');
 
-        // Kembali ke posisi sebelumnya untuk elemen berikutnya
-        $pdf->SetXY($x + 0, $y); // Mengatur posisi untuk elemen berikutnya jika diperlukan
+        // Baris kedua (Tanggal)
+        $pdf->Cell(47.3, 5, $data['master']->created_at, 'LR', 0, 'C');
+        $pdf->Cell(47.3, 5, $data['master']->app4_date, 'R', 0, 'C');
+        $pdf->Cell(47.3, 5, $data['master']->app_date, 0, 0, 'C');
+        $pdf->Cell(47.3, 5, $data['master']->app2_date, 'LR', 1, 'C');
 
-        // Menyimpan posisi saat ini
-        $x = $pdf->GetX();
-        $y = $pdf->GetY();
+        // Baris pemisah
+        $pdf->Cell(47.3, 5, '', 'LR', 0, 'C');
+        $pdf->Cell(47.3, 5, '', 0, 0, 'C');
+        $pdf->Cell(47.3, 5, '', 'L', 0, 'C');
+        $pdf->Cell(47.3, 5, '', 'LR', 1, 'C');
 
-        // Mengatur posisi X dan Y dengan margin tambahan untuk teks tanggal
-        $pdf->SetXY($x + -50, $y + 4.5); // Menambahkan margin horizontal dan vertikal
+        // Jarak kosong untuk pemisah
+        $pdf->Ln(0);
 
-        // Menggunakan Cell() untuk mencetak teks tanggal dengan margin
-        $pdf->Cell(50, 15, date('d-m-Y H:i:s', strtotime($data['master']->created_at)), 0, 0, 'C');
-
-        // Kembali ke posisi sebelumnya untuk elemen berikutnya
-        $pdf->SetXY($x + 0, $y); // Mengatur posisi untuk elemen berikutnya jika diperlukan
-
-        // Approval 1
-        $pdf->Cell(50, 13.5, strtoupper($data['master']->app_status), 0, 0, 'C');
-
-        $x = $pdf->GetX();
-        $y = $pdf->GetY();
-
-        $pdf->SetXY($x + -50, $y + 0); // Menambahkan margin horizontal dan vertikal
-        $pdf->Cell(50, 18, '', 1, 0, 'C');
-
-        // Kembali ke posisi sebelumnya untuk elemen berikutnya
-        $pdf->SetXY($x + 0, $y); // Mengatur posisi untuk elemen berikutnya jika diperlukan
-
-        // Menyimpan posisi saat ini
-        $x = $pdf->GetX();
-        $y = $pdf->GetY();
-
-        // Mengatur posisi X dan Y dengan margin tambahan untuk teks tanggal
-        $pdf->SetXY($x + -50, $y + 4.5); // Menambahkan margin horizontal dan vertikal
-
-        if ($data['master']->app_date == null) {
-            $date = '';
-        }
-        if ($data['master']->app_date != null) {
-            $date = date('d-m-Y H:i:s', strtotime($data['master']->app_date));
-        }
-
-        // Menggunakan Cell() untuk mencetak teks tanggal dengan margin
-        $pdf->Cell(50, 15, $date, 0, 0, 'C');
-
-        // Kembali ke posisi sebelumnya untuk elemen berikutnya
-        $pdf->SetXY($x + 0, $y); // Mengatur posisi untuk elemen berikutnya jika diperlukan
-
-        // Approval 2
-        $pdf->Cell(50, 13.5, strtoupper($data['master']->app2_status), 0, 0, 'C');
-
-        $x = $pdf->GetX();
-        $y = $pdf->GetY();
-
-        $pdf->SetXY($x + -50, $y + 0); // Menambahkan margin horizontal dan vertikal
-        $pdf->Cell(50, 18, '', 1, 0, 'C');
-
-        // Kembali ke posisi sebelumnya untuk elemen berikutnya
-        $pdf->SetXY($x + 0, $y); // Mengatur posisi untuk elemen berikutnya jika diperlukan
-
-        // Menyimpan posisi saat ini
-        $x = $pdf->GetX();
-        $y = $pdf->GetY();
-
-        // Mengatur posisi X dan Y dengan margin tambahan untuk teks tanggal
-        $pdf->SetXY($x + -50, $y + 4.5); // Menambahkan margin horizontal dan vertikal
-
-        if ($data['master']->app2_date == null) {
-            $date2 = '';
-        }
-        if ($data['master']->app2_date != null) {
-            $date2 = date('d-m-Y H:i:s', strtotime($data['master']->app2_date));
-        }
-
-        // Menggunakan Cell() untuk mencetak teks tanggal dengan margin
-        $pdf->Cell(50, 15, $date2, 0, 0, 'C');
-
-        // Kembali ke posisi sebelumnya untuk elemen berikutnya 
-        $pdf->SetXY($x + -150, $y + 18); // Mengatur posisi untuk elemen berikutnya jika diperlukan
-
-        // Menulis elemen selanjutnya dengan ukuran baris yang lebih kecil
-        $pdf->Cell(50, 8.5, $data['user'], 1, 0, 'C');
-        $pdf->Cell(50, 8.5, $data['master']->app_name, 1, 0, 'C');
-        $pdf->Cell(50, 8.5, $data['master']->app2_name, 1, 1, 'C');
+        // Baris ketiga (Nama pengguna)
+        $pdf->Cell(47.3, 8.5, $data['user'], 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, $data['master']->app4_name, 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, $data['master']->app_name, 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, $data['master']->app2_name, 1, 1, 'C');
 
 
         // Output the PDF
-        $pdf->Output('I', 'Reimbust - ' . $data['master']->kode_reimbust . '.pdf');
+        $pdf->Output('I', 'sw_reimbust - ' . $data['master']->kode_reimbust . '.pdf');
     }
 
     // MEREGENERATE KODE REIMBUST
     public function generate_kode()
     {
         $date = $this->input->post('date');
-        $kode = $this->M_swi_reimbust->max_kode($date)->row();
+        $kode = $this->M_sw_reimbust->max_kode($date)->row();
         if (empty($kode->kode_reimbust)) {
             $no_urut = 1;
         } else {
@@ -622,20 +571,20 @@ class Swi_reimbust extends CI_Controller
     {
         // INISIASI
         $data['id_user'] = $this->session->userdata('id_user');
-        $data['id_pembuat'] = $this->M_swi_reimbust->get_by_id($id)->id_user;
+        $data['id_pembuat'] = $this->M_sw_reimbust->get_by_id($id)->id_user;
 
         $data['id'] = $id;
         $data['aksi'] = 'update';
         $data['title_view'] = "Edit Reimbust";
-        $data['rek_options'] = $this->M_swi_reimbust->options($data['id_user'])->result_array();
-        $data['title'] = 'backend/swi_reimbust/swi_reimbust_form';
+        $data['rek_options'] = $this->M_sw_reimbust->options($data['id_user'])->result_array();
+        $data['title'] = 'backend/sw_reimbust/sw_reimbust_form';
         $this->load->view('backend/home', $data);
     }
 
     function edit_data($id)
     {
-        $data['master'] = $this->M_swi_reimbust->get_by_id($id);
-        $data['transaksi'] = $this->M_swi_reimbust->get_by_id_detail($id);
+        $data['master'] = $this->M_sw_reimbust->get_by_id($id);
+        $data['transaksi'] = $this->M_sw_reimbust->get_by_id_detail($id);
         $data['nama'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $data['master']->id_user)
@@ -645,7 +594,7 @@ class Swi_reimbust extends CI_Controller
 
     function read_detail($id)
     {
-        $data = $this->M_swi_reimbust->get_by_id_detail($id);
+        $data = $this->M_sw_reimbust->get_by_id_detail($id);
         echo json_encode($data);
     }
 
@@ -655,7 +604,7 @@ class Swi_reimbust extends CI_Controller
             $deklarasi = $this->input->post('deklarasi');
 
             // Mengambil data deklarasi dari database
-            $deklarasiRecord = $this->db->get_where('swi_deklarasi', ['kode_deklarasi' => $deklarasi])->row_array();
+            $deklarasiRecord = $this->db->get_where('tbl_deklarasi', ['kode_deklarasi' => $deklarasi])->row_array();
 
             // Debug log
             log_message('debug', 'Deklarasi: ' . print_r($deklarasi, true));
@@ -664,7 +613,7 @@ class Swi_reimbust extends CI_Controller
             if ($deklarasiRecord) {
                 // Mengambil ID dari record yang ditemukan
                 $deklarasiId = $deklarasiRecord['id']; // Pastikan 'id' adalah nama kolom yang sesuai
-                $redirect_url = site_url('datadeklarasi_pw/read_form/' . $deklarasiId);
+                $redirect_url = site_url('sw_datadeklarasi/read_form/' . $deklarasiId);
 
                 $response = array(
                     'status' => 'success',
@@ -689,7 +638,7 @@ class Swi_reimbust extends CI_Controller
     {
         // INSERT KODE REIMBUST SAAT SUBMIT
         $date = $this->input->post('tgl_pengajuan');
-        $kode = $this->M_swi_reimbust->max_kode($date)->row();
+        $kode = $this->M_sw_reimbust->max_kode($date)->row();
         if (empty($kode->kode_reimbust)) {
             $no_urut = 1;
         } else {
@@ -757,15 +706,14 @@ class Swi_reimbust extends CI_Controller
             ->get('tbl_submenu')
             ->row();
 
-        $confirm = $this->db->select('app_id, app2_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
-        if (!empty($confirm->app_id) && isset($confirm->app_id, $confirm->app2_id)) {
+        $confirm = $this->db->select('app_id, app2_id, app4_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
+        if (!empty($confirm) && isset($confirm->app_id, $confirm->app2_id)) {
             $app = $confirm;
         } else {
             echo json_encode(array("status" => FALSE, "error" => "Approval Belum Ditentukan, Mohon untuk menghubungi admin."));
             exit();
             $valid = false;
         }
-        $id = $this->session->userdata('id_user');
 
         // Inisialisasi data untuk tabel reimbust
         $data1 = array(
@@ -789,11 +737,16 @@ class Swi_reimbust extends CI_Controller
                 ->where('id_user', $app->app2_id)
                 ->get()
                 ->row('name'),
+            'app4_name' => $this->db->select('name')
+                ->from('tbl_data_user')
+                ->where('id_user', $app->app4_id)
+                ->get()
+                ->row('name'),
             'created_at' =>  date('Y-m-d H:i:s')
         );
         // Hanya simpan ke database jika tidak ada file yang melebihi 3 MB
         if ($valid) {
-            $reimbust_id = $this->M_swi_reimbust->save($data1);
+            $reimbust_id = $this->M_sw_reimbust->save($data1);
         }
 
         $data2 = [];
@@ -808,7 +761,7 @@ class Swi_reimbust extends CI_Controller
                 $_FILES['file']['error'] = $_FILES['kwitansi']['error'][$i];
                 $_FILES['file']['size'] = $_FILES['kwitansi']['size'][$i];
 
-                $config['upload_path'] = './assets/backend/document/reimbust/kwitansi_swi/';
+                $config['upload_path'] = './assets/backend/document/reimbust/kwitansi_sw/';
                 $config['allowed_types'] = 'jpeg|jpg|png';
                 $config['max_size'] = 3072; // Batasan ukuran file dalam kilobytes (3 MB)
                 $config['encrypt_name'] = TRUE;
@@ -835,13 +788,13 @@ class Swi_reimbust extends CI_Controller
             // Update data deklarasi yang di tampilkan di modal, jika gambar di submit maka is active akan menjadi 0
             $this->db->set('is_active', 0);
             $this->db->where('kode_deklarasi', $deklarasi[$i]);
-            $this->db->update('swi_deklarasi');
+            $this->db->update('tbl_deklarasi');
         }
         $this->db->set('is_active', 0);
         $this->db->where('kode_prepayment', $this->input->post('kode_prepayment'));
-        $this->db->update('swi_prepayment');
+        $this->db->update('tbl_prepayment');
 
-        $this->M_swi_reimbust->save_detail($data2);
+        $this->M_sw_reimbust->save_detail($data2);
 
 
         echo json_encode(array("status" => TRUE));
@@ -873,6 +826,9 @@ class Swi_reimbust extends CI_Controller
             'app2_status' => 'waiting',
             'app2_date' => null,
             'app2_keterangan' => null,
+            'app4_status' => 'waiting',
+            'app4_date' => null,
+            'app4_keterangan' => null,
             'status' => 'on-process'
         );
 
@@ -890,24 +846,24 @@ class Swi_reimbust extends CI_Controller
         $deklarasi = $this->input->post('deklarasi');
         $deklarasi_old = $this->input->post('deklarasi_old');
 
-        if ($this->db->update('swi_reimbust', $data)) {
+        if ($this->db->update('tbl_reimbust', $data)) {
             // 1. Hapus Baris yang Telah Dihapus
             $deletedRows = json_decode($this->input->post('deleted_rows'), true);
             if (!empty($deletedRows)) {
                 foreach ($deletedRows as $id2) {
-                    $reimbust_detail = $this->db->get_where('swi_reimbust_detail', ['id' => $id2])->row_array();
+                    $reimbust_detail = $this->db->get_where('tbl_reimbust_detail', ['id' => $id2])->row_array();
 
                     if ($reimbust_detail) {
                         $old_image = $reimbust_detail['kwitansi'];
                         if ($old_image != 'default.jpg') {
-                            @unlink(FCPATH . './assets/backend/document/reimbust/kwitansi_swi/' . $old_image);
+                            @unlink(FCPATH . './assets/backend/document/reimbust/kwitansi_sw/' . $old_image);
                         }
 
                         $this->db->where('id', $id2);
-                        $this->db->delete('swi_reimbust_detail');
+                        $this->db->delete('tbl_reimbust_detail');
 
                         $kode_deklarasi = $reimbust_detail['deklarasi'];
-                        $this->db->update('swi_deklarasi', ['is_active' => 1], ['kode_deklarasi' => $kode_deklarasi]);
+                        $this->db->update('tbl_deklarasi', ['is_active' => 1], ['kode_deklarasi' => $kode_deklarasi]);
                     }
                 }
             }
@@ -929,7 +885,7 @@ class Swi_reimbust extends CI_Controller
                         return;
                     }
 
-                    $config['upload_path'] = './assets/backend/document/reimbust/kwitansi_swi/';
+                    $config['upload_path'] = './assets/backend/document/reimbust/kwitansi_sw/';
                     $config['allowed_types'] = 'jpeg|jpg|png';
                     $config['max_size'] = 3072;
                     $config['encrypt_name'] = TRUE;
@@ -939,13 +895,13 @@ class Swi_reimbust extends CI_Controller
                     if ($this->upload->do_upload('file')) {
                         $id = !empty($detail_id[$i]) ? $detail_id[$i] : NULL;
 
-                        $reimbust_detail = $this->db->get_where('swi_reimbust_detail', ['id' => $id])->row_array();
+                        $reimbust_detail = $this->db->get_where('tbl_reimbust_detail', ['id' => $id])->row_array();
 
                         if ($reimbust_detail) {
                             $old_image = $reimbust_detail['kwitansi'];
 
                             if ($old_image && $old_image != 'default.jpg') {
-                                @unlink(FCPATH . './assets/backend/document/reimbust/kwitansi_swi/' . $old_image);
+                                @unlink(FCPATH . './assets/backend/document/reimbust/kwitansi_sw/' . $old_image);
                             }
                         }
                         $kwitansi = $this->upload->data('file_name');
@@ -967,27 +923,27 @@ class Swi_reimbust extends CI_Controller
                     'deklarasi' => $deklarasi[$i]
                 );
 
-                // Mengubah data swi_prepayment is_active menjadi 0 pada data swi_prepayment terbaru, jika kode_prepayment ada
+                // Mengubah data prepayment is_active menjadi 0 pada data prepayment terbaru, jika kode_prepayment ada
                 $kode_prepayment = $this->input->post('kode_prepayment');
                 if (!empty($kode_prepayment)) {
-                    $this->db->update('swi_prepayment', ['is_active' => 0], ['kode_prepayment' => $kode_prepayment]);
+                    $this->db->update('tbl_prepayment', ['is_active' => 0], ['kode_prepayment' => $kode_prepayment]);
                 }
 
-                // Mengubah data swi_prepayment is_active menjadi 1 pada data swi_prepayment terlama, jika kode_prepayment_old ada
+                // Mengubah data prepayment is_active menjadi 1 pada data prepayment terlama, jika kode_prepayment_old ada
                 $kode_prepayment_old = $this->input->post('kode_prepayment_old');
                 if ($kode_prepayment != $kode_prepayment_old && !empty($kode_prepayment_old)) {
-                    $this->db->update('swi_prepayment', ['is_active' => 1], ['kode_prepayment' => $kode_prepayment_old]);
+                    $this->db->update('tbl_prepayment', ['is_active' => 1], ['kode_prepayment' => $kode_prepayment_old]);
                 }
 
                 // Replace data di tbl_reimbust_detail
-                $this->db->replace('swi_reimbust_detail', $data2);
+                $this->db->replace('tbl_reimbust_detail', $data2);
 
                 // mengubah is_active deklarasi awal menjadi 1, dan deklarasi baru menjadi 0
                 if ($deklarasi_old[$i]) {
-                    $this->db->update('swi_deklarasi', ['is_active' => 1], ['kode_deklarasi' => $deklarasi_old[$i]]);
-                    $this->db->update('swi_deklarasi', ['is_active' => 0], ['kode_deklarasi' => $deklarasi[$i]]);
+                    $this->db->update('tbl_deklarasi', ['is_active' => 1], ['kode_deklarasi' => $deklarasi_old[$i]]);
+                    $this->db->update('tbl_deklarasi', ['is_active' => 0], ['kode_deklarasi' => $deklarasi[$i]]);
                 } else {
-                    $this->db->update('swi_deklarasi', ['is_active' => 0], ['kode_deklarasi' => $deklarasi[$i]]);
+                    $this->db->update('tbl_deklarasi', ['is_active' => 0], ['kode_deklarasi' => $deklarasi[$i]]);
                 }
             }
         }
@@ -996,11 +952,35 @@ class Swi_reimbust extends CI_Controller
 
     function delete($id)
     {
-        $this->M_swi_reimbust->delete($id);
+        $this->M_sw_reimbust->delete($id);
         echo json_encode(array("status" => TRUE));
     }
 
     //APPROVE DATA
+    public function approve3()
+    {
+        $data = array(
+            'app4_keterangan' => $this->input->post('app4_keterangan'),
+            'app4_status' => $this->input->post('app4_status'),
+            'app4_date' => date('Y-m-d H:i:s'),
+        );
+
+        // UPDATE STATUS DEKLARASI
+        if ($this->input->post('app4_status') === 'revised') {
+            $data['status'] = 'revised';
+        } elseif ($this->input->post('app4_status') === 'approved') {
+            $data['status'] = 'on-process';
+        } elseif ($this->input->post('app4_status') === 'rejected') {
+            $data['status'] = 'rejected';
+        }
+
+        //UPDATE APPROVAL PERTAMA
+        $this->db->where('id', $this->input->post('hidden_id'));
+        $this->db->update('tbl_reimbust', $data);
+
+        echo json_encode(array("status" => TRUE));
+    }
+
     public function approve()
     {
         $data = array(
@@ -1020,7 +1000,7 @@ class Swi_reimbust extends CI_Controller
 
         //UPDATE APPROVAL PERTAMA
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('swi_reimbust', $data);
+        $this->db->update('tbl_reimbust', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -1044,15 +1024,16 @@ class Swi_reimbust extends CI_Controller
 
         // UPDATE APPROVAL 2
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('swi_reimbust', $data);
+        $this->db->update('tbl_reimbust', $data);
 
         echo json_encode(array("status" => TRUE));
     }
 
     function payment()
     {
+        // UPDATE APPROVAL 2
         $this->db->where('id', $this->input->post('id'));
-        $this->db->update('swi_reimbust', ['payment_status' => $this->input->post('payment_status')]);
+        $this->db->update('tbl_reimbust', ['payment_status' => $this->input->post('payment_status')]);
 
         echo json_encode(array("status" => TRUE));
     }

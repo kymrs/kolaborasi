@@ -121,7 +121,7 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header text-right">
-                    <a class="btn btn-primary btn-sm btn-style" href="<?= base_url('swi_reimbust') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+                    <a class="btn btn-primary btn-sm btn-style" href="<?= base_url('sw_reimbust') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
                     <form id="form" enctype="multipart/form-data">
@@ -138,6 +138,12 @@
                                         <div class="btn btn-primary btn-small btn-style btn-search-prepayment" data-toggle="modal" data-target="#pelaporanModal" id="pelaporan_button" style="margin-left: 7px;"><i class="fas fa-solid fa-search"></i></div>
                                     </div>
                                 </div>
+                                <!-- <div class="form-group row" >
+                                    <label class="col-sm-5"></label>
+                                    <div class="col-sm-7">
+                                        <div class="btn btn-primary btn-small" data-toggle="modal" data-target="#pelaporanModal">Pelaporan</div>
+                                    </div>
+                                </div> -->
                                 <div class="form-group row">
                                     <label class="col-sm-4">Tanggal Pengajuan</label>
                                     <div class="col-sm-8">
@@ -304,7 +310,7 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="deklarasiModalLabel">Data Deklarasi</h5>
-                                        <!-- <a style="position: relative; right: 75px" class="btn btn-primary btn-sm" href="<?= base_url('swi_datadeklarasi/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a> -->
+                                        <!-- <a style="position: relative; right: 75px" class="btn btn-primary btn-sm" href="<?= base_url('sw_datadeklarasi/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a> -->
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span style="position: relative; bottom: 5px" aria-hidden="true">&times;</span>
                                         </button>
@@ -351,7 +357,7 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="deklarasiModalLabel">Data Deklarasi</h5>
-                                        <a style="position: relative; right: 75px" class="btn btn-primary btn-sm" href="<?= base_url('swi_datadeklarasi/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a>
+                                        <a style="position: relative; right: 75px" class="btn btn-primary btn-sm" href="<?= base_url('sw_datadeklarasi/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span style="position: relative; bottom: 5px" aria-hidden="true">&times;</span>
                                         </button>
@@ -425,7 +431,7 @@
                 $("#tgl_pengajuan-error").remove(); // Menghapus label error
             }
             $.ajax({
-                url: "<?php echo site_url('swi_reimbust/generate_kode') ?>",
+                url: "<?php echo site_url('sw_reimbust/generate_kode') ?>",
                 type: "POST",
                 data: {
                     "date": dateText
@@ -487,7 +493,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('swi_reimbust/get_list3') ?>",
+                "url": "<?php echo site_url('sw_reimbust/get_list3') ?>",
                 "type": "POST",
                 "data": function(d) {
                     d.status = 'approved';
@@ -516,7 +522,7 @@
             $('#kode_prepayment_input').val(data[2]);
             // $('#nama').val(data[3]);
             $('#departemenPrepayment').val(data[4]);
-            $('#jabatan').val(data[5]);
+            // $('#jabatan').val(data[5]);
             // $('#tgl_pengajuan').val(data[6]);
             $('#jumlah_prepayment').val(data[8]);
             var cleanedValue = data[8].replace(/\./g, '');
@@ -539,7 +545,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('swi_reimbust/get_list2') ?>",
+                "url": "<?php echo site_url('sw_reimbust/get_list2') ?>",
                 "type": "POST"
             },
             "columnDefs": [{
@@ -579,11 +585,9 @@
                 $('#upload' + currentRowCount).css('background-color', '#EAECF4').text('Deklarasi').val('');
                 $('.kwitansi_image' + currentRowCount).val('');
                 $('#pemakaian' + currentRowCount).css('cursor', 'not-allowed').attr('placeholder', 'Deklarasi').val(data[7]);
-                $('#inputGroupFile01' + currentRowCount).val('').attr('name', '');
 
                 // Menghapus atribut required dari input file
                 $('#inputGroupFile01' + currentRowCount).removeAttr('required').val('');
-
 
                 $('#tgl_nota_' + currentRowCount).css({
                     'cursor': 'not-allowed',
@@ -633,7 +637,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('swi_datadeklarasi/get_list') ?>",
+                "url": "<?php echo site_url('sw_datadeklarasi/get_list') ?>",
                 "type": "POST"
             },
             "columnDefs": [{
@@ -666,7 +670,7 @@
     //             $("#tgl_pengajuan-error").remove();
     //         }
     //         $.ajax({
-    //             url: "<?php echo site_url('swi_reimbust/generate_kode') ?>",
+    //             url: "<?php echo site_url('sw_reimbust/generate_kode') ?>",
     //             type: "POST",
     //             data: {
     //                 "date": dateText
@@ -865,7 +869,7 @@
                 $(this).find('input[name^="jumlah"]').attr('name', `jumlah[${newRowNumber}]`).attr('placeholder', `Jumlah ${newRowNumber}`).val(jumlahValue);
                 $(this).find('input[name^="kwitansi"]').attr('name', `kwitansi[${newRowNumber}]`).attr('placeholder', `Input ${newRowNumber}`).val(kwitansiValue);
                 $(this).find('#kwitansi_image').attr('name', `kwitansi_image[${newRowNumber}]`).attr('placeholder', `Input ${newRowNumber}`).val(kwitansiImageValue);
-                $(this).find('input[name^="deklarasi"]').attr('name', `deklarasi[${newRowNumber}]`).attr('placeholder', `Input ${newRowNumber}`).val(deklarasiValue);
+                $(this).find('input[name^="deklarasi"]').attr('name', `deklarasi[${newRowNumber}]`).attr('placeholder', `Deklarasi ${newRowNumber}`).val(deklarasiValue);
                 $(this).find('.deklarasi-old').attr('name', `deklarasi_old[${newRowNumber}]`).attr('placeholder', `Deklarasi Old${newRowNumber}`);
                 $(this).find('.delete-btn').attr('data-id', newRowNumber).text('Delete');
             });
@@ -1176,7 +1180,7 @@
             $('#kode_reimbust').val(kode).prop('readonly', true).css('cursor', 'not-allowed');
             $("select option[value='']").hide();
             $.ajax({
-                url: "<?= site_url('swi_reimbust/edit_data') ?>/" + id,
+                url: "<?= site_url('sw_reimbust/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -1360,7 +1364,7 @@
                                         <div class="btn btn-primary btn-lg btn-block btn-sm openModal" data-kwitansi="${data['transaksi'][index]['kwitansi']}">Lihat Foto</div>
                                     </td>
                                     <td width="150" style="padding: 15px 10px">
-                                        <a href="<?= base_url() ?>swi_datadeklarasi/read_form/25" class="btn btn-primary btn-lg btn-block btn-sm" 
+                                        <a href="<?= base_url() ?>sw_datadeklarasi/read_form/25" class="btn btn-primary btn-lg btn-block btn-sm" 
                                             data-id="${index + 1}"
                                             data-deklarasi="${data['transaksi'][index]['deklarasi']}"
                                             id="deklarasi-modal${index + 1}">
@@ -1400,7 +1404,7 @@
                                 } else {
                                     // Jika data kwitansi ada, lanjutkan dengan membuka modal
                                     modal.css("display", "block");
-                                    modalImg.attr('src', `<?= base_url() ?>/assets/backend/img/reimbust/kwitansi/${kwitansi}`);
+                                    modalImg.attr('src', `<?= base_url() ?>/assets/backend/img/reimbust/kwitansi_sw/${kwitansi}`);
                                     // captionText.text('Deskripsi gambar Anda di sini'); // Ubah dengan deskripsi gambar
                                 }
                             });
@@ -1446,7 +1450,7 @@
             // $('th:last-child').remove();
 
             // $.ajax({
-            //     url: "<?php echo site_url('swi_reimbust/read_detail/') ?>" + id,
+            //     url: "<?php echo site_url('sw_reimbust/read_detail/') ?>" + id,
             //     type: "GET",
             //     dataType: "JSON",
             //     success: function(data) {
@@ -1472,9 +1476,9 @@
 
             var url;
             if (id == 0) {
-                url = "<?php echo site_url('swi_reimbust/add') ?>";
+                url = "<?php echo site_url('sw_reimbust/add') ?>";
             } else {
-                url = "<?php echo site_url('swi_reimbust/update') ?>";
+                url = "<?php echo site_url('sw_reimbust/update') ?>";
             }
 
             var formData = new FormData(this);
@@ -1504,7 +1508,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then((result) => {
-                            location.href = "<?= base_url('swi_reimbust') ?>";
+                            location.href = "<?= base_url('sw_reimbust') ?>";
                         });
                     } else {
 
@@ -1518,6 +1522,7 @@
                             text: data.error
                         });
                     }
+
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
 

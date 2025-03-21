@@ -1,12 +1,13 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Pu_prepayment extends CI_Controller
+class Mac_prepayment extends CI_Controller
 {
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('backend/M_pu_prepayment');
+        $this->load->model('backend/M_mac_prepayment');
+        $this->load->model('backend/M_notifikasi');
         $this->M_login->getsecurity();
         date_default_timezone_set('Asia/Jakarta');
     }
@@ -42,8 +43,7 @@ class Pu_prepayment extends CI_Controller
         ($akses->view_level == 'N' ? redirect('auth') : '');
         $data['add'] = $akses->add_level;
         $data['alias'] = $this->session->userdata('username');
-
-        $data['title'] = "backend/pu_prepayment/pu_prepayment_list";
+        $data['title'] = "backend/mac_prepayment/mac_prepayment_list";
         $data['titleview'] = "Data Prepayment";
         $name = $this->db->select('name')
             ->from('tbl_data_user')
@@ -51,7 +51,7 @@ class Pu_prepayment extends CI_Controller
             ->get()
             ->row('name');
         $data['approval'] = $this->db->select('COUNT(*) as total_approval')
-            ->from('tbl_prepayment_pu')
+            ->from('mac_prepayment')
             ->where('app_name', $name)
             ->or_where('app2_name', $name)
             ->get()
@@ -61,7 +61,7 @@ class Pu_prepayment extends CI_Controller
 
     public function get_pdf()
     {
-        $this->load->view('backend/pu_prepayment/prepayment_pdf');
+        $this->load->view('backend/mac_prepayment/prepayment_pdf');
     }
 
     function get_list()
@@ -72,7 +72,7 @@ class Pu_prepayment extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $list = $this->M_pu_prepayment->get_datatables();
+        $list = $this->M_mac_prepayment->get_datatables();
         $data = array();
         $no = $_POST['start'];
 
@@ -86,10 +86,10 @@ class Pu_prepayment extends CI_Controller
         foreach ($list as $field) {
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
-            $action_read = ($read == 'Y') ? '<a href="pu_prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
-            $action_edit = ($edit == 'Y') ? '<a href="pu_prepayment/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
+            $action_read = ($read == 'Y') ? '<a href="mac_prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
+            $action_edit = ($edit == 'Y') ? '<a href="mac_prepayment/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
-            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="pu_prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
+            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="mac_prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             if ($this->session->userdata('username') == 'eko') {
@@ -137,8 +137,8 @@ class Pu_prepayment extends CI_Controller
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_pu_prepayment->count_all(),
-            "recordsFiltered" => $this->M_pu_prepayment->count_filtered(),
+            "recordsTotal" => $this->M_mac_prepayment->count_all(),
+            "recordsFiltered" => $this->M_mac_prepayment->count_filtered(),
             "data" => $data,
         );
         //output dalam format JSON
@@ -149,7 +149,7 @@ class Pu_prepayment extends CI_Controller
     public function read_form($id)
     {
         $data['id'] = $id;
-        $data['user'] = $this->M_pu_prepayment->get_by_id($id);
+        $data['user'] = $this->M_mac_prepayment->get_by_id($id);
         $data['app_name'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $this->session->userdata('id_user'))
@@ -160,7 +160,7 @@ class Pu_prepayment extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $data['title'] = 'backend/pu_prepayment/pu_prepayment_read';
+        $data['title'] = 'backend/mac_prepayment/mac_prepayment_read';
         $data['title_view'] = 'Prepayment';
         $this->load->view('backend/home', $data);
     }
@@ -169,14 +169,14 @@ class Pu_prepayment extends CI_Controller
     public function add_form()
     {
         // INISIASI
-        $id_user = $this->session->userdata('id_user');
-        $data['id_user'] = $id_user;
+        $id = $this->session->userdata('id_user');
+        $data['id_user'] = $id;
         $data['id_pembuat'] = 0;
-
         $data['id'] = 0;
-        $data['title'] = 'backend/pu_prepayment/pu_prepayment_form';
+        $data['title'] = 'backend/mac_prepayment/mac_prepayment_form';
         $data['title_view'] = 'Prepayment Form';
-        $data['rek_options'] = $this->M_pu_prepayment->options($id_user)->result_array();
+        $data['rek_options'] = $this->M_mac_prepayment->options($data['id_user'])->result_array();
+
         $this->load->view('backend/home', $data);
     }
 
@@ -184,7 +184,7 @@ class Pu_prepayment extends CI_Controller
     public function generate_kode()
     {
         $date = $this->input->post('date');
-        $kode = $this->M_pu_prepayment->max_kode($date)->row();
+        $kode = $this->M_mac_prepayment->max_kode($date)->row();
         if (empty($kode->kode_prepayment)) {
             $no_urut = 1;
         } else {
@@ -203,20 +203,20 @@ class Pu_prepayment extends CI_Controller
     {
         // INISIASI
         $data['id_user'] = $this->session->userdata('id_user');
-        $data['id_pembuat'] = $this->M_pu_prepayment->get_by_id($id)->id_user;
+        $data['id_pembuat'] = $this->M_mac_prepayment->get_by_id($id)->id_user;
 
         $data['id'] = $id;
         $data['aksi'] = 'update';
         $data['title_view'] = "Edit Data Prepayment";
-        $data['rek_options'] = $this->M_pu_prepayment->options($data['id_user'])->result_array();
-        $data['title'] = 'backend/pu_prepayment/pu_prepayment_form';
+        $data['rek_options'] = $this->M_mac_prepayment->options($data['id_user'])->result_array();
+        $data['title'] = 'backend/mac_prepayment/mac_prepayment_form';
         $this->load->view('backend/home', $data);
     }
 
     function edit_data($id)
     {
-        $data['master'] = $this->M_pu_prepayment->get_by_id($id);
-        $data['transaksi'] = $this->M_pu_prepayment->get_by_id_detail($id);
+        $data['master'] = $this->M_mac_prepayment->get_by_id($id);
+        $data['transaksi'] = $this->M_mac_prepayment->get_by_id_detail($id);
         $data['nama'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $data['master']->id_user)
@@ -226,7 +226,7 @@ class Pu_prepayment extends CI_Controller
 
     function read_detail($id)
     {
-        $data = $this->M_pu_prepayment->get_by_id_detail($id);
+        $data = $this->M_mac_prepayment->get_by_id_detail($id);
         echo json_encode($data);
     }
 
@@ -235,7 +235,7 @@ class Pu_prepayment extends CI_Controller
     {
         // INSERT KODE PREPAYMENT SAAT SUBMIT
         $date = $this->input->post('tgl_prepayment');
-        $kode = $this->M_pu_prepayment->max_kode($date)->row();
+        $kode = $this->M_mac_prepayment->max_kode($date)->row();
         if (empty($kode->kode_prepayment)) {
             $no_urut = 1;
         } else {
@@ -248,20 +248,21 @@ class Pu_prepayment extends CI_Controller
         $kode_prepayment = 'P' . $year . $month . $urutan;
 
         // MENCARI SIAPA YANG AKAN MELAKUKAN APPROVAL PERMINTAAN
-        $id = $this->session->userdata('id_user');
         $id_menu = $this->db->select('id_menu')
             ->where('link', $this->router->fetch_class())
             ->get('tbl_submenu')
             ->row();
 
+        $valid = true;
         $confirm = $this->db->select('app_id, app2_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
-        if (!empty($confirm) && isset($confirm->app_id, $confirm->app2_id)) {
+        if (!empty($confirm->app_id) && isset($confirm->app_id, $confirm->app2_id)) {
             $app = $confirm;
         } else {
             echo json_encode(array("status" => FALSE, "error" => "Approval Belum Ditentukan, Mohon untuk menghubungi admin."));
             exit();
             $valid = false;
         }
+        $id = $this->session->userdata('id_user');
 
         // CHECK APAKAH MENGINPUT YANG SUDAH ADA ATAU YANG BARU (REKENING)
         if (!empty($_POST['nama_rek'])) {
@@ -288,20 +289,22 @@ class Pu_prepayment extends CI_Controller
                 ->where('id_user', $id)
                 ->get()
                 ->row('jabatan'),
-            'app_name' => $this->db->select('fullname')
-                ->from('tbl_user')
+            'app_name' => $this->db->select('name')
+                ->from('tbl_data_user')
                 ->where('id_user', $app->app_id)
                 ->get()
-                ->row('fullname'),
-            'app2_name' => $this->db->select('fullname')
-                ->from('tbl_user')
+                ->row('name'),
+            'app2_name' => $this->db->select('name')
+                ->from('tbl_data_user')
                 ->where('id_user', $app->app2_id)
                 ->get()
-                ->row('fullname'),
+                ->row('name'),
             'created_at' => date('Y-m-d H:i:s')
         );
 
-        $inserted = $this->M_pu_prepayment->save($data);
+        if ($valid) {
+            $inserted = $this->M_mac_prepayment->save($data);
+        }
 
         if ($inserted) {
             // INISIASI VARIABEL INPUT DETAIL PREPAYMENT
@@ -317,7 +320,7 @@ class Pu_prepayment extends CI_Controller
                     'keterangan' => $keterangan[$i]
                 );
             }
-            $this->M_pu_prepayment->save_detail($data2);
+            $this->M_mac_prepayment->save_detail($data2);
         }
         echo json_encode(array("status" => TRUE));
     }
@@ -355,14 +358,14 @@ class Pu_prepayment extends CI_Controller
         $rincian = $this->input->post('rincian[]');
         $nominal = $this->input->post('hidden_nominal[]');
         $keterangan = $this->input->post('keterangan[]');
-        if ($this->db->update('tbl_prepayment_pu', $data)) {
+        if ($this->db->update('mac_prepayment', $data)) {
             // UNTUK MENGHAPUS ROW YANG TELAH DIDELETE
             $deletedRows = json_decode($this->input->post('deleted_rows'), true);
             if (!empty($deletedRows)) {
                 foreach ($deletedRows as $id2) {
                     // Hapus row dari database berdasarkan ID
                     $this->db->where('id', $id2);
-                    $this->db->delete('tbl_prepayment_detail_pu');
+                    $this->db->delete('mac_prepayment_detail');
                 }
             }
 
@@ -378,7 +381,7 @@ class Pu_prepayment extends CI_Controller
                     'keterangan' => $keterangan[$i]
                 );
                 // Menggunakan db->replace untuk memasukkan atau menggantikan data
-                $this->db->replace('tbl_prepayment_detail_pu', $data2[$i - 1]);
+                $this->db->replace('mac_prepayment_detail', $data2[$i - 1]);
             }
         }
         echo json_encode(array("status" => TRUE));
@@ -387,8 +390,8 @@ class Pu_prepayment extends CI_Controller
     // MENGHAPUS DATA
     function delete($id)
     {
-        $this->M_pu_prepayment->delete($id);
-        $this->M_pu_prepayment->delete_detail($id);
+        $this->M_mac_prepayment->delete($id);
+        $this->M_mac_prepayment->delete_detail($id);
         echo json_encode(array("status" => TRUE));
     }
 
@@ -412,7 +415,7 @@ class Pu_prepayment extends CI_Controller
 
         //UPDATE APPROVAL PERTAMA
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_prepayment_pu', $data);
+        $this->db->update('mac_prepayment', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -436,7 +439,7 @@ class Pu_prepayment extends CI_Controller
 
         // UPDATE APPROVAL 2
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_prepayment_pu', $data);
+        $this->db->update('mac_prepayment', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -447,8 +450,8 @@ class Pu_prepayment extends CI_Controller
         $this->load->library('Fpdf_generate');
 
         // Load data from database based on $id
-        $data['master'] = $this->M_pu_prepayment->get_by_id($id);
-        $data['transaksi'] = $this->M_pu_prepayment->get_by_id_detail($id);
+        $data['master'] = $this->M_mac_prepayment->get_by_id($id);
+        $data['transaksi'] = $this->M_mac_prepayment->get_by_id_detail($id);
         $data['user'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $data['master']->id_user)
@@ -484,7 +487,7 @@ class Pu_prepayment extends CI_Controller
         $pdf->AddPage('P', 'Letter');
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/pengenumroh.png', 11.5, 3, 35, 22);
+        $pdf->Image(base_url('') . '/assets/backend/img/mobileautocare.png', 11, 3, 37, 22);
 
         $pdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php');
         $pdf->AddFont('Poppins-Bold', '', 'Poppins-Bold.php');
@@ -640,7 +643,7 @@ class Pu_prepayment extends CI_Controller
         }
 
         // Output the PDF
-        $pdf->Output('I', 'pu_prepayment.pdf');
+        $pdf->Output('I', 'mac_prepayment.pdf');
     }
 
     // QUERY UNTUK INPUT TANDA TANGAN
@@ -669,7 +672,7 @@ class Pu_prepayment extends CI_Controller
     function payment()
     {
         $this->db->where('id', $this->input->post('id'));
-        $this->db->update('tbl_prepayment_pu', ['payment_status' => $this->input->post('payment_status')]);
+        $this->db->update('mac_prepayment', ['payment_status' => $this->input->post('payment_status')]);
 
         echo json_encode(array("status" => TRUE));
     }

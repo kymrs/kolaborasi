@@ -151,11 +151,11 @@
                                 <td>:</td>
                                 <td class="line" id="namaTxt"></td>
                             </tr>
-                            <tr>
+                            <!-- <tr>
                                 <td>Jabatan</td>
                                 <td>:</td>
                                 <td class="line" id="jabatanTxt"></td>
-                            </tr>
+                            </tr> -->
                             <tr>
                                 <td colspan="3">Telah/akan melakukan pembayaran kepada :</td>
                             </tr>

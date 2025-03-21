@@ -29,13 +29,10 @@
         }
 
         .header .logo {
-            /* height: 150px; */
+            height: 150px;
             display: flex;
             align-items: center;
-            width: 170px;
-            position: relative;
-            left: 0px;
-            bottom: 14px;
+            width: 200px;
         }
 
         .header .logo img {
@@ -152,10 +149,12 @@
             <?php if ($user->app_name == $app_name && $user->status == 'approved') { ?>
                 <a class="btn btn-success btn-sm mr-2" id="paymentBtn" data-toggle="modal" data-target="#paymentModal"><i class="fas fa-money-bill"></i>&nbsp;Payment</a>
             <?php } ?>
-            <?php if ($user->app_name == $app_name && !in_array($user->app2_status, ['revised', 'rejected']) && !in_array($user->status, ['approved'])) { ?>
+            <?php if ($user->app_name == $app_name && $user->app4_status = 'approved' && !in_array($user->app2_status, ['rejected', 'revised']) && $user->status != 'approved') { ?>
                 <a class="btn btn-warning btn-sm mr-2" id="appBtn" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
-            <?php } elseif ($user->app2_name == $app2_name && !in_array($user->app2_status, ['approved', 'rejected']) && $user->app_status == 'approved') { ?>
+            <?php } elseif ($user->app2_name == $app2_name && !in_array($user->status, ['rejected', 'approved'])  && $user->app_status == 'approved') { ?>
                 <a class="btn btn-warning btn-sm mr-2" id="appBtn2" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
+            <?php } elseif ($user->app4_name == $app_name && !in_array($user->app_status, ['rejected', 'revised']) && !in_array($user->app2_status, ['rejected', 'revised']) && $user->status != 'approved') { ?>
+                <a class="btn btn-warning btn-sm mr-2" id="appBtn3" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
             <?php } ?>
             <a class="btn btn-secondary btn-sm" onclick="history.back()"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
         </div>
@@ -163,11 +162,11 @@
             <!-- Header -->
             <div class="header">
                 <div class="logo">
-                    <img src="<?= base_url() ?>assets/backend/img/sobatwisata.png" alt="Logo">
+                    <img src="<?= base_url() ?>assets/backend/img/sebelaswarna.png" alt="Logo">
                 </div>
                 <div class="title">
                     <h1>FORM PELAPORAN / REIMBUST</h1>
-                    <h2>SOBATWISATA</h2>
+                    <h2>SEBELASWARNA</h2>
                 </div>
             </div>
 
@@ -179,7 +178,7 @@
                         <td>:</td>
                         <td id="nama"></td>
                     </tr>
-                    <!-- <tr>
+                    <tr>
                         <td>JABATAN</td>
                         <td>:</td>
                         <td id="jabatan"></td>
@@ -188,7 +187,7 @@
                         <td>DEPARTEMEN</td>
                         <td>:</td>
                         <td id="departemen"></td>
-                    </tr> -->
+                    </tr>
                     <tr>
                         <td>SIFAT PELAPORAN</td>
                         <td>:</td>
@@ -246,16 +245,19 @@
                 <table>
                     <tr>
                         <td>Yang melakukan</td>
+                        <td>Captain</td>
                         <td>Mengetahui</td>
                         <td>Menyetujui</td>
                     </tr>
                     <tr style="height: 75px">
                         <td id="statusMelakukan"></td>
+                        <td id="statusKapten"></td>
                         <td id="statusMengetahui"></td>
                         <td id="statusMenyetujui"></td>
                     </tr>
                     <tr>
                         <td id="melakukan"></td>
+                        <td id="kapten"></td>
                         <td id="mengetahui"></td>
                         <td id="menyetujui"></td>
                     </tr>
@@ -357,7 +359,6 @@
         </div>
     </div>
 
-
     <!-- Modal -->
     <div id="myModal" class="kwitansi-modal">
         <span class="close">&times;</span>
@@ -387,9 +388,9 @@
             $('#appBtn').click(function() {
                 $('#app_keterangan').attr('name', 'app_keterangan');
                 $('#app_status').attr('name', 'app_status');
-                $('#approvalForm').attr('action', '<?= site_url('swi_reimbust/approve') ?>');
+                $('#approvalForm').attr('action', '<?= site_url('sw_reimbust/approve') ?>');
                 $.ajax({
-                    url: "<?php echo site_url('swi_reimbust/edit_data') ?>/" + id,
+                    url: "<?php echo site_url('sw_reimbust/edit_data') ?>/" + id,
                     type: "GET",
                     dataType: "JSON",
                     success: function(data) {
@@ -416,10 +417,10 @@
             $('#appBtn2').click(function() {
                 $('#app_keterangan').attr('name', 'app2_keterangan').attr('id', 'app2_keterangan');
                 $('#app_status').attr('name', 'app2_status').attr('id', 'app2_status');
-                $('#approvalForm').attr('action', '<?= site_url('swi_reimbust/approve2') ?>');
+                $('#approvalForm').attr('action', '<?= site_url('sw_reimbust/approve2') ?>');
 
                 $.ajax({
-                    url: "<?php echo site_url('swi_reimbust/edit_data') ?>/" + id,
+                    url: "<?php echo site_url('sw_reimbust/edit_data') ?>/" + id,
                     type: "GET",
                     dataType: "JSON",
                     success: function(data) {
@@ -442,11 +443,40 @@
                 });
             });
 
-            $('#paymentBtn').click(function() {
-                $('#paymentForm').attr('action', '<?= site_url('swi_reimbust/payment') ?>');
+            $('#appBtn3').click(function() {
+                $('#app_keterangan').attr('name', 'app4_keterangan').attr('id', 'app4_keterangan');
+                $('#app_status').attr('name', 'app4_status').attr('id', 'app4_status');
+                $('#approvalForm').attr('action', '<?= site_url('sw_reimbust/approve3') ?>');
 
                 $.ajax({
-                    url: "<?php echo site_url('swi_reimbust/edit_data') ?>/" + id,
+                    url: "<?php echo site_url('sw_reimbust/edit_data') ?>/" + id,
+                    type: "GET",
+                    dataType: "JSON",
+                    success: function(data) {
+                        var nama4, date2, status2, keterangan2;
+                        if (data['master']['app4_status'] == 'waiting') {
+                            $('#app4_status').val();
+                            $('#app4_keterangan').val();
+                        } else {
+                            nama4 = data['master']['app4_name'];
+                            status2 = data['master']['app4_status'];
+                            keterangan2 = data['master']['app4_keterangan'];
+                            $('#app4_status').val(status2);
+                            $('#app2_keterangan').val(keterangan2);
+                            // $('#note_id').append(`<p>* ${keterangan2}</p>`);
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert('Error get data from ajax');
+                    }
+                });
+            });
+
+            $('#paymentBtn').click(function() {
+                $('#paymentForm').attr('action', '<?= site_url('sw_reimbust/payment') ?>');
+
+                $.ajax({
+                    url: "<?php echo site_url('sw_reimbust/edit_data') ?>/" + id,
                     type: "GET",
                     dataType: "JSON",
                     success: function(data) {
@@ -469,7 +499,7 @@
 
             // Additional logic to dynamically load data into the form
             $.ajax({
-                url: "<?php echo site_url('swi_reimbust/edit_data') ?>/" + id,
+                url: "<?php echo site_url('sw_reimbust/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -486,7 +516,8 @@
                     $('#jumlah_prepayment').html(data['master']['jumlah_prepayment'].replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
                     $('#no_rek').html(data['master']['no_rek'] ? data['master']['no_rek'] : '-');
                     if ((data['master']['app_keterangan'] !== null && data['master']['app_keterangan'] !== '') ||
-                        (data['master']['app2_keterangan'] !== null && data['master']['app2_keterangan'] !== '')) {
+                        (data['master']['app2_keterangan'] !== null && data['master']['app2_keterangan'] !== '') ||
+                        (data['master']['app4_keterangan'] !== null && data['master']['app4_keterangan'] !== '')) {
                         $('#keterangan').append(`<span>Keterangan :</span>`);
                     }
                     if (data['master']['app_keterangan'] != null && data['master']['app_keterangan'] != '') {
@@ -494,6 +525,9 @@
                     }
                     if (data['master']['app2_keterangan'] != null && data['master']['app2_keterangan'] != '') {
                         $('#keterangan').append(`<span class="form-control-plaintext">*(${data['master']['app2_name']}) ${data['master']['app2_keterangan']}</span>`);
+                    }
+                    if (data['master']['app4_keterangan'] != null && data['master']['app4_keterangan'] != '') {
+                        $('#keterangan').append(`<span class="form-control-plaintext">*(${data['master']['app4_name']}) ${data['master']['app4_keterangan']}</span>`);
                     }
 
                     // DATA APPROVAL REIMBUST
@@ -504,7 +538,7 @@
                         nama = data['master']['app_name'];
                         status = data['master']['app_status'];
                         keterangan = data['master']['app_keterangan'];
-                        url = "<?php echo site_url('swi_reimbust/approve') ?>";
+                        url = "<?php echo site_url('sw_reimbust/approve') ?>";
                         $('#note_id').append(`<p>* ${keterangan}</p>`);
                     }
 
@@ -520,7 +554,7 @@
                         nama = data['master']['app_name'];
                         status = data['master']['app_status'];
                         keterangan = data['master']['app_keterangan'];
-                        url = "<?php echo site_url('swi_reimbust/approve') ?>";
+                        url = "<?php echo site_url('sw_reimbust/approve') ?>";
                         $('#note_id').append(`<p>* ${keterangan}</p>`);
                     }
                     if (data['master']['app_date'] == null) {
@@ -543,6 +577,21 @@
                     }
                     if (data['master']['app2_date'] != null) {
                         date2 = moment(data['master']['app2_date']).format('D-MM-YYYY HH:mm:ss');
+                    }
+
+                    // Memeriksa apakah data yang menyetujui ada
+                    if (data['master']['app4_status'] != null) {
+                        nama = data['master']['app4_name'];
+                        status = data['master']['app4_status'];
+                        keterangan = data['master']['app4_keterangan'];
+                        url = "<?php echo site_url('sw_reimbust/approve') ?>";
+                        $('#note_id').append(`<p>* ${keterangan}</p>`);
+                    }
+                    if (data['master']['app4_date'] == null) {
+                        date4 = '';
+                    }
+                    if (data['master']['app4_date'] != null) {
+                        date4 = moment(data['master']['app4_date']).format('D-MM-YYYY HH:mm:ss');
                     }
 
                     // Keterangan
@@ -588,7 +637,7 @@
                         if (kwitansi) {
                             // Jika data kwitansi ada, lanjutkan dengan membuka modal
                             modal.css("display", "block");
-                            modalImg.attr('src', `<?= base_url() ?>/assets/backend/document/reimbust/kwitansi_swi/${kwitansi}`);
+                            modalImg.attr('src', `<?= base_url() ?>/assets/backend/document/reimbust/kwitansi_sw/${kwitansi}`);
                             // captionText.text('Deskripsi gambar Anda di sini'); // Ubah dengan deskripsi gambar
                         }
                     });
@@ -645,7 +694,7 @@
                         var deklarasi = $(this).data('deklarasi');
 
                         $.ajax({
-                            url: '<?= site_url('swi_reimbust/detail_deklarasi') ?>', // URL method controller
+                            url: '<?= site_url('sw_reimbust/detail_deklarasi') ?>', // URL method controller
                             method: 'POST',
                             data: {
                                 deklarasi: deklarasi
@@ -701,9 +750,11 @@
                     $('#input-container').append(ttl_row);
 
                     $('#melakukan').text(`${data['nama']}`);
+                    $('#kapten').text(`${data['master']['app4_name']}`);
                     $('#mengetahui').text(`${data['master']['app_name']}`);
                     $('#menyetujui').text(`${data['master']['app2_name']}`);
                     $('#statusMelakukan').html('CREATED<br>' + `${moment(data['master']['created_at']).format('D-MM-YYYY HH:mm:ss')}`);
+                    $('#statusKapten').html(`<div>${data['master']['app4_status'].toUpperCase()}<br><span>${date4}</span></div></div>`);
                     $('#statusMengetahui').html(`<div>${data['master']['app_status'].toUpperCase()}<br><span>${date}</span></div></div>`);
                     $('#statusMenyetujui').html(`<div>${data['master']['app2_status'].toUpperCase()}<br><span>${date2}</span></div></div>`);
                 },

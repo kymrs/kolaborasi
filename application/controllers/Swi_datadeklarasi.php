@@ -205,7 +205,7 @@ class Swi_datadeklarasi extends CI_Controller
         $valid = true;
         $confirm = $this->db->select('app_id, app2_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
         if (!empty($confirm) && isset($confirm->app_id, $confirm->app2_id)) {
-            $app = $this->db->select('app_id, app2_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
+            $app = $confirm;
         } else {
             echo json_encode(array("status" => FALSE, "error" => "Approval Belum Ditentukan, Mohon untuk menghubungi admin."));
             exit();
@@ -382,8 +382,8 @@ class Swi_datadeklarasi extends CI_Controller
         $pdf->Cell(60, 10, ': ' . $formatted_date, 0, 1);
         $pdf->Cell(40, 10, 'Nama', 0, 0);
         $pdf->Cell(60, 10, ': ' . $data['user'], 0, 1);
-        $pdf->Cell(40, 10, 'Jabatan', 0, 0);
-        $pdf->Cell(60, 10, ': ' . $data['master']->jabatan, 0, 1);
+        // $pdf->Cell(40, 10, 'Jabatan', 0, 0);
+        // $pdf->Cell(60, 10, ': ' . $data['master']->jabatan, 0, 1);
 
         $pdf->Ln(1);
         $pdf->SetFont('Poppins-Regular', '', 12);

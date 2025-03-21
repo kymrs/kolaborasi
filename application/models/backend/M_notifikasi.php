@@ -12,10 +12,10 @@ class M_notifikasi extends CI_Model
         // PREPAYMENT
         $prepayment_sw = $this->db->table_exists('tbl_prepayment') ? $this->db->select('id')->from('tbl_prepayment')->where('app4_name', $app)->where('app4_status', 'waiting')->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app_name', $app)->where('app4_status', 'approved')->where('app_status', 'waiting')->or_where('app2_name', $app)->where('app4_status', 'approved')->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
         $sml_prepayment = $this->db->table_exists('sml_prepayment') ? $this->db->select('id')->from('sml_prepayment')->where('app4_name', $app)->where('app4_status', 'waiting')->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app_name', $app)->where('app4_status', 'approved')->where('app_status', 'waiting')->or_where('app2_name', $app)->where('app4_status', 'approved')->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
-        $prepayment_pu = $this->db->table_exists('tbl_prepayment_pu') ? $this->db->select('id')->from('tbl_prepayment_pu')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
+        $pu_prepayment = $this->db->table_exists('tbl_prepayment_pu') ? $this->db->select('id')->from('tbl_prepayment_pu')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
         $swi_prepayment = $this->db->table_exists('swi_prepayment') ? $this->db->select('id')->from('swi_prepayment')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
-        $prepayment_kps = $this->db->table_exists('kps_prepayment') ? $this->db->select('id')->from('kps_prepayment')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
-        $prepayment_qbg = $this->db->table_exists('qbg_prepayment') ? $this->db->select('id')->from('qbg_prepayment')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
+        $kps_prepayment = $this->db->table_exists('kps_prepayment') ? $this->db->select('id')->from('kps_prepayment')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
+        $qbg_prepayment = $this->db->table_exists('qbg_prepayment') ? $this->db->select('id')->from('qbg_prepayment')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
         $bmn_prepayment = $this->db->table_exists('bmn_prepayment') ? $this->db->select('id')->from('bmn_prepayment')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
         $prepayment_mac = $this->db->table_exists('mac_prepayment') ? $this->db->select('id')->from('mac_prepayment')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
         $prepayment_ctz = $this->db->table_exists('ctz_prepayment') ? $this->db->select('id')->from('ctz_prepayment')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
@@ -23,22 +23,22 @@ class M_notifikasi extends CI_Model
         // REIMBUST
         $reimbust_sw = $this->db->table_exists('tbl_reimbust') ? $this->db->select('id')->from('tbl_reimbust')->where('app4_name', $app)->where('app4_status', 'waiting')->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app_name', $app)->where('app4_status', 'approved')->where('app_status', 'waiting')->or_where('app2_name', $app)->where('app4_status', 'approved')->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
         $sml_reimbust = $this->db->table_exists('sml_reimbust') ? $this->db->select('id')->from('sml_reimbust')->where('app4_name', $app)->where('app4_status', 'waiting')->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app_name', $app)->where('app4_status', 'approved')->where('app_status', 'waiting')->or_where('app2_name', $app)->where('app4_status', 'approved')->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
-        $reimbust_pu = $this->db->table_exists('tbl_reimbust_pu') ? $this->db->select('id')->from('tbl_reimbust_pu')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
+        $pu_reimbust = $this->db->table_exists('tbl_reimbust_pu') ? $this->db->select('id')->from('tbl_reimbust_pu')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
         $swi_reimbust = $this->db->table_exists('swi_reimbust') ? $this->db->select('id')->from('swi_reimbust')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
-        $reimbust_kps = $this->db->table_exists('kps_reimbust') ? $this->db->select('id')->from('kps_reimbust')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
+        $kps_reimbust = $this->db->table_exists('kps_reimbust') ? $this->db->select('id')->from('kps_reimbust')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
         $bmn_reimbust = $this->db->table_exists('bmn_reimbust') ? $this->db->select('id')->from('bmn_reimbust')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
-        $reimbust_qbg = $this->db->table_exists('qbg_reimbust') ? $this->db->select('id')->from('qbg_reimbust')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
+        $qbg_reimbust = $this->db->table_exists('qbg_reimbust') ? $this->db->select('id')->from('qbg_reimbust')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
         $reimbust_mac = $this->db->table_exists('mac_reimbust') ? $this->db->select('id')->from('mac_reimbust')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
         $reimbust_ctz = $this->db->table_exists('ctz_reimbust') ? $this->db->select('id')->from('ctz_reimbust')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
 
         // DEKLARASI
         $datadeklarasi_sw = $this->db->table_exists('tbl_deklarasi') ? $this->db->select('id')->from('tbl_deklarasi')->where('app4_name', $app)->where('app4_status', 'waiting')->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app_name', $app)->where('app4_status', 'approved')->where('app_status', 'waiting')->or_where('app2_name', $app)->where('app4_status', 'approved')->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
         $sml_datadeklarasi = $this->db->table_exists('sml_deklarasi') ? $this->db->select('id')->from('sml_deklarasi')->where('app4_name', $app)->where('app4_status', 'waiting')->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app_name', $app)->where('app4_status', 'approved')->where('app_status', 'waiting')->or_where('app2_name', $app)->where('app4_status', 'approved')->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
-        $datadeklarasi_pu = $this->db->table_exists('tbl_deklarasi_pu') ? $this->db->select('id')->from('tbl_deklarasi_pu')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
+        $pu_datadeklarasi = $this->db->table_exists('tbl_deklarasi_pu') ? $this->db->select('id')->from('tbl_deklarasi_pu')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
         $swi_datadeklarasi = $this->db->table_exists('swi_deklarasi') ? $this->db->select('id')->from('swi_deklarasi')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
-        $deklarasi_kps = $this->db->table_exists('kps_deklarasi') ? $this->db->select('id')->from('kps_deklarasi')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
+        $kps_datadeklarasi = $this->db->table_exists('kps_deklarasi') ? $this->db->select('id')->from('kps_deklarasi')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
         $bmn_datadeklarasi = $this->db->table_exists('bmn_deklarasi') ? $this->db->select('id')->from('bmn_deklarasi')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
-        $deklarasi_qbg = $this->db->table_exists('qbg_deklarasi') ? $this->db->select('id')->from('qbg_deklarasi')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
+        $qbg_datadeklarasi = $this->db->table_exists('qbg_deklarasi') ? $this->db->select('id')->from('qbg_deklarasi')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
         $deklarasi_mac = $this->db->table_exists('mac_deklarasi') ? $this->db->select('id')->from('mac_deklarasi')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
         $deklarasi_ctz = $this->db->table_exists('ctz_deklarasi') ? $this->db->select('id')->from('ctz_deklarasi')->where('app_name', $app)->where('app_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
 
@@ -53,46 +53,41 @@ class M_notifikasi extends CI_Model
         $data['notif_pending'] = [
             'prepayment_sw' => $prepayment_sw,
             'sml_prepayment' => $sml_prepayment,
-            'prepayment_pu' => $prepayment_pu,
+            'pu_prepayment' => $pu_prepayment,
             'swi_prepayment' => $swi_prepayment,
-            'prepayment_kps' => $prepayment_kps,
+            'kps_prepayment' => $kps_prepayment,
             'bmn_prepayment' => $bmn_prepayment,
-            'prepayment_qbg' => $prepayment_qbg,
+            'qbg_prepayment' => $qbg_prepayment,
             'prepayment_mac' => $prepayment_mac,
             'prepayment_ctz' => $prepayment_ctz,
             'reimbust_sw' => $reimbust_sw,
             'sml_reimbust' => $sml_reimbust,
-            'reimbust_pu' => $reimbust_pu,
+            'pu_reimbust' => $pu_reimbust,
             'swi_reimbust' => $swi_reimbust,
-            'reimbust_kps' => $reimbust_kps,
+            'kps_reimbust' => $kps_reimbust,
             'bmn_reimbust' => $bmn_reimbust,
-            'reimbust_qbg' => $reimbust_qbg,
+            'qbg_reimbust' => $qbg_reimbust,
             'reimbust_mac' => $reimbust_mac,
             'reimbust_ctz' => $reimbust_ctz,
             'datadeklarasi_sw' => $datadeklarasi_sw,
             'sml_datadeklarasi' => $sml_datadeklarasi,
-            'datadeklarasi_pu' => $datadeklarasi_pu,
+            'pu_datadeklarasi' => $pu_datadeklarasi,
             'swi_datadeklarasi' => $swi_datadeklarasi,
-            'datadeklarasi_kps' => $deklarasi_kps,
+            'kps_datadeklarasi' => $kps_datadeklarasi,
             'bmn_datadeklarasi' => $bmn_datadeklarasi,
-            'datadeklarasi_qbg' => $deklarasi_qbg,
+            'qbg_datadeklarasi' => $qbg_datadeklarasi,
             'datadeklarasi_mac' => $deklarasi_mac,
             'datadeklarasi_ctz' => $deklarasi_ctz,
-            'datanotifikasi_sw' => $notifikasi_sw,
             'datanotifikasi_pu' => $notifikasi_pu,
-            'datanotifikasi_pw' => $notifikasi_pw,
-            'datanotifikasi_bmn' => $notifikasi_bmn,
-            'datanotifikasi_kps' => $notifikasi_kps,
-            'datanotifikasi_qbg' => $notifikasi_qbg,
         ];
 
         $data['notif_menu'] = [
-            'pengenumroh' => $prepayment_pu + $reimbust_pu + $datadeklarasi_pu,
+            'pengenumroh' => $pu_prepayment + $pu_reimbust + $pu_datadeklarasi,
             'sebelaswarna' => $prepayment_sw + $reimbust_sw + $datadeklarasi_sw,
-            'KPS' => $prepayment_kps + $reimbust_kps + $deklarasi_kps,
+            'KPS' => $kps_prepayment + $kps_reimbust + $kps_datadeklarasi,
             'sobatwisata' => $swi_prepayment + $swi_reimbust + $swi_datadeklarasi,
             'bymoment' => $bmn_prepayment + $bmn_reimbust + $bmn_datadeklarasi,
-            'qubagift' => $prepayment_qbg + $reimbust_qbg + $deklarasi_qbg,
+            'qubagift' => $qbg_prepayment + $qbg_reimbust + $qbg_datadeklarasi,
             'mobileautocare' => $prepayment_mac + $reimbust_mac + $deklarasi_mac,
             'carstensz' => $prepayment_ctz + $reimbust_ctz + $deklarasi_ctz,
             'samlog' => $sml_prepayment + $sml_reimbust + $sml_datadeklarasi

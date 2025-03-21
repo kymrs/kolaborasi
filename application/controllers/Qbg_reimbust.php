@@ -19,7 +19,7 @@ class Qbg_reimbust extends CI_Controller
         $data['add'] = $akses->add_level;
         $data['alias'] = $this->session->userdata('username');
 
-        $data['title'] = "backend/Qbg_reimbust/qbg_reimbust_list";
+        $data['title'] = "backend/qbg_reimbust/qbg_reimbust_list";
         $data['titleview'] = "Data Reimbust";
         $name = $this->db->select('name')
             ->from('tbl_data_user')
@@ -57,10 +57,10 @@ class Qbg_reimbust extends CI_Controller
         foreach ($list as $field) {
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
-            $action_read = ($read == 'Y') ? '<a href="Qbg_reimbust/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
-            $action_edit = ($edit == 'Y') ? '<a href="Qbg_reimbust/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
+            $action_read = ($read == 'Y') ? '<a href="qbg_reimbust/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
+            $action_edit = ($edit == 'Y') ? '<a href="qbg_reimbust/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
-            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="Qbg_reimbust/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
+            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="qbg_reimbust/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             if ($this->session->userdata('username') == 'eko') {
@@ -281,7 +281,7 @@ class Qbg_reimbust extends CI_Controller
             ->row('name');
         $data['id'] = $id;
         $data['title_view'] = "Data Reimbust";
-        $data['title'] = 'backend/Qbg_reimbust/qbg_reimbust_read';
+        $data['title'] = 'backend/qbg_reimbust/qbg_reimbust_read';
         $this->db->select('kwitansi');
         $this->db->where('reimbust_id', $id);
         $data['kwitansi'] = $this->db->get('qbg_reimbust_detail')->result_array();
@@ -299,7 +299,7 @@ class Qbg_reimbust extends CI_Controller
         $data['aksi'] = 'add';
         $data['rek_options'] = $this->M_qbg_reimbust->options($id_user)->result_array();
         $data['title_view'] = "Reimbust Form";
-        $data['title'] = 'backend/Qbg_reimbust/qbg_reimbust_form';
+        $data['title'] = 'backend/qbg_reimbust/qbg_reimbust_form';
         $this->load->view('backend/home', $data);
     }
 
@@ -632,7 +632,7 @@ class Qbg_reimbust extends CI_Controller
         $data['aksi'] = 'update';
         $data['title_view'] = "Edit Reimbust";
         $data['rek_options'] = $this->M_qbg_reimbust->options($data['id_user'])->result_array();
-        $data['title'] = 'backend/Qbg_reimbust/qbg_reimbust_form';
+        $data['title'] = 'backend/qbg_reimbust/qbg_reimbust_form';
         $this->load->view('backend/home', $data);
     }
 
@@ -763,7 +763,7 @@ class Qbg_reimbust extends CI_Controller
 
         $confirm = $this->db->select('app_id, app2_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
         if (!empty($confirm) && isset($confirm->app_id, $confirm->app2_id)) {
-            $app = $this->db->select('app_id, app2_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
+            $app = $confirm;
         } else {
             echo json_encode(array("status" => FALSE, "error" => "Approval Belum Ditentukan, Mohon untuk menghubungi admin."));
             exit();

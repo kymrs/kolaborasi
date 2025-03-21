@@ -1,8 +1,6 @@
 <head>
     <?php $this->load->view('template/header'); ?>
     <style>
-        /* style prepayment */
-
         body .container {
             font-family: Arial, Helvetica, sans-serif;
             padding: 0;
@@ -28,20 +26,14 @@
         }
 
         .header .logo {
-            width: 120px;
+            width: 160px;
             position: relative;
-            right: -1px;
-            bottom: 100px;
-            margin-bottom: -120px;
+            right: 17px;
         }
 
         .header h1 {
             font-size: 1.4rem;
             font-weight: bold;
-        }
-
-        .header-field {
-            margin-top: 25px;
         }
 
         .header-field tr td:nth-child(2) {
@@ -52,6 +44,7 @@
         .title {
             text-align: center;
             margin-top: 10px;
+            margin-bottom: 30px;
         }
 
         .title h1 {
@@ -125,8 +118,11 @@
             margin-top: 35px;
         }
 
-
         @media (max-width: 546px) {
+            .header .header-field img {
+                margin: 20px 0;
+            }
+
             .main-field table tr td {
                 padding: 5px 0;
             }
@@ -152,10 +148,12 @@
                         <?php if ($user->app_name == $app_name && $user->status == 'approved') { ?>
                             <a class="btn btn-success btn-sm mr-2" id="paymentBtn" data-toggle="modal" data-target="#paymentModal"><i class="fas fa-money-bill"></i>&nbsp;Payment</a>
                         <?php } ?>
-                        <?php if ($user->app_name == $app_name && !in_array($user->app2_status, ['revised', 'rejected']) && !in_array($user->status, ['approved'])) { ?>
+                        <?php if ($user->app_name == $app_name && $user->app4_status = 'approved' && !in_array($user->app2_status, ['rejected', 'revised']) && $user->status != 'approved') { ?>
                             <a class="btn btn-warning btn-sm mr-2" id="appBtn" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
                         <?php } elseif ($user->app2_name == $app2_name && !in_array($user->status, ['rejected', 'approved'])  && $user->app_status == 'approved') { ?>
                             <a class="btn btn-warning btn-sm mr-2" id="appBtn2" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
+                        <?php } elseif ($user->app4_name == $app_name && !in_array($user->app_status, ['rejected', 'revised']) && !in_array($user->app2_status, ['rejected', 'revised']) && $user->status != 'approved') { ?>
+                            <a class="btn btn-warning btn-sm mr-2" id="appBtn3" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
                         <?php } ?>
                         <a class="btn btn-secondary btn-sm" onclick="history.back()"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                     </div>
@@ -163,18 +161,18 @@
                     <!-- Header Section -->
                     <div class="header">
                         <div class="header-field">
-                            <img src="<?= base_url('assets/backend/img/sobatwisata.png') ?>" alt="" class="logo">
+                            <img src="<?= base_url('assets/backend/img/sebelaswarna.png') ?>" alt="" class="logo">
                             <table>
                                 <tr>
                                     <td style="font-weight: bold;">Divisi</td>
                                     <td>:</td>
                                     <td id="divisiTxt">tess</td>
                                 </tr>
-                                <!-- <tr>
+                                <tr>
                                     <td style="font-weight: bold;">Prepayment</td>
                                     <td>:</td>
                                     <td id="prepaymentTxt">tess</td>
-                                </tr> -->
+                                </tr>
                             </table>
                         </div>
                     </div>
@@ -193,11 +191,11 @@
                                 <td>:</td>
                                 <td class="line" id="namaTxt">tess</td>
                             </tr>
-                            <!-- <tr>
+                            <tr>
                                 <td>Jabatan</td>
                                 <td>:</td>
                                 <td class="line" id="jabatanTxt">tess</td>
-                            </tr> -->
+                            </tr>
                             <tr>
                                 <td colspan="3">Dengan ini bermaksud mengajukan prepayment untuk :</td>
                             </tr>
@@ -230,16 +228,19 @@
                         <table>
                             <tr>
                                 <td>Yang melakukan</td>
+                                <td>Captain</td>
                                 <td>Mengetahui</td>
                                 <td>Menyetujui</td>
                             </tr>
                             <tr style="height: 75px">
                                 <td id="statusMelakukan"></td>
+                                <td id="statusKapten"></td>
                                 <td id="statusMengetahui"></td>
                                 <td id="statusMenyetujui"></td>
                             </tr>
                             <tr>
                                 <td id="melakukan"></td>
+                                <td id="kapten"></td>
                                 <td id="mengetahui"></td>
                                 <td id="menyetujui"></td>
                             </tr>
@@ -346,7 +347,6 @@
     </div>
 </div>
 
-
 <!-- Include jQuery and Bootstrap JS -->
 <?php $this->load->view('template/footer'); ?>
 <?php $this->load->view('template/script'); ?>
@@ -368,9 +368,9 @@
         $('#appBtn').click(function() {
             $('#app_keterangan').attr('name', 'app_keterangan');
             $('#app_status').attr('name', 'app_status');
-            $('#approvalForm').attr('action', '<?= site_url('swi_prepayment/approve') ?>');
+            $('#approvalForm').attr('action', '<?= site_url('sw_prepayment/approve') ?>');
             $.ajax({
-                url: "<?php echo site_url('swi_prepayment/edit_data') ?>/" + id,
+                url: "<?php echo site_url('sw_prepayment/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -397,10 +397,10 @@
         $('#appBtn2').click(function() {
             $('#app_keterangan').attr('name', 'app2_keterangan').attr('id', 'app2_keterangan');
             $('#app_status').attr('name', 'app2_status').attr('id', 'app2_status');
-            $('#approvalForm').attr('action', '<?= site_url('swi_prepayment/approve2') ?>');
+            $('#approvalForm').attr('action', '<?= site_url('sw_prepayment/approve2') ?>');
 
             $.ajax({
-                url: "<?php echo site_url('swi_prepayment/edit_data') ?>/" + id,
+                url: "<?php echo site_url('sw_prepayment/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -423,11 +423,40 @@
             });
         });
 
-        $('#paymentBtn').click(function() {
-            $('#paymentForm').attr('action', '<?= site_url('swi_prepayment/payment') ?>');
+        $('#appBtn3').click(function() {
+            $('#app_keterangan').attr('name', 'app4_keterangan').attr('id', 'app4_keterangan');
+            $('#app_status').attr('name', 'app4_status').attr('id', 'app4_status');
+            $('#approvalForm').attr('action', '<?= site_url('sw_prepayment/approve3') ?>');
 
             $.ajax({
-                url: "<?php echo site_url('swi_prepayment/edit_data') ?>/" + id,
+                url: "<?php echo site_url('sw_prepayment/edit_data') ?>/" + id,
+                type: "GET",
+                dataType: "JSON",
+                success: function(data) {
+                    var nama2, date2, status2, keterangan2;
+                    if (data['master']['app4_status'] == 'waiting') {
+                        $('#app4_status').val();
+                        $('#app4_keterangan').val();
+                    } else {
+                        nama2 = data['master']['app4_name'];
+                        status2 = data['master']['app4_status'];
+                        keterangan2 = data['master']['app4_keterangan'];
+                        $('#app4_status').val(status2);
+                        $('#app2_keterangan').val(keterangan2);
+                        // $('#note_id').append(`<p>* ${keterangan2}</p>`);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    alert('Error get data from ajax');
+                }
+            });
+        });
+
+        $('#paymentBtn').click(function() {
+            $('#paymentForm').attr('action', '<?= site_url('sw_prepayment/payment') ?>');
+
+            $.ajax({
+                url: "<?php echo site_url('sw_prepayment/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -440,6 +469,7 @@
                 }
             });
         });
+
         // Handle the approval button click event
         $('#confirmApproval').click(function() {
             const id = $('#hidden_id').val();
@@ -451,14 +481,15 @@
 
         // Additional logic to dynamically load data into the form
         $.ajax({
-            url: "<?php echo site_url('swi_prepayment/edit_data') ?>/" + id,
+            url: "<?php echo site_url('sw_prepayment/edit_data') ?>/" + id,
             type: "GET",
             dataType: "JSON",
             success: function(data) {
                 moment.locale('id')
+                // console.log(data);
                 // DATA PREPAYMENT
                 $('#divisiTxt').text(data['master']['divisi']);
-                $('#prepaymentTxt').text(data['master']['prepayment']);
+                $('#prepaymentTxt').text(data['event']);
                 $('#tanggalTxt').text(moment(data['master']['tgl_prepayment']).format('D MMMM YYYY'));
                 $('#namaTxt').text(data['nama']);
                 $('#jabatanTxt').text(data['master']['jabatan']);
@@ -474,6 +505,12 @@
                     $('#keterangan').append(`<span class="form-control-plaintext">*(${data['master']['app_name']}) ${data['master']['app2_keterangan']}</span>`);
                 }
                 // DATA APPROVAL PREPAYMENT
+                if (data['master']['app4_date'] == null) {
+                    date4 = '';
+                }
+                if (data['master']['app4_date'] != null) {
+                    date4 = data['master']['app4_date'];
+                }
 
                 if (data['master']['app_date'] == null) {
                     date = '';
@@ -491,9 +528,11 @@
                 }
 
                 $('#melakukan').html(`<div class="signature-text text-center">${data['nama']}</div>`);
+                $('#kapten').html(`<div class="signature-text text-center">${data['master']['app4_name']}</div>`);
                 $('#mengetahui').html(`<div class="signature-text text-center">${data['master']['app_name']}</div>`);
                 $('#menyetujui').html(`<div class="signature-text text-center">${data['master']['app2_name']}</div>`);
                 $('#statusMelakukan').html(`<div class="signature-text text-center">CREATED<br><span>${data['master']['created_at']}</span></div>`);
+                $('#statusKapten').html(`<div class="signature-text text-center">${data['master']['app4_status'].toUpperCase()}<br><span>${date4}</span></div>`);
                 $('#statusMengetahui').html(`<div class="signature-text text-center">${data['master']['app_status'].toUpperCase()}<br><span>${date}</span></div>`);
                 $('#statusMenyetujui').html(`<div class="signature-text text-center">${data['master']['app2_status'].toUpperCase()}<br><span>${date2}</span></div>`);
 
@@ -523,7 +562,6 @@
             }
         });
 
-        // APPROVE
         // APPROVE
         $("#approvalForm").validate({
             rules: {
