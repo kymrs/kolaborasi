@@ -170,11 +170,11 @@
                                     <td>:</td>
                                     <td id="divisiTxt">tess</td>
                                 </tr>
-                                <tr>
+                                <!-- <tr>
                                     <td style="font-weight: bold;">Prepayment</td>
                                     <td>:</td>
                                     <td id="prepaymentTxt">tess</td>
-                                </tr>
+                                </tr> -->
                             </table>
                         </div>
                     </div>
@@ -193,11 +193,11 @@
                                 <td>:</td>
                                 <td class="line" id="namaTxt">tess</td>
                             </tr>
-                            <tr>
+                            <!-- <tr>
                                 <td>Jabatan</td>
                                 <td>:</td>
                                 <td class="line" id="jabatanTxt">tess</td>
-                            </tr>
+                            </tr> -->
                             <tr>
                                 <td colspan="3">Dengan ini bermaksud mengajukan prepayment untuk :</td>
                             </tr>

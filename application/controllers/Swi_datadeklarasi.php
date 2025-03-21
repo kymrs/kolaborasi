@@ -15,11 +15,10 @@ class Swi_datadeklarasi extends CI_Controller
 
     public function index()
     {
-
         $akses = $this->M_app->hak_akses($this->session->userdata('id_level'), $this->router->fetch_class());
         ($akses->view_level == 'N' ? redirect('auth') : '');
         $data['add'] = $akses->add_level;
-
+        $data['alias'] = $this->session->userdata('username');
         $data['title'] = "backend/swi_datadeklarasi/swi_deklarasi_list";
         $data['titleview'] = "Deklarasi";
         $name = $this->db->select('name')
@@ -56,25 +55,20 @@ class Swi_datadeklarasi extends CI_Controller
 
         //LOOPING DATATABLES
         foreach ($list as $field) {
-
             $action_read = ($read == 'Y') ? '<a href="swi_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
             $action_edit = ($edit == 'Y') ? '<a href="swi_datadeklarasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
             $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="swi_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
-            if ($field->app_name == $fullname && $field->id_pengaju != $this->session->userdata('id_user')) {
-                $action = $action_read . $action_print;
-            } elseif ($field->id_pengaju != $this->session->userdata('id_user') && $field->app2_name == $fullname) {
-                $action = $action_read . $action_print;
-            } elseif (in_array($field->status, ['rejected', 'approved'])) {
-                $action = $action_read . $action_print;
-            } elseif ($field->app_status == 'revised' || $field->app2_status == 'revised') {
-                $action = $action_read . $action_edit . $action_print;
-            } elseif ($field->app_status == 'approved') {
-                $action = $action_read . $action_print;
-            } else {
+            if ($this->session->userdata('username') == 'eko') {
                 $action = $action_read . $action_edit . $action_delete . $action_print;
+            } elseif ($field->id_pengaju == $this->session->userdata('id_user') && !in_array($field->status, ['rejected', 'approved', 'revised']) && $field->app_status == "waiting") {
+                $action = $action_read . $action_edit . $action_delete . $action_print;
+            } elseif (($field->id_pengaju == $this->session->userdata('id_user') || $this->session->userdata('username') == 'eko') && $field->status == 'revised') {
+                $action = $action_read . $action_edit . $action_print;
+            } else {
+                $action = $action_read . $action_print;
             }
 
             //MENENSTUKAN SATTSU PROGRESS PENGAJUAN PERMINTAAN
@@ -93,7 +87,7 @@ class Swi_datadeklarasi extends CI_Controller
             $row[] = strtoupper($field->kode_deklarasi);
             $row[] = date("d M Y", strtotime($field->tgl_deklarasi));
             $row[] = $field->name;
-            $row[] = $field->jabatan;
+            // $row[] = $field->jabatan;
             $row[] = $field->nama_dibayar;
             $row[] = $field->tujuan;
             $row[] = 'Rp. ' . number_format($field->sebesar, 0, ',', '.');;
@@ -114,7 +108,6 @@ class Swi_datadeklarasi extends CI_Controller
 
     function read_form($id)
     {
-
         $data['id'] = $id;
         $data['user'] = $this->M_swi_datadeklarasi->get_by_id($id);
         $data['app_name'] = $this->db->select('name')
@@ -134,8 +127,9 @@ class Swi_datadeklarasi extends CI_Controller
 
     function add_form()
     {
-
         $data['id'] = 0;
+        $data['id_user'] = $data['id'];
+        $data['id_pembuat'] = 0;
         $data['title_view'] = "Deklarasi Form";
         $data['aksi'] = 'update';
         $data['title'] = 'backend/swi_datadeklarasi/swi_deklarasi_form';
@@ -144,8 +138,9 @@ class Swi_datadeklarasi extends CI_Controller
 
     function edit_form($id)
     {
-
         $data['id'] = $id;
+        $data['id_user'] = $this->session->userdata('id_user');
+        $data['id_pembuat'] = $this->M_swi_datadeklarasi->get_by_id($id)->id_pengaju;
         $data['title_view'] = "Edit Data Deklarasi";
         $data['title'] = 'backend/swi_datadeklarasi/swi_deklarasi_form';
         $this->load->view('backend/home', $data);
@@ -209,8 +204,8 @@ class Swi_datadeklarasi extends CI_Controller
 
         $valid = true;
         $confirm = $this->db->select('app_id, app2_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
-        if (!empty($confirm) && $confirm->app_id != null) {
-            $app = $this->db->select('app_id, app2_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
+        if (!empty($confirm) && isset($confirm->app_id, $confirm->app2_id)) {
+            $app = $confirm;
         } else {
             echo json_encode(array("status" => FALSE, "error" => "Approval Belum Ditentukan, Mohon untuk menghubungi admin."));
             exit();
@@ -249,8 +244,6 @@ class Swi_datadeklarasi extends CI_Controller
         } else {
             echo json_encode(array("status" => FALSE));
         }
-
-        echo json_encode(array("status" => TRUE));
     }
 
     public function update()
@@ -389,8 +382,8 @@ class Swi_datadeklarasi extends CI_Controller
         $pdf->Cell(60, 10, ': ' . $formatted_date, 0, 1);
         $pdf->Cell(40, 10, 'Nama', 0, 0);
         $pdf->Cell(60, 10, ': ' . $data['user'], 0, 1);
-        $pdf->Cell(40, 10, 'Jabatan', 0, 0);
-        $pdf->Cell(60, 10, ': ' . $data['master']->jabatan, 0, 1);
+        // $pdf->Cell(40, 10, 'Jabatan', 0, 0);
+        // $pdf->Cell(60, 10, ': ' . $data['master']->jabatan, 0, 1);
 
         $pdf->Ln(1);
         $pdf->SetFont('Poppins-Regular', '', 12);

@@ -27,7 +27,7 @@ class Pu_reimbust extends CI_Controller
             ->get()
             ->row('name');
         $data['approval'] = $this->db->select('COUNT(*) as total_approval')
-            ->from('pu_reimbust')
+            ->from('tbl_reimbust_pu')
             ->where('app_name', $name)
             ->or_where('app2_name', $name)
             ->get()
@@ -667,7 +667,7 @@ class Pu_reimbust extends CI_Controller
             if ($deklarasiRecord) {
                 // Mengambil ID dari record yang ditemukan
                 $deklarasiId = $deklarasiRecord['id']; // Pastikan 'id' adalah nama kolom yang sesuai
-                $redirect_url = site_url('datadeklarasi_pu/read_form/' . $deklarasiId);
+                $redirect_url = site_url('pu_datadeklarasi/read_form/' . $deklarasiId);
 
                 $response = array(
                     'status' => 'success',

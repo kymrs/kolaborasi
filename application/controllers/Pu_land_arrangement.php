@@ -483,25 +483,27 @@ class Pu_land_arrangement extends CI_Controller
         // $t_cpdf->SetHeaderMargin(40);    // Jarak antara header dan konten
         $t_cpdf->SetAutoPageBreak(true, 40); // Penanganan otomatis margin bawah
 
-        // $t_cpdf->AddFont('helvetica', '', base_url('\application\third_party\TCPDF-main\fonts\helvetica.php'));
-        // $t_cpdf->AddFont('helvetica', '', base_url('\application\third_party\TCPDF-main\fonts\helvetica.php'));
+        $t_cpdf->AddFont('poppins-bold', '', base_url('\application\third_party\TCPDF-main\fonts\Poppins-Bold.php'));
+        $t_cpdf->AddFont('Poppins-Regular', '', base_url('\application\third_party\TCPDF-main\fonts\Poppins-Regular.php'));
 
         // Add a new page
         $t_cpdf->AddPage();
 
         // Pilih font untuk isi
-        $t_cpdf->SetFont('helvetica', '', 24);
+        $t_cpdf->SetFont('poppins-bold', '', 24);
 
         // Margin setup
         $left_margin = 10;
         $t_cpdf->SetLeftMargin($left_margin);  // Mengatur margin kiri
 
+        $header_margin = $t_cpdf->GetY() + 3;
+
         // Bagian TO
-        $t_cpdf->SetXY($left_margin, $t_cpdf->GetY());
+        $t_cpdf->SetXY($left_margin, $header_margin);
         $t_cpdf->Cell(0, 10, 'PENAWARAN', 0, 1, 'L');
 
         // Name and title (Creative Director)
-        $t_cpdf->SetFont('helvetica', '', 9);
+        $t_cpdf->SetFont('poppins-Regular', '', 9);
         $t_cpdf->Cell(38, 6, 'No', 0, 0,);
         $t_cpdf->cell(5, 5, ':', 0, 0);
         $t_cpdf->Cell(50, 5, $penawaran->no_pelayanan, 0, 1);
@@ -544,18 +546,18 @@ class Pu_land_arrangement extends CI_Controller
 
         // Add QR Code to PDF using TCPDF
         // Use TCPDF Image() method with '@"' to directly use the binary string
-        $t_cpdf->Image('@' . $result, 140, 42, 32, 32, 'PNG');
+        $t_cpdf->Image('@' . $result, 140, 45, 32, 32, 'PNG');
 
         // Add favicon with white background
         $t_cpdf->SetFillColor(255, 255, 255); // RGB for white
-        $t_cpdf->Rect(153.5, 56, 5, 6, 'F');   // X, Y, Width, Height, 'F' for filled rectangle
-        $t_cpdf->Image('assets/backend/img/favicon-pu.png', 153.5, 56, 5, 6);
+        $t_cpdf->Rect(153.5, 59, 5, 6, 'F');   // X, Y, Width, Height, 'F' for filled rectangle
+        $t_cpdf->Image('assets/backend/img/favicon-pu.png', 153.5, 59, 5, 6);
 
 
         $t_cpdf->Ln(5); // SPASI
 
         // HEADER LAYANAN
-        $t_cpdf->SetFont('helvetica', '', 11);
+        $t_cpdf->SetFont('poppins-bold', '', 11);
         $t_cpdf->SetFillColor(252, 118, 19);
         $t_cpdf->SetTextColor(255, 255, 255);
         $t_cpdf->Cell(0, 10, 'LAYANAN', 0, 1, 'L', true);
@@ -566,7 +568,7 @@ class Pu_land_arrangement extends CI_Controller
         $t_cpdf->Ln(2);
 
         // Konten text (justify)
-        $t_cpdf->SetFont('helvetica', '', 9);
+        $t_cpdf->SetFont('poppins-Regular', '', 9);
 
         // HEADER DESKRIPSI
         $t_cpdf->Cell(100, 5, 'Deskripsi :', 0, 0);
@@ -595,7 +597,7 @@ class Pu_land_arrangement extends CI_Controller
 
         // KONTEN DESKRIPSI
         $body_text = $penawaran->deskripsi;
-        $t_cpdf->Sety(91 + 4);
+        $t_cpdf->Sety(94 + 4);
         $t_cpdf->MultiCell($content_width, 4, $body_text, 0, (strlen($body_text) < 50 ? 'L' : 'J'));
         // 'J' digunakan untuk rata kiri dan kanan (justify)
 
@@ -612,7 +614,7 @@ class Pu_land_arrangement extends CI_Controller
         $t_cpdf->Sety($useY + 5);
 
         // HEADER LAYANAN TERMASUK
-        $t_cpdf->SetFont('helvetica', '', 9);
+        $t_cpdf->SetFont('poppins-Regular', '', 9);
         $t_cpdf->Cell(100, 5, 'Layanan Termasuk :', 0, 0);
 
         $trmskY = $t_cpdf->GetY();
@@ -651,8 +653,8 @@ class Pu_land_arrangement extends CI_Controller
 
         // KONTEN HOTEL DAN PENERBANGAN
         foreach ($hotels as $hotel) {
-            $t_cpdf->SetFont('helvetica', '', 9);
-            $t_cpdf->SetX(100); // Pindahkan posisi ke kolom kanan
+            $t_cpdf->SetFont('poppins-Regular', '', 9);
+            $t_cpdf->SetX($right_column_x - 4); // Pindahkan posisi ke kolom kanan
             $t_cpdf->Cell(25, 5, 'Hotel ' . $hotel->kota, 0, 0,);
             $t_cpdf->SetFont('ZapfDingbats');
             $stars = '';
@@ -664,18 +666,18 @@ class Pu_land_arrangement extends CI_Controller
                 }
             }
             $t_cpdf->cell(15, 5, $stars, 0, 0);
-            $t_cpdf->SetFont('helvetica', '', 9);
+            $t_cpdf->SetFont('poppins-Regular', '', 9);
             $t_cpdf->cell(3, 5, ':', 0, 0);
             $t_cpdf->Cell(40, 5, $hotel->nama_hotel, 0, 1);
         }
 
         // PENERBANGAN
-        $t_cpdf->SetX(100); // Pindahkan posisi ke kolom kanan
+        $t_cpdf->SetX($right_column_x - 4); // Pindahkan posisi ke kolom kanan
         $t_cpdf->Cell(40, 5, 'Keberangkatan', 0, 0);
         $t_cpdf->Cell(3, 5, ':', 0, 0);
         $t_cpdf->Cell(40, 5, $penawaran->keberangkatan, 0, 1);
 
-        $t_cpdf->SetX(100); // Pindahkan posisi ke kolom kanan
+        $t_cpdf->SetX($right_column_x - 4); // Pindahkan posisi ke kolom kanan
         $t_cpdf->Cell(40, 5, 'Kepulangan', 0, 0);
         $t_cpdf->Cell(3, 5, ':', 0, 0);
         $t_cpdf->Cell(40, 5, $penawaran->kepulangan, 0, 1);
@@ -687,28 +689,28 @@ class Pu_land_arrangement extends CI_Controller
         $t_cpdf->Sety($trmskY + 5);
         $body_text2 = $penawaran->layanan_trmsk;
 
-        if (strpos($body_text2, '<ol>') !== false) {
-            $x2 = 1;
-        } else if (strpos($body_text2, '<li>') !== false) {
-            $x2 = 1;
+        // Cek apakah $body_text2 mengandung list (<ol> atau <li>)
+        if (strpos($body_text2, '<ol>') !== false || strpos($body_text2, '<li>') !== false) {
+            $x2 = 1; // Jika ada list, gunakan posisi X = 1
         } else {
-            $x2 = 10;
+            $x2 = 10; // Jika tidak ada list, gunakan posisi X = 10
         }
 
-
+        // Menulis konten HTML ke PDF
         $t_cpdf->writeHTMLCell(
             80,                    // Lebar sel
             0,                     // Tinggi sel (0 berarti tinggi dinamis)
-            $x2,       // Posisi X
+            $x2,                   // Posisi X berdasarkan pengecekan list
             $t_cpdf->GetY(),       // Posisi Y saat ini
             $body_text2,           // Konten HTML
             0,                     // Border (0 = tidak ada border)
             1,                     // Line break (1 = pindah ke baris baru setelah cell)
             false,                 // Fill (false = tidak ada latar belakang)
             true,                  // Auto padding
-            'L',                   // Align (L = kiri)
+            'J',                   // Align (L = kiri)
             true                   // Konversi tag HTML
         );
+
 
         // Dapatkan posisi Y setelah konten terakhir
         $termasukY = $t_cpdf->GetY();
@@ -724,7 +726,7 @@ class Pu_land_arrangement extends CI_Controller
         $t_cpdf->SetY($useY2 + 5);
 
         // HEADER HARGA PAKET
-        $t_cpdf->SetFont('helvetica', '', 11);
+        $t_cpdf->SetFont('poppins-bold', '', 11);
         $t_cpdf->SetFillColor(252, 118, 19);
         $t_cpdf->SetTextColor(255, 255, 255);
         $t_cpdf->Cell(0, 10, 'HARGA PAKET', 0, 1, 'L', true);
@@ -734,7 +736,7 @@ class Pu_land_arrangement extends CI_Controller
         $t_cpdf->Ln(2);
 
         // BIAYA
-        $t_cpdf->SetFont('helvetica', '', 15);
+        $t_cpdf->SetFont('poppins-Bold', '', 15);
         $t_cpdf->Cell(20, 5, 'BIAYA', 0, 0,);
         $t_cpdf->cell(5, 5, ':', 0, 0);
         $t_cpdf->Cell(50, 5, 'Rp. ' . number_format($penawaran->biaya, 0, ',', '.'), 0, 1);
@@ -742,8 +744,15 @@ class Pu_land_arrangement extends CI_Controller
         // Spasi antara konten dan signature
         $t_cpdf->Ln(2);
 
+        $cek_kolom_y = $t_cpdf->getY();
+
+        if ($cek_kolom_y > 219.604166) {
+            $t_cpdf->AddPage();
+            $t_cpdf->setY($header_margin);
+        }
+
         // HEADER LAYANAN PASTI
-        $t_cpdf->SetFont('helvetica', '', 11);
+        $t_cpdf->SetFont('poppins-Bold', '', 11);
         $t_cpdf->SetFillColor(252, 118, 19);
         $t_cpdf->SetTextColor(255, 255, 255);
         $t_cpdf->Cell(0, 10, 'LAYANAN PASTI', 0, 1, 'L', true);
@@ -753,7 +762,7 @@ class Pu_land_arrangement extends CI_Controller
         $t_cpdf->Ln(1);
 
         // Konten text (justify)
-        $t_cpdf->SetFont('helvetica', '', 11);
+        $t_cpdf->SetFont('poppins-Regular', '', 11);
 
         // LAYANAN PASTI
         $t_cpdf->Cell(100, 5, '1. Konsultasi Gratis', 0, 0);
@@ -784,7 +793,7 @@ EOD;
 
         // Looping melalui rundown untuk menambahkan baris dinamis
         foreach ($rundowns as $rundown) {
-            $tbl .= '<tr>';
+            $tbl .= '<tr nobr="true">';
             $tbl .= '<td width="100" align="center">' . $rundown->hari . '</td>';
             $tbl .= '<td width="140" align="center">' . $rundown->tanggal . '</td>';
             $tbl .= '<td width="300">' . $rundown->kegiatan . '</td>';
@@ -796,7 +805,7 @@ EOD;
 </tbody>
 </table>
 EOD;
-        $t_cpdf->Sety(38);
+        $t_cpdf->setY($header_margin);
         $t_cpdf->writeHTML($tbl, true, false, false, false, '');
 
         // Output PDF (tampilkan di browser)

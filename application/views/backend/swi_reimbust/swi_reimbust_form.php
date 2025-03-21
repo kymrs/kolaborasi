@@ -160,8 +160,12 @@
                                     <div class="col-sm-8">
                                         <div class="input-group mb-3">
                                             <div class="form-check form-check-inline" style="margin-bottom: 5px;">
-                                                <input class="form-check-input" type="radio" name="radioNoLabel" id="exist" value="" aria-label="..." checked><label for="exist" style="margin-right: 14px; margin-top: 8px; cursor: pointer">Rekening terdaftar</label>
-                                                <input class="form-check-input" type="radio" name="radioNoLabel" id="new" value="" aria-label="..."><label for="new" style="margin-top: 8px; cursor: pointer">Rekening baru</label>
+                                                <?php if ($id_pembuat != $id_user && $aksi == 'update') { ?>
+                                                    <input class="form-check-input" type="radio" name="radioNoLabel" id="new" value="" aria-label="..." checked><label for="new" style="margin-top: 8px; cursor: pointer">Rekening</label>
+                                                <?php } else { ?>
+                                                    <input class="form-check-input" type="radio" name="radioNoLabel" id="exist" value="" aria-label="..." checked><label for="exist" style="margin-right: 14px; margin-top: 8px; cursor: pointer">Rekening terdaftar</label>
+                                                    <input class="form-check-input" type="radio" name="radioNoLabel" id="new" value="" aria-label="..."><label for="new" style="margin-top: 8px; cursor: pointer">Rekening baru</label>
+                                                <?php } ?>
                                             </div>
                                             <select class="js-example-basic-single" id="rekening" name="rekening">
                                                 <option value="Pilih rekening tujuan" selected disabled>Pilih rekening tujuan</option>
@@ -1181,15 +1185,18 @@
                     $('#sifat_pelaporan').val(data['master']['sifat_pelaporan']);
                     $('#id').val(data['master']['id']);
                     $('#kode_reimbust').val(data['master']['kode_reimbust']).attr('readonly', true);
-                    // $('#nama').val(data['master']['nama']);
-                    // $('#jabatan').val(data['master']['jabatan']);
-                    // $('#departemen').val(data['master']['departemen']);
-                    // $('#departemenPrepayment').val(data['master']['departemen']);
                     $('#tgl_pengajuan').val(moment(data['master']['tgl_pengajuan']).format('DD-MM-YYYY'));
                     $('#tujuan').val(data['master']['tujuan']);
                     $('#status').val(data['master']['status']);
                     $('#jumlah_prepayment').val(data['master']['jumlah_prepayment'].replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
                     $('#rekening').val(data['master']['no_rek']).trigger('change');
+                    var parts = data['master']['no_rek'].split("-"); // Pisahkan berdasarkan "-"
+
+                    if (parts.length === 3) {
+                        $("#nama_rek").val(parts[0]);
+                        $("#nama_bank").val(parts[1]);
+                        $("#nomor_rekening").val(parts[2]);
+                    }
                     $('#hidden_jumlah_prepayment').val(data['master']['jumlah_prepayment']);
                     $('#kode_prepayment_input').val(data['master']['kode_prepayment']);
                     $('#kode_prepayment_old').val(data['master']['kode_prepayment']);

@@ -51,7 +51,7 @@ class Pu_prepayment extends CI_Controller
             ->get()
             ->row('name');
         $data['approval'] = $this->db->select('COUNT(*) as total_approval')
-            ->from('pu_prepayment')
+            ->from('tbl_prepayment_pu')
             ->where('app_name', $name)
             ->or_where('app2_name', $name)
             ->get()
@@ -669,7 +669,7 @@ class Pu_prepayment extends CI_Controller
     function payment()
     {
         $this->db->where('id', $this->input->post('id'));
-        $this->db->update('pu_prepayment', ['payment_status' => $this->input->post('payment_status')]);
+        $this->db->update('tbl_prepayment_pu', ['payment_status' => $this->input->post('payment_status')]);
 
         echo json_encode(array("status" => TRUE));
     }
