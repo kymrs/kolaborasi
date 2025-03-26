@@ -513,7 +513,7 @@
                                         <input type="text" class="form-control tgl_keberangkatan" name="tgl_keberangkatan[${index + 1}]" value="${data['transaksi'][index]['tgl_keberangkatan']}" placeholder="Keberangkatan..." />
                                         <input type="text" class="form-control tgl_kepulangan" name="tgl_kepulangan[${index + 1}]" value="${data['transaksi'][index]['tgl_kepulangan']}" placeholder="Kepulangan..." />
                                         <input type="hidden" id="hidden_id${index + 1}" name="hidden_id" value="${data['master']['id']}">
-                                <input type="text" id="hidden_id_detail${index + 1}" name="hidden_id_detail[${index + 1}]" value="${data['transaksi'][index]['id']}">
+                                <input type="hidden" id="hidden_id_detail${index + 1}" name="hidden_id_detail[${index + 1}]" value="${data['transaksi'][index]['id']}">
                                     </td>
                                     <td><input type="text" class="form-control jenis" name="jenis[${index + 1}]" value="${data['transaksi'][index]['jenis']}" placeholder="Jenis..." /></td>
                                     <td><input type="text" class="form-control jumlah" id="jumlah-${index + 1}" name="jumlah[${index + 1}]" value="${data['transaksi'][index]['jumlah']}" placeholder="Jumlah..." /></td>
