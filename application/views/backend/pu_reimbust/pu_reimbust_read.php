@@ -32,7 +32,7 @@
             height: 150px;
             display: flex;
             align-items: center;
-            width: 260px;
+            width: 160px;
             position: relative;
             left: 20px;
         }
@@ -133,17 +133,9 @@
         }
 
         @media (max-width: 546px) {
-
-            td,
-            th,
-            button,
-            .btn,
-            span {
-                font-size: 75%;
-            }
-
             .table-main {
                 overflow-x: scroll;
+                font-size: 75%;
             }
 
             .table-approve table {
@@ -154,10 +146,6 @@
             .header h2 {
                 font-size: 90%;
                 margin-right: 0;
-            }
-
-            .no-prepayment {
-                margin-right: 80px;
             }
         }
     </style>
@@ -180,11 +168,11 @@
             <!-- Header -->
             <div class="header">
                 <div class="logo">
-                    <img src="<?= base_url() ?>assets/backend/img/carstensz.png" alt="Logo">
+                    <img src="<?= base_url() ?>assets/backend/img/pengenumroh.png" alt="Logo">
                 </div>
                 <div class="title">
                     <h1>FORM PELAPORAN / REIMBUST</h1>
-                    <h2>CARSTENSZ</h2>
+                    <h2>PENGENUMROH</h2>
                 </div>
             </div>
 
@@ -404,9 +392,9 @@
             $('#appBtn').click(function() {
                 $('#app_keterangan').attr('name', 'app_keterangan');
                 $('#app_status').attr('name', 'app_status');
-                $('#approvalForm').attr('action', '<?= site_url('reimbust_ctz/approve') ?>');
+                $('#approvalForm').attr('action', '<?= site_url('pu_reimbust/approve') ?>');
                 $.ajax({
-                    url: "<?php echo site_url('reimbust_ctz/edit_data') ?>/" + id,
+                    url: "<?php echo site_url('pu_reimbust/edit_data') ?>/" + id,
                     type: "GET",
                     dataType: "JSON",
                     success: function(data) {
@@ -433,10 +421,10 @@
             $('#appBtn2').click(function() {
                 $('#app_keterangan').attr('name', 'app2_keterangan').attr('id', 'app2_keterangan');
                 $('#app_status').attr('name', 'app2_status').attr('id', 'app2_status');
-                $('#approvalForm').attr('action', '<?= site_url('reimbust_ctz/approve2') ?>');
+                $('#approvalForm').attr('action', '<?= site_url('pu_reimbust/approve2') ?>');
 
                 $.ajax({
-                    url: "<?php echo site_url('reimbust_ctz/edit_data') ?>/" + id,
+                    url: "<?php echo site_url('pu_reimbust/edit_data') ?>/" + id,
                     type: "GET",
                     dataType: "JSON",
                     success: function(data) {
@@ -460,10 +448,10 @@
             });
 
             $('#paymentBtn').click(function() {
-                $('#paymentForm').attr('action', '<?= site_url('reimbust_ctz/payment') ?>');
+                $('#paymentForm').attr('action', '<?= site_url('pu_reimbust/payment') ?>');
 
                 $.ajax({
-                    url: "<?php echo site_url('reimbust_ctz/edit_data') ?>/" + id,
+                    url: "<?php echo site_url('pu_reimbust/edit_data') ?>/" + id,
                     type: "GET",
                     dataType: "JSON",
                     success: function(data) {
@@ -486,7 +474,7 @@
 
             // Additional logic to dynamically load data into the form
             $.ajax({
-                url: "<?php echo site_url('reimbust_ctz/edit_data') ?>/" + id,
+                url: "<?php echo site_url('pu_reimbust/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -521,7 +509,7 @@
                         nama = data['master']['app_name'];
                         status = data['master']['app_status'];
                         keterangan = data['master']['app_keterangan'];
-                        url = "<?php echo site_url('reimbust_ctz/approve') ?>";
+                        url = "<?php echo site_url('pu_reimbust/approve') ?>";
                         $('#note_id').append(`<p>* ${keterangan}</p>`);
                     }
 
@@ -537,7 +525,7 @@
                         nama = data['master']['app_name'];
                         status = data['master']['app_status'];
                         keterangan = data['master']['app_keterangan'];
-                        url = "<?php echo site_url('reimbust_ctz/approve') ?>";
+                        url = "<?php echo site_url('pu_reimbust/approve') ?>";
                         $('#note_id').append(`<p>* ${keterangan}</p>`);
                     }
                     if (data['master']['app_date'] == null) {
@@ -605,7 +593,7 @@
                         if (kwitansi) {
                             // Jika data kwitansi ada, lanjutkan dengan membuka modal
                             modal.css("display", "block");
-                            modalImg.attr('src', `<?= base_url() ?>/assets/backend/document/reimbust/kwitansi_ctz/${kwitansi}`);
+                            modalImg.attr('src', `<?= base_url() ?>/assets/backend/document/reimbust/kwitansi_pu/${kwitansi}`);
                             // captionText.text('Deskripsi gambar Anda di sini'); // Ubah dengan deskripsi gambar
                         }
                     });
@@ -662,7 +650,7 @@
                         var deklarasi = $(this).data('deklarasi');
 
                         $.ajax({
-                            url: '<?= site_url('reimbust_ctz/detail_deklarasi') ?>', // URL method controller
+                            url: '<?= site_url('pu_reimbust/detail_deklarasi') ?>', // URL method controller
                             method: 'POST',
                             data: {
                                 deklarasi: deklarasi

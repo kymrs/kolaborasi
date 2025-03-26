@@ -121,7 +121,7 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header text-right">
-                    <a class="btn btn-primary btn-sm btn-style" href="<?= base_url('reimbust_ctz') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+                    <a class="btn btn-primary btn-sm btn-style" href="<?= base_url('ctz_reimbust') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
                     <form id="form" enctype="multipart/form-data">
@@ -166,8 +166,12 @@
                                     <div class="col-sm-8">
                                         <div class="input-group mb-3">
                                             <div class="form-check form-check-inline" style="margin-bottom: 5px;">
-                                                <input class="form-check-input" type="radio" name="radioNoLabel" id="exist" value="" aria-label="..." checked><label for="exist" style="margin-right: 14px; margin-top: 8px; cursor: pointer">Rekening terdaftar</label>
-                                                <input class="form-check-input" type="radio" name="radioNoLabel" id="new" value="" aria-label="..."><label for="new" style="margin-top: 8px; cursor: pointer">Rekening baru</label>
+                                                <?php if ($id_pembuat != $id_user && $aksi == 'update') { ?>
+                                                    <input class="form-check-input" type="radio" name="radioNoLabel" id="new" value="" aria-label="..." checked><label for="new" style="margin-top: 8px; cursor: pointer">Rekening</label>
+                                                <?php } else { ?>
+                                                    <input class="form-check-input" type="radio" name="radioNoLabel" id="exist" value="" aria-label="..." checked><label for="exist" style="margin-right: 14px; margin-top: 8px; cursor: pointer">Rekening terdaftar</label>
+                                                    <input class="form-check-input" type="radio" name="radioNoLabel" id="new" value="" aria-label="..."><label for="new" style="margin-top: 8px; cursor: pointer">Rekening baru</label>
+                                                <?php } ?>
                                             </div>
                                             <select class="js-example-basic-single" id="rekening" name="rekening">
                                                 <option value="Pilih rekening tujuan" selected disabled>Pilih rekening tujuan</option>
@@ -307,7 +311,7 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="deklarasiModalLabel">Data Deklarasi</h5>
-                                        <!-- <a style="position: relative; right: 75px" class="btn btn-primary btn-sm" href="<?= base_url('datadeklarasi_ctz/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a> -->
+                                        <!-- <a style="position: relative; right: 75px" class="btn btn-primary btn-sm" href="<?= base_url('ctz_datadeklarasi/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a> -->
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span style="position: relative; bottom: 5px" aria-hidden="true">&times;</span>
                                         </button>
@@ -354,7 +358,7 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="deklarasiModalLabel">Data Deklarasi</h5>
-                                        <a style="position: relative; right: 75px" class="btn btn-primary btn-sm" href="<?= base_url('datadeklarasi_ctz/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a>
+                                        <a style="position: relative; right: 75px" class="btn btn-primary btn-sm" href="<?= base_url('ctz_datadeklarasi/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span style="position: relative; bottom: 5px" aria-hidden="true">&times;</span>
                                         </button>
@@ -428,7 +432,7 @@
                 $("#tgl_pengajuan-error").remove(); // Menghapus label error
             }
             $.ajax({
-                url: "<?php echo site_url('reimbust_ctz/generate_kode') ?>",
+                url: "<?php echo site_url('ctz_reimbust/generate_kode') ?>",
                 type: "POST",
                 data: {
                     "date": dateText
@@ -491,7 +495,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('reimbust_ctz/get_list3') ?>",
+                "url": "<?php echo site_url('ctz_reimbust/get_list3') ?>",
                 "type": "POST",
                 "data": function(d) {
                     d.status = 'approved';
@@ -543,7 +547,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('reimbust_ctz/get_list2') ?>",
+                "url": "<?php echo site_url('ctz_reimbust/get_list2') ?>",
                 "type": "POST"
             },
             "columnDefs": [{
@@ -636,7 +640,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('datadeklarasi_ctz/get_list') ?>",
+                "url": "<?php echo site_url('ctz_datadeklarasi/get_list') ?>",
                 "type": "POST"
             },
             "columnDefs": [{
@@ -1073,7 +1077,7 @@
             $('#kode_reimbust').val(kode).prop('readonly', true).css('cursor', 'not-allowed');
             $("select option[value='']").hide();
             $.ajax({
-                url: "<?= site_url('reimbust_ctz/edit_data') ?>/" + id,
+                url: "<?= site_url('ctz_reimbust/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -1082,10 +1086,13 @@
                     $('#sifat_pelaporan').val(data['master']['sifat_pelaporan']);
                     $('#id').val(data['master']['id']);
                     $('#kode_reimbust').val(data['master']['kode_reimbust']).attr('readonly', true);
-                    // $('#nama').val(data['master']['nama']);
-                    // $('#jabatan').val(data['master']['jabatan']);
-                    // $('#departemen').val(data['master']['departemen']);
-                    // $('#departemenPrepayment').val(data['master']['departemen']);
+                    var parts = data['master']['no_rek'].split("-"); // Pisahkan berdasarkan "-"
+
+                    if (parts.length === 3) {
+                        $("#nama_rek").val(parts[0]);
+                        $("#nama_bank").val(parts[1]);
+                        $("#nomor_rekening").val(parts[2]);
+                    }
                     $('#tgl_pengajuan').val(moment(data['master']['tgl_pengajuan']).format('DD-MM-YYYY'));
                     $('#tujuan').val(data['master']['tujuan']);
                     $('#status').val(data['master']['status']);
@@ -1254,7 +1261,7 @@
                                         <div class="btn btn-primary btn-lg btn-block btn-sm openModal" data-kwitansi="${data['transaksi'][index]['kwitansi']}">Lihat Foto</div>
                                     </td>
                                     <td width="150" style="padding: 15px 10px">
-                                        <a href="<?= base_url() ?>datadeklarasi_ctz/read_form/25" class="btn btn-primary btn-lg btn-block btn-sm" 
+                                        <a href="<?= base_url() ?>ctz_datadeklarasi/read_form/25" class="btn btn-primary btn-lg btn-block btn-sm" 
                                             data-id="${index + 1}"
                                             data-deklarasi="${data['transaksi'][index]['deklarasi']}"
                                             id="deklarasi-modal${index + 1}">
@@ -1332,9 +1339,9 @@
 
             var url;
             if (id == 0) {
-                url = "<?php echo site_url('reimbust_ctz/add') ?>";
+                url = "<?php echo site_url('ctz_reimbust/add') ?>";
             } else {
-                url = "<?php echo site_url('reimbust_ctz/update') ?>";
+                url = "<?php echo site_url('ctz_reimbust/update') ?>";
             }
 
             var formData = new FormData(this);
@@ -1364,7 +1371,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then((result) => {
-                            location.href = "<?= base_url('reimbust_ctz') ?>";
+                            location.href = "<?= base_url('ctz_reimbust') ?>";
                         });
                     } else {
                         // Sembunyikan loading saat respons diterima

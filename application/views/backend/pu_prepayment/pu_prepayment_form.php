@@ -94,7 +94,7 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header text-right">
-                    <a class="btn btn-secondary btn-sm" href="<?= base_url('prepayment_ctz') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+                    <a class="btn btn-secondary btn-sm" href="<?= base_url('pu_prepayment') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
                     <form id="form">
@@ -123,8 +123,12 @@
                                         <div class="input-group mb-3">
                                             <!-- RADIO BUTTON UNTUK PEMILIHAN INPUTAN REKENING -->
                                             <div class="form-check form-check-inline" style="margin-bottom: 5px;">
-                                                <input class="form-check-input" type="radio" name="radioNoLabel" id="exist" value="" aria-label="..." checked><label for="exist" style="margin-right: 14px; margin-top: 8px; cursor: pointer">Rekening terdaftar</label>
-                                                <input class="form-check-input" type="radio" name="radioNoLabel" id="new" value="" aria-label="..."><label for="new" style="margin-top: 8px; cursor: pointer">Rekening baru</label>
+                                                <?php if ($id_pembuat != $id_user && !empty($aksi)) { ?>
+                                                    <input class="form-check-input" type="radio" name="radioNoLabel" id="new" value="" aria-label="..." checked><label for="new" style="margin-top: 8px; cursor: pointer">Rekening</label>
+                                                <?php } else { ?>
+                                                    <input class="form-check-input" type="radio" name="radioNoLabel" id="exist" value="" aria-label="..." checked><label for="exist" style="margin-right: 14px; margin-top: 8px; cursor: pointer">Rekening terdaftar</label>
+                                                    <input class="form-check-input" type="radio" name="radioNoLabel" id="new" value="" aria-label="..."><label for="new" style="margin-top: 8px; cursor: pointer">Rekening baru</label>
+                                                <?php } ?>
                                             </div>
                                             <select class="js-example-basic-single" id="rekening" name="rekening">
                                                 <option value="" selected disabled>Pilih rekening tujuan</option>
@@ -229,7 +233,7 @@
                 $("#tgl_prepayment-error").remove(); // Menghapus label error
             }
             $.ajax({
-                url: "<?php echo site_url('prepayment_ctz/generate_kode') ?>",
+                url: "<?php echo site_url('pu_prepayment/generate_kode') ?>",
                 type: "POST",
                 data: {
                     "date": dateText
@@ -448,7 +452,7 @@
             $('.aksi').append('<span class="front front-aksi">Update</span>');
             $("select option[value='']").hide();
             $.ajax({
-                url: "<?php echo site_url('prepayment_ctz/edit_data') ?>/" + id,
+                url: "<?php echo site_url('pu_prepayment/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -477,6 +481,13 @@
                         total_nominal = parseInt(data['master']['total_nominal'], 10);
                         $('#total_nominal_view').text(total_nominal.toLocaleString());
                         $('#total_nominal').val(data['master']['total_nominal']);
+                    }
+                    var parts = data['master']['no_rek'].split("-"); // Pisahkan berdasarkan "-"
+
+                    if (parts.length === 3) {
+                        $("#nama_rek").val(parts[0]);
+                        $("#nama_bank").val(parts[1]);
+                        $("#nomor_rekening").val(parts[2]);
                     }
 
                     //APPEND DATA TRANSAKSI DETAIL PREPAYMENT
@@ -543,7 +554,7 @@
             $('th:last-child').remove();
 
             $.ajax({
-                url: "<?php echo site_url('prepayment_ctz/read_detail/') ?>" + id,
+                url: "<?php echo site_url('pu_prepayment/read_detail/') ?>" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -571,9 +582,9 @@
             if (!$form.valid()) return false;
             var url;
             if (id == 0) {
-                url = "<?php echo site_url('prepayment_ctz/add') ?>";
+                url = "<?php echo site_url('pu_prepayment/add') ?>";
             } else {
-                url = "<?php echo site_url('prepayment_ctz/update') ?>";
+                url = "<?php echo site_url('pu_prepayment/update') ?>";
             }
 
             // Tampilkan loading
@@ -601,7 +612,7 @@
                             timer: 1500
                         }).then((result) => {
                             checkNotifications();
-                            location.href = "<?= base_url('prepayment_ctz') ?>";
+                            location.href = "<?= base_url('pu_prepayment') ?>";
                         })
                     } else {
                         // Sembunyikan loading saat respons diterima
