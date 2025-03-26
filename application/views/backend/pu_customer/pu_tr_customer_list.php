@@ -7,13 +7,11 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
-                    <?php if ($add == 'Y') { ?>
-                        <a class="btn btn-primary btn-sm" id="add_btn" href="<?= base_url('pu_customer/add_form') ?>">
-                            <i class="fa fa-plus"></i>&nbsp;Add Data
-                        </a>
-                    <?php } ?>
-                    <a class="btn btn-secondary btn-sm float-right ml-2" href="<?= base_url('pu_customer') ?>">
-                        <i class="fas fa-chevron-left"></i>&nbsp;Back
+                    <a class="btn btn-primary btn-sm" id="add_btn" href="<?= base_url('pu_customer/add_form_transaksi') ?>">
+                        <i class="fa fa-plus"></i>&nbsp;Add Data
+                    </a>
+                    <a class="btn btn-primary btn-sm" id="add_btn" href="<?= base_url('pu_customer/customer') ?>">
+                        <i class="fa fa-list"></i>&nbsp;&nbsp;Data Customer
                     </a>
                     <a class="btn btn-success btn-sm float-right" id="btn-export-excel">
                         <i class="fa fa-file-excel" style="margin-right: 6px"></i>Export to Excel
@@ -34,7 +32,9 @@
                                     <th>Nama</th>
                                     <th>Jenis Kelamin</th>
                                     <th>No Telp</th>
-                                    <th>Asal</th>
+                                    <th>Tanggal Berangkat</th>
+                                    <th>Produk</th>
+                                    <th>Travel</th>
                                     <th>Dibuat pada</th>
                                 </tr>
                             </thead>
@@ -45,11 +45,14 @@
                                 <tr>
                                     <th>No</th>
                                     <th style="width: 120px;">Action</th>
+                                    <th>Customer ID</th>
                                     <th>Group ID</th>
                                     <th>Nama</th>
                                     <th>Jenis Kelamin</th>
                                     <th>No Telp</th>
-                                    <th>Asal</th>
+                                    <th>Tanggal Berangkat</th>
+                                    <th>Produk</th>
+                                    <th>Travel</th>
                                     <th>Dibuat pada</th>
                                 </tr>
                             </tfoot>
@@ -74,7 +77,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('pu_customer/get_list') ?>",
+                "url": "<?php echo site_url('pu_customer/get_list2') ?>",
                 "type": "POST",
                 // "data": function(d) {
                 //     d.status = $('#appFilter').val(); // Tambahkan parameter status ke permintaan server
@@ -85,11 +88,11 @@
                 "infoFiltered": ""
             },
             "columnDefs": [{
-                    "targets": [1, 2, 3, 4, 5, 6, 7, 8], // Adjusted indices to match the number of columns
+                    "targets": [], // Adjusted indices to match the number of columns
                     "className": 'dt-head-nowrap'
                 },
                 {
-                    "targets": [1, 2, 3, 4, 5, 6, 7, 8],
+                    "targets": [1],
                     "className": 'dt-body-nowrap'
                 },
                 {
@@ -112,7 +115,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: "<?php echo site_url('pu_customer/delete/') ?>" + id,
+                    url: "<?php echo site_url('pu_customer/delete2/') ?>" + id,
                     type: "POST",
                     dataType: "JSON",
                     success: function(data) {
@@ -123,7 +126,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then((result) => {
-                            location.href = "<?= base_url('pu_customer/customer') ?>";
+                            location.href = "<?= base_url('pu_customer') ?>";
                         })
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
@@ -136,7 +139,7 @@
 
     $('#btn-export-excel').click(function() {
         // Arahkan ke URL controller untuk export Excel
-        window.location.href = "<?= site_url('pu_customer/export_excel_customer'); ?>";
+        window.location.href = "<?= site_url('pu_customer/export_excel'); ?>";
     });
 
     // $('#add_btn').click(function(e) {

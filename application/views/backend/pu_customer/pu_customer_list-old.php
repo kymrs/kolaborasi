@@ -6,16 +6,13 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <?php if ($add == 'Y') { ?>
-                        <a class="btn btn-primary btn-sm" id="add_btn" href="<?= base_url('pu_customer/add_form') ?>">
-                            <i class="fa fa-plus"></i>&nbsp;Add Data
-                        </a>
-                    <?php } ?>
-                    <a class="btn btn-secondary btn-sm float-right ml-2" href="<?= base_url('pu_customer') ?>">
-                        <i class="fas fa-chevron-left"></i>&nbsp;Back
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <!-- <?php if ($add == 'Y') { ?> -->
+                    <a class="btn btn-primary btn-sm" id="add_btn" href="<?= base_url('pu_customer/add_form') ?>">
+                        <i class="fa fa-plus"></i>&nbsp;Add Data
                     </a>
-                    <a class="btn btn-success btn-sm float-right" id="btn-export-excel">
+                    <!-- <?php } ?> -->
+                    <a class="btn btn-success btn-sm" id="btn-export-excel">
                         <i class="fa fa-file-excel" style="margin-right: 6px"></i>Export to Excel
                     </a>
                 </div>
@@ -29,13 +26,14 @@
                                 <tr>
                                     <th>No</th>
                                     <th style="width: 120px;">Action</th>
-                                    <th>Customer ID</th>
                                     <th>Group ID</th>
                                     <th>Nama</th>
                                     <th>Jenis Kelamin</th>
                                     <th>No Telp</th>
                                     <th>Asal</th>
-                                    <th>Dibuat pada</th>
+                                    <th>Produk</th>
+                                    <th>Keberangkatan</th>
+                                    <th>Travel</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -50,7 +48,9 @@
                                     <th>Jenis Kelamin</th>
                                     <th>No Telp</th>
                                     <th>Asal</th>
-                                    <th>Dibuat pada</th>
+                                    <th>Produk</th>
+                                    <th>Keberangkatan</th>
+                                    <th>Travel</th>
                                 </tr>
                             </tfoot>
                         </table>
@@ -85,11 +85,11 @@
                 "infoFiltered": ""
             },
             "columnDefs": [{
-                    "targets": [1, 2, 3, 4, 5, 6, 7, 8], // Adjusted indices to match the number of columns
+                    "targets": [], // Adjusted indices to match the number of columns
                     "className": 'dt-head-nowrap'
                 },
                 {
-                    "targets": [1, 2, 3, 4, 5, 6, 7, 8],
+                    "targets": [1],
                     "className": 'dt-body-nowrap'
                 },
                 {
@@ -123,7 +123,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then((result) => {
-                            location.href = "<?= base_url('pu_customer/customer') ?>";
+                            location.href = "<?= base_url('pu_customer') ?>";
                         })
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
@@ -136,7 +136,7 @@
 
     $('#btn-export-excel').click(function() {
         // Arahkan ke URL controller untuk export Excel
-        window.location.href = "<?= site_url('pu_customer/export_excel_customer'); ?>";
+        window.location.href = "<?= site_url('pu_customer/export_excel'); ?>";
     });
 
     // $('#add_btn').click(function(e) {
