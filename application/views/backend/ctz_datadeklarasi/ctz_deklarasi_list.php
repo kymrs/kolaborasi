@@ -34,7 +34,7 @@
                     <?php } ?>
                     <?php if ($alias == "eko") { ?>
                         <li class="nav-item">
-                            <a class="nav-link" id="employeeTab" href="#" data-tab="employee">Approval</a>
+                            <a class="nav-link" id="adminTab" href="#" data-tab="admin">Admin</a>
                         </li>
                     <?php } ?>
                 </ul>
@@ -104,6 +104,9 @@
             $(`.nav-tabs .nav-link[data-tab="${activeTab}"]`).addClass('active');
             // console.log('labubu');
             // You can load content for the active tab here if needed
+        } else if (activeTab == 'employee') {
+            $('.nav-tabs .nav-link').removeClass('active');
+            $(`.nav-tabs .nav-link[data-tab="${activeTab}"]`).addClass('active');
         } else {
             // Default to the "User" tab if session storage is empty or approval tab doesn't exist
             $('.nav-tabs .nav-link').removeClass('active');

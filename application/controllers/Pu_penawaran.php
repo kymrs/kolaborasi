@@ -255,6 +255,7 @@ class Pu_penawaran extends CI_Controller
             'no_arsip' => $no_arsip,
             'nama_dokumen' => $this->input->post('produk'),
             'penerbit' => $divisi,
+            'tgl_dokumen' => date('y-m-d H:i:s'),
             'no_dokumen' => $no_pelayanan
         ];
 

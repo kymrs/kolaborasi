@@ -404,9 +404,9 @@
             $('#appBtn').click(function() {
                 $('#app_keterangan').attr('name', 'app_keterangan');
                 $('#app_status').attr('name', 'app_status');
-                $('#approvalForm').attr('action', '<?= site_url('reimbust_ctz/approve') ?>');
+                $('#approvalForm').attr('action', '<?= site_url('ctz_reimbust/approve') ?>');
                 $.ajax({
-                    url: "<?php echo site_url('reimbust_ctz/edit_data') ?>/" + id,
+                    url: "<?php echo site_url('ctz_reimbust/edit_data') ?>/" + id,
                     type: "GET",
                     dataType: "JSON",
                     success: function(data) {
@@ -433,10 +433,10 @@
             $('#appBtn2').click(function() {
                 $('#app_keterangan').attr('name', 'app2_keterangan').attr('id', 'app2_keterangan');
                 $('#app_status').attr('name', 'app2_status').attr('id', 'app2_status');
-                $('#approvalForm').attr('action', '<?= site_url('reimbust_ctz/approve2') ?>');
+                $('#approvalForm').attr('action', '<?= site_url('ctz_reimbust/approve2') ?>');
 
                 $.ajax({
-                    url: "<?php echo site_url('reimbust_ctz/edit_data') ?>/" + id,
+                    url: "<?php echo site_url('ctz_reimbust/edit_data') ?>/" + id,
                     type: "GET",
                     dataType: "JSON",
                     success: function(data) {
@@ -460,10 +460,10 @@
             });
 
             $('#paymentBtn').click(function() {
-                $('#paymentForm').attr('action', '<?= site_url('reimbust_ctz/payment') ?>');
+                $('#paymentForm').attr('action', '<?= site_url('ctz_reimbust/payment') ?>');
 
                 $.ajax({
-                    url: "<?php echo site_url('reimbust_ctz/edit_data') ?>/" + id,
+                    url: "<?php echo site_url('ctz_reimbust/edit_data') ?>/" + id,
                     type: "GET",
                     dataType: "JSON",
                     success: function(data) {
@@ -486,7 +486,7 @@
 
             // Additional logic to dynamically load data into the form
             $.ajax({
-                url: "<?php echo site_url('reimbust_ctz/edit_data') ?>/" + id,
+                url: "<?php echo site_url('ctz_reimbust/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -521,7 +521,7 @@
                         nama = data['master']['app_name'];
                         status = data['master']['app_status'];
                         keterangan = data['master']['app_keterangan'];
-                        url = "<?php echo site_url('reimbust_ctz/approve') ?>";
+                        url = "<?php echo site_url('ctz_reimbust/approve') ?>";
                         $('#note_id').append(`<p>* ${keterangan}</p>`);
                     }
 
@@ -537,7 +537,7 @@
                         nama = data['master']['app_name'];
                         status = data['master']['app_status'];
                         keterangan = data['master']['app_keterangan'];
-                        url = "<?php echo site_url('reimbust_ctz/approve') ?>";
+                        url = "<?php echo site_url('ctz_reimbust/approve') ?>";
                         $('#note_id').append(`<p>* ${keterangan}</p>`);
                     }
                     if (data['master']['app_date'] == null) {
@@ -662,7 +662,7 @@
                         var deklarasi = $(this).data('deklarasi');
 
                         $.ajax({
-                            url: '<?= site_url('reimbust_ctz/detail_deklarasi') ?>', // URL method controller
+                            url: '<?= site_url('ctz_reimbust/detail_deklarasi') ?>', // URL method controller
                             method: 'POST',
                             data: {
                                 deklarasi: deklarasi

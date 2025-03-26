@@ -1,41 +1,16 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Ctz_datadeklarasi extends CI_Controller
+class Swi_penawaran extends CI_Controller
 {
 
     function __construct()
     {
         parent::__construct();
-        $this->load->model('backend/M_ctz_datadeklarasi');
+        $this->load->model('backend/M_swi_penawaran');
         $this->load->model('backend/M_notifikasi');
         $this->M_login->getsecurity();
         date_default_timezone_set('Asia/Jakarta');
-    }
-
-    function tgl_indo($tanggal)
-    {
-        $bulan = array(
-            1 =>   'Januari',
-            'Februari',
-            'Maret',
-            'April',
-            'Mei',
-            'Juni',
-            'Juli',
-            'Agustus',
-            'September',
-            'Oktober',
-            'November',
-            'Desember'
-        );
-        $pecahkan = explode('-', $tanggal);
-
-        // variabel pecahkan 0 = tanggal
-        // variabel pecahkan 1 = bulan
-        // variabel pecahkan 2 = tahun
-
-        return $pecahkan[2] . ' ' . $bulan[(int)$pecahkan[1]] . ' ' . $pecahkan[0];
     }
 
     public function index()
@@ -44,15 +19,15 @@ class Ctz_datadeklarasi extends CI_Controller
         ($akses->view_level == 'N' ? redirect('auth') : '');
         $data['add'] = $akses->add_level;
         $data['alias'] = $this->session->userdata('username');
-        $data['title'] = "backend/ctz_datadeklarasi/ctz_deklarasi_list";
-        $data['titleview'] = "Deklarasi";
+        $data['title'] = "backend/swi_penawaran/swi_penawaran_list";
+        $data['titleview'] = "Penawaran";
         $name = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
         $data['approval'] = $this->db->select('COUNT(*) as total_approval')
-            ->from('ctz_deklarasi')
+            ->from('swi_deklarasi')
             ->where('app_name', $name)
             ->or_where('app2_name', $name)
             ->get()
@@ -68,7 +43,7 @@ class Ctz_datadeklarasi extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $list = $this->M_ctz_datadeklarasi->get_datatables();
+        $list = $this->M_swi_penawaran->get_datatables();
         $data = array();
         $no = $_POST['start'];
 
@@ -80,52 +55,31 @@ class Ctz_datadeklarasi extends CI_Controller
 
         //LOOPING DATATABLES
         foreach ($list as $field) {
-
-            $action_read = ($read == 'Y') ? '<a href="ctz_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
-            $action_edit = ($edit == 'Y') ? '<a href="ctz_datadeklarasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
+            $action_read = ($read == 'Y') ? '<a href="swi_penawaran/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
+            $action_edit = ($edit == 'Y') ? '<a href="swi_penawaran/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
-            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="ctz_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
+            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="swi_penawaran/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
-            if ($this->session->userdata('username') == 'eko') {
-                $action = $action_read . $action_edit . $action_delete . $action_print;
-            } elseif ($field->id_pengaju == $this->session->userdata('id_user') && !in_array($field->status, ['rejected', 'approved', 'revised']) && $field->app_status == "waiting") {
-                $action = $action_read . $action_edit . $action_delete . $action_print;
-            } elseif (($field->id_pengaju == $this->session->userdata('id_user') || $this->session->userdata('username') == 'eko') && $field->status == 'revised') {
-                $action = $action_read . $action_edit . $action_print;
-            } else {
-                $action = $action_read . $action_print;
-            }
-
-            //MENENSTUKAN SATTSU PROGRESS PENGAJUAN PERMINTAAN
-            if ($field->app_status == 'approved' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
-                $status = $field->status . ' (' . $field->app2_name . ')';
-            } elseif ($field->app_status == 'waiting' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
-                $status = $field->status . ' (' . $field->app_name . ')';
-            } else {
-                $status = $field->status;
-            }
+            $action = $action_read . $action_edit . $action_delete . $action_print;
 
             $no++;
             $row = array();
             $row[] = $no;
             $row[] = $action;
-            $row[] = strtoupper($field->kode_deklarasi);
-            $row[] = $this->tgl_indo(date("Y-m-j", strtotime($field->tgl_deklarasi)));
+            $row[] = strtoupper($field->kode);
             $row[] = $field->name;
-            // $row[] = $field->jabatan;
-            $row[] = $field->nama_dibayar;
+            $row[] = $field->asal;
             $row[] = $field->tujuan;
-            $row[] = 'Rp. ' . number_format($field->sebesar, 0, ',', '.');;
-            // $row[] = $field->sebesar;
-            $row[] = $status;
+            $row[] = $field->kendaraan;
+            $row[] = date("d M Y", strtotime($field->created_at));
             $data[] = $row;
         }
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_ctz_datadeklarasi->count_all(),
-            "recordsFiltered" => $this->M_ctz_datadeklarasi->count_filtered(),
+            "recordsTotal" => $this->M_swi_penawaran->count_all(),
+            "recordsFiltered" => $this->M_swi_penawaran->count_filtered(),
             "data" => $data,
         );
         //output dalam format JSON
@@ -135,7 +89,7 @@ class Ctz_datadeklarasi extends CI_Controller
     function read_form($id)
     {
         $data['id'] = $id;
-        $data['user'] = $this->M_ctz_datadeklarasi->get_by_id($id);
+        $data['user'] = $this->M_swi_penawaran->get_by_id($id);
         $data['app_name'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $this->session->userdata('id_user'))
@@ -146,8 +100,8 @@ class Ctz_datadeklarasi extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $data['title_view'] = "Data Deklarasi";
-        $data['title'] = 'backend/ctz_datadeklarasi/ctz_deklarasi_read';
+        $data['title_view'] = "Data Penawaran";
+        $data['title'] = 'backend/swi_penawaran/swi_penawaran_read';
         $this->load->view('backend/home', $data);
     }
 
@@ -156,9 +110,8 @@ class Ctz_datadeklarasi extends CI_Controller
         $data['id'] = 0;
         $data['id_user'] = $data['id'];
         $data['id_pembuat'] = 0;
-        $data['title_view'] = "Deklarasi Form";
-        $data['aksi'] = 'update';
-        $data['title'] = 'backend/ctz_datadeklarasi/ctz_deklarasi_form';
+        $data['title_view'] = "Penawaran Form";
+        $data['title'] = 'backend/swi_penawaran/swi_penawaran_form';
         $this->load->view('backend/home', $data);
     }
 
@@ -166,19 +119,16 @@ class Ctz_datadeklarasi extends CI_Controller
     {
         $data['id'] = $id;
         $data['id_user'] = $this->session->userdata('id_user');
-        $data['id_pembuat'] = $this->M_ctz_datadeklarasi->get_by_id($id)->id_pengaju;
-        $data['title_view'] = "Edit Data Deklarasi";
-        $data['title'] = 'backend/ctz_datadeklarasi/ctz_deklarasi_form';
+        $data['title_view'] = "Edit Data Penawaran";
+        $data['aksi'] = 'update';
+        $data['title'] = 'backend/swi_penawaran/swi_penawaran_form';
         $this->load->view('backend/home', $data);
     }
 
     function edit_data($id)
     {
-        $data['master'] = $this->M_ctz_datadeklarasi->get_by_id($id);
-        $data['nama'] = $this->db->select('name')
-            ->from('tbl_data_user')
-            ->where('id_user', $data['master']->id_pengaju)
-            ->get()->row('name');
+        $data['master'] = $this->M_swi_penawaran->get_by_id($id);
+        $data['transaksi'] = $this->M_swi_penawaran->get_by_id_detail($id);
         echo json_encode($data);
     }
 
@@ -186,80 +136,64 @@ class Ctz_datadeklarasi extends CI_Controller
     public function generate_kode()
     {
         $date = $this->input->post('date');
-        $kode = $this->M_ctz_datadeklarasi->max_kode($date)->row();
-        if (empty($kode->kode_deklarasi)) {
+        $kode = $this->M_swi_penawaran->max_kode($date)->row();
+        if (empty($kode->kode)) {
             $no_urut = 1;
         } else {
-            $bln = substr($kode->kode_deklarasi, 3, 2);
-            $no_urut = substr($kode->kode_deklarasi, 5) + 1;
+            $no_urut = substr($kode->kode, 7, 3) + 1;
         }
         $urutan = str_pad($no_urut, 3, "0", STR_PAD_LEFT);
         $month = substr($date, 3, 2);
-        $year = substr($date, 8, 2);
-        $data = 'd' . $year . $month . $urutan;
+        $year = substr($date, 6, 4);
+        $data = 'S' . $year . $month . $urutan . 'P';
         echo json_encode($data);
     }
 
     public function add()
     {
         // INSERT KODE DEKLARASI
-        $date = $this->input->post('tgl_deklarasi');
-        $kode = $this->M_ctz_datadeklarasi->max_kode($date)->row();
-        if (empty($kode->kode_deklarasi)) {
+        $date = $this->input->post('tgl_dokumen');
+        $kode = $this->M_swi_penawaran->max_kode($date)->row();
+        if (empty($kode->kode)) {
             $no_urut = 1;
         } else {
-            $bln = substr($kode->kode_deklarasi, 3, 2);
-            $no_urut = substr($kode->kode_deklarasi, 5) + 1;
+            $no_urut = substr($kode->kode, 7, 3) + 1;
         }
         $urutan = str_pad($no_urut, 3, "0", STR_PAD_LEFT);
         $month = substr($date, 3, 2);
-        $year = substr($date, 8, 2);
-        $kode_deklarasi = 'D' . $year . $month . $urutan;
-
-        // MENCARI SIAPA YANG AKAN MELAKUKAN APPROVAL PERMINTAAN
-        $id_menu = $this->db->select('id_menu')
-            ->where('link', $this->router->fetch_class())
-            ->get('tbl_submenu')
-            ->row();
-
-        $valid = true;
-        $confirm = $this->db->select('app_id, app2_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
-        if (!empty($confirm) && isset($confirm->app_id, $confirm->app2_id)) {
-            $app = $confirm;
-        } else {
-            echo json_encode(array("status" => FALSE, "error" => "Approval Belum Ditentukan, Mohon untuk menghubungi admin."));
-            exit();
-            $valid = false;
-        }
-        $id = $this->session->userdata('id_user');
+        $year = substr($date, 6, 4);
+        $kode_penawaran = 'S' . $year . $month . $urutan . 'P';
 
         $data = array(
-            'kode_deklarasi' => $kode_deklarasi,
-            'tgl_deklarasi' => date('Y-m-d', strtotime($this->input->post('tgl_deklarasi'))),
-            'id_pengaju' => $id,
-            'jabatan' => $this->db->select('jabatan')
-                ->from('tbl_data_user')
-                ->where('id_user', $id)
-                ->get()
-                ->row('jabatan'),
-            'nama_dibayar' => $this->input->post('nama_dibayar'),
+            'kode' => $kode_penawaran,
+            'created_at' => date('Y-m-d', strtotime($this->input->post('tgl_dokumen'))),
+            'name' => $this->input->post('name'),
+            'asal' => $this->input->post('asal'),
             'tujuan' => $this->input->post('tujuan'),
-            'sebesar' => $this->input->post('hidden_sebesar'),
-            'app_name' => $this->db->select('name')
-                ->from('tbl_data_user')
-                ->where('id_user', $app->app_id)
-                ->get()
-                ->row('name'),
-            'app2_name' => $this->db->select('name')
-                ->from('tbl_data_user')
-                ->where('id_user', $app->app2_id)
-                ->get()
-                ->row('name'),
-            'created_at' => date('Y-m-d H:i:s')
+            'kendaraan' => $this->input->post('kendaraan'),
         );
 
-        if ($valid) {
-            $this->M_ctz_datadeklarasi->save($data);
+        // INISIASI VARIABLE DETAIL
+        $tgl_keberangkatan = $this->input->post('tgl_keberangkatan[]');
+        $tgl_kepulangan = $this->input->post('tgl_kepulangan[]');
+        $jenis = $this->input->post('jenis[]');
+        $jumlah = $this->input->post('jumlah[]');
+        $nominal = $this->input->post('hidden_nominal[]');
+        $keterangan = $this->input->post('keterangan[]');
+
+        if ($id_penawaran = $this->M_swi_penawaran->save($data)) {
+            for ($i = 1; $i <= count($tgl_keberangkatan); $i++) {
+                $data2[] = array(
+                    'id_penawaran' => $id_penawaran,
+                    'tgl_keberangkatan' => date('Y-m-d', strtotime($tgl_keberangkatan[$i])),
+                    'tgl_kepulangan' => date('Y-m-d', strtotime($tgl_kepulangan[$i])),
+                    'jenis' => $jenis[$i],
+                    'jumlah' => $jumlah[$i],
+                    'harga' => $nominal[$i],
+                    'keterangan' => isset($keterangan[$i]) ? $keterangan[$i] : ''
+                );
+            }
+            $this->M_swi_penawaran->save_detail($data2);
             echo json_encode(array("status" => TRUE));
         } else {
             echo json_encode(array("status" => FALSE));
@@ -269,26 +203,60 @@ class Ctz_datadeklarasi extends CI_Controller
     public function update()
     {
         $data = array(
-            'tgl_deklarasi' => date('Y-m-d', strtotime($this->input->post('tgl_deklarasi'))),
-            'nama_dibayar' => $this->input->post('nama_dibayar'),
+            'created_at' => date('Y-m-d', strtotime($this->input->post('tgl_dokumen'))),
+            'kode' => $this->input->post('kode_penawaran'),
+            'name' => $this->input->post('name'),
+            'asal' => $this->input->post('asal'),
             'tujuan' => $this->input->post('tujuan'),
-            'sebesar' => $this->input->post('hidden_sebesar'),
-            'app_status' => 'waiting',
-            'app_date' => null,
-            'app_keterangan' => null,
-            'app2_status' => 'waiting',
-            'app2_date' => null,
-            'app2_keterangan' => null,
-            'status' => 'on-process'
+            'kendaraan' => $this->input->post('kendaraan'),
         );
-        $this->db->where('id', $this->input->post('id'));
-        $this->db->update('ctz_deklarasi', $data);
-        echo json_encode(array("status" => TRUE));
+        // $this->db->where('id', $this->input->post('id'));
+        // $this->db->update('swi_penawaran', $data);
+        if ($this->db->update('swi_penawaran', $data, ['id' => $this->input->post('id')])) {
+            // INISIASI VARIABLE DETAIL
+            $tgl_keberangkatan = $this->input->post('tgl_keberangkatan[]');
+            $tgl_kepulangan = $this->input->post('tgl_kepulangan[]');
+            $id_penawaran2 = $this->input->post('id');
+            $id_detail = $this->input->post('hidden_id_detail[]');
+            $jenis = $this->input->post('jenis[]');
+            $jumlah = $this->input->post('jumlah[]');
+            $nominal = $this->input->post('hidden_nominal[]');
+            $keterangan = $this->input->post('keterangan[]');
+
+
+            // UNTUK MENGHAPUS ROW YANG TELAH DIDELETE
+            $deletedRows = json_decode($this->input->post('deleted_rows'), true);
+            if (!empty($deletedRows)) {
+                foreach ($deletedRows as $id2) {
+                    // Hapus row dari database berdasarkan ID
+                    $this->db->where('id', $id2);
+                    $this->db->delete('swi_penawaran_detail');
+                }
+            }
+
+            for ($i = 1; $i <= count($tgl_keberangkatan); $i++) {
+                $id = !empty($id_detail[$i]) ? $id_detail[$i] : NULL;
+                $data2 = array(
+                    'id' => $id,
+                    'id_penawaran' => $id_penawaran2,
+                    'tgl_keberangkatan' => date('Y-m-d', strtotime($tgl_keberangkatan[$i])),
+                    'tgl_kepulangan' => date('Y-m-d', strtotime($tgl_kepulangan[$i])),
+                    'jenis' => $jenis[$i],
+                    'jumlah' => $jumlah[$i],
+                    'harga' => $nominal[$i],
+                    'keterangan' => isset($keterangan[$i]) ? $keterangan[$i] : ''
+                );
+                $this->db->replace('swi_penawaran_detail', $data2);
+            }
+            echo json_encode(array("status" => TRUE));
+        } else {
+            echo json_encode(array("status" => FALSE));
+        }
     }
 
     function delete($id)
     {
-        $this->M_ctz_datadeklarasi->delete($id);
+        $this->M_swi_penawaran->delete($id);
         echo json_encode(array("status" => TRUE));
     }
 
@@ -312,7 +280,7 @@ class Ctz_datadeklarasi extends CI_Controller
 
         //UPDATE APPROVAL PERTAMA
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('ctz_deklarasi', $data);
+        $this->db->update('swi_deklarasi', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -336,7 +304,7 @@ class Ctz_datadeklarasi extends CI_Controller
 
         // UPDATE APPROVAL 2
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('ctz_deklarasi', $data);
+        $this->db->update('swi_deklarasi', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -348,7 +316,7 @@ class Ctz_datadeklarasi extends CI_Controller
         $this->load->library('Fpdf_generate');
 
         // Load data from database based on $id
-        $data['master'] = $this->M_ctz_datadeklarasi->get_by_id($id);
+        $data['master'] = $this->M_swi_penawaran->get_by_id($id);
         $data['user'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $data['master']->id_pengaju)
@@ -384,7 +352,7 @@ class Ctz_datadeklarasi extends CI_Controller
         $pdf->AddPage('P', 'Letter');
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/carstensz.png', 15, 16, 60, 15);
+        $pdf->Image(base_url('') . '/assets/backend/img/sobatwisata.png', 12, 8, 34, 26);
 
         // Title of the form
         $pdf->Ln(25);
@@ -476,6 +444,6 @@ class Ctz_datadeklarasi extends CI_Controller
         }
 
         // Output the PDF
-        $pdf->Output('I', 'Deklarasi_CTZ.pdf');
+        $pdf->Output('I', 'Deklarasi.pdf');
     }
 }

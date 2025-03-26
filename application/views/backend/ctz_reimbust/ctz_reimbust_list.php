@@ -8,7 +8,7 @@
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex justify-content-between align-items-center">
                     <?php if ($add == 'Y') { ?>
-                        <a class="btn btn-primary btn-sm" href="<?= base_url('reimbust_ctz/add_form') ?>">
+                        <a class="btn btn-primary btn-sm" href="<?= base_url('ctz_reimbust/add_form') ?>">
                             <i class="fa fa-plus"></i>&nbsp;Add Data
                         </a>
                     <?php } ?>
@@ -34,6 +34,11 @@
                             <a class="nav-link" id="employeeTab" href="#" data-tab="employee">Approval</a>
                         </li>
                     <?php } ?>
+                    <?php if ($alias == "eko") { ?>
+                        <li class="nav-item">
+                            <a class="nav-link" id="adminTab" href="#" data-tab="admin">Admin</a>
+                        </li>
+                    <?php } ?>
                 </ul>
                 <div class="card-body">
                     <table id="table" class="table table-bordered table-striped">
@@ -44,8 +49,8 @@
                                 <th>Status Pembayaran</th>
                                 <th>Kode Reimbust</th>
                                 <th>Nama</th>
-                                <th>Jabatan</th>
-                                <th>Departemen</th>
+                                <!-- <th>Jabatan</th>
+                                <th>Departemen</th> -->
                                 <th>Sifat Pelaporan</th>
                                 <th>Tanggal Pengajuan</th>
                                 <th>Tujuan</th>
@@ -62,8 +67,8 @@
                                 <th>Status Pembayaran</th>
                                 <th>Kode Reimbust</th>
                                 <th>Nama</th>
-                                <th>Jabatan</th>
-                                <th>Departemen</th>
+                                <!-- <th>Jabatan</th>
+                                <th>Departemen</th> -->
                                 <th>Sifat Pelaporan</th>
                                 <th>Tanggal Pengajuan</th>
                                 <th>Tujuan</th>
@@ -99,6 +104,9 @@
             $(`.nav-tabs .nav-link[data-tab="${activeTab}"]`).addClass('active');
             // console.log('labubu');
             // You can load content for the active tab here if needed
+        } else if (activeTab == 'admin') {
+            $('.nav-tabs .nav-link').removeClass('active');
+            $(`.nav-tabs .nav-link[data-tab="${activeTab}"]`).addClass('active');
         } else {
             // Default to the "User" tab if session storage is empty or approval tab doesn't exist
             $('.nav-tabs .nav-link').removeClass('active');
@@ -132,7 +140,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('reimbust_ctz/get_list') ?>",
+                "url": "<?php echo site_url('ctz_reimbust/get_list') ?>",
                 "type": "POST",
                 "data": function(d) {
                     d.status = $('#appFilter').val(); // Tambahkan parameter status ke permintaan server
@@ -143,11 +151,11 @@
                 "infoFiltered": ""
             },
             "columnDefs": [{
-                    "targets": [2, 3, 7, 8, 10],
+                    "targets": [2, 3, 5, 6, 8],
                     "className": 'dt-head-nowrap'
                 },
                 {
-                    "targets": [1, 2, 3, 4, 5, 11],
+                    "targets": [1, 6, 9],
                     "className": 'dt-body-nowrap'
                 }, {
                     "targets": [0, 1],
@@ -185,7 +193,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: "<?php echo site_url('reimbust_ctz/delete/') ?>" + id,
+                    url: "<?php echo site_url('ctz_reimbust/delete/') ?>" + id,
                     type: "POST",
                     dataType: "JSON",
                     success: function(data) {
@@ -197,7 +205,7 @@
                                 showConfirmButton: false,
                                 timer: 1500
                             }).then(() => {
-                                location.href = "<?= base_url('reimbust_ctz') ?>";
+                                location.href = "<?= base_url('ctz_reimbust') ?>";
                             });
                         } else {
                             Swal.fire({
@@ -215,7 +223,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then(() => {
-                            location.href = "<?= base_url('reimbust_ctz') ?>";
+                            location.href = "<?= base_url('ctz_reimbust') ?>";
                         });
                     }
                 });

@@ -16,7 +16,7 @@
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex justify-content-between align-items-center">
                     <?php if ($add == 'Y') { ?>
-                        <a class="btn btn-primary btn-sm" href="<?= base_url('prepayment_ctz/add_form') ?>">
+                        <a class="btn btn-primary btn-sm" href="<?= base_url('ctz_prepayment/add_form') ?>">
                             <i class="fa fa-plus"></i>&nbsp;Add Data
                         </a>
                     <?php } ?>
@@ -41,6 +41,11 @@
                             <a class="nav-link" id="employeeTab" href="#" data-tab="employee">Approval</a>
                         </li>
                     <?php } ?>
+                    <?php if ($alias == "eko") { ?>
+                        <li class="nav-item">
+                            <a class="nav-link" id="adminTab" href="#" data-tab="admin">Admin</a>
+                        </li>
+                    <?php } ?>
                 </ul>
 
                 <div class="card-body">
@@ -52,8 +57,8 @@
                                 <th>Status Pembayaran</th>
                                 <th>Kode Prepayment</th>
                                 <th>Nama</th>
-                                <th>Divisi</th>
-                                <th>Jabatan</th>
+                                <!-- <th>Divisi</th>
+                                <th>Jabatan</th> -->
                                 <th>Tanggal Pengajuan</th>
                                 <th>Prepayment</th>
                                 <th>Total Nominal</th>
@@ -69,8 +74,8 @@
                                 <th>Status Pembayaran</th>
                                 <th>Kode Prepayment</th>
                                 <th>Nama</th>
-                                <th>Divisi</th>
-                                <th>Jabatan</th>
+                                <!-- <th>Divisi</th>
+                                <th>Jabatan</th> -->
                                 <th>Tanggal Pengajuan</th>
                                 <th>Prepayment</th>
                                 <th>Total Nominal</th>
@@ -107,6 +112,9 @@
             $(`.nav-tabs .nav-link[data-tab="${activeTab}"]`).addClass('active');
             // console.log('labubu');
             // You can load content for the active tab here if needed
+        } else if (activeTab == 'employee') {
+            $('.nav-tabs .nav-link').removeClass('active');
+            $(`.nav-tabs .nav-link[data-tab="${activeTab}"]`).addClass('active');
         } else {
             // Default to the "User" tab if session storage is empty or approval tab doesn't exist
             $('.nav-tabs .nav-link').removeClass('active');
@@ -141,7 +149,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('prepayment_ctz/get_list') ?>",
+                "url": "<?php echo site_url('ctz_prepayment/get_list') ?>",
                 "type": "POST",
                 "data": function(d) {
                     d.status = $('#appFilter').val(); // Tambahkan parameter status ke permintaan server
@@ -152,11 +160,11 @@
             //     "infoFiltered": ""
             // },
             "columnDefs": [{
-                    "targets": [2, 3, 7, 9],
+                    "targets": [2, 3, 5, 7],
                     "className": 'dt-head-nowrap'
                 },
                 {
-                    "targets": [1, 3, 4, 6, 8, 9, 10],
+                    "targets": [1, 5, 8],
                     "className": 'dt-body-nowrap'
                 }, {
                     "targets": [0, 1],
@@ -195,7 +203,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: "<?php echo site_url('prepayment_ctz/delete/') ?>" + id,
+                    url: "<?php echo site_url('ctz_prepayment/delete/') ?>" + id,
                     type: "POST",
                     dataType: "JSON",
                     success: function(data) {
@@ -206,7 +214,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then((result) => {
-                            location.href = "<?= base_url('prepayment_ctz') ?>";
+                            location.href = "<?= base_url('ctz_prepayment') ?>";
                         })
                     },
                     error: function(jqXHR, textStatus, errorThrown) {

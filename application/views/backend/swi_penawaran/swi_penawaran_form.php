@@ -37,13 +37,28 @@
         transform: translateY(-2px);
     }
 
-    #rekening {
-        width: 100%;
+    .tgl_keberangkatan,
+    .tgl_kepulangan {
+        width: 150px;
+        min-width: 150px;
+        /* Batas minimal agar tidak terlalu kecil */
     }
 
-    .rekening-text {
-        margin-bottom: -2px;
+    .jenis,
+    .harga {
+        width: 150px;
+        min-width: 150px;
     }
+
+    .jumlah {
+        width: 120px;
+        min-width: 120px;
+    }
+
+    .tgl_keberangkatan {
+        margin-bottom: 10px;
+    }
+
 
     /* Mengubah gaya dropdown */
     .select2-container--default .select2-selection--single {
@@ -94,17 +109,17 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header text-right">
-                    <a class="btn btn-secondary btn-sm" href="<?= base_url('prepayment_ctz') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+                    <a class="btn btn-secondary btn-sm" href="<?= base_url('swi_penawaran') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
                     <form id="form">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group row">
-                                    <label class="col-sm-4 col-form-label">Tanggal Prepayment</label>
+                                    <label class="col-sm-4 col-form-label">Tanggal Dokumen</label>
                                     <div class="col-sm-8">
                                         <div class="input-group date">
-                                            <input type="text" class="form-control" name="tgl_prepayment" id="tgl_prepayment" placeholder="DD-MM-YYYY" autocomplete="off" readonly />
+                                            <input type="text" class="form-control" name="tgl_dokumen" id="tgl_dokumen" placeholder="DD-MM-YYYY" autocomplete="off" readonly />
                                             <div class="input-group-append">
                                                 <div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
                                             </div>
@@ -112,34 +127,15 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-sm-4 col-form-label">Kode Prepayment</label>
+                                    <label class="col-sm-4 col-form-label">Kode Penawaran</label>
                                     <div class="col-sm-8">
-                                        <input type="text" class="form-control" id="kode_prepayment" name="kode_prepayment" readonly>
+                                        <input type="text" class="form-control" id="kode_penawaran" name="kode_penawaran" readonly>
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-sm-4 col-form-label">No Rekening</label>
+                                    <label class="col-sm-4 col-form-label">Nama</label>
                                     <div class="col-sm-8">
-                                        <div class="input-group mb-3">
-                                            <!-- RADIO BUTTON UNTUK PEMILIHAN INPUTAN REKENING -->
-                                            <div class="form-check form-check-inline" style="margin-bottom: 5px;">
-                                                <input class="form-check-input" type="radio" name="radioNoLabel" id="exist" value="" aria-label="..." checked><label for="exist" style="margin-right: 14px; margin-top: 8px; cursor: pointer">Rekening terdaftar</label>
-                                                <input class="form-check-input" type="radio" name="radioNoLabel" id="new" value="" aria-label="..."><label for="new" style="margin-top: 8px; cursor: pointer">Rekening baru</label>
-                                            </div>
-                                            <select class="js-example-basic-single" id="rekening" name="rekening">
-                                                <option value="" selected disabled>Pilih rekening tujuan</option>
-                                                <?php foreach ($rek_options as $option) { ?>
-                                                    <option value="<?= $option['no_rek'] ?>"><?= $option['no_rek'] ?></option>
-                                                <?php } ?>
-                                            </select>
-                                            <div class="input-group rekening-text">
-                                                <input type="text" class="form-control col-sm-4" style="font-size: 13px;" id="nama_rek" name="nama_rek" placeholder="Nama Pengaju">&nbsp;
-                                                <span class="py-2">-</span>&nbsp;
-                                                <input type="text" class="form-control col-sm-3" style="font-size: 13px;" id="nama_bank" name="nama_bank" placeholder="Nama Bank">&nbsp;
-                                                <span class="py-2">-</span>&nbsp;
-                                                <input type="text" class="form-control col-sm-7" style="font-size: 13px;" id="nomor_rekening" name="nomor_rekening" placeholder="No Rekening">
-                                            </div>
-                                        </div>
+                                        <input type="text" class="form-control" id="name" name="name" placeholder="Nama....">
                                     </div>
                                 </div>
                             </div>
@@ -147,15 +143,21 @@
                             <!-- SEBELAH KANAN -->
                             <div class="col-md-6">
                                 <div class="form-group row">
-                                    <label class="col-sm-4 col-form-label prepayment-field">Prepayment</label>
+                                    <label class="col-sm-4 col-form-label prepayment-field">Asal</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="prepayment" name="prepayment" placeholder="Prepayment for....">
+                                        <input type="text" class="form-control" id="asal" name="asal" placeholder="Asal....">
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-sm-4 col-form-label tujuan-field">Tujuan</label>
+                                    <label class="col-sm-4 col-form-label prepayment-field">Tujuan</label>
                                     <div class="col-sm-7">
-                                        <textarea class="form-control" id="tujuan" name="tujuan" rows="2"></textarea>
+                                        <input type="text" class="form-control" id="tujuan" name="tujuan" placeholder="Tujuan....">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label prepayment-field">Kendaraan</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="kendaraan" name="kendaraan" placeholder="Kendaraan....">
                                     </div>
                                 </div>
                             </div>
@@ -170,9 +172,11 @@
                                 <thead class="thead-dark">
                                     <tr>
                                         <th scope="col" class="text-center">No</th>
-                                        <th scope="col">Rincian</th>
-                                        <th scope="col">Nominal</th>
-                                        <th scope="col">Keterangan</th>
+                                        <th scope="col" class="text-center">Tanggal</th>
+                                        <th scope="col" class="text-center">Jenis</th>
+                                        <th scope="col" class="text-center">Jumlah</th>
+                                        <th scope="col" class="text-center">Harga</th>
+                                        <th scope="col" class="text-center">Keterangan</th>
                                         <th scope="col" class="text-center">Action</th>
                                     </tr>
                                 </thead>
@@ -180,7 +184,7 @@
                                     <!-- CONTAINER INPUTAN -->
                                 </tbody>
                                 <tr class="font-weight-bold">
-                                    <td colspan="4" id="total_nominal_row" class="text-right">Total</td>
+                                    <td colspan="6" id="total_nominal_row" class="text-right">Total</td>
                                     <td id="total_nominal_view"></td>
                                     <input type="hidden" id="total_nominal" name="total_nominal" value="">
                                 </tr>
@@ -214,7 +218,7 @@
 <?php $this->load->view('template/script'); ?>
 
 <script>
-    $('#tgl_prepayment').datepicker({
+    $('#tgl_dokumen').datepicker({
         dateFormat: 'dd-mm-yy',
         minDate: new Date(),
         maxDate: new Date(),
@@ -222,22 +226,22 @@
         // MENGENERATE KODE PREPAYMENT SETELAH PILIH TANGGAL
         onSelect: function(dateText) {
             var id = dateText;
-            $('#tgl_prepayment').removeClass("is-invalid");
+            $('#tgl_dokumen').removeClass("is-invalid");
 
             // Menghapus label error secara manual jika ada
-            if ($("#tgl_prepayment-error").length) {
-                $("#tgl_prepayment-error").remove(); // Menghapus label error
+            if ($("#tgl_dokumen-error").length) {
+                $("#tgl_dokumen-error").remove(); // Menghapus label error
             }
             $.ajax({
-                url: "<?php echo site_url('prepayment_ctz/generate_kode') ?>",
+                url: "<?php echo site_url('swi_penawaran/generate_kode') ?>",
                 type: "POST",
                 data: {
                     "date": dateText
                 },
                 dataType: "JSON",
                 success: function(data) {
-                    // console.log(data);
-                    $('#kode_prepayment').val(data.toUpperCase());
+                    console.log(data);
+                    $('#kode_penawaran').val(data.toUpperCase());
                     $('#kode').val(data);
                 },
                 error: function(error) {
@@ -256,40 +260,9 @@
         let inputCount = 0;
         let deletedRows = [];
 
-        $('.js-example-basic-single').select2();
+        let rowCount = 0;
 
-        // Fungsi untuk mengatur enabled/disabled elemen berdasarkan radio button yang dipilih
-        function toggleInputs() {
-            const isExistChecked = $('#exist').is(':checked');
-
-            // Atur visibility dropdown dan input fields
-            if (isExistChecked) {
-                $('#rekening').prop('disabled', false).show(); // Aktifkan dan tampilkan elemen asli
-                $('#rekening').next('.select2-container').show(); // Tampilkan elemen Select2
-                $('.input-group.rekening-text input[type="text"]').prop('disabled', true).parent().hide(); // Sembunyikan input fields
-            } else {
-                $('#rekening').prop('disabled', true).hide(); // Nonaktifkan dan sembunyikan elemen asli
-                $('#rekening').next('.select2-container').hide(); // Sembunyikan elemen Select2
-                $('.input-group.rekening-text input[type="text"]').prop('disabled', false).parent().show(); // Tampilkan input fields
-            }
-        }
-
-        // Panggil fungsi saat halaman dimuat
-        toggleInputs();
-
-        // Panggil fungsi saat radio button berubah
-        $('input[name="radioNoLabel"]').change(toggleInputs);
-
-        // AGAR INPUT FIELD HANYA BISA NOMOR
-        document.getElementById('nomor_rekening').addEventListener('input', function(e) {
-            let value = this.value.replace(/[^0-9]/g, '');
-            if (value.length > 14) {
-                value = value.slice(0, 10);
-            }
-            this.value = value;
-        });
-
-        // Tambahkan fungsi untuk memformat input nominal memiliki titik
+        // Fungsi untuk memformat input nominal memiliki titik (ribuan)
         function formatJumlahInput(selector) {
             $(document).on('input', selector, function() {
                 let value = $(this).val().replace(/[^,\d]/g, '');
@@ -305,111 +278,166 @@
                 // Hapus semua pemisah ribuan untuk pengiriman ke server
                 let cleanValue = value.replace(/\./g, '');
 
-                // Pastikan elemen hidden dengan ID yang benar diperbarui
-                const hiddenId = `#hidden_${$(this).attr('id').replace('nominal-', 'nominal')}`;
-                $(hiddenId).val(cleanValue);
+                // Pastikan elemen hidden diperbarui
+                let rowId = $(this).attr('id').split('-')[1];
+                $(`#hidden_nominal-${rowId}`).val(cleanValue);
 
                 // Hitung total nominal setelah nilai berubah
                 calculateTotalNominal();
             });
         }
 
+        // Fungsi untuk memastikan input jumlah hanya angka
+        $(document).on('input', '.jumlah', function() {
+            let jumlah = $(this).val().replace(/\D/g, '');
+            $(this).val(jumlah);
+            calculateTotalNominal();
+        });
+
+        // Fungsi menghitung total nominal
         function calculateTotalNominal() {
-            let total = 0;
-            $('input[name^="hidden_nominal"]').each(function() {
-                let value = parseInt($(this).val()) || 0; // Parse as integer, default to 0 if invalid
-                total += value;
+            let total = 0; // Simpan total keseluruhan
+
+            $('.jumlah').each(function() {
+                let rowId = $(this).attr('id').replace('jumlah-', ''); // Ambil nomor row dari ID
+
+                let jumlah = parseInt($(this).val()) || 0; // Ambil jumlah (default 0)
+                let nominal = parseInt($(`#hidden_nominal-${rowId}`).val()) || 0; // Ambil nominal tersembunyi
+
+                let subtotal = jumlah * nominal; // Hitung total per baris
+                total += subtotal; // Tambahkan ke total keseluruhan
+
+                // Simpan subtotal di hidden input tiap row
+                $(`#hidden_total-${rowId}`).val(subtotal);
+
+                // Update tampilan total per baris
+                $(`#total-${rowId}`).val(subtotal.toLocaleString('id-ID')); // Format ribuan
             });
-            $('#total_nominal_view').text(total.toLocaleString()); // Format total dengan pemisah ribuan
-            $('#total_nominal').val(total);
+
+            // Update total keseluruhan ke tampilan & hidden input
+            $('#total_nominal_view').text(total.toLocaleString('id-ID')); // Format ribuan
+            $('#total_nominal').val(total); // Simpan nilai total tanpa pemisah ribuan
         }
 
-        //MENAMBAH FORM INPUTAN DI ADD FORM
-        let rowCount = 0;
 
+        // Fungsi untuk menambahkan baris input
         function addRow() {
             rowCount++;
             const row = `
-                <tr id="row-${rowCount}">
-                    <td class="row-number">${rowCount}</td>
-                    <td><input type="text" class="form-control" name="rincian[${rowCount}]" value="" placeholder="Input here..." /></td>
-                    <td><input type="text" class="form-control" id="nominal-${rowCount}" name="nominal[${rowCount}]" value="" placeholder="Input here..." />
-                        <input type="hidden" id="hidden_nominal${rowCount}" name="hidden_nominal[${rowCount}]" value="">
-                    </td>
-                    <td><input type="text" class="form-control" name="keterangan[${rowCount}]" value="" placeholder="Input here..." /></td>
-                    
-                    <td><span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span></td>
-                </tr>
-                `;
+    <tr id="row-${rowCount}">
+        <td class="row-number">${rowCount}</td>
+        <td>
+            <input type="text" class="form-control tgl_keberangkatan" name="tgl_keberangkatan[${rowCount}]" placeholder="Keberangkatan..." />
+            <input type="text" class="form-control tgl_kepulangan" name="tgl_kepulangan[${rowCount}]" placeholder="Kepulangan..." />
+        </td>
+        <td><input type="text" class="form-control jenis" name="jenis[${rowCount}]" placeholder="Jenis..." /></td>
+        <td><input type="text" class="form-control jumlah" id="jumlah-${rowCount}" name="jumlah[${rowCount}]" placeholder="Jumlah..." /></td>
+        <td>
+            <input type="text" class="form-control harga" id="nominal-${rowCount}" name="nominal[${rowCount}]" placeholder="Harga..." />
+            <input type="hidden" id="hidden_nominal-${rowCount}" name="hidden_nominal[${rowCount}]" value="">
+            <input type="hidden" id="hidden_total-${rowCount}" name="hidden_total[${rowCount}]" value=""> <!-- Hidden untuk total per row -->
+        </td>
+        <td><textarea name="keterangan[${rowCount}]" cols="25" rows="3"></textarea></td>
+        <td><span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span></td>
+    </tr>
+`;
             $('#input-container').append(row);
-            // Tambahkan format ke input nominal yang baru
-            formatJumlahInput(`#nominal-${rowCount}`);
-            updateSubmitButtonState(); // Perbarui status tombol submit
-            //checkDeleteButtonState(); // Cek tombol delete setelah baris ditambahkan
+            formatJumlahInput(`#nominal-${rowCount}`); // Format input nominal
 
-            // Hitung total nominal setelah baris baru ditambahkan
+            updateSubmitButtonState()
+
+            // Hitung ulang total setelah menambahkan baris baru
             calculateTotalNominal();
 
-            //VALIDASI ROW YANG TELAH DI APPEND
-            $("#form").validate().settings.rules[`rincian[${rowCount}]`] = {
+            // Validasi form untuk elemen baru
+            $("#form").validate().settings.rules[`tgl_keberangkatan[${rowCount}]`] = {
+                required: true
+            };
+            $("#form").validate().settings.rules[`tgl_kepulangan[${rowCount}]`] = {
+                required: true
+            };
+            $("#form").validate().settings.rules[`jenis[${rowCount}]`] = {
+                required: true
+            };
+            $("#form").validate().settings.rules[`jumlah[${rowCount}]`] = {
                 required: true
             };
             $("#form").validate().settings.rules[`nominal[${rowCount}]`] = {
                 required: true
             };
-            $("#form").validate().settings.messages[`rincian[${rowCount}]`] = {
-                required: "Rincian is required"
+
+            $("#form").validate().settings.messages[`tgl_keberangkatan[${rowCount}]`] = {
+                required: "*Tanggal keberangkatan wajib diisi"
+            };
+            $("#form").validate().settings.messages[`tgl_kepulangan[${rowCount}]`] = {
+                required: "*Tanggal kepulangan wajib diisi"
+            };
+            $("#form").validate().settings.messages[`jenis[${rowCount}]`] = {
+                required: "*Jenis wajib diisi"
+            };
+            $("#form").validate().settings.messages[`jumlah[${rowCount}]`] = {
+                required: "*Jumlah wajib diisi"
             };
             $("#form").validate().settings.messages[`nominal[${rowCount}]`] = {
-                required: "Nominal is required"
+                required: "*Harga wajib diisi"
             };
 
-            // $("#form").validate().settings.rules[`keterangan[${rowCount}]`] = {
-            //     required: true
-            // };
+            // Aktifkan datepicker pada elemen baru
+            $('.tgl_keberangkatan').datepicker({
+                dateFormat: 'dd-mm-yy'
+            });
+            $('.tgl_kepulangan').datepicker({
+                dateFormat: 'dd-mm-yy'
+            });
         }
 
-        // MENGHAPUS ROW
         function deleteRow(id) {
-            // Simpan ID dari row yang dihapus
-            const rowId = $(`#row-${id}`).find('input:hidden[id^="hidden_id_detail"]').val();
-            if (rowId) {
-                deletedRows.push(rowId);
+            const row = $(`#row-${id}`);
+            if (!row.length) return;
+
+            // Ambil nilai subtotal dari hidden input sebelum menghapus row
+            let subtotal = parseInt($(`#hidden_total-${id}`).val()) || 0;
+
+            // Kurangi subtotal dari total keseluruhan
+            let total = parseInt($('#total_nominal').val()) || 0;
+            total -= subtotal;
+
+            // Update tampilan total setelah penghapusan
+            $('#total_nominal_view').text(total.toLocaleString('id-ID'));
+            $('#total_nominal').val(total);
+
+            // Jika row berasal dari database, tambahkan ke `deletedRows`
+            const rowIdInput = row.find('input:hidden[id^="hidden_id_detail"]');
+            if (rowIdInput.length) {
+                const rowId = rowIdInput.val();
+                if (rowId) deletedRows.push(rowId);
             }
 
-            // console.log(rowId);
+            // Hapus row dari DOM
+            row.remove();
 
-            $(`#row-${id}`).remove();
-            // Reorder rows and update row numbers
+            updateSubmitButtonState()
+
+            // Update kembali urutan ID row
             reorderRows();
-            updateSubmitButtonState(); // Perbarui status tombol 
-            //checkDeleteButtonState(); // Cek tombol delete setelah baris dihapus
-
-            // Hitung total nominal setelah baris dihapus
-            calculateTotalNominal();
         }
 
         // MENHATUR ULANG URUTAN ROW SAAT DIHAPUS
         function reorderRows() {
             $('#input-container tr').each(function(index) {
-                //INISIASI VARIABLE UNTUK reorderRows
                 const newRowNumber = index + 1;
-                const rincianValue = $(this).find('input[name^="rincian"]').val();
-                const nominalValue = $(this).find('input[name^="nominal"]').val();
-                const hiddenIdValue = $(this).find('input[name^="hidden_id_detail"]').val();
-                const hiddenNominalValue = $(this).find('input[name^="hidden_nominal"]').val();
-                const keteranganValue = $(this).find('input[name^="keterangan"]').val();
-
                 $(this).attr('id', `row-${newRowNumber}`);
                 $(this).find('.row-number').text(newRowNumber);
-                $(this).find('input[name^="rincian"]').attr('name', `rincian[${newRowNumber}]`).attr('placeholder', `Input here...`).val(rincianValue);
-                $(this).find('input[name^="nominal"]').attr('name', `nominal[${newRowNumber}]`).attr('id', `nominal-${newRowNumber}`).attr('placeholder', `Input here...`).val(nominalValue);
-                $(this).find('input[name^="hidden_id_detail"]').attr('name', `hidden_id_detail[${newRowNumber}]`).val(hiddenIdValue);
-                $(this).find('input[name^="hidden_nominal"]').attr('name', `hidden_nominal[${newRowNumber}]`).attr('id', `hidden_nominal${newRowNumber}`).val(hiddenNominalValue);
-                $(this).find('input[name^="keterangan"]').attr('name', `keterangan[${newRowNumber}]`).attr('placeholder', `Input here...`).val(keteranganValue);
-                $(this).find('.delete-btn').attr('data-id', newRowNumber).text('Delete');
+                $(this).find('.delete-btn').attr('data-id', newRowNumber);
+
+                // Perbarui ID input dan name agar tetap sesuai
+                $(this).find('input[name^="jumlah"]').attr('name', `jumlah[${newRowNumber}]`).attr('id', `jumlah-${newRowNumber}`);
+                $(this).find('input[name^="nominal"]').attr('name', `nominal[${newRowNumber}]`).attr('id', `nominal-${newRowNumber}`);
+                $(this).find('input[name^="hidden_nominal"]').attr('name', `hidden_nominal[${newRowNumber}]`).attr('id', `hidden_nominal-${newRowNumber}`);
+                $(this).find('input[name^="hidden_total"]').attr('name', `hidden_total[${newRowNumber}]`).attr('id', `hidden_total-${newRowNumber}`);
             });
-            rowCount = $('#input-container tr').length; // Update rowCount to the current number of rows
+
+            rowCount = $('#input-container tr').length; // Update rowCount agar tetap akurat
         }
 
         $('#add-row').click(function() {
@@ -427,6 +455,7 @@
 
         $(document).on('click', '.delete-btn', function() {
             const id = $(this).data('id');
+            // console.log(id);
             deleteRow(id);
         });
 
@@ -448,28 +477,21 @@
             $('.aksi').append('<span class="front front-aksi">Update</span>');
             $("select option[value='']").hide();
             $.ajax({
-                url: "<?php echo site_url('prepayment_ctz/edit_data') ?>/" + id,
+                url: "<?php echo site_url('swi_penawaran/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
                     // moment.locale('id')
+                    console.log(data);
                     let total_nominal = 0;
-                    // console.log(data);
-                    for (let index = 0; index < data['transaksi'].length; index++) {
-                        total_nominal += parseInt(data['transaksi'][index]['nominal'], 10);
-                    }
                     //SET VALUE DATA MASTER PREPAYMENT
                     $('#id').val(data['master']['id']);
-                    $('#kode_prepayment').val(data['master']['kode_prepayment'].toUpperCase()).attr('readonly', true);
-                    $('#tgl_prepayment').val(moment(data['master']['tgl_prepayment']).format('DD-MM-YYYY'));
-                    $('#nama').val(data['master']['nama']);
-                    if (data['master']['no_rek'] == '') {
-                        $('#rekening').val().trigger('change');
-                    } else {
-                        $('#rekening').val(data['master']['no_rek']).trigger('change');
-                    }
-                    $('#prepayment').val(data['master']['prepayment']);
+                    $('#kode_penawaran').val(data['master']['kode'].toUpperCase()).attr('readonly', true);
+                    $('#tgl_dokumen').val(moment(data['master']['created_at']).format('DD-MM-YYYY'));
+                    $('#name').val(data['master']['name']);
+                    $('#asal').val(data['master']['asal']);
                     $('#tujuan').val(data['master']['tujuan']);
+                    $('#kendaraan').val(data['master']['kendaraan']);
                     if (data['master']['total_nominal'] == null) {
                         $('#total_nominal_view').text(total_nominal.toLocaleString());
                         $('#total_nominal').val(total_nominal);
@@ -483,21 +505,27 @@
                     if (aksi == 'update') {
                         $(data['transaksi']).each(function(index) {
                             //Nilai nominal diformat menggunakan pemisah ribuan sebelum dimasukkan ke dalam elemen input.
-                            const nominalFormatted = data['transaksi'][index]['nominal'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                            const nominalFormatted = data['transaksi'][index]['harga'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
                             const row = `
-                        <tr id="row-${index + 1}">
-                            <td class="row-number">${index + 1}</td>
-                            <td><input type="text" class="form-control" name="rincian[${index + 1}]" value="${data['transaksi'][index]['rincian']}" />
-                                <input type="hidden" id="hidden_id${index + 1}" name="hidden_id" value="${data['master']['id']}">
-                                <input type="hidden" id="hidden_id_detail${index + 1}" name="hidden_id_detail[${index + 1}]" value="${data['transaksi'][index]['id']}">
-                            </td>
-                            <td><input type="text" class="form-control" id="nominal-${index + 1}" name="nominal[${index + 1}]" value="${nominalFormatted}" />
-                                <input type="hidden" id="hidden_nominal${index + 1}" name="hidden_nominal[${index + 1}]" value="${data['transaksi'][index]['nominal']}">
-                            </td>
-                            <td><input type="text" class="form-control" name="keterangan[${index + 1}]" value="${data['transaksi'][index]['keterangan']}" placeholder="input here...."/></td>
-                            <td><span class="btn delete-btn btn-danger" data-id="${index + 1}">Delete</span></td>
-                        </tr>
-                        `;
+                                <tr id="row-${index + 1}">
+                                    <td class="row-number">${index + 1}</td>
+                                    <td>
+                                        <input type="text" class="form-control tgl_keberangkatan" name="tgl_keberangkatan[${index + 1}]" value="${data['transaksi'][index]['tgl_keberangkatan']}" placeholder="Keberangkatan..." />
+                                        <input type="text" class="form-control tgl_kepulangan" name="tgl_kepulangan[${index + 1}]" value="${data['transaksi'][index]['tgl_kepulangan']}" placeholder="Kepulangan..." />
+                                        <input type="hidden" id="hidden_id${index + 1}" name="hidden_id" value="${data['master']['id']}">
+                                <input type="text" id="hidden_id_detail${index + 1}" name="hidden_id_detail[${index + 1}]" value="${data['transaksi'][index]['id']}">
+                                    </td>
+                                    <td><input type="text" class="form-control jenis" name="jenis[${index + 1}]" value="${data['transaksi'][index]['jenis']}" placeholder="Jenis..." /></td>
+                                    <td><input type="text" class="form-control jumlah" id="jumlah-${index + 1}" name="jumlah[${index + 1}]" value="${data['transaksi'][index]['jumlah']}" placeholder="Jumlah..." /></td>
+                                    <td>
+                                        <input type="text" class="form-control harga" id="nominal-${index + 1}" name="nominal[${index + 1}]" value="${nominalFormatted}" placeholder="Harga..." />
+                                        <input type="hidden" id="hidden_nominal-${index + 1}" name="hidden_nominal[${index + 1}]" value="${data['transaksi'][index]['harga']}">
+                                        <input type="hidden" id="hidden_total-${index + 1}" name="hidden_total[${index + 1}]" value="${data['transaksi'][index]['jumlah'] * data['transaksi'][index]['harga']}">
+                                    </td>
+                                    <td><textarea name="keterangan[${index + 1}]" cols="25" rows="3">${data['transaksi'][index]['keterangan']}</textarea></td>
+                                    <td><span class="btn delete-btn btn-danger" data-id="${index + 1}">Delete</span></td>
+                                </tr>
+                            `;
                             $('#input-container').append(row);
                             // Tambahkan format ke input nominal yang baru
                             formatJumlahInput(`#nominal-${index+1}`);
@@ -515,11 +543,14 @@
                             $("#form").validate().settings.messages[`nominal[${index + 1}]`] = {
                                 required: "Nominal is required"
                             };
-                            // $("#form").validate().settings.rules[`keterangan[${index + 1}]`] = {
-                            //     required: true
-                            // };
                             rowCount = index + 1;
                         });
+
+                        // 🔹 Panggil calculateTotalNominal() setelah semua transaksi dimasukkan
+                        calculateTotalNominal();
+
+                        // 🔹 Panggil reorderRow() agar nomor urut tetap teratur
+                        // reorderRow();
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
@@ -532,10 +563,8 @@
         if (aksi == "read") {
             $('.aksi').hide();
             $('#id').prop('readonly', true);
-            $('#tgl_prepayment').prop('disabled', true);
+            $('#tgl_dokumen').prop('disabled', true);
             $('#nama').prop('readonly', true);
-            // $('#jabatan').prop('disabled', true);
-            // $('#divisi').prop('disabled', true);
             $('#prepayment').prop('readonly', true);
             $('#tujuan').prop('readonly', true);
             $('#total_nominal_row').attr('colspan', 3);
@@ -543,7 +572,7 @@
             $('th:last-child').remove();
 
             $.ajax({
-                url: "<?php echo site_url('prepayment_ctz/read_detail/') ?>" + id,
+                url: "<?php echo site_url('swi_penawaran/read_detail/') ?>" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
@@ -566,14 +595,15 @@
 
         // INSERT ATAU UPDATE
         $("#form").submit(function(e) {
+            // console.log('testing');
             e.preventDefault();
             var $form = $(this);
             if (!$form.valid()) return false;
             var url;
             if (id == 0) {
-                url = "<?php echo site_url('prepayment_ctz/add') ?>";
+                url = "<?php echo site_url('swi_penawaran/add') ?>";
             } else {
-                url = "<?php echo site_url('prepayment_ctz/update') ?>";
+                url = "<?php echo site_url('swi_penawaran/update') ?>";
             }
 
             // Tampilkan loading
@@ -600,8 +630,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then((result) => {
-                            checkNotifications();
-                            location.href = "<?= base_url('prepayment_ctz') ?>";
+                            location.href = "<?= base_url('swi_penawaran') ?>";
                         })
                     } else {
                         // Sembunyikan loading saat respons diterima
@@ -630,52 +659,39 @@
 
         $("#form").validate({
             rules: {
-                tgl_prepayment: {
+                tgl_dokumen: {
                     required: true,
                 },
-                nama: {
+                name: {
                     required: true,
                 },
-                prepayment: {
+                asal: {
                     required: true,
                 },
                 tujuan: {
                     required: true,
                 },
-                nama_rek: {
+                kendaraan: {
                     required: true,
                     maxlength: 22,
-                },
-                nama_bank: {
-                    required: true,
-                },
-                nomor_rekening: {
-                    required: true,
-                },
+                }
             },
             messages: {
-                tgl_prepayment: {
-                    required: "Tanggal is required",
+                tgl_dokumen: {
+                    required: "*Tanggal is required",
                 },
-                nama: {
-                    required: "Nama is required",
+                name: {
+                    required: "*Nama is required",
                 },
-                prepayment: {
-                    required: "Prepayment is required",
+                asal: {
+                    required: "*Asal is required",
                 },
                 tujuan: {
-                    required: "Tujuan is required",
+                    required: "*Tujuan is required",
                 },
-                nama_rek: {
-                    required: "*Nama rekening perlu diisi",
-                    maxlength: "*Nama rekening tidak boleh lebih dari 22 digit",
-                },
-                nama_bank: {
-                    required: "*Nama Bank perlu diisi",
-                },
-                nomor_rekening: {
-                    required: "*Nomor rekening perlu diisi",
-                },
+                kendaraan: {
+                    required: "*Kendaraan rekening perlu diisi"
+                }
             },
             errorPlacement: function(error, element) {
                 if (element.parent().hasClass('input-group')) {
