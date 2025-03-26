@@ -1,38 +1,3 @@
-<style>
-    /* Styling box input Select2 */
-    .select2-container .select2-selection--single {
-        height: 38px;
-        /* Sama seperti form-control Bootstrap */
-        padding: 6px 12px;
-        border: 1px solid #ced4da;
-        border-radius: 0.375rem;
-        transition: 300ms;
-    }
-
-    /* Saat select2 dalam keadaan fokus */
-    .select2-container--default .select2-selection--single:focus,
-    .select2-container--default .select2-selection--single:hover {
-        border-color: #86b7fe;
-        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-    }
-
-    /* Styling dropdown Select2 */
-    .select2-container--default .select2-results__option {
-        padding: 10px;
-        font-size: 1rem;
-    }
-
-    /* Hover pada dropdown */
-    .select2-container--default .select2-results__option--highlighted {
-        background-color: #007bff;
-        color: white;
-    }
-
-    /* Styling placeholder */
-    .select2-container--default .select2-selection--single .select2-selection__placeholder {
-        color: #6c757d;
-    }
-</style>
 <div class="container-fluid">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"><?= $title_view ?></h1>
@@ -42,7 +7,7 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header text-right">
-                    <a class="btn btn-secondary btn-sm" href="<?= base_url('pu_customer/customer') ?>">
+                    <a class="btn btn-secondary btn-sm" href="<?= base_url('pu_customer') ?>">
                         <i class="fas fa-chevron-left"></i>&nbsp;Back
                     </a>
                 </div>
@@ -62,12 +27,22 @@
                                     <div class="col-sm-7">
                                         <select class="form-control" id="group_id" name="group_id" style="cursor: pointer;">
                                             <option value="" hidden>Pilih Group</option>
-                                            <option id="group-option" value="group">Group</option>
-                                            <option value="-">Non Group</option>
+                                            <option value="">Non Group</option>
                                             <?php foreach ($group_id as $data) : ?>
                                                 <option value="<?= $data['group_id'] ?>"><?= $data['group_id'] ?></option>
                                             <?php endforeach ?>
                                         </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="tgl_berangkat">Tanggal Berangkat</label>
+                                    <div class="col-sm-7">
+                                        <div class="input-group date">
+                                            <input type="text" class="form-control" name="tgl_berangkat" id="tgl_berangkat" placeholder="DD-MM-YYYY" autocomplete="off" style="cursor: pointer;">
+                                            <div class="input-group-append">
+                                                <div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -104,15 +79,79 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
+                                    <label class="col-sm-5" for="travel">Travel</label>
+                                    <div class="col-sm-7">
+                                        <select class="form-control" id="travel" name="travel" style="cursor: pointer;">
+                                            <option value="" hidden>Pilih Travel</option>
+                                            <?php foreach ($travel as $data) : ?>
+                                                <option value="<?= $data['travel'] ?>"><?= $data['travel'] ?></option>
+                                            <?php endforeach ?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
                                     <label class="col-sm-5" for="asal">Asal</label>
                                     <div class="col-sm-7">
                                         <input type="text" class="form-control" id="asal" name="asal" required autocomplete="off">
                                     </div>
                                 </div>
                                 <div class="form-group row">
+                                    <label class="col-sm-5" for="produk">Produk</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="produk" name="produk" required autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
                                     <label class="col-sm-5" for="akun">Akun</label>
                                     <div class="col-sm-7">
                                         <input type="text" class="form-control" id="akun" name="akun" autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="tipe_kamar">Tipe Kamar</label>
+                                    <div class="col-sm-7">
+                                        <select class="form-control" id="tipe_kamar" name="tipe_kamar" style="cursor: pointer;">
+                                            <option value="" hidden>Pilih Tipe Kamar</option>
+                                            <option value="Double">Double</option>
+                                            <option value="Triple">Triple</option>
+                                            <option value="Quad">Quad</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="pakaian">Pakaian</label>
+                                    <div class="col-sm-7">
+                                        <select class="form-control" id="pakaian" name="pakaian" style="cursor: pointer;">
+                                            <option value="" hidden>Pilih Pakaian</option>
+                                            <option value="Gamis">Gamis</option>
+                                            <option value="Koko">Koko</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="ukuran">Ukuran</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="ukuran" name="ukuran" autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="kirim_perlengkapan">Kirim Perlengkapan</label>
+                                    <div class="col-sm-7">
+                                        <select class="form-control" id="kirim_perlengkapan" name="kirim_perlengkapan" style="cursor: pointer;">
+                                            <option value="" hidden>Pilih Opsi</option>
+                                            <option value="Sudah">Sudah</option>
+                                            <option value="Belum">Belum</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="status">Status</label>
+                                    <div class="col-sm-7">
+                                        <select class="form-control" id="status" name="status" style="cursor: pointer;">
+                                            <option value="" hidden>Pilih Status</option>
+                                            <option value="Keluarga">Keluarga</option>
+                                            <option value="Sendiri">Sendiri</option>
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="form-group row" style="margin-top: 23px; margin-bottom: 9px">
@@ -203,6 +242,52 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="harga">Harga</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="harga" name="harga" required autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="harga_promo">Harga Promo</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="harga_promo" name="harga_promo" autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="promo_diskon">Promo Diskon</label>
+                                    <div class="col-sm-7">
+                                        <select class="form-control" id="promo_diskon" name="promo_diskon" required style="cursor: pointer;">
+                                            <option value="" hidden>Pilih Promo Diskon</option>
+                                            <option value="Ya">Ya</option>
+                                            <option value="Tidak">Tidak</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="dp">DP</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="dp" name="dp" autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="pembayaran_1">Pembayaran 1</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="pembayaran_1" name="pembayaran_1" autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="pembayaran_2">Pembayaran 2</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="pembayaran_2" name="pembayaran_2" autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="pelunasan">Pelunasan</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="pelunasan" name="pelunasan" autocomplete="off">
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -240,10 +325,21 @@
 <?php $this->load->view('template/script'); ?>
 
 <script>
-    $(document).ready(function() {
-        $('#no_hp').on('input', function() {
-            this.value = this.value.replace(/[^0-9]/g, '');
-        });
+    $('#tgl_berangkat').datepicker({
+        dateFormat: 'dd-mm-yy',
+        // minDate: new Date(),
+        // maxDate: new Date(),
+
+        // MENGENERATE KODE DEKLARASI SETELAH PILIH TANGGAL
+        onSelect: function(dateText) {
+            var id = dateText;
+            $('#tgl_berangkat').removeClass("is-invalid");
+
+            // Menghapus label error secara manual jika ada
+            if ($("#tgl_berangkat-error").length) {
+                $("#tgl_berangkat-error").remove(); // Menghapus label error
+            }
+        }
     });
 
     // Fungsi untuk memformat angka menjadi format Rupiah
@@ -282,6 +378,12 @@
         });
     }
 
+    // Panggil fungsi saat halaman di-load
+    window.onload = function() {
+        var inputIds = ['harga', 'harga_promo', 'dp', 'pembayaran_1', 'pembayaran_2', 'pelunasan', 'cashback'];
+        formatMultipleInputsToRupiah(inputIds);
+    }
+
     $(document).ready(function() {
         // Ketika halaman di-load, panggil customer ID dari server
         $.ajax({
@@ -305,7 +407,7 @@
             $('#customer_id').val(kode).attr('readonly', true);
         } else {
             $('.aksi').text('Update');
-            $("select option[value='group']").hide();
+            $("select option[value='']").hide();
             $.ajax({
                 url: "<?php echo site_url('pu_customer/edit_data') ?>/" + id,
                 type: "GET",
@@ -315,12 +417,31 @@
                     $('#id').val(data['master'].id);
                     $('#customer_id').val(data['master'].customer_id.toUpperCase()).attr('readonly', true);
                     $('#group_id').val(data['master'].group_id);
+                    $('#tgl_berangkat').val(moment(data['master'].tgl_berangkat).format('DD-MM-YYYY'));
                     $('#title').val(data['master'].title);
                     $('#nama').val(data['master'].nama);
                     $('#no_hp').val(data['master'].no_hp);
+                    $('#travel').val(data['master'].travel);
                     $('#jenis_kelamin').val(data['master'].jenis_kelamin);
                     $('#asal').val(data['master'].asal);
+                    $('#produk').val(data['master'].produk);
+
+                    // Memformat harga dan nilai lainnya ke dalam format Rupiah
+                    $('#harga').val(formatRupiah(data['master'].harga, 'Rp. '));
+                    $('#harga_promo').val(formatRupiah(data['master'].harga_promo, 'Rp. '));
+                    $('#dp').val(formatRupiah(data['master'].dp, 'Rp. '));
+                    $('#pembayaran_1').val(formatRupiah(data['master'].pembayaran_1, 'Rp. '));
+                    $('#pembayaran_2').val(formatRupiah(data['master'].pembayaran_2, 'Rp. '));
+                    $('#pelunasan').val(formatRupiah(data['master'].pelunasan, 'Rp. '));
+                    $('#cashback').val(formatRupiah(data['master'].cashback, 'Rp. '));
+
+                    $('#promo_diskon').val(data['master'].promo_diskon);
+                    $('#tipe_kamar').val(data['master'].tipe_kamar);
                     $('#akun').val(data['master'].akun);
+                    $('#pakaian').val(data['master'].pakaian);
+                    $('#ukuran').val(data['master'].ukuran);
+                    $('#kirim_perlengkapan').val(data['master'].kirim_perlengkapan);
+                    $('#status').val(data['master'].status);
 
 
                     // Update gambar jika ada
@@ -548,12 +669,18 @@
             $('.aksi').hide();
             $('#customer_id').prop('disabled', true).css('cursor', 'not-allowed');
             $('#group_id').prop('disabled', true).css('cursor', 'not-allowed');
-            $('#title').prop('disabled', true).css('cursor', 'not-allowed');
-            $('#nama').prop('readonly', true).css('cursor', 'not-allowed');
-            $('#no_hp').prop('readonly', true).css('cursor', 'not-allowed');
-            $('#jenis_kelamin').prop('disabled', true).css('cursor', 'not-allowed');
-            $('#asal').prop('readonly', true).css('cursor', 'not-allowed');
-            $('#akun').prop('readonly', true).css('cursor', 'not-allowed');
+            $('#tgl_berangkat').prop('disabled', true).css('cursor', 'not-allowed');;
+            $('#title').prop('disabled', true).css('cursor', 'not-allowed');;
+            $('#nama').prop('readonly', true).css('cursor', 'not-allowed');;
+            $('#no_hp').prop('readonly', true).css('cursor', 'not-allowed');;
+            $('#jenis_kelamin').prop('disabled', true).css('cursor', 'not-allowed');;
+            $('#travel').prop('disabled', true).css('cursor', 'not-allowed');;
+            $('#asal').prop('readonly', true).css('cursor', 'not-allowed');;
+            $('#produk').prop('readonly', true).css('cursor', 'not-allowed');;
+            $('#harga').prop('readonly', true).css('cursor', 'not-allowed');;
+            $('#harga_promo').prop('readonly', true).css('cursor', 'not-allowed');;
+            $('#tipe_kamar').prop('disabled', true).css('cursor', 'not-allowed');;
+            $('#promo_diskon').prop('disabled', true).css('cursor', 'not-allowed');;
 
             $('#paspor').css('display', 'none');
             $('#kartu_kuning').css('display', 'none');
@@ -562,6 +689,17 @@
             $('#buku_nikah').css('display', 'none');
             $('#akta_lahir').css('display', 'none');
             $('#pas_foto').css('display', 'none');
+
+            $('#dp').prop('readonly', true).css('cursor', 'not-allowed');;
+            $('#pembayaran_1').prop('readonly', true).css('cursor', 'not-allowed');;
+            $('#pembayaran_2').prop('readonly', true).css('cursor', 'not-allowed');;
+            $('#pelunasan').prop('readonly', true).css('cursor', 'not-allowed');;
+            $('#cashback').prop('readonly', true).css('cursor', 'not-allowed');;
+            $('#akun').prop('readonly', true).css('cursor', 'not-allowed');;
+            $('#pakaian').prop('disabled', true).css('cursor', 'not-allowed');;
+            $('#ukuran').prop('readonly', true).css('cursor', 'not-allowed');;
+            $('#kirim_perlengkapan').prop('disabled', true).css('cursor', 'not-allowed');;
+            $('#status').prop('disabled', true).css('cursor', 'not-allowed');;
 
             $('#delete_paspor').hide();
             $('#delete_kartu_kuning').css('display', 'none');
@@ -605,7 +743,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then((result) => {
-                            location.href = "<?= base_url('pu_customer/customer') ?>";
+                            location.href = "<?= base_url('pu_customer') ?>";
                         });
                     }
                 },
@@ -620,7 +758,7 @@
                 customer_id: {
                     required: true,
                 },
-                group_id: {
+                tgl_berangkat: {
                     required: true,
                 },
                 title: {
@@ -635,7 +773,19 @@
                 no_hp: {
                     required: true,
                 },
+                travel: {
+                    required: true,
+                },
                 asal: {
+                    required: true,
+                },
+                produk: {
+                    required: true,
+                },
+                harga: {
+                    required: true,
+                },
+                promo_diskon: {
                     required: true,
                 },
             },
@@ -643,8 +793,8 @@
                 customer_id: {
                     required: "ID Customer is required",
                 },
-                group_id: {
-                    required: "Group ID is required",
+                tgl_berangkat: {
+                    required: "Tanggal Berangkat is required",
                 },
                 title: {
                     required: "Title is required",
@@ -658,8 +808,20 @@
                 no_hp: {
                     required: "No Telp is required",
                 },
+                travel: {
+                    required: "Travel is required",
+                },
                 asal: {
                     required: "Asal is required",
+                },
+                produk: {
+                    required: "Produk is required",
+                },
+                harga: {
+                    required: "Harga is required",
+                },
+                promo_diskon: {
+                    required: "Promo Diskon is required",
                 },
             },
             errorPlacement: function(error, element) {

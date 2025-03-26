@@ -58,17 +58,6 @@ class Swi_invoice extends CI_Controller
 
         $data['title'] = "backend/swi_invoice/swi_invoice_list";
         $data['titleview'] = "Data Invoice";
-        // $name = $this->db->select('name')
-        //     ->from('tbl_data_user')
-        //     ->where('id_user', $this->session->userdata('id_user'))
-        //     ->get()
-        //     ->row('name');
-        // $data['approval'] = $this->db->select('COUNT(*) as total_approval')
-        //     ->from('tbl_prepayment_pu')
-        //     ->where('app_name', $name)
-        //     ->or_where('app2_name', $name)
-        //     ->get()
-        //     ->row('total_approval');
         $this->load->view('backend/home', $data);
     }
 
@@ -104,33 +93,7 @@ class Swi_invoice extends CI_Controller
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
             $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="swi_invoice/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
-            // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
-            // if ($field->app_name == $fullname && $field->id_user != $this->session->userdata('id_user')) {
-            //     $action = $action_read . $action_print;
-            // } elseif ($field->id_user != $this->session->userdata('id_user') && $field->app2_name == $fullname) {
-            //     $action = $action_read . $action_print;
-            // } elseif (in_array($field->status, ['rejected', 'approved'])) {
-            //     $action = $action_read . $action_print;
-            // } elseif ($field->app_status == 'revised' || $field->app2_status == 'revised') {
-            //     $action = $action_read . $action_edit . $action_print;
-            // } elseif ($field->app_status == 'approved') {
-            //     $action = $action_read . $action_print;
-            // } else {
-            //     $action = $action_read . $action_edit . $action_delete . $action_print;
-            // }
-
-            // //MENENSTUKAN SATTSU PROGRESS PENGAJUAN PERMINTAAN
-            // if ($field->app_status == 'approved' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
-            //     $status = $field->status . ' (' . $field->app2_name . ')';
-            // } elseif ($field->app_status == 'waiting' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
-            //     $status = $field->status . ' (' . $field->app_name . ')';
-            // } else {
-            //     $status = $field->status;
-            // }
-
             $action = $action_read . $action_edit . $action_delete . $action_print;
-
-
 
             $no++;
             $row = array();
@@ -459,6 +422,8 @@ class Swi_invoice extends CI_Controller
 
         // Tambahkan gambar background untuk memenuhi halaman
         $t_cpdf2->Image('assets/backend/img/background-invoice-swi.png', 0, 0, 210, 297, '', '', '', false);
+
+        $t_cpdf2->Image('assets/backend/img/sobatwisata.png', 10, 10, 40, 0, 'PNG');
 
         // Set posisi untuk teks
         $t_cpdf2->SetY(3);
