@@ -16,7 +16,7 @@ class Qbg_transaksi extends CI_Controller
     {
         $data['title'] = "backend/qbg_transaksi/qbg_transaksi_list";
         $data['titleview'] = "Data Transaksi";
-        $data['produk'] = $this->db->select('kode_produk, nama_produk')->get('qbg_produk')->result_array();
+        $data['produk'] = $this->db->select('kode_produk, nama_produk, berat, satuan')->get('qbg_produk')->result_array();
         $this->load->view('backend/home', $data);
     }
 

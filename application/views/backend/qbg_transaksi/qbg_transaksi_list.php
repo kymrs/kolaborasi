@@ -39,6 +39,39 @@
         cursor: pointer;
     }
 
+    /* Styling box input Select2 */
+    .select2-container .select2-selection--single {
+        height: 38px;
+        /* Sama seperti form-control Bootstrap */
+        padding: 6px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 0.375rem;
+    }
+
+    /* Saat select2 dalam keadaan fokus */
+    .select2-container--default .select2-selection--single:focus,
+    .select2-container--default .select2-selection--single:hover {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    /* Styling dropdown Select2 */
+    .select2-container--default .select2-results__option {
+        padding: 10px;
+        font-size: 1rem;
+    }
+
+    /* Hover pada dropdown */
+    .select2-container--default .select2-results__option--highlighted {
+        background-color: #007bff;
+        color: white;
+    }
+
+    /* Styling placeholder */
+    .select2-container--default .select2-selection--single .select2-selection__placeholder {
+        color: #6c757d;
+    }
+
     @media (max-width: 1400px) {
 
         .transaksi-filter .tgl-awal,
@@ -47,7 +80,7 @@
         }
     }
 
-    @media (max-width: 1060px) {
+    @media (max-width: 1260px) {
         .transaksi-filter {
             display: block;
         }
@@ -64,11 +97,11 @@
                 <div class="card-header">
                     <div class="transaksi-filter">
                         <div class="col-custom">
-                            <label for="">Produk :</label>
+                            <label for="">Produk :</label><br>
                             <select id="kode_produk" class="form-control" style="cursor: pointer;">
                                 <option value="all" selected>All</option>
                                 <?php foreach ($produk as $data) : ?>
-                                    <option value="<?= $data['kode_produk'] ?>"><?= $data['nama_produk'] ?> (<?= $data['kode_produk'] ?>)</option>
+                                    <option value="<?= $data['kode_produk'] ?>"><?= $data['nama_produk'] . ' ' . $data['berat'] . ' ' . $data['satuan'] ?> </option>
                                 <?php endforeach ?>
                             </select>
                         </div>
@@ -154,6 +187,8 @@
 <?php $this->load->view('template/script'); ?>
 
 <script type="text/javascript">
+    $('#kode_produk').select2();
+
     $('#tgl_awal').on('click', function() {
         // console.log('berhasil');
         $('#tgl_awal').datepicker('setDate', null);
@@ -256,39 +291,15 @@
         });
     });
 
-    // Cek apakah ada nilai filter yang tersimpan di localStorage = kode produk
-    var savedKodeProduk = localStorage.getItem('kodeProdukStatus');
-    if (savedKodeProduk) {
-        $('#kode_produk').val(savedKodeProduk).change(); // Set filter dengan nilai yang tersimpan
-    }
-
-    // Simpan nilai filter ke localStorage setiap kali berubah
     $('#kode_produk').on('change', function() {
-        localStorage.setItem('kodeProdukStatus', $(this).val());
         table.ajax.reload(); // Muat ulang DataTables dengan filter baru
     });
 
-    // Cek apakah ada nilai filter yang tersimpan di localStorage = jenis transaksi
-    var jenisTransaksi = localStorage.getItem('jenisTransaksiStatus');
-    if (jenisTransaksi) {
-        $('#jenis_transaksi').val(jenisTransaksi).change(); // Set filter dengan nilai yang tersimpan
-    }
-
-    // Simpan nilai filter ke localStorage setiap kali berubah
     $('#jenis_transaksi').on('change', function() {
-        localStorage.setItem('jenisTransaksiStatus', $(this).val());
         table.ajax.reload(); // Muat ulang DataTables dengan filter baru
     });
 
-    // Cek apakah ada nilai filter yang tersimpan di localStorage = keterangan
-    var keterangan = localStorage.getItem('keteranganStatus');
-    if (keterangan) {
-        $('#keterangan').val(keterangan).change(); // Set filter dengan nilai yang tersimpan
-    }
-
-    // Simpan nilai filter ke localStorage setiap kali berubah
     $('#keterangan').on('change', function() {
-        localStorage.setItem('keteranganStatus', $(this).val());
         table.ajax.reload(); // Muat ulang DataTables dengan filter baru
     });
 </script>

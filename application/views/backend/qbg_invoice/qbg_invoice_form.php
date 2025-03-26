@@ -275,7 +275,7 @@
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-4 col-form-label">No Rekening</label>
-                                    <div class="col-sm-7">
+                                    <div class="col-sm-8">
                                         <div class="input-group mb-3">
                                             <!-- RADIO BUTTON UNTUK PEMILIHAN INPUTAN REKENING -->
                                             <div class="form-check form-check-inline" style="margin-bottom: 5px;">
@@ -285,14 +285,16 @@
                                             <select class="js-example-basic-single" id="rekening" name="rekening">
                                                 <option value="" selected disabled>Pilih rekening tujuan</option>
                                                 <?php foreach ($rek_options as $option) { ?>
-                                                    <option data-bank="<?= $option->nama_bank ?>" data-rek="<?= $option->no_rek ?>" value=""><?= $option->nama_bank . '-' . $option->no_rek ?></option>
+                                                    <option data-bank="<?= $option->nama_bank ?>" data-rek="<?= $option->no_rek ?>" data-atas_nama="<?= $option->atas_nama ?>" value=""><?= $option->nama_bank . ' - ' . $option->no_rek . ' - ' . $option->atas_nama ?></option>
                                                 <?php } ?>
                                             </select>
                                             <div class="input-group rekening-text">
-                                                <input type="text" class="form-control col-sm-4" style="font-size: 13px;" id="nama_bank" name="nama_bank" placeholder="Nama Bank">&nbsp;
-                                                <span class="py-2">-</span>&nbsp;
-                                                <input type="text" class="form-control col-sm-6" style="font-size: 13px;" id="nomor_rekening" name="nomor_rekening" placeholder="No Rekening">
-                                                <span class="py-2"></span>&nbsp;
+                                                <input type="text" class="form-control col-sm-4" style="font-size: 13px;" id="nama_bank" name="nama_bank" placeholder="Nama Bank">
+                                                &nbsp;<span class="py-2">-</span>&nbsp;
+                                                <input type="text" class="form-control col-sm-4" style="font-size: 13px;" id="nomor_rekening" name="nomor_rekening" placeholder="No Rekening">
+                                                &nbsp;<span class="py-2">-</span>&nbsp;
+                                                <input type="text" class="form-control col-sm-4" style="font-size: 13px;" id="atas_nama" name="atas_nama" placeholder="Atas Nama">
+
                                                 <button type="button" class="btn-primary" id="btn-rek" style="height: 33.5px; width: 40px"><i class="fa fa-plus" aria-hidden="true"></i></button>
                                             </div>
                                         </div>
@@ -301,8 +303,9 @@
                                         <table id="rek-table" class=" table table-bordered">
                                             <thead>
                                                 <th>No</th>
-                                                <th class="col-sm-4">Nama Bank</th>
-                                                <th class="col-sm-8">No Rekening</th>
+                                                <th class="col-sm-2">Bank</th>
+                                                <th class="col-sm-4">No Rek</th>
+                                                <th class="col-sm-6">Atas Nama</th>
                                                 <th>Delete</th>
                                             </thead>
                                             <tbody class="tbody-rekening">
@@ -859,22 +862,28 @@
         let rowRekCount = 0;
 
         //ADD ROW NOMOR REKENING
-        function addRekRow(bank, rek) {
+        function addRekRow(bank, rek, atas_nama) {
             // Ambil nilai dari input
             const namaBank = bank;
             const nomorRekening = rek;
+            const atasNama = atas_nama;
 
             rowRekCount++;
-            if (namaBank != '' && nomorRekening != '') {
+            if (namaBank != '' && nomorRekening != '' && atasNama != '') {
                 const rekRow = `
                 <tr id="rek-${rowRekCount}">
                     <td class="rek-number">${rowRekCount}</td>
                     <td>
-                    <input name="nama_bank[${rowRekCount}]" id="nama_bank-${rowRekCount}" value="${namaBank}" style="border: none; pointer-events: none; color: #666">
-                    <input type="hidden" id="hidden_rekId${rowRekCount}" name="hidden_rekId[${rowRekCount}]" value="">
+                        <input name="nama_bank[${rowRekCount}]" id="nama_bank-${rowRekCount}" value="${namaBank}" style="width: 100%; border: none; pointer-events: none; color: #666">
+                        <input type="hidden" id="hidden_rekId${rowRekCount}" name="hidden_rekId[${rowRekCount}]" value="">
                     </td>
-                    <td><input name="no_rek[${rowRekCount}]" id="no_rek-${rowRekCount}" value="${nomorRekening}" style="border: none; pointer-events: none; color: #666"></td>
-                    <td><button type="button" class="btn rek-delete btn-danger" data-id="${rowRekCount}">Delete</button></td>
+                    <td>
+                        <input name="no_rek[${rowRekCount}]" id="no_rek-${rowRekCount}" value="${nomorRekening}" style="width: 100%; border: none; pointer-events: none; color: #666">
+                    </td>
+                    <td>
+                        <input name="atas_nama[${rowRekCount}]" id="atas_nama-${rowRekCount}" value="${atasNama}" style="width: 100%; border: none; pointer-events: none; color: #666">
+                    </td>
+                    <td><button type="button" class="btn rek-delete btn-danger" data-id="${rowRekCount}"><i class="fas fa-solid fa-trash"></i></button></td>
                 </tr>
             `;
                 $('#rek-table tbody').append(rekRow);
@@ -1000,13 +1009,15 @@
                 const hiddenRekIdValue = $(this).find('input[name^="hidden_rekId"]').val();
                 const namaBankValue = $(this).find('input[name^="nama_bank"]').val();
                 const noRekValue = $(this).find('input[name^="no_rek"]').val();
+                const atasNamaValue = $(this).find('input[name^="atas_nama"]').val();
 
                 $(this).attr('id', `rek-${newRekRowNumber}`);
                 $(this).find('.rek-number').text(newRekRowNumber);
                 $(this).find('input[name^="nama_bank"]').attr('name', `nama_bank[${newRekRowNumber}]`).attr('id', `nama_bank-${newRekRowNumber}`).attr('placeholder', `Nama Bank...`).val(namaBankValue);
                 $(this).find('input[name^="no_rek"]').attr('name', `no_rek[${newRekRowNumber}]`).attr('id', `no_rek-${newRekRowNumber}`).attr('placeholder', `Nomor Rekening...`).val(noRekValue);
+                $(this).find('input[name^="atas_nama"]').attr('name', `atas_nama[${newRekRowNumber}]`).attr('id', `atas_nama-${newRekRowNumber}`).attr('placeholder', `Atas Nama...`).val(atasNamaValue);
                 $(this).find('input[name^="hidden_rekId"]').attr('name', `hidden_rekId[${newRekRowNumber}]`).attr('id', `hidden_rekId${newRekRowNumber}`).val(hiddenRekIdValue);
-                $(this).find('.rek-delete').attr('data-id', newRekRowNumber).text('Delete');
+                $(this).find('.rek-delete').attr('data-id', newRekRowNumber).html('<i class="fas fa-solid fa-trash"></i>');
             });
             rowRekCount = $('#rek-table tbody tr').length;
         }
@@ -1032,9 +1043,11 @@
         $('#btn-rek').click(function() {
             var bank = $('#nama_bank').val();
             var rek = $('#nomor_rekening').val();
-            addRekRow(bank, rek);
+            var atasNama = $('#atas_nama').val();
+            addRekRow(bank, rek, atasNama);
             $('#nama_bank').val('');
             $('#nomor_rekening').val('');
+            $('#atas_nama').val('');
         });
 
         // SELECT ADD ROW NOMOR REKENING
@@ -1045,8 +1058,9 @@
             // Ambil nilai atribut data
             var bank = selectedOption.data('bank');
             var rek = selectedOption.data('rek');
+            var atasNama = selectedOption.data('atas_nama');
 
-            addRekRow(bank, rek);
+            addRekRow(bank, rek, atasNama);
         });
 
         function updateSubmitButtonState() {
@@ -1126,11 +1140,16 @@
                             <tr id="rek-${index + 1}">
                                 <td class="rek-number">${index + 1}</td>
                                 <td>
-                                <input name="nama_bank[${index+1}]" id="nama_bank-${index + 1}" value="${data['rek_invoice'][index]['nama_bank']}" style="border: none; pointer-events: none; color: #666">
+                                <input name="nama_bank[${index+1}]" id="nama_bank-${index + 1}" value="${data['rek_invoice'][index]['nama_bank']}" style="width: 100%; border: none; pointer-events: none; color: #666">
                                 <input type="hidden" id="hidden_rekId${index + 1}" name="hidden_rekId[${index + 1}]" value="${data['rek_invoice'][index]['id']}">
                                 </td>
-                                <td><input name="no_rek[${index+1}]" id="no_rek-${index + 1}" value="${data['rek_invoice'][index]['no_rek']}" style="border: none; pointer-events: none; color: #666"></td>
-                                <td><button type="button" class="btn rek-delete btn-danger" data-id="${index + 1}">Delete</button></td>
+                                <td>
+                                    <input name="no_rek[${index+1}]" id="no_rek-${index + 1}" value="${data['rek_invoice'][index]['no_rek']}" style="width: 100%; border: none; pointer-events: none; color: #666">
+                                </td>
+                                <td>
+                                    <input name="atas_nama[${index+1}]" id="atas_nama-${index + 1}" value="${data['rek_invoice'][index]['atas_nama']}" style="width: 100%; border: none; pointer-events: none; color: #666">
+                                </td>
+                                <td><button type="button" class="btn rek-delete btn-danger" data-id="${index + 1}"><i class="fas fa-solid fa-trash"></i></button></td>
                             </tr>
                             `;
                             $('#rek-table tbody').append(row);
@@ -1271,9 +1290,6 @@
                 nomor_customer: {
                     required: true,
                 },
-                email_customer: {
-                    required: true,
-                },
                 alamat_customer: {
                     required: true,
                 },
@@ -1299,9 +1315,6 @@
                 },
                 nomor_customer: {
                     required: "Nomor Customer is required",
-                },
-                email_customer: {
-                    required: "Email Customer is required",
                 },
                 alamat_customer: {
                     required: "Alamat Customer is required",

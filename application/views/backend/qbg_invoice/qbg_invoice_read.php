@@ -99,11 +99,13 @@
                             <td style="text-align: center;">Biaya Pengiriman</td>
                             <td style="text-align: center"><?= "Rp. " . number_format($invoice['ongkir'], 0, ',', '.') ?></td>
                         </tr>
-                        <tr>
-                            <td colspan="2" style="border-left-color: #fff; border-bottom-color: #fff"></td>
-                            <td style="text-align: center;">Potongan Harga</td>
-                            <td style="text-align: center"><?= "Rp. -" . number_format($invoice['potongan_harga'], 0, ',', '.') ?></td>
-                        </tr>
+                        <?php if ($invoice['potongan_harga'] != 0) : ?>
+                            <tr>
+                                <td colspan="2" style="border-left-color: #fff; border-bottom-color: #fff"></td>
+                                <td style="text-align: center;">Potongan Harga</td>
+                                <td style="text-align: center"><?= "Rp. -" . number_format($invoice['potongan_harga'], 0, ',', '.') ?></td>
+                            </tr>
+                        <?php endif ?>
                         <tr>
                             <td colspan="2" style="border-left-color: #fff; border-bottom-color: #fff"></td>
                             <th>Total</th>
@@ -115,10 +117,9 @@
                     <p>Metode Pembayaran</p>
                     <ol>
                         <?php foreach ($rekening as $data) : ?>
-                            <li>Bank : <?= $data['nama_bank'] ?> <br> No. Rekening : <?= $data['no_rek'] ?> </li>
+                            <li>Bank : <?= $data['nama_bank'] ?> <br> No. Rekening : <?= $data['no_rek'] ?> <br> Atas Nama : <b><?= $data['atas_nama'] ?></b></li>
                         <?php endforeach ?>
                     </ol>
-                    <p>Atas Nama : PT. Kolaborasi Para Sahabat </p>
                 </div>
                 <div class="">
                     <p>Catatan :</p>

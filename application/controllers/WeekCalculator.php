@@ -1,4 +1,22 @@
 <?php
+<<<<<<< HEAD
+
+class WeekCalculator extends CI_Controller
+{
+    public function __construct()
+    {
+        parent::__construct();
+        $this->load->model('backend/M_swi_prepayment');
+    }
+
+    public function index()
+    {
+        $data['title'] = "week";
+        $this->load->view('backend/home', $data);
+    }
+
+    public function getWeek($year = null, $month = null, $day = null)
+=======
 // class WeekCalculator extends CI_Controller
 // {
 //     public function index($year = null, $month = null)
@@ -45,6 +63,7 @@
 class WeekCalculator extends CI_Controller
 {
     public function index($year = null, $month = null, $day = null)
+>>>>>>> 7c27ea1bc4d3668fecef601333b30ec568da7736
     {
         // Set default bulan, tahun, dan hari jika tidak diberikan
         $year = $year ?? date('Y');
