@@ -1,6 +1,23 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
+// Memuat file TCPDF dari folder third_party
+require_once(APPPATH . 'third_party/TCPDF-main/tcpdf.php');
+
+class T_cpdf2 extends TCPDf
+{
+    // Page header
+    function Header()
+    {
+        // Ambil ukuran halaman
+        $pageWidth = $this->getPageWidth();
+        $pageHeight = $this->getPageHeight();
+
+        // Set background image (ganti dengan path gambar kamu)
+        $this->Image('assets/backend/img/background-invoice-swi.png', 0, 0, $pageWidth, $pageHeight, '', '', '', false, 300, '', false, false, 0);
+    }
+}
+
 class Swi_penawaran extends CI_Controller
 {
 
@@ -312,138 +329,189 @@ class Swi_penawaran extends CI_Controller
     // PRINTOUT FPDF
     public function generate_pdf($id)
     {
-        // Load FPDF library
-        $this->load->library('Fpdf_generate');
+        // INISIAI VARIABLE
+        // $penawaran = $this->M_swi_invoice->get_by_id($id);
+        // $penawaran_details = $this->M_swi_invoice->get_detail($id);
 
-        // Load data from database based on $id
-        $data['master'] = $this->M_swi_penawaran->get_by_id($id);
-        $data['user'] = $this->db->select('name')
-            ->from('tbl_data_user')
-            ->where('id_user', $data['master']->id_pengaju)
-            ->get()
-            ->row('name');
-        $data['app_status'] = strtoupper($data['master']->app_status);
-        $data['app2_status'] = strtoupper($data['master']->app2_status);
+        // Initialize the TCPDF object
+        $t_cpdf2 = new t_cpdf2('P', 'mm', 'A4', true, 'UTF-8', false);
 
-        // Format tgl_prepayment to Indonesian date
-        $tanggal = $data['master']->tgl_deklarasi;
-        $formatted_date = date('d F Y', strtotime($tanggal));
-        $months = [
-            'January' => 'Januari',
-            'February' => 'Februari',
-            'March' => 'Maret',
-            'April' => 'April',
-            'May' => 'Mei',
-            'June' => 'Juni',
-            'July' => 'Juli',
-            'August' => 'Agustus',
-            'September' => 'September',
-            'October' => 'Oktober',
-            'November' => 'November',
-            'December' => 'Desember'
-        ];
-        $month = date('F', strtotime($tanggal));
-        $translated_month = $months[$month];
-        $formatted_date = str_replace($month, $translated_month, $formatted_date);
+        // Set document properties
+        $t_cpdf2->SetCreator(PDF_CREATOR);
+        $t_cpdf2->SetAuthor('Author Name');
+        $t_cpdf2->SetTitle('Invoice - ' . 'invoice');
 
-        // Start FPDF
-        $pdf = new FPDF('P', 'mm', 'A4');
-        $pdf->SetTitle('Form Deklarasi');
-        $pdf->AddPage('P', 'Letter');
+        // Set margin agar gambar memenuhi halaman
+        $t_cpdf2->SetMargins(0, 0, 0); // Margin ke 0
+        $t_cpdf2->SetAutoPageBreak(true, 0);
 
-        // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/sobatwisata.png', 12, 8, 34, 26);
+        // Tambahkan halaman baru
+        $t_cpdf2->AddPage();
 
-        // Title of the form
-        $pdf->Ln(25);
-        // Set font
-        $pdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php');
-        $pdf->AddFont('Poppins-Bold', '', 'Poppins-Bold.php');
+        // Set posisi untuk teks
+        $t_cpdf2->SetY(3);
+        $t_cpdf2->SetFont('poppins-bold', '', 24);
+        $t_cpdf2->SetX($t_cpdf2->GetPageWidth() - 50); // Posisikan teks di kanan atas
+        $t_cpdf2->Cell(35, 10, 'INVOICE', 0, 1, 'R');
 
-        $pdf->SetFont('Poppins-Bold', '', 14);
-        $pdf->Cell(0, 10, 'FORM DEKLARASI', 0, 1, 'C');
-        $pdf->Ln(5);
+        // Set font untuk detail
+        $t_cpdf2->SetFont('poppins-regular', '', 11);
 
-        // Set font for form data
-        $pdf->SetFont('Poppins-Regular', '', 12);
-        $pdf->Cell(40, 10, 'Tanggal', 0, 0);
-        $pdf->Cell(60, 10, ': ' . $formatted_date, 0, 1);
-        $pdf->Cell(40, 10, 'Nama', 0, 0);
-        $pdf->Cell(60, 10, ': ' . $data['user'], 0, 1);
-        // $pdf->Cell(40, 10, 'Jabatan', 0, 0);
-        // $pdf->Cell(60, 10, ': ' . $data['master']->jabatan, 0, 1);
+        // Set posisi awal
+        $t_cpdf2->SetY(15);
+        $t_cpdf2->SetX(160);
 
-        $pdf->Ln(1);
-        $pdf->SetFont('Poppins-Regular', '', 12);
-        $pdf->Cell(60, 10, 'Telah/akan melakukan pembayaran kepada:', 0, 1);
+        // Kolom pertama (No)
+        $t_cpdf2->Cell(9, 5, 'No :', 0, 0, 'L');
+        $t_cpdf2->Cell(40, 5, 'kode invoice', 0, 1, 'L');
 
-        // Set font for form data
-        $pdf->SetFont('Poppins-Regular', '', 12);
-        $pdf->Cell(40, 10, 'Nama', 0, 0);
-        $pdf->Cell(60, 10, ': ' . $data['master']->nama_dibayar, 0, 1);
-        $pdf->Cell(40, 10, 'Tujuan', 0, 0);
-        $pdf->Cell(60, 10, ': ' . $data['master']->tujuan, 0, 1);
-        $pdf->Cell(40, 10, 'Sebesar', 0, 0);
-        $pdf->Cell(60, 10, ': ' . number_format($data['master']->sebesar, 0, ',', '.'), 0, 1);
+        // Kolom kedua (Tgl)
+        $t_cpdf2->SetX(160);
+        $t_cpdf2->Cell(9, 5, 'Tgl :', 0, 0, 'L');
+        $t_cpdf2->Cell(40, 5, 'tgl_invoice', 0, 1, 'L');
 
-        // Jarak kosong untuk pemisah
-        $pdf->Ln(3);
+        $t_cpdf2->SetY(45);
+        $t_cpdf2->SetX(7);
+        $t_cpdf2->SetFont('poppins-regular', 'B', 10);
+        $t_cpdf2->Cell(0, 7, 'FROM', 0, 1, 'L');
+        $t_cpdf2->SetFont('poppins-regular', '', 10);
+        $t_cpdf2->SetX(7);
+        $t_cpdf2->Cell(0, 7, 'Sobat Wisata', 0, 1, 'L');
 
-        // Set font untuk header
-        $pdf->SetFont('Poppins-Bold', '', 12);
+        $t_cpdf2->SetY(45);
+        $t_cpdf2->SetX(80);
+        $t_cpdf2->SetFont('poppins-regular', 'B', 10);
+        $t_cpdf2->Cell(0, 7, 'TO', 0, 1, 'L');
+        $t_cpdf2->SetFont('poppins-regular', '', 10);
+        $t_cpdf2->SetX(80);
+        $t_cpdf2->Cell(0, 7, 'invoice_to', 0, 1, 'L');
 
-        // Membuat header tabel
-        $pdf->Cell(63, 8.5, 'Yang Melakukan', 1, 0, 'C');
-        $pdf->Cell(63, 8.5, 'Mengetahui', 1, 0, 'C');
-        $pdf->Cell(63, 8.5, 'Menyetujui', 1, 1, 'C');
+        $t_cpdf2->SetY(63);
+        $t_cpdf2->SetX(7);
+        $t_cpdf2->SetFont('poppins-regular', 'B', 10);
+        $t_cpdf2->Cell(0, 7, 'Address', 0, 1, 'L');
+        $t_cpdf2->SetFont('poppins-regular', '', 10);
+        $t_cpdf2->SetX(7);
+        // MultiCell untuk teks panjang
+        $t_cpdf2->MultiCell(65, 7, 'Kp. Tunggilis RT 001 RW 007, Desa/Kelurahan Situsari, Kec. Cileungsi, Kab. Bogor, Provinsi Jawa Barat, Kode Pos: 16820', 0, 'L');
 
-        // Set font normal untuk konten tabel
-        $pdf->SetFont('Poppins-Regular', '', 10);
+        $t_cpdf2->SetY(63);
+        $t_cpdf2->SetX(80);
+        $t_cpdf2->SetFont('poppins-regular', 'B', 10);
+        $t_cpdf2->Cell(0, 7, 'Address', 0, 1, 'L');
+        $t_cpdf2->SetFont('poppins-regular', '', 10);
+        $t_cpdf2->SetX(80);
+        // MultiCell untuk teks panjang
+        $t_cpdf2->MultiCell(65, 7, 'alamat_invoice', 0, 'L');
 
-        // Baris pemisah
-        $pdf->Cell(63, 5, '', 'LR', 0, 'C');
-        $pdf->Cell(63, 5, '', 0, 0, 'C');
-        $pdf->Cell(63, 5, '', 'LR', 1, 'C');
+        // Table
+        // Geser posisi vertikal ke tengah halaman (atur sesuai kebutuhan)
+        $t_cpdf2->SetY(117);  // Ini buat vertikal, ubah 100 biar lebih pas
+        $t_cpdf2->SetX(18);  // Ini buat vertikal, ubah 100 biar lebih pas
 
-        // Baris pertama (Status)
-        $pdf->Cell(63, 5, 'CREATED', 'LR', 0, 'C');
-        $pdf->Cell(63, 5, strtoupper($data['master']->app_status), 0, 0, 'C');
-        $pdf->Cell(63, 5, strtoupper($data['master']->app2_status), 'LR', 1, 'C');
+        // Geser posisi horizontal (atur tengah secara manual)
+        $html = '<table border="1" cellpadding="5" cellspacing="0" style="margin-left:auto; margin-right:auto; width: 90%;">  
+            <thead>
+                <tr style="background-color:#f2f2f2; display: none">
+                    <th>Item</th>
+                    <th>Qty</th>
+                    <th>Day</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>';
 
-        // Baris kedua (Tanggal)
-        $pdf->Cell(63, 5, $data['master']->created_at, 'LR', 0, 'C');
-        $pdf->Cell(63, 5, $data['master']->app_date, 0, 0, 'C');
-        $pdf->Cell(63, 5, $data['master']->app2_date, 'LR', 1, 'C');
+        // Looping data dari database
+        // foreach ($invoice_details as $data) {
+        //     $html .= '<tr style="text-align: center">
+        //         <td style="width: 35%">' . $data->item . '</td>
+        //         <td style="width: 8%">' . $data->qty . '</td>
+        //         <td style="width: 20.5%">' . $data->day . '</td>
+        //         <td style="width: 18%">Rp. ' . number_format($data->price, 0, ',', '.') . '</td>
+        //         <td>Rp. ' . number_format($data->total, 0, ',', '.') . '</td>
+        //       </tr>';
+        // }
 
-        // Baris pemisah
-        $pdf->Cell(63, 5, '', 'LR', 0, 'C');
-        $pdf->Cell(63, 5, '', 0, 0, 'C');
-        $pdf->Cell(63, 5, '', 'LR', 1, 'C');
+        // $html .= '</tbody></table>';
 
-        // Jarak kosong untuk pemisah
-        $pdf->Ln(0);
+        // Tampilkan di PDF
+        // $t_cpdf2->writeHTML($html, true, false, true, false, '');
 
-        // Baris ketiga (Nama pengguna)
-        $pdf->Cell(63, 8.5, $data['user'], 1, 0, 'C');
-        $pdf->Cell(63, 8.5, $data['master']->app_name, 1, 0, 'C');
-        $pdf->Cell(63, 8.5, $data['master']->app2_name, 1, 1, 'C');
+        $t_cpdf2->SetY(180);
+        $t_cpdf2->SetX(130);
+        $t_cpdf2->SetFont('poppins-regular', 'B', 10);
+        $t_cpdf2->Cell(0, 7, 'TOTAL', 0, 1, 'L');
+        $t_cpdf2->SetFont('poppins-regular', '', 10);
+        $t_cpdf2->SetY(180);
+        $t_cpdf2->SetX(164);
+        $t_cpdf2->Cell(0, 7, 'Rp. ' . 'total', 0, 1, 'L');
 
+        $t_cpdf2->SetY(189);
+        $t_cpdf2->SetX(130);
+        $t_cpdf2->SetFont('poppins-regular', 'B', 10);
+        $t_cpdf2->Cell(0, 7, 'TAX', 0, 1, 'L');
+        $t_cpdf2->SetFont('poppins-regular', '', 10);
+        $t_cpdf2->SetY(189);
+        $t_cpdf2->SetX(164);
+        $t_cpdf2->Cell(0, 7, 'tax', 0, 1, 'L');
 
-        // Add keterangan
-        $pdf->Ln(5);
-        $pdf->SetFont('Poppins-Regular', '', 12);
-        if (($data['master']->app_keterangan != null && $data['master']->app_keterangan != '') || ($data['master']->app2_keterangan != null && $data['master']->app2_keterangan != '')) {
-            $pdf->Cell(40, 10, 'Keterangan:', 0, 0);
-        }
-        $pdf->Ln(8);
-        if ($data['master']->app_keterangan != null && $data['master']->app_keterangan != '') {
-            $pdf->Cell(60, 10, '*' . '(' . $data['master']->app_name . ') ' . $data['master']->app_keterangan, 0, 1);
-        }
-        if ($data['master']->app2_keterangan != null && $data['master']->app2_keterangan != '') {
-            $pdf->Cell(60, 10, '*' . '(' . $data['master']->app2_name . ') ' . $data['master']->app2_keterangan, 0, 1);
-        }
+        $grand_total = 'total';
 
-        // Output the PDF
-        $pdf->Output('I', 'Deklarasi.pdf');
+        // $t_cpdf2->SetY(198);
+        // $t_cpdf2->SetX(130);
+        // $t_cpdf2->SetFont('poppins-regular', 'B', 10);
+        // $t_cpdf2->Cell(0, 7, 'GRAND TOTAL', 0, 1, 'L');
+        // $t_cpdf2->SetFont('poppins-regular', '', 10);
+        // $t_cpdf2->SetY(198);
+        // $t_cpdf2->SetX(164);
+        // $t_cpdf2->Cell(0, 7, 'Rp. ' . number_format($grand_total, 0, ',', '.'), 0, 1, 'L');
+
+        // $t_cpdf2->SetY(238);
+        // $t_cpdf2->SetX(143);
+        // $t_cpdf2->SetFont('poppins-regular', 'B', 10);
+        // $t_cpdf2->Cell(0, 7, 'Rahmat Kurniawan', 0, 1, 'L');
+        // $t_cpdf2->SetY(245);
+        // $t_cpdf2->SetX(151);
+        // $t_cpdf2->Cell(0, 7, 'Head Unit', 0, 1, 'L');
+
+        $t_cpdf2->SetY(180);
+        $t_cpdf2->SetX(20);
+        $t_cpdf2->SetFont('poppins-regular', 'B', 10);
+        $t_cpdf2->Cell(0, 7, 'BANK DETAILS', 0, 1, 'L');
+
+        $t_cpdf2->SetY(188);
+        $t_cpdf2->SetX(20);
+
+        $t_cpdf2->SetFont('poppins-regular', '', 10);
+        // Geser posisi horizontal (atur tengah secara manual)
+        $html = '<table border="1" cellpadding="3" cellspacing="0" style="margin-left:auto; margin-right:auto; width: 90%;">  
+    <thead>
+        <tr style="background-color:#f2f2f2; display: none">
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>';
+
+        // Looping data dari database
+        // foreach ($invoice_rek as $data) {
+        //     $html .= '<tr>
+        //                 <td style="width: 35%">' . $data->nama_bank . '</td>
+        //             </tr>';
+        //     $html .= '<tr>
+        //                 <td style="width: 35%">' . $data->no_rek . '</td>
+        //             </tr>';
+        //     $html .= '<tr>
+        //                 <td style="width: 35%">' . $data->nama_rek . '</td>
+        //             </tr>';
+        // }
+
+        $html .= '</tbody></table>';
+
+        // Tampilkan di PDF
+        $t_cpdf2->writeHTML($html, true, false, true, false, '');
+
+        // Output file
+        $t_cpdf2->Output('Penawaran sobatwisata-' . 'kode' . '.pdf', 'I');
     }
 }
