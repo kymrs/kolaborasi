@@ -127,6 +127,8 @@ class Swi_penawaran extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
+        $data['data'] = $this->db->get_where('swi_penawaran', ['id' => $id])->row_array();
+        $data['data_detail'] = $this->db->get_where('swi_penawaran_detail', ['id_penawaran' => $id])->result_array();
         $data['title_view'] = "Data Penawaran";
         $data['title'] = 'backend/swi_penawaran/swi_penawaran_read';
         $this->load->view('backend/home', $data);

@@ -34,7 +34,7 @@
                     </table>
                     <p>Kepada Yth,</p>
                     <div class="group">
-                        <p>Sdr. Haidar</p>
+                        <p><?= $data['name'] ?></p>
                         <p>Di</p>
                         <p>Tempat</p>
                     </div>
@@ -45,7 +45,7 @@
             </div>
             <div class="content">
                 <p>Dengan Hormat,</p>
-                <p>Bersama surat ini kami sampaikan penawaran penyewaan Armada <span>Bigbus</span> untuk kebutuhan perjalanan dari <span>Bogor</span> ke <span>Bandung</span> dengan rincian sebagai berikut:</p>
+                <p>Bersama surat ini kami sampaikan penawaran penyewaan Armada <span><?= $data['kendaraan'] ?></span> untuk kebutuhan perjalanan dari <span><?= $data['asal'] ?></span> ke <span><?= $data['tujuan'] ?></span> dengan rincian sebagai berikut:</p>
                 <div class="table-data">
                     <div class="table-header">
                         <span style="width: 35%;">TANGGAL</span>
@@ -55,13 +55,15 @@
                         <span style="width: 24%;">KETERANGAN</span>
                     </div>
                     <div class="data-container">
-                        <div class="data">
-                            <span style="width: 37%;">tes</span>
-                            <span style="width: 15%; position: relative; right: 25px">tes</span>
-                            <span style="width: 15%; position: relative; right: 5px">tes</span>
-                            <span style="width: 24%;">tes</span>
-                            <span style="width: 24%;">tes</span>
-                        </div>
+                        <?php foreach ($data_detail as $data) : ?>
+                            <div class="data">
+                                <span style="width: 37%;"><?= $data['tgl_keberangkatan'] ?></span>
+                                <span style="width: 15%; position: relative; right: 25px"><?= $data['jenis'] ?></span>
+                                <span style="width: 15%; position: relative; right: 5px"><?= $data['jumlah'] ?></span>
+                                <span style="width: 24%;"><?= $data['harga'] ?></span>
+                                <span style="width: 24%;"><?= $data['keterangan'] ?></span>
+                            </div>
+                        <?php endforeach ?>
                     </div>
                 </div>
             </div>
