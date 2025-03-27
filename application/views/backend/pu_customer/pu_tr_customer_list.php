@@ -8,7 +8,7 @@
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
                     <a class="btn btn-primary btn-sm" id="add_btn" href="<?= base_url('pu_customer/add_form_transaksi') ?>">
-                        <i class="fa fa-plus"></i>&nbsp;Add Data
+                        <i class="fa fa-plus"></i>&nbsp;Add Data Transaksi
                     </a>
                     <a class="btn btn-primary btn-sm" id="add_btn" href="<?= base_url('pu_customer/customer') ?>">
                         <i class="fa fa-list"></i>&nbsp;&nbsp;Data Customer

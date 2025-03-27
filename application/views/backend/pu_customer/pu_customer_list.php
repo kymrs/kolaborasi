@@ -9,10 +9,10 @@
                 <div class="card-header py-3">
                     <?php if ($add == 'Y') { ?>
                         <a class="btn btn-primary btn-sm" id="add_btn" href="<?= base_url('pu_customer/add_form') ?>">
-                            <i class="fa fa-plus"></i>&nbsp;Add Data
+                            <i class="fa fa-plus"></i>&nbsp;Add Data Customer
                         </a>
                     <?php } ?>
-                    <a class="btn btn-secondary btn-sm float-right ml-2" href="<?= base_url('pu_customer') ?>">
+                    <a style="background-color: rgb(36, 44, 73);" class="btn btn-secondary btn-sm float-right ml-2" href="<?= base_url('pu_customer') ?>">
                         <i class="fas fa-chevron-left"></i>&nbsp;Back
                     </a>
                     <a class="btn btn-success btn-sm float-right" id="btn-export-excel">
