@@ -9,12 +9,22 @@ class T_cpdf2 extends TCPDf
     // Page header
     function Header()
     {
-        // Ambil ukuran halaman
-        $pageWidth = $this->getPageWidth();
-        $pageHeight = $this->getPageHeight();
+        $this->Image('assets/backend/img/sobatwisata.png', 170, 5, 37, 20);
+        $this->Image('assets/backend/img/ellipse-invoice-swi.png', 146, 0, 70, 45);
 
-        // Set background image (ganti dengan path gambar kamu)
-        $this->Image('assets/backend/img/background-invoice-swi.png', 0, 0, $pageWidth, $pageHeight, '', '', '', false, 300, '', false, false, 0);
+        $this->Ln(5);
+    }
+
+    // Page footer
+    function Footer()
+    {
+        // Position at 1.5 cm from bottom
+        // $this->SetY(-15);
+        // helvetica italic 8
+        $this->SetFont('helvetica', 'I', 8);
+        // Page number
+        // $this->Cell(0, 10, 'Page ' . $this->PageNo() . '/{nb}', 0, 0, 'C');
+        $this->Image(base_url('assets/backend/img/footer-invoice-swi.png'), 0, 270, 210, 30);
     }
 }
 
@@ -326,12 +336,40 @@ class Swi_penawaran extends CI_Controller
         echo json_encode(array("status" => TRUE));
     }
 
+    function tgl_indo($tanggal)
+    {
+        $bulan = [
+            1 => 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        ];
+
+        // Pecah berdasarkan tanda "-"
+        $pecahkan = explode('-', $tanggal);
+        $jumlahPecahan = count($pecahkan);
+
+        // Jika format YYYY-MM-DD (3 bagian)
+        if ($jumlahPecahan === 3) {
+            return $pecahkan[2] . ' ' . $bulan[(int)$pecahkan[1]] . ' ' . $pecahkan[0];
+        }
+        // Jika format MM-DD (2 bagian)
+        elseif ($jumlahPecahan === 2) {
+            return $pecahkan[1] . ' ' . $bulan[(int)$pecahkan[0]];
+        }
+        // Jika hanya MM (1 bagian)
+        elseif ($jumlahPecahan === 1) {
+            return $bulan[(int)$pecahkan[0]];
+        }
+
+        return "Format tidak valid";
+    }
+
+
     // PRINTOUT FPDF
     public function generate_pdf($id)
     {
         // INISIAI VARIABLE
-        // $penawaran = $this->M_swi_invoice->get_by_id($id);
-        // $penawaran_details = $this->M_swi_invoice->get_detail($id);
+        $penawaran = $this->M_swi_penawaran->get_by_id($id);
+        $penawaran_details = $this->M_swi_penawaran->get_by_id_detail($id);
 
         // Initialize the TCPDF object
         $t_cpdf2 = new t_cpdf2('P', 'mm', 'A4', true, 'UTF-8', false);
@@ -341,175 +379,97 @@ class Swi_penawaran extends CI_Controller
         $t_cpdf2->SetAuthor('Author Name');
         $t_cpdf2->SetTitle('Invoice - ' . 'invoice');
 
-        // Set margin agar gambar memenuhi halaman
-        $t_cpdf2->SetMargins(0, 0, 0); // Margin ke 0
-        $t_cpdf2->SetAutoPageBreak(true, 0);
+        $t_cpdf2->SetMargins(15, 50, 15); // Margin kiri, atas (untuk header), kanan
+        // $t_cpdf2->SetHeaderMargin(30);    // Jarak antara header dan konten
+        $t_cpdf2->SetAutoPageBreak(true, 15); // Penanganan otomatis margin bawah
+        // $t_cpdf2->setPrintHeader(true);
 
         // Tambahkan halaman baru
         $t_cpdf2->AddPage();
 
-        // Set posisi untuk teks
-        $t_cpdf2->SetY(3);
-        $t_cpdf2->SetFont('poppins-bold', '', 24);
-        $t_cpdf2->SetX($t_cpdf2->GetPageWidth() - 50); // Posisikan teks di kanan atas
-        $t_cpdf2->Cell(35, 10, 'INVOICE', 0, 1, 'R');
+        $t_cpdf2->SetFont('Poppins-Regular', '');
 
-        // Set font untuk detail
-        $t_cpdf2->SetFont('poppins-regular', '', 11);
+        // No & Tanggal
+        $t_cpdf2->SetXY(15, 10);
+        $t_cpdf2->Cell(20, 5, 'No', 0, 0, 'L');
+        $t_cpdf2->Cell(2, 5, ':', 0, 0, 'L');
+        $t_cpdf2->Cell(0, 5, $penawaran->kode, 0, 1, 'L');
+        $t_cpdf2->SetXY(15, 15);
+        $t_cpdf2->Cell(20, 5, 'Tgl', 0, 0, 'L');
+        $t_cpdf2->Cell(2, 5, ':', 0, 0, 'L');
+        $t_cpdf2->Cell(0, 5, $this->tgl_indo(date("Y-m-j", strtotime($penawaran->created_at))), 0, 1, 'L');
+        $t_cpdf2->SetXY(15, 20);
+        $t_cpdf2->Cell(20, 5, 'Perihal', 0, 0, 'L');
+        $t_cpdf2->Cell(2, 5, ':', 0, 0, 'L');
+        $t_cpdf2->Cell(0, 5, 'Penawaran Harga Sewa Armada', 0, 1, 'L');
 
-        // Set posisi awal
-        $t_cpdf2->SetY(15);
-        $t_cpdf2->SetX(160);
+        // Kepada Yth
+        $t_cpdf2->SetXY(15, 35);
+        $t_cpdf2->Cell(0, 5, 'Kepada Yth,', 0, 1, 'L');
+        $t_cpdf2->SetXY(15, 45);
+        $t_cpdf2->Cell(0, 5, 'Sdr. ' . ucfirst($penawaran->name), 0, 1, 'L');
+        $t_cpdf2->SetXY(15, 50);
+        $t_cpdf2->Cell(0, 5, 'Di Tempat', 0, 1, 'L');
 
-        // Kolom pertama (No)
-        $t_cpdf2->Cell(9, 5, 'No :', 0, 0, 'L');
-        $t_cpdf2->Cell(40, 5, 'kode invoice', 0, 1, 'L');
+        // Isi Surat
+        $t_cpdf2->SetXY(15, 63);
+        $t_cpdf2->MultiCell(0, 5, "Dengan hormat,\n\nBersama surat ini kami sampaikan penawaran penyewaan Armada " . $penawaran->kendaraan . " untuk kebutuhan perjalanan dari " . $penawaran->asal . " ke " . $penawaran->tujuan . " dengan rincian sebagai berikut:", 0, 'L');
 
-        // Kolom kedua (Tgl)
-        $t_cpdf2->SetX(160);
-        $t_cpdf2->Cell(9, 5, 'Tgl :', 0, 0, 'L');
-        $t_cpdf2->Cell(40, 5, 'tgl_invoice', 0, 1, 'L');
+        // Tabel
 
-        $t_cpdf2->SetY(45);
-        $t_cpdf2->SetX(7);
-        $t_cpdf2->SetFont('poppins-regular', 'B', 10);
-        $t_cpdf2->Cell(0, 7, 'FROM', 0, 1, 'L');
-        $t_cpdf2->SetFont('poppins-regular', '', 10);
-        $t_cpdf2->SetX(7);
-        $t_cpdf2->Cell(0, 7, 'Sobat Wisata', 0, 1, 'L');
+        $t_cpdf2->Image('assets/backend/img/tableheader-penawaran-swi.png', 5.5, 85, 200, 12);
 
-        $t_cpdf2->SetY(45);
-        $t_cpdf2->SetX(80);
-        $t_cpdf2->SetFont('poppins-regular', 'B', 10);
-        $t_cpdf2->Cell(0, 7, 'TO', 0, 1, 'L');
-        $t_cpdf2->SetFont('poppins-regular', '', 10);
-        $t_cpdf2->SetX(80);
-        $t_cpdf2->Cell(0, 7, 'invoice_to', 0, 1, 'L');
-
-        $t_cpdf2->SetY(63);
-        $t_cpdf2->SetX(7);
-        $t_cpdf2->SetFont('poppins-regular', 'B', 10);
-        $t_cpdf2->Cell(0, 7, 'Address', 0, 1, 'L');
-        $t_cpdf2->SetFont('poppins-regular', '', 10);
-        $t_cpdf2->SetX(7);
-        // MultiCell untuk teks panjang
-        $t_cpdf2->MultiCell(65, 7, 'Kp. Tunggilis RT 001 RW 007, Desa/Kelurahan Situsari, Kec. Cileungsi, Kab. Bogor, Provinsi Jawa Barat, Kode Pos: 16820', 0, 'L');
-
-        $t_cpdf2->SetY(63);
-        $t_cpdf2->SetX(80);
-        $t_cpdf2->SetFont('poppins-regular', 'B', 10);
-        $t_cpdf2->Cell(0, 7, 'Address', 0, 1, 'L');
-        $t_cpdf2->SetFont('poppins-regular', '', 10);
-        $t_cpdf2->SetX(80);
-        // MultiCell untuk teks panjang
-        $t_cpdf2->MultiCell(65, 7, 'alamat_invoice', 0, 'L');
-
-        // Table
-        // Geser posisi vertikal ke tengah halaman (atur sesuai kebutuhan)
-        $t_cpdf2->SetY(117);  // Ini buat vertikal, ubah 100 biar lebih pas
-        $t_cpdf2->SetX(18);  // Ini buat vertikal, ubah 100 biar lebih pas
-
-        // Geser posisi horizontal (atur tengah secara manual)
-        $html = '<table border="1" cellpadding="5" cellspacing="0" style="margin-left:auto; margin-right:auto; width: 90%;">  
+        $tbl = <<<EOD
+        <table border="0" cellpadding="3">
             <thead>
-                <tr style="background-color:#f2f2f2; display: none">
-                    <th>Item</th>
-                    <th>Qty</th>
-                    <th>Day</th>
-                    <th>Price</th>
-                    <th>Total</th>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
                 </tr>
             </thead>
-            <tbody>';
+            <tbody>
+    EOD;
+        foreach ($penawaran_details as $detail) {
+            $bulan_awal = date("m", strtotime($detail->tgl_keberangkatan));
+            $bulan_kedua = date("m", strtotime($detail->tgl_kepulangan));
+            if ($bulan_awal == $bulan_kedua) {
+                $date_use = date("d", strtotime($detail->tgl_keberangkatan)) . " - " . $this->tgl_indo(date("Y-m-j", strtotime($detail->tgl_kepulangan)));
+            } else {
+                $date_use = $this->tgl_indo(date("m-j", strtotime($detail->tgl_keberangkatan))) . " - " . $this->tgl_indo(date("Y-m-j", strtotime($detail->tgl_kepulangan)));
+            }
+            $tbl .= '<tr>';
+            $tbl .= '<td width="20%">' . $date_use . '</td>';
+            $tbl .= '<td width="20%" style="text-align: center">' . $detail->jenis . '</td>';
+            $tbl .= '<td width="15%" style="text-align: center">' . $detail->jumlah . '</td>';
+            $tbl .= '<td width="25%" style="text-align: center">' . 'Rp. ' . number_format($detail->harga, 0, ',', '.') . '</td>';
+            $tbl .= '<td width="20%" style="text-align: center">' . $detail->keterangan . '</td>';
+            $tbl .= '</tr>';
+        }
+        $tbl .= <<<EOD
+    </tbody>
+</table>
+EOD;
+        $t_cpdf2->SetXY(15, 90);
+        $t_cpdf2->writeHTML($tbl, true, false, false, false, '');
 
-        // Looping data dari database
-        // foreach ($invoice_details as $data) {
-        //     $html .= '<tr style="text-align: center">
-        //         <td style="width: 35%">' . $data->item . '</td>
-        //         <td style="width: 8%">' . $data->qty . '</td>
-        //         <td style="width: 20.5%">' . $data->day . '</td>
-        //         <td style="width: 18%">Rp. ' . number_format($data->price, 0, ',', '.') . '</td>
-        //         <td>Rp. ' . number_format($data->total, 0, ',', '.') . '</td>
-        //       </tr>';
-        // }
+        // Notes
+        $t_cpdf2->SetXY(15, 115);
+        $note = "Note:\n" .
+            "- DP Minimal 30%\n" .
+            str_repeat(" ", 2) . "- Pelunasan H-5 sebelum hari keberangkatan\n" .
+            str_repeat(" ", 2) . "- Pembayaran melalui transfer ke BCA PT Quick Project Indonesia\n" .
+            str_repeat(" ", 4) . "dengan nomor rekening 713 172 8003\n" .
+            str_repeat(" ", 2) . "- Harga dan ketersediaan unit tidak mengikat jika tidak\n" .
+            str_repeat(" ", 4) . "melakukan pembayaran DP\n\n" .
+            "Demikian Surat penawaran harga ini kami buat, kami tunggu kabar baik dari Bapak/Ibu, atas perhatiannya kami ucapkan terima kasih.";
 
-        // $html .= '</tbody></table>';
+        $t_cpdf2->MultiCell(0, 5, $note, 0, 'L');
 
-        // Tampilkan di PDF
-        // $t_cpdf2->writeHTML($html, true, false, true, false, '');
-
-        $t_cpdf2->SetY(180);
-        $t_cpdf2->SetX(130);
-        $t_cpdf2->SetFont('poppins-regular', 'B', 10);
-        $t_cpdf2->Cell(0, 7, 'TOTAL', 0, 1, 'L');
-        $t_cpdf2->SetFont('poppins-regular', '', 10);
-        $t_cpdf2->SetY(180);
-        $t_cpdf2->SetX(164);
-        $t_cpdf2->Cell(0, 7, 'Rp. ' . 'total', 0, 1, 'L');
-
-        $t_cpdf2->SetY(189);
-        $t_cpdf2->SetX(130);
-        $t_cpdf2->SetFont('poppins-regular', 'B', 10);
-        $t_cpdf2->Cell(0, 7, 'TAX', 0, 1, 'L');
-        $t_cpdf2->SetFont('poppins-regular', '', 10);
-        $t_cpdf2->SetY(189);
-        $t_cpdf2->SetX(164);
-        $t_cpdf2->Cell(0, 7, 'tax', 0, 1, 'L');
-
-        $grand_total = 'total';
-
-        // $t_cpdf2->SetY(198);
-        // $t_cpdf2->SetX(130);
-        // $t_cpdf2->SetFont('poppins-regular', 'B', 10);
-        // $t_cpdf2->Cell(0, 7, 'GRAND TOTAL', 0, 1, 'L');
-        // $t_cpdf2->SetFont('poppins-regular', '', 10);
-        // $t_cpdf2->SetY(198);
-        // $t_cpdf2->SetX(164);
-        // $t_cpdf2->Cell(0, 7, 'Rp. ' . number_format($grand_total, 0, ',', '.'), 0, 1, 'L');
-
-        // $t_cpdf2->SetY(238);
-        // $t_cpdf2->SetX(143);
-        // $t_cpdf2->SetFont('poppins-regular', 'B', 10);
-        // $t_cpdf2->Cell(0, 7, 'Rahmat Kurniawan', 0, 1, 'L');
-        // $t_cpdf2->SetY(245);
-        // $t_cpdf2->SetX(151);
-        // $t_cpdf2->Cell(0, 7, 'Head Unit', 0, 1, 'L');
-
-        $t_cpdf2->SetY(180);
-        $t_cpdf2->SetX(20);
-        $t_cpdf2->SetFont('poppins-regular', 'B', 10);
-        $t_cpdf2->Cell(0, 7, 'BANK DETAILS', 0, 1, 'L');
-
-        $t_cpdf2->SetY(188);
-        $t_cpdf2->SetX(20);
-
-        $t_cpdf2->SetFont('poppins-regular', '', 10);
-        // Geser posisi horizontal (atur tengah secara manual)
-        $html = '<table border="1" cellpadding="3" cellspacing="0" style="margin-left:auto; margin-right:auto; width: 90%;">  
-    <thead>
-        <tr style="background-color:#f2f2f2; display: none">
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>';
-
-        // Looping data dari database
-        // foreach ($invoice_rek as $data) {
-        //     $html .= '<tr>
-        //                 <td style="width: 35%">' . $data->nama_bank . '</td>
-        //             </tr>';
-        //     $html .= '<tr>
-        //                 <td style="width: 35%">' . $data->no_rek . '</td>
-        //             </tr>';
-        //     $html .= '<tr>
-        //                 <td style="width: 35%">' . $data->nama_rek . '</td>
-        //             </tr>';
-        // }
-
-        $html .= '</tbody></table>';
-
-        // Tampilkan di PDF
-        $t_cpdf2->writeHTML($html, true, false, true, false, '');
+        $t_cpdf2->Cell(0, 15, 'Hormat kami,', 0, 1, 'R');
+        $t_cpdf2->Cell(0, 40, 'Sobat Wisata', 0, 1, 'R');
 
         // Output file
         $t_cpdf2->Output('Penawaran sobatwisata-' . 'kode' . '.pdf', 'I');
