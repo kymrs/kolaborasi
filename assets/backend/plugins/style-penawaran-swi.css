@@ -1,0 +1,217 @@
+.container .canvas-bg-swi-penawaran {
+    width: 620px;
+    /* min-height: 842px; */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    margin: 30px auto;
+    position: relative;
+    background-color: #fff;
+    color: #222;
+    font-size: 14px;
+}
+
+.btn-back {
+    float: right;
+    position: relative;
+    right: 150px;
+}
+
+.canvas-bg-swi-penawaran .page-2{
+    width: 100%;
+}
+
+.canvas-bg-swi-penawaran .ellipse {
+    width: 42%;
+    position: absolute;
+    right: 0;
+}
+
+/* header */
+.canvas-bg-swi-penawaran .header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.canvas-bg-swi-penawaran .header .col {
+    padding: 11px;
+}
+
+.canvas-bg-swi-penawaran .header .col:nth-child(1) {
+    flex-basis: 15%;
+}
+
+.canvas-bg-swi-penawaran .header .col table {
+    margin-top: 50px;
+}
+
+.canvas-bg-swi-penawaran .header .col:nth-child(1) p {
+    margin-top: 30px;
+}
+
+.canvas-bg-swi-penawaran .header .col:nth-child(1) .group p {
+    margin: 0;
+}
+
+.canvas-bg-swi-penawaran .header .col table tr td:nth-child(2) {
+    padding-left: 15px;
+}
+
+.canvas-bg-swi-penawaran .header .col img {
+    width: 50%;
+    position: relative;
+    left: 35%;
+    margin-top: 20px;
+}
+
+/* content */
+.canvas-bg-swi-penawaran .content {
+    margin-top: 25px;
+}
+
+.canvas-bg-swi-penawaran .content p{
+    padding: 0 11px;
+}
+
+/* table data */
+.canvas-bg-swi-penawaran .table-data {
+    margin-top: 10px;
+}
+
+.canvas-bg-swi-penawaran .table-data .table-header {
+    width: 90%;
+    margin: auto;
+    background: linear-gradient(to right, #5BDDE5, #004BAD);
+    height: 35px;
+    border-radius: 20px;
+    display: flex;
+    color: #fff;
+    align-items: center;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.canvas-bg-swi-penawaran .table-data .table-header span,
+.canvas-bg-swi-penawaran .table-data .data span {
+    text-align: center;
+    font-size: 0.8rem;
+}
+
+.canvas-bg-swi-penawaran .table-data .data-container {
+    min-height: 70px;
+}
+
+.canvas-bg-swi-penawaran .table-data .data {
+    width: 90%;
+    margin: auto;
+    display: flex;
+    color: #111;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+/* content 2 */
+.canvas-bg-swi-penawaran .content-2 {
+    padding: 0 11px;
+}
+
+.canvas-bg-swi-penawaran .content-2 ul {
+    padding-left: 25px;
+}
+
+.canvas-bg-swi-penawaran .content-2 .sign{
+    float: right;
+    margin-top: 50px;
+    margin-right: 30px;
+    margin-bottom: 120px;
+}
+
+/* Footer */
+.footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #0089D9;
+    text-align: center;
+    padding: 10px 0;
+}
+
+.footer img {
+    width: 90%;
+}
+
+/* Media Queries */
+@media (max-width: 936px) {
+    .container .canvas-bg-swi-penawaran {
+        width: 500px;
+        /* min-height: 750px; */
+        font-size: 11px;
+    }
+
+    .btn-back {
+        right: 80px;
+    }
+
+    .canvas-bg-swi-penawaran .header .col table {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 546px) {
+    .container .canvas-bg-swi-penawaran {
+        /* min-height: 610px; */
+        width: 345px;
+        font-size: 9px;
+    }
+
+    .btn-back {
+        right: 20px;
+    }
+
+    .canvas-bg-swi-penawaran .header .col table {
+        margin-top: 25px;
+        font-size: 9px;
+    }
+
+    .canvas-bg-swi-penawaran .header .col:nth-child(1) p {
+        margin-top: 20px;
+    }
+
+    .canvas-bg-swi-penawaran .header .col {
+        padding: 7px;
+    }
+
+    .canvas-bg-swi-penawaran .header .col img {
+        width: 50%;
+        position: relative;
+        left: 35%;
+        margin-top: 10px;
+    }
+
+    .canvas-bg-swi-penawaran .content {
+        margin-top: 15px;
+    }
+
+    .canvas-bg-swi-penawaran .table-data .table-header span{
+        font-size: 9px;
+    }
+
+    .canvas-bg-swi-penawaran .table-data .table-header span:nth-child(5){
+        font-size: 9px;
+        position: relative;
+        right: 10px;
+    }
+
+    .canvas-bg-swi-penawaran .table-data .data-container {
+        min-height: 40px;
+    }
+
+    .canvas-bg-swi-penawaran .table-data .data span{
+        font-size: 10px;
+    }
+
+    .canvas-bg-swi-penawaran .content-2 .sign{
+        margin-top: 30px;
+        margin-bottom: 70px;
+    }
+}
