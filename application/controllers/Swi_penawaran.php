@@ -10,7 +10,7 @@ class T_cpdf2 extends TCPDf
     function Header()
     {
         $this->Image('assets/backend/img/sobatwisata.png', 170, 5, 37, 20);
-        $this->Image('assets/backend/img/ellipse-invoice-swi.png', 146, 0, 70, 45);
+        $this->Image('assets/backend/img/ellipse-invoice-swi.png', 146, 0, 85, 60);
 
         $this->Ln(5);
     }
@@ -24,7 +24,7 @@ class T_cpdf2 extends TCPDf
         $this->SetFont('helvetica', 'I', 8);
         // Page number
         // $this->Cell(0, 10, 'Page ' . $this->PageNo() . '/{nb}', 0, 0, 'C');
-        $this->Image(base_url('assets/backend/img/footer-invoice-swi.png'), 0, 270, 210, 30);
+        $this->Image(base_url('assets/backend/img/footer-invoice-swi.png'), 0, 260, 210, 40);
     }
 }
 
@@ -382,7 +382,7 @@ class Swi_penawaran extends CI_Controller
         $t_cpdf2->SetMargins(15, 50, 15); // Margin kiri, atas (untuk header), kanan
         // $t_cpdf2->SetHeaderMargin(30);    // Jarak antara header dan konten
         $t_cpdf2->SetAutoPageBreak(true, 15); // Penanganan otomatis margin bawah
-        // $t_cpdf2->setPrintHeader(true);
+        $t_cpdf2->setPrintHeader(true);
 
         // Tambahkan halaman baru
         $t_cpdf2->AddPage();
@@ -470,6 +470,19 @@ EOD;
 
         $t_cpdf2->Cell(0, 15, 'Hormat kami,', 0, 1, 'R');
         $t_cpdf2->Cell(0, 40, 'Sobat Wisata', 0, 1, 'R');
+
+        //PAGE SELANJUTNYA
+        $t_cpdf2->setPrintHeader(false);
+        $t_cpdf2->AddPage();
+        $t_cpdf2->setPrintFooter(false);
+
+        $pageWidth = $t_cpdf2->getPageWidth();
+        $pageHeight = $t_cpdf2->getPageHeight();
+
+        // Set background image (ganti dengan path gambar kamu)
+        $t_cpdf2->SetAutoPageBreak(false, 0);
+        $t_cpdf2->Image('assets/backend/img/ketentuan-sewa-swi.png', 0, 0, $pageWidth + 10, $pageHeight, '', '', '', false, 300, '', false, false, 1);
+
 
         // Output file
         $t_cpdf2->Output('Penawaran sobatwisata-' . 'kode' . '.pdf', 'I');
