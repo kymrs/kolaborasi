@@ -481,7 +481,7 @@ EOD;
 
         // Set background image (ganti dengan path gambar kamu)
         $t_cpdf2->SetAutoPageBreak(false, 0);
-        $t_cpdf2->Image('assets/backend/img/ketentuan-sewa-swi.png', 0, 0, $pageWidth + 10, $pageHeight, '', '', '', false, 300, '', false, false, 1);
+        $t_cpdf2->Image('assets/backend/img/ketentuan-sewa-swi.png', 0, 0, $pageWidth + 1, $pageHeight, '', '', '', false, 300, '', false, false, 1);
 
 
         // Output file
