@@ -130,9 +130,13 @@ class pu_customer extends CI_Controller
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             $action_read = ($read == 'Y') ? '<a href="pu_customer/read_form_transaksi/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
             $action_edit = ($edit == 'Y') ? '<a href="pu_customer/edit_form_transaksi/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
-            $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
 
-            $action = $action_read . $action_edit . $action_delete;
+            $action = $action_read . $action_edit;
+
+            if (time() < strtotime($field->tgl_berangkat)) {
+                $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
+                $action .= $action_delete;
+            }
 
             $no++;
             $row = array();
@@ -197,6 +201,7 @@ class pu_customer extends CI_Controller
         $query = "SELECT DISTINCT group_id FROM pu_customer ORDER BY group_id DESC";
         $data['customer'] = $this->db->select('customer_id, group_id, title, nama')->get('pu_customer')->result_array();
         $data['group_id'] = $this->db->query($query)->result_array();
+        $data['travel'] = $this->db->get('pu_travel')->result_array();
         $this->load->view('backend/home', $data);
     }
 
