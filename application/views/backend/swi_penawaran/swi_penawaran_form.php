@@ -327,8 +327,8 @@
     <tr id="row-${rowCount}">
         <td class="row-number">${rowCount}</td>
         <td>
-            <input type="text" class="form-control tgl_keberangkatan" name="tgl_keberangkatan[${rowCount}]" placeholder="Keberangkatan..." />
-            <input type="text" class="form-control tgl_kepulangan" name="tgl_kepulangan[${rowCount}]" placeholder="Kepulangan..." />
+            <input type="text" class="form-control tgl_keberangkatan" name="tgl_keberangkatan[${rowCount}]" placeholder="Keberangkatan..." readonly />
+            <input type="text" class="form-control tgl_kepulangan" name="tgl_kepulangan[${rowCount}]" placeholder="Kepulangan..." readonly />
         </td>
         <td><input type="text" class="form-control jenis" name="jenis[${rowCount}]" placeholder="Jenis..." /></td>
         <td><input type="text" class="form-control jumlah" id="jumlah-${rowCount}" name="jumlah[${rowCount}]" placeholder="Jumlah..." /></td>
@@ -510,8 +510,8 @@
                                 <tr id="row-${index + 1}">
                                     <td class="row-number">${index + 1}</td>
                                     <td>
-                                        <input type="text" class="form-control tgl_keberangkatan" name="tgl_keberangkatan[${index + 1}]" value="${data['transaksi'][index]['tgl_keberangkatan']}" placeholder="Keberangkatan..." />
-                                        <input type="text" class="form-control tgl_kepulangan" name="tgl_kepulangan[${index + 1}]" value="${data['transaksi'][index]['tgl_kepulangan']}" placeholder="Kepulangan..." />
+                                        <input type="text" class="form-control tgl_keberangkatan" name="tgl_keberangkatan[${index + 1}]" value="${moment(['transaksi'][index]['tgl_keberangkatan']).format('DD-MM-YYYY')}" placeholder="Keberangkatan..." readonly />
+                                        <input type="text" class="form-control tgl_kepulangan" name="tgl_kepulangan[${index + 1}]" value="${moment(['transaksi'][index]['tgl_kepulangan']).format('DD-MM-YYYY')}" placeholder="Kepulangan..." readonly />
                                         <input type="hidden" id="hidden_id${index + 1}" name="hidden_id" value="${data['master']['id']}">
                                 <input type="hidden" id="hidden_id_detail${index + 1}" name="hidden_id_detail[${index + 1}]" value="${data['transaksi'][index]['id']}">
                                     </td>
@@ -543,6 +543,14 @@
                             $("#form").validate().settings.messages[`nominal[${index + 1}]`] = {
                                 required: "Nominal is required"
                             };
+
+                            // Aktifkan datepicker pada elemen baru
+                            $('.tgl_keberangkatan').datepicker({
+                                dateFormat: 'dd-mm-yy'
+                            });
+                            $('.tgl_kepulangan').datepicker({
+                                dateFormat: 'dd-mm-yy'
+                            });
                             rowCount = index + 1;
                         });
 

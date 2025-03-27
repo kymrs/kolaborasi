@@ -459,11 +459,11 @@ EOD;
         $t_cpdf2->SetXY(15, 115);
         $note = "Note:\n" .
             "- DP Minimal 30%\n" .
-            str_repeat(" ", 2) . "- Pelunasan H-5 sebelum hari keberangkatan\n" .
-            str_repeat(" ", 2) . "- Pembayaran melalui transfer ke BCA PT Quick Project Indonesia\n" .
-            str_repeat(" ", 4) . "dengan nomor rekening 713 172 8003\n" .
-            str_repeat(" ", 2) . "- Harga dan ketersediaan unit tidak mengikat jika tidak\n" .
-            str_repeat(" ", 4) . "melakukan pembayaran DP\n\n" .
+            str_repeat(" ", 0) . "- Pelunasan H-5 sebelum hari keberangkatan\n" .
+            str_repeat(" ", 0) . "- Pembayaran melalui transfer ke BCA PT Quick Project Indonesia\n" .
+            str_repeat(" ", 3) . "dengan nomor rekening 713 172 8003\n" .
+            str_repeat(" ", 0) . "- Harga dan ketersediaan unit tidak mengikat jika tidak\n" .
+            str_repeat(" ", 3) . "melakukan pembayaran DP\n\n" .
             "Demikian Surat penawaran harga ini kami buat, kami tunggu kabar baik dari Bapak/Ibu, atas perhatiannya kami ucapkan terima kasih.";
 
         $t_cpdf2->MultiCell(0, 5, $note, 0, 'L');
