@@ -117,6 +117,11 @@
         <h1 class="h3 mb-0 text-gray-800"><?= $title_view ?></h1>
     </div>
 
+    <!-- Form Loading indicator -->
+    <div id="form_loading" style="display: none;">
+        <p>Loading...</p>
+    </div>
+
     <div class="row">
         <div class="col-lg-12">
             <div class="card shadow mb-4">
@@ -661,6 +666,12 @@
         let inputCount = 0;
         let deletedRows = [];
 
+        if (id != 0) {
+            // Tampilkan loading
+            $('#form_loading').show();
+            $('.aksi').prop('disabled', true);
+        }
+
         //MEMBUAT TAMPILAN HARGA MENJADI ADA TITIK
         $('#jumlah_prepayment').on('input', function() {
             let value = $(this).val().replace(/[^,\d]/g, '');
@@ -1057,6 +1068,13 @@
                 dataType: "JSON",
                 success: function(data) {
                     moment.locale('id')
+
+                    // PENGECEKAN APAKAH DATA TRANSAKSI ADA ATAU TIDAK
+                    if (data.transaksi.length > 0) {
+                        $('#form_loading').hide();
+                        $('.aksi').prop('disabled', false);
+                    }
+
                     // Set nilai untuk setiap field dari data master    
                     $('#sifat_pelaporan').val(data['master']['sifat_pelaporan']);
                     $('#id').val(data['master']['id']);

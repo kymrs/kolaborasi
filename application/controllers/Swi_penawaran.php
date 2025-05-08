@@ -24,7 +24,7 @@ class T_cpdf2 extends TCPDf
         $this->SetFont('helvetica', 'I', 8);
         // Page number
         // $this->Cell(0, 10, 'Page ' . $this->PageNo() . '/{nb}', 0, 0, 'C');
-        $this->Image(base_url('assets/backend/img/footer-invoice-swi.png'), 0, 260, 210, 40);
+        $this->Image(base_url('assets/backend/img/footer2-invoice-swi.png'), 0, 260, 210, 40);
     }
 }
 
@@ -379,7 +379,7 @@ class Swi_penawaran extends CI_Controller
         // Set document properties
         $t_cpdf2->SetCreator(PDF_CREATOR);
         $t_cpdf2->SetAuthor('Author Name');
-        $t_cpdf2->SetTitle('Invoice - ' . 'invoice');
+        $t_cpdf2->SetTitle('Penawaran - ' . $penawaran->kode);
 
         $t_cpdf2->SetMargins(15, 50, 15); // Margin kiri, atas (untuk header), kanan
         // $t_cpdf2->SetHeaderMargin(30);    // Jarak antara header dan konten
@@ -416,22 +416,15 @@ class Swi_penawaran extends CI_Controller
         // Isi Surat
         $t_cpdf2->SetXY(15, 63);
         $t_cpdf2->MultiCell(0, 5, "Dengan hormat,\n\nBersama surat ini kami sampaikan penawaran penyewaan Armada " . $penawaran->kendaraan . " untuk kebutuhan perjalanan dari " . $penawaran->asal . " ke " . $penawaran->tujuan . " dengan rincian sebagai berikut:", 0, 'L');
+        $Y_position = $t_cpdf2->GetY();
 
         // Tabel
+        $t_cpdf2->Image('assets/backend/img/tableheader-penawaran-swi.png', 5.5, $Y_position + 4, 200, 12);
 
-        $t_cpdf2->Image('assets/backend/img/tableheader-penawaran-swi.png', 5.5, 85, 200, 12);
+        $Y_position2 = $t_cpdf2->GetY();
 
         $tbl = <<<EOD
         <table border="0" cellpadding="3">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                </tr>
-            </thead>
             <tbody>
     EOD;
         foreach ($penawaran_details as $detail) {
@@ -454,11 +447,12 @@ class Swi_penawaran extends CI_Controller
     </tbody>
 </table>
 EOD;
-        $t_cpdf2->SetXY(15, 90);
+        $t_cpdf2->SetXY(15, $Y_position2 + 17);
         $t_cpdf2->writeHTML($tbl, true, false, false, false, '');
+        $Y_position3 = $t_cpdf2->GetY();
 
         // Notes
-        $t_cpdf2->SetXY(15, 115);
+        $t_cpdf2->SetXY(15, $Y_position3 - 1);
         $note = "Note:\n" .
             "- DP Minimal 30%\n" .
             str_repeat(" ", 0) . "- Pelunasan H-5 sebelum hari keberangkatan\n" .
@@ -483,10 +477,10 @@ EOD;
 
         // Set background image (ganti dengan path gambar kamu)
         $t_cpdf2->SetAutoPageBreak(false, 0);
-        $t_cpdf2->Image('assets/backend/img/ketentuan-sewa-swi.png', 0, 0, $pageWidth + 10, $pageHeight, '', '', '', false, 300, '', false, false, 1);
+        $t_cpdf2->Image('assets/backend/img/ketentuan-sewa-swi.png', 0, 0, $pageWidth + 1, $pageHeight, '', '', '', false, 300, '', false, false, 1);
 
 
         // Output file
-        $t_cpdf2->Output('Penawaran sobatwisata-' . 'kode' . '.pdf', 'I');
+        $t_cpdf2->Output('Penawaran sobatwisata-' . $penawaran->kode . '.pdf', 'I');
     }
 }
