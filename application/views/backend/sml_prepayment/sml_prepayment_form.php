@@ -90,6 +90,11 @@
         <h1 class="h3 mb-0 text-gray-800"><?= $title_view ?></h1>
     </div>
 
+    <!-- Form Loading indicator -->
+    <div id="form_loading" style="display: none;">
+        <p>Loading...</p>
+    </div>
+
     <div class="row">
         <div class="col-lg-12">
             <div class="card shadow mb-4">
@@ -292,6 +297,12 @@
         let inputCount = 0;
         let deletedRows = [];
 
+        if (id != 0) {
+            // Tampilkan loading
+            $('#form_loading').show();
+            $('.aksi').prop('disabled', true);
+        }
+
         // Tambahkan fungsi untuk memformat input nominal memiliki titik
         function formatJumlahInput(selector) {
             $(document).on('input', selector, function() {
@@ -446,6 +457,13 @@
                 success: function(data) {
                     // moment.locale('id')
                     let total_nominal = 0;
+
+                    // PENGECEKAN APAKAH DATA TRANSAKSI ADA ATAU TIDAK
+                    if (data.transaksi.length > 0) {
+                        $('#form_loading').hide();
+                        $('.aksi').prop('disabled', false);
+                    }
+
                     // console.log(data);
                     for (let index = 0; index < data['transaksi'].length; index++) {
                         total_nominal += parseInt(data['transaksi'][index]['nominal'], 10);

@@ -51,7 +51,7 @@ class M_notifikasi extends CI_Model
         $notifikasi_qbg = $this->db->table_exists('qbg_notifikasi') ? $this->db->select('id')->from('qbg_notifikasi')->where('app_hc_name', $app)->where('app_hc_status', 'waiting')->where('app2_status', 'waiting')->or_where('app2_name', $app)->where('app_hc_status', 'approved')->where('app2_status', 'waiting')->get()->num_rows() : null;
 
         $data['notif_pending'] = [
-            'prepayment_sw' => $prepayment_sw,
+            'sw_prepayment' => $prepayment_sw,
             'sml_prepayment' => $sml_prepayment,
             'pu_prepayment' => $pu_prepayment,
             'swi_prepayment' => $swi_prepayment,
@@ -59,8 +59,8 @@ class M_notifikasi extends CI_Model
             'bmn_prepayment' => $bmn_prepayment,
             'qbg_prepayment' => $qbg_prepayment,
             'mac_prepayment' => $prepayment_mac,
-            'prepayment_ctz' => $prepayment_ctz,
-            'reimbust_sw' => $reimbust_sw,
+            'ctz_prepayment' => $prepayment_ctz,
+            'sw_reimbust' => $reimbust_sw,
             'sml_reimbust' => $sml_reimbust,
             'pu_reimbust' => $pu_reimbust,
             'swi_reimbust' => $swi_reimbust,
@@ -68,8 +68,8 @@ class M_notifikasi extends CI_Model
             'bmn_reimbust' => $bmn_reimbust,
             'qbg_reimbust' => $qbg_reimbust,
             'mac_reimbust' => $reimbust_mac,
-            'reimbust_ctz' => $reimbust_ctz,
-            'datadeklarasi_sw' => $datadeklarasi_sw,
+            'ctz_reimbust' => $reimbust_ctz,
+            'sw_datadeklarasi' => $datadeklarasi_sw,
             'sml_datadeklarasi' => $sml_datadeklarasi,
             'pu_datadeklarasi' => $pu_datadeklarasi,
             'swi_datadeklarasi' => $swi_datadeklarasi,
@@ -77,7 +77,7 @@ class M_notifikasi extends CI_Model
             'bmn_datadeklarasi' => $bmn_datadeklarasi,
             'qbg_datadeklarasi' => $qbg_datadeklarasi,
             'mac_datadeklarasi' => $deklarasi_mac,
-            'datadeklarasi_ctz' => $deklarasi_ctz,
+            'ctz_datadeklarasi' => $deklarasi_ctz,
             'datanotifikasi_pu' => $notifikasi_pu,
         ];
 

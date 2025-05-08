@@ -810,7 +810,7 @@ class Pu_reimbust extends CI_Controller
                 $_FILES['file']['error'] = $_FILES['kwitansi']['error'][$i];
                 $_FILES['file']['size'] = $_FILES['kwitansi']['size'][$i];
 
-                $config['upload_path'] = 'D:\Assets';
+                $config['upload_path'] = './assets/backend/document/reimbust/kwitansi_pu/';
                 $config['allowed_types'] = 'jpeg|jpg|png';
                 $config['max_size'] = 3072; // Batasan ukuran file dalam kilobytes (3 MB)
                 $config['encrypt_name'] = TRUE;
@@ -966,8 +966,12 @@ class Pu_reimbust extends CI_Controller
                     'pemakaian' => $pemakaian[$i],
                     'jumlah' => $jumlahClean[$i],
                     'kwitansi' => !empty($kwitansi) ? $kwitansi : (isset($kwitansi_image[$i]) ? $kwitansi_image[$i] : ''),
-                    'deklarasi' => $deklarasi[$i]
+                    // 'deklarasi' => $deklarasi[$i]
                 );
+
+                if (isset($deklarasi[$i])) {
+                    $data2['deklarasi'] = $deklarasi[$i];
+                }
 
                 // Mengubah data tbl_prepayment_pu is_active menjadi 0 pada data tbl_prepayment_pu terbaru, jika kode_prepayment ada
                 $kode_prepayment = $this->input->post('kode_prepayment');
@@ -982,14 +986,16 @@ class Pu_reimbust extends CI_Controller
                 }
 
                 // Replace data di tbl_reimbust_detail
-                $this->db->replace('tbl_reimbust_detail', $data2);
+                $this->db->replace('tbl_reimbust_detail_pu', $data2);
 
                 // mengubah is_active deklarasi awal menjadi 1, dan deklarasi baru menjadi 0
-                if ($deklarasi_old[$i]) {
-                    $this->db->update('tbl_deklarasi_pu', ['is_active' => 1], ['kode_deklarasi' => $deklarasi_old[$i]]);
-                    $this->db->update('tbl_deklarasi_pu', ['is_active' => 0], ['kode_deklarasi' => $deklarasi[$i]]);
-                } else {
-                    $this->db->update('tbl_deklarasi_pu', ['is_active' => 0], ['kode_deklarasi' => $deklarasi[$i]]);
+                if (isset($deklarasi_old[$i])) {
+                    if ($deklarasi_old[$i]) {
+                        $this->db->update('tbl_deklarasi_pu', ['is_active' => 1], ['kode_deklarasi' => $deklarasi_old[$i]]);
+                        $this->db->update('tbl_deklarasi_pu', ['is_active' => 0], ['kode_deklarasi' => $deklarasi[$i]]);
+                    } else {
+                        $this->db->update('tbl_deklarasi_pu', ['is_active' => 0], ['kode_deklarasi' => $deklarasi[$i]]);
+                    }
                 }
             }
         }

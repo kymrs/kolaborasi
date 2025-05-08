@@ -8,6 +8,8 @@
 </head>
 
 <body>
+    <!-- FITUR PAYMENT -->
+    <a class="btn btn-success btn-sm mr-2" id="paymentBtn" data-toggle="modal" style="float: right;" data-target="#paymentModal"><i class="fas fa-money-bill"></i>&nbsp;Payment</a>
     <a class="btn btn-secondary btn-sm btn-back" onclick="history.back()"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
     <div style="clear: both;"></div>
     <div class="container">
@@ -110,5 +112,99 @@
         </div>
     </div>
 
+    <!-- Modal Payment -->
+    <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                        <i class="fas fa-check-circle"></i> Payment
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="paymentForm" action="">
+                        <!-- <div class="form-group">
+                            <label style="font-size: 107%;"><span style="font-weight: bold">No Rekening</span> <span style="margin-left: 20px;">:</span> <span id="no_rek"></span></label> <br> -->
+                        <!-- <label style="font-size: 107%;"><span style="font-weight: bold">Jenis Rekening</span> <span style="margin-left: 5px;">:</span> <span id="jenis_rek"></span></label> -->
+                        <!-- </div> -->
+                        <div class="form-group">
+                            <label for="payment_status">Status <span class="text-danger">*</span></label>
+                            <select id="payment_status" name="payment_status" class="form-control" style="cursor: pointer;" required>
+                                <option selected disabled>Choose status...</option>
+                                <option value="1">Lunas</option>
+                                <option value="0">Belum Lunas</option>
+                            </select>
+                            <input type="hidden" id="hidden_id" value="<?php echo $id ?>" name="id">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                <i class="fas fa-times"></i> Close
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <?php $this->load->view('template/footer'); ?>
     <?php $this->load->view('template/script'); ?>
+
+    <script>
+        $(document).ready(function() {
+            $('#paymentBtn').click(function() {
+                $('#paymentForm').attr('action', '<?= site_url('swi_invoice/payment') ?>');
+                const id = $('#hidden_id').val();
+
+                $.ajax({
+                    url: "<?php echo site_url('swi_invoice/edit_data') ?>/" + id,
+                    type: "GET",
+                    dataType: "JSON",
+                    success: function(data) {
+                        console.log(data);
+                        $('#payment_status').val(data['master']['payment_status']);
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert('Error get data from ajax');
+                    }
+                });
+            });
+
+            // PAYMENT
+            $('#paymentForm').submit(function(e) {
+                e.preventDefault();
+                var url = $(this).attr('action');
+                // MENGINPUT PAYMENT
+                $.ajax({
+                    url: url, // Mengambil action dari form
+                    type: "POST",
+                    data: $(this).serialize(), // Mengambil semua data dari form
+                    dataType: "JSON",
+                    success: function(data) {
+                        console.log(data);
+                        if (data.status) //if success close modal and reload ajax table
+                        {
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'success',
+                                title: 'Your data has been saved',
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then((result) => {
+                                window.history.back(); // Kembali ke halaman sebelumnya
+                            })
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert('Error adding / update data');
+                    }
+                });
+            });
+        });
+    </script>

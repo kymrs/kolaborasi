@@ -123,6 +123,12 @@ class Swi_invoice extends CI_Controller
         // $data['notif'] = $this->M_notifikasi->pending_notification();
         $data['id'] = $id;
         $data['invoice'] = $this->M_swi_invoice->getInvoiceData($id);
+        // $data['name'] = $this->db->select('username')
+        //     ->from('tbl_user')
+        //     ->where('id_user', $data['id_user'])
+        //     ->get()
+        //     ->row('username');
+        $data['status'] = $this->M_swi_invoice->get_by_id($id)->payment_status;
         $data['rekening'] = $this->db->get_where('swi_rek_invoice', ['invoice_id' => $id])->result_array();
         $data['detail'] = $this->db->get_where('swi_detail_invoice', ['invoice_id' => $id])->result_array();
         $data['title'] = 'backend/swi_invoice/swi_invoice_read';
@@ -595,7 +601,7 @@ class Swi_invoice extends CI_Controller
     function payment()
     {
         $this->db->where('id', $this->input->post('id'));
-        $this->db->update('tbl_prepayment_pu', ['payment_status' => $this->input->post('payment_status')]);
+        $this->db->update('swi_invoice', ['payment_status' => $this->input->post('payment_status')]);
 
         echo json_encode(array("status" => TRUE));
     }

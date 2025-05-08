@@ -203,7 +203,7 @@ class Ctz_prepayment extends CI_Controller
     {
         // INISIASI
         $data['id_user'] = $this->session->userdata('id_user');
-        $data['id_pembuat'] = $this->M_qbg_prepayment->get_by_id($id)->id_user;
+        $data['id_pembuat'] = $this->M_ctz_prepayment->get_by_id($id)->id_user;
 
         $data['id'] = $id;
         $data['aksi'] = 'update';

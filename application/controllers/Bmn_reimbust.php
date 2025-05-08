@@ -243,8 +243,8 @@ class Bmn_reimbust extends CI_Controller
             $row[] = $action;
             $row[] = strtoupper($field->kode_prepayment);
             $row[] = $field->name;
-            // $row[] = strtoupper($field->divisi);
-            // $row[] = strtoupper($field->jabatan);
+            $row[] = strtoupper($field->divisi);
+            $row[] = strtoupper($field->jabatan);
             $row[] = date("d M Y", strtotime($field->tgl_prepayment));
             $row[] = $field->prepayment;
             $row[] = $formatted_nominal;
@@ -968,8 +968,12 @@ class Bmn_reimbust extends CI_Controller
                     'pemakaian' => $pemakaian[$i],
                     'jumlah' => $jumlahClean[$i],
                     'kwitansi' => !empty($kwitansi) ? $kwitansi : (isset($kwitansi_image[$i]) ? $kwitansi_image[$i] : ''),
-                    'deklarasi' => $deklarasi[$i]
+                    // 'deklarasi' => $deklarasi[$i]
                 );
+
+                if (isset($deklarasi[$i])) {
+                    $data2['deklarasi'] = $deklarasi[$i];
+                }
 
                 // Mengubah data prepayment is_active menjadi 0 pada data prepayment terbaru, jika kode_prepayment ada
                 $kode_prepayment = $this->input->post('kode_prepayment');
@@ -987,11 +991,13 @@ class Bmn_reimbust extends CI_Controller
                 $this->db->replace('bmn_reimbust_detail', $data2);
 
                 // mengubah is_active deklarasi awal menjadi 1, dan deklarasi baru menjadi 0
-                if ($deklarasi_old[$i]) {
-                    $this->db->update('bmn_deklarasi', ['is_active' => 1], ['kode_deklarasi' => $deklarasi_old[$i]]);
-                    $this->db->update('bmn_deklarasi', ['is_active' => 0], ['kode_deklarasi' => $deklarasi[$i]]);
-                } else {
-                    $this->db->update('bmn_deklarasi', ['is_active' => 0], ['kode_deklarasi' => $deklarasi[$i]]);
+                if (isset($deklarasi_old[$i])) {
+                    if ($deklarasi_old[$i]) {
+                        $this->db->update('bmn_deklarasi', ['is_active' => 1], ['kode_deklarasi' => $deklarasi_old[$i]]);
+                        $this->db->update('bmn_deklarasi', ['is_active' => 0], ['kode_deklarasi' => $deklarasi[$i]]);
+                    } else {
+                        $this->db->update('bmn_deklarasi', ['is_active' => 0], ['kode_deklarasi' => $deklarasi[$i]]);
+                    }
                 }
             }
         }
