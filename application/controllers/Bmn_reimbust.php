@@ -243,8 +243,8 @@ class Bmn_reimbust extends CI_Controller
             $row[] = $action;
             $row[] = strtoupper($field->kode_prepayment);
             $row[] = $field->name;
-            // $row[] = strtoupper($field->divisi);
-            // $row[] = strtoupper($field->jabatan);
+            $row[] = strtoupper($field->divisi);
+            $row[] = strtoupper($field->jabatan);
             $row[] = date("d M Y", strtotime($field->tgl_prepayment));
             $row[] = $field->prepayment;
             $row[] = $formatted_nominal;

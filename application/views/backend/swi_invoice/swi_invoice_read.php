@@ -104,6 +104,11 @@
                     <p style="margin-bottom: 5px;"><?= $data['nama_rek'] ?></p>
                 <?php endforeach ?>
             </div>
+            <img class="logo-lunas" src="<?= base_url('assets/backend/img/logo-lunas-swi.png') ?>" alt="asdsad" width="100">
+            <div class="pic">
+                <p>Rahmat Kurniawan</p>
+                <p>Head Unit</p>
+            </div>
             <div class="footer">
                 <img src="<?= base_url('assets/backend/img/footer-invoice-swi.png') ?>" alt="footer">
             </div>

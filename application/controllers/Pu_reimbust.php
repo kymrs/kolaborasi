@@ -982,7 +982,7 @@ class Pu_reimbust extends CI_Controller
                 }
 
                 // Replace data di tbl_reimbust_detail
-                $this->db->replace('tbl_reimbust_detail', $data2);
+                $this->db->replace('tbl_reimbust_detail_pu', $data2);
 
                 // mengubah is_active deklarasi awal menjadi 1, dan deklarasi baru menjadi 0
                 if ($deklarasi_old[$i]) {

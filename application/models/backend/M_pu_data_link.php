@@ -30,12 +30,26 @@ class M_pu_data_link extends CI_Model
     public function get_datatables()
     {
         $data = $this->get_data_from_json($this->file_path_crew);
+        $search = $_POST['search']['value'] ?? ''; // Ambil keyword dari DataTables
 
-        $start = isset($_POST['start']) ? intval($_POST['start']) : 0;
-        $length = isset($_POST['length']) ? intval($_POST['length']) : 10;
+        if (!empty($search)) {
+            // Filter data berdasarkan pencarian
+            $filtered = array_filter($data, function ($item) use ($search) {
+                // Contoh filter berdasarkan nama atau noHP
+                return stripos($item['nama'], $search) !== false ||
+                    stripos($item['noHP'], $search) !== false;
+            });
+        } else {
+            $filtered = $data;
+        }
 
-        return array_slice($data, $start, $length);
+        // Paging
+        $start = intval($_POST['start'] ?? 0);
+        $length = intval($_POST['length'] ?? 10);
+
+        return array_slice($filtered, $start, $length);
     }
+
 
     // Total semua data crew
     public function count_all()
@@ -43,21 +57,39 @@ class M_pu_data_link extends CI_Model
         return count($this->get_data_from_json($this->file_path_crew));
     }
 
-    // Total data crew setelah filtering
     public function count_filtered()
     {
-        return count($this->get_data_from_json($this->file_path_crew));
+        $data = $this->get_data_from_json($this->file_path_crew);
+        $search = $_POST['search']['value'] ?? '';
+
+        if (!empty($search)) {
+            $filtered = array_filter($data, function ($item) use ($search) {
+                return stripos($item['nama'], $search) !== false ||
+                    stripos($item['noHP'], $search) !== false;
+            });
+            return count($filtered);
+        }
+
+        return count($data);
     }
 
-    // Mendapatkan data member dengan paging
     public function get_datatables2()
     {
         $data = $this->get_data_from_json($this->file_path_member);
+        $search = $_POST['search']['value'] ?? '';
 
-        $start = isset($_POST['start']) ? intval($_POST['start']) : 0;
-        $length = isset($_POST['length']) ? intval($_POST['length']) : 10;
+        if (!empty($search)) {
+            $filtered = array_filter($data, function ($item) use ($search) {
+                return stripos($item['namaMember'], $search) !== false;
+            });
+        } else {
+            $filtered = $data;
+        }
 
-        return array_slice($data, $start, $length);
+        $start = intval($_POST['start'] ?? 0);
+        $length = intval($_POST['length'] ?? 10);
+
+        return array_slice($filtered, $start, $length);
     }
 
     // Total semua data member
@@ -69,6 +101,16 @@ class M_pu_data_link extends CI_Model
     // Total data member setelah filtering
     public function count_filtered2()
     {
-        return count($this->get_data_from_json($this->file_path_member));
+        $data = $this->get_data_from_json($this->file_path_member);
+        $search = $_POST['search']['value'] ?? '';
+
+        if (!empty($search)) {
+            $filtered = array_filter($data, function ($item) use ($search) {
+                return stripos($item['namaMember'], $search) !== false;
+            });
+            return count($filtered);
+        }
+
+        return count($data);
     }
 }
