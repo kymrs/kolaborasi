@@ -193,7 +193,6 @@
                     data: $(this).serialize(), // Mengambil semua data dari form
                     dataType: "JSON",
                     success: function(data) {
-                        console.log(data);
                         if (data.status) //if success close modal and reload ajax table
                         {
                             Swal.fire({
