@@ -552,6 +552,9 @@ class Swi_invoice extends CI_Controller
 
         $t_cpdf2->SetY(238);
         $t_cpdf2->SetX(143);
+        $t_cpdf2->SetAlpha(0.3); // Set transparansi 50%
+        $t_cpdf2->Image('assets/backend/img/logo-lunas-swi.png', 141, 224, 40, 0, 'PNG');
+        $t_cpdf2->SetAlpha(1); // Kembalikan ke normal
         $t_cpdf2->SetFont('poppins-regular', 'B', 10);
         $t_cpdf2->Cell(0, 7, 'Rahmat Kurniawan', 0, 1, 'L');
         $t_cpdf2->SetY(245);
