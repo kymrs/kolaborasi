@@ -1511,7 +1511,6 @@
                             location.href = "<?= base_url('sw_reimbust') ?>";
                         });
                     } else {
-
                         // Sembunyikan loading saat respons diterima
                         $('#loading').hide();
 
@@ -1522,7 +1521,6 @@
                             text: data.error
                         });
                     }
-
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
 

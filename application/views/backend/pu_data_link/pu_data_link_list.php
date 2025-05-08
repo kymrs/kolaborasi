@@ -26,6 +26,7 @@
                                     <th>Nama Crew</th>
                                     <th>No Handphone</th>
                                     <th>Link</th>
+                                    <th>QR Code</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -39,6 +40,7 @@
                                     <th>Nama Crew</th>
                                     <th>No Handphone</th>
                                     <th>Link</th>
+                                    <th>QR Code</th>
                                 </tr>
                             </tfoot>
                         </table>
@@ -68,6 +70,7 @@
                                     <th>Kode Member</th>
                                     <th>Nama Member</th>
                                     <th>Link</th>
+                                    <th>QR Code</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -80,6 +83,7 @@
                                     <th>Kode Member</th>
                                     <th>Nama Member</th>
                                     <th>Link</th>
+                                    <th>QR Code</th>
                                 </tr>
                             </tfoot>
                         </table>
@@ -158,8 +162,88 @@
 
 <?php $this->load->view('template/footer'); ?>
 <?php $this->load->view('template/script'); ?>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
 
 <script type="text/javascript">
+    $('#crew-table').on('click', '.download-qr-crew', function(e) {
+        e.preventDefault(); // Biar gak langsung jalanin href default
+
+        var link = $(this).data('link');
+        var label = $(this).data('label');
+        var canvas = $('#qrCanvasCrew')[0];
+        var ctx = canvas.getContext('2d');
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const qr = new QRious({
+            element: canvas,
+            value: link,
+            size: 256
+        });
+
+        setTimeout(() => {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            const boxWidth = 70;
+            const boxHeight = 20;
+            ctx.fillStyle = 'white';
+            ctx.fillRect(centerX - boxWidth / 2, centerY - boxHeight / 2, boxWidth, boxHeight);
+
+            ctx.font = '11px Arial';
+            ctx.fillStyle = 'black';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(label, centerX, centerY);
+
+            // Trigger download otomatis
+            const tempLink = document.createElement('a');
+            tempLink.href = canvas.toDataURL("image/png");
+            tempLink.download = label + '.png';
+            tempLink.click();
+        }, 100);
+    });
+
+    $('#member-table').on('click', '.download-qr-member', function(e) {
+        e.preventDefault(); // Jangan langsung loncatin link-nya
+
+        var link = $(this).data('link');
+        var label = $(this).data('label');
+        var canvas = $('#qrCanvasMember')[0];
+        var ctx = canvas.getContext('2d');
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const qr = new QRious({
+            element: canvas,
+            value: link,
+            size: 256
+        });
+
+        setTimeout(() => {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            const boxWidth = 70;
+            const boxHeight = 20;
+            ctx.fillStyle = 'white';
+            ctx.fillRect(centerX - boxWidth / 2, centerY - boxHeight / 2, boxWidth, boxHeight);
+
+            ctx.font = '11px Arial';
+            ctx.fillStyle = 'black';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(label, centerX, centerY);
+
+            // Bikin elemen <a> buat trigger download secara manual
+            const tempLink = document.createElement('a');
+            tempLink.href = canvas.toDataURL("image/png");
+            tempLink.download = label + '.png';
+            tempLink.click(); // Trigger download otomatis
+        }, 100);
+    });
+
+
     document.addEventListener("DOMContentLoaded", function() {
         const inputNoHp = document.getElementById("no_hp");
 

@@ -9,8 +9,8 @@
 
 <body>
     <!-- FITUR PAYMENT -->
-    <a class="btn btn-success btn-sm mr-2" id="paymentBtn" data-toggle="modal" style="float: right;" data-target="#paymentModal"><i class="fas fa-money-bill"></i>&nbsp;Payment</a>
     <a class="btn btn-secondary btn-sm btn-back" onclick="history.back()"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+    <a class="btn btn-success btn-sm btn-back" style="margin-right: 10px" id="paymentBtn" data-toggle="modal" data-target="#paymentModal"><i class="fas fa-money-bill"></i>&nbsp;Payment</a>
     <div style="clear: both;"></div>
     <div class="container">
         <div class="canvas-bg-swi">
@@ -106,6 +106,13 @@
                     <p style="margin-bottom: 5px;"><?= $data['nama_rek'] ?></p>
                 <?php endforeach ?>
             </div>
+            <?php if ($status == 1) : ?>
+                <img class="logo-lunas" src="<?= base_url('assets/backend/img/logo-lunas-swi.png') ?>" alt="asdsad" width="100">
+            <?php endif ?>
+            <div class="pic">
+                <p>Rahmat Kurniawan</p>
+                <p>Head Unit</p>
+            </div>
             <div class="footer">
                 <img src="<?= base_url('assets/backend/img/footer-invoice-swi.png') ?>" alt="footer">
             </div>
@@ -167,8 +174,7 @@
                     type: "GET",
                     dataType: "JSON",
                     success: function(data) {
-                        console.log(data);
-                        $('#payment_status').val(data['master']['payment_status']);
+                        console.log(data['master']['payment_status']);
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
                         alert('Error get data from ajax');

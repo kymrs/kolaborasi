@@ -54,6 +54,7 @@ class Pu_data_link extends CI_Controller
 				$row[] = isset($crew['nama']) ? $crew['nama'] : '';  // Kolom nama
 				$row[] = isset($crew['noHP']) ? $crew['noHP'] : '';  // Kolom noHP
 				$row[] = '<a target="_blank" href="https://link.pengenumroh.com/?ref=' . $crew['id'] . '">' . 'Kunjungi</a>';
+				$row[] = '<a data-label="' . $crew['id'] . '" data-link="https://link.pengenumroh.com/?ref=' . $crew['id'] . '" class="download-qr-crew" download="qrcode - ' . $crew['id'] . '.png" style="cursor: pointer">Download QR Code</a><canvas style="display: none" id="qrCanvasCrew"></canvas>';
 
 				$data[] = $row;
 			}
@@ -99,6 +100,7 @@ class Pu_data_link extends CI_Controller
 				$row[] = $member['idMember'] ?? '';
 				$row[] = $member['namaMember'] ?? '';
 				$row[] = '<a target="_blank" href="https://link.pengenumroh.com/?mb=' . $member['idMember'] . '">' . 'Kunjungi</a>';
+				$row[] = '<a data-label="' . $member['idMember'] . '" data-link="https://link.pengenumroh.com/?mb=' . $member['idMember'] . '" class="download-qr-member" download="qrcode - ' . $member['idMember'] . '.png" style="cursor: pointer">Download QR Code</a><canvas style="display: none" id="qrCanvasMember"></canvas>';
 
 				$data[] = $row;
 			}

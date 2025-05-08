@@ -686,6 +686,16 @@
             // Gunakan FormData untuk menangani file upload
             var formData2 = new FormData($form2[0]); // Ambil semua data form termasuk file
 
+            // Tampilkan loading Swal sebelum request dikirim
+            Swal.fire({
+                title: 'Memproses...',
+                html: 'Mohon tunggu, data sedang disimpan',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
             $.ajax({
                 url: url,
                 type: "POST",
@@ -694,21 +704,28 @@
                 processData: false, // Agar data FormData tidak diproses menjadi string
                 dataType: "JSON",
                 success: function(data) {
+                    Swal.close(); // Tutup loading swal setelah request selesai
+
                     if (data.status) {
                         $('#add-customer').modal('hide');
                         Swal.fire({
                             position: 'center',
                             icon: 'success',
-                            title: 'Your data has been saved',
+                            title: 'Data berhasil disimpan',
                             showConfirmButton: false,
                             timer: 1500
-                        }).then((result) => {
+                        }).then(() => {
                             location.href = "<?= base_url('pu_customer/add_form_transaksi') ?>";
                         });
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
-                    alert('Error adding / updating data');
+                    Swal.close(); // Tutup loading swal jika terjadi error
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Terjadi kesalahan saat menyimpan data!',
+                    });
                 }
             });
         });

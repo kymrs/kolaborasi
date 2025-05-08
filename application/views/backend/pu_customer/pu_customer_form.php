@@ -589,6 +589,16 @@
             // Gunakan FormData untuk menangani file upload
             var formData = new FormData($form[0]); // Ambil semua data form termasuk file
 
+            // Tampilkan loading Swal sebelum request dikirim
+            Swal.fire({
+                title: 'Memproses...',
+                html: 'Mohon tunggu, data sedang disimpan',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
             $.ajax({
                 url: url,
                 type: "POST",
@@ -597,6 +607,8 @@
                 processData: false, // Agar data FormData tidak diproses menjadi string
                 dataType: "JSON",
                 success: function(data) {
+                    Swal.close(); // Tutup loading swal setelah request selesai
+
                     if (data.status) {
                         Swal.fire({
                             position: 'center',
@@ -604,13 +616,18 @@
                             title: 'Your data has been saved',
                             showConfirmButton: false,
                             timer: 1500
-                        }).then((result) => {
+                        }).then(() => {
                             location.href = "<?= base_url('pu_customer/customer') ?>";
                         });
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
-                    alert('Error adding / updating data');
+                    Swal.close(); // Tutup loading swal jika terjadi error
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Error adding / updating data!',
+                    });
                 }
             });
         });
