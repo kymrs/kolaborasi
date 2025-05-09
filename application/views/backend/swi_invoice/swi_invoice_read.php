@@ -107,7 +107,9 @@
                 <?php endforeach ?>
             </div>
             <?php if ($status == 1) : ?>
-                <img class="logo-lunas" src="<?= base_url('assets/backend/img/logo-lunas-swi.png') ?>" alt="asdsad" width="100">
+                <img class="logo-lunas" src="<?= base_url('assets/backend/img/logo-lunas-swi.png') ?>" alt="logo" width="100">
+            <?php else : ?>
+                <img class="logo-lunas" style="display: none" src="<?= base_url('assets/backend/img/logo-lunas-swi.png') ?>" alt="logo" width="100">
             <?php endif ?>
             <div class="pic">
                 <p>Rahmat Kurniawan</p>
@@ -165,6 +167,8 @@
 
     <script>
         $(document).ready(function() {
+
+            // PAYMENT MODAL        
             $('#paymentBtn').click(function() {
                 $('#paymentForm').attr('action', '<?= site_url('swi_invoice/payment') ?>');
                 const id = $('#hidden_id').val();
@@ -193,6 +197,7 @@
                     data: $(this).serialize(), // Mengambil semua data dari form
                     dataType: "JSON",
                     success: function(data) {
+
                         if (data.status) //if success close modal and reload ajax table
                         {
                             Swal.fire({
@@ -202,7 +207,15 @@
                                 showConfirmButton: false,
                                 timer: 1500
                             }).then((result) => {
-                                window.history.back(); // Kembali ke halaman sebelumnya
+
+                                if ($('#payment_status').val() == 1) {
+                                    $('.modal').modal('hide');
+                                    $('.logo-lunas').css('display', '');
+                                } else {
+                                    $('.modal').modal('hide');
+                                    $('.logo-lunas').css('display', 'none');
+                                }
+
                             })
                         }
                     },
