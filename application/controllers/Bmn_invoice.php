@@ -273,6 +273,9 @@ class Bmn_invoice extends CI_Controller
                 );
             }
             $this->M_bmn_invoice->save_detail($data2);
+        } else {
+            echo json_encode(array("status" => FALSE, "message" => "Mohon Untuk menginput rekening!"));
+            exit();
         }
 
         if ($inserted) {
