@@ -107,11 +107,15 @@
             </div>
             <div class="payment">
                 <p>Pembayaran Transfer Melalui</p>
-                <ol style="margin-bottom: -1px;">
-                    <?php foreach ($rekening as $data) : ?>
-                        <li>Nama : <?= $data['nama'] ?> <br> Bank : <?= $data['nama_bank'] ?> <br> No. Rekening : <?= $data['no_rek'] ?></li>
-                    <?php endforeach ?>
-                </ol>
+                <p>BCA Cab. Cibodas</p>
+                <p>No. Rekening : 7131720380</p>
+                <?php if (isset($rekening)) { ?>
+                    <ol style="margin-bottom: -1px;">
+                        <?php foreach ($rekening as $data) : ?>
+                            <li>Nama : <?= $data['nama'] ?> <br> Bank : <?= $data['nama_bank'] ?> <br> No. Rekening : <?= $data['no_rek'] ?></li>
+                        <?php endforeach ?>
+                    </ol>
+                <?php } ?>
                 <p>a/n PT. Sahabat Multi Logistik</p>
             </div>
             <div class="approval">

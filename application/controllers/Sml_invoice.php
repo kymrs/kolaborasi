@@ -557,21 +557,25 @@ class Sml_invoice extends CI_Controller
         $t_cpdf2->Ln(10);
         $t_cpdf2->SetFont('helvetica', 'B', 10);
         $t_cpdf2->Cell(0, 6, 'Pembayaran Transfer Melalui:', 0, 1);
+        $t_cpdf2->Cell(0, 6, 'BCA Cab. Cibodas', 0, 1);
+        $t_cpdf2->Cell(0, 6, 'No. Rekening : 7131720380', 0, 1);
         $t_cpdf2->SetFont('helvetica', '', 10);
-        $list = <<<EOD
+        if (isset($invoice_rek)) {
+            $list = <<<EOD
         <ol>
         EOD;
 
-        foreach ($invoice_rek as $rek) {
-            $list .= '<li>Nama : ' . $rek->nama . '<br>Bank : ' . $rek->nama_bank . '<br>No. Rekening : ' . $rek->no_rek . '</li>';
-        }
-        $list .= <<<EOD
+            foreach ($invoice_rek as $rek) {
+                $list .= '<li>Nama : ' . $rek->nama . '<br>Bank : ' . $rek->nama_bank . '<br>No. Rekening : ' . $rek->no_rek . '</li>';
+            }
+            $list .= <<<EOD
         </ol>
         EOD;
-        $t_cpdf2->SetFont('helvetica', '', 10);
-        $y = $t_cpdf2->GetY();
-        $x = 8;
-        $t_cpdf2->writeHTMLCell(0, 0, $x, $y, $list, 0, 1, false, true, 'L', true);
+            $t_cpdf2->SetFont('helvetica', '', 10);
+            $y = $t_cpdf2->GetY();
+            $x = 8;
+            $t_cpdf2->writeHTMLCell(0, 0, $x, $y, $list, 0, 1, false, true, 'L', true);
+        }
         $t_cpdf2->SetFont('helvetica', 'B', 10);
         $t_cpdf2->Cell(0, 6, 'a/n PT. Sahabat Multi Logistik', 0, 1);
 

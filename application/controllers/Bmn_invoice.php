@@ -447,28 +447,50 @@ class Bmn_invoice extends CI_Controller
             $data['sub'] = 'bmn';
             $data['output'] = 'save';
             $this->load->library('tcpdf_invoice'); // Sesuaikan dengan nama file library
-            $pdf_content = $this->tcpdf_invoice->generateInvoice($data); // Gunakan nama yang benar
+            ob_end_clean();
+            $pdf_content = $this->tcpdf_invoice->generateInvoice($data); // return string PDF content
 
-            // Simpan PDF sementara
-            $pdf_path = FCPATH . 'assets/backend/uploads/Invoice ByMoment.pdf'; // Simpan di folder uploads
+            $tmp_path = FCPATH . 'assets/backend/uploads/Invoice ByMoment.pdf';
+            // file_put_contents($tmp_path, $pdf_content);
 
-            // **2. Kirim email dengan lampiran PDF**
             $this->email->from('audricafabiano@gmail.com', 'Audrica Ewaldo');
             $this->email->to($email);
             $this->email->subject('Invoice by.moment');
             $this->email->message('Terlampir invoice Anda dalam format PDF.');
 
-            // **3. Attach PDF**
-            $this->email->attach($pdf_path);
+            // Attach PDF langsung dari string
+            $this->email->attach($tmp_path);
+            // $this->email->attach($pdf_content, 'attachment', 'Invoice.pdf', 'application/pdf');
+
 
             if ($this->email->send()) {
+                unlink($tmp_path);
                 echo json_encode(array("status" => TRUE, "message" => "Email berhasil dikirim dengan PDF."));
             } else {
                 echo json_encode(array("status" => FALSE, "message" => $this->email->print_debugger()));
             }
+            // $pdf_content = $this->tcpdf_invoice->generateInvoice($data); // Gunakan nama yang benar
 
-            // **4. Hapus file setelah dikirim agar tidak menumpuk**
-            unlink($pdf_path);
+            // // Simpan PDF sementara
+            // $pdf_path = FCPATH . 'assets/backend/uploads/Invoice ByMoment.pdf'; // Simpan di folder uploads
+
+            // **2. Kirim email dengan lampiran PDF**
+            // $this->email->from('audricafabiano@gmail.com', 'Audrica Ewaldo');
+            // $this->email->to($email);
+            // $this->email->subject('Invoice by.moment');
+            // $this->email->message('Terlampir invoice Anda dalam format PDF.');
+
+            // // **3. Attach PDF**
+            // $this->email->attach($pdf_path);
+
+            // if ($this->email->send()) {
+            //     echo json_encode(array("status" => TRUE, "message" => "Email berhasil dikirim dengan PDF."));
+            // } else {
+            //     echo json_encode(array("status" => FALSE, "message" => $this->email->print_debugger()));
+            // }
+
+            // // **4. Hapus file setelah dikirim agar tidak menumpuk**
+            // unlink($pdf_path);
         } else {
             echo json_encode(array("status" => FALSE, "message" => "Email tidak ditemukan."));
         }
