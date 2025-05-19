@@ -347,7 +347,8 @@ class pu_customer extends CI_Controller
             'kk' => $uploaded_files['kk'],
             'buku_nikah' => $uploaded_files['buku_nikah'],
             'akta_lahir' => $uploaded_files['akta_lahir'],
-            'pas_foto' => $uploaded_files['pas_foto']
+            'pas_foto' => $uploaded_files['pas_foto'],
+            'created_at' => date('Y-m-d H:i:s')
         );
 
         // Simpan data ke database
@@ -378,7 +379,8 @@ class pu_customer extends CI_Controller
             'pembayaran_1' => preg_replace('/\D/', '', $this->input->post('pembayaran_1')),
             'pembayaran_2' => preg_replace('/\D/', '', $this->input->post('pembayaran_2')),
             'pelunasan' => preg_replace('/\D/', '', $this->input->post('pelunasan')),
-            'cashback' => preg_replace('/\D/', '', $this->input->post('cashback'))
+            'cashback' => preg_replace('/\D/', '', $this->input->post('cashback')),
+            'created_at' => date('Y-m-d H:i:s')
         );
 
         // Simpan data ke database

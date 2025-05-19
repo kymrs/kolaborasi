@@ -225,6 +225,10 @@
                             <div class="modal-content">
                                 <div class="modal-body text-center">
                                     <img id="modalImage" src="" alt="Gambar" class="img-fluid" />
+                                    <br>
+                                    <a id="downloadImageBtn" href="#" class="btn btn-primary mt-3" download target="_blank">
+                                        <i class="fa fa-download"></i> Download Gambar
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -720,5 +724,15 @@
         //     $('#signNamaPengajuan').text(namaPengajuan);
         // });
 
+    });
+
+    // Set href tombol download setiap kali modal dibuka
+    $('#modalImage').on('load', function() {
+        var imgSrc = $(this).attr('src');
+        $('#downloadImageBtn').attr('href', imgSrc);
+
+        // Optional: set nama file download otomatis
+        var filename = imgSrc.split('/').pop();
+        $('#downloadImageBtn').attr('download', filename);
     });
 </script>
