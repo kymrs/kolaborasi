@@ -119,8 +119,8 @@ class Pu_invoice extends CI_Controller
             $row[] = $this->tgl_indo(date("Y-m-j", strtotime($field->tgl_invoice)));
             $kode_invoice = substr($field->kode_invoice, 0, 5) . substr($field->kode_invoice, 7, 6);
             $row[] = strtoupper($kode_invoice);
-            $row[] = $field->ctc_nama;
-            $row[] = $field->ctc_alamat;
+            $row[] = $field->ctc2_nama;
+            $row[] = $field->ctc2_alamat;
             $row[] = $this->tgl_indo(date("Y-m-j", strtotime($field->tgl_tempo)));
 
             $data[] = $row;
@@ -231,16 +231,13 @@ class Pu_invoice extends CI_Controller
             'kode_invoice' => $kode_invoice,
             'tgl_tempo' => date('Y-m-d', strtotime($this->input->post('tgl_tempo'))),
             'ctc_nama' => $this->input->post('ctc_nama'),
-            'ctc_alamat' => $this->input->post('ctc_alamat'),
-            'detail_pesanan' => $this->input->post('detail_pesanan'),
+            'ctc_nomor' => $this->input->post('ctc_nomor'),
+            'ctc2_nama' => $this->input->post('ctc2_nama'),
+            'ctc2_nomor' => $this->input->post('ctc2_nomor'),
+            'ctc2_email' => $this->input->post('ctc2_email'),
+            'ctc2_alamat' => $this->input->post('ctc2_alamat'),
             'created_at' => date('Y-m-d H:i:s')
         );
-
-        if (!empty($this->input->post('jamaah_item'))) {
-            $data['jamaah'] = $this->input->post('jamaah_item');
-        } else {
-            echo json_encode(array("status" => FALSE, "message" => "Jamaah tidak boleh kosong"));
-        }
 
         if (!empty($_POST['catatan_item'])) {
             $data['keterangan'] = $this->input->post('catatan_item');
@@ -317,15 +314,13 @@ class Pu_invoice extends CI_Controller
             'kode_invoice' => $kode_invoice,
             'tgl_tempo' => date('Y-m-d', strtotime($this->input->post('tgl_tempo'))),
             'ctc_nama' => $this->input->post('ctc_nama'),
-            'ctc_alamat' => $this->input->post('ctc_alamat'),
+            'ctc_nomor' => $this->input->post('ctc_nomor'),
+            'ctc2_nama' => $this->input->post('ctc2_nama'),
+            'ctc2_email' => $this->input->post('ctc2_email'),
+            'ctc2_nomor' => $this->input->post('ctc2_nomor'),
+            'ctc2_alamat' => $this->input->post('ctc2_alamat'),
             'created_at' => date('Y-m-d H:i:s')
         );
-
-        if (!empty($this->input->post('jamaah_item'))) {
-            $data['jamaah'] = $this->input->post('jamaah_item');
-        } else {
-            echo json_encode(array("status" => FALSE, "message" => "Jamaah tidak boleh kosong"));
-        }
 
         if (!empty($_POST['catatan_item'])) {
             $data['keterangan'] = $this->input->post('catatan_item');
@@ -539,7 +534,7 @@ class Pu_invoice extends CI_Controller
         $t_cpdf2->Cell(0, 0, ':', 0, 0);
         $t_cpdf2->SetY($t_cpdf2->GetY());
         $t_cpdf2->SetX(31);
-        $t_cpdf2->MultiCell(58, 0, $invoice->ctc_alamat, 0, 'L');
+        $t_cpdf2->MultiCell(58, 0, $invoice->ctc2_alamat, 0, 'L');
 
         $t_cpdf2->SetY($t_cpdf2->GetY() + 2);
         // HEADER DETAIL JAMAAH

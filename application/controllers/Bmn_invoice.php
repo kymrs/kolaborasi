@@ -273,6 +273,9 @@ class Bmn_invoice extends CI_Controller
                 );
             }
             $this->M_bmn_invoice->save_detail($data2);
+        } else {
+            echo json_encode(array("status" => FALSE, "message" => "Mohon Untuk menginput rekening!"));
+            exit();
         }
 
         if ($inserted) {
@@ -429,17 +432,19 @@ class Bmn_invoice extends CI_Controller
         $id = $this->input->post('id');
 
         if ($email) {
-            // Konfigurasi email
             $config = [
-                'protocol'  => 'smtp',
-                'smtp_host' => 'ssl://smtp.googlemail.com',
-                'smtp_user' => 'audricafabiano@gmail.com',
-                'smtp_pass' => 'rxhr ylvy dgwg lwgl',
-                'smtp_port' => 465,
-                'mailtype'  => 'html',
-                'charset'   => 'utf-8',
-                'newline'   => "\r\n"
+                'protocol'    => 'smtp',
+                'smtp_host'   => 'mail.naufalandriana.com',  // sesuai dengan gambar
+                'smtp_user'   => 'cs@naufalandriana.com', // sesuai yang tertera
+                'smtp_pass'   => 'Adminpu123',   // bukan password cPanel!
+                'smtp_port'   => 465,
+                'smtp_crypto' => 'ssl',
+                'mailtype'    => 'html',
+                'charset'     => 'utf-8',
+                'newline'     => "\r\n",
+                'crlf'        => "\r\n"
             ];
+
 
             $this->email->initialize($config);
 
@@ -447,31 +452,50 @@ class Bmn_invoice extends CI_Controller
             $data['sub'] = 'bmn';
             $data['output'] = 'save';
             $this->load->library('tcpdf_invoice'); // Sesuaikan dengan nama file library
-            $pdf_content = $this->tcpdf_invoice->generateInvoice($data); // Gunakan nama yang benar
+            ob_end_clean();
+            $pdf_content = $this->tcpdf_invoice->generateInvoice($data); // return string PDF content
 
-            // Simpan PDF sementara
-            $pdf_path = FCPATH . 'assets/backend/uploads/Invoice ByMoment.pdf'; // Simpan di folder uploads
+            // Buat message body simple (penutup email)
+            $message_body = '
+            <p>Thanks and Best Regards,</p>
+            <p><strong>Yunita Ekaputri</strong><br>
+            Human Capital and General Services (Legal, Recruitment and Training Staff)</p>
+            <p>PT BRAJA MUKTI CAKRA<br>
+            Jalan Desa Harapan Kita Nomor 4, Bekasi Utara, 17124<br>
+            Phone : +6221 8871 836 <Ext. 107> / 085715098019<br>
+            Email : <a href="mailto:yunita@bmc.co.id">yunita@bmc.co.id</a></p>
+            ';
 
-            // **2. Kirim email dengan lampiran PDF**
-            $this->email->from('audricafabiano@gmail.com', 'Audrica Ewaldo');
+            $tmp_path = FCPATH . 'assets/backend/uploads/Invoice ByMoment.pdf';
+            // file_put_contents($tmp_path, $pdf_content);
+
+            $this->email->from('cs@naufalandriana.com', 'Audrica Ewaldo');
             $this->email->to($email);
             $this->email->subject('Invoice by.moment');
-            $this->email->message('Terlampir invoice Anda dalam format PDF.');
+            $this->email->message($message_body);
 
-            // **3. Attach PDF**
-            $this->email->attach($pdf_path);
+            // Attach PDF langsung dari string
+            $this->email->attach($tmp_path);
+            // $this->email->attach($pdf_content, 'attachment', 'Invoice.pdf', 'application/pdf');
 
             if ($this->email->send()) {
-                echo json_encode(array("status" => TRUE, "message" => "Email berhasil dikirim dengan PDF."));
+                unlink($tmp_path);
+                echo json_encode(["status" => TRUE, "message" => "Email berhasil dikirim dengan PDF."]);
             } else {
-                echo json_encode(array("status" => FALSE, "message" => $this->email->print_debugger()));
+                echo json_encode(["status" => FALSE, "message" => $this->email->print_debugger(['headers'])]);
             }
-
-            // **4. Hapus file setelah dikirim agar tidak menumpuk**
-            unlink($pdf_path);
         } else {
-            echo json_encode(array("status" => FALSE, "message" => "Email tidak ditemukan."));
+            echo json_encode(["status" => FALSE, "message" => "Email tidak ditemukan."]);
         }
+        //     if ($this->email->send()) {
+        //         unlink($tmp_path);
+        //         echo json_encode(array("status" => TRUE, "message" => "Email berhasil dikirim dengan PDF."));
+        //     } else {
+        //         echo json_encode(array("status" => FALSE, "message" => $this->email->print_debugger()));
+        //     }
+        // } else {
+        //     echo json_encode(array("status" => FALSE, "message" => "Email tidak ditemukan."));
+        // }
     }
 
 

@@ -104,14 +104,23 @@
                         <td style="padding-right: 5px;"><?= number_format($invoice['total'] + $invoice['tax'] - $invoice['diskon'], 0, ',', '.') ?></td>
                     </tr>
                 </table>
+                <?php if ($status == 1) { ?>
+                    <div class="watermark">LUNAS</div>
+                <?php } else { ?>
+                    <div class="watermark" style="display:none">LUNAS</div>
+                <?php } ?>
             </div>
             <div class="payment">
                 <p>Pembayaran Transfer Melalui</p>
-                <ol style="margin-bottom: -1px;">
-                    <?php foreach ($rekening as $data) : ?>
-                        <li>Nama : <?= $data['nama'] ?> <br> Bank : <?= $data['nama_bank'] ?> <br> No. Rekening : <?= $data['no_rek'] ?></li>
-                    <?php endforeach ?>
-                </ol>
+                <p>BCA Cab. Cibodas</p>
+                <p>No. Rekening : 7131720380</p>
+                <?php if (isset($rekening)) { ?>
+                    <ol style="margin-bottom: -1px;">
+                        <?php foreach ($rekening as $data) : ?>
+                            <li>Nama : <?= $data['nama'] ?> <br> Bank : <?= $data['nama_bank'] ?> <br> No. Rekening : <?= $data['no_rek'] ?></li>
+                        <?php endforeach ?>
+                    </ol>
+                <?php } ?>
                 <p>a/n PT. Sahabat Multi Logistik</p>
             </div>
             <div class="approval">
@@ -229,7 +238,14 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then((result) => {
-                            window.history.back(); // Kembali ke halaman sebelumnya
+                            // window.history.back(); // Kembali ke halaman sebelumnya
+                            if ($('#payment_status').val() == 1) {
+                                $('.modal').modal('hide');
+                                $('.watermark').css('display', '');
+                            } else {
+                                $('.modal').modal('hide');
+                                $('.watermark').css('display', 'none');
+                            }
                         })
                     }
                 },

@@ -543,36 +543,72 @@ class Sml_invoice extends CI_Controller
         // Total
         $t_cpdf2->SetFont('helvetica', 'B', 10);
         if ($invoice->tax > 0) {
-            $t_cpdf2->Cell(130, 6, 'PPN', 1, 0, 'R');
+            $t_cpdf2->Cell(100, 6, '', 0, 0,);
+            $t_cpdf2->Cell(30, 6, 'PPN', 1, 0, 'R');
             $t_cpdf2->Cell(44, 6, number_format($invoice->tax, 0, ',', '.'), 1, 1, 'R');
         }
         if ($invoice->diskon > 0) {
-            $t_cpdf2->Cell(130, 6, 'Diskon', 1, 0, 'R');
+            $t_cpdf2->Cell(100, 6, '', 0, 0,);
+            $t_cpdf2->Cell(30, 6, 'Diskon', 1, 0, 'R');
             $t_cpdf2->Cell(44, 6, number_format($invoice->diskon, 0, ',', '.'), 1, 1, 'R');
         }
-        $t_cpdf2->Cell(130, 6, 'Total', 1, 0, 'R');
+        $t_cpdf2->Cell(100, 6, '', 0, 0,);
+        $t_cpdf2->Cell(30, 6, 'Total', 1, 0, 'R');
         $t_cpdf2->Cell(44, 6, number_format($grand_total + $invoice->tax - $invoice->diskon, 0, ',', '.'), 1, 1, 'R');
+
+        if ($status == 1) {
+            $text = 'Lunas';
+            $x = $t_cpdf2->GetX() + 150;
+            $y = $t_cpdf2->GetY() + 4;
+            $radius = 12;
+            $angle = 0;
+
+            $t_cpdf2->SetTextColor(69, 87, 123);
+            $t_cpdf2->SetAlpha(0.25);
+            $t_cpdf2->SetFont('Courier', '', 20);
+
+            $t_cpdf2->StartTransform();
+            $t_cpdf2->Rotate($angle, $x, $y);
+
+            $t_cpdf2->SetDrawColor(69, 87, 123);
+            $t_cpdf2->SetLineWidth(1);
+            // $t_cpdf2->Rect($x - 9, $y - 2, 45, 15);
+            // $t_cpdf2->Ellipse($x, $y, 17, 8, 'D'); // Bentuk elips horizontal
+            $t_cpdf2->Circle($x, $y, $radius, 'D'); // 'D' untuk border tanpa fill
+
+            // $t_cpdf2->Text($x, $y, $text);
+            $t_cpdf2->Text($x - 11, $y - 5, $text);
+
+            $t_cpdf2->StopTransform();
+            $t_cpdf2->SetTextColor(0, 0, 0); // Reset warna teks ke hitam
+            $t_cpdf2->SetAlpha(1); // Pastikan tidak ada transparansi yang tersisa
+        }
 
         // Informasi Transfer
         $t_cpdf2->Ln(10);
         $t_cpdf2->SetFont('helvetica', 'B', 10);
         $t_cpdf2->Cell(0, 6, 'Pembayaran Transfer Melalui:', 0, 1);
+        $t_cpdf2->Cell(0, 6, 'BCA Cab. Cibodas', 0, 1);
+        $t_cpdf2->Cell(0, 6, 'No. Rekening : 7131720380', 0, 1);
         $t_cpdf2->SetFont('helvetica', '', 10);
-        $list = <<<EOD
+        if (isset($invoice_rek)) {
+            $list = <<<EOD
         <ol>
         EOD;
 
-        foreach ($invoice_rek as $rek) {
-            $list .= '<li>Nama : ' . $rek->nama . '<br>Bank : ' . $rek->nama_bank . '<br>No. Rekening : ' . $rek->no_rek . '</li>';
-        }
-        $list .= <<<EOD
+            foreach ($invoice_rek as $rek) {
+                $list .= '<li>Nama : ' . $rek->nama . '<br>Bank : ' . $rek->nama_bank . '<br>No. Rekening : ' . $rek->no_rek . '</li>';
+            }
+            $list .= <<<EOD
         </ol>
         EOD;
-        $t_cpdf2->SetFont('helvetica', '', 10);
-        $y = $t_cpdf2->GetY();
-        $x = 8;
-        $t_cpdf2->writeHTMLCell(0, 0, $x, $y, $list, 0, 1, false, true, 'L', true);
+            $t_cpdf2->SetFont('helvetica', '', 10);
+            $y = $t_cpdf2->GetY();
+            $x = 8;
+            $t_cpdf2->writeHTMLCell(0, 0, $x, $y, $list, 0, 1, false, true, 'L', true);
+        }
         $t_cpdf2->SetFont('helvetica', 'B', 10);
+        $t_cpdf2->setY($t_cpdf2->getY() - 4.5);
         $t_cpdf2->Cell(0, 6, 'a/n PT. Sahabat Multi Logistik', 0, 1);
 
         // Footer

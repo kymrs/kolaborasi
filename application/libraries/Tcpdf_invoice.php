@@ -182,7 +182,6 @@ EOD;
 
         if ($data['status'] == 1) {
             $text = 'Lunas';
-            // $x = $t_cpdf2->GetPageWidth() / 2 - 35;
             $x = $t_cpdf2->GetX() + 113;
             $y = $t_cpdf2->GetY() + 4;
             $radius = 12;
@@ -260,7 +259,7 @@ EOD;
         } elseif ($data['output'] == 'save') {
             $pdf_path = FCPATH . 'assets/backend/uploads/Invoice ByMoment.pdf'; // Simpan di folder uploads
             $t_cpdf2->Output($pdf_path, 'F'); // 'F' berarti simpan ke file
-            // $t_cpdf2->Output('invoice.pdf', 'S'); // 'S' berarti string
+            // $t_cpdf2->Output('Invoice ByMoment.pdf', 'S'); // 'S' berarti string
         }
     }
 }

@@ -978,6 +978,13 @@
                             checkNotifications();
                             location.href = "<?= base_url('bmn_invoice') ?>";
                         })
+                    } else {
+                        // Jika ada error, tampilkan pesan error
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.message
+                        });
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {

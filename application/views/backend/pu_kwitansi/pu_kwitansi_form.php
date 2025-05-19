@@ -109,7 +109,7 @@
                     <form id="form">
                         <div class="row mb-4">
                             <div class="col-md-6">
-                                <div class="p-4">
+                                <div class="p-4 mb-2">
                                     <h4 class="section-title">FROM :</h4>
                                     <hr style="border-top: 3px solid #000;">
                                     <div class="form-group row">
@@ -140,28 +140,28 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- <div class="form-group row">
+                                    <div class="form-group row">
                                         <label class="col-sm-4 col-form-label">Contact Nama</label>
                                         <div class="col-sm-8">
                                             <input type="text" class="form-control" id="ctc_nama" name="ctc_nama" placeholder="Contact Nama">
                                         </div>
-                                    </div> -->
-                                    <!-- <div class="form-group row">
+                                    </div>
+                                    <div class="form-group row">
                                         <label class="col-sm-4 col-form-label">Contact Nomor</label>
                                         <div class="col-sm-8">
                                             <input type="text" class="form-control" id="ctc_nomor" name="ctc_nomor" placeholder="Contact Nomor">
                                         </div>
-                                    </div> -->
+                                    </div>
                                 </div>
                                 <div class="p-4">
                                     <h4 class="section-title">PAYMENT INFO :</h4>
                                     <hr style="border-top: 3px solid #000;">
-                                    <!-- <div class="form-group row">
+                                    <div class="form-group row">
                                         <label class="col-sm-4 col-form-label">Diskon</label>
                                         <div class="col-sm-4">
                                             <input type="text" class="form-control" id="diskon" name="diskon" placeholder="Diskon %">
                                         </div>
-                                    </div> -->
+                                    </div>
                                     <div class="form-group row">
                                         <label class="col-sm-4 col-form-label">No Rekening</label>
                                         <div class="col-sm-8">
@@ -212,59 +212,45 @@
                                 <div class="p-4">
                                     <h4>JAMA'AH:</h4>
                                     <hr style="border-top: 3px solid #000;">
-                                    <div class="row">
-                                        <label class="col-sm-4 col-form-label">Contact Person</label>
-                                        <div class="input-group col-sm-7">
-                                            <input type="text" class="form-control" id="ctc_nama" name="ctc_nama" placeholder="Nama jamaah..." aria-label="Recipient's username" aria-describedby="button-addon2">
+                                    <div class="form-group row">
+                                        <label class="col-sm-4 col-form-label">Contact Nama</label>
+                                        <div class="col-sm-7">
+                                            <input type="text" class="form-control" id="ctc2_nama" name="ctc2_nama" placeholder="Contact Nama">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-4 col-form-label">Contact Nomor</label>
+                                        <div class="col-sm-7">
+                                            <input type="text" class="form-control" id="ctc2_nomor" name="ctc2_nomor" placeholder="Contact Nomor">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-4 col-form-label">Email</label>
+                                        <div class="col-sm-7">
+                                            <input type="email" class="form-control" id="ctc2_email" name="ctc2_email" placeholder="Email">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-4 col-form-label">Contact Alamat</label>
+                                        <div class="col-sm-7">
+                                            <textarea class="form-control" id="ctc2_alamat" name="ctc2_alamat" rows="2" placeholder="Contact Alamat"></textarea>
                                         </div>
                                     </div>
 
-                                    <!-- Layanan Termasuk -->
-                                    <div class="row">
-                                        <div class="col-sm-12 mb-3">
-                                            <label class="form-label">Jamaah:</label>
-                                            <div id="jamaah" name="jamaah" class="border p-2" style="height: 200px;"></div>
-                                            <input type="hidden" name="jamaah_item" id="jamaah_item">
-                                        </div>
-                                    </div>
-
-                                    <!-- <div class="table-responsive">
+                                    <div class="table-responsive">
                                         <table id="jamaah-table" class=" table table-bordered">
                                             <thead>
                                                 <tr>
-                                                    <th style="width: 5%; text-align:center;">No</th>
-                                                    <th style="width: 35%; text-align:center;">Nama</th>
-                                                    <th style="width: 10%; text-align:center;">Delete</th>
+                                                    <th style="width: 5%;">No</th>
+                                                    <th style="width: 35%;">Nama Bank</th>
+                                                    <th style="width: 50%;">No Rekening</th>
+                                                    <th style="width: 10%;">Delete</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
 
                                             </tbody>
                                         </table>
-                                    </div> -->
-                                    <!-- <div class="form-group row">
-                                        <label class="col-sm-4 col-form-label">Contact Nomor</label>
-                                        <div class="col-sm-7">
-                                            <input type="text" class="form-control" id="ctc2_nomor" name="ctc2_nomor" placeholder="Contact Nomor">
-                                        </div>
-                                    </div> -->
-                                    <!-- <div class="form-group row">
-                                        <label class="col-sm-4 col-form-label">Email</label>
-                                        <div class="col-sm-7">
-                                            <input type="email" class="form-control" id="ctc2_email" name="ctc2_email" placeholder="Email">
-                                        </div>
-                                    </div> -->
-                                    <div class="form-group row">
-                                        <label class="col-sm-4 col-form-label">Detail Pesanan</label>
-                                        <div class="col-sm-7">
-                                            <textarea class="form-control" id="detail_pesanan" name="detail_pesanan" rows="2" placeholder="Detail pesanan..."></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="col-sm-4 col-form-label">Contact Alamat</label>
-                                        <div class="col-sm-7">
-                                            <textarea class="form-control" id="ctc_alamat" name="ctc_alamat" rows="2" placeholder="Contact Alamat"></textarea>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -395,22 +381,11 @@
         theme: 'snow',
     });
 
-    const quill2 = new Quill('#jamaah', {
-        // modules: {
-        //     toolbar: toolbarOptions
-        // },
-        placeholder: 'Jamaah...',
-        theme: 'snow',
-    });
-
     document.getElementById("form").onsubmit = function() {
         // Get HTML content from Quill editor
         var catatanItem = quill.root.innerHTML;
-        var jamaahItem = quill2.root.innerHTML;
-
         // Set it to hidden input
         document.getElementById("catatan_item").value = catatanItem;
-        document.getElementById("jamaah_item").value = jamaahItem;
     };
 
     $(document).ready(function() {
@@ -428,13 +403,13 @@
             // Hapus semua karakter yang bukan angka
             $(this).val(value.replace(/[^0-9]/g, ''));
         });
-        // $('#diskon').on('input', function() {
-        //     // Ambil nilai input
-        //     let value = $(this).val();
+        $('#diskon').on('input', function() {
+            // Ambil nilai input
+            let value = $(this).val();
 
-        //     // Hapus semua karakter yang bukan angka
-        //     $(this).val(value.replace(/[^0-9]/g, ''));
-        // });
+            // Hapus semua karakter yang bukan angka
+            $(this).val(value.replace(/[^0-9]/g, ''));
+        });
     });
 
 
@@ -769,57 +744,6 @@
             $('#nomor_rekening').val('');
         });
 
-        // BUTTON ADD ROW jamaa
-        let jamaahCount = 0;
-        $('#btn-jamaah').click(function() {
-            const jamaah = $('#nama_jamaah').val();
-            if (jamaah != '') {
-                const row = `
-                <tr id="jamaah-${jamaahCount}">
-                    <td class="row-number">${jamaahCount + 1}</td>
-                    <td>
-                        <input type="text" class="form-control" name="jamaah[${jamaahCount}]" value="${jamaah}" placeholder="Nama Jamaah" style="border: none; pointer-events: none; color: #666"/>
-                    </td>
-                    <td><span class="btn delete-jamaah btn-danger" data-id="${jamaahCount}">Delete</span></td>
-                </tr>
-                `;
-                $('#jamaah-table tbody').append(row);
-                $('#nama_jamaah').val(''); // Kosongkan input setelah menambah
-                updateSubmitButtonState(); // Perbarui status tombol submit
-                //checkDeleteButtonState(); // Cek tombol delete setelah baris ditambahkan
-                jamaahCount++;
-                //VALIDASI ROW YANG TELAH DI APPEND
-                $("#form").validate().settings.rules[`jamaah[${jamaahCount}]`] = {
-                    required: true
-                };
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Kesalahan',
-                    text: 'Nama Jamaah tidak boleh kosong!',
-                });
-            }
-        });
-        // BUTTON HAPUS JAMA'AH
-        $(document).on('click', '.delete-jamaah', function() {
-            const id = $(this).data('id');
-            $(`#jamaah-${id}`).remove();
-            // Reorder rows and update row numbers
-            reorderJamaahRows();
-            updateSubmitButtonState(); // Perbarui status tombol submit
-        });
-
-        // REORDER JAMA'AH
-        function reorderJamaahRows() {
-            $('#jamaah-table tbody tr').each(function(index) {
-                const newJamaahRowNumber = index + 1;
-                $(this).attr('id', `jamaah-${newJamaahRowNumber}`);
-                $(this).find('.row-number').text(newJamaahRowNumber);
-                $(this).find('.delete-jamaah').attr('data-id', newJamaahRowNumber).text('Delete');
-            });
-            jamaahCount = $('#jamaah-table tbody tr').length;
-        }
-
         // SELECT ADD ROW NOMOR REKENING
         $('#rekening').change(function() {
             // Ambil elemen yang dipilih
@@ -894,12 +818,14 @@
                     $('#tgl_invoice').val(formattedDate); // Masukkan ke input
                     $('#kode_invoice').val(data['master']['kode_invoice']);
                     $('#tgl_tempo').val(data['master']['tgl_tempo']);
-                    // $('#diskon').val(data['master']['diskon']);
                     $('#ctc_nama').val(data['master']['ctc_nama']);
-                    $('#detail_pesanan').val(data['master']['detail_pesanan']);
-                    $('#ctc_alamat').val(data['master']['ctc_alamat']);
+                    $('#ctc_nomor').val(data['master']['ctc_nomor']);
+                    $('#diskon').val(data['master']['diskon']);
+                    $('#ctc2_nama').val(data['master']['ctc2_nama']);
+                    $('#ctc2_email').val(data['master']['ctc2_email']);
+                    $('#ctc2_nomor').val(data['master']['ctc2_nomor']);
+                    $('#ctc2_alamat').val(data['master']['ctc2_alamat']);
                     quill.clipboard.dangerouslyPasteHTML(data['master']['keterangan']);
-                    quill2.clipboard.dangerouslyPasteHTML(data['master']['jamaah']);
                     //APPEND DATA pu_rek_invoice DETAIL PREPAYMENT
                     console.log(data['rek_invoice']);
                     if (aksi == 'update') {
@@ -949,21 +875,6 @@
                             `;
                             $('#input-container').append(row);
                             rowCount = index + 1;
-                        });
-
-                        // detail jamaah
-                        $(data['jamaah']).each(function(index) {
-                            const row = `
-                            <tr id="jamaah-${index + 1}">
-                                <td class="row-number">${index + 1}</td>
-                                <td>
-                                    <input type="text" class="form-control" name="jamaah[${index + 1}]" value="${data['jamaah'][index]}" placeholder="Nama Jamaah" style="border: none; pointer-events: none; color: #666"/>
-                                </td>
-                                <td><span class="btn delete-jamaah btn-danger" data-id="${index + 1}">Delete</span></td>
-                            </tr>
-                            `;
-                            $('#jamaah-table tbody').append(row);
-                            jamaahCount = index + 1;
                         });
                     }
                 },
@@ -1021,64 +932,46 @@
                 url = "<?php echo site_url('pu_invoice/update') ?>";
             }
 
-            const quillText = quill.getText().trim();
-            const quill2Text = quill2.getText().trim();
-            // Get HTML content from Quill editor
-            var catatanItem = quill.root.innerHTML;
-            var jamaahItem = quill2.root.innerHTML;
-
             // Tampilkan loading
             $('#loading').show();
 
             $('.aksi').prop('disabled', true);
 
-            // Cek quill
-            if (quill2Text === '') {
-                e.preventDefault(); // batalkan submit
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: $('#form').serialize(),
+                dataType: "JSON",
+                success: function(data) {
+                    console.log(data);
+                    // Sembunyikan loading saat respons diterima
+                    $('#loading').hide();
 
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Jamaah Kosong',
-                    text: 'Silakan isi Jamaah terlebih dahulu.',
-                    confirmButtonText: 'OK'
-                });
-            } else {
-                $.ajax({
-                    url: url,
-                    type: "POST",
-                    data: $('#form').serialize(),
-                    dataType: "JSON",
-                    success: function(data) {
-                        console.log(data);
-                        // Sembunyikan loading saat respons diterima
-                        $('#loading').hide();
-
-                        if (data.status) //if success close modal and reload ajax table
-                        {
-                            Swal.fire({
-                                position: 'center',
-                                icon: 'success',
-                                title: 'Your data has been saved',
-                                showConfirmButton: false,
-                                timer: 1500
-                            }).then((result) => {
-                                checkNotifications();
-                                location.href = "<?= base_url('pu_invoice') ?>";
-                            })
-                        }
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        // Sembunyikan loading saat respons diterima
-                        $('#loading').hide();
-
+                    if (data.status) //if success close modal and reload ajax table
+                    {
                         Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'Error adding / updating data: ' + textStatus
-                        });
+                            position: 'center',
+                            icon: 'success',
+                            title: 'Your data has been saved',
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then((result) => {
+                            checkNotifications();
+                            location.href = "<?= base_url('pu_invoice') ?>";
+                        })
                     }
-                });
-            }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    // Sembunyikan loading saat respons diterima
+                    $('#loading').hide();
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Error adding / updating data: ' + textStatus
+                    });
+                }
+            });
         });
 
         $("#form").validate({
@@ -1092,12 +985,24 @@
                 tgl_tempo: {
                     required: true,
                 },
+                ctc_nama1: {
+                    required: true,
+                },
+                ctc_nomor1: {
+                    required: true,
+                },
+                ctc_nama2: {
+                    required: true,
+                },
+                ctc_nomor2: {
+                    required: true,
+                },
                 ctc_alamat: {
                     required: true,
                 },
-                // diskon: {
-                //     max: 100,
-                // }
+                diskon: {
+                    max: 100,
+                }
             },
             messages: {
                 tgl_invoice: {
@@ -1109,12 +1014,24 @@
                 tgl_tempo: {
                     required: "Tanggal Tempo is required",
                 },
+                ctc_nama1: {
+                    required: "Contact Nama is required",
+                },
+                ctc_nomor1: {
+                    required: "Contact Nomor is required",
+                },
+                ctc_nama2: {
+                    required: "Contact Nama is required",
+                },
+                ctc_nomor2: {
+                    required: "Contact Nomor is required",
+                },
                 ctc_alamat: {
                     required: "Contact Nomor is required",
                 },
-                // diskon: {
-                //     max: "Diskon tidak boleh melibihi 100",
-                // }
+                diskon: {
+                    max: "Diskon tidak boleh melibihi 100",
+                }
             },
             errorPlacement: function(error, element) {
                 if (element.parent().hasClass('input-group')) {
