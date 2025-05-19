@@ -9,8 +9,8 @@ class M_pu_invoice extends CI_Model
     var $id = 'id';
     var $table = 'pu_invoice';
     var $table2 = 'pu_rek_invoice';
-    var $column_order = array(null, null, 'tgl_invoice', 'kode_invoice', 'tgl_tempo', 'ctc_nama', 'ctc_alamat');
-    var $column_search = array('tgl_invoice', 'kode_invoice', 'tgl_tempo', 'ctc_nama', 'ctc_alamat'); //field yang diizin untuk pencarian
+    var $column_order = array(null, null, 'tgl_invoice', 'kode_invoice', 'tgl_tempo', 'ctc2_nama', 'ctc2_alamat');
+    var $column_search = array('tgl_invoice', 'kode_invoice', 'tgl_tempo', 'ctc2_nama', 'ctc2_alamat'); //field yang diizin untuk pencarian
     var $order = array('id' => 'desc');
 
     // UNTUK QUERY DATA TABLE
@@ -95,7 +95,7 @@ class M_pu_invoice extends CI_Model
 
     public function getInvoiceData($id)
     {
-        $this->db->select('tgl_invoice, kode_invoice, diskon, tgl_tempo, ctc_nama, ctc_alamat, keterangan');
+        $this->db->select('tgl_invoice, kode_invoice, diskon, tgl_tempo, ctc_nama, ctc_nomor, ctc2_nama, ctc2_nomor, ctc2_alamat, keterangan');
         $this->db->from('pu_invoice');
         $this->db->where('id', $id);
         $data = $this->db->get()->row_array();

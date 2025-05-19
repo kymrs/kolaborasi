@@ -104,6 +104,11 @@
                         <td style="padding-right: 5px;"><?= number_format($invoice['total'] + $invoice['tax'] - $invoice['diskon'], 0, ',', '.') ?></td>
                     </tr>
                 </table>
+                <?php if ($status == 1) { ?>
+                    <div class="watermark">LUNAS</div>
+                <?php } else { ?>
+                    <div class="watermark" style="display:none">LUNAS</div>
+                <?php } ?>
             </div>
             <div class="payment">
                 <p>Pembayaran Transfer Melalui</p>
@@ -233,7 +238,14 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then((result) => {
-                            window.history.back(); // Kembali ke halaman sebelumnya
+                            // window.history.back(); // Kembali ke halaman sebelumnya
+                            if ($('#payment_status').val() == 1) {
+                                $('.modal').modal('hide');
+                                $('.watermark').css('display', '');
+                            } else {
+                                $('.modal').modal('hide');
+                                $('.watermark').css('display', 'none');
+                            }
                         })
                     }
                 },

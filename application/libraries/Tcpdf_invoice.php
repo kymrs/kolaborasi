@@ -182,7 +182,6 @@ EOD;
 
         if ($data['status'] == 1) {
             $text = 'Lunas';
-            // $x = $t_cpdf2->GetPageWidth() / 2 - 35;
             $x = $t_cpdf2->GetX() + 113;
             $y = $t_cpdf2->GetY() + 4;
             $radius = 12;
