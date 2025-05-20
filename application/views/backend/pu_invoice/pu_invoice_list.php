@@ -1,3 +1,9 @@
+<style>
+    .ui-datepicker {
+        z-index: 1060 !important;
+    }
+</style>
+
 <div class="container-fluid">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"><?= $titleview ?></h1>
@@ -12,18 +18,18 @@
                             <i class="fa fa-plus"></i>&nbsp;Add Data
                         </a>
                     <?php } ?>
+                    <div class="d-flex align-items-center">
+                        <label for="appFilter" class="mr-2 mb-0">Filter:</label>
+                        <select id="appFilter" name="appFilter" class="form-control form-control-sm">
+                            <option value="" selected>Show all....</option>
+                            <option value="pending" selected>Pending</option>
+                            <option value="down payment">Down Payment</option>
+                            <option value="pembayaran">Pembayaran</option>
+                            <option value="pelunasan">Pelunasan</option>
+                        </select>
+                    </div>
                 </div>
-                <!-- NAV TABS -->
-                <!-- <ul class="nav nav-tabs">
-                    <li class="nav-item">
-                        <a class="nav-link active" id="personalTab" href="#" data-tab="personal">User</a>
-                    </li>
-                    <?php if ($approval > 0) { ?>
-                        <li class="nav-item">
-                            <a class="nav-link" id="employeeTab" href="#" data-tab="employee">Approval</a>
-                        </li>
-                    <?php } ?>
-                </ul> -->
+
 
                 <div class="card-body">
                     <table id="table" class="table table-bordered table-striped" style="width: 100%;">
@@ -31,10 +37,10 @@
                             <tr>
                                 <th>No</th>
                                 <th>Action</th>
-                                <th>Tanggal Invoice</th>
                                 <th>Kode Invoice</th>
-                                <th>Nama Tujuan</th>
-                                <th>Alamat Tujuan</th>
+                                <th>Nama</th>
+                                <th>Status</th>
+                                <th>Tanggal Invoice</th>
                                 <th>Tanggal Tempo</th>
                             </tr>
                         </thead>
@@ -44,10 +50,10 @@
                             <tr>
                                 <th>No</th>
                                 <th>Action</th>
-                                <th>Tanggal Invoice</th>
                                 <th>Kode Invoice</th>
-                                <th>Nama Tujuan</th>
-                                <th>Alamat Tujuan</th>
+                                <th>Nama</th>
+                                <th>Status</th>
+                                <th>Tanggal Invoice</th>
                                 <th>Tanggal Tempo</th>
                             </tr>
                         </tfoot>
@@ -56,6 +62,61 @@
             </div>
         </div>
     </div>
+
+    <!-- MODAL UNTUK MELAKUKAN PAYMENT -->
+    <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="paymentModalLabel">Pembayaran Invoice</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="paymentForm">
+                        <input type="hidden" name="invoice_id" id="payment_invoice_id">
+                        <div class="form-group">
+                            <label for="tanggal_pembayaran">Tanggal Pembayaran</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control tanggal_pembayaran" id="tanggal_pembayaran" name="tanggal_pembayaran" autocomplete="off" style="cursor: pointer" readonly>
+                                <div class="input-group-append">
+                                    <div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="tgl_tempo">Tanggal Tempo</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control tgl_tempo" id="tgl_tempo" name="tgl_tempo" autocomplete="off" style="cursor: pointer" readonly>
+                                <div class="input-group-append">
+                                    <div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="nominal_dibayar">Jumlah Pembayaran</label>
+                            <input type="text" class="form-control" id="nominal_dibayar" name="nominal_dibayar" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="status_pembayaran">Status Pembayaran</label>
+                            <select name="status_pembayaran" id="status_pembayaran" class="form-control" required>
+                                <option value="" selected disabled>-- Pilih Status Pembayaran --</option>
+                                <option value="down payment">Down Payment</option>
+                                <option value="pembayaran">Pembayaran</option>
+                                <option value="pelunasan">Pelunasan</option>
+                            </select>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success">Bayar</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <?php $this->load->view('template/footer'); ?>
@@ -64,9 +125,74 @@
 <script type="text/javascript">
     var table;
 
+    function showPaymentModal(invoiceId) {
+        $('#payment_invoice_id').val(invoiceId);
+        $('#paymentForm')[0].reset();
+        $('#paymentModal').modal('show');
+    }
+
+    $('#tanggal_pembayaran').datepicker({
+        dateFormat: 'yy-mm-dd',
+    });
+    $('#tgl_tempo').datepicker({
+        dateFormat: 'yy-mm-dd',
+    });
+
     // METHOD POST MENAMPILKAN DATA KE DATA TABLE
     $(document).ready(function() {
 
+        $('#nominal_dibayar').on('input', function() {
+            // Ambil nilai input
+            let value = $(this).val();
+
+            // Hapus semua karakter yang bukan angka
+            value = value.replace(/[^0-9]/g, '');
+
+            // Format ke Rupiah
+            let formatted = new Intl.NumberFormat('id-ID').format(value);
+
+            // Set nilai input dengan format Rupiah
+            $(this).val(formatted);
+        });
+
+        $('#paymentForm').on('submit', function(e) {
+            e.preventDefault(); // Mencegah pengiriman form default
+
+            // Ambil data dari form
+            var invoiceId = $('#payment_invoice_id').val();
+            var nominalDibayar = $('#nominal_dibayar').val().replace(/\./g, ''); // Menghapus titik dari format Rupiah
+            var statusPembayaran = $('#status_pembayaran').val();
+            var tanggalPembayaran = $('#tanggal_pembayaran').val();
+            var tglTempo = $('#tgl_tempo').val();
+
+
+            // Kirim data ke server menggunakan AJAX
+            $.ajax({
+                url: "<?php echo site_url('pu_invoice/payment/') ?>" + invoiceId,
+                type: "POST",
+                data: {
+                    nominal_dibayar: nominalDibayar,
+                    status_pembayaran: statusPembayaran,
+                    tanggal_pembayaran: tanggalPembayaran,
+                    tgl_tempo: tglTempo
+                },
+                dataType: "JSON",
+                success: function(data) {
+                    Swal.fire({
+                        position: 'center',
+                        icon: 'success',
+                        title: 'Pembayaran berhasil dilakukan',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then((result) => {
+                        location.href = "<?= base_url('pu_invoice') ?>";
+                    })
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    alert('Error adding / update data');
+                }
+            });
+        });
 
         // Set active tab on page load
         const activeTab = sessionStorage.getItem('activeTab');
@@ -76,31 +202,31 @@
 
         // console.log(activeTab)
 
-        if (activeTab && (activeTab == 'employee' || approvalTabExists)) {
-            $('.nav-tabs .nav-link').removeClass('active');
-            $(`.nav-tabs .nav-link[data-tab="${activeTab}"]`).addClass('active');
-            // console.log('labubu');
-            // You can load content for the active tab here if needed
-        } else {
-            // Default to the "User" tab if session storage is empty or approval tab doesn't exist
-            $('.nav-tabs .nav-link').removeClass('active');
-            $('#personalTab').addClass('active');
-            // console.log('ladada');
-        }
+        // if (activeTab && (activeTab == 'employee' || approvalTabExists)) {
+        //     $('.nav-tabs .nav-link').removeClass('active');
+        //     $(`.nav-tabs .nav-link[data-tab="${activeTab}"]`).addClass('active');
+        //     // console.log('labubu');
+        //     // You can load content for the active tab here if needed
+        // } else {
+        //     // Default to the "User" tab if session storage is empty or approval tab doesn't exist
+        //     $('.nav-tabs .nav-link').removeClass('active');
+        //     $('#personalTab').addClass('active');
+        //     // console.log('ladada');
+        // }
 
         $('.collapse-item').on('click', function(e) {
             localStorage.removeItem('appFilterStatus'); // Hapus filter yang tersimpan
-            localStorage.removeItem('activeTab'); // Hapus filter yang tersimpan
+            // localStorage.removeItem('activeTab'); // Hapus filter yang tersimpan
         })
 
         // Tab click event
-        $('.nav-tabs .nav-link').on('click', function() {
-            const tab = $(this).data('tab');
-            sessionStorage.setItem('activeTab', tab);
-            $('.nav-tabs .nav-link').removeClass('active');
-            $(this).addClass('active');
-            table.ajax.reload(); // Muat ulang data di DataTable saat tab berubah
-        });
+        // $('.nav-tabs .nav-link').on('click', function() {
+        //     const tab = $(this).data('tab');
+        //     sessionStorage.setItem('activeTab', tab);
+        //     $('.nav-tabs .nav-link').removeClass('active');
+        //     $(this).addClass('active');
+        //     table.ajax.reload(); // Muat ulang data di DataTable saat tab berubah
+        // });
 
         // Cek apakah ada nilai filter yang tersimpan di localStorage
         var savedFilter = localStorage.getItem('appFilterStatus');
@@ -119,7 +245,6 @@
                 "type": "POST",
                 "data": function(d) {
                     d.status = $('#appFilter').val(); // Tambahkan parameter status ke permintaan server
-                    d.tab = $('.nav-tabs .nav-link.active').data('tab'); // Tambahkan parameter tab ke permintaan server
                 }
             },
             // "language": {
@@ -143,6 +268,7 @@
         $('#appFilter').on('change', function() {
             localStorage.setItem('appFilterStatus', $(this).val());
             table.ajax.reload(); // Muat ulang DataTables dengan filter baru
+            console.log($('#appFilter'));
         });
 
         // Event listener untuk nav tabs

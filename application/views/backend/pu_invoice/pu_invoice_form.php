@@ -140,18 +140,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- <div class="form-group row">
-                                        <label class="col-sm-4 col-form-label">Contact Nama</label>
-                                        <div class="col-sm-8">
-                                            <input type="text" class="form-control" id="ctc_nama" name="ctc_nama" placeholder="Contact Nama">
-                                        </div>
-                                    </div> -->
-                                    <!-- <div class="form-group row">
-                                        <label class="col-sm-4 col-form-label">Contact Nomor</label>
-                                        <div class="col-sm-8">
-                                            <input type="text" class="form-control" id="ctc_nomor" name="ctc_nomor" placeholder="Contact Nomor">
-                                        </div>
-                                    </div> -->
                                 </div>
                                 <div class="p-4">
                                     <h4 class="section-title">PAYMENT INFO :</h4>
@@ -162,6 +150,35 @@
                                             <input type="text" class="form-control" id="diskon" name="diskon" placeholder="Diskon %">
                                         </div>
                                     </div> -->
+                                    <div class="form-group row">
+                                        <label class="col-sm-4 col-form-label" for="tanggal_pembayaran">Tanggal Pembayaran</label>
+                                        <div class="col-sm-8">
+                                            <div class="input-group">
+                                                <input type="text" class="form-control tanggal_pembayaran" id="tanggal_pembayaran" name="tanggal_pembayaran" autocomplete="off" style="cursor: pointer" readonly>
+                                                <div class="input-group-append">
+                                                    <div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-4 col-form-label" for="nominal_dibayar">Jumlah Pembayaran</label>
+                                        <div class="col-sm-8">
+                                            <input type="text" class="form-control" id="nominal_dibayar" name="nominal_dibayar" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-4 col-form-label" for="status_pembayaran">Status Pembayaran</label>
+                                        <div class="col-sm-8">
+                                            <select name="status_pembayaran" id="status_pembayaran" class="form-control" required>
+                                                <option value="" selected disabled>-- Pilih Status Pembayaran --</option>
+                                                <option value="pending">Pending</option>
+                                                <option value="down payment">Down Payment</option>
+                                                <option value="pembayaran">Pembayaran</option>
+                                                <option value="pelunasan">Pelunasan</option>
+                                            </select>
+                                        </div>
+                                    </div>
                                     <div class="form-group row">
                                         <label class="col-sm-4 col-form-label">No Rekening</label>
                                         <div class="col-sm-8">
@@ -310,6 +327,7 @@
                         <div id="loading" style="display: none;">
                             <p>Loading...</p>
                         </div>
+
 
                         <!-- PENENTUAN UPDATE ATAU ADD -->
                         <input type="hidden" name="id" id="id" value="<?= $id ?>">
@@ -501,6 +519,24 @@
         dateFormat: 'dd-mm-yy',
         // minDate: new Date(),
         // maxDate: new Date(),
+    });
+
+    $('#tanggal_pembayaran').datepicker({
+        dateFormat: 'yy-mm-dd',
+    });
+
+    $('#nominal_dibayar').on('input', function() {
+        // Ambil nilai input
+        let value = $(this).val();
+
+        // Hapus semua karakter yang bukan angka
+        value = value.replace(/[^0-9]/g, '');
+
+        // Format ke Rupiah
+        let formatted = new Intl.NumberFormat('id-ID').format(value);
+
+        // Set nilai input dengan format Rupiah
+        $(this).val(formatted);
     });
 
     $(document).ready(function() {
@@ -894,6 +930,9 @@
                     $('#tgl_invoice').val(formattedDate); // Masukkan ke input
                     $('#kode_invoice').val(data['master']['kode_invoice']);
                     $('#tgl_tempo').val(data['master']['tgl_tempo']);
+                    $('#tanggal_pembayaran').val(data['master']['tanggal_pembayaran']);
+                    $('#nominal_dibayar').val(data['master']['nominal_dibayar']);
+                    $('#status_pembayaran').val(data['master']['status_pembayaran']);
                     // $('#diskon').val(data['master']['diskon']);
                     $('#ctc_nama').val(data['master']['ctc_nama']);
                     $('#detail_pesanan').val(data['master']['detail_pesanan']);
@@ -1065,6 +1104,13 @@
                                 checkNotifications();
                                 location.href = "<?= base_url('pu_invoice') ?>";
                             })
+                        } else {
+                            // Jika ada error, tampilkan pesan error
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: data.message
+                            });
                         }
                     },
                     error: function(jqXHR, textStatus, errorThrown) {

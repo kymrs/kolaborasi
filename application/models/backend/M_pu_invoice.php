@@ -41,6 +41,16 @@ class M_pu_invoice extends CI_Model
             $i++;
         }
 
+        if ($_POST['status'] == 'pending') {
+            $this->db->where('status_pembayaran', 'pending');
+        } elseif ($_POST['status'] == 'down payment') {
+            $this->db->where('status_pembayaran', 'down payment');
+        } elseif ($_POST['status'] == 'pembayaran') {
+            $this->db->where('status_pembayaran', 'pembayaran');
+        } elseif ($_POST['status'] == 'pelunasan') {
+            $this->db->where('status_pembayaran', 'pelunasan');
+        }
+
         if (isset($_POST['order'])) {
             $this->db->order_by($this->column_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
         } else if (isset($this->order)) {
@@ -165,5 +175,39 @@ class M_pu_invoice extends CI_Model
     public function options()
     {
         return $this->db->distinct()->select('nama_bank, no_rek')->from('pu_rek_invoice')->get();
+    }
+
+    // PAYMENT
+    public function payment($id)
+    {
+        // Ambil data invoice lama
+        $this->db->select('tgl_invoice, kode_invoice, diskon, total_tagihan, ctc_nama, ctc_alamat, jamaah, detail_pesanan, keterangan');
+        $this->db->from('pu_invoice');
+        $this->db->where('id', $id);
+        $invoice = $this->db->get()->row_array(); // ambil satu baris saja
+
+        if (!$invoice) {
+            return false; // tidak ditemukan
+        } else {
+            $this->db->where('id', $id);
+            $this->db->update('pu_invoice', ['is_active' => 0]);
+        }
+
+        // Ambil input baru
+        $tanggal_pembayaran = $this->input->post('tanggal_pembayaran');
+        $status_pembayaran  = $this->input->post('status_pembayaran'); // misal: DP / CICILAN / LUNAS
+        $nominal_dibayar = $this->input->post('nominal_dibayar');
+        $tgl_tempo = $this->input->post('tgl_tempo');
+
+        // Siapkan data baru untuk insert
+        $insert_data = array_merge($invoice, [
+            'tanggal_pembayaran'  => $tanggal_pembayaran,
+            'tgl_tempo' => $tgl_tempo,
+            'status_pembayaran'   => $status_pembayaran,
+            'nominal_dibayar'  => $nominal_dibayar,
+        ]);
+
+        // Simpan ke database (baris baru di pu_invoice)
+        return $this->db->insert('pu_invoice', $insert_data);
     }
 }

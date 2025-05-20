@@ -107,20 +107,25 @@ class Pu_invoice extends CI_Controller
             $action_read = ($read == 'Y') ? '<a href="pu_invoice/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
             $action_edit = ($edit == 'Y') ? '<a href="pu_invoice/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
-            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="pu_invoice/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
+            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="pu_invoice/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>&nbsp;' : '';
+            $action_payment = '<button type="button" class="btn btn-primary btn-circle btn-sm" onclick="showPaymentModal(' . $field->id . ')"><i class="fas fa-money-bill-wave"></i></button>';
 
-            $action = $action_read . $action_edit . $action_delete . $action_print;
+            if ($field->is_active == 0) {
+                $action = $action_read . $action_print . $action_payment;
+            } else {
+                $action = $action_read . $action_edit . $action_delete . $action_print . $action_payment;
+            }
 
             $no++;
             $row = array();
             $row[] = $no;
             $row[] = $action;
 
-            $row[] = $this->tgl_indo(date("Y-m-j", strtotime($field->tgl_invoice)));
             $kode_invoice = substr($field->kode_invoice, 0, 5) . substr($field->kode_invoice, 7, 6);
             $row[] = strtoupper($kode_invoice);
             $row[] = $field->ctc_nama;
-            $row[] = $field->ctc_alamat;
+            $row[] = $field->status_pembayaran;
+            $row[] = $this->tgl_indo(date("Y-m-j", strtotime($field->tgl_invoice)));
             $row[] = $this->tgl_indo(date("Y-m-j", strtotime($field->tgl_tempo)));
 
             $data[] = $row;
@@ -236,6 +241,17 @@ class Pu_invoice extends CI_Controller
             'created_at' => date('Y-m-d H:i:s')
         );
 
+        // INISIAI VARIABEL UNTUK PAYMENT
+        $tanggal_pembayaran = $this->input->post('tanggal_pembayaran');
+        $nominal_dibayar = $this->input->post('nominal_dibayar');
+        $status_pembayaran = $this->input->post('status_pembayaran');
+
+        if ($tanggal_pembayaran && $nominal_dibayar && $status_pembayaran) {
+            $data['tanggal_pembayaran'] = $tanggal_pembayaran;
+            $data['nominal_dibayar'] = $nominal_dibayar;
+            $data['status_pembayaran'] =  $status_pembayaran;
+        }
+
         if (!empty($this->input->post('jamaah_item'))) {
             $data['jamaah'] = $this->input->post('jamaah_item');
         } else {
@@ -247,6 +263,24 @@ class Pu_invoice extends CI_Controller
         }
         if (!empty($_POST['diskon'])) {
             $data['diskon'] = $this->input->post('diskon');
+        }
+
+        // INISIASI VARIABEL UNTUK MENGHITUNG TOTAL TAGIHAN
+        $grand_total = 0;
+        $deskripsi = $this->input->post('deskripsi[]');
+        $jumlah = preg_replace('/\D/', '', $this->input->post('jumlah[]'));
+        $harga = preg_replace('/\D/', '', $this->input->post('harga[]'));
+        $satuan = $this->input->post('satuan[]');
+        $total = preg_replace('/\D/', '', $this->input->post('total[]'));
+
+        if (!empty($deskripsi) && !empty($jumlah) && !empty($satuan) && !empty($harga) && !empty($total)) {
+            for ($i = 1; $i <= count($deskripsi); $i++) {
+                $grand_total += (int)$total[$i]; // Menjumlahkan total
+            }
+            $data['total_tagihan'] = $grand_total;
+        } else {
+            echo json_encode(array("status" => FALSE, "message" => "Data detail invoice tidak boleh kosong"));
+            exit();
         }
 
         $inserted = $this->M_pu_invoice->save($data);
@@ -267,12 +301,6 @@ class Pu_invoice extends CI_Controller
         }
 
         if ($inserted) {
-            // INISIASI VARIABEL INPUT DETAIL PREPAYMENT
-            $deskripsi = $this->input->post('deskripsi[]');
-            $jumlah = preg_replace('/\D/', '', $this->input->post('jumlah[]'));
-            $harga = preg_replace('/\D/', '', $this->input->post('harga[]'));
-            $satuan = $this->input->post('satuan[]');
-            $total = preg_replace('/\D/', '', $this->input->post('total[]'));
             //PERULANGAN UNTUK INSER QUERY DETAIL PREPAYMENT
             if (!empty($deskripsi) && !empty($jumlah) && !empty($satuan) && !empty($harga) && !empty($total)) {
                 for ($i = 1; $i <= count($deskripsi); $i++) {
@@ -321,6 +349,17 @@ class Pu_invoice extends CI_Controller
             'created_at' => date('Y-m-d H:i:s')
         );
 
+        // INISIAI VARIABEL UNTUK PAYMENT
+        $tanggal_pembayaran = $this->input->post('tanggal_pembayaran');
+        $nominal_dibayar = $this->input->post('nominal_dibayar');
+        $status_pembayaran = $this->input->post('status_pembayaran');
+
+        if ($tanggal_pembayaran && $nominal_dibayar && $status_pembayaran) {
+            $data['tanggal_pembayaran'] = $tanggal_pembayaran;
+            $data['nominal_dibayar'] = $nominal_dibayar;
+            $data['status_pembayaran'] =  $status_pembayaran;
+        }
+
         if (!empty($this->input->post('jamaah_item'))) {
             $data['jamaah'] = $this->input->post('jamaah_item');
         } else {
@@ -335,14 +374,27 @@ class Pu_invoice extends CI_Controller
             $data['diskon'] = $this->input->post('diskon');
         }
 
+        // INISIASI VARIABEL UNTUK MENGHITUNG TOTAL TAGIHAN
+        $grand_total = 0;
+        $deskripsi = $this->input->post('deskripsi[]');
+        $jumlah = preg_replace('/\D/', '', $this->input->post('jumlah[]'));
+        $harga = preg_replace('/\D/', '', $this->input->post('harga[]'));
+        $satuan = $this->input->post('satuan[]');
+        $total = preg_replace('/\D/', '', $this->input->post('total[]'));
+
+        if (!empty($deskripsi) && !empty($jumlah) && !empty($satuan) && !empty($harga) && !empty($total)) {
+            for ($i = 1; $i <= count($deskripsi); $i++) {
+                $grand_total += (int)$total[$i]; // Menjumlahkan total
+            }
+            $data['total_tagihan'] = $grand_total;
+        } else {
+            echo json_encode(array("status" => FALSE, "message" => "Data detail invoice tidak boleh kosong"));
+            exit();
+        }
+
         //UPDATE DETAIL PREPAYMENT
         $id_detail = $this->input->post('hidden_id[]');
         // $invoice_id = $this->input->post('hidden_invoiceId[]');
-        $deskripsi = $this->input->post('deskripsi[]');
-        $jumlah = preg_replace('/\D/', '', $this->input->post('jumlah[]'));
-        $satuan = $this->input->post('satuan[]');
-        $harga = preg_replace('/\D/', '', $this->input->post('harga[]'));
-        $total = preg_replace('/\D/', '', $this->input->post('total[]'));
         if ($this->db->update('pu_invoice', $data, ['id' => $this->input->post('id')])) {
             // UNTUK MENGHAPUS ROW YANG TELAH DIDELETE
             $deletedRows = json_decode($this->input->post('deleted_rows'), true);
@@ -405,6 +457,13 @@ class Pu_invoice extends CI_Controller
     function delete($id)
     {
         $this->M_pu_invoice->delete($id);
+        echo json_encode(array("status" => TRUE));
+    }
+
+    // PAYMENT
+    function payment($id)
+    {
+        $this->M_pu_invoice->payment($id);
         echo json_encode(array("status" => TRUE));
     }
 
@@ -676,13 +735,5 @@ EOD;
 
         // Output PDF (tampilkan di browser)
         $t_cpdf2->Output('Invoice Pengenumroh.pdf', 'I'); // 'I' untuk menampilkan di browser
-    }
-
-    function payment()
-    {
-        $this->db->where('id', $this->input->post('id'));
-        $this->db->update('tbl_prepayment_pu', ['payment_status' => $this->input->post('payment_status')]);
-
-        echo json_encode(array("status" => TRUE));
     }
 }
