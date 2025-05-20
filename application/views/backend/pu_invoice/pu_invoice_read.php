@@ -4,7 +4,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?= base_url('assets/backend/plugins/style-invoice.css') ?>">
+    <link rel="stylesheet" href="<?= base_url('assets/backend/plugins/style-invoice-pu.css') ?>">
 </head>
 
 <body>
@@ -13,103 +13,100 @@
             <a class="btn btn-secondary btn-sm" onclick="history.back()" style="float: right"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
             <hr class="line-header">
             <header>
-                <div class="left-side">
-                    <div class="logo">
-                        <img src="<?= base_url('assets/backend/img/pengenumroh.png') ?>" alt="logo pengenumroh">
-                    </div>
-                </div>
-                <div class="right-side">
-                    <div class="email">pengenumroh@gmail.com</div>
-                    <div class="noHP">089602984422</div>
-                    <div class="alamat">Depok</div>
-                </div>
-            </header>
-            <hr class="line">
-            <main>
-                <div class="invoice">
-                    <h3>INVOICE</h3>
-                    <?php $result = substr($invoice['kode_invoice'], 0, 5) . substr($invoice['kode_invoice'], 7); ?>
-                    <p>No. Invoice : <?= $result; ?></p>
-                </div>
-                <div class="header-content">
+                <img class="header-image" src="<?= base_url('assets/backend/img/header.png') ?>" alt="">
+                <div style="clear:both"></div>
+                <div class="row">
                     <div class="left-side">
-                        <h2>Kepada Yth.</h2>
-                        <h1><?= $invoice['ctc2_nama'] ?></h1>
-                        <p class="alamat">Alamat : <?= $invoice['ctc2_alamat'] ?></p>
+                        <h3>PT. KOLABORASI PARA SAHABAT</h3>
                     </div>
                     <div class="right-side">
+                        <h1>INVOICE</h1>
                         <table>
+                            <tr>
+                                <td>No</td>
+                                <td>:</td>
+                                <td>INVPU050001</td>
+                            </tr>
                             <tr>
                                 <td>Tanggal Invoice</td>
                                 <td>:</td>
-                                <td><?= date('d/m/Y', strtotime($invoice['tgl_invoice'])) ?></td>
+                                <td>10/05/2025</td>
                             </tr>
                             <tr>
                                 <td>Tanggal Jatuh Tempo</td>
                                 <td>:</td>
-                                <td><?= date('d/m/Y', strtotime($invoice['tgl_tempo'])) ?></td>
+                                <td>17/05/2025</td>
                             </tr>
                         </table>
                     </div>
                 </div>
-                <div class="detail-pemesanan">
-                    <div class="header">
-                        Detail Pemesanan :
+            </header>
+            <div class="line-title">Data Pemesanan :<span>Jumlah Yang Harus Dibayar</span></div>
+            <div class="data-pemesanan">
+                <div class="row">
+                    <div class="left-side">
+                        <p>Kpd Yth.</p>
+                        <h2>Bapak Nana Suryana</h2>
+                        <p class="address">Alamat : Kp. Jatake RT 002 RW 001 Jatake, Jatiuwung, Tangerang</p>
                     </div>
-                    <table>
-                        <tr>
-                            <th>DESKRIPSI</th>
-                            <th>JUMLAH</th>
-                            <th>HARGA</th>
-                            <th>TOTAL</th>
-                        </tr>
-                        <?php
-                        $total = 0; // Inisialisasi variabel total
-                        $diskon = $invoice['diskon'];
-                        foreach ($detail as $data) :
-                            if ($diskon != 0) {
-                                $total += $data['total'] - ($data['total'] * $diskon / 100);
-                            } else {
-                                $total += $data['total']; // Tambahkan harga ke total
-                            }
-                        ?>
-                            <tr>
-                                <td><?= $data['deskripsi'] ?></td>
-                                <td class="jumlah"><?= $data['jumlah'] ?></td>
-                                <td class="harga"><?= "Rp. " . number_format($data['harga'], 0, ',', '.') ?></td>
-                                <td class="total"><?= "Rp. " . number_format($data['total'], 0, ',', '.') ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                        <tr>
-                            <td colspan="2" style="border-left-color: #fff; border-bottom-color: #fff"></td>
-                            <td style="text-align: center;">Diskon</td>
-                            <td style="text-align: center"><?= $invoice['diskon'] ?>%</td>
-                        </tr>
-                        <tr>
-                            <td colspan="2" style="border-left-color: #fff; border-bottom-color: #fff"></td>
-                            <th>Total</th>
-                            <td style="text-align: center"><?= "Rp. " . number_format($total, 0, ',', '.') ?></td>
-                        </tr>
-                    </table>
-                </div>
-                <div class="metode-pembayaran">
-                    <p>Metode Pembayaran</p>
-                    <ol>
-                        <?php foreach ($rekening as $data) : ?>
-                            <li>Bank : <?= $data['nama_bank'] ?> <br> No. Rekening : <?= $data['no_rek'] ?> </li>
-                        <?php endforeach ?>
-                    </ol>
-                    <p>Atas Nama : PT. Kolaborasi Para Sahabat </p>
-                </div>
-                <div class="">
-                    <p>Catatan :</p>
-                    <div style="margin-top: -16px;">
-                        <?= $invoice['keterangan'] ?>
+                    <div class="right-side">
+                        <h1>30.000.000</h1>
                     </div>
                 </div>
-            </main>
+            </div>
+            <div class="line-title">Data Jamaah :<span>Detail Pesanan</span></div>
+            <div class="data-jamaah">
+                <div class="row">
+                    <div class="left-side">
+                        <div class="jamaah">
+                            <ol>
+                                <li data-list="ordered"><span class="ql-ui" contenteditable="false"></span>Renaldo</li>
+                                <li data-list="ordered"><span class="ql-ui" contenteditable="false"></span>Jamilah</li>
+                                <li data-list="ordered"><span class="ql-ui" contenteditable="false"></span>Setiabudi</li>
+                            </ol>
+                        </div>
+                    </div>
+                    <div class="right-side">
+                        <div class="detail-pesanan">
+                            Umroh 4 September 2025<br>
+                            Plus City Tour Thaif - 9 Hari<br>
+                            Kamar : Triple<br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="line-title">Detail Pemesanan :</div>
+            <div class="detail-pemesanan">
+                <table>
+                    <tr>
+                        <th>DESKRIPSI</th>
+                        <th>JUMLAH</th>
+                        <th>HARGA</th>
+                        <th>TOTAL</th>
+                    </tr>
+                    <tr>
+                        <td>DP Umroh 4 September 2025</td>
+                        <td>5</td>
+                        <td>10.000.000</td>
+                        <td>30.000.000</td>
+                    </tr>
+                    <tr>
+                        <td style="border-color: #fff;"></td>
+                        <td style="border-bottom-color: #fff;"></td>
+                        <td style="text-align: left; font-weight: bold">Total</td>
+                        <td>tes</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="metode-pembayaran">
+                <p>Metode Pembayaran</p>
+                <ol>
+                    <li>Bank : <span>Bank Syariah Indonesia</span><br>No Rekening : <span>7215671498</span></li>
+                </ol>
+                <p>a/n : PT. Kolaborasi Para Sahabat</p>
+            </div>
+            <img class="footer-image" src="<?= base_url('assets/backend/img/footer.png') ?>" alt="">
         </div>
-
     </div>
 
     <?php $this->load->view('template/footer'); ?>

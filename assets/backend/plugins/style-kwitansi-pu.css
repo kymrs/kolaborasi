@@ -1,0 +1,192 @@
+.container {
+    font-family: "Poppins", serif;
+    font-weight: 300;
+    font-style: normal;
+    margin-bottom: 20px;
+    color: #222;
+    font-size: 0.9rem;
+}
+
+.canvas {
+    margin: 0 auto;
+    width: 180mm;
+    height: 255mm;
+    display: block;
+    margin-bottom: 20px;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    padding: 15px 25px;
+    color: #222;
+}
+
+/* Header */
+header {
+    height: auto;
+}
+
+header .header-image {
+    width: 80%;
+    margin-bottom: 15px;
+}
+
+header img {
+    width: 100%;
+    float: right;
+}
+
+hr.line {
+    background-color: black;
+    height: 2px;
+    margin: 12px 0;
+}
+
+hr.line-header {
+    background-color: rgba(0,0,0,0.1);
+    clear: both;
+    margin-top: 50px;
+}
+
+header .row {
+    padding: 0 13px;
+    display: inline-block;
+}
+
+header .row p {
+    font-weight: bold;
+    margin-bottom: 3px;
+}
+
+header .row table tr td:nth-child(2) {
+    padding: 0 5px 0 30px;
+}
+
+.line-title {
+    width: 100%;
+    background-color: #fc7613;
+    color: #fff;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 5px 10px;
+    font-weight: bold;
+}
+
+.line-title span {
+    float: right;
+    font-weight: normal;
+}
+
+/* Data Pemesan */
+.data-pemesan h1 {
+    font-size: 1.5rem;
+    margin-top: 14px;
+    margin-right: 5px;
+    font-weight: bold;
+}
+
+.data-pemesan p {
+    margin-bottom: 5px;
+}
+
+.data-pemesan h3 {
+    font-size: 1.2rem;
+}
+
+/* Rincian Pemesanan */
+.rincian-pemesanan table {
+    width: 100%;
+}
+
+.rincian-pemesanan table th,
+.rincian-pemesanan table td {
+    text-align: center;
+}
+
+.rincian-pemesanan table th:nth-child(1) {
+    width: 40%;
+}
+.rincian-pemesanan table th:nth-child(2) {
+    width: 20%;
+}
+.rincian-pemesanan table th:nth-child(3) {
+    width: 20%;
+}
+.rincian-pemesanan table th:nth-child(4) {
+    width: 20%;
+}
+
+.footer-image {
+    position: relative;
+    top: 350px;
+    width: 100%;
+}
+
+/* Media Queries */
+@media (max-width: 1080px) {
+    .container {
+        font-size: 79.5%;
+    }
+
+    .canvas {
+        width: 160mm;
+    }
+}
+
+@media (max-width: 936px) {
+    .container {
+        font-size: 72.5%;
+    }
+
+    .canvas {
+        width: 150mm;
+    }
+}
+
+@media (max-width: 767px) {
+    .container {
+        font-size: 62.5%;
+    }
+
+    .canvas {
+        width: 140mm;
+        margin-left: -40px;
+    }
+
+    .invoice h3 {
+        font-size: 1rem;
+    }
+
+    .header-content .left-side h1 {
+        font-size: 0.8rem;
+    }
+    .header-content .left-side h2 {
+        font-size: 0.6rem;
+    }
+}
+
+@media (max-width: 546px) {
+    .container {
+        font-size: 52.5%;
+    }
+
+    .canvas {
+        width: 90mm;
+        max-height: 200mm;
+        margin: 0;
+    }
+    
+    .data-pemesan .row {
+        display: flex !important;
+    }
+
+    .data-pemesan h3 {
+        font-size: 0.9rem;
+    }
+
+    .data-pemesan h1 {
+        font-size: 0.9rem;
+        margin-top: 5px;
+        margin-right: 5px;
+        font-weight: bold;
+    }
+}
