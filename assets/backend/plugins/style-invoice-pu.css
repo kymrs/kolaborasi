@@ -1,0 +1,259 @@
+.container {
+    font-family: "Poppins", serif;
+    font-weight: 300;
+    font-style: normal;
+    margin-bottom: 20px;
+    color: #222;
+    font-size: 0.9rem;
+}
+
+.canvas {
+    margin: 0 auto;
+    width: 180mm;
+    height: 255mm;
+    display: block;
+    margin-bottom: 20px;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    padding: 15px 25px;
+    color: #222;
+}
+
+/* Header */
+header {
+    height: auto;
+}
+
+header .header-image {
+    width: 80%;
+    margin-bottom: 15px;
+}
+
+header img {
+    width: 100%;
+    float: right;
+}
+
+hr.line {
+    background-color: black;
+    height: 2px;
+    margin: 12px 0;
+}
+
+hr.line-header {
+    background-color: rgba(0,0,0,0.1);
+    clear: both;
+    margin-top: 50px;
+}
+
+header .row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 13px;
+}
+
+header .row .left-side {
+    width: 50%;
+}
+
+header .row .left-side h3 {
+    margin-top: 5px;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+header .row .right-side {
+    width: 50%;
+    text-align: right;
+}
+
+header .row .right-side h1 {
+    font-size: 1.8rem;
+    font-size: bold;
+}
+
+header .row .right-side table {
+    width: 100%;
+}
+
+.line-title {
+    width: 100%;
+    background-color: #fc7613;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 5px 10px;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.line-title span {
+    float: right;
+    font-weight: normal;
+}
+
+/* Data Pemesanan */
+.data-pemesanan .row {
+    display: flex;
+    padding: 0 13px;
+}
+
+.data-pemesanan .row .left-side {
+    width: 50%;
+}
+
+.data-pemesanan .row .left-side p {
+    /* background-color: red; */
+    margin: 0;
+}
+
+.data-pemesanan .row .left-side h2 {
+    font-size: 1.1rem;
+    margin: 7px 0;
+    font-weight: normal;
+}
+
+.data-pemesanan .row .right-side {
+    width: 50%;
+    text-align: right;
+}
+
+.data-pemesanan .row .right-side h1 {
+    font-size: 1.4rem;
+    margin-top: 13%;
+    text-align: right;
+}
+
+/* Data Jamaah */
+.data-jamaah .row {
+    display: flex;
+    padding: 0 13px;
+}
+
+.data-jamaah .left-side {
+    width: 65%;
+}
+
+.data-jamaah .right-side {
+    width: 35%;
+}
+
+.data-jamaah .left-side .jamaah ol {
+    padding-left: 20px;
+    margin: 0;
+}
+
+.data-jamaah .right-side .detail-pesanan {
+    /* float: right; */
+}
+
+/* Detail Pemesanan */
+.detail-pemesanan table {
+    width: 100%;
+    border: 1px solid #333;
+}
+
+.detail-pemesanan table th,
+.detail-pemesanan table td {
+    text-align: center;
+    padding: 3px 5px;
+    border: 1px solid #222;
+}
+
+/* Metode Pembayaran */
+.metode-pembayaran {
+    margin-top: 20px;
+}
+
+.metode-pembayaran p {
+    margin-bottom: 5px;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.metode-pembayaran p:nth-child(3) {
+    font-weight: normal;
+    text-decoration: none;
+}
+
+.metode-pembayaran ol {
+    padding-left: 15px;
+    margin: 0;
+}
+
+.footer-image {
+    position: relative;
+    top: 80px;
+    width: 100%;
+}
+
+/* Media Queries */
+@media (max-width: 1080px) {
+    .container {
+        font-size: 79.5%;
+    }
+
+    .canvas {
+        width: 160mm;
+    }
+}
+
+@media (max-width: 936px) {
+    .container {
+        font-size: 72.5%;
+    }
+
+    .canvas {
+        width: 150mm;
+    }
+}
+
+@media (max-width: 767px) {
+    .container {
+        font-size: 62.5%;
+    }
+
+    .canvas {
+        width: 140mm;
+        margin-left: -40px;
+    }
+
+    .invoice h3 {
+        font-size: 1rem;
+    }
+
+    .header-content .left-side h1 {
+        font-size: 0.8rem;
+    }
+    .header-content .left-side h2 {
+        font-size: 0.6rem;
+    }
+}
+
+@media (max-width: 546px) {
+    .container {
+        font-size: 52.5%;
+    }
+
+    .canvas {
+        width: 90mm;
+        max-height: 200mm;
+        margin: 0;
+    }
+
+    header .row .right-side h1 {
+        font-size: 1rem;
+    }
+
+    header .row .left-side h3 {
+        font-size: 0.7rem;
+    }
+
+    .data-pemesanan .row .left-side h2 {
+        font-size: 0.8rem;
+    }
+
+    .data-pemesanan .row .right-side h1 {
+        font-size: 0.8rem;
+    }
+}

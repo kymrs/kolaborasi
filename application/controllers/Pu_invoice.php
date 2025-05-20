@@ -149,7 +149,7 @@ class Pu_invoice extends CI_Controller
         $data['invoice'] = $this->M_pu_invoice->getInvoiceData($id);
         $data['rekening'] = $this->db->get_where('pu_rek_invoice', ['invoice_id' => $id])->result_array();
         $data['detail'] = $this->db->get_where('pu_detail_invoice', ['invoice_id' => $id])->result_array();
-        $data['title'] = 'backend/pu_invoice/pu_invoice_read';
+        $data['title'] = 'backend/pu_invoice/pu_kwitansi_read';
         $data['title_view'] = 'Prepayment';
         $this->load->view('backend/home', $data);
     }
