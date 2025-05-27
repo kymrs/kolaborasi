@@ -3,12 +3,12 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-class M_pu_produk_agen extends CI_Model
+class M_bmn_survey extends CI_Model
 {
     var $id = 'id';
-    var $table = 'pu_produk_agen'; //nama tabel dari database
-    var $column_order = array(null, null, 'travel', 'harga_paket', 'fee_agen', 'tanggal_keberangkatan', 'sisa_seat', 'created_at');
-    var $column_search = array('travel', 'harga_paket', 'fee_agen', 'tanggal_keberangkatan', 'sisa_seat', 'created_at'); //field yang diizin untuk pencarian 
+    var $table = 'bmn_survey'; // nama tabel dari database
+    var $column_order = array(null, null, 'nama', 'tgl_pernikahan', 'no_hp', 'created_at');
+    var $column_search = array('nama', 'tgl_pernikahan', 'no_hp', 'created_at'); //field yang diizin untuk pencarian 
     var $order = array('id' => 'desc'); // default order 
 
     public function __construct()

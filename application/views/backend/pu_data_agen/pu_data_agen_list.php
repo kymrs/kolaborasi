@@ -113,7 +113,13 @@
                             <label for="" class="col-sm-3 col-form-label">KTP</label>
                             <div class="col-sm-9">
                                 <img src="" alt="tes" width="100px" style="margin-bottom: 10px; display: none;" id="imgKTPEdit">
-                                <input type="file" class="form-control" id="ktp" name="ktp" accept=".jpg, .jpeg, .png" required>
+                                <input type="file" class="form-control" id="ktp" name="ktp" accept=".jpg, .jpeg, .png">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="" class="col-sm-3 col-form-label">Password</label>
+                            <div class="col-sm-9">
+                                <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
                             </div>
                         </div>
                     </div>
@@ -249,9 +255,11 @@
         $('.form-control').removeClass('error');
         $('#modal-default').modal('show');
         $('.card-title').text('Edit Data Agen');
-        $('#imgKTPEdit').show();
         $('.aksi').text('Update');
-        console.log(id);
+
+        // Sembunyikan preview gambar KTP dulu
+        $('#imgKTPEdit').hide().attr('src', '');
+
         $.ajax({
             url: "<?php echo site_url('pu_data_agen/get_id/') ?>/" + id,
             type: "GET",
@@ -261,8 +269,15 @@
                 $('[name="nama_agen"]').val(data.nama);
                 $('[name="no_telp"]').val(data.no_telp);
                 $('[name="alamat"]').val(data.alamat);
-                $('#imgKTPEdit').attr('src', '<?php echo base_url('assets/backend/document/pu_ktp_agen/') ?>' + data.ktp);
 
+                // Preview gambar KTP jika ada
+                if (data.ktp) {
+                    $('#imgKTPEdit')
+                        .attr('src', '<?php echo base_url('assets/backend/document/pu_data_agen/') ?>' + data.ktp)
+                        .show();
+                } else {
+                    $('#imgKTPEdit').hide().attr('src', '');
+                }
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 alert('Error get data from ajax');

@@ -48,15 +48,12 @@
                                 <tr>
                                     <th>No</th>
                                     <th style="width: 120px;">Action</th>
-                                    <th>Kategori Produk</th>
-                                    <th>Nama Produk</th>
+                                    <th>Nama Travel</th>
                                     <th>Harga Paket</th>
                                     <th>Fee Agen</th>
+                                    <th>Tanggal Keberangkatan</th>
+                                    <th>Sisa Seat</th>
                                     <th>Image</th>
-                                    <th>Hotel</th>
-                                    <th>Rating</th>
-                                    <th>Maskapai</th>
-                                    <th>Layanan Unggul</th>
                                     <th>Dibuat Pada</th>
                                 </tr>
                             </thead>
@@ -67,15 +64,12 @@
                                 <tr>
                                     <th>No</th>
                                     <th style="width: 120px;">Action</th>
-                                    <th>Kategori Produk</th>
-                                    <th>Nama Produk</th>
+                                    <th>Nama Travel</th>
                                     <th>Harga Paket</th>
                                     <th>Fee Agen</th>
+                                    <th>Tanggal Keberangkatan</th>
+                                    <th>Sisa Seat</th>
                                     <th>Image</th>
-                                    <th>Hotel</th>
-                                    <th>Rating</th>
-                                    <th>Maskapai</th>
-                                    <th>Layanan Unggul</th>
                                     <th>Dibuat Pada</th>
                                 </tr>
                             </tfoot>
@@ -87,7 +81,7 @@
     </div>
 
     <!-- Modal -->
-    <div class="modal fade" id="modal-default">
+    <!-- <div class="modal fade" id="modal-default">
         <div class="modal-dialog">
             <div class="modal-content">
                 <form id="modalform">
@@ -97,7 +91,6 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <!-- /.card-header -->
                     <div class="modal-body">
                         <input type="hidden" name="id" />
                         <div class="form-group row">
@@ -122,7 +115,7 @@
                         <div class="form-group row">
                             <label for="" class="col-sm-3 col-form-label">KTP</label>
                             <div class="col-sm-9">
-                                <img src="" alt="tes" width="100px" style="margin-bottom: 10px; display: none;" id="imgKTPEdit">
+                                <img src="" alt="tes" width="100px" style="margin-bottom: 10px; display: none;" id="imgProdukEdit">
                                 <input type="file" class="form-control" id="ktp" name="ktp" accept=".jpg, .jpeg, .png" required>
                             </div>
                         </div>
@@ -133,23 +126,23 @@
                 </form>
             </div>
         </div>
-    </div>
+    </div> -->
 
-    <!-- Modal Lihat KTP -->
-    <div class="modal fade" id="modalKTP" tabindex="-1" role="dialog" aria-labelledby="modalKTPLabel" aria-hidden="true">
+    <!-- Modal Lihat Produk -->
+    <div class="modal fade" id="modalProduk" tabindex="-1" role="dialog" aria-labelledby="modalProdukLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalKTPLabel">Lihat KTP</h5>
+                    <h5 class="modal-title" id="modalProdukLabel">Lihat Produk</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body text-center">
-                    <img id="imgKTP" src="" alt="KTP" class="img-fluid" style="max-height:400px;">
+                    <img id="imgProduk" src="" alt="Produk" class="img-fluid" style="max-height:400px;">
                     <br>
-                    <a id="downloadKTP" href="#" class="btn btn-primary mt-3" download target="_blank">
-                        <i class="fa fa-download"></i> Download KTP
+                    <a id="downloadProduk" href="#" class="btn btn-primary mt-3" download target="_blank">
+                        <i class="fa fa-download"></i> Download Foto
                     </a>
                 </div>
             </div>
@@ -237,7 +230,7 @@
         method = 'add';
         $('#modalform')[0].reset();
         var validator = $("#modalform").validate();
-        $('#imgKTPEdit').hide();
+        $('#imgProdukEdit').hide();
         validator.resetForm();
     };
 
@@ -259,7 +252,7 @@
         $('.form-control').removeClass('error');
         $('#modal-default').modal('show');
         $('.card-title').text('Edit Data Agen');
-        $('#imgKTPEdit').show();
+        $('#imgProdukEdit').show();
         $('.aksi').text('Update');
         console.log(id);
         $.ajax({
@@ -271,7 +264,7 @@
                 $('[name="nama_agen"]').val(data.nama);
                 $('[name="no_telp"]').val(data.no_telp);
                 $('[name="alamat"]').val(data.alamat);
-                $('#imgKTPEdit').attr('src', '<?php echo base_url('assets/backend/document/ktp_agen_pu/') ?>' + data.ktp);
+                $('#imgProdukEdit').attr('src', '<?php echo base_url('assets/backend/document/ktp_agen_pu/') ?>' + data.ktp);
 
             },
             error: function(jqXHR, textStatus, errorThrown) {
@@ -313,13 +306,13 @@
         })
     };
 
-    $(document).on('click', '.lihat-ktp', function(e) {
+    $(document).on('click', '.lihat-produk', function(e) {
         e.preventDefault();
         var imgUrl = $(this).data('img');
-        $('#imgKTP').attr('src', imgUrl);
-        $('#downloadKTP').attr('href', imgUrl);
+        $('#imgProduk').attr('src', imgUrl);
+        $('#downloadProduk').attr('href', imgUrl);
         // Optional: set nama file download
-        $('#downloadKTP').attr('download', 'ktp-' + Date.now() + '.jpg');
-        $('#modalKTP').modal('show');
+        $('#downloadProduk').attr('download', 'produk-' + Date.now() + '.jpg');
+        $('#modalProduk').modal('show');
     });
 </script>
