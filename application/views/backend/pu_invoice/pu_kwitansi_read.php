@@ -18,7 +18,7 @@
             <header>
                 <img class="header-image" src="<?= base_url('assets/backend/img/header.png') ?>" alt="">
                 <div style="clear:both"></div>
-                <div class="row">
+                <div class="row" style="margin-top: 125px;">
                     <p>BUKTI TERIMA PEMBAYARAN</p>
                     <table>
                         <tr>
