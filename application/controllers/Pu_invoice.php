@@ -751,10 +751,10 @@ class Pu_invoice extends CI_Controller
             80,                    // Lebar sel
             0,                     // Tinggi sel (0 berarti tinggi dinamis)
             4,       // Posisi X
-            $t_cpdf2->SetY($t_cpdf2->GetY()),       // Posisi Y saat ini
+            $t_cpdf2->SetY($t_cpdf2->GetY() + 1.5),       // Posisi Y saat ini
             $invoice->jamaah,           // Konten HTML
             0,                     // Border (0 = tidak ada border)
-            1,                     // Line break (1 = pindah ke baris baru setelah cell)
+            0,                     // Line break (1 = pindah ke baris baru setelah cell)
             false,                 // Fill (false = tidak ada latar belakang)
             true,                  // Auto padding
             'L',                   // Align (L = kiri)
@@ -769,7 +769,7 @@ class Pu_invoice extends CI_Controller
             80,                    // Lebar sel
             0,                     // Tinggi sel (0 berarti tinggi dinamis)
             150,       // Posisi X
-            $t_cpdf2->GetY() - 4.5,       // Posisi Y saat ini
+            $t_cpdf2->GetY(),       // Posisi Y saat ini
             $invoice->detail_pesanan,           // Konten HTML
             0,                     // Border (0 = tidak ada border)
             1,                     // Line break (1 = pindah ke baris baru setelah cell)
