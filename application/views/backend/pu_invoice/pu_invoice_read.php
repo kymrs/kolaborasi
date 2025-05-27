@@ -16,7 +16,7 @@
             <header>
                 <img class="header-image" src="<?= base_url('assets/backend/img/header.png') ?>" alt="">
                 <div style="clear:both"></div>
-                <div class="row">
+                <div class="row" style="margin-top: 130px;">
                     <div class="left-side">
                         <h3>PT. KOLABORASI PARA SAHABAT</h3>
                     </div>
@@ -116,7 +116,7 @@
                 <p><b>a/n : <span><?= $rekening->travel ?></span></b></p>
             </div>
             <!-- Tambahkan catatan di bawah metode pembayaran -->
-            <div class="catatan-invoice" style="margin-top:20px;">
+            <div class="catatan-invoice" style="margin-top:20px; margin-bottom:40px;">
                 <table>
                     <tr>
                         <td style="font-weight:bold; width:120px; vertical-align: top;">Catatan</td>

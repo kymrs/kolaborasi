@@ -78,56 +78,27 @@
                             <div class="col-md-6">
                                 <!-- First Set of Fields -->
                                 <div class="form-group row">
-                                    <label class="col-sm-5" for="customer_id">Kategori Produk</label>
+                                    <label class="col-sm-5" for="travel">Nama Travel</label>
                                     <div class="col-sm-7">
-                                        <select class="form-control" name="kategori_id" id="kategori_id">
-                                            <option value="" selected>Pilih Kategori</option>
-                                            <?php foreach ($kategori as $row) : ?>
-                                                <option value="<?= $row->id ?>"><?= $row->kategori ?></option>
+                                        <select class="form-control" name="travel" id="travel">
+                                            <option value="" hidden>Pilih Travel</option>
+                                            <?php foreach ($travels as $travel) : ?>
+                                                <option value="<?= $travel->travel ?>"><?= $travel->travel ?></option>
                                             <?php endforeach; ?>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-sm-5" for="nama_produk">Nama Produk</label>
+                                    <label class="col-sm-5">Tanggal Keberangkatan</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="nama_produk" name="nama_produk" required autocomplete="off" placeholder="Nama Produk">
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-5" for="hotel">Nama Hotel</label>
-                                    <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="hotel" name="hotel" required autocomplete="off" placeholder="Nama Hotel">
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label for="" class="col-sm-5 col-form-label">Rating Hotel</label>
-                                    <div class="col-sm-7">
-                                        <div class="rating">
-                                            <input type="radio" id="star5" name="rating" value="5">
-                                            <label for="star5" title="5 Bintang">★</label>
-                                            <input type="radio" id="star4" name="rating" value="4">
-                                            <label for="star4" title="4 Bintang">★</label>
-                                            <input type="radio" id="star3" name="rating" value="3">
-                                            <label for="star3" title="3 Bintang">★</label>
-                                            <input type="radio" id="star2" name="rating" value="2">
-                                            <label for="star2" title="2 Bintang">★</label>
-                                            <input type="radio" id="star1" name="rating" value="1">
-                                            <label for="star1" title="1 Bintang">★</label>
+                                        <div class="input-group date">
+                                            <input type="text" class="form-control" name="tanggal_keberangkatan" id="tanggal_keberangkatan" placeholder="DD-MM-YYYY" autocomplete="off" style="cursor: pointer;">
+                                            <div class="input-group-append">
+                                                <div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-5" for="maskapai">Maskapai</label>
-                                    <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="maskapai" name="maskapai" required autocomplete="off" placeholder="Maskapai">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <!-- Second Set of Fields -->
-
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="image">Gambar Produk</label>
                                     <div class="col-sm-7">
@@ -140,22 +111,17 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!-- Input Layanan Unggul -->
+                            </div>
+
+                            <div class="col-md-6">
+                                <!-- Second Set of Fields -->
+                                <!-- Input Harga Paket -->
                                 <div class="form-group row">
-                                    <label class="col-sm-5" for="layanan_unggul_input">Layanan Unggul</label>
+                                    <label class="col-sm-5" for="sisa_seat">Sisa Seat</label>
                                     <div class="col-sm-7">
-                                        <div class="input-group mb-2">
-                                            <input type="text" class="form-control" id="layanan_unggul_input" placeholder="Contoh: 9 hari, Termasuk Visa">
-                                            <div class="input-group-append">
-                                                <button class="btn btn-primary" type="button" id="add_layanan_unggul"><i class="fa fa-plus"></i></button>
-                                            </div>
-                                        </div>
-                                        <div id="layanan_unggul_list" class="mb-2"></div>
-                                        <input type="hidden" name="layanan_unggul" id="layanan_unggul">
+                                        <input type="text" class="form-control" id="sisa_seat" name="sisa_seat" placeholder="Sisa seat" onkeypress="return hanyaAngka(event)" onkeyup="this.value = this.value.replace(/[^0-9]/g, '')">
                                     </div>
                                 </div>
-
-                                <!-- Input Harga Paket -->
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="harga_paket">Harga Paket</label>
                                     <div class="col-sm-7">
@@ -205,6 +171,12 @@
 <?php $this->load->view('template/script'); ?>
 
 <script>
+    $('#tanggal_keberangkatan').datepicker({
+        dateFormat: 'dd-mm-yy',
+        // minDate: new Date(),
+        // maxDate: new Date(),
+    });
+
     $('#kategori_id').select2();
     $(document).ready(function() {
         $('#no_hp').on('input', function() {
@@ -253,19 +225,6 @@
     }
 
     $(document).ready(function() {
-        // Ketika halaman di-load, panggil customer ID dari server
-        $.ajax({
-            url: '<?= base_url("pu_customer/generate_customer_id") ?>', // Sesuaikan dengan URL yang benar
-            type: 'GET',
-            dataType: 'json',
-            success: function(response) {
-                // Isi nilai customer_id ke input field
-                $('#customer_id').val(response.customer_id);
-            }
-        });
-    });
-
-    $(document).ready(function() {
         var id = $('#id').val();
         var aksi = $('#aksi').val();
         var kode = $('#kode').val();
@@ -277,43 +236,23 @@
             $('.aksi').text('Update');
             $("select option[value='group']").hide();
             $.ajax({
-                url: "<?php echo site_url('pu_customer/edit_data') ?>/" + id,
+                url: "<?php echo site_url('pu_produk_agen/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
                     moment.locale('id');
                     $('#id').val(data['master'].id);
-                    $('#customer_id').val(data['master'].customer_id.toUpperCase()).attr('readonly', true);
-                    $('#group_id').val(data['master'].group_id);
-                    $('#title').val(data['master'].title);
-                    $('#nama').val(data['master'].nama);
-                    $('#no_hp').val(data['master'].no_hp);
-                    $('#jenis_kelamin').val(data['master'].jenis_kelamin);
-                    $('#asal').val(data['master'].asal);
-                    $('#akun').val(data['master'].akun);
+                    // // ISI FIELD PRODUK AGEN
+                    $('#travel').val(data['master'].travel);
+                    $('#tanggal_keberangkatan').val(moment(data['master'].tanggal_keberangkatan).format('DD-MM-YYYY'));
+                    $('#sisa_seat').val(data['master'].sisa_seat);
 
-
-                    // Update gambar jika ada
-
-                    // Pas Foto
-                    if (data['master'].pas_foto) {
-                        $('#pas_foto_image').attr('src', "<?php echo base_url('assets/backend/document/pu_customer/pas_foto/') ?>" + data['master'].pas_foto)
-                            .css({
-                                'margin-bottom': '10px',
-                                'cursor': 'pointer'
-                            }) // Menambahkan cursor pointer
-                            .show();
-                        $('#pas_foto_tidak_ada').hide();
-                        $('#pas_foto_image').click(function() {
-                            $('#modalImage').attr('src', "<?php echo base_url('assets/backend/document/pu_customer/pas_foto/') ?>" + data['master'].pas_foto);
-                            $('#imageModal').modal('show');
-                        });
-                        if (aksi != 'read') {
-                            $('#delete_pas_foto').show();
-                        }
-                    } else {
-                        $('#pas_foto_image').hide();
-                        $('#pas_foto_tidak_ada').text('Tidak ada').show();
+                    // Harga Paket & Fee Agen (format ke rupiah)
+                    if (data['master'].harga_paket) {
+                        $('#harga_paket').val(formatRupiah(data['master'].harga_paket, 'Rp. '));
+                    }
+                    if (data['master'].fee_agen) {
+                        $('#fee_agen').val(formatRupiah(data['master'].fee_agen, 'Rp. '));
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
@@ -338,7 +277,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: '<?php echo base_url("pu_customer/delete_file"); ?>', // URL controller untuk menghapus file
+                        url: '<?php echo base_url("pu_produk_agen/delete_file"); ?>', // URL controller untuk menghapus file
                         type: 'POST',
                         data: {
                             id: id, // Kirim ID customer untuk diupdate
@@ -388,33 +327,11 @@
         });
 
         if (aksi == "read") {
-            $('.aksi').hide();
-            $('#customer_id').prop('disabled', true).css('cursor', 'not-allowed');
-            $('#group_id').prop('disabled', true).css('cursor', 'not-allowed');
-            $('#title').prop('disabled', true).css('cursor', 'not-allowed');
-            $('#nama').prop('readonly', true).css('cursor', 'not-allowed');
-            $('#no_hp').prop('readonly', true).css('cursor', 'not-allowed');
-            $('#jenis_kelamin').prop('disabled', true).css('cursor', 'not-allowed');
-            $('#asal').prop('readonly', true).css('cursor', 'not-allowed');
-            $('#akun').prop('readonly', true).css('cursor', 'not-allowed');
-
-            $('#paspor').css('display', 'none');
-            $('#kartu_kuning').css('display', 'none');
-            $('#ktp').css('display', 'none');
-            $('#kk').css('display', 'none');
-            $('#buku_nikah').css('display', 'none');
-            $('#akta_lahir').css('display', 'none');
-            $('#pas_foto').css('display', 'none');
-
-            $('#delete_paspor').hide();
-            $('#delete_kartu_kuning').css('display', 'none');
-            $('#delete_ktp').css('display', 'none');
-            $('#delete_kk').css('display', 'none');
-            $('#delete_buku_nikah').css('display', 'none');
-            $('#delete_akta_lahir').css('display', 'none');
-            $('#delete_pas_foto').css('display', 'none');
-
-            $('.kwitansi-label').css('display', 'none');
+            // Disable semua input, select, textarea, radio, dan tombol plus
+            $('#form input, #form select, #form textarea, #form button, #form .input-group-append button').attr('disabled', true);
+            // Khusus tombol back dan submit tetap aktif
+            $('.btn-secondary').attr('disabled', false);
+            $('.aksi').hide(); // Sembunyikan tombol submit
         }
 
         $("#form").submit(function(e) {
@@ -424,9 +341,9 @@
 
             var url;
             if (id == 0) {
-                url = "<?php echo site_url('pu_customer/add') ?>";
+                url = "<?php echo site_url('pu_produk_agen/add') ?>";
             } else {
-                url = "<?php echo site_url('pu_customer/update') ?>";
+                url = "<?php echo site_url('pu_produk_agen/update') ?>";
             }
 
             // Gunakan FormData untuk menangani file upload
@@ -460,7 +377,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then(() => {
-                            location.href = "<?= base_url('pu_customer/customer') ?>";
+                            location.href = "<?= base_url('pu_produk_agen') ?>";
                         });
                     }
                 },
@@ -474,34 +391,6 @@
                 }
             });
         });
-
-        // Input dinamis layanan unggul
-        var layananArr = [];
-
-        $('#add_layanan_unggul').on('click', function() {
-            var val = $('#layanan_unggul_input').val().trim();
-            if (val) {
-                layananArr.push(val);
-                updateLayananList();
-                $('#layanan_unggul_input').val('');
-            }
-        });
-
-        $('#layanan_unggul_list').on('click', '.hapus-layanan', function(e) {
-            e.preventDefault();
-            var idx = $(this).data('idx');
-            layananArr.splice(idx, 1);
-            updateLayananList();
-        });
-
-        function updateLayananList() {
-            var html = '';
-            layananArr.forEach(function(item, idx) {
-                html += '<span class="badge badge-info mr-1 mb-1">' + item + ' <a href="#" class="text-danger hapus-layanan" data-idx="' + idx + '"><i class="fa fa-times"></i></a></span>';
-            });
-            $('#layanan_unggul_list').html(html);
-            $('#layanan_unggul').val(layananArr.join(', '));
-        }
 
         $("#form").validate({
             rules: {
