@@ -65,7 +65,9 @@ class Pu_travel extends CI_Controller
     public function add()
     {
         $data = array(
-            'travel' => $this->input->post('travel')
+            'travel' => $this->input->post('travel'),
+            'nama_bank' => $this->input->post('nama_bank'),
+            'no_rek' => $this->input->post('no_rek'),
         );
 
         $this->M_pu_travel->save($data);
@@ -75,7 +77,9 @@ class Pu_travel extends CI_Controller
     public function update()
     {
         $data = array(
-            'travel' => $this->input->post('travel')
+            'travel' => $this->input->post('travel'),
+            'nama_bank' => $this->input->post('nama_bank'),
+            'no_rek' => $this->input->post('no_rek'),
         );
         $this->db->where('id', $this->input->post('id'));
         $this->db->update('pu_travel', $data);
