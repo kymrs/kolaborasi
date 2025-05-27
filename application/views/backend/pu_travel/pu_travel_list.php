@@ -91,6 +91,18 @@
                                 <input type="hidden" class="form-control" id="id" name="id" placeholder="id">
                             </div>
                         </div>
+                        <div class="form-group row">
+                            <label for="" class="col-sm-3 col-form-label">Bank</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="nama_bank" name="nama_bank" placeholder="Nama Bank" required>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="" class="col-sm-3 col-form-label">Norek</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="no_rek" name="no_rek" placeholder="Nomor Rekening" required>
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer text-right">
                         <button type="submit" class="btn btn-primary aksi">Save</button>
@@ -212,6 +224,8 @@
             success: function(data) {
                 $('[name="id"]').val(data.id);
                 $('[name="travel"]').val(data.travel);
+                $('[name="nama_bank"]').val(data.nama_bank);
+                $('[name="no_rek"]').val(data.no_rek);
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 alert('Error get data from ajax');

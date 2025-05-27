@@ -10,7 +10,8 @@
 <body>
     <div class="container">
         <div class="canvas">
-            <a class="btn btn-secondary btn-sm" onclick="history.back()" style="float: right"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+            <a class="btn btn-secondary btn-sm" onclick="history.back()" style="float: right; margin-left: 8px;"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+            <a class="btn btn-success btn-sm" href="<?= base_url('pu_invoice/generate_pdf_invoice/' . $invoice['id']) ?>" style="float: right;"><i class="fas fa-file-pdf"></i>&nbsp;Print</a>
             <hr class="line-header">
             <header>
                 <img class="header-image" src="<?= base_url('assets/backend/img/header.png') ?>" alt="">
@@ -25,17 +26,17 @@
                             <tr>
                                 <td>No</td>
                                 <td>:</td>
-                                <td>INVPU050001</td>
+                                <td><?= $invoice['kode_invoice'] ?></td>
                             </tr>
                             <tr>
                                 <td>Tanggal Invoice</td>
                                 <td>:</td>
-                                <td>10/05/2025</td>
+                                <td><?= $tgl_invoice ?></td>
                             </tr>
                             <tr>
                                 <td>Tanggal Jatuh Tempo</td>
                                 <td>:</td>
-                                <td>17/05/2025</td>
+                                <td><?= $tgl_tempo ?></td>
                             </tr>
                         </table>
                     </div>
@@ -47,10 +48,10 @@
                     <div class="left-side">
                         <p>Kpd Yth.</p>
                         <h2>Bapak Nana Suryana</h2>
-                        <p class="address">Alamat : Kp. Jatake RT 002 RW 001 Jatake, Jatiuwung, Tangerang</p>
+                        <p class="address">Alamat : <?= $invoice['ctc_alamat'] ?></p>
                     </div>
                     <div class="right-side">
-                        <h1>30.000.000</h1>
+                        <h1>Rp. <?= number_format($total_tagihan, 0, ',', '.') ?></h1>
                     </div>
                 </div>
             </div>
@@ -59,18 +60,12 @@
                 <div class="row">
                     <div class="left-side">
                         <div class="jamaah">
-                            <ol>
-                                <li data-list="ordered"><span class="ql-ui" contenteditable="false"></span>Renaldo</li>
-                                <li data-list="ordered"><span class="ql-ui" contenteditable="false"></span>Jamilah</li>
-                                <li data-list="ordered"><span class="ql-ui" contenteditable="false"></span>Setiabudi</li>
-                            </ol>
+                            <?= $invoice['jamaah'] ?>
                         </div>
                     </div>
                     <div class="right-side">
                         <div class="detail-pesanan">
-                            Umroh 4 September 2025<br>
-                            Plus City Tour Thaif - 9 Hari<br>
-                            Kamar : Triple<br>
+                            <?= $invoice['detail_pesanan'] ?>
                         </div>
                     </div>
                 </div>
@@ -84,26 +79,51 @@
                         <th>HARGA</th>
                         <th>TOTAL</th>
                     </tr>
-                    <tr>
-                        <td>DP Umroh 4 September 2025</td>
-                        <td>5</td>
-                        <td>10.000.000</td>
-                        <td>30.000.000</td>
-                    </tr>
+                    <?php foreach ($details as $key => $value) { ?>
+                        <tr>
+                            <td><?= $value['deskripsi'] ?></td>
+                            <td><?= $value['jumlah'] ?></td>
+                            <td>Rp. <?= number_format($value['harga'], 0, ',', '.') ?></td>
+                            <td>Rp. <?= number_format($value['total'], 0, ',', '.') ?></td>
+                        </tr>
+                    <?php } ?>
                     <tr>
                         <td style="border-color: #fff;"></td>
                         <td style="border-bottom-color: #fff;"></td>
-                        <td style="text-align: left; font-weight: bold">Total</td>
-                        <td>tes</td>
+                        <td style="text-align: center; font-weight: bold">Total</td>
+                        <td>Rp. <?= number_format($total_tagihan, 0, ',', '.') ?></td>
                     </tr>
+                    <?php if ($total_nominal_dibayar > 0) { ?>
+                        <tr>
+                            <td style="border-color: #fff;"></td>
+                            <td style="border-bottom-color: #fff;"></td>
+                            <td style="text-align: center; font-weight: bold">Total Dibayar</td>
+                            <td>Rp. <?= number_format($total_nominal_dibayar, 0, ',', '.') ?></td>
+                        </tr>
+                        <tr>
+                            <td style="border-color: #fff;"></td>
+                            <td style="border-bottom-color: #fff;"></td>
+                            <td style="text-align: center; font-weight: bold">Sisa Tagihan</td>
+                            <td>Rp. <?= number_format($total_tagihan - $total_nominal_dibayar, 0, ',', '.') ?></td>
+                        </tr>
+                    <?php } ?>
                 </table>
             </div>
             <div class="metode-pembayaran">
                 <p>Metode Pembayaran</p>
-                <ol>
-                    <li>Bank : <span>Bank Syariah Indonesia</span><br>No Rekening : <span>7215671498</span></li>
-                </ol>
-                <p>a/n : PT. Kolaborasi Para Sahabat</p>
+                <p>Bank : <span><?= $rekening->nama_bank ?></span></p>
+                <p>No rek : <span><?= $rekening->no_rek ?></span></p>
+                <p><b>a/n : <span><?= $rekening->travel ?></span></b></p>
+            </div>
+            <!-- Tambahkan catatan di bawah metode pembayaran -->
+            <div class="catatan-invoice" style="margin-top:20px;">
+                <table>
+                    <tr>
+                        <td style="font-weight:bold; width:120px; vertical-align: top;">Catatan</td>
+                        <td style="vertical-align: top;">:</td>
+                        <td style="vertical-align: top;"><?= !empty($invoice['keterangan']) ? nl2br($invoice['keterangan']) : '-' ?></td>
+                    </tr>
+                </table>
             </div>
             <img class="footer-image" src="<?= base_url('assets/backend/img/footer.png') ?>" alt="">
         </div>

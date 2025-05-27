@@ -108,9 +108,46 @@
                 <div class="card-body">
                     <form id="form">
                         <div class="row mb-4">
+                            <!-- SEBELAH KIRI -->
                             <div class="col-md-6">
                                 <div class="p-4">
-                                    <h4 class="section-title">FROM :</h4>
+                                    <h4>JAMA'AH:</h4>
+                                    <hr style="border-top: 3px solid #000;">
+                                    <div class="row">
+                                        <label class="col-sm-4 col-form-label">Contact Person</label>
+                                        <div class="input-group col-sm-7">
+                                            <input type="text" class="form-control" id="ctc_nama" name="ctc_nama" placeholder="Nama jamaah..." aria-label="Recipient's username" aria-describedby="button-addon2">
+                                        </div>
+                                    </div>
+
+                                    <!-- Layanan Termasuk -->
+                                    <div class="row">
+                                        <div class="col-sm-12 mb-3">
+                                            <label class="form-label">Jamaah:</label>
+                                            <div id="jamaah" name="jamaah" class="border p-2" style="height: 200px;"></div>
+                                            <input type="hidden" name="jamaah_item" id="jamaah_item">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-sm-12">
+                                            <label class="form-label">Detail Pesanan</label>
+                                            <div id="detail_pesanan" name="detail_pesanan" class="border p-2" style="height: 200px;"></div>
+                                            <input type="hidden" name="pesanan_item" id="pesanan_item">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-4 col-form-label">Contact Alamat</label>
+                                        <div class="col-sm-7">
+                                            <textarea class="form-control" id="ctc_alamat" name="ctc_alamat" rows="2" placeholder="Contact Alamat"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- SEBELAH KANAN -->
+                            <div class="col-md-6">
+                                <div class="p-4">
+                                    <h4 class="section-title">RINCIAN :</h4>
                                     <hr style="border-top: 3px solid #000;">
                                     <div class="form-group row">
                                         <label class="col-sm-4 col-form-label">Tanggal Invoice</label>
@@ -140,130 +177,17 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- <div class="form-group row">
-                                        <label class="col-sm-4 col-form-label">Contact Nama</label>
-                                        <div class="col-sm-8">
-                                            <input type="text" class="form-control" id="ctc_nama" name="ctc_nama" placeholder="Contact Nama">
-                                        </div>
-                                    </div> -->
-                                    <!-- <div class="form-group row">
-                                        <label class="col-sm-4 col-form-label">Contact Nomor</label>
-                                        <div class="col-sm-8">
-                                            <input type="text" class="form-control" id="ctc_nomor" name="ctc_nomor" placeholder="Contact Nomor">
-                                        </div>
-                                    </div> -->
-                                </div>
-                                <div class="p-4">
-                                    <h4 class="section-title">PAYMENT INFO :</h4>
-                                    <hr style="border-top: 3px solid #000;">
-                                    <!-- <div class="form-group row">
-                                        <label class="col-sm-4 col-form-label">Diskon</label>
-                                        <div class="col-sm-4">
-                                            <input type="text" class="form-control" id="diskon" name="diskon" placeholder="Diskon %">
-                                        </div>
-                                    </div> -->
                                     <div class="form-group row">
                                         <label class="col-sm-4 col-form-label">No Rekening</label>
                                         <div class="col-sm-8">
                                             <div class="input-group mb-3">
-                                                <!-- RADIO BUTTON UNTUK PEMILIHAN INPUTAN REKENING -->
-                                                <div class="form-check form-check-inline" style="margin-bottom: 5px;">
-                                                    <input class="form-check-input" type="radio" name="radioNoLabel" id="exist" value="" aria-label="..." checked><label for="exist" style="margin-right: 14px; margin-top: 8px; cursor: pointer">Rekening terdaftar</label>
-                                                    <input class="form-check-input" type="radio" name="radioNoLabel" id="new" value="" aria-label="..."><label for="new" style="margin-top: 8px; cursor: pointer">Rekening baru</label>
-                                                </div>
                                                 <select class="js-example-basic-single" id="rekening" name="rekening">
-                                                    <option value="" selected disabled>Pilih rekening tujuan</option>
+                                                    <option value="" selected disabled>Pilih tujuan</option>
                                                     <?php foreach ($rek_options as $option) { ?>
-                                                        <option data-bank="<?= $option->nama_bank ?>" data-rek="<?= $option->no_rek ?>" value=""><?= $option->nama_bank . '-' . $option->no_rek ?></option>
+                                                        <option value="<?= $option->id ?>"><?= $option->travel . '-' . $option->nama_bank . '-' . $option->no_rek ?></option>
                                                     <?php } ?>
                                                 </select>
-                                                <div class="input-group rekening-text">
-                                                    <input type="text" class="form-control col-sm-4" style="font-size: 13px;" id="nama_bank" name="nama_bank" placeholder="Nama Bank">&nbsp;
-                                                    <span class="py-2">-</span>&nbsp;
-                                                    <input type="text" class="form-control col-sm-6" style="font-size: 13px;" id="nomor_rekening" name="nomor_rekening" placeholder="No Rekening">
-                                                    <span class="py-2"></span>&nbsp;
-                                                    <button type="button" class="btn-primary" id="btn-rek" style="height: 33.5px; width: 40px"><i class="fa fa-plus" aria-hidden="true"></i></button>
-                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-sm-12">
-                                            <div class="table-responsive">
-                                                <table id="rek-table" class=" table table-bordered">
-                                                    <thead>
-                                                        <tr>
-                                                            <th style="width: 5%;">No</th>
-                                                            <th style="width: 35%;">Nama Bank</th>
-                                                            <th style="width: 50%;">No Rekening</th>
-                                                            <th style="width: 10%;">Delete</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- SEBELAH KANAN -->
-                            <div class="col-md-6">
-                                <div class="p-4">
-                                    <h4>JAMA'AH:</h4>
-                                    <hr style="border-top: 3px solid #000;">
-                                    <div class="row">
-                                        <label class="col-sm-4 col-form-label">Contact Person</label>
-                                        <div class="input-group col-sm-7">
-                                            <input type="text" class="form-control" id="ctc_nama" name="ctc_nama" placeholder="Nama jamaah..." aria-label="Recipient's username" aria-describedby="button-addon2">
-                                        </div>
-                                    </div>
-
-                                    <!-- Layanan Termasuk -->
-                                    <div class="row">
-                                        <div class="col-sm-12 mb-3">
-                                            <label class="form-label">Jamaah:</label>
-                                            <div id="jamaah" name="jamaah" class="border p-2" style="height: 200px;"></div>
-                                            <input type="hidden" name="jamaah_item" id="jamaah_item">
-                                        </div>
-                                    </div>
-
-                                    <!-- <div class="table-responsive">
-                                        <table id="jamaah-table" class=" table table-bordered">
-                                            <thead>
-                                                <tr>
-                                                    <th style="width: 5%; text-align:center;">No</th>
-                                                    <th style="width: 35%; text-align:center;">Nama</th>
-                                                    <th style="width: 10%; text-align:center;">Delete</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-
-                                            </tbody>
-                                        </table>
-                                    </div> -->
-                                    <!-- <div class="form-group row">
-                                        <label class="col-sm-4 col-form-label">Contact Nomor</label>
-                                        <div class="col-sm-7">
-                                            <input type="text" class="form-control" id="ctc2_nomor" name="ctc2_nomor" placeholder="Contact Nomor">
-                                        </div>
-                                    </div> -->
-                                    <!-- <div class="form-group row">
-                                        <label class="col-sm-4 col-form-label">Email</label>
-                                        <div class="col-sm-7">
-                                            <input type="email" class="form-control" id="ctc2_email" name="ctc2_email" placeholder="Email">
-                                        </div>
-                                    </div> -->
-                                    <div class="form-group row">
-                                        <label class="col-sm-4 col-form-label">Detail Pesanan</label>
-                                        <div class="col-sm-7">
-                                            <textarea class="form-control" id="detail_pesanan" name="detail_pesanan" rows="2" placeholder="Detail pesanan..."></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="col-sm-4 col-form-label">Contact Alamat</label>
-                                        <div class="col-sm-7">
-                                            <textarea class="form-control" id="ctc_alamat" name="ctc_alamat" rows="2" placeholder="Contact Alamat"></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -310,6 +234,7 @@
                         <div id="loading" style="display: none;">
                             <p>Loading...</p>
                         </div>
+
 
                         <!-- PENENTUAN UPDATE ATAU ADD -->
                         <input type="hidden" name="id" id="id" value="<?= $id ?>">
@@ -403,14 +328,24 @@
         theme: 'snow',
     });
 
+    const quill3 = new Quill('#detail_pesanan', {
+        // modules: {
+        //     toolbar: toolbarOptions
+        // },
+        placeholder: 'Pesanan...',
+        theme: 'snow',
+    });
+
     document.getElementById("form").onsubmit = function() {
         // Get HTML content from Quill editor
         var catatanItem = quill.root.innerHTML;
         var jamaahItem = quill2.root.innerHTML;
+        var pesananItem = quill3.root.innerHTML;
 
         // Set it to hidden input
         document.getElementById("catatan_item").value = catatanItem;
         document.getElementById("jamaah_item").value = jamaahItem;
+        document.getElementById("pesanan_item").value = pesananItem;
     };
 
     $(document).ready(function() {
@@ -421,13 +356,13 @@
             // Hapus semua karakter yang bukan angka
             $(this).val(value.replace(/[^0-9]/g, ''));
         });
-        $('#ctc2_nomor').on('input', function() {
-            // Ambil nilai input
-            let value = $(this).val();
+        // $('#ctc2_nomor').on('input', function() {
+        //     // Ambil nilai input
+        //     let value = $(this).val();
 
-            // Hapus semua karakter yang bukan angka
-            $(this).val(value.replace(/[^0-9]/g, ''));
-        });
+        //     // Hapus semua karakter yang bukan angka
+        //     $(this).val(value.replace(/[^0-9]/g, ''));
+        // });
         // $('#diskon').on('input', function() {
         //     // Ambil nilai input
         //     let value = $(this).val();
@@ -503,6 +438,24 @@
         // maxDate: new Date(),
     });
 
+    $('#tanggal_pembayaran').datepicker({
+        dateFormat: 'yy-mm-dd',
+    });
+
+    // $('#nominal_dibayar').on('input', function() {
+    //     // Ambil nilai input
+    //     let value = $(this).val();
+
+    //     // Hapus semua karakter yang bukan angka
+    //     value = value.replace(/[^0-9]/g, '');
+
+    //     // Format ke Rupiah
+    //     let formatted = new Intl.NumberFormat('id-ID').format(value);
+
+    //     // Set nilai input dengan format Rupiah
+    //     $(this).val(formatted);
+    // });
+
     $(document).ready(function() {
 
         // INISIASI VARIABEL JAVASCRIPT/JQUERY
@@ -516,35 +469,35 @@
         $('.js-example-basic-single').select2();
 
         // Fungsi untuk mengatur enabled/disabled elemen berdasarkan radio button yang dipilih
-        function toggleInputs() {
-            const isExistChecked = $('#exist').is(':checked');
+        // function toggleInputs() {
+        //     const isExistChecked = $('#exist').is(':checked');
 
-            // Atur visibility dropdown dan input fields
-            if (isExistChecked) {
-                $('#rekening').prop('disabled', false).show(); // Aktifkan dan tampilkan elemen asli
-                $('#rekening').next('.select2-container').show(); // Tampilkan elemen Select2
-                $('.input-group.rekening-text input[type="text"]').prop('disabled', true).parent().hide(); // Sembunyikan input fields
-            } else {
-                $('#rekening').prop('disabled', true).hide(); // Nonaktifkan dan sembunyikan elemen asli
-                $('#rekening').next('.select2-container').hide(); // Sembunyikan elemen Select2
-                $('.input-group.rekening-text input[type="text"]').prop('disabled', false).parent().show(); // Tampilkan input fields
-            }
-        }
+        //     // Atur visibility dropdown dan input fields
+        //     if (isExistChecked) {
+        //         $('# ').prop('disabled', false).show(); // Aktifkan dan tampilkan elemen asli
+        //         $('#rekening').next('.select2-container').show(); // Tampilkan elemen Select2
+        //         $('.input-group.rekening-text input[type="text"]').prop('disabled', true).parent().hide(); // Sembunyikan input fields
+        //     } else {
+        //         $('#rekening').prop('disabled', true).hide(); // Nonaktifkan dan sembunyikan elemen asli
+        //         $('#rekening').next('.select2-container').hide(); // Sembunyikan elemen Select2
+        //         $('.input-group.rekening-text input[type="text"]').prop('disabled', false).parent().show(); // Tampilkan input fields
+        //     }
+        // }
 
         // Panggil fungsi saat halaman dimuat
-        toggleInputs();
+        // toggleInputs();
 
         // Panggil fungsi saat radio button berubah
-        $('input[name="radioNoLabel"]').change(toggleInputs);
+        // $('input[name="radioNoLabel"]').change(toggleInputs);
 
         // AGAR INPUT FIELD HANYA BISA NOMOR
-        document.getElementById('nomor_rekening').addEventListener('input', function(e) {
-            let value = this.value.replace(/[^0-9]/g, '');
-            if (value.length > 14) {
-                value = value.slice(0, 10);
-            }
-            this.value = value;
-        });
+        // document.getElementById('nomor_rekening').addEventListener('input', function(e) {
+        //     let value = this.value.replace(/[^0-9]/g, '');
+        //     if (value.length > 14) {
+        //         value = value.slice(0, 10);
+        //     }
+        //     this.value = value;
+        // });
 
         // Tambahkan fungsi untuk memformat input nominal memiliki titik
         function formatJumlahInput(selector) {
@@ -583,30 +536,30 @@
 
         //MENAMBAH FORM INPUTAN DI ADD FORM
         let rowCount = 0;
-        let rowRekCount = 0;
+        // let rowRekCount = 0;
 
         //ADD ROW NOMOR REKENING
-        function addRekRow(bank, rek) {
-            // Ambil nilai dari input
-            const namaBank = bank;
-            const nomorRekening = rek;
+        // function addRekRow(travel, bank, rek) {
+        //     // Ambil nilai dari input
+        //     const namaBank = bank;
+        //     const nomorRekening = rek;
 
-            rowRekCount++;
-            if (namaBank != '' && nomorRekening != '') {
-                const rekRow = `
-                <tr id="rek-${rowRekCount}">
-                    <td class="rek-number">${rowRekCount}</td>
-                    <td>
-                    <input name="nama_bank[${rowRekCount}]" id="nama_bank-${rowRekCount}" value="${namaBank}" style="border: none; pointer-events: none; color: #666">
-                    <input type="hidden" id="hidden_rekId${rowRekCount}" name="hidden_rekId[${rowRekCount}]" value="">
-                    </td>
-                    <td><input name="no_rek[${rowRekCount}]" id="no_rek-${rowRekCount}" value="${nomorRekening}" style="border: none; pointer-events: none; color: #666"></td>
-                    <td><button type="button" class="btn rek-delete btn-danger" data-id="${rowRekCount}">Delete</button></td>
-                </tr>
-            `;
-                $('#rek-table tbody').append(rekRow);
-            }
-        }
+        //     rowRekCount++;
+        //     if (namaBank != '' && nomorRekening != '') {
+        //         const rekRow = `
+        //         <tr id="rek-${rowRekCount}">
+        //             <td class="rek-number">${rowRekCount}</td>
+        //             <td>
+        //             <input name="nama_bank[${rowRekCount}]" id="nama_bank-${rowRekCount}" value="${namaBank}" style="border: none; pointer-events: none; color: #666">
+        //             <input type="hidden" id="hidden_rekId${rowRekCount}" name="hidden_rekId[${rowRekCount}]" value="">
+        //             </td>
+        //             <td><input name="no_rek[${rowRekCount}]" id="no_rek-${rowRekCount}" value="${nomorRekening}" style="border: none; pointer-events: none; color: #666"></td>
+        //             <td><button type="button" class="btn rek-delete btn-danger" data-id="${rowRekCount}">Delete</button></td>
+        //         </tr>
+        //     `;
+        //         $('#rek-table tbody').append(rekRow);
+        //     }
+        // }
 
         // ADD Row Detail Invoice
         function addRow() {
@@ -738,22 +691,22 @@
         }
 
         // REORDER NOMOR REKENING
-        function reorderRekRows() {
-            $('#rek-table tbody tr').each(function(index) {
-                const newRekRowNumber = index + 1;
-                const hiddenRekIdValue = $(this).find('input[name^="hidden_rekId"]').val();
-                const namaBankValue = $(this).find('input[name^="nama_bank"]').val();
-                const noRekValue = $(this).find('input[name^="no_rek"]').val();
+        // function reorderRekRows() {
+        //     $('#rek-table tbody tr').each(function(index) {
+        //         const newRekRowNumber = index + 1;
+        //         const hiddenRekIdValue = $(this).find('input[name^="hidden_rekId"]').val();
+        //         const namaBankValue = $(this).find('input[name^="nama_bank"]').val();
+        //         const noRekValue = $(this).find('input[name^="no_rek"]').val();
 
-                $(this).attr('id', `rek-${newRekRowNumber}`);
-                $(this).find('.rek-number').text(newRekRowNumber);
-                $(this).find('input[name^="nama_bank"]').attr('name', `nama_bank[${newRekRowNumber}]`).attr('id', `nama_bank-${newRekRowNumber}`).attr('placeholder', `Nama Bank...`).val(namaBankValue);
-                $(this).find('input[name^="no_rek"]').attr('name', `no_rek[${newRekRowNumber}]`).attr('id', `no_rek-${newRekRowNumber}`).attr('placeholder', `Nomor Rekening...`).val(noRekValue);
-                $(this).find('input[name^="hidden_rekId"]').attr('name', `hidden_rekId[${newRekRowNumber}]`).attr('id', `hidden_rekId${newRekRowNumber}`).val(hiddenRekIdValue);
-                $(this).find('.rek-delete').attr('data-id', newRekRowNumber).text('Delete');
-            });
-            rowRekCount = $('#rek-table tbody tr').length;
-        }
+        //         $(this).attr('id', `rek-${newRekRowNumber}`);
+        //         $(this).find('.rek-number').text(newRekRowNumber);
+        //         $(this).find('input[name^="nama_bank"]').attr('name', `nama_bank[${newRekRowNumber}]`).attr('id', `nama_bank-${newRekRowNumber}`).attr('placeholder', `Nama Bank...`).val(namaBankValue);
+        //         $(this).find('input[name^="no_rek"]').attr('name', `no_rek[${newRekRowNumber}]`).attr('id', `no_rek-${newRekRowNumber}`).attr('placeholder', `Nomor Rekening...`).val(noRekValue);
+        //         $(this).find('input[name^="hidden_rekId"]').attr('name', `hidden_rekId[${newRekRowNumber}]`).attr('id', `hidden_rekId${newRekRowNumber}`).val(hiddenRekIdValue);
+        //         $(this).find('.rek-delete').attr('data-id', newRekRowNumber).text('Delete');
+        //     });
+        //     rowRekCount = $('#rek-table tbody tr').length;
+        // }
 
         // BUTTON ADD ROW DETAIL TRANSAKSI
         $('#add-row').click(function() {
@@ -761,13 +714,13 @@
         });
 
         // BUTTON ADD ROW NOMOR REKENING
-        $('#btn-rek').click(function() {
-            var bank = $('#nama_bank').val();
-            var rek = $('#nomor_rekening').val();
-            addRekRow(bank, rek);
-            $('#nama_bank').val('');
-            $('#nomor_rekening').val('');
-        });
+        // $('#btn-rek').click(function() {
+        //     var bank = $('#nama_bank').val();
+        //     var rek = $('#nomor_rekening').val();
+        //     addRekRow(bank, rek);
+        //     $('#nama_bank').val('');
+        //     $('#nomor_rekening').val('');
+        // });
 
         // BUTTON ADD ROW jamaa
         let jamaahCount = 0;
@@ -821,19 +774,19 @@
         }
 
         // SELECT ADD ROW NOMOR REKENING
-        $('#rekening').change(function() {
-            // Ambil elemen yang dipilih
-            var selectedOption = $(this).find(':selected');
+        // $('#rekening').change(function() {
+        //     // Ambil elemen yang dipilih
+        //     var selectedOption = $(this).find(':selected');
 
-            // Ambil nilai atribut data
-            var bank = selectedOption.data('bank');
-            var rek = selectedOption.data('rek');
+        //     // Ambil nilai atribut data
+        //     var bank = selectedOption.data('bank');
+        //     var rek = selectedOption.data('rek');
 
-            addRekRow(bank, rek);
-            // // Cetak ke konsol untuk memastikan
-            // console.log('Bank:', bank);
-            // console.log('Rekening:', rek);
-        });
+        //     addRekRow(bank, rek);
+        //     // // Cetak ke konsol untuk memastikan
+        //     // console.log('Bank:', bank);
+        //     // console.log('Rekening:', rek);
+        // });
 
         function updateSubmitButtonState() {
             const rowCount = $('#input-container tr').length;
@@ -851,12 +804,12 @@
         });
 
         // BUTTON HAPUS NOMOR REKENING
-        $(document).on('click', '.rek-delete', function() {
-            const rowId = $(this).data('id');
-            // console.log(rowId);
-            deleteRekRow(rowId);
-            reorderRekRows();
-        });
+        // $(document).on('click', '.rek-delete', function() {
+        //     const rowId = $(this).data('id');
+        //     // console.log(rowId);
+        //     deleteRekRow(rowId);
+        //     reorderRekRows();
+        // });
 
         $('#form').submit(function(event) {
             // Tambahkan array deletedRows ke dalam form data sebelum submit
@@ -894,31 +847,17 @@
                     $('#tgl_invoice').val(formattedDate); // Masukkan ke input
                     $('#kode_invoice').val(data['master']['kode_invoice']);
                     $('#tgl_tempo').val(data['master']['tgl_tempo']);
+                    $('#tanggal_pembayaran').val(data['master']['tanggal_pembayaran']);
+                    $('#rekening').val(data['master']['travel_id']).trigger('change.select2');
                     // $('#diskon').val(data['master']['diskon']);
                     $('#ctc_nama').val(data['master']['ctc_nama']);
                     $('#detail_pesanan').val(data['master']['detail_pesanan']);
                     $('#ctc_alamat').val(data['master']['ctc_alamat']);
                     quill.clipboard.dangerouslyPasteHTML(data['master']['keterangan']);
                     quill2.clipboard.dangerouslyPasteHTML(data['master']['jamaah']);
+                    quill3.clipboard.dangerouslyPasteHTML(data['master']['detail_pesanan']);
                     //APPEND DATA pu_rek_invoice DETAIL PREPAYMENT
-                    console.log(data['rek_invoice']);
                     if (aksi == 'update') {
-                        // Rekening
-                        $(data['rek_invoice']).each(function(index) {
-                            const row = `
-                            <tr id="rek-${index + 1}">
-                                <td class="rek-number">${index + 1}</td>
-                                <td>
-                                <input name="nama_bank[${index+1}]" id="nama_bank-${index + 1}" value="${data['rek_invoice'][index]['nama_bank']}" style="border: none; pointer-events: none; color: #666">
-                                <input type="hidden" id="hidden_rekId${index + 1}" name="hidden_rekId[${index + 1}]" value="${data['rek_invoice'][index]['id']}">
-                                </td>
-                                <td><input name="no_rek[${index+1}]" id="no_rek-${index + 1}" value="${data['rek_invoice'][index]['no_rek']}" style="border: none; pointer-events: none; color: #666"></td>
-                                <td><button type="button" class="btn rek-delete btn-danger" data-id="${index + 1}">Delete</button></td>
-                            </tr>
-                            `;
-                            $('#rek-table tbody').append(row);
-                            rowRekCount = index + 1;
-                        });
 
                         // Detail pemesanan
                         $(data['detail_invoice']).each(function(index) {
@@ -1065,6 +1004,13 @@
                                 checkNotifications();
                                 location.href = "<?= base_url('pu_invoice') ?>";
                             })
+                        } else {
+                            // Jika ada error, tampilkan pesan error
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: data.message
+                            });
                         }
                     },
                     error: function(jqXHR, textStatus, errorThrown) {

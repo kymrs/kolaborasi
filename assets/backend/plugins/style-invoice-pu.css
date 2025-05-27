@@ -144,7 +144,7 @@ header .row .right-side table {
 }
 
 .data-jamaah .right-side .detail-pesanan {
-    /* float: right; */
+    float: right;
 }
 
 /* Detail Pemesanan */
@@ -167,12 +167,12 @@ header .row .right-side table {
 
 .metode-pembayaran p {
     margin-bottom: 5px;
-    font-weight: bold;
-    text-decoration: underline;
+    /* font-weight: bold;
+    text-decoration: underline; */
 }
 
-.metode-pembayaran p:nth-child(3) {
-    font-weight: normal;
+.metode-pembayaran p:nth-child(4) {
+    font-weight: bold;
     text-decoration: none;
 }
 
