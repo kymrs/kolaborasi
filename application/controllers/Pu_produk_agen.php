@@ -9,6 +9,21 @@ class Pu_produk_agen extends CI_Controller
         parent::__construct();
         $this->load->model('backend/M_pu_produk_agen');
         date_default_timezone_set('Asia/Jakarta');
+
+        $allowed_origin = 'https://agen.pengenumroh.com';
+        $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
+
+        if ($origin === $allowed_origin) {
+            header("Access-Control-Allow-Origin: $origin");
+            header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+            header("Access-Control-Allow-Headers: Content-Type, Authorization");
+        }
+
+        // Tangani preflight OPTIONS
+        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+            header("HTTP/1.1 200 OK");
+            exit;
+        }
     }
 
     public function index()
@@ -92,7 +107,6 @@ class Pu_produk_agen extends CI_Controller
 
     function read_form($id)
     {
-
         $data['aksi'] = 'read';
         $data['id'] = $id;
         $data['title_view'] = "Data Produk Agen";
