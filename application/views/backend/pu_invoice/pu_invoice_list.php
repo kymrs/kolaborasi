@@ -93,7 +93,7 @@
                         <input type="hidden" name="invoice_id" id="payment_invoice_id" value="">
                         <?php if ($edit == 'Y') { ?>
                             <div class="form-group">
-                                <label for="tgl_update_pembayaran">Tanggal Pembayaran</label>
+                                <label for="tgl_update_pembayaran">Tanggal Pembayaran ini digunakan untuk melakukan update</label>
                                 <select class="form-control" id="tgl_update_pembayaran" name="tgl_update_pembayaran">
                                     <option value="" selected disabled>-- Pilih Tanggal Invoice --</option>
                                 </select>
@@ -111,6 +111,12 @@
                         <div class="form-group">
                             <label for="nominal_dibayar">Jumlah Pembayaran</label>
                             <input type="text" class="form-control" id="nominal_dibayar" name="nominal_dibayar" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="keterangan">Keterangan</label>
+                            <div class="input-group">
+                                <textarea class="form-control" id="keterangan" name="keterangan" rows="2" style="resize: vertical;" autocomplete="off" required></textarea>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="status_pembayaran">Status Pembayaran</label>

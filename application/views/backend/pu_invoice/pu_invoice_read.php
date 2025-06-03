@@ -93,7 +93,7 @@
                         <td style="text-align: center; font-weight: bold">Total</td>
                         <td>Rp. <?= number_format($total_tagihan, 0, ',', '.') ?></td>
                     </tr>
-                    <?php if ($total_nominal_dibayar > 0) { ?>
+                    <?php if ($total_nominal_dibayar != 0 && ($total_tagihan - $total_nominal_dibayar) != 0) { ?>
                         <tr>
                             <td style="border-color: #fff;"></td>
                             <td style="border-bottom-color: #fff;"></td>

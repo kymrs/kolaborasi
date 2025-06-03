@@ -60,42 +60,12 @@
             </div>
             <div class="line-title">RINCIAN PEMESANAN:</div>
             <div class="rincian-pemesanan">
-                <table style="width:100%; border-collapse: collapse;" border="1">
-                    <tr>
-                        <th style="border:1px solid #000;">DESKRIPSI</th>
-                        <th style="border:1px solid #000;">JUMLAH</th>
-                        <th style="border:1px solid #000;">HARGA</th>
-                        <th style="border:1px solid #000;">TOTAL BAYAR</th>
-                    </tr>
-                    <?php foreach ($detail as $row) : ?>
-                        <tr>
-                            <td style="border:1px solid #000;"><?= $row['deskripsi'] ?></td>
-                            <td style="vertical-align: top; border:1px solid #000;"><?= $row['jumlah'] ?> Pax</td>
-                            <td style="vertical-align: top; border:1px solid #000;">Rp. <?= number_format($row['harga'], 0, ',', '.') ?></td>
-                            <td style="vertical-align: top; border:1px solid #000;">Rp. <?= number_format($row['jumlah'] * $row['harga'], 0, ',', '.') ?></td>
-                        </tr>
-                    <?php endforeach; ?>
-                    <tr>
-                        <td style="border:1px solid #000;"></td>
-                        <td style="border:1px solid #000;"></td>
-                        <td style="font-weight: bold; border:1px solid #000;">Total</td>
-                        <td style="font-weight: bold; border:1px solid #000;" id="total_tagihan" data-total="<?= $total_tagihan ?>">Rp. <?= number_format($total_tagihan, 0, ',', '.') ?></td>
-                    </tr>
+                <table style="width:100%;">
                     <!-- Tambahkan tbody khusus untuk detail kwitansi -->
                     <tbody id="detail_kwitansi"></tbody>
                 </table>
             </div>
-            <div class="catatan-invoice" style="margin-top:20px;">
-                <table>
-                    <tr>
-                        <td style="font-weight:bold; width:120px; vertical-align: top;">Catatan</td>
-                        <td style="vertical-align: top;">:</td>
-                        <td style="vertical-align: top;"><?= !empty($invoice['keterangan']) ? nl2br($invoice['keterangan']) : '-' ?></td>
-                    </tr>
-                </table>
-            </div>
             <img class="footer-image" src="<?= base_url('assets/backend/img/footer.png') ?>" alt="">
-
         </div>
     </div>
 
@@ -122,6 +92,8 @@
             var selectedValue = $(this).val();
             var idInvoice = $('#tgl_pembayaran option:selected').data('id_invoice');
             const totalTagihan = $('#total_tagihan').data('total');
+            let total = 0;
+
             // console.log('Selected value:', selectedValue);
 
             // Update href tombol Print
@@ -142,30 +114,30 @@
                     var detail_kwitansi = '';
                     if (Array.isArray(data.detail)) {
                         data.detail.forEach(function(item) {
-                            detail_kwitansi += `
+                            total = Number(item.nominal_dibayar);
+                        });
+                        detail_kwitansi += `
                                 <tr>
-                                    <td colspan="2" style="text-align: center; font-weight: bold; border:1px solid #000;">Detail Pembayaran</td>
-                                    <td style="text-align: center; font-weight: bold; border:1px solid #000;">${formatTanggalIndo(item.tanggal_pembayaran)}</td>
-                                    <td style="text-align: center; font-weight: bold; border:1px solid #000;">- Rp. ${Number(item.nominal_dibayar).toLocaleString('id-ID')}</td>
+                                    <td style="text-align: left; width: 150px; font-weight: bold; border:none">Banyak Uang</td>
+                                    <td style="text-align: center; width: 20px; font-weight: bold; border:none">:</td>
+                                    <td colspan="2" style="text-align: left; font-weight: bold; border:none">Rp. ${Number(total).toLocaleString('id-ID')}</td>
                                 </tr>
                             `;
-                        });
                     }
                     // Tambahkan row total nominal di paling bawah
                     detail_kwitansi += `
                         <tr>
-                            <td colspan="3" style="text-align: center; font-weight: bold; border:1px solid #000;">Total Bayar</td>
-                            <td style="text-align: center; font-weight: bold; border:1px solid #000;">- Rp. ${Number(data.total_nominal_dibayar).toLocaleString('id-ID')}</td>
-                        </tr>
-                        <tr>
-                            <td colspan="3" style="text-align: center; font-weight: bold; border:1px solid #000;">Sisa Tagihan</td>
-                            <td style="text-align: center; font-weight: bold; border:1px solid #000;">Rp. ${(parseInt(totalTagihan) - parseInt(data.total_nominal_dibayar)).toLocaleString('id-ID')}</td>
+                            <td style="text-align: left; vertical-align:top; font-weight: bold; border:none">Untuk Pembayaran</td>
+                            <td style="text-align: center; vertical-align:top; font-weight: bold; border:none">:</td>
+                            <td colspan="2" style="text-align: left; font-weight: bold; border:none">
+                            ${data.kwitansi.keterangan ? data.kwitansi.keterangan : '-'}
+                            </td>
                         </tr>
                     `;
 
                     $('#detail_kwitansi').append(detail_kwitansi);
-                    console.log('total nominal:', data.total_nominal_dibayar);
-                    console.log('total tagihan:', totalTagihan);
+                    // console.log('total nominal:', data.total_nominal_dibayar);
+                    // console.log('total tagihan:', totalTagihan);
                 },
                 error: function(xhr, status, error) {
                     console.error('Error:', error);

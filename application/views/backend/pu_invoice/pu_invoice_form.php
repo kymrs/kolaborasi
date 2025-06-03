@@ -178,6 +178,12 @@
                                         </div>
                                     </div>
                                     <div class="form-group row">
+                                        <label class="col-sm-4 col-form-label">Total Order</label>
+                                        <div class="col-sm-8">
+                                            <input type="text" class="form-control" id="total_order" name="total_order">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
                                         <label class="col-sm-4 col-form-label">No Rekening</label>
                                         <div class="col-sm-8">
                                             <div class="input-group mb-3">
@@ -208,7 +214,6 @@
                                         <th scope="col" class="text-center">No</th>
                                         <th scope="col">Deskripsi</th>
                                         <th scope="col">Jumlah</th>
-                                        <th scope="col">Satuan</th>
                                         <th scope="col">Harga</th>
                                         <th scope="col">Total</th>
                                         <th scope="col" class="text-center">Action</th>
@@ -356,20 +361,6 @@
             // Hapus semua karakter yang bukan angka
             $(this).val(value.replace(/[^0-9]/g, ''));
         });
-        // $('#ctc2_nomor').on('input', function() {
-        //     // Ambil nilai input
-        //     let value = $(this).val();
-
-        //     // Hapus semua karakter yang bukan angka
-        //     $(this).val(value.replace(/[^0-9]/g, ''));
-        // });
-        // $('#diskon').on('input', function() {
-        //     // Ambil nilai input
-        //     let value = $(this).val();
-
-        //     // Hapus semua karakter yang bukan angka
-        //     $(this).val(value.replace(/[^0-9]/g, ''));
-        // });
     });
 
 
@@ -434,27 +425,11 @@
 
     $('#tgl_tempo').datepicker({
         dateFormat: 'dd-mm-yy',
-        // minDate: new Date(),
-        // maxDate: new Date(),
     });
 
     $('#tanggal_pembayaran').datepicker({
         dateFormat: 'yy-mm-dd',
     });
-
-    // $('#nominal_dibayar').on('input', function() {
-    //     // Ambil nilai input
-    //     let value = $(this).val();
-
-    //     // Hapus semua karakter yang bukan angka
-    //     value = value.replace(/[^0-9]/g, '');
-
-    //     // Format ke Rupiah
-    //     let formatted = new Intl.NumberFormat('id-ID').format(value);
-
-    //     // Set nilai input dengan format Rupiah
-    //     $(this).val(formatted);
-    // });
 
     $(document).ready(function() {
 
@@ -468,36 +443,19 @@
 
         $('.js-example-basic-single').select2();
 
-        // Fungsi untuk mengatur enabled/disabled elemen berdasarkan radio button yang dipilih
-        // function toggleInputs() {
-        //     const isExistChecked = $('#exist').is(':checked');
+        $('#total_order').on('input', function() {
+            // Ambil nilai input
+            let value = $(this).val();
 
-        //     // Atur visibility dropdown dan input fields
-        //     if (isExistChecked) {
-        //         $('# ').prop('disabled', false).show(); // Aktifkan dan tampilkan elemen asli
-        //         $('#rekening').next('.select2-container').show(); // Tampilkan elemen Select2
-        //         $('.input-group.rekening-text input[type="text"]').prop('disabled', true).parent().hide(); // Sembunyikan input fields
-        //     } else {
-        //         $('#rekening').prop('disabled', true).hide(); // Nonaktifkan dan sembunyikan elemen asli
-        //         $('#rekening').next('.select2-container').hide(); // Sembunyikan elemen Select2
-        //         $('.input-group.rekening-text input[type="text"]').prop('disabled', false).parent().show(); // Tampilkan input fields
-        //     }
-        // }
+            // Hapus semua karakter yang bukan angka
+            value = value.replace(/[^0-9]/g, '');
 
-        // Panggil fungsi saat halaman dimuat
-        // toggleInputs();
+            // Format ke Rupiah
+            let formatted = new Intl.NumberFormat('id-ID').format(value);
 
-        // Panggil fungsi saat radio button berubah
-        // $('input[name="radioNoLabel"]').change(toggleInputs);
-
-        // AGAR INPUT FIELD HANYA BISA NOMOR
-        // document.getElementById('nomor_rekening').addEventListener('input', function(e) {
-        //     let value = this.value.replace(/[^0-9]/g, '');
-        //     if (value.length > 14) {
-        //         value = value.slice(0, 10);
-        //     }
-        //     this.value = value;
-        // });
+            // Set nilai input dengan format Rupiah
+            $(this).val(formatted);
+        });
 
         // Tambahkan fungsi untuk memformat input nominal memiliki titik
         function formatJumlahInput(selector) {
@@ -536,30 +494,6 @@
 
         //MENAMBAH FORM INPUTAN DI ADD FORM
         let rowCount = 0;
-        // let rowRekCount = 0;
-
-        //ADD ROW NOMOR REKENING
-        // function addRekRow(travel, bank, rek) {
-        //     // Ambil nilai dari input
-        //     const namaBank = bank;
-        //     const nomorRekening = rek;
-
-        //     rowRekCount++;
-        //     if (namaBank != '' && nomorRekening != '') {
-        //         const rekRow = `
-        //         <tr id="rek-${rowRekCount}">
-        //             <td class="rek-number">${rowRekCount}</td>
-        //             <td>
-        //             <input name="nama_bank[${rowRekCount}]" id="nama_bank-${rowRekCount}" value="${namaBank}" style="border: none; pointer-events: none; color: #666">
-        //             <input type="hidden" id="hidden_rekId${rowRekCount}" name="hidden_rekId[${rowRekCount}]" value="">
-        //             </td>
-        //             <td><input name="no_rek[${rowRekCount}]" id="no_rek-${rowRekCount}" value="${nomorRekening}" style="border: none; pointer-events: none; color: #666"></td>
-        //             <td><button type="button" class="btn rek-delete btn-danger" data-id="${rowRekCount}">Delete</button></td>
-        //         </tr>
-        //     `;
-        //         $('#rek-table tbody').append(rekRow);
-        //     }
-        // }
 
         // ADD Row Detail Invoice
         function addRow() {
@@ -573,9 +507,6 @@
                         <input type="hidden" name="hidden_invoiceId[${rowCount}]" id="hidden_invoiceId${rowCount}" value="">
                     <td>
                         <input type="text" class="form-control jumlah" id="jumlah-${rowCount}" name="jumlah[${rowCount}]" value="" placeholder="Jumlah">
-                    </td>
-                    <td>
-                        <input type="text" class="form-control" id="satuan-${rowCount}" name="satuan[${rowCount}]" value="" placeholder="Satuan">
                     </td>
                     <td>
                         <input type="text" class="form-control harga" id="harga-${rowCount}" name="harga[${rowCount}]" value="" placeholder="Harga" />
@@ -615,9 +546,6 @@
                 required: true
             };
             $("#form").validate().settings.rules[`jumlah[${rowCount}]`] = {
-                required: true
-            };
-            $("#form").validate().settings.rules[`satuan[${rowCount}]`] = {
                 required: true
             };
             $("#form").validate().settings.rules[`harga[${rowCount}]`] = {
@@ -669,7 +597,6 @@
                 //INISIASI VARIABLE UNTUK reorderRows
                 const newRowNumber = index + 1;
                 const deskripsiValue = $(this).find('input[name^="deskripsi"]').val();
-                const satuanValue = $(this).find('input[name^="satuan"]').val();
                 const jumlahValue = $(this).find('input[name^="jumlah"]').val();
                 const hargaValue = $(this).find('input[name^="harga"]').val();
                 const totalValue = $(this).find('input[name^="total"]').val();
@@ -680,7 +607,6 @@
                 $(this).find('.row-number').text(newRowNumber);
                 $(this).find('input[name^="deskripsi"]').attr('name', `deskripsi[${newRowNumber}]`).attr('placeholder', `Deskripsi`).val(deskripsiValue);
                 $(this).find('input[name^="jumlah"]').attr('name', `jumlah[${newRowNumber}]`).attr('id', `jumlah-${newRowNumber}`).attr('placeholder', `Jumlah`).val(jumlahValue);
-                $(this).find('input[name^="satuan"]').attr('name', `satuan[${newRowNumber}]`).attr('id', `satuan-${newRowNumber}`).attr('placeholder', 'Satuan').val(satuanValue);
                 $(this).find('input[name^="harga"]').attr('name', `harga[${newRowNumber}]`).attr('id', `harga-${newRowNumber}`).attr('placeholder', `Harga`).val(hargaValue);
                 $(this).find('input[name^="total"]').attr('name', `total[${newRowNumber}]`).attr('id', `total-${newRowNumber}`).attr('placeholder', `Total`).val(totalValue);
                 $(this).find('input[name^="hidden_invoiceId"]').attr('name', `hidden_invoiceId[${newRowNumber}]`).attr('id', `hidden_invoiceId${newRowNumber}`).val(hiddenInvoiceIdValue);
@@ -690,37 +616,10 @@
             rowCount = $('#input-container tr').length; // Update rowCount to the current number of rows
         }
 
-        // REORDER NOMOR REKENING
-        // function reorderRekRows() {
-        //     $('#rek-table tbody tr').each(function(index) {
-        //         const newRekRowNumber = index + 1;
-        //         const hiddenRekIdValue = $(this).find('input[name^="hidden_rekId"]').val();
-        //         const namaBankValue = $(this).find('input[name^="nama_bank"]').val();
-        //         const noRekValue = $(this).find('input[name^="no_rek"]').val();
-
-        //         $(this).attr('id', `rek-${newRekRowNumber}`);
-        //         $(this).find('.rek-number').text(newRekRowNumber);
-        //         $(this).find('input[name^="nama_bank"]').attr('name', `nama_bank[${newRekRowNumber}]`).attr('id', `nama_bank-${newRekRowNumber}`).attr('placeholder', `Nama Bank...`).val(namaBankValue);
-        //         $(this).find('input[name^="no_rek"]').attr('name', `no_rek[${newRekRowNumber}]`).attr('id', `no_rek-${newRekRowNumber}`).attr('placeholder', `Nomor Rekening...`).val(noRekValue);
-        //         $(this).find('input[name^="hidden_rekId"]').attr('name', `hidden_rekId[${newRekRowNumber}]`).attr('id', `hidden_rekId${newRekRowNumber}`).val(hiddenRekIdValue);
-        //         $(this).find('.rek-delete').attr('data-id', newRekRowNumber).text('Delete');
-        //     });
-        //     rowRekCount = $('#rek-table tbody tr').length;
-        // }
-
         // BUTTON ADD ROW DETAIL TRANSAKSI
         $('#add-row').click(function() {
             addRow();
         });
-
-        // BUTTON ADD ROW NOMOR REKENING
-        // $('#btn-rek').click(function() {
-        //     var bank = $('#nama_bank').val();
-        //     var rek = $('#nomor_rekening').val();
-        //     addRekRow(bank, rek);
-        //     $('#nama_bank').val('');
-        //     $('#nomor_rekening').val('');
-        // });
 
         // BUTTON ADD ROW jamaa
         let jamaahCount = 0;
@@ -773,21 +672,6 @@
             jamaahCount = $('#jamaah-table tbody tr').length;
         }
 
-        // SELECT ADD ROW NOMOR REKENING
-        // $('#rekening').change(function() {
-        //     // Ambil elemen yang dipilih
-        //     var selectedOption = $(this).find(':selected');
-
-        //     // Ambil nilai atribut data
-        //     var bank = selectedOption.data('bank');
-        //     var rek = selectedOption.data('rek');
-
-        //     addRekRow(bank, rek);
-        //     // // Cetak ke konsol untuk memastikan
-        //     // console.log('Bank:', bank);
-        //     // console.log('Rekening:', rek);
-        // });
-
         function updateSubmitButtonState() {
             const rowCount = $('#input-container tr').length;
             if (rowCount > 0) {
@@ -802,14 +686,6 @@
             const id = $(this).data('id');
             deleteRow(id);
         });
-
-        // BUTTON HAPUS NOMOR REKENING
-        // $(document).on('click', '.rek-delete', function() {
-        //     const rowId = $(this).data('id');
-        //     // console.log(rowId);
-        //     deleteRekRow(rowId);
-        //     reorderRekRows();
-        // });
 
         $('#form').submit(function(event) {
             // Tambahkan array deletedRows ke dalam form data sebelum submit
@@ -831,7 +707,27 @@
         // MENGISI FORM UPDATE
         if (id == 0) {
             $('.aksi').append('<span class="front front-aksi">Save</span>');
-        } else {
+        } else if (aksi == 'new') {
+            $('.aksi').append('<span class="front front-aksi">Save</span>');
+            $('#total_order').prop('readonly', true);
+            $.ajax({
+                url: "<?php echo site_url('pu_invoice/edit_data') ?>/" + id,
+                type: "GET",
+                dataType: "JSON",
+                success: function(data) {
+                    $('#total_order').val(data['master']['total_order'].replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
+                    $('#ctc_nama').val(data['master']['ctc_nama']);
+                    // $('#detail_pesanan').val(data['master']['detail_pesanan']);
+                    $('#ctc_alamat').val(data['master']['ctc_alamat']);
+                    $('#rekening').val(data['master']['travel_id']).trigger('change.select2');
+                    quill2.clipboard.dangerouslyPasteHTML(data['master']['jamaah']);
+                    quill3.clipboard.dangerouslyPasteHTML(data['master']['detail_pesanan']);
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    alert('Error get data from ajax');
+                }
+            });
+        } else if (aksi == 'update') {
             $('.aksi').append('<span class="front front-aksi">Update</span>');
             $("select option[value='']").hide();
             $.ajax({
@@ -853,6 +749,7 @@
                     $('#ctc_nama').val(data['master']['ctc_nama']);
                     $('#detail_pesanan').val(data['master']['detail_pesanan']);
                     $('#ctc_alamat').val(data['master']['ctc_alamat']);
+                    $('#total_order').val(data['master']['total_order']);
                     quill.clipboard.dangerouslyPasteHTML(data['master']['keterangan']);
                     quill2.clipboard.dangerouslyPasteHTML(data['master']['jamaah']);
                     quill3.clipboard.dangerouslyPasteHTML(data['master']['detail_pesanan']);
@@ -872,9 +769,6 @@
                                     <input type="hidden" name="hidden_invoiceId[${index + 1}]" id="hidden_invoiceId${index + 1}" value="${data['detail_invoice'][index]['invoice_id']}">
                                 <td>
                                     <input type="text" class="form-control jumlah" id="jumlah-${index + 1}" name="jumlah[${index + 1}]" value="${data['detail_invoice'][index]['jumlah']}" placeholder="Jumlah" style="margin-left: 10px">
-                                </td>
-                                <td>
-                                    <input type="text" class="form-control" id="satuan-${index + 1}" name="satuan[${index + 1}]" value="${data['detail_invoice'][index]['satuan']}" placeholder="Satuan">
                                 </td>
                                 <td>
                                     <input type="text" class="form-control harga" id="harga-${index + 1}" name="harga[${index + 1}]" value="${hargaFormatted}" placeholder="Harga" />
@@ -954,9 +848,9 @@
             var $form = $(this);
             if (!$form.valid()) return false;
             var url;
-            if (id == 0) {
+            if (id == 0 || aksi == 'new') {
                 url = "<?php echo site_url('pu_invoice/add') ?>";
-            } else {
+            } else if (aksi == 'update') {
                 url = "<?php echo site_url('pu_invoice/update') ?>";
             }
 
@@ -1041,9 +935,9 @@
                 ctc_alamat: {
                     required: true,
                 },
-                // diskon: {
-                //     max: 100,
-                // }
+                total_order: {
+                    required: true,
+                }
             },
             messages: {
                 tgl_invoice: {
@@ -1058,9 +952,9 @@
                 ctc_alamat: {
                     required: "Contact Nomor is required",
                 },
-                // diskon: {
-                //     max: "Diskon tidak boleh melibihi 100",
-                // }
+                total_order: {
+                    required: "Total Order is required",
+                }
             },
             errorPlacement: function(error, element) {
                 if (element.parent().hasClass('input-group')) {
