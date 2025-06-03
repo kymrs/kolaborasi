@@ -12,15 +12,15 @@ class Pu_survey extends CI_Controller
         date_default_timezone_set('Asia/Jakarta');
 
         // Header untuk CORS
-        // header("Access-Control-Allow-Origin: https://survey.pengenumroh.com");
-        // header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-        // header("Access-Control-Allow-Headers: Content-Type, Authorization");
+        header("Access-Control-Allow-Origin: https://survey.pengenumroh.com");
+        header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+        header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
-        // // Tangani preflight request OPTIONS
-        // if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-        //     header("HTTP/1.1 200 OK");
-        //     exit;
-        // }
+        // Tangani preflight request OPTIONS
+        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+            header("HTTP/1.1 200 OK");
+            exit;
+        }
     }
 
     public function index()

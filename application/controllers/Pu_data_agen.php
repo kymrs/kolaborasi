@@ -9,6 +9,21 @@ class Pu_data_agen extends CI_Controller
         parent::__construct();
         $this->load->model('backend/M_pu_data_agen');
         date_default_timezone_set('Asia/Jakarta');
+
+        $allowed_origin = 'https://agen.pengenumroh.com';
+        $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
+
+        if ($origin === $allowed_origin) {
+            header("Access-Control-Allow-Origin: $origin");
+            header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+            header("Access-Control-Allow-Headers: Content-Type, Authorization");
+        }
+
+        // Tangani preflight OPTIONS
+        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+            header("HTTP/1.1 200 OK");
+            exit;
+        }
     }
 
     public function index()
@@ -190,11 +205,11 @@ class Pu_data_agen extends CI_Controller
 
     public function api_data_agen()
     {
-        // Izinkan akses dari semua origin (CORS)
-        header("Access-Control-Allow-Origin: *");
-        header("Access-Control-Allow-Methods: GET, OPTIONS");
-        header("Access-Control-Allow-Headers: Content-Type, Authorization");
-        header("Content-Type: application/json; charset=UTF-8");
+        if (isset($_SERVER['HTTP_ORIGIN']) && $_SERVER['HTTP_ORIGIN'] === 'https://agen.pengenumroh.com') {
+            header("Access-Control-Allow-Origin: https://agen.pengenumroh.com");
+            header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+            header("Access-Control-Allow-Headers: Content-Type, Authorization");
+        }
 
         // Handle preflight request
         if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
@@ -214,11 +229,11 @@ class Pu_data_agen extends CI_Controller
 
     public function api_tambah_agen()
     {
-        // Izinkan akses dari semua origin (CORS)
-        header("Access-Control-Allow-Origin: *");
-        header("Access-Control-Allow-Methods: GET, OPTIONS");
-        header("Access-Control-Allow-Headers: Content-Type, Authorization");
-        header("Content-Type: application/json; charset=UTF-8");
+        if (isset($_SERVER['HTTP_ORIGIN']) && $_SERVER['HTTP_ORIGIN'] === 'https://agen.pengenumroh.com') {
+            header("Access-Control-Allow-Origin: https://agen.pengenumroh.com");
+            header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+            header("Access-Control-Allow-Headers: Content-Type, Authorization");
+        }
 
         // Validasi method
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

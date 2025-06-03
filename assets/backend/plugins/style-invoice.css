@@ -1,0 +1,234 @@
+.container {
+    font-family: "Poppins", serif;
+    font-weight: 300;
+    font-style: normal;
+    margin-bottom: 20px;
+    color: #222;
+    font-size: 0.9rem;
+}
+
+.canvas {
+    margin: 0 auto;
+    width: 165mm;
+    /* height: 297mm; */
+    display: block;
+    margin-bottom: 20px;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    padding: 15px;
+}
+
+/* Header */
+header {
+    height: auto;
+    display: flex;
+    justify-content: space-between;
+}
+
+header .logo {
+    width: 150px;
+    margin-bottom: 15px;
+}
+
+header img {
+    width: 100%;
+}
+
+header .left-side,
+header .right-side {
+    width: 50%;
+}
+
+header .right-side {
+    text-align: right;
+}
+
+header .right-side .email {
+    margin-top: 10px;
+}
+
+hr.line {
+    background-color: black;
+    height: 2px;
+    margin: 12px 0;
+}
+
+hr.line-header {
+    background-color: rgba(0,0,0,0.1);
+    clear: both;
+    margin-top: 50px;
+}
+
+/* Main Content */
+main {
+    margin: 0;
+}
+
+main .invoice {
+    text-align: center;
+}
+
+main .invoice h3 {
+    margin-bottom: 2px;
+}
+
+/* Header Content */
+.header-content {
+    display: flex;
+    justify-content: space-between;
+}
+
+.header-content h2 {
+    font-size: 1rem;
+}
+
+.header-content .right-side table {
+    position: relative;
+    bottom: 4px;
+}
+
+.header-content .right-side table tr td:nth-child(2) {
+    padding: 0 3px 0 8px;
+}
+
+.header-content .left-side {
+    width: 50%;
+}
+
+.header-content .left-side h1 {
+    font-size: 1.4rem;
+}
+
+.header-content .left-side p {
+    margin-bottom: 5px;
+}
+
+/* Detail Pemesanan */
+.detail-pemesanan {
+    margin-top: 10px;
+}
+
+.detail-pemesanan .header {
+    background-color: #FC7613;
+    padding: 3px 7px;
+    color: #fff;
+}
+
+.detail-pemesanan table {
+    width: 100%;
+    margin-top: 15px;
+}
+
+.detail-pemesanan table tr,
+.detail-pemesanan table th,
+.detail-pemesanan table td {
+    border: 1px solid #222;
+    padding-left: 7px;
+}
+
+.detail-pemesanan table th,
+.detail-pemesanan table .jumlah,
+.detail-pemesanan table .harga,
+.detail-pemesanan table .total {
+    text-align: center;
+}
+
+/* Metode Pembayaran */
+.metode-pembayaran {
+    margin-top: 20px;
+}
+
+.metode-pembayaran p {
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.metode-pembayaran p:nth-child(1) {
+    text-decoration: underline;
+}
+
+.metode-pembayaran ol {
+    padding-left: 25px;
+    margin-bottom: 10px;
+}
+
+.metode-pembayaran ol li {
+    padding-left: 5px;
+}
+
+.watermark {
+    border: 5px solid #FC7613;
+    color: black;
+    font-weight: bold;
+    border-radius: 10px;
+    background-color: rgba(234,36,39,0.7);
+    text-align: center;
+    line-height: 100px;
+    font-size: 3rem;
+    width: 300px;
+    height: 100px;
+    position: absolute;
+    top: 450px;
+    transform: rotate(-30deg);
+    left: 740px;
+}
+
+/* Media Queries */
+@media (max-width: 1080px) {
+    .container {
+        font-size: 79.5%;
+    }
+
+    .canvas {
+        width: 160mm;
+    }
+}
+
+@media (max-width: 936px) {
+    .container {
+        font-size: 72.5%;
+    }
+
+    .canvas {
+        width: 150mm;
+    }
+}
+
+@media (max-width: 767px) {
+    .container {
+        font-size: 62.5%;
+    }
+
+    .canvas {
+        width: 140mm;
+        margin-left: -40px;
+    }
+
+    .invoice h3 {
+        font-size: 1rem;
+    }
+
+    .header-content .left-side h1 {
+        font-size: 0.8rem;
+    }
+    .header-content .left-side h2 {
+        font-size: 0.6rem;
+    }
+}
+
+@media (max-width: 546px) {
+    .container {
+        font-size: 52.5%;
+    }
+
+    .canvas {
+        width: 90mm;
+        max-height: 240mm;
+        margin: 0;
+    }
+
+    header .logo {
+        width: 90px;
+    }    
+}
