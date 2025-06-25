@@ -14,7 +14,7 @@ class T_cpdf2 extends TCPDf
     {
         // Logo
         $this->SetFont('helvetica', 'B', 12);
-        $this->Image(base_url('assets/backend/img/Header.png'), 49, 5, 160, 30);
+        $this->Image(base_url('assets/backend/img/header.png'), 49, 5, 160, 30);
         $this->Ln(5);
     }
 
@@ -27,7 +27,7 @@ class T_cpdf2 extends TCPDf
         $this->SetFont('helvetica', 'I', 8);
         // Page number
         // $this->Cell(0, 10, 'Page ' . $this->PageNo() . '/{nb}', 0, 0, 'C');
-        $this->Image(base_url('assets/backend/img/Footer.png'), 0, 280, 210, 5);
+        $this->Image(base_url('assets/backend/img/footer.png'), 0, 280, 210, 5);
     }
 }
 
@@ -104,6 +104,7 @@ class Pu_invoice extends CI_Controller
         $no = $_POST['start'];
 
         $akses = $this->M_app->hak_akses($this->session->userdata('id_level'), $this->router->fetch_class());
+        $add = $akses->add_level;
         $read = $akses->view_level;
         $edit = $akses->edit_level;
         $delete = $akses->delete_level;
@@ -119,13 +120,12 @@ class Pu_invoice extends CI_Controller
             </button>&nbsp;' : '';
             $action_edit = ($edit == 'Y') ? '&nbsp;<a href="pu_invoice/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
-            // $action_print = ($print == 'Y') ? '
-            // <button type="button" class="btn btn-success btn-circle btn-sm show-print-dropdown" data-id="' . $field->id . '" data-is_active="' . $field->is_active . '" title="Print">
-            //     <i class="fas fa-file-pdf"></i>
-            // </button>&nbsp;' : '';
             $action_payment = '<button type="button" class="btn btn-primary btn-circle btn-sm" onclick="showPaymentModal(' . $field->id . ')"><i class="fas fa-money-bill-wave"></i></button>';
+            $action_new = ($add == 'Y' && $field->total_order != 0) ? '&nbsp;<a href="pu_invoice/new_form/' . $field->id . '" class="btn btn-secondary btn-circle btn-sm" title="New"><i class="fa fa-plus"></i></a>&nbsp;' : '';
 
-            if ($field->is_active == 0) {
+            if ($field->is_active == 0 && $field->status == 0) {
+                $action = $action_read . $action_payment . $action_new;
+            } elseif ($field->is_active == 0) {
                 $action = $action_read . $action_payment;
             } else {
                 $action = $action_read . $action_edit . $action_delete . $action_payment;
@@ -190,8 +190,8 @@ class Pu_invoice extends CI_Controller
         $data['id'] = $id;
         $data['invoice'] = $this->M_pu_invoice->getInvoiceData($id);
         $data['kwitansi'] = $this->db->get_where('pu_kwitansi', ['id_invoice' => $id])->result_array();
-        $data['detail'] = $this->db->get_where('pu_detail_invoice', ['invoice_id' => $id])->result_array();
-        $data['total_tagihan'] = $this->db->select_sum('total')->get_where('pu_detail_invoice', ['invoice_id' => $id])->row()->total;
+        // $data['detail'] = $this->db->get_where('pu_detail_invoice', ['invoice_id' => $id])->result_array();
+        // $data['total_tagihan'] = $this->db->select_sum('total')->get_where('pu_detail_invoice', ['invoice_id' => $id])->row()->total;
         $data['tgl_invoice'] = $this->tgl_indo(date("Y-m-j", strtotime($data['invoice']['tgl_invoice'])));
         $data['title'] = 'backend/pu_invoice/pu_kwitansi_read';
         $data['title_view'] = 'Prepayment';
@@ -279,6 +279,17 @@ class Pu_invoice extends CI_Controller
         $this->load->view('backend/home', $data);
     }
 
+    //UNTUK MENAMPILKAN INVOICE BARU
+    function new_form($id)
+    {
+        $data['id'] = $id;
+        $data['aksi'] = 'new';
+        $data['title_view'] = "Tambah Data Invoice";
+        $data['title'] = 'backend/pu_invoice/pu_invoice_form';
+        $data['rek_options'] = $this->M_pu_invoice->options()->result();
+        $this->load->view('backend/home', $data);
+    }
+
     function edit_data($id)
     {
         $data['master'] = $this->M_pu_invoice->get_by_id($id);
@@ -315,6 +326,7 @@ class Pu_invoice extends CI_Controller
         $data = array(
             'tgl_invoice' => date('Y-m-d', strtotime($this->input->post('tgl_invoice'))),
             'kode_invoice' => $kode_invoice,
+            'total_order' => preg_replace('/\D/', '', $this->input->post('total_order')),
             'tgl_tempo' => date('Y-m-d', strtotime($this->input->post('tgl_tempo'))),
             'ctc_nama' => $this->input->post('ctc_nama'),
             'ctc_alamat' => $this->input->post('ctc_alamat'),
@@ -341,12 +353,15 @@ class Pu_invoice extends CI_Controller
         $deskripsi = $this->input->post('deskripsi[]');
         $jumlah = preg_replace('/\D/', '', $this->input->post('jumlah[]'));
         $harga = preg_replace('/\D/', '', $this->input->post('harga[]'));
-        $satuan = $this->input->post('satuan[]');
         $total = preg_replace('/\D/', '', $this->input->post('total[]'));
 
-        if (!empty($deskripsi) && !empty($jumlah) && !empty($satuan) && !empty($harga) && !empty($total)) {
+        if (!empty($deskripsi) && !empty($jumlah) && !empty($harga) && !empty($total)) {
             for ($i = 1; $i <= count($deskripsi); $i++) {
                 $grand_total += (int)$total[$i]; // Menjumlahkan total
+            }
+            if ($grand_total > preg_replace('/\D/', '', $this->input->post('total_order'))) {
+                echo json_encode(array("status" => FALSE, "message" => "Total tagihan tidak boleh lebih besar dari total order"));
+                exit();
             }
             $data['total_tagihan'] = $grand_total;
         } else {
@@ -354,17 +369,20 @@ class Pu_invoice extends CI_Controller
             exit();
         }
 
+        if (!empty($this->input->post('id'))) {
+            $this->db->update('pu_invoice', ['total_order' => 0], ['id' => $this->input->post('id')]);
+        }
+
         $inserted = $this->M_pu_invoice->save($data);
 
         if ($inserted) {
             //PERULANGAN UNTUK INSER QUERY DETAIL PREPAYMENT
-            if (!empty($deskripsi) && !empty($jumlah) && !empty($satuan) && !empty($harga) && !empty($total)) {
+            if (!empty($deskripsi) && !empty($jumlah) && !empty($harga) && !empty($total)) {
                 for ($i = 1; $i <= count($deskripsi); $i++) {
                     $data3[] = array(
                         'invoice_id' => $inserted,
                         'deskripsi' => $deskripsi[$i],
                         'jumlah' => $jumlah[$i],
-                        'satuan' => $satuan[$i],
                         'harga' => $harga[$i],
                         'total' => $total[$i]
                     );
@@ -379,16 +397,16 @@ class Pu_invoice extends CI_Controller
     // ADD KWITANSI
     public function add_kwitansi()
     {
-        $total_tagihan = $this->db->select('total_tagihan')
+        $total = $this->db->select('total_order, total_tagihan')
             ->from('pu_invoice')
             ->where('id', $this->input->post('invoice_id'))
             ->get()
-            ->row('total_tagihan');
+            ->row();
 
         $nominal_dibayar = preg_replace('/\D/', '', $this->input->post('nominal_dibayar'));
 
         // ERROR HANDLING UNTUK NOMINAL DIBAYAR
-        if ($nominal_dibayar > $total_tagihan) {
+        if ($nominal_dibayar > $total->total_tagihan) {
             echo json_encode(array("status" => FALSE, "message" => "Nominal yang dibayarkan tidak sesuai dengan Invoice"));
             return;
         }
@@ -398,16 +416,19 @@ class Pu_invoice extends CI_Controller
             'tanggal_pembayaran' => date('Y-m-d', strtotime($this->input->post('tanggal_pembayaran'))),
             'status_pembayaran' => $this->input->post('status_pembayaran'),
             'nominal_dibayar' => $nominal_dibayar,
+            'keterangan' => $this->input->post('keterangan'),
             'created_at' => date('Y-m-d H:i:s'),
         );
 
         if ($this->M_pu_invoice->save_kwitansi($data)) {
             // Update invoice setelah pembayaran
-            $new_total = $total_tagihan - $nominal_dibayar;
+            $new_total_tagihan = $total->total_tagihan - $nominal_dibayar;
+            $new_total_order = $total->total_order - $nominal_dibayar;
             $invoice_update = array(
-                'total_tagihan' => $new_total,
+                'total_tagihan' => $new_total_tagihan,
+                'total_order' => $new_total_order,
                 'is_active' => 0,
-                'status' => ($new_total == 0) ? 0 : 1,
+                'status' => ($new_total_tagihan == 0) ? 0 : 1,
             );
 
             $this->db->where('id', $this->input->post('invoice_id'));
@@ -445,6 +466,7 @@ class Pu_invoice extends CI_Controller
             'tanggal_pembayaran' => date('Y-m-d', strtotime($this->input->post('tanggal_pembayaran'))),
             'status_pembayaran' => $this->input->post('status_pembayaran'),
             'nominal_dibayar' => $nominal_dibayar,
+            'keterangan' => $this->input->post('keterangan'),
         );
 
         $kwitansi_id = $this->input->post('tgl_update_pembayaran'); // diasumsikan sebagai ID kwitansi
@@ -507,6 +529,7 @@ class Pu_invoice extends CI_Controller
         $data = array(
             'tgl_invoice' => date('Y-m-d', strtotime($this->input->post('tgl_invoice'))),
             'kode_invoice' => $kode_invoice,
+            'total_order' => preg_replace('/\D/', '', $this->input->post('total_order')),
             'tgl_tempo' => date('Y-m-d', strtotime($this->input->post('tgl_tempo'))),
             'ctc_nama' => $this->input->post('ctc_nama'),
             'ctc_alamat' => $this->input->post('ctc_alamat'),
@@ -534,12 +557,15 @@ class Pu_invoice extends CI_Controller
         $deskripsi = $this->input->post('deskripsi[]');
         $jumlah = preg_replace('/\D/', '', $this->input->post('jumlah[]'));
         $harga = preg_replace('/\D/', '', $this->input->post('harga[]'));
-        $satuan = $this->input->post('satuan[]');
         $total = preg_replace('/\D/', '', $this->input->post('total[]'));
 
-        if (!empty($deskripsi) && !empty($jumlah) && !empty($satuan) && !empty($harga) && !empty($total)) {
+        if (!empty($deskripsi) && !empty($jumlah) && !empty($harga) && !empty($total)) {
             for ($i = 1; $i <= count($deskripsi); $i++) {
                 $grand_total += (int)$total[$i]; // Menjumlahkan total
+            }
+            if ($grand_total > preg_replace('/\D/', '', $this->input->post('total_order'))) {
+                echo json_encode(array("status" => FALSE, "message" => "Total tagihan tidak boleh lebih besar dari total order"));
+                exit();
             }
             $data['total_tagihan'] = $grand_total;
         } else {
@@ -570,7 +596,6 @@ class Pu_invoice extends CI_Controller
                     'invoice_id' => $this->input->post('id'),
                     'deskripsi' => $deskripsi[$i],
                     'jumlah' => $jumlah[$i],
-                    'satuan' => $satuan[$i],
                     'harga' => $harga[$i],
                     'total' => $total[$i]
                 );
@@ -721,7 +746,7 @@ class Pu_invoice extends CI_Controller
         $t_cpdf2->SetFont('Poppins-Regular', 'B', 15);
         $t_cpdf2->SetX(15);
         $t_cpdf2->Cell(0, 0, $invoice->ctc_nama, 0, 0);
-        $t_cpdf2->Cell(0, 0, number_format($total, 0, ',', '.'), 0, 1, 'R');
+        $t_cpdf2->Cell(0, 0, number_format($total ?? 0, 0, ',', '.'), 0, 1, 'R');
 
         $t_cpdf2->SetFont('Poppins-Regular', '', 10);
         $t_cpdf2->SetY($t_cpdf2->GetY() + 1);
@@ -811,8 +836,8 @@ class Pu_invoice extends CI_Controller
             $tbl .= '<tr>';
             $tbl .= '<td width="30%">' . $detail->deskripsi . '</td>';
             $tbl .= '<td width="20%" style="text-align: center">' . $detail->jumlah . '</td>';
-            $tbl .= '<td width="25%" style="text-align: center">' . 'Rp. ' . number_format($detail->harga, 0, ',', '.') . '</td>';
-            $tbl .= '<td width="25%" style="text-align: center">' . 'Rp. ' . number_format($detail->total, 0, ',', '.') . '</td>';
+            $tbl .= '<td width="25%" style="text-align: center">' . 'Rp. ' . number_format($detail->harga ?? 0, 0, ',', '.') . '</td>';
+            $tbl .= '<td width="25%" style="text-align: center">' . 'Rp. ' . number_format($detail->total ?? 0, 0, ',', '.') . '</td>';
             $tbl .= '</tr>';
         }
         $tbl .= <<<EOD
@@ -835,18 +860,20 @@ EOD;
         $table2 .= '<tr style="border: none;">';
         $table2 .= '<td colspan="2" style="border: none;"></td>';
         $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center"><b>Total</b></td>';
-        $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center"> ' . 'Rp. ' . number_format($total, 0, ',', '.') . '</td>';
+        $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center"> ' . 'Rp. ' . number_format($total ?? 0, 0, ',', '.') . '</td>';
         $table2 .= '</tr>';
-        $table2 .= '<tr style="border: none;">';
-        $table2 .= '<td colspan="2" style="border: none;"></td>';
-        $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center"><b>Total Dibayar</b></td>';
-        $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center"> - ' . 'Rp. ' . number_format($total_nominal_dibayar, 0, ',', '.') . '</td>';
-        $table2 .= '</tr>';
-        $table2 .= '<tr style="border: none;">';
-        $table2 .= '<td colspan="2" style="border: none;"></td>';
-        $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center"><b>Sisa Tagihan</b></td>';
-        $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center">' . 'Rp. ' . number_format($total - $total_nominal_dibayar, 0, ',', '.') . '</td>';
-        $table2 .= '</tr>';
+        if ($total_nominal_dibayar != 0 && ($total - $total_nominal_dibayar) != 0) {
+            $table2 .= '<tr style="border: none;">';
+            $table2 .= '<td colspan="2" style="border: none;"></td>';
+            $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center"><b>Total Dibayar</b></td>';
+            $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center"> - ' . 'Rp. ' . number_format($total_nominal_dibayar ?? 0, 0, ',', '.') . '</td>';
+            $table2 .= '</tr>';
+            $table2 .= '<tr style="border: none;">';
+            $table2 .= '<td colspan="2" style="border: none;"></td>';
+            $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center"><b>Sisa Tagihan</b></td>';
+            $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center">' . 'Rp. ' . number_format(($total ?? 0) - ($total_nominal_dibayar ?? 0), 0, ',', '.') . '</td>';
+            $table2 .= '</tr>';
+        }
         $table2 .=  <<<EOD
             <tbody>
             </table>
@@ -884,7 +911,7 @@ EOD;
         $t_cpdf2->writeHTMLCell(0, 0, 13, $t_cpdf2->GetY(), $catatan, 0, 1, false, true, 'L', true);
 
         // Output PDF (tampilkan di browser)
-        $t_cpdf2->Output('Invoice Pengenumroh.pdf', 'I'); // 'I' untuk menampilkan di browser
+        $t_cpdf2->Output('Invoice Pengenumroh ' . $invoice->kode_invoice . '.pdf', 'I'); // 'I' untuk menampilkan di browser
     }
 
     // TCPDF KWITANSI
@@ -913,7 +940,7 @@ EOD;
         // Set document properties
         $t_cpdf2->SetCreator(PDF_CREATOR);
         $t_cpdf2->SetAuthor('Author Name');
-        $t_cpdf2->SetTitle('Invoice Pengenumroh PDF');
+        $t_cpdf2->SetTitle('Kwitansi Pengenumroh PDF');
 
         $t_cpdf2->SetMargins(15, 40, 15); // Margin kiri, atas (untuk header), kanan
         $t_cpdf2->SetAutoPageBreak(true, 15); // Penanganan otomatis margin bawah
@@ -978,33 +1005,6 @@ EOD;
         $t_cpdf2->Cell(182, 10, 'Detail Pemesanan', 0, 1, 'L', true);
         $t_cpdf2->SetTextColor(0, 0, 0);
 
-        $tbl = <<<EOD
-        <table border="1" cellpadding="3">
-            <thead>
-                <tr>
-                    <th align="center" width="30%"><b>DESKRIPSI</b></th>
-                    <th align="center" width="20%"><b>JUMLAH</b></th>
-                    <th align="center" width="25%"><b>HARGA</b></th>
-                    <th align="center" width="25%"><b>TOTAL</b></th>
-                </tr>
-            </thead>
-            <tbody>
-    EOD;
-        foreach ($invoice_details as $detail) {
-            $tbl .= '<tr>';
-            $tbl .= '<td width="30%">' . $detail['deskripsi'] . '</td>';
-            $tbl .= '<td width="20%" style="text-align: center">' . $detail['jumlah'] . '</td>';
-            $tbl .= '<td width="25%" style="text-align: center">' . 'Rp. ' . number_format($detail['harga'], 0, ',', '.') . '</td>';
-            $tbl .= '<td width="25%" style="text-align: center">' . 'Rp. ' . number_format($detail['total'], 0, ',', '.') . '</td>';
-            $tbl .= '</tr>';
-        }
-        $tbl .= <<<EOD
-    </tbody>
-</table>
-EOD;
-
-        $t_cpdf2->writeHTMLCell(184, 0, 14, $t_cpdf2->GetY() + 4, $tbl, 0, 1, false, true, 'L', true);
-
         $table2 = <<<EOD
             <table>
             <tbody>
@@ -1021,46 +1021,38 @@ EOD;
         }
 
         $table2 .= '<tr style="border: none;">';
-        $table2 .= '<td colspan="3" style="border: 1px solid black; text-align: center"><b>Sub Total</b></td>';
-        $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center"> ' . 'Rp. ' . number_format($total, 0, ',', '.') . '</td>';
-        $table2 .= '</tr>';
+        $table2 .= '<td width="15%" colspan="2" style="border: none; text-align: left">Banyak Uang</td>';
+        $table2 .= '<td width="10px" style="border: none; text-align: center">:</td>';
         foreach ($nominal_dibayar_rows as $key) {
-            $table2 .= '<tr style="border: none;">';
-            $table2 .= '<td colspan="2" style="border: 1px solid black; text-align: center">Detail Pembayaran</td>';
-            $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center">' . $this->tgl_indo(date('Y-m-d', strtotime($key->tanggal_pembayaran))) . '</td>';
-            $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center"> ' . '- Rp. ' . number_format($key->nominal_dibayar, 0, ',', '.') . '</td>';
-            $table2 .= '</tr>';
+            $table2 .= '<td width="83%" style="border: none; text-align: left"> ' . 'Rp. ' . number_format($key->nominal_dibayar ?? 0, 0, ',', '.') . '</td>';
         }
-        $table2 .= '<tr style="border: none;">';
-        $table2 .= '<td colspan="3" style="border: 1px solid black; text-align: center"><b>Total bayar</b></td>';
-        $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center"> ' . 'Rp. ' . number_format($total_dibayar, 0, ',', '.') . '</td>';
         $table2 .= '</tr>';
         $table2 .= '<tr style="border: none;">';
-        $table2 .= '<td colspan="2" style="border: none;"></td>';
-        $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center"><b>Sisa Tagihan</b></td>';
-        $table2 .= '<td width="25%" style="border: 1px solid black; text-align: center"> ' . 'Rp. ' . number_format($total - $total_dibayar, 0, ',', '.') . '</td>';
+        $table2 .= '<td width="15%" colspan="2" style="border: none; text-align: left">Terbilang</td>';
+        $table2 .= '<td width="10px" style="border: none; text-align: center">:</td>';
+        $table2 .= '<td width="83%" style="border: none; text-align: left"> ' . $kwitansi->keterangan . '</td>';
         $table2 .= '</tr>';
         $table2 .=  <<<EOD
             <tbody>
             </table>
         EOD;
 
-        $t_cpdf2->writeHTMLCell(184, 0, 14, $t_cpdf2->GetY(), $table2, 0, 1, false, true, 'L', true);
+        $t_cpdf2->writeHTMLCell(184, 0, 14, $t_cpdf2->GetY() + 4, $table2, 0, 1, false, true, 'L', true);
 
-        $t_cpdf2->setY($t_cpdf2->GetY() + 5);
-        $t_cpdf2->SetX(13);
+        // $t_cpdf2->setY($t_cpdf2->GetY() + 5);
+        // $t_cpdf2->SetX(13);
 
-        $t_cpdf2->SetFont('Poppins-Regular', '', 10);
-        $t_cpdf2->Cell(19, 9, 'Catatan :', 0, 1);
-        if ($invoice->keterangan != '') {
-            $catatan = $invoice->keterangan;
-        } else {
-            $catatan = '';
-        }
+        // $t_cpdf2->SetFont('Poppins-Regular', '', 10);
+        // $t_cpdf2->Cell(19, 9, 'Catatan :', 0, 1);
+        // if ($invoice->keterangan != '') {
+        //     $catatan = $invoice->keterangan;
+        // } else {
+        //     $catatan = '';
+        // }
 
-        $t_cpdf2->writeHTMLCell(0, 0, 13, $t_cpdf2->GetY(), $catatan, 0, 1, false, true, 'L', true);
+        // $t_cpdf2->writeHTMLCell(0, 0, 13, $t_cpdf2->GetY(), $catatan, 0, 1, false, true, 'L', true);
 
         // Output PDF (tampilkan di browser)
-        $t_cpdf2->Output('Invoice Pengenumroh.pdf', 'I'); // 'I' untuk menampilkan di browser
+        $t_cpdf2->Output('Kwitansi Pengenumroh ' . $invoice->kode_invoice . '.pdf', 'I'); // 'I' untuk menampilkan di browser
     }
 }
