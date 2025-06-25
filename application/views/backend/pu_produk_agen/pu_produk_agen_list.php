@@ -48,6 +48,8 @@
                                 <tr>
                                     <th>No</th>
                                     <th style="width: 120px;">Action</th>
+                                    <th>Status</th>
+                                    <th>Nama Produk</th>
                                     <th>Nama Travel</th>
                                     <th>Harga Paket</th>
                                     <th>Fee Agen</th>
@@ -64,6 +66,8 @@
                                 <tr>
                                     <th>No</th>
                                     <th style="width: 120px;">Action</th>
+                                    <th>Status</th>
+                                    <th>Nama Produk</th>
                                     <th>Nama Travel</th>
                                     <th>Harga Paket</th>
                                     <th>Fee Agen</th>
@@ -146,6 +150,36 @@
                     </a>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Modal Edit Status Produk -->
+    <div class="modal fade" id="modalStatusProduk" tabindex="-1" role="dialog" aria-labelledby="modalStatusProdukLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <form id="formStatusProduk">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalStatusProdukLabel">Ubah Status Produk</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="statusProdukId" name="id">
+                        <div class="form-group">
+                            <label for="is_active_produk">Status Produk</label>
+                            <select class="form-control" id="is_active_produk" name="is_active">
+                                <option value="1">Aktif</option>
+                                <option value="0">Tidak Aktif</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -305,6 +339,44 @@
             }
         })
     };
+
+    // Trigger modal edit status produk
+    $(document).on('click', '.status-produk-modal-trigger', function() {
+        var id = $(this).data('id');
+        var status = $(this).data('status');
+        $('#statusProdukId').val(id);
+        $('#is_active_produk').val(status);
+        $('#modalStatusProduk').modal('show');
+    });
+
+    // Submit perubahan status produk
+    $('#formStatusProduk').on('submit', function(e) {
+        e.preventDefault();
+        $.ajax({
+            url: '<?php echo base_url("pu_produk_agen/update_status"); ?>',
+            type: 'POST',
+            data: $(this).serialize(),
+            dataType: 'json',
+            success: function(res) {
+                if (res.status) {
+                    $('#modalStatusProduk').modal('hide');
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Status produk berhasil diupdate',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    // reload_table(); // pastikan fungsi reload_table ada
+                    location.reload();
+                } else {
+                    alert(res.message || 'Gagal update status');
+                }
+            },
+            error: function() {
+                alert('Terjadi kesalahan saat mengupdate status');
+            }
+        });
+    });
 
     $(document).on('click', '.lihat-produk', function(e) {
         e.preventDefault();
