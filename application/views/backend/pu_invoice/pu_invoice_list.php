@@ -40,12 +40,15 @@
                     <table id="table" class="table table-bordered table-striped" style="width: 100%;">
                         <thead>
                             <tr>
+                                <th>id</th>
                                 <th>No</th>
-                                <th class="action-column">Action</th>
-                                <th>Kode Invoice</th>
+                                <th>Order</th>
                                 <th>Nama</th>
-                                <th>Tanggal Invoice</th>
-                                <th>Jatuh Tempo</th>
+                                <th>Invoice</th>
+                                <th>Tanggal Order</th>
+                                <!-- <th class="action-column">Action</th> -->
+                                <th>Harga Paket</th>
+                                <th>Nominal Terbayar</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -53,12 +56,15 @@
                         </tbody>
                         <tfoot>
                             <tr>
+                                <th>id</th>
                                 <th>No</th>
-                                <th class="action-column">Action</th>
-                                <th>Kode Invoice</th>
                                 <th>Nama</th>
-                                <th>Tanggal Invoice</th>
-                                <th>Jatuh Tempo</th>
+                                <th>Invoice</th>
+                                <th>Tanggal Order</th>
+                                <!-- <th class="action-column">Action</th> -->
+                                <th>Order</th>
+                                <th>Harga Paket</th>
+                                <th>Nominal Terbayar</th>
                                 <th>Status</th>
                             </tr>
                         </tfoot>
@@ -90,6 +96,7 @@
                 </div>
                 <div class="modal-body">
                     <form id="paymentForm">
+                        <input type="hidden" class="form-control" id="email" name="email" value="">
                         <input type="hidden" name="invoice_id" id="payment_invoice_id" value="">
                         <?php if ($edit == 'Y') { ?>
                             <div class="form-group">
@@ -127,6 +134,11 @@
                                 <option value="pelunasan">Pelunasan</option>
                             </select>
                         </div>
+                        <div class="form-group">
+                            <label for="bukti_pembayaran">Upload Bukti Pembayaran</label>
+                            <input type="file" class="form-control-file" id="bukti_pembayaran" name="bukti_pembayaran" accept="image/*">
+                            <div id="buktiPembayaranInfo" class="mt-2"></div>
+                        </div>
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-success">Bayar</button>
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
@@ -149,6 +161,20 @@
         console.log(invoiceId);
         $('#paymentForm')[0].reset();
         $('#payment_invoice_id').val(invoiceId);
+
+        $.ajax({
+            url: "<?php echo site_url('pu_invoice/edit_data/') ?>" + invoiceId,
+            type: "GET",
+            dataType: "JSON",
+            success: function(data) {
+                // Set nilai input email dengan email dari invoice
+                $('#email').val(data.master.ctc_email);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert('Error fetching invoice details');
+            }
+        });
+
         $.ajax({
             url: "<?php echo site_url('pu_invoice/get_kwitansi_dates/') ?>" + invoiceId,
             type: "GET",
@@ -199,10 +225,18 @@
                 success: function(data) {
                     $('#tanggal_pembayaran').val(data.tanggal_pembayaran);
                     $('#status_pembayaran').val(data.status_pembayaran);
+                    $('#keterangan').val(data.keterangan);
                     // Format nominal_dibayar dengan tanda titik sebagai pemisah ribuan
                     let nominal = data.nominal_dibayar ? data.nominal_dibayar.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") : '';
                     $('#nominal_dibayar').val(nominal);
-                    // console.log(data);
+                    var bukti_pembayaran = data.bukti_pembayaran ? data.bukti_pembayaran : '';
+                    $('#buktiPembayaranInfo').empty();
+                    if (bukti_pembayaran) {
+                        $('#buktiPembayaranInfo').html('<a href="<?= base_url('assets/backend/uploads/bukti_pembayaran_pu/') ?>' + bukti_pembayaran + '" target="_blank">Lihat Bukti Pembayaran (' + bukti_pembayaran + ')</a>');
+                    } else {
+                        $('#buktiPembayaranInfo').text('file tidak ada');
+                    }
+                    console.log(data);
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     alert('Error fetching kwitansi data');
@@ -237,7 +271,7 @@
             $('#lihatInvoice').attr('href', 'pu_invoice/read_invoice/' + id);
 
             // Tampilkan/hidden kwitansi berdasarkan is_active (dari data attribute, bukan PHP)
-            if (is_active == 0) {
+            if (is_active == 0 || is_active == 2) {
                 $('#lihatKwitansi').show().attr('href', 'pu_invoice/read_kwitansi/' + id);
             } else {
                 $('#lihatKwitansi').hide();
@@ -306,26 +340,26 @@
             $(this).val(formatted);
         });
 
+
+        // SUBMIT FORM PEMBAYARAN
         $('#paymentForm').on('submit', function(e) {
-            e.preventDefault(); // Mencegah pengiriman form default
+            e.preventDefault();
 
-            // Cek apakah ada nilai dari input tgl_update_pembayaran
-            var selectedValue = $('#tgl_update_pembayaran').val();
-            var isUpdate = selectedValue !== null && selectedValue !== "";
+            var $tglElement = $('#tgl_update_pembayaran');
+            var selectedValue = $tglElement.length ? $tglElement.val() : null;
+            var isUpdate = $tglElement.length && selectedValue !== null && selectedValue !== "";
 
-            console.log('selectedValue:', '"' + selectedValue + '"');
-            console.log('isUpdate:', isUpdate);
-
-            // Tentukan URL berdasarkan kondisi tersebut
             var actionUrl = isUpdate ?
                 "<?php echo site_url('pu_invoice/update_kwitansi/') ?>" :
                 "<?php echo site_url('pu_invoice/add_kwitansi/') ?>";
 
-            // Kirim data ke server menggunakan AJAX
+
             $.ajax({
                 url: actionUrl,
                 type: "POST",
-                data: $('#paymentForm').serialize(),
+                data: new FormData(this),
+                processData: false,
+                contentType: false,
                 dataType: "JSON",
                 success: function(data) {
                     if (data.status) {
@@ -352,7 +386,6 @@
             });
         });
 
-
         // Set active tab on page load
         const activeTab = sessionStorage.getItem('activeTab');
 
@@ -370,6 +403,13 @@
             $('#appFilter').val(savedFilter).change(); // Set filter dengan nilai yang tersimpan
         }
 
+        const userAkses = {
+            read: '<?= $read ?>',
+            edit: '<?= $edit ?>',
+            delete: '<?= $delete ?>',
+            add: '<?= $add ?>'
+        };
+
         table = $('#table').DataTable({
             "responsive": false,
             "scrollX": true,
@@ -380,25 +420,140 @@
                 "url": "<?php echo site_url('pu_invoice/get_list') ?>",
                 "type": "POST",
                 "data": function(d) {
-                    d.status = $('#appFilter').val(); // Tambahkan parameter status ke permintaan server
+                    d.status = $('#appFilter').val();
                 }
             },
-            // "language": {
-            //     "infoFiltered": ""
-            // },
             "columnDefs": [{
-                    "targets": [],
-                    "className": 'dt-head-nowrap'
-                },
-                {
-                    "targets": [1],
-                    "className": 'dt-body-nowrap'
-                }, {
-                    "targets": [0, 1],
-                    "orderable": false,
-                },
-            ]
+                "targets": [0], // kolom order_id
+                "visible": false
+            }, {
+                "targets": [2], // kolom untuk expand
+                "orderable": false,
+                "className": 'dt-control'
+            }],
+            "createdRow": function(row, data, dataIndex) {
+                // Misal order_id ada di kolom ke-2 (data[2])
+                var order_id = data[0];
+                $(row).attr('data-order-id', order_id);
+            }
         });
+
+        function formatTanggalIndonesia(tanggal) {
+            const bulan = [
+                "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+                "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+            ];
+
+            const [tahun, bulanIndex, hari] = tanggal.split("-");
+            return `${parseInt(hari)} ${bulan[parseInt(bulanIndex) - 1]} ${tahun}`;
+        }
+
+        function showPaymentModal(id) {
+            // tampilkan modal pembayaran
+            console.log("Tampilkan modal pembayaran untuk invoice id:", id);
+        }
+
+
+        $('#table tbody').on('click', 'td.dt-control', function() {
+            var tr = $(this).closest('tr');
+            var row = table.row(tr);
+
+            // Ambil order_id dari kolom tertentu (misalnya kolom kode_order ada di indeks ke-2)
+            var order_id = row.data()[0]; // atau simpan di <tr> pakai data-order-id, tinggal ambil pakai tr.data('order-id')
+            console.log(order_id);
+            if (row.child.isShown()) {
+                row.child.hide();
+                tr.removeClass('shown');
+            } else {
+                // Ambil invoice dari server
+                $.ajax({
+                    url: "<?= site_url('pu_invoice/get_invoice_by_order/') ?>" + order_id,
+                    type: "GET",
+                    dataType: "json",
+                    success: function(response) {
+                        let html = `
+                            <table class="table table-sm table-bordered mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Kode Invoice</th>
+                                        <th>Tagihan Invoice</td>
+                                        <th>Tanggal</th>
+                                        <th>Status</th>
+                                        <th class="text-nowrap">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                        `;
+
+                        response.forEach((inv, i) => {
+                            console.log(inv);
+
+                            let status = inv.status == 0 ? 'Lunas' : 'Belum Lunas';
+
+                            let action = '';
+                            if (userAkses.read == 'Y') {
+                                action += `
+                            <button type="button" class="btn btn-info btn-circle btn-sm show-dropdown" data-id="${inv.id}" data-is_active="${inv.is_active}" title="Read">
+                                <i class="fa fa-eye"></i>
+                            </button>&nbsp;`;
+                            }
+
+                            if (inv.is_active == 1) {
+                                if (userAkses.edit == 'Y') {
+                                    action += `<a href="pu_invoice/edit_form/${inv.id}" class="btn btn-warning btn-circle btn-sm" title="Edit">
+                                    <i class="fa fa-edit"></i>
+                                </a>&nbsp;`;
+                                }
+
+                                if (userAkses.delete == 'Y') {
+                                    action += `<a href="javascript:void(0);" onclick="delete_data('${inv.id}')" class="btn btn-danger btn-circle btn-sm" title="Delete">
+                                    <i class="fa fa-trash"></i>
+                                </a>&nbsp;`;
+                                }
+                            }
+
+                            // Tombol ini selalu muncul
+                            if (inv.status == 1) {
+                                action += `<button type="button" class="btn btn-primary btn-circle btn-sm" onclick="showPaymentModal(${inv.id})" title="Payment">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </button>&nbsp;`;
+                            }
+
+                            // Tombol New hanya jika add = 'Y' dan invoice belum lunas
+                            if (userAkses.add == 'Y' && (inv.is_active == 0 && inv.status == 0 && inv.total_tagihan != inv.total_order)) {
+                                action += `<a href="pu_invoice/new_form/${inv.id}" class="btn btn-secondary btn-circle btn-sm" title="New">
+                                <i class="fa fa-plus"></i>
+                            </a>`;
+                            }
+
+                            html += `
+                            <tr>
+                                <td>${i + 1}</td>
+                                <td>${inv.kode_invoice}</td>
+                                <td>Rp ${Number(inv.total_tagihan).toLocaleString('id-ID')}</td>
+                                <td>${formatTanggalIndonesia(inv.tgl_invoice)}</td>
+                                <td>${status}</td>
+                                <td class="text-nowrap">${action}</td>
+                            </tr>
+                        `;
+                        });
+
+                        html += `
+                                </tbody>
+                            </table>
+                        `;
+                        row.child(html).show();
+                        tr.addClass('shown');
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Gagal mengambil data invoice:', error);
+                    }
+                });
+            }
+        });
+
+
 
         // Simpan nilai filter ke localStorage setiap kali berubah
         $('#appFilter').on('change', function() {

@@ -175,28 +175,25 @@
                                     <div class="col-sm-8">
                                         <div class="input-group mb-3">
                                             <!-- RADIO BUTTON UNTUK PEMILIHAN INPUTAN REKENING -->
-                                            <div class="form-check form-check-inline" style="margin-bottom: 5px;">
+                                            <!-- <div class="form-check form-check-inline" style="margin-bottom: 5px;">
                                                 <input class="form-check-input" type="radio" name="radioNoLabel" id="exist" value="" aria-label="..." checked><label for="exist" style="margin-right: 14px; margin-top: 8px; cursor: pointer">Rekening terdaftar</label>
                                                 <input class="form-check-input" type="radio" name="radioNoLabel" id="new" value="" aria-label="..."><label for="new" style="margin-top: 8px; cursor: pointer">Rekening baru</label>
-                                            </div>
+                                            </div> -->
                                             <select class="js-example-basic-single" id="rekening" name="rekening">
                                                 <option value="" selected disabled>Pilih rekening tujuan</option>
                                                 <?php foreach ($rek_options as $option) { ?>
                                                     <option data-nama="<?= $option->nama ?>" data-bank="<?= $option->nama_bank ?>" data-rek="<?= $option->no_rek ?>" value=""><?= $option->nama . '-' . $option->nama_bank . '-' . $option->no_rek ?></option>
                                                 <?php } ?>
                                             </select>
-                                            <div class="input-group rekening-text">
+                                            <!-- <div class="input-group rekening-text">
                                                 <div class="row-sm mb-2" style="width: 100%;">
                                                     <input type="text" class="form-control" id="nama_rek" name="nama_rek" placeholder="Nama" maxlength="20">
                                                 </div>
-                                                <!-- <div class="row" style="margin-left: 0px; background-color: red"> -->
                                                 <input type="text" class="form-control rek_input" style="border-radius: 5px" id="nama_bank" name="nama_bank" placeholder="Nama Bank">
                                                 &nbsp;<span class="py-2">-</span>&nbsp;
                                                 <input type="text" class="form-control rek_input2" style="border-radius: 5px" id="nomor_rekening" name="nomor_rekening" placeholder="No Rekening">
-                                                <!-- <span class="py-2"></span>&nbsp; -->
-                                                <!-- </div> -->
                                                 <button type="button" class="btn-primary" id="btn-rek" style="height: 33.5px; width: 40px"><i class="fa fa-plus" aria-hidden="true"></i></button>
-                                            </div>
+                                            </div> -->
                                         </div>
                                     </div>
                                     <div class="col-sm-12 table-responsive">
@@ -479,47 +476,47 @@
 
         $('.js-example-basic-single').select2();
 
-        document.getElementById("nama_rek").addEventListener("input", function(event) {
-            let words = this.value.trim().split(/\s+/); // Pisahkan kata berdasarkan spasi
-            if (words.length > 20) {
-                this.value = words.slice(0, 20).join(" "); // Batasi hanya 20 kata
-                event.preventDefault(); // Mencegah input tambahan
-            }
-        });
+        // document.getElementById("nama_rek").addEventListener("input", function(event) {
+        //     let words = this.value.trim().split(/\s+/); // Pisahkan kata berdasarkan spasi
+        //     if (words.length > 20) {
+        //         this.value = words.slice(0, 20).join(" "); // Batasi hanya 20 kata
+        //         event.preventDefault(); // Mencegah input tambahan
+        //     }
+        // });
 
 
         // Fungsi untuk mengatur enabled/disabled elemen berdasarkan radio button yang dipilih
-        function toggleInputs() {
-            const isExistChecked = $('#exist').is(':checked');
+        // function toggleInputs() {
+        //     const isExistChecked = $('#exist').is(':checked');
 
-            // Atur visibility dropdown dan input fields
-            if (isExistChecked) {
-                $('#rekening').prop('disabled', false).show(); // Aktifkan dan tampilkan elemen asli
-                $('#rekening').next('.select2-container').show(); // Tampilkan elemen Select2
-                $('.input-group.rekening-text input[type="text"]').prop('disabled', true).parent().hide(); // Sembunyikan input fields
-                $('.input-group.rekening-text button[type="button"]').prop('disabled', true).parent().hide(); // Sembunyikan input fields
-            } else {
-                $('#rekening').prop('disabled', true).hide(); // Nonaktifkan dan sembunyikan elemen asli
-                $('#rekening').next('.select2-container').hide(); // Sembunyikan elemen Select2
-                $('.input-group.rekening-text input[type="text"]').prop('disabled', false).parent().show(); // Tampilkan input fields
-                $('.input-group.rekening-text button[type="button"]').prop('disabled', false).parent().show(); // Tampilkan input fields
-            }
-        }
+        //     // Atur visibility dropdown dan input fields
+        //     if (isExistChecked) {
+        //         $('#rekening').prop('disabled', false).show(); // Aktifkan dan tampilkan elemen asli
+        //         $('#rekening').next('.select2-container').show(); // Tampilkan elemen Select2
+        //         $('.input-group.rekening-text input[type="text"]').prop('disabled', true).parent().hide(); // Sembunyikan input fields
+        //         $('.input-group.rekening-text button[type="button"]').prop('disabled', true).parent().hide(); // Sembunyikan input fields
+        //     } else {
+        //         $('#rekening').prop('disabled', true).hide(); // Nonaktifkan dan sembunyikan elemen asli
+        //         $('#rekening').next('.select2-container').hide(); // Sembunyikan elemen Select2
+        //         $('.input-group.rekening-text input[type="text"]').prop('disabled', false).parent().show(); // Tampilkan input fields
+        //         $('.input-group.rekening-text button[type="button"]').prop('disabled', false).parent().show(); // Tampilkan input fields
+        //     }
+        // }
 
         // Panggil fungsi saat halaman dimuat
-        toggleInputs();
+        // toggleInputs();
 
         // Panggil fungsi saat radio button berubah
-        $('input[name="radioNoLabel"]').change(toggleInputs);
+        // $('input[name="radioNoLabel"]').change(toggleInputs);
 
         // AGAR INPUT FIELD HANYA BISA NOMOR
-        document.getElementById('nomor_rekening').addEventListener('input', function(e) {
-            let value = this.value.replace(/[^0-9]/g, '');
-            if (value.length > 14) {
-                value = value.slice(0, 10);
-            }
-            this.value = value;
-        });
+        // document.getElementById('nomor_rekening').addEventListener('input', function(e) {
+        //     let value = this.value.replace(/[^0-9]/g, '');
+        //     if (value.length > 14) {
+        //         value = value.slice(0, 10);
+        //     }
+        //     this.value = value;
+        // });
 
         // Tambahkan fungsi untuk memformat input nominal memiliki titik
         function formatJumlahInput(selector) {
@@ -752,15 +749,15 @@
         });
 
         // BUTTON ADD ROW NOMOR REKENING
-        $('#btn-rek').click(function() {
-            var nama = $('#nama_rek').val();
-            var bank = $('#nama_bank').val();
-            var rek = $('#nomor_rekening').val();
-            addRekRow(nama, bank, rek);
-            $('#nama_rek').val('');
-            $('#nama_bank').val('');
-            $('#nomor_rekening').val('');
-        });
+        // $('#btn-rek').click(function() {
+        //     var nama = $('#nama_rek').val();
+        //     var bank = $('#nama_bank').val();
+        //     var rek = $('#nomor_rekening').val();
+        //     addRekRow(nama, bank, rek);
+        //     $('#nama_rek').val('');
+        //     $('#nama_bank').val('');
+        //     $('#nomor_rekening').val('');
+        // });
 
         // SELECT ADD ROW NOMOR REKENING
         $('#rekening').change(function() {

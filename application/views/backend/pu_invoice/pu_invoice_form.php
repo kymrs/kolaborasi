@@ -178,10 +178,24 @@
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="col-sm-4 col-form-label">Total Order</label>
+                                        <?php if (!(count($orders) > 1)) { ?>
+                                            <label class="col-sm-4 col-form-label">Harga Paket</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="total_order" name="total_order">
+                                            </div>
+                                        <?php } else { ?>
+                                            <label class="col-sm-4 col-form-label">Harga Paket</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="total_order" name="total_order" readonly>
+                                            </div>
+                                        <?php } ?>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-4 col-form-label">Email</label>
                                         <div class="col-sm-8">
-                                            <input type="text" class="form-control" id="total_order" name="total_order">
+                                            <input type="text" class="form-control" id="ctc_email" name="ctc_email" placeholder="Email">
                                         </div>
+                                        <input type="hidden" id="order_id" name="order_insert">
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-4 col-form-label">No Rekening</label>
@@ -527,7 +541,7 @@
             // Hitung total nominal setelah baris baru ditambahkan
             calculateTotalNominal();
 
-            $('.harga, .total, .jumlah').on('input', function() {
+            $('.harga, .total').on('input', function() {
                 // Ambil nilai input
                 let value = $(this).val();
 
@@ -539,6 +553,17 @@
 
                 // Set nilai input dengan format Rupiah
                 $(this).val(formatted);
+            });
+
+            $('.jumlah').on('input', function() {
+                // Ambil nilai input
+                let value = $(this).val();
+
+                // Hapus semua karakter yang bukan angka
+                value = value.replace(/[^0-9]/g, '');
+
+                // Set nilai input dengan format Rupiah
+                $(this).val(value);
             });
 
             //VALIDASI ROW YANG TELAH DI APPEND
@@ -715,8 +740,10 @@
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
-                    $('#total_order').val(data['master']['total_order'].replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
+                    $('#ctc_email').val(data['master']['ctc_email']);
+                    $('#total_order').val((data['master']['total_order'] - data['master']['total_tagihan']).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
                     $('#ctc_nama').val(data['master']['ctc_nama']);
+                    $('#order_id').val(data['master']['order_id']);
                     // $('#detail_pesanan').val(data['master']['detail_pesanan']);
                     $('#ctc_alamat').val(data['master']['ctc_alamat']);
                     $('#rekening').val(data['master']['travel_id']).trigger('change.select2');
@@ -735,9 +762,10 @@
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
-                    console.log(data);
+                    // console.log(data);
                     //SET VALUE DATA MASTER PREPAYMENT
                     $('#id').val(data['master']['id']);
+                    $('#ctc_email').val(data['master']['ctc_email']);
                     let dateParts = data['master']['tgl_invoice'].split('-'); // Pisahkan berdasarkan "-"
                     let formattedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`; // Susun jadi DD-MM-YYYY
                     $('#tgl_invoice').val(formattedDate); // Masukkan ke input
@@ -749,7 +777,7 @@
                     $('#ctc_nama').val(data['master']['ctc_nama']);
                     $('#detail_pesanan').val(data['master']['detail_pesanan']);
                     $('#ctc_alamat').val(data['master']['ctc_alamat']);
-                    $('#total_order').val(data['master']['total_order']);
+                    $('#total_order').val(data['master']['total_order'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
                     quill.clipboard.dangerouslyPasteHTML(data['master']['keterangan']);
                     quill2.clipboard.dangerouslyPasteHTML(data['master']['jamaah']);
                     quill3.clipboard.dangerouslyPasteHTML(data['master']['detail_pesanan']);
@@ -782,6 +810,14 @@
                             `;
                             $('#input-container').append(row);
                             rowCount = index + 1;
+
+                            // Tambahkan event handler agar field harga & total tetap bertitik saat diketik
+                            $(`#harga-${index + 1}, #total-${index + 1}`).on('input', function() {
+                                let value = $(this).val();
+                                value = value.replace(/[^0-9]/g, '');
+                                let formatted = new Intl.NumberFormat('id-ID').format(value);
+                                $(this).val(formatted);
+                            });
                         });
 
                         // detail jamaah
@@ -906,6 +942,9 @@
                                 text: data.message
                             });
                         }
+
+                        // Enable tombol kembali
+                        $('.aksi').prop('disabled', false);
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
                         // Sembunyikan loading saat respons diterima
@@ -916,6 +955,9 @@
                             title: 'Error',
                             text: 'Error adding / updating data: ' + textStatus
                         });
+
+                        // Enable tombol kembali
+                        $('.aksi').prop('disabled', false);
                     }
                 });
             }
@@ -930,6 +972,9 @@
                     required: true,
                 },
                 tgl_tempo: {
+                    required: true,
+                },
+                ctc_email: {
                     required: true,
                 },
                 ctc_alamat: {
@@ -948,6 +993,9 @@
                 },
                 tgl_tempo: {
                     required: "Tanggal Tempo is required",
+                },
+                ctc_email: {
+                    required: "Email is required",
                 },
                 ctc_alamat: {
                     required: "Contact Nomor is required",

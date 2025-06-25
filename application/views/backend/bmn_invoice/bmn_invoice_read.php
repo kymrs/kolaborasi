@@ -169,9 +169,13 @@
                 <div class="metode-pembayaran">
                     <p>Metode Pembayaran</p>
                     <ol>
-                        <?php foreach ($rekening as $data) : ?>
-                            <li>Nama : <?= $data['nama'] ?> <br> Bank : <?= $data['nama_bank'] ?> <br> No. Rekening : <?= $data['no_rek'] ?> </li>
-                        <?php endforeach ?>
+                        <?php if (!empty($rekening)) : ?>
+                            <?php foreach ($rekening as $data) : ?>
+                                <li>Nama : <?= $data['nama'] ?> <br> Bank : <?= $data['nama_bank'] ?> <br> No. Rekening : <?= $data['no_rek'] ?> </li>
+                            <?php endforeach ?>
+                        <?php else : ?>
+                            <li>Nama : PT. Kolaborasi Para Sahabat <br> Bank : BCA <br> No. Rekening : 1234567890</li>
+                        <?php endif; ?>
                     </ol>
                     <p>Atas Nama : PT. Kolaborasi Para Sahabat </p>
                 </div>
@@ -262,6 +266,7 @@
                         $.ajax({
                             url: "<?= base_url('bmn_invoice/send_email') ?>",
                             type: "POST",
+                            dataType: "json",
                             data: {
                                 email: email,
                                 id: id
@@ -269,7 +274,12 @@
                             success: function(response) {
                                 loadingSwal.close(); // Tutup loading spinner
                                 console.log(response); // Lihat apa yang dikembalikan dari controller
-                                Swal.fire('Terkirim!', 'Email berhasil dikirim.', 'success');
+                                if (response.status) {
+                                    Swal.fire('Terkirim!', 'Email berhasil dikirim.', 'success');
+                                } else {
+                                    Swal.fire('Gagal!', 'Email tidak berhasil dikirim.', 'error');
+                                    return;
+                                }
                             },
                             error: function() {
                                 loadingSwal.close(); // Tutup loading spinner

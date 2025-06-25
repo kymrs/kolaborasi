@@ -11,9 +11,10 @@
     <div class="container">
         <div class="canvas">
             <a class="btn btn-secondary btn-sm" onclick="history.back()" style="float: right; margin-left: 8px;"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
-            <a class="btn btn-success btn-sm" href="#" id="btnPrintKwitansi" style="float: right;">
+            <a class="btn btn-success btn-sm" data-id="" id="btnPrintKwitansi" style="float: right;">
                 <i class="fas fa-file-pdf"></i>&nbsp;Print
             </a>
+            <a class="btn btn-info btn-sm" id="send_email" data-id="" style="float: right; margin-right: 10px"><i class="fas fa-envelope"></i>&nbsp;&nbsp;Send Email</a>
             <hr class="line-header">
             <header>
                 <img class="header-image" src="<?= base_url('assets/backend/img/header.png') ?>" alt="">
@@ -64,6 +65,9 @@
                     <!-- Tambahkan tbody khusus untuk detail kwitansi -->
                     <tbody id="detail_kwitansi"></tbody>
                 </table>
+                <div id="bukti_pembayaran">
+
+                </div>
             </div>
             <img class="footer-image" src="<?= base_url('assets/backend/img/footer.png') ?>" alt="">
         </div>
@@ -73,6 +77,8 @@
     <?php $this->load->view('template/script'); ?>
 
     <script>
+        let idKwitansi = null;
+
         $('.js-example-basic-single').select2();
 
         // Fungsi untuk format tanggal Indonesia
@@ -94,12 +100,13 @@
             const totalTagihan = $('#total_tagihan').data('total');
             let total = 0;
 
-            // console.log('Selected value:', selectedValue);
+            // Update data-id tombol Print
+            $('#btnPrintKwitansi').attr('data-id', selectedValue);
+            $('#send_email').attr('data-id', selectedValue);
 
-            // Update href tombol Print
-            var printUrl = "<?= base_url('pu_invoice/generate_pdf_kwitansi/') ?>" + selectedValue;
-            $('#btnPrintKwitansi').attr('href', printUrl);
+            idKwitansi = selectedValue;
 
+            // Mengisi detail kwitansi
             $.ajax({
                 url: "<?= base_url('/pu_invoice/get_kwitansi') ?>",
                 type: "POST",
@@ -136,11 +143,108 @@
                     `;
 
                     $('#detail_kwitansi').append(detail_kwitansi);
+                    $('#bukti_pembayaran').html(`
+                        ${data.kwitansi.bukti_pembayaran ? `
+                        <div class="row" style="margin-top:20px;">
+                            <div class="col-md-12 text-center">
+                                <img src="<?= base_url('assets/backend/uploads/bukti_pembayaran_pu/') ?>${data.kwitansi.bukti_pembayaran}" alt="Bukti Pembayaran" style="max-width: 100%; max-height: 300px; width: auto; height: auto; border:1px solid #ccc; border-radius:8px; object-fit: contain;">
+                                <div style="margin-top:5px; font-size:12px; color:#888;">Bukti Pembayaran</div>
+                            </div>
+                        </div>
+                        ` : ''}
+                    `);
                     // console.log('total nominal:', data.total_nominal_dibayar);
                     // console.log('total tagihan:', totalTagihan);
                 },
                 error: function(xhr, status, error) {
                     console.error('Error:', error);
+                }
+            });
+        });
+
+        $('#btnPrintKwitansi').on('click', function(e) {
+            e.preventDefault();
+            // let id = $(this).data('id');
+            let id = idKwitansi;
+
+            if (!id) {
+                Swal.fire('Pilih Tanggal Pembayaran terlebih dahulu!', '', 'warning');
+                return;
+            }
+
+            // Gunakan form POST tersembunyi untuk membuka tab baru
+            let form = $('<form>', {
+                action: "<?= base_url('pu_invoice/prepare_print_kwitansi') ?>",
+                method: 'POST',
+                target: '_blank'
+            }).append($('<input>', {
+                type: 'hidden',
+                name: 'id',
+                value: id
+            }));
+
+            // Append form ke body dan submit
+            form.appendTo('body').submit().remove();
+        });
+
+        // SEND EMAIL
+        $('#send_email').on('click', function(e) {
+            e.preventDefault();
+
+            let email = "<?= isset($kwitansi[0]['ctc_email']) ? $kwitansi[0]['ctc_email'] : '' ?>";
+
+            let id = $('#tgl_pembayaran').val();
+            if (!id) {
+                Swal.fire('Pilih Tanggal Pembayaran terlebih dahulu!', '', 'warning');
+                return;
+            }
+
+            Swal.fire({
+                title: 'Apakah anda ingin mengirim email ke:',
+                html: `<strong>${email}</strong>`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'YA',
+                cancelButtonText: 'TIDAK',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Tampilkan loading spinner
+                    const loadingSwal = Swal.fire({
+                        title: 'Sedang mengirim email...',
+                        html: 'Harap tunggu sebentar',
+                        didOpen: () => {
+                            Swal.showLoading(); // Menampilkan spinner loading
+                        },
+                        allowOutsideClick: false, // Jangan biarkan swal ditutup saat loading
+                    });
+
+                    // Kirim data email ke controller via AJAX
+                    $.ajax({
+                        url: "<?= base_url('pu_invoice/send_email_kwitansi') ?>",
+                        type: "POST",
+                        dataType: "json",
+                        data: {
+                            email: email,
+                            id: id
+                        },
+                        success: function(response) {
+                            loadingSwal.close(); // Tutup loading spinner
+                            if (response.status) {
+                                Swal.fire('Terkirim!', 'Email berhasil dikirim.', 'success');
+                            } else {
+                                Swal.fire('Gagal!', 'Email tidak berhasil dikirim.', 'error');
+                                return;
+                            }
+                        },
+                        error: function() {
+                            loadingSwal.close(); // Tutup loading spinner
+                            Swal.fire('Error!', 'Terjadi kesalahan saat mengirim email.', 'error');
+                        }
+                    });
+
+                } else {
+                    Swal.fire('Dibatalkan', 'Pengiriman email dibatalkan.', 'info');
                 }
             });
         });

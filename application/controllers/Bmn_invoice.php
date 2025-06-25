@@ -426,78 +426,76 @@ class Bmn_invoice extends CI_Controller
 
     public function send_email()
     {
-        $this->load->library('email');
-        $this->load->library('tcpdf'); // Pastikan TCPDF sudah di-load
-        $email = $this->input->post('email'); // Ambil email tujuan
-        $id = $this->input->post('id');
+        $email = $this->input->post('email');
+        $this->load->library('tcpdf'); // Pastikan library TCPDF sudah di-autoload atau dimuat manual
+        $this->load->library('tcpdf_invoice'); // Library untuk generate invoice PDF
+        $id    = $this->input->post('id');
 
-        if ($email) {
-            $config = [
-                'protocol'    => 'smtp',
-                'smtp_host'   => 'mail.naufalandriana.com',  // sesuai dengan gambar
-                'smtp_user'   => 'cs@naufalandriana.com', // sesuai yang tertera
-                'smtp_pass'   => 'Adminpu123',   // bukan password cPanel!
-                'smtp_port'   => 465,
-                'smtp_crypto' => 'ssl',
-                'mailtype'    => 'html',
-                'charset'     => 'utf-8',
-                'newline'     => "\r\n",
-                'crlf'        => "\r\n"
-            ];
+        $config = [
+            'protocol'    => 'smtp',
+            'smtp_host'   => 'ssl://smtp.hostinger.com',
+            'smtp_user'   => 'cs@bymoment.id',
+            'smtp_pass'   => '@Adminmoment123',
+            'smtp_port'   => 465,
+            'mailtype'    => 'html',
+            'charset'     => 'utf-8',
+            'newline'     => "\r\n",
+            'crlf'        => "\r\n",
+            'smtp_timeout' => 30,
+            'wordwrap'    => TRUE
+        ];
 
+        $this->load->library('email', $config);
+        $this->email->set_newline("\r\n");
 
-            $this->email->initialize($config);
+        $data = [
+            'id'      => $id,
+            'sub'     => 'bmn',
+            'output'  => 'save',
+            'status'  => 'approved'
+        ];
 
-            $data['id'] = $id;
-            $data['sub'] = 'bmn';
-            $data['output'] = 'save';
-            $this->load->library('tcpdf_invoice'); // Sesuaikan dengan nama file library
-            ob_end_clean();
-            $pdf_content = $this->tcpdf_invoice->generateInvoice($data); // return string PDF content
+        // Generate PDF content dari TCPDF
+        $pdf_content = $this->tcpdf_invoice->generateInvoice($data);
 
-            // Buat message body simple (penutup email)
-            $message_body = '
-            <p>Thanks and Best Regards,</p>
-            <p><strong>Yunita Ekaputri</strong><br>
-            Human Capital and General Services (Legal, Recruitment and Training Staff)</p>
-            <p>PT BRAJA MUKTI CAKRA<br>
-            Jalan Desa Harapan Kita Nomor 4, Bekasi Utara, 17124<br>
-            Phone : +6221 8871 836 <Ext. 107> / 085715098019<br>
-            Email : <a href="mailto:yunita@bmc.co.id">yunita@bmc.co.id</a></p>
-            ';
+        // Simpan sementara file PDF di server
+        $pdf_path = FCPATH . 'assets/backend/uploads/Invoice_ByMoment.pdf';
+        file_put_contents($pdf_path, $pdf_content);
 
-            $tmp_path = FCPATH . 'assets/backend/uploads/Invoice ByMoment.pdf';
-            // file_put_contents($tmp_path, $pdf_content);
+        // Email body (HTML)
+        $message_body = '
+        <p>Dear Customer,</p>
 
-            $this->email->from('cs@naufalandriana.com', 'Audrica Ewaldo');
-            $this->email->to($email);
-            $this->email->subject('Invoice by.moment');
-            $this->email->message($message_body);
+        <p>Melalui email ini, kami ingin menginformasikan bahwa pelunasan atas invoice yang telah diterbitkan telah kami selesaikan. Mohon dapat dicek kembali dan dikonfirmasi apabila telah diterima dengan baik.</p>
 
-            // Attach PDF langsung dari string
-            $this->email->attach($tmp_path);
-            // $this->email->attach($pdf_content, 'attachment', 'Invoice.pdf', 'application/pdf');
+        <p>Apabila terdapat pertanyaan atau hal lain yang perlu dikomunikasikan lebih lanjut, silakan menghubungi kami melalui email atau nomor telepon di bawah ini.</p>
 
-            if ($this->email->send()) {
-                unlink($tmp_path);
-                echo json_encode(["status" => TRUE, "message" => "Email berhasil dikirim dengan PDF."]);
-            } else {
-                echo json_encode(["status" => FALSE, "message" => $this->email->print_debugger(['headers'])]);
-            }
+        <p>Terima kasih atas kerja samanya.</p>
+
+        <br>
+
+        <p>Best regards,</p>
+        <p><strong>Tim bymoment</strong><br>
+        Email: <a href="mailto:cs@bymoment.id">cs@bymoment.id</a><br>
+        WhatsApp: 0812-9070-0033</p>
+        ';
+
+        $this->email->from('cs@bymoment.id', 'Bymoment');
+        $this->email->to('audricafabiano@gmail.com');
+        $this->email->subject('bymoment Invoice');
+        $this->email->message($message_body);
+
+        // Attach PDF
+        $this->email->attach($pdf_path);
+
+        if ($this->email->send()) {
+            echo json_encode(["status" => true, "message" => "Berhasil dikirim dengan PDF"]);
+            // (Opsional) hapus file PDF setelah dikirim
+            unlink($pdf_path);
         } else {
-            echo json_encode(["status" => FALSE, "message" => "Email tidak ditemukan."]);
+            echo json_encode(["status" => false, "message" => $this->email->print_debugger()]);
         }
-        //     if ($this->email->send()) {
-        //         unlink($tmp_path);
-        //         echo json_encode(array("status" => TRUE, "message" => "Email berhasil dikirim dengan PDF."));
-        //     } else {
-        //         echo json_encode(array("status" => FALSE, "message" => $this->email->print_debugger()));
-        //     }
-        // } else {
-        //     echo json_encode(array("status" => FALSE, "message" => "Email tidak ditemukan."));
-        // }
     }
-
 
     // PRINTOUT TCPDF
     public function generate_pdf($id)

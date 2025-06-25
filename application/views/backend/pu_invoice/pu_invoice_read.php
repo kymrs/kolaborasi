@@ -11,7 +11,20 @@
     <div class="container">
         <div class="canvas">
             <a class="btn btn-secondary btn-sm" onclick="history.back()" style="float: right; margin-left: 8px;"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
-            <a class="btn btn-success btn-sm" href="<?= base_url('pu_invoice/generate_pdf_invoice/' . $invoice['id']) ?>" style="float: right;"><i class="fas fa-file-pdf"></i>&nbsp;Print</a>
+            <a class="btn btn-success btn-sm" id="print-btn" data-id="<?= $invoice['id'] ?>" style="float: right;"><i class="fas fa-file-pdf"></i>&nbsp;Print</a>
+            <a class="btn btn-info btn-sm" id="send_email" data-id="<?= $invoice['id'] ?>" style="float: right; margin-right: 10px"><i class="fas fa-envelope"></i>&nbsp;&nbsp;Send Email</a>
+
+            <select class="js-example-basic-single" id="tagihan_select" name="tagihan_select" style="float: right; margin-right: 10px; width: 200px; height: 30px;">
+                <option value="default" selected>Tagihan 1</option>
+                <?php $i = 2; ?>
+                <?php foreach ($kwitansi as $option) { ?>
+                    <?php if ($option['sisa_tagihan'] != 0) { ?>
+                        <option value="<?= $option['id'] ?>" data-id_invoice="<?= $option['id_invoice'] ?>">Tagihan <?= $i ?></option>
+                    <?php } ?>
+                    <?php $i++; ?>
+                <?php } ?>
+            </select>
+
             <hr class="line-header">
             <header>
                 <img class="header-image" src="<?= base_url('assets/backend/img/header.png') ?>" alt="">
@@ -47,7 +60,7 @@
                 <div class="row">
                     <div class="left-side">
                         <p>Kpd Yth.</p>
-                        <h2>Bapak Nana Suryana</h2>
+                        <h2><?= $invoice['ctc_nama'] ?></h2>
                         <p class="address">Alamat : <?= $invoice['ctc_alamat'] ?></p>
                     </div>
                     <div class="right-side">
@@ -90,23 +103,12 @@
                     <tr>
                         <td style="border-color: #fff;"></td>
                         <td style="border-bottom-color: #fff;"></td>
-                        <td style="text-align: center; font-weight: bold">Total</td>
+                        <td style="text-align: center; font-weight: bold">Total Tagihan</td>
                         <td>Rp. <?= number_format($total_tagihan, 0, ',', '.') ?></td>
                     </tr>
-                    <?php if ($total_nominal_dibayar != 0 && ($total_tagihan - $total_nominal_dibayar) != 0) { ?>
-                        <tr>
-                            <td style="border-color: #fff;"></td>
-                            <td style="border-bottom-color: #fff;"></td>
-                            <td style="text-align: center; font-weight: bold">Total Dibayar</td>
-                            <td>Rp. <?= number_format($total_nominal_dibayar, 0, ',', '.') ?></td>
-                        </tr>
-                        <tr>
-                            <td style="border-color: #fff;"></td>
-                            <td style="border-bottom-color: #fff;"></td>
-                            <td style="text-align: center; font-weight: bold">Sisa Tagihan</td>
-                            <td>Rp. <?= number_format($total_tagihan - $total_nominal_dibayar, 0, ',', '.') ?></td>
-                        </tr>
-                    <?php } ?>
+                    <tbody id="detail_tagihan">
+
+                    </tbody>
                 </table>
             </div>
             <div class="metode-pembayaran">
@@ -131,3 +133,136 @@
 
     <?php $this->load->view('template/footer'); ?>
     <?php $this->load->view('template/script'); ?>
+
+    <script>
+        $(document).ready(function() {
+
+            $('#tagihan_select').on('change', function() {
+                $('#detail_kwitansi').empty(); // Clear previous detail_kwitansi
+                var selectedValue = $(this).val();
+                var idInvoice = $('#tagihan_select option:selected').data('id_invoice');
+                $('#detail_tagihan').empty();
+
+                if ($('#tagihan_select').val() != 'default') {
+                    // Mengisi detail kwitansi
+                    $.ajax({
+                        url: "<?= base_url('/pu_invoice/get_kwitansi') ?>",
+                        type: "POST",
+                        data: {
+                            id: selectedValue,
+                            id_invoice: idInvoice
+                        },
+                        dataType: "json",
+                        success: function(data) {
+                            // console.log(data);
+                            $('#detail_tagihan').append(`
+                            <tr>
+                                <td style="border-color: #fff;"></td>
+                                <td style="border-bottom-color: #fff;"></td>
+                                <td style="text-align: center; font-weight: bold">Telah Terbayar</td>
+                                <td>Rp. ${Number(data.total_nominal_dibayar).toLocaleString('id-ID')}</td>
+                            </tr>
+                            <tr>
+                                <td style="border-color: #fff;"></td>
+                                <td style="border-bottom-color: #fff;"></td>
+                                <td style="text-align: center; font-weight: bold">Sisa Tagihan</td>
+                                <td>Rp. ${Number(data.kwitansi.sisa_tagihan).toLocaleString('id-ID')}</td>
+                            </tr>
+                        `);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error:', error);
+                        }
+                    });
+                }
+            });
+
+            //PRINT
+            $('#print-btn').on('click', function(e) {
+                e.preventDefault();
+                let id = $(this).data('id');
+                let value = $('#tagihan_select').val() != 'default' ? $('#tagihan_select').val() : '';
+                console.log(value);
+
+                // Gunakan form POST tersembunyi untuk membuka tab baru
+                let form = $('<form>', {
+                    action: "<?= base_url('pu_invoice/prepare_print_invoice') ?>",
+                    method: 'POST',
+                    target: '_blank'
+                }).append($('<input>', {
+                    type: 'hidden',
+                    name: 'id_invoice',
+                    value: id
+                }), $('<input>', {
+                    type: 'hidden',
+                    name: 'id',
+                    value: value
+                }));
+
+                // Append form ke body dan submit
+                form.appendTo('body').submit().remove();
+            });
+
+
+            // SEND EMAIL
+            $('#send_email').on('click', function(e) {
+                e.preventDefault();
+
+                let email = "<?= $invoice['ctc_email'] ?>"; // Ambil email dari PHP
+                let id_invoice = $(this).data('id');
+                let id = $('#tagihan_select').val();
+                console.log('ID:', id); // Debugging untuk melihat ID yang dikirim
+
+                Swal.fire({
+                    title: 'Apakah anda ingin mengirim email ke:',
+                    html: `<strong>${email}</strong>`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'YA',
+                    cancelButtonText: 'TIDAK',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Tampilkan loading spinner
+                        const loadingSwal = Swal.fire({
+                            title: 'Sedang mengirim email...',
+                            html: 'Harap tunggu sebentar',
+                            didOpen: () => {
+                                Swal.showLoading(); // Menampilkan spinner loading
+                            },
+                            allowOutsideClick: false, // Jangan biarkan swal ditutup saat loading
+                        });
+
+                        // Kirim data email ke controller via AJAX
+                        $.ajax({
+                            url: "<?= base_url('pu_invoice/send_email_invoice') ?>",
+                            type: "POST",
+                            dataType: "json",
+                            data: {
+                                email: email,
+                                id_invoice: id_invoice,
+                                id: id
+                            },
+                            success: function(response) {
+                                loadingSwal.close(); // Tutup loading spinner
+                                console.log(response); // Lihat apa yang dikembalikan dari controller
+                                if (response.status) {
+                                    Swal.fire('Terkirim!', 'Email berhasil dikirim.', 'success');
+                                } else {
+                                    Swal.fire('Gagal!', 'Email tidak berhasil dikirim.', 'error');
+                                    return;
+                                }
+                            },
+                            error: function() {
+                                loadingSwal.close(); // Tutup loading spinner
+                                Swal.fire('Error!', 'Terjadi kesalahan saat mengirim email.', 'error');
+                            }
+                        });
+
+                    } else {
+                        Swal.fire('Dibatalkan', 'Pengiriman email dibatalkan.', 'info');
+                    }
+                });
+            });
+        });
+    </script>
