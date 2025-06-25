@@ -7,8 +7,8 @@ class M_pu_produk_agen extends CI_Model
 {
     var $id = 'id';
     var $table = 'pu_produk_agen'; //nama tabel dari database
-    var $column_order = array(null, null, 'travel', 'harga_paket', 'fee_agen', 'tanggal_keberangkatan', 'sisa_seat', 'created_at');
-    var $column_search = array('travel', 'harga_paket', 'fee_agen', 'tanggal_keberangkatan', 'sisa_seat', 'created_at'); //field yang diizin untuk pencarian 
+    var $column_order = array(null, null, 'nama_produk', 'travel', 'harga_paket', 'fee_agen', 'tanggal_keberangkatan', 'sisa_seat', 'created_at');
+    var $column_search = array('nama_produk', 'travel', 'harga_paket', 'fee_agen', 'tanggal_keberangkatan', 'sisa_seat', 'created_at'); //field yang diizin untuk pencarian 
     var $order = array('id' => 'desc'); // default order 
 
     public function __construct()

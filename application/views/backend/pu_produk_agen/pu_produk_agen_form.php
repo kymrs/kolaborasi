@@ -78,6 +78,13 @@
                             <div class="col-md-6">
                                 <!-- First Set of Fields -->
                                 <div class="form-group row">
+                                    <label class="col-sm-5" for="nama_produk">Nama Produk</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="nama_produk" name="nama_produk" placeholder="Nama Produk" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
                                     <label class="col-sm-5" for="travel">Nama Travel</label>
                                     <div class="col-sm-7">
                                         <select class="form-control" name="travel" id="travel">
@@ -107,7 +114,7 @@
                                         <p id="image_tidak_ada" style="display: none;"></p>
                                         <div class="form-group" style="margin-bottom: 0;">
                                             <input type="file" class="form-control-file" id="image" name="image" style="border: 1px solid rgb(209,211,226); padding: 3px 5px; cursor: pointer; border-radius: 6px">
-                                            <span class="kwitansi-label">Max Size : 3MB</span>
+                                            <span class="kwitansi-label">Max Size : 4MB</span>
                                         </div>
                                     </div>
                                 </div>
@@ -243,6 +250,7 @@
                     moment.locale('id');
                     $('#id').val(data['master'].id);
                     // // ISI FIELD PRODUK AGEN
+                    $('#nama_produk').val(data['master'].nama_produk);
                     $('#travel').val(data['master'].travel);
                     $('#tanggal_keberangkatan').val(moment(data['master'].tanggal_keberangkatan).format('DD-MM-YYYY'));
                     $('#sisa_seat').val(data['master'].sisa_seat);
@@ -302,30 +310,6 @@
                 }
             });
         }
-
-        // Event listeners untuk setiap tombol hapus
-        $('#delete_pas_foto').on('click', function() {
-            deleteFile('pas_foto');
-        });
-        $('#delete_ktp').on('click', function() {
-            deleteFile('ktp');
-        });
-        $('#delete_kk').on('click', function() {
-            deleteFile('kk');
-        });
-        $('#delete_buku_nikah').on('click', function() {
-            deleteFile('buku_nikah');
-        });
-        $('#delete_paspor').on('click', function() {
-            deleteFile('paspor');
-        });
-        $('#delete_akta_lahir').on('click', function() {
-            deleteFile('akta_lahir');
-        });
-        $('#delete_kartu_kuning').on('click', function() {
-            deleteFile('kartu_kuning');
-        });
-
         if (aksi == "read") {
             // Disable semua input, select, textarea, radio, dan tombol plus
             $('#form input, #form select, #form textarea, #form button, #form .input-group-append button').attr('disabled', true);
@@ -333,6 +317,33 @@
             $('.btn-secondary').attr('disabled', false);
             $('.aksi').hide(); // Sembunyikan tombol submit
         }
+
+        $('#image').on('change', function() {
+            var file = this.files[0];
+            if (file) {
+                // Cek ukuran file
+                if (file.size > 4 * 1024 * 1024) { // 4 MB
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Ukuran file terlalu besar',
+                        text: 'Maksimal ukuran file adalah 4 MB!',
+                    });
+                    $(this).val(''); // reset input file
+                    return;
+                }
+                // Cek tipe file
+                var allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+                if ($.inArray(file.type, allowedTypes) === -1) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Tipe file tidak didukung',
+                        text: 'Hanya file JPG, JPEG, atau PNG yang diperbolehkan!',
+                    });
+                    $(this).val(''); // reset input file
+                    return;
+                }
+            }
+        });
 
         $("#form").submit(function(e) {
             e.preventDefault();

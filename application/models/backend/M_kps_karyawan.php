@@ -3,13 +3,13 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-class M_pu_data_agen extends CI_Model
+class M_kps_karyawan extends CI_Model
 {
     var $id = 'id';
-    var $table = 'pu_data_agen'; //nama tabel dari database
-    var $column_order = array(null, null, 'nama', 'no_telp', 'kode_referral', 'alamat', 'ktp', 'created_at');
-    var $column_search = array('nama', 'no_telp', 'kode_referral', 'alamat', 'ktp', 'created_at'); //field yang diizin untuk pencarian 
-    var $order = array('id' => 'desc'); // default order 
+    var $table = 'kps_karyawan'; //nama tabel dari database
+    var $column_order = array(null, null, 'npk', 'nama_lengkap', 'jenis_kelamin', 'tempat_lahir', 'tgl_lahir', 'umur', 'created_at');
+    var $column_search = array('npk', 'nama_lengkap', 'jenis_kelamin', 'tempat_lahir', 'tgl_lahir', 'umur', 'created_at'); //field yang diizin untuk pencarian
+    var $order = array('id' => 'desc'); // default order
 
     public function __construct()
     {
@@ -99,5 +99,17 @@ class M_pu_data_agen extends CI_Model
     {
         $this->db->where($this->id, $id);
         $this->db->delete($this->table);
+    }
+
+    public function delete_kontrak_by_id($id)
+    {
+        $this->db->where('id', $id);
+        return $this->db->delete('kps_kontrak_pkwt');
+    }
+
+    public function delete_keluarga_by_id($id)
+    {
+        $this->db->where('id', $id);
+        return $this->db->delete('kps_keluarga_karyawan');
     }
 }

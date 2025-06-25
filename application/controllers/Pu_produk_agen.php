@@ -59,6 +59,13 @@ class Pu_produk_agen extends CI_Controller
             $row = array();
             $row[] = $no;
             $row[] = $action;
+            $row[] = '<button type="button" class="btn btn-sm status-produk-modal-trigger ' .
+                ($field->is_active == 1 ? 'btn-outline-success' : 'btn-outline-danger') . '" 
+                data-id="' . $field->id . '" 
+                data-status="' . $field->is_active . '">'
+                . ($field->is_active == 1 ? '<i class="fa fa-check-circle"></i> Aktif' : '<i class="fa fa-times-circle"></i> Tidak Aktif')
+                . '</button>';
+            $row[] = $field->nama_produk;
             $row[] = $field->travel;
             $row[] = 'Rp. ' . number_format($field->harga_paket, 0, ',', '.');
             $row[] = 'Rp. ' . number_format($field->fee_agen, 0, ',', '.');
@@ -110,6 +117,7 @@ class Pu_produk_agen extends CI_Controller
         $data['aksi'] = 'read';
         $data['id'] = $id;
         $data['title_view'] = "Data Produk Agen";
+        $data['travels'] = $this->db->get('pu_travel')->result();
         $data['title'] = 'backend/pu_produk_agen/pu_produk_agen_form';
         $this->load->view('backend/home', $data);
     }
@@ -120,8 +128,8 @@ class Pu_produk_agen extends CI_Controller
         $image_name = null;
         if (!empty($_FILES['image']['name'])) {
             $config['upload_path']   = './assets/backend/document/pu_produk_agen/';
-            $config['allowed_types'] = 'jpg|jpeg|png|gif';
-            $config['max_size']      = 3072; // 3MB
+            $config['allowed_types'] = 'jpg|jpeg|png';
+            $config['max_size']      = 4096; // 4MB
             $config['encrypt_name']  = TRUE;
 
             $this->load->library('upload', $config);
@@ -129,6 +137,19 @@ class Pu_produk_agen extends CI_Controller
             if ($this->upload->do_upload('image')) {
                 $upload_data = $this->upload->data();
                 $image_name = $upload_data['file_name'];
+
+                // Kompres gambar
+                $config['image_library'] = 'gd2';
+                $config['source_image'] = $upload_data['full_path'];
+                $config['create_thumb'] = FALSE;
+                $config['maintain_ratio'] = TRUE;
+                $config['quality'] = '80';
+                $config['width'] = 1400;
+                $config['height'] = 1400;
+
+                $this->load->library('image_lib', $config);
+                $this->image_lib->resize();
+                $this->image_lib->clear();
             } else {
                 echo json_encode([
                     "status" => FALSE,
@@ -139,12 +160,14 @@ class Pu_produk_agen extends CI_Controller
         }
 
         $data = array(
+            'nama_produk' => $this->input->post('nama_produk'),
             'travel' => $this->input->post('travel'),
             'tanggal_keberangkatan' => date('Y-m-d', strtotime($this->input->post('tanggal_keberangkatan'))),
             'harga_paket' => preg_replace('/\D/', '', $this->input->post('harga_paket')),
             'fee_agen' => preg_replace('/\D/', '', $this->input->post('fee_agen')),
             'sisa_seat' => $this->input->post('sisa_seat'),
             'image' => $image_name, // simpan nama file gambar
+            'is_active' => 1,
             'created_at' =>  date('Y-m-d H:i:s')
         );
 
@@ -162,8 +185,8 @@ class Pu_produk_agen extends CI_Controller
         // Jika ada file gambar baru diupload
         if (!empty($_FILES['image']['name'])) {
             $config['upload_path']   = './assets/backend/document/pu_produk_agen/';
-            $config['allowed_types'] = 'jpg|jpeg|png|gif';
-            $config['max_size']      = 3072; // 3MB
+            $config['allowed_types'] = 'jpg|jpeg|png';
+            $config['max_size']      = 4096; // 4MB
             $config['encrypt_name']  = TRUE;
 
             $this->load->library('upload', $config);
@@ -175,6 +198,19 @@ class Pu_produk_agen extends CI_Controller
                 }
                 $upload_data = $this->upload->data();
                 $image_name = $upload_data['file_name'];
+
+                // Kompres gambar
+                $config['image_library'] = 'gd2';
+                $config['source_image'] = $upload_data['full_path'];
+                $config['create_thumb'] = FALSE;
+                $config['maintain_ratio'] = TRUE;
+                $config['quality'] = '80';
+                $config['width'] = 1400;
+                $config['height'] = 1400;
+
+                $this->load->library('image_lib', $config);
+                $this->image_lib->resize();
+                $this->image_lib->clear();
             } else {
                 echo json_encode([
                     "status" => FALSE,
@@ -185,6 +221,7 @@ class Pu_produk_agen extends CI_Controller
         }
 
         $data = array(
+            'nama_produk' => $this->input->post('nama_produk'),
             'travel' => $this->input->post('travel'),
             'tanggal_keberangkatan' => date('Y-m-d', strtotime($this->input->post('tanggal_keberangkatan'))),
             'harga_paket' => preg_replace('/\D/', '', $this->input->post('harga_paket')),
@@ -213,6 +250,15 @@ class Pu_produk_agen extends CI_Controller
         // Hapus data dari database
         $this->M_pu_produk_agen->delete($id);
         echo json_encode(array("status" => TRUE));
+    }
+
+    public function update_status()
+    {
+        $id = $this->input->post('id');
+        $is_active = $this->input->post('is_active');
+        $this->db->where('id', $id);
+        $this->db->update('pu_produk_agen', ['is_active' => $is_active]);
+        echo json_encode(['status' => true, 'message' => 'Status produk berhasil diupdate']);
     }
 
     public function api_produk_agen()
