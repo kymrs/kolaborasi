@@ -444,15 +444,24 @@ class Pu_data_agen extends CI_Controller
                     $btn_status = '<div class="text-center"><button type="button" class="btn btn-sm btn-warning payment-status-trigger" data-id="' . $row->id . '" data-status="2">Belum Dibayar</button></div>';
                 }
             } else {
-                $btn_status = '<div class="text-center">
-                    <button type="button" class="btn btn-sm btn-primary btnTambahInsentif"
-                        data-id="' . $row->id . '"
-                        data-no_telp="' . $row->no_telp . '"
-                        data-nama_agen="' . htmlspecialchars($agen->nama, ENT_QUOTES) . '"
-                        data-nominal="' . $row->nominal . '"
-                        data-deskripsi="' . htmlspecialchars($row->description, ENT_QUOTES) . '"
-                    >Insentif</button>
-                </div>';
+                // Hanya tombol insentif pada baris insentif terbaru (paling atas) yang bisa diklik
+                static $first_insentif = true;
+                if ($first_insentif) {
+                    $btn_status = '<div class="text-center">
+                        <button type="button" class="btn btn-sm btn-primary btnTambahInsentif"
+                            data-id="' . $row->id . '"
+                            data-no_telp="' . $row->no_telp . '"
+                            data-nama_agen="' . htmlspecialchars($agen->nama, ENT_QUOTES) . '"
+                            data-nominal="' . $row->nominal . '"
+                            data-deskripsi="' . htmlspecialchars($row->description, ENT_QUOTES) . '"
+                        >Insentif</button>
+                    </div>';
+                    $first_insentif = false;
+                } else {
+                    $btn_status = '<div class="text-center">
+                        <button type="button" class="btn btn-sm btn-secondary" disabled>Insentif</button>
+                    </div>';
+                }
             }
 
             $data[] = [
@@ -527,6 +536,7 @@ class Pu_data_agen extends CI_Controller
 
         // Ambil data POST
         $no_telp = $this->input->post('no_telp', TRUE);
+        $nik = $this->input->post('sip', TRUE);
         $nominal = $this->input->post('nominal', TRUE);
         $no_rek = $this->input->post('no_rek', TRUE);
         $nama_bank = $this->input->post('nama_bank', TRUE);
@@ -623,11 +633,11 @@ class Pu_data_agen extends CI_Controller
         $id = $this->input->post('id', TRUE);
         $no_telp = $this->input->post('no_telp', TRUE);
         $nama_agen = $this->input->post('nama_agen', TRUE);
-        $nominal = preg_replace('/\D/', '', $this->input->post('nominal', TRUE));
+        $nominal_baru = preg_replace('/\D/', '', $this->input->post('nominal', TRUE));
         $description = $this->input->post('deskripsi', TRUE);
 
         // Validasi data
-        if (!$id || !$no_telp || !$nama_agen || !$nominal || !$description) {
+        if (!$id || !$no_telp || !$nama_agen || !$nominal_baru || !$description) {
             echo json_encode(['status' => false, 'message' => 'Data tidak lengkap']);
             return;
         }
@@ -639,17 +649,26 @@ class Pu_data_agen extends CI_Controller
             return;
         }
 
+        // Jika nominal berubah dan jenis_transaksi insentif, update saldo agen
+        if ($insentif->jenis_transaksi == 'insentif' && $insentif->nominal != $nominal_baru) {
+            $selisih = $nominal_baru - $insentif->nominal;
+            // Update saldo agen
+            $this->db->where('no_telp', $no_telp);
+            $this->db->set('saldo', 'saldo + ' . (int)$selisih, FALSE);
+            $this->db->update('pu_data_agen');
+        }
+
         // Update data insentif
         $data = [
             'no_telp' => $no_telp,
             'description' => $description,
-            'nominal' => $nominal
+            'nominal' => $nominal_baru
         ];
         $this->db->where('id', $id);
         $update = $this->db->update('pu_insentif_agen', $data);
 
         if ($update) {
-            echo json_encode(['status' => true, 'message' => 'Insentif berhasil diupdate']);
+            echo json_encode(['status' => true, 'message' => 'Insentif & saldo berhasil diupdate']);
         } else {
             echo json_encode(['status' => false, 'message' => 'Gagal update insentif']);
         }
@@ -657,14 +676,14 @@ class Pu_data_agen extends CI_Controller
 
     public function getHistoryTransaksi($no_telp)
     {
-        if (isset($_SERVER['HTTP_ORIGIN']) && $_SERVER['HTTP_ORIGIN'] === 'https://agen.pengenumroh.com') {
-            header("Access-Control-Allow-Origin: https://agen.pengenumroh.com");
-            header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-            header("Access-Control-Allow-Headers: Content-Type, Authorization");
-        } else {
-            echo json_encode(['status' => false, 'message' => 'Akses ditolak']);
-            return;
-        }
+        // if (isset($_SERVER['HTTP_ORIGIN']) && $_SERVER['HTTP_ORIGIN'] === 'https://agen.pengenumroh.com') {
+        //     header("Access-Control-Allow-Origin: https://agen.pengenumroh.com");
+        //     header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+        //     header("Access-Control-Allow-Headers: Content-Type, Authorization");
+        // } else {
+        //     echo json_encode(['status' => false, 'message' => 'Akses ditolak']);
+        //     return;
+        // }
 
         // Handle preflight OPTIONS
         if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {

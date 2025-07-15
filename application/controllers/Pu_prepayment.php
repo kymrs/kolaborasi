@@ -45,6 +45,7 @@ class Pu_prepayment extends CI_Controller
 
         $data['title'] = "backend/pu_prepayment/pu_prepayment_list";
         $data['titleview'] = "Data Prepayment";
+
         $name = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $this->session->userdata('id_user'))
@@ -110,7 +111,6 @@ class Pu_prepayment extends CI_Controller
             } else {
                 $status = $field->status;
             }
-
 
             $formatted_nominal = number_format($field->total_nominal, 0, ',', '.');
             $no++;

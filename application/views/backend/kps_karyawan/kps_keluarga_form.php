@@ -163,7 +163,7 @@
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="umur">Umur</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" name="umur" id="umur">
+                                        <input type="text" class="form-control" name="umur" id="umur" readonly>
                                     </div>
                                 </div>
                                 <div class="form-group row">

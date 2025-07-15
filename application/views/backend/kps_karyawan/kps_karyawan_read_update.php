@@ -415,13 +415,13 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="no_rek" class="col-sm-5 col-form-label">No Rek</label>
+                                    <label for="no_rek" class="col-sm-5 col-form-label">No Rekening</label>
                                     <div class="col-sm-7">
                                         <input type="text" class="form-control only-number" name="no_rek" id="no_rek" value="<?= $master->no_rek ?>">
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="nama_pemilik_rek" class="col-sm-5 col-form-label">Nama Pemilik Rek</label>
+                                    <label for="nama_pemilik_rek" class="col-sm-5 col-form-label">Nama Pemilik Rekening</label>
                                     <div class="col-sm-7">
                                         <input type="text" class="form-control" name="nama_pemilik_rek" id="nama_pemilik_rek" value="<?= $master->nama_pemilik_rek ?>">
                                     </div>
