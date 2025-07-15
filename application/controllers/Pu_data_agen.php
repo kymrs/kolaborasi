@@ -244,18 +244,28 @@ class Pu_data_agen extends CI_Controller
 
     function delete($id)
     {
-        // Ambil data agen untuk mendapatkan nama file KTP
+        // Ambil data agen untuk mendapatkan no_telp dan nama file KTP
         $agen = $this->M_pu_data_agen->get_by_id($id);
-        if ($agen && $agen->ktp) {
-            $file_path = './assets/backend/document/pu_data_agen/' . $agen->ktp;
-            if (file_exists($file_path)) {
-                @unlink($file_path);
+        if ($agen) {
+            // Hapus file KTP jika ada
+            if ($agen->ktp) {
+                $file_path = './assets/backend/document/pu_data_agen/' . $agen->ktp;
+                if (file_exists($file_path)) {
+                    @unlink($file_path);
+                }
             }
-        }
 
-        // Hapus data dari database
-        $this->M_pu_data_agen->delete($id);
-        echo json_encode(array("status" => TRUE));
+            // Hapus data insentif berdasarkan no_telp
+            $this->db->where('no_telp', $agen->no_telp);
+            $this->db->delete('pu_insentif_agen');
+
+            // Hapus data agen
+            $this->M_pu_data_agen->delete($id);
+
+            echo json_encode(array("status" => TRUE));
+        } else {
+            echo json_encode(array("status" => FALSE, "message" => "Data agen tidak ditemukan"));
+        }
     }
 
     public function api_data_agen()
@@ -515,24 +525,24 @@ class Pu_data_agen extends CI_Controller
 
     public function api_tambah_pencairan()
     {
-        // CORS untuk domain tertentu
-        if (isset($_SERVER['HTTP_ORIGIN']) && $_SERVER['HTTP_ORIGIN'] === 'https://agen.pengenumroh.com') {
-            header("Access-Control-Allow-Origin: https://agen.pengenumroh.com");
-            header("Access-Control-Allow-Methods: POST, OPTIONS");
-            header("Access-Control-Allow-Headers: Content-Type, Authorization");
-        }
+        // // CORS untuk domain tertentu
+        // if (isset($_SERVER['HTTP_ORIGIN']) && $_SERVER['HTTP_ORIGIN'] === 'https://agen.pengenumroh.com') {
+        //     header("Access-Control-Allow-Origin: https://agen.pengenumroh.com");
+        //     header("Access-Control-Allow-Methods: POST, OPTIONS");
+        //     header("Access-Control-Allow-Headers: Content-Type, Authorization");
+        // }
 
-        // Handle preflight OPTIONS
-        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-            http_response_code(200);
-            exit();
-        }
+        // // Handle preflight OPTIONS
+        // if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+        //     http_response_code(200);
+        //     exit();
+        // }
 
-        // Validasi method
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            echo json_encode(['status' => false, 'message' => 'Invalid request method']);
-            return;
-        }
+        // // Validasi method
+        // if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        //     echo json_encode(['status' => false, 'message' => 'Invalid request method']);
+        //     return;
+        // }
 
         // Ambil data POST
         $no_telp = $this->input->post('no_telp', TRUE);

@@ -255,10 +255,17 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="form-group row mb-0">
+                                <div class="form-group row">
                                     <label for="wilayah_kerja" class="col-sm-5 col-form-label">Wilayah Kerja</label>
                                     <div class="col-sm-7">
                                         <input type="text" class="form-control" name="wilayah_kerja" id="wilayah_kerja" value="<?= $master->wilayah_kerja ?>">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="wilayah_kerja" class="col-sm-5 col-form-label">Foto</label>
+                                    <div class="col-sm-7">
+                                        <input class="form-control" type="file" name="foto" id="foto">
+                                        <span class="kwitansi-label">Max Size : 3MB</span>
                                     </div>
                                 </div>
                             </div>
@@ -396,7 +403,7 @@
                                         <input type="date" class="form-control datepicker" name="tgl_akhir_kontrak" id="tgl_akhir_kontrak" value="<?= $master->tgl_akhir_kontrak ?>">
                                     </div>
                                 </div>
-                                <div class="form-group row">
+                                <div class="form-group row" id="tgl_phk_container" style="<?= ($master->status_kerja == 'nonaktif') ? '' : 'display: none;' ?>">
                                     <label for="tgl_phk" class="col-sm-5 col-form-label">Tanggal PHK</label>
                                     <div class="col-sm-7">
                                         <input type="date" class="form-control datepicker" name="tgl_phk" id="tgl_phk" value="<?= $master->tgl_phk ?>">
@@ -722,6 +729,31 @@
             placeholder: "Pilih Grade",
             allowClear: true
         });
+    });
+
+    $('#status_kerja').on('change', function() {
+        if ($(this).val() == 'nonaktif') {
+            $('#tgl_phk_container').show();
+        } else {
+            $('#tgl_phk_container').hide();
+        }
+    });
+
+    $('#foto').on('change', function() {
+        const file = this.files[0];
+
+        if (file) {
+            const maxSize = 3 * 1024 * 1024; // 3 MB dalam byte
+
+            if (file.size > maxSize) {
+                swal.fire({
+                    icon: 'warning',
+                    text: "Ukuran file tidak boleh melebihi dari 3MB!",
+                    confirmButtonColor: "#0e131d"
+                });
+                $(this).val(''); // reset input file
+            }
+        }
     });
 
     $(function() {

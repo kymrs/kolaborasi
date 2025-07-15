@@ -185,7 +185,7 @@ class pu_customer extends CI_Controller
         $data['title_view'] = "Data Customer";
         $data['title'] = 'backend/pu_customer/pu_customer_form';
         $data['travel'] = $this->db->get('pu_travel')->result_array();
-        $query = "SELECT group_id, nama FROM pu_customer WHERE group_id <> '-' GROUP BY group_id ORDER BY id DESC";
+        $query = "SELECT DISTINCT group_id FROM pu_customer ORDER BY group_id DESC";
         $data['group_id'] = $this->db->query($query)->result_array();
         $this->load->view('backend/home', $data);
     }
@@ -213,7 +213,7 @@ class pu_customer extends CI_Controller
         $data['aksi'] = 'update';
         $data['title'] = 'backend/pu_customer/pu_customer_form';
         $data['travel'] = $this->db->get('pu_travel')->result_array();
-        $query = "SELECT group_id, nama FROM pu_customer WHERE group_id <> '-' GROUP BY group_id ORDER BY id DESC";
+        $query = "SELECT DISTINCT group_id FROM pu_customer WHERE group_id <> '-' ORDER BY group_id DESC";
         $data['group_id'] = $this->db->query($query)->result_array();
         $this->load->view('backend/home', $data);
     }
@@ -226,19 +226,19 @@ class pu_customer extends CI_Controller
         $data['aksi'] = 'update';
         $data['title'] = 'backend/pu_customer/pu_tr_customer_form';
         $data['travel'] = $this->db->get('pu_travel')->result_array();
-        $data['customer'] = $this->db->select('customer_id, group_id, title, nama')->order_by('id', 'DESC')->get('pu_customer')->result_array();
+        $data['customer'] = $this->db->select('customer_id, group_id, title, nama')->get('pu_customer')->result_array();
         $this->load->view('backend/home', $data);
     }
 
     function edit_form($id)
     {
         $data['id'] = $id;
-        $data['aksi'] = 'edit';
         $data['title_view'] = "Edit Data Customer";
 
         $data['title'] = 'backend/pu_customer/pu_customer_form';
         $data['travel'] = $this->db->get('pu_travel')->result_array();
-        $query = "SELECT group_id, nama FROM pu_customer WHERE group_id <> '-' GROUP BY group_id ORDER BY id DESC";
+        $query = "SELECT DISTINCT group_id FROM pu_customer WHERE group_id <> '-' ORDER BY group_id DESC";
+        $data['customer'] = $this->db->select('customer_id, group_id, title, nama')->get('pu_customer')->result_array();
         $data['group_id'] = $this->db->query($query)->result_array();
         $this->load->view('backend/home', $data);
     }
@@ -299,25 +299,28 @@ class pu_customer extends CI_Controller
         // Inisialisasi array untuk menyimpan nama file
         $uploaded_files = [];
 
-        // Upload untuk masing-masing file secara langsung
+        // Upload untuk masing-masing file
         $fields = ['pas_foto', 'paspor', 'kartu_kuning', 'ktp', 'kk', 'buku_nikah', 'akta_lahir'];
         foreach ($fields as $field) {
             if (!empty($_FILES[$field]['name'])) {
+                // Siapkan file untuk diupload
+                $_FILES['file']['name'] = $_FILES[$field]['name'];
+                $_FILES['file']['type'] = $_FILES[$field]['type'];
+                $_FILES['file']['tmp_name'] = $_FILES[$field]['tmp_name'];
+                $_FILES['file']['error'] = $_FILES[$field]['error'];
+                $_FILES['file']['size'] = $_FILES[$field]['size'];
+
                 // Tentukan folder upload sesuai dengan field
-                $upload_path = './assets/backend/document/pu_customer/' . $field . '/';
-                // Pastikan folder upload ada
-                if (!is_dir($upload_path)) {
-                    mkdir($upload_path, 0755, true);
-                }
+                $upload_path = './assets/backend/document/pu_customer/' . $field;
                 $config['upload_path'] = $upload_path;
                 $config['allowed_types'] = 'jpeg|jpg|png'; // Tipe file yang diizinkan
-                $config['max_size'] = 2000; // Maksimal ukuran file 2MB 2000(KB)
+                $config['max_size'] = 3000; // Maksimal ukuran file 3MB 3000(KB)
                 $config['encrypt_name'] = TRUE; // Enkripsi nama file untuk menghindari konflik
 
                 $this->upload->initialize($config);
 
-                // Proses upload langsung pada field aslinya
-                if ($this->upload->do_upload($field)) {
+                // Proses upload
+                if ($this->upload->do_upload('file')) {
                     $uploaded_files[$field] = $this->upload->data('file_name'); // Simpan nama file yang diupload
                 } else {
                     echo json_encode(array("status" => FALSE, "error" => $this->upload->display_errors()));
@@ -418,14 +421,10 @@ class pu_customer extends CI_Controller
         foreach ($fields as $field) {
             if (!empty($_FILES[$field]['name'])) {
                 // Siapkan konfigurasi upload
-                $upload_path = './assets/backend/document/pu_customer/' . $field . '/';
-                if (!is_dir($upload_path)) {
-                    mkdir($upload_path, 0755, true);
-                }
-                $config['upload_path'] = $upload_path;
-                $config['allowed_types'] = 'jpeg|jpg|png';
-                $config['max_size'] = 2000;
-                $config['encrypt_name'] = TRUE;
+                $config['upload_path'] = './assets/backend/document/pu_customer/' . $field . '/';
+                $config['allowed_types'] = 'jpeg|jpg|png'; // Jenis file yang diizinkan
+                $config['max_size'] = 3000; // Maksimal 3MB
+                $config['encrypt_name'] = TRUE; // Enkripsi nama file
 
                 $this->upload->initialize($config);
 
@@ -433,9 +432,9 @@ class pu_customer extends CI_Controller
                 if ($this->upload->do_upload($field)) {
                     // Hapus file lama jika ada
                     if (!empty($customer->$field)) {
-                        $old_file_path = $upload_path . $customer->$field;
+                        $old_file_path = './assets/backend/document/pu_customer/' . $field . '/' . $customer->$field;
                         if (file_exists($old_file_path)) {
-                            unlink($old_file_path);
+                            unlink($old_file_path); // Hapus file lama
                         }
                     }
                     // Simpan nama file baru
