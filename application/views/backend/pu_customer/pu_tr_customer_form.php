@@ -59,7 +59,6 @@
                                                 <option value="<?= $data['customer_id'] ?>"><?= $data['title'] . '. ' . $data['nama'] ?> </option>
                                             <?php endforeach ?>
                                         </select>
-                                        <div class="btn btn-primary add-customer" data-toggle="modal" data-target="#add-customer" style="margin-left: 7px;"><i class="fas fa-solid fa-plus"></i></div>
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -210,185 +209,6 @@
                         <button type="submit" class="btn btn-primary btn-sm aksi"></button>
                     </form>
 
-                    <!-- Modal Customer -->
-                    <div class="modal fade" id="add-customer">
-                        <div class="modal-dialog modal-xl">
-                            <div class="modal-content">
-                                <form id="customer-form">
-                                    <div class="modal-header bg-primary text-gray-100">
-                                        <h5 class="card-title" style="margin: 0;">Tambah Data Customer</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-top: -23px;">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <!-- /.card-header -->
-                                    <div class="modal-body">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <!-- First Set of Fields -->
-                                                <div class="form-group row">
-                                                    <label class="col-sm-4" for="customer_id">Customer ID</label>
-                                                    <div class="col-sm-7">
-                                                        <input type="text" class="form-control" id="customer_id" name="customer_id" value="">
-                                                    </div>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <label class="col-sm-4" for="group_id">Group ID</label>
-                                                    <div class="col-sm-7">
-                                                        <select class="form-control" id="group_id" name="group_id" style="cursor: pointer;">
-                                                            <option value="" hidden>Pilih Group</option>
-                                                            <option id="group-option" value="group">Group</option>
-                                                            <option value="-">Non Group</option>
-                                                            <?php foreach ($group_id as $data) : ?>
-                                                                <option value="<?= $data['group_id'] ?>"><?= $data['group_id'] ?></option>
-                                                            <?php endforeach ?>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <label class="col-sm-4" for="title">Title</label>
-                                                    <div class="col-sm-7">
-                                                        <select class="form-control" id="title" name="title" style="cursor: pointer;" required>
-                                                            <option value="" hidden>Pilih Title</option>
-                                                            <option value="Tn">Tn</option>
-                                                            <option value="Ny">Ny</option>
-                                                            <option value="Nn">Nn</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <label class="col-sm-4" for="nama">Nama</label>
-                                                    <div class="col-sm-7">
-                                                        <input type="text" class="form-control" id="nama" name="nama" required autocomplete="off">
-                                                    </div>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <label class="col-sm-4" for="jenis_kelamin">Jenis Kelamin</label>
-                                                    <div class="col-sm-7">
-                                                        <select class="form-control" id="jenis_kelamin" name="jenis_kelamin" required style="cursor: pointer;">
-                                                            <option value="" hidden>Pilih Jenis Kelamin</option>
-                                                            <option value="Laki-laki">Laki-laki</option>
-                                                            <option value="Perempuan">Perempuan</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <label class="col-sm-4" for="no_hp">No Telp</label>
-                                                    <div class="col-sm-7">
-                                                        <input type="text" class="form-control" id="no_hp" name="no_hp" required autocomplete="off">
-                                                    </div>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <label class="col-sm-4" for="asal">Asal</label>
-                                                    <div class="col-sm-7">
-                                                        <input type="text" class="form-control" id="asal" name="asal" required autocomplete="off">
-                                                    </div>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <label class="col-sm-4" for="akun">Akun</label>
-                                                    <div class="col-sm-7">
-                                                        <input type="text" class="form-control" id="akun" name="akun" autocomplete="off">
-                                                    </div>
-                                                </div>
-                                                <div class="form-group row" style="margin-top: 23px; margin-bottom: 9px">
-                                                    <label class="col-sm-4" for="pas_foto">Pas Foto</label>
-                                                    <div class="col-sm-7">
-                                                        <img alt="foto" width="100" style="display: none" id="pas_foto_image">
-                                                        <span id="delete_pas_foto" style="display: none; background-color: #E74A3B; color: white; padding: 5px 7px; cursor: pointer; font-size: 13px; margin-left: 10px; border-radius: 3px"><i class="fa fa-solid fa-trash"></i></span>
-                                                        <p id="pas_foto_tidak_ada" style="display: none;"></p>
-                                                        <div class="form-group" style="margin-bottom: 0;">
-                                                            <input type="file" class="form-control-file" id="pas_foto" name="pas_foto" style="border: 1px solid rgb(209,211,226); padding: 3px 5px; cursor: pointer; border-radius: 6px">
-                                                            <span class="kwitansi-label">Max Size : 3MB</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <label class="col-sm-4" for="ktp">KTP</label>
-                                                    <div class="col-sm-7">
-                                                        <img alt="foto" width="100" style="display: none" id="ktp_foto">
-                                                        <span id="delete_ktp" style="display: none; background-color: #E74A3B; color: white; padding: 5px 7px; cursor: pointer; font-size: 13px; margin-left: 10px; border-radius: 3px"><i class="fa fa-solid fa-trash"></i></span>
-                                                        <p id="ktp_tidak_ada" style="display: none;"></p>
-                                                        <div class="form-group" style="margin-bottom: 0;">
-                                                            <input type="file" class="form-control-file" id="ktp" name="ktp" style="border: 1px solid rgb(209,211,226); padding: 3px 5px; cursor: pointer; border-radius: 6px">
-                                                            <span class="kwitansi-label">Max Size : 3MB</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-6">
-                                                <!-- Second Set of Fields -->
-                                                <div class="form-group row">
-                                                    <label class="col-sm-4" for="kk">KK</label>
-                                                    <div class="col-sm-7">
-                                                        <img alt="foto" width="100" style="display: none" id="kk_foto">
-                                                        <span id="delete_kk" style="display: none; background-color: #E74A3B; color: white; padding: 5px 7px; cursor: pointer; font-size: 13px; margin-left: 10px; border-radius: 3px"><i class="fa fa-solid fa-trash"></i></span>
-                                                        <p id="kk_tidak_ada" style="display: none;"></p>
-                                                        <div class="form-group" style="margin-bottom: 0;">
-                                                            <input type="file" class="form-control-file" id="kk" name="kk" style="border: 1px solid rgb(209,211,226); padding: 3px 5px; cursor: pointer; border-radius: 6px">
-                                                            <span class="kwitansi-label">Max Size : 3MB</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <label class="col-sm-4" for="buku_nikah">Buku Nikah</label>
-                                                    <div class="col-sm-7">
-                                                        <img alt="foto" width="100" style="display: none" id="buku_nikah_foto">
-                                                        <span id="delete_buku_nikah" style="display: none; background-color: #E74A3B; color: white; padding: 5px 7px; cursor: pointer; font-size: 13px; margin-left: 10px; border-radius: 3px"><i class="fa fa-solid fa-trash"></i></span>
-                                                        <p id="buku_nikah_tidak_ada" style="display: none;"></p>
-                                                        <div class="form-group" style="margin-bottom: 0;">
-                                                            <input type="file" class="form-control-file" id="buku_nikah" name="buku_nikah" style="border: 1px solid rgb(209,211,226); padding: 3px 5px; cursor: pointer; border-radius: 6px">
-                                                            <span class="kwitansi-label">Max Size : 3MB</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <label class="col-sm-4" for="paspor">Paspor</label>
-                                                    <div class="col-sm-7">
-                                                        <img alt="foto" width="100" style="display: none" id="paspor_foto">
-                                                        <span id="delete_paspor" style="display: none; background-color: #E74A3B; color: white; padding: 5px 7px; cursor: pointer; font-size: 13px; margin-left: 10px; border-radius: 3px"><i class="fa fa-solid fa-trash"></i></span>
-                                                        <p id="paspor_tidak_ada" style="display: none;"></p>
-                                                        <div class="form-group" style="margin-bottom: 0;">
-                                                            <input type="file" class="form-control-file" id="paspor" name="paspor" style="border: 1px solid rgb(209,211,226); padding: 3px 5px; cursor: pointer; border-radius: 6px">
-                                                            <span class="kwitansi-label">Max Size : 3MB</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <label class="col-sm-4" for="akta_lahir">Akta Lahir</label>
-                                                    <div class="col-sm-7">
-                                                        <img alt="foto" width="100" style="display: none" id="akta_lahir_foto">
-                                                        <span id="delete_akta_lahir" style="display: none; background-color: #E74A3B; color: white; padding: 5px 7px; cursor: pointer; font-size: 13px; margin-left: 10px; border-radius: 3px"><i class="fa fa-solid fa-trash"></i></span>
-                                                        <p id="akta_lahir_tidak_ada" style="display: none;"></p>
-                                                        <div class="form-group" style="margin-bottom: 0;">
-                                                            <input type="file" class="form-control-file" id="akta_lahir" name="akta_lahir" style="border: 1px solid rgb(209,211,226); padding: 3px 5px; cursor: pointer; border-radius: 6px">
-                                                            <span class="kwitansi-label">Max Size : 3MB</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <label class="col-sm-4" for="kartu_kuning">Kartu Kuning</label>
-                                                    <div class="col-sm-7">
-                                                        <img alt="foto" width="100" style="display: none" id="kartu_kuning_foto">
-                                                        <span id="delete_kartu_kuning" style="display: none; background-color: #E74A3B; color: white; padding: 5px 7px; cursor: pointer; font-size: 13px; margin-left: 10px; border-radius: 3px"><i class="fa fa-solid fa-trash"></i></span>
-                                                        <p id="kartu_kuning_tidak_ada" style="display: none;"></p>
-                                                        <div class="form-group" style="margin-bottom: 0;">
-                                                            <input type="file" class="form-control-file" id="kartu_kuning" name="kartu_kuning" style="border: 1px solid rgb(209,211,226); padding: 3px 5px; cursor: pointer; border-radius: 6px">
-                                                            <span class="kwitansi-label">Max Size : 3MB</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer text-right">
-                                        <button type="submit" class="btn btn-primary aksi">Save</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Modal Travel -->
                     <div class="modal fade" id="add-travel">
                         <div class="modal-dialog">
@@ -407,6 +227,18 @@
                                             <div class="col-sm-9">
                                                 <input type="text" class="form-control" id="travel" name="travel" placeholder="Nama Travel" required>
                                                 <input type="hidden" class="form-control" id="id" name="id" placeholder="id">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="" class="col-sm-3 col-form-label">Bank</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="nama_bank" name="nama_bank" placeholder="Nama Bank" required>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="" class="col-sm-3 col-form-label">Norek</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="no_rek" name="no_rek" placeholder="Nomor Rekening" required>
                                             </div>
                                         </div>
                                     </div>
@@ -439,7 +271,11 @@
 <?php $this->load->view('template/script'); ?>
 
 <script>
-    $('#nama_customer').select2();
+    $('#nama_customer').select2({
+        placeholder: "Pilih Customer",
+        allowClear: true,
+        width: '100%'
+    });
 
     $('#tgl_berangkat').datepicker({
         dateFormat: 'dd-mm-yy',
@@ -672,60 +508,6 @@
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     alert('Error adding / updating data');
-                }
-            });
-        });
-
-        $("#customer-form").submit(function(e) {
-            e.preventDefault();
-            var $form2 = $(this);
-            // if (!$form2.valid()) return false;
-
-            url = "<?php echo site_url('pu_customer/add') ?>";
-
-            // Gunakan FormData untuk menangani file upload
-            var formData2 = new FormData($form2[0]); // Ambil semua data form termasuk file
-
-            // Tampilkan loading Swal sebelum request dikirim
-            Swal.fire({
-                title: 'Memproses...',
-                html: 'Mohon tunggu, data sedang disimpan',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-
-            $.ajax({
-                url: url,
-                type: "POST",
-                data: formData2,
-                contentType: false, // Agar tidak mengubah tipe konten FormData
-                processData: false, // Agar data FormData tidak diproses menjadi string
-                dataType: "JSON",
-                success: function(data) {
-                    Swal.close(); // Tutup loading swal setelah request selesai
-
-                    if (data.status) {
-                        $('#add-customer').modal('hide');
-                        Swal.fire({
-                            position: 'center',
-                            icon: 'success',
-                            title: 'Data berhasil disimpan',
-                            showConfirmButton: false,
-                            timer: 1500
-                        }).then(() => {
-                            location.href = "<?= base_url('pu_customer/add_form_transaksi') ?>";
-                        });
-                    }
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    Swal.close(); // Tutup loading swal jika terjadi error
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'Terjadi kesalahan saat menyimpan data!',
-                    });
                 }
             });
         });

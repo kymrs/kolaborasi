@@ -149,9 +149,10 @@
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="umur">Umur</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control only-number" name="umur" id="umur">
+                                        <input type="text" class="form-control only-number" name="umur" id="umur" readonly>
                                     </div>
                                 </div>
+
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="pendidikan">Pendidikan</label>
                                     <div class="col-sm-7">
@@ -195,7 +196,21 @@
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="ktk">KTK</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" name="ktk" id="ktk">
+                                        <select id="ktk" name="ktk" class="form-control">
+                                            <option value="">Pilih KTK</option>
+                                            <option value="TK/0">TK/0 - Tidak Kawin, 0 tanggungan</option>
+                                            <option value="TK/1">TK/1 - Tidak Kawin, 1 tanggungan</option>
+                                            <option value="TK/2">TK/2 - Tidak Kawin, 2 tanggungan</option>
+                                            <option value="TK/3">TK/3 - Tidak Kawin, 3 tanggungan</option>
+                                            <option value="K/0">K/0 - Kawin, 0 tanggungan</option>
+                                            <option value="K/1">K/1 - Kawin, 1 tanggungan</option>
+                                            <option value="K/2">K/2 - Kawin, 2 tanggungan</option>
+                                            <option value="K/3">K/3 - Kawin, 3 tanggungan</option>
+                                            <option value="K/I/0">K/I/0 - Kawin, istri bekerja, 0 tanggungan</option>
+                                            <option value="K/I/1">K/I/1 - Kawin, istri bekerja, 1 tanggungan</option>
+                                            <option value="K/I/2">K/I/2 - Kawin, istri bekerja, 2 tanggungan</option>
+                                            <option value="K/I/3">K/I/3 - Kawin, istri bekerja, 3 tanggungan</option>
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -246,6 +261,47 @@
                                     <div class="col-sm-7">
                                         <select id="lokasi_kerja" name="lokasi_kerja" class="form-control">
                                             <option value="" hidden>Pilih Lokasi Kerja</option>
+                                            <option value="Kantor Pusat">Kantor Pusat</option>
+                                            <option value="Cabang">Cabang</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="wilayah_kerja" class="col-sm-5 col-form-label">Wilayah Kerja</label>
+                                    <div class="col-sm-7">
+                                        <select id="wilayah_kerja" name="wilayah_kerja" class="form-control">
+                                            <option value="" hidden>Pilih Wilayah Kerja</option>
+                                            <option value="Nasional">Nasional</option>
+                                            <option value="Bogor">Bogor (Jabar 1)</option>
+                                            <option value="Bandung">Bandung (Jabar 2)</option>
+                                            <option value="Gresik">Gresik</option>
+                                            <option value="Yogyakarta">Yogyakarta</option>
+                                            <option value="Palembang">Palembang</option>
+                                            <option value="Pekanbaru">Pekanbaru</option>
+                                            <option value="Lampung">Lampung</option>
+                                            <option value="Serang">Serang</option>
+                                            <option value="Lubuklinggau">Lubuklinggau</option>
+                                            <option value="Kediri">Kediri</option>
+                                            <option value="Bali">Bali</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="wilayah_kerja" class="col-sm-5 col-form-label">Foto</label>
+                                    <div class="col-sm-7">
+                                        <input class="form-control" type="file" name="foto" id="foto">
+                                        <span class="kwitansi-label">Max Size : 3MB</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <!-- Second Set of Fields -->
+                                <div class="form-group row">
+                                    <label for="posisi" class="col-sm-5 col-form-label">Unit Bisnis</label>
+                                    <div class="col-sm-7">
+                                        <select id="unit_bisnis" name="unit_bisnis" class="form-control">
+                                            <option value="" hidden>Pilih Unit Bisnis</option>
                                             <option value="kps">Kolaborasi Para Sahabat</option>
                                             <option value="sebelaswarna">sebelaswarna</option>
                                             <option value="pengenumroh">pengenumroh</option>
@@ -259,19 +315,21 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="wilayah_kerja" class="col-sm-5 col-form-label">Wilayah Kerja</label>
-                                    <div class="col-sm-7">
-                                        <input type="text" class="form-control" name="wilayah_kerja" id="wilayah_kerja">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <!-- Second Set of Fields -->
-                                <div class="form-group row">
                                     <label for="posisi" class="col-sm-5 col-form-label">Posisi</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" name="posisi" id="posisi">
+                                        <select name="posisi" id="posisi" class="form-control" required>
+                                            <option value="" hidden>Pilih Posisi</option>
+                                            <option value="Admin HRD">Admin HRD</option>
+                                            <option value="Staff Keuangan">Staff Keuangan</option>
+                                            <option value="Marketing Digital">Marketing Digital</option>
+                                            <option value="Teknisi Lapangan">Teknisi Lapangan</option>
+                                            <option value="Customer Service">Customer Service</option>
+                                            <option value="Content Writer">Content Writer</option>
+                                            <option value="Operator Produksi">Operator Produksi</option>
+                                            <option value="Driver">Driver</option>
+                                            <option value="Office Boy">Office Boy</option>
+                                        </select>
+
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -376,6 +434,16 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
+                                    <label for="asal_karyawan" class="col-sm-5 col-form-label">Asal Karyawan</label>
+                                    <div class="col-sm-7">
+                                        <select class="form-control" name="asal_karyawan" id="asal_karyawan">
+                                            <option value="" hidden>Pilih Asal Karyawan</option>
+                                            <option value="MCS">MCS</option>
+                                            <option value="KPS">KPS</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
                                     <label for="tgl_masuk" class="col-sm-5 col-form-label">Tanggal Masuk</label>
                                     <div class="col-sm-7">
                                         <input type="date" class="form-control datepicker" name="tgl_masuk" id="tgl_masuk">
@@ -399,7 +467,7 @@
                                         <input type="date" class="form-control datepicker" name="tgl_akhir_kontrak" id="tgl_akhir_kontrak">
                                     </div>
                                 </div>
-                                <div class="form-group row">
+                                <div class="form-group row" id="tgl_phk_container" style="display: none;">
                                     <label for="tgl_phk" class="col-sm-5 col-form-label">Tanggal PHK</label>
                                     <div class="col-sm-7">
                                         <input type="date" class="form-control datepicker" name="tgl_phk" id="tgl_phk">
@@ -418,13 +486,13 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="no_rek" class="col-sm-5 col-form-label">No Rek</label>
+                                    <label for="no_rek" class="col-sm-5 col-form-label">No Rekening</label>
                                     <div class="col-sm-7">
                                         <input type="text" class="form-control only-number" name="no_rek" id="no_rek">
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="nama_pemilik_rek" class="col-sm-5 col-form-label">Nama Pemilik Rek</label>
+                                    <label for="nama_pemilik_rek" class="col-sm-5 col-form-label">Nama Pemilik Rekening</label>
                                     <div class="col-sm-7">
                                         <input type="text" class="form-control" name="nama_pemilik_rek" id="nama_pemilik_rek">
                                     </div>
@@ -452,12 +520,6 @@
                                             <option value="Muamalat">Bank Muamalat</option>
                                             <option value="Lainnya">Lainnya</option>
                                         </select>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label for="asal_karyawan" class="col-sm-5 col-form-label">Asal Karyawan</label>
-                                    <div class="col-sm-7">
-                                        <input type="text" class="form-control" name="asal_karyawan" id="asal_karyawan">
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -546,6 +608,31 @@
             changeYear: true,
             autoclose: true
         });
+    });
+
+    $('#status_kerja').on('change', function() {
+        if ($(this).val() == 'nonaktif') {
+            $('#tgl_phk_container').show();
+        } else {
+            $('#tgl_phk_container').hide();
+        }
+    });
+
+    $('#foto').on('change', function() {
+        const file = this.files[0];
+
+        if (file) {
+            const maxSize = 3 * 1024 * 1024; // 3 MB dalam byte
+
+            if (file.size > maxSize) {
+                swal.fire({
+                    icon: 'warning',
+                    text: "Ukuran file tidak boleh melebihi dari 3MB!",
+                    confirmButtonColor: "#0e131d"
+                });
+                $(this).val(''); // reset input file
+            }
+        }
     });
 
     $(document).ready(function() {
@@ -781,7 +868,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then(() => {
-                            location.href = "<?= base_url('kps_karyawan') ?>";
+                            location.href = "<?= base_url('kps_karyawan/add_form_keluarga') ?>";
                         });
                     }
                 },

@@ -29,6 +29,7 @@
         /* Tambah sedikit jarak antara label dan konten */
     }
 
+<<<<<<< HEAD
     .labelPemasukan {
         display: inline-block;
         /* Agar label tetap satu baris dengan konten */
@@ -40,12 +41,15 @@
         /* Tambah sedikit jarak antara label dan konten */
     }
 
+=======
+>>>>>>> 01baacc0bc7ac03d364f8779f5d23138bd323641
     .contentPengeluaran {
         display: inline-block;
         text-align: right;
         margin-left: 10px;
     }
 
+<<<<<<< HEAD
     .flexing {
         display: flex;
     }
@@ -61,6 +65,8 @@
         border-radius: 8px;
     }
 
+=======
+>>>>>>> 01baacc0bc7ac03d364f8779f5d23138bd323641
     @media (max-width: 1000px) {
         .tgl-header {
             display: inline-block;
@@ -74,6 +80,7 @@
             margin-left: 0;
             margin-top: 1rem;
         }
+<<<<<<< HEAD
 
         .flexing {
             display: inline-block;
@@ -88,6 +95,8 @@
         .flexing .left-side {
             width: 100%;
         }
+=======
+>>>>>>> 01baacc0bc7ac03d364f8779f5d23138bd323641
     }
 </style>
 
@@ -130,6 +139,7 @@
 
                 <div class="card">
                     <div class="card-body">
+<<<<<<< HEAD
                         <div class="flexing">
                             <div class="left-side">
                                 <div>
@@ -156,6 +166,19 @@
                                     <strong class="labelPemasukan">Margin</strong> : <div style="display: inline-block; width: 135px; text-align: right"><strong class="contentPengeluaran" id="margin"></strong></div>
                                 </div>
                             </div>
+=======
+                        <div>
+                            <strong class="labelPengeluaran">Prepayment</strong> : <div style="display: inline-block; width: 135px; text-align: right"><strong class="contentPengeluaran" id="totalPrepayment"></strong></div>
+                        </div>
+                        <div>
+                            <strong class="labelPengeluaran">Reimbust</strong> : <div style="display: inline-block; width: 135px; text-align: right"><strong class="contentPengeluaran" id="totalReimbust"></strong></div>
+                        </div>
+                        <div>
+                            <strong class="labelPengeluaran">Pelaporan</strong> : <div style="display: inline-block; width: 135px; text-align: right"><strong class="contentPengeluaran" id="totalPelaporan"></strong></div>
+                        </div>
+                        <div>
+                            <strong class="labelPengeluaran">Pengeluaran</strong> : <div style="display: inline-block; width: 135px; text-align: right"><strong class="contentPengeluaran" id="total"></strong></div>
+>>>>>>> 01baacc0bc7ac03d364f8779f5d23138bd323641
                         </div>
                     </div>
                 </div>
@@ -168,6 +191,7 @@
                     <li class="nav-item">
                         <a class="nav-link" id="reimbustTab" href="#" data-tab="reimbust">Reimbust</a>
                     </li>
+<<<<<<< HEAD
                     <li class="nav-item">
                         <a class="nav-link" id="invoiceTab" href="#" data-tab="invoice">invoice</a>
                     </li>
@@ -180,6 +204,16 @@
                         </thead>
                         <tbody id="table-body">
 
+=======
+                </ul>
+
+                <div class="card-body">
+                    <table id="table" class="table table-bordered table-striped">
+                        <thead id="table-header">
+                            <!-- GENERATE THEAD -->
+                        </thead>
+                        <tbody>
+>>>>>>> 01baacc0bc7ac03d364f8779f5d23138bd323641
                         </tbody>
                         <tfoot id="table-footer">
                             <!-- GENERATE TFOOTER -->
@@ -197,10 +231,17 @@
 <script type="text/javascript">
     var table;
 
+<<<<<<< HEAD
     var activeTab = 'pelaporan';
 
     // METHOD POST MENAMPILKAN DATA KE DATA TABLE
     $(document).ready(function() {
+=======
+    // METHOD POST MENAMPILKAN DATA KE DATA TABLE
+    $(document).ready(function() {
+
+        var activeTab = $('.nav-link.active').data('tab');
+>>>>>>> 01baacc0bc7ac03d364f8779f5d23138bd323641
         // $('#labelPengeluaran').text(activeTab.charAt(0).toUpperCase() + activeTab.slice(1));
 
         $('#tgl_awal').on('click', function() {
@@ -239,6 +280,7 @@
             return `${year}-${month}-${day}`;
         }
 
+<<<<<<< HEAD
         function getAjaxUrl(tab) {
             switch (tab) {
                 case 'pelaporan':
@@ -259,6 +301,9 @@
 
             var ajaxUrl = getAjaxUrl(activeTab)
 
+=======
+        function initializeDataTable() {
+>>>>>>> 01baacc0bc7ac03d364f8779f5d23138bd323641
             table = $('#table').DataTable({
                 "destroy": true, // Destroy the previous DataTable instance
                 "responsive": true,
@@ -267,7 +312,11 @@
                 "serverSide": true,
                 "order": [],
                 "ajax": {
+<<<<<<< HEAD
                     "url": ajaxUrl,
+=======
+                    "url": "<?php echo site_url('sml_rekapitulasi/get_list') ?>",
+>>>>>>> 01baacc0bc7ac03d364f8779f5d23138bd323641
                     "type": "POST",
                     "data": function(d) {
                         let tgl_awal = $('#tgl_awal').val();
@@ -284,9 +333,24 @@
                         d.tab = $('.nav-tabs .nav-link.active').data('tab'); // Tambahkan parameter tab ke permintaan server
                     }
                 },
+<<<<<<< HEAD
                 footerCallback: function(row, data, start, end, display) {
                     // cukup trigger agar footer bisa terpakai
                 },
+=======
+                "columnDefs": [{
+                        "targets": [1, 2],
+                        "className": 'dt-head-nowrap'
+                    },
+                    {
+                        "targets": [1, 5, 6],
+                        "className": 'dt-body-nowrap'
+                    }, {
+                        "targets": [0],
+                        "orderable": false,
+                    },
+                ],
+>>>>>>> 01baacc0bc7ac03d364f8779f5d23138bd323641
                 "drawCallback": function(settings) {
                     $.ajax({
                         "url": "<?php echo site_url('sml_rekapitulasi/get_total') ?>",
@@ -300,6 +364,7 @@
                             var total = JSON.parse(response);
                             // console.log('Success logging data to second URL' + response);
                             // console.log(response);
+<<<<<<< HEAD
                             var pengeluaran = total.pengeluaran ? total.pengeluaran : 0;
                             var pemasukan = total.pemasukan ? total.pemasukan : 0;
                             var totalPrepayment = pengeluaran.total_prepayment ? pengeluaran.total_prepayment : 0;
@@ -318,6 +383,12 @@
                             $('#invoiceBelumLunas').text('Rp. ' + parseInt(invoiceBelumLunas).toLocaleString('id-ID'));
 
                             $('#margin').text('Rp. ' + parseInt(invoiceLunas - total).toLocaleString('id-ID'));
+=======
+                            $('#totalPrepayment').text('Rp. ' + parseInt(total.total_prepayment).toLocaleString('id-ID'));
+                            $('#totalReimbust').text('Rp. ' + parseInt(total.total_reimbust).toLocaleString('id-ID'));
+                            $('#totalPelaporan').text('Rp. ' + parseInt(total.total_pelaporan).toLocaleString('id-ID'));
+                            $('#total').text('Rp. ' + parseInt(total.total_pengeluaran).toLocaleString('id-ID'));
+>>>>>>> 01baacc0bc7ac03d364f8779f5d23138bd323641
                         },
                         error: function(error) {
                             console.log('Error logging data to second URL');
@@ -329,6 +400,7 @@
 
         // Function to update the table header based on the active tab
         function updateTableHeader(tab) {
+<<<<<<< HEAD
             // Destroy DataTable jika sudah ada
             if ($.fn.DataTable.isDataTable('#table')) {
                 $('#table').DataTable().clear().destroy();
@@ -371,6 +443,62 @@
             $('#table-footer').html(footerHtml);
 
             // Setelah struktur benar, inisialisasi DataTables
+=======
+            var tableHeader = $('#table-header');
+            var tableFooter = $('#table-footer');
+
+            // Clear the current table header
+            tableHeader.empty();
+
+            // Define headers for each tab
+            if (tab === 'pelaporan') {
+                tableHeader.append(`
+                <tr>
+                    <th>No</th>
+                    <th>Kode Prepayment</th>
+                    <th>Kode Reimbust</th>
+                    <th>Nama</th>
+                    <th>Keterangan</th>
+                    <th>Tanggal</th>
+                    <th>Pengeluaran</th>
+                </tr>
+            `);
+                tableFooter.append(`
+                <tr>
+                    <th>No</th>
+                    <th>Kode Prepayment</th>
+                    <th>Kode Reimbust</th>
+                    <th>Nama</th>
+                    <th>Keterangan</th>
+                    <th>Tanggal</th>
+                    <th>Pengeluaran</th>
+                </tr>
+            `);
+            } else if (tab === 'reimbust') {
+                tableHeader.append(`
+                <tr>
+                    <th>No</th>
+                    <th>Kode Prepayment</th>
+                    <th>Kode Reimbust</th>
+                    <th>Nama</th>
+                    <th>Keterangan</th>
+                    <th>Tanggal</th>
+                    <th>Pengeluaran</th>
+                </tr>
+            `);
+                tableFooter.append(`
+                <tr>
+                    <th>No</th>
+                    <th>Kode Prepayment</th>
+                    <th>Kode Reimbust</th>
+                    <th>Nama</th>
+                    <th>Keterangan</th>
+                    <th>Tanggal</th>
+                    <th>Pengeluaran</th>
+                </tr>
+            `);
+            }
+>>>>>>> 01baacc0bc7ac03d364f8779f5d23138bd323641
             initializeDataTable();
         }
 
@@ -384,14 +512,22 @@
             $(this).addClass('active'); // Tambahkan kelas aktif ke tab yang diklik
 
             // Get the active tab
+<<<<<<< HEAD
             activeTab = $(this).data('tab');
+=======
+            var activeTab = $(this).data('tab');
+>>>>>>> 01baacc0bc7ac03d364f8779f5d23138bd323641
             // $('#labelPengeluaran').text(activeTab.charAt(0).toUpperCase() + activeTab.slice(1));
 
             // Update the table header based on the active tab
             updateTableHeader(activeTab);
 
             // Reload DataTables to reflect the new header
+<<<<<<< HEAD
             // table.ajax.reload();
+=======
+            table.ajax.reload();
+>>>>>>> 01baacc0bc7ac03d364f8779f5d23138bd323641
         });
     });
 
@@ -402,6 +538,7 @@
     });
 
     // Event listener untuk nav tabs
+<<<<<<< HEAD
     // $('.nav-tabs a').on('click', function(e) {
     //     e.preventDefault();
     //     $('.nav-tabs a').removeClass('active'); // Hapus kelas aktif dari semua tab
@@ -409,6 +546,15 @@
 
     //     table.ajax.reload(); // Muat ulang data di DataTable saat tab berubah
     // });
+=======
+    $('.nav-tabs a').on('click', function(e) {
+        e.preventDefault();
+        $('.nav-tabs a').removeClass('active'); // Hapus kelas aktif dari semua tab
+        $(this).addClass('active'); // Tambahkan kelas aktif ke tab yang diklik
+
+        table.ajax.reload(); // Muat ulang data di DataTable saat tab berubah
+    });
+>>>>>>> 01baacc0bc7ac03d364f8779f5d23138bd323641
 
     $('#btn-export-excel').click(function() {
         // Ambil nilai dari datepicker

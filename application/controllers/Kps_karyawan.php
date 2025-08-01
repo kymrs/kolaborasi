@@ -128,9 +128,37 @@ class Kps_karyawan extends CI_Controller
 
     public function add_data_karyawan()
     {
+        $config['upload_path']   = './assets/backend/document/data_karyawan';
+        $config['allowed_types'] = 'jpg|jpeg|png';
+        $config['max_size']      = 3048;
+        $config['encrypt_name']  = TRUE;
+
+        $this->load->library('upload', $config);
+
+        // Pastikan folder tujuan ada
+        if (!is_dir($config['upload_path'])) {
+            mkdir($config['upload_path'], 0777, TRUE);
+        }
+
+        $foto_name = null;
+
+        if (!empty($_FILES['foto']['name'])) {
+            if ($this->upload->do_upload('foto')) {
+                $upload_data = $this->upload->data();
+                $foto_name = $upload_data['file_name'];
+            } else {
+                echo json_encode([
+                    "status" => FALSE,
+                    "error" => $this->upload->display_errors()
+                ]);
+                return;
+            }
+        }
+
         $data = array(
             'status_kerja' => $this->input->post('status_kerja'),
             'npk' => $this->input->post('npk'),
+            'foto' => $foto_name,
             'nama_lengkap' => $this->input->post('nama_lengkap'),
             'jenis_kelamin' => $this->input->post('jenis_kelamin'),
             'tempat_lahir' => $this->input->post('tempat_lahir'),
@@ -167,7 +195,7 @@ class Kps_karyawan extends CI_Controller
             'keahlian' => $this->input->post('keahlian'),
             'pelatihan_internal' => $this->input->post('pelatihan_internal'),
             'pelatihan_eksternal' => $this->input->post('pelatihan_eksternal'),
-            'created_at' => date('Y-m-d H:i:s')
+            'created_at'     => date('Y-m-d H:i:s')
         );
 
         $this->M_kps_karyawan->save($data);
@@ -210,6 +238,46 @@ class Kps_karyawan extends CI_Controller
     public function update()
     {
         $npk = $this->input->post('npk');
+        $id_master = $this->input->post('id_master');
+
+        // Konfigurasi upload
+        $config['upload_path']   = './assets/backend/document/data_karyawan';
+        $config['allowed_types'] = 'jpg|jpeg|png';
+        $config['max_size']      = 3048;
+        $config['encrypt_name']  = TRUE;
+
+        $this->load->library('upload', $config);
+
+        // Pastikan folder tujuan ada
+        if (!is_dir($config['upload_path'])) {
+            mkdir($config['upload_path'], 0777, TRUE);
+        }
+
+        // Ambil data karyawan lama
+        $karyawan_lama = $this->db->select('foto')->where('id', $id_master)->get('kps_karyawan')->row_array();
+        $foto_name = $karyawan_lama['foto'];
+
+        // Proses upload foto baru jika ada
+        if (!empty($_FILES['foto']['name'])) {
+            if ($this->upload->do_upload('foto')) {
+                $upload_data = $this->upload->data();
+                $foto_name = $upload_data['file_name'];
+
+                // Hapus foto lama jika ada
+                if (!empty($karyawan_lama['foto'])) {
+                    $file_path = FCPATH . 'assets/backend/document/data_karyawan/' . $karyawan_lama['foto'];
+                    if (file_exists($file_path)) {
+                        unlink($file_path);
+                    }
+                }
+            } else {
+                echo json_encode([
+                    "status" => FALSE,
+                    "error" => $this->upload->display_errors()
+                ]);
+                return;
+            }
+        }
 
         $data = array(
             'status_kerja' => $this->input->post('status_kerja'),
@@ -250,9 +318,10 @@ class Kps_karyawan extends CI_Controller
             'keahlian' => $this->input->post('keahlian'),
             'pelatihan_internal' => $this->input->post('pelatihan_internal'),
             'pelatihan_eksternal' => $this->input->post('pelatihan_eksternal'),
+            'foto' => $foto_name,
             'updated_at' => date('Y-m-d H:i:s')
         );
-        $this->db->where('id', $this->input->post('id_master'));
+        $this->db->where('id', $id_master);
         $this->db->update('kps_karyawan', $data);
 
         $id_kontrak = $this->input->post('id_kontrak');
@@ -260,7 +329,7 @@ class Kps_karyawan extends CI_Controller
         $end = $this->input->post('end');
 
         if (is_array($id_kontrak) && count($id_kontrak) > 0) {
-
+            $data1 = [];
             foreach ($id_kontrak as $i => $val) {
                 $data1[] = [
                     'id' => $id_kontrak[$i],
@@ -270,7 +339,6 @@ class Kps_karyawan extends CI_Controller
                     'updated_at' => date('Y-m-d H:i:s')
                 ];
             }
-
             $this->db->update_batch('kps_kontrak_pkwt', $data1, 'id');
         }
 
@@ -286,6 +354,7 @@ class Kps_karyawan extends CI_Controller
         $wilayah_kerja_kel = $this->input->post('wilayah_kerja_kel');
 
         if (is_array($id_keluarga) && count($id_keluarga) > 0) {
+            $data2 = [];
             foreach ($id_keluarga as $i => $val) {
                 $data2[] = [
                     'id' => $id_keluarga[$i],
@@ -310,11 +379,22 @@ class Kps_karyawan extends CI_Controller
 
     function delete_data_karyawan($id)
     {
-        $npk = $this->db->select('npk')->where('id', $id)->get('kps_karyawan')->row_array();
+        // Ambil npk dan nama file foto
+        $karyawan = $this->db->select('npk, foto')->where('id', $id)->get('kps_karyawan')->row_array();
 
-        $this->db->delete('kps_keluarga_karyawan', ['npk' => $npk['npk']]);
-        $this->db->delete('kps_kontrak_pkwt', ['npk' => $npk['npk']]);
+        // Hapus file foto jika ada
+        if (!empty($karyawan['foto'])) {
+            $file_path = FCPATH . 'assets/backend/document/data_karyawan/' . $karyawan['foto'];
+            if (file_exists($file_path)) {
+                unlink($file_path);
+            }
+        }
 
+        // Hapus data keluarga dan kontrak
+        $this->db->delete('kps_keluarga_karyawan', ['npk' => $karyawan['npk']]);
+        $this->db->delete('kps_kontrak_pkwt', ['npk' => $karyawan['npk']]);
+
+        // Hapus data karyawan
         $this->M_kps_karyawan->delete($id);
         echo json_encode(array("status" => TRUE));
     }

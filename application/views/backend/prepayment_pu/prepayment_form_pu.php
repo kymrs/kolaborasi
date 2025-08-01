@@ -496,18 +496,18 @@
                             //Nilai nominal diformat menggunakan pemisah ribuan sebelum dimasukkan ke dalam elemen input.
                             const nominalFormatted = data['transaksi'][index]['nominal'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
                             const row = `
-                        <tr id="row-${index + 1}">
-                            <td class="row-number">${index + 1}</td>
-                            <td><input type="text" class="form-control" name="rincian[${index + 1}]" value="${data['transaksi'][index]['rincian']}" />
-                                <input type="hidden" id="hidden_id${index + 1}" name="hidden_id" value="${data['master']['id']}">
-                                <input type="hidden" id="hidden_id_detail${index + 1}" name="hidden_id_detail[${index + 1}]" value="${data['transaksi'][index]['id']}">
-                            </td>
-                            <td><input type="text" class="form-control" id="nominal-${index + 1}" name="nominal[${index + 1}]" value="${nominalFormatted}" />
-                                <input type="hidden" id="hidden_nominal${index + 1}" name="hidden_nominal[${index + 1}]" value="${data['transaksi'][index]['nominal']}">
-                            </td>
-                            <td><input type="text" class="form-control" name="keterangan[${index + 1}]" value="${data['transaksi'][index]['keterangan']}" placeholder="input here...."/></td>
-                            <td><span class="btn delete-btn btn-danger" data-id="${index + 1}">Delete</span></td>
-                        </tr>
+                                <tr id="row-${index + 1}">
+                                    <td class="row-number">${index + 1}</td>
+                                    <td><input type="text" class="form-control" name="rincian[${index + 1}]" value="${data['transaksi'][index]['rincian']}" />
+                                        <input type="hidden" id="hidden_id${index + 1}" name="hidden_id" value="${data['master']['id']}">
+                                        <input type="hidden" id="hidden_id_detail${index + 1}" name="hidden_id_detail[${index + 1}]" value="${data['transaksi'][index]['id']}">
+                                    </td>
+                                    <td><input type="text" class="form-control" id="nominal-${index + 1}" name="nominal[${index + 1}]" value="${nominalFormatted}" />
+                                        <input type="hidden" id="hidden_nominal${index + 1}" name="hidden_nominal[${index + 1}]" value="${data['transaksi'][index]['nominal']}">
+                                    </td>
+                                    <td><input type="text" class="form-control" name="keterangan[${index + 1}]" value="${data['transaksi'][index]['keterangan']}" placeholder="input here...."/></td>
+                                    <td><span class="btn delete-btn btn-danger" data-id="${index + 1}">Delete</span></td>
+                                </tr>
                         `;
                             $('#input-container').append(row);
                             // Tambahkan format ke input nominal yang baru

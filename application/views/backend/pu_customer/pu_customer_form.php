@@ -62,10 +62,11 @@
                                     <div class="col-sm-7">
                                         <select class="form-control" id="group_id" name="group_id" style="cursor: pointer;">
                                             <option value="" hidden>Pilih Group</option>
-                                            <option id="group-option" value="group">Group</option>
-                                            <option value="-">Non Group</option>
+                                            <?php if ($aksi != 'edit') : ?>
+                                                <option id="group-option" value="group">Non Group (keluarga berbeda)</option>
+                                            <?php endif ?>
                                             <?php foreach ($group_id as $data) : ?>
-                                                <option value="<?= $data['group_id'] ?>"><?= $data['group_id'] ?></option>
+                                                <option value="<?= $data['group_id'] ?>"><?= $data['group_id'] ?> - <?= $data['nama'] ?></option>
                                             <?php endforeach ?>
                                         </select>
                                     </div>
@@ -123,7 +124,7 @@
                                         <p id="pas_foto_tidak_ada" style="display: none;"></p>
                                         <div class="form-group" style="margin-bottom: 0;">
                                             <input type="file" class="form-control-file" id="pas_foto" name="pas_foto" style="border: 1px solid rgb(209,211,226); padding: 3px 5px; cursor: pointer; border-radius: 6px">
-                                            <span class="kwitansi-label">Max Size : 3MB</span>
+                                            <span class="kwitansi-label">Max Size : 2MB</span>
                                         </div>
                                     </div>
                                 </div>
@@ -135,7 +136,7 @@
                                         <p id="ktp_tidak_ada" style="display: none;"></p>
                                         <div class="form-group" style="margin-bottom: 0;">
                                             <input type="file" class="form-control-file" id="ktp" name="ktp" style="border: 1px solid rgb(209,211,226); padding: 3px 5px; cursor: pointer; border-radius: 6px">
-                                            <span class="kwitansi-label">Max Size : 3MB</span>
+                                            <span class="kwitansi-label">Max Size : 2MB</span>
                                         </div>
                                     </div>
                                 </div>
@@ -151,7 +152,7 @@
                                         <p id="kk_tidak_ada" style="display: none;"></p>
                                         <div class="form-group" style="margin-bottom: 0;">
                                             <input type="file" class="form-control-file" id="kk" name="kk" style="border: 1px solid rgb(209,211,226); padding: 3px 5px; cursor: pointer; border-radius: 6px">
-                                            <span class="kwitansi-label">Max Size : 3MB</span>
+                                            <span class="kwitansi-label">Max Size : 2MB</span>
                                         </div>
                                     </div>
                                 </div>
@@ -163,7 +164,7 @@
                                         <p id="buku_nikah_tidak_ada" style="display: none;"></p>
                                         <div class="form-group" style="margin-bottom: 0;">
                                             <input type="file" class="form-control-file" id="buku_nikah" name="buku_nikah" style="border: 1px solid rgb(209,211,226); padding: 3px 5px; cursor: pointer; border-radius: 6px">
-                                            <span class="kwitansi-label">Max Size : 3MB</span>
+                                            <span class="kwitansi-label">Max Size : 2MB</span>
                                         </div>
                                     </div>
                                 </div>
@@ -175,7 +176,7 @@
                                         <p id="paspor_tidak_ada" style="display: none;"></p>
                                         <div class="form-group" style="margin-bottom: 0;">
                                             <input type="file" class="form-control-file" id="paspor" name="paspor" style="border: 1px solid rgb(209,211,226); padding: 3px 5px; cursor: pointer; border-radius: 6px">
-                                            <span class="kwitansi-label">Max Size : 3MB</span>
+                                            <span class="kwitansi-label">Max Size : 2MB</span>
                                         </div>
                                     </div>
                                 </div>
@@ -187,7 +188,7 @@
                                         <p id="akta_lahir_tidak_ada" style="display: none;"></p>
                                         <div class="form-group" style="margin-bottom: 0;">
                                             <input type="file" class="form-control-file" id="akta_lahir" name="akta_lahir" style="border: 1px solid rgb(209,211,226); padding: 3px 5px; cursor: pointer; border-radius: 6px">
-                                            <span class="kwitansi-label">Max Size : 3MB</span>
+                                            <span class="kwitansi-label">Max Size : 2MB</span>
                                         </div>
                                     </div>
                                 </div>
@@ -199,7 +200,7 @@
                                         <p id="kartu_kuning_tidak_ada" style="display: none;"></p>
                                         <div class="form-group" style="margin-bottom: 0;">
                                             <input type="file" class="form-control-file" id="kartu_kuning" name="kartu_kuning" style="border: 1px solid rgb(209,211,226); padding: 3px 5px; cursor: pointer; border-radius: 6px">
-                                            <span class="kwitansi-label">Max Size : 3MB</span>
+                                            <span class="kwitansi-label">Max Size : 2MB</span>
                                         </div>
                                     </div>
                                 </div>
@@ -234,6 +235,28 @@
                         </div>
                     </div>
 
+                    <?php if ($aksi != 'read') : ?>
+                        <!-- Input khusus kompresi gambar -->
+                        <div class="card mt-4 mb-4">
+                            <div class="card-header">
+                                <strong>Kompresi Gambar (Opsional)</strong>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Pilih Gambar untuk Kompresi</label>
+                                    <div class="col-sm-9">
+                                        <input type="file" id="compress_input" accept="image/*" class="form-control-file mb-2">
+                                        <img id="compress_preview" src="" alt="Preview" style="max-width:180px;display:none;margin-bottom:10px;">
+                                        <br>
+                                        <a id="compress_download" href="#" class="btn btn-success btn-sm" style="display:none" download="compressed_image.jpg">
+                                            <i class="fa fa-download"></i> Download Hasil Kompresi
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
                 </div>
             </div>
         </div>
@@ -247,6 +270,12 @@
     $(document).ready(function() {
         $('#no_hp').on('input', function() {
             this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
+        $('#group_id').select2({
+            placeholder: "Pilih Group",
+            allowClear: true,
+            width: '100%'
         });
     });
 
@@ -299,6 +328,23 @@
         });
     });
 
+    $('input[type="file"]').on('change', function() {
+        // Allow larger file size for compress_input only
+        if ($(this).attr('id') === 'compress_input') {
+            return;
+        }
+        var file = this.files[0];
+        if (file && file.size > 2 * 1024 * 1024) { // 2MB
+            Swal.fire({
+                icon: 'error',
+                title: 'File Terlalu Besar',
+                text: 'Ukuran file tidak boleh lebih dari 2 MB! Mohon Kompresi gambar terlebih dahulu.',
+                showConfirmButton: true
+            });
+            $(this).val(''); // Reset input file
+        }
+    });
+
     $(document).ready(function() {
         var id = $('#id').val();
         var aksi = $('#aksi').val();
@@ -318,7 +364,7 @@
                     moment.locale('id');
                     $('#id').val(data['master'].id);
                     $('#customer_id').val(data['master'].customer_id.toUpperCase()).attr('readonly', true);
-                    $('#group_id').val(data['master'].group_id);
+                    $('#group_id').val(data['master'].group_id).trigger('change'); // Trigger change event for Select2
                     $('#title').val(data['master'].title);
                     $('#nama').val(data['master'].nama);
                     $('#no_hp').val(data['master'].no_hp);
@@ -734,5 +780,43 @@
         // Optional: set nama file download otomatis
         var filename = imgSrc.split('/').pop();
         $('#downloadImageBtn').attr('download', filename);
+    });
+
+    // Kompresi Gambar
+    function compressImage(file, quality, callback) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const img = new Image();
+            img.onload = function() {
+                // Resize jika perlu, di sini tetap ukuran asli
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+
+                canvas.toBlob(function(blob) {
+                    callback(blob, canvas.toDataURL('image/jpeg', quality));
+                }, 'image/jpeg', quality);
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    $('#compress_input').on('change', function() {
+        const file = this.files[0];
+        if (file && file.type.match('image.*')) {
+            compressImage(file, 0.6, function(blob, dataUrl) {
+                // Preview hasil kompresi
+                $('#compress_preview').attr('src', dataUrl).show();
+                // Download hasil kompresi
+                const url = URL.createObjectURL(blob);
+                $('#compress_download').attr('href', url).show();
+            });
+        } else {
+            $('#compress_preview').hide();
+            $('#compress_download').hide();
+        }
     });
 </script>
