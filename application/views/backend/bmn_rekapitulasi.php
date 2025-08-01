@@ -29,10 +29,36 @@
         /* Tambah sedikit jarak antara label dan konten */
     }
 
+    .labelPemasukan {
+        display: inline-block;
+        /* Agar label tetap satu baris dengan konten */
+        width: 200px;
+        /* Atur lebar yang sama untuk setiap label */
+        text-align: left;
+        /* Ratakan teks ke kanan untuk sejajar dengan tanda ':' */
+        margin-right: 5px;
+        /* Tambah sedikit jarak antara label dan konten */
+    }
+
     .contentPengeluaran {
         display: inline-block;
         text-align: right;
         margin-left: 10px;
+    }
+
+    .flexing {
+        display: flex;
+    }
+
+    .flexing .left-side {
+        margin-right: 30px;
+    }
+
+    .flexing .right-side,
+    .flexing .left-side {
+        border: 1px solid #000;
+        padding: 10px;
+        border-radius: 8px;
     }
 
     @media (max-width: 1000px) {
@@ -47,6 +73,20 @@
         .export-excel {
             margin-left: 0;
             margin-top: 1rem;
+        }
+
+        .flexing {
+            display: inline-block;
+            font-size: 70%;
+        }
+
+        .flexing .left-side {
+            margin-bottom: 20px;
+        }
+
+        .flexing .right-side,
+        .flexing .left-side {
+            width: 100%;
         }
     }
 </style>
@@ -90,17 +130,32 @@
 
                 <div class="card">
                     <div class="card-body">
-                        <div>
-                            <strong class="labelPengeluaran">Prepayment</strong> : <div style="display: inline-block; width: 135px; text-align: right"><strong class="contentPengeluaran" id="totalPrepayment"></strong></div>
-                        </div>
-                        <div>
-                            <strong class="labelPengeluaran">Reimbust</strong> : <div style="display: inline-block; width: 135px; text-align: right"><strong class="contentPengeluaran" id="totalReimbust"></strong></div>
-                        </div>
-                        <div>
-                            <strong class="labelPengeluaran">Pelaporan</strong> : <div style="display: inline-block; width: 135px; text-align: right"><strong class="contentPengeluaran" id="totalPelaporan"></strong></div>
-                        </div>
-                        <div>
-                            <strong class="labelPengeluaran">Pengeluaran</strong> : <div style="display: inline-block; width: 135px; text-align: right"><strong class="contentPengeluaran" id="total"></strong></div>
+                        <div class="flexing">
+                            <div class="left-side">
+                                <div>
+                                    <strong class="labelPengeluaran">Prepayment</strong> : <div style="display: inline-block; width: 135px; text-align: right"><strong class="contentPengeluaran" id="totalPrepayment"></strong></div>
+                                </div>
+                                <div>
+                                    <strong class="labelPengeluaran">Reimbust</strong> : <div style="display: inline-block; width: 135px; text-align: right"><strong class="contentPengeluaran" id="totalReimbust"></strong></div>
+                                </div>
+                                <div>
+                                    <strong class="labelPengeluaran">Pelaporan</strong> : <div style="display: inline-block; width: 135px; text-align: right"><strong class="contentPengeluaran" id="totalPelaporan"></strong></div>
+                                </div>
+                                <div>
+                                    <strong class="labelPengeluaran">Pengeluaran</strong> : <div style="display: inline-block; width: 135px; text-align: right"><strong class="contentPengeluaran" id="total"></strong></div>
+                                </div>
+                            </div>
+                            <div class="right-side">
+                                <div>
+                                    <strong class="labelPemasukan">Invoice(Lunas)</strong> : <div style="display: inline-block; width: 135px; text-align: right"><strong class="contentPengeluaran" id="invoiceLunas"></strong></div>
+                                </div>
+                                <div>
+                                    <strong class="labelPemasukan">Invoice(Belum Lunas)</strong> : <div style="display: inline-block; width: 135px; text-align: right"><strong class="contentPengeluaran" id="invoiceBelumLunas"></strong></div>
+                                </div>
+                                <div>
+                                    <strong class="labelPemasukan">Margin</strong> : <div style="display: inline-block; width: 135px; text-align: right"><strong class="contentPengeluaran" id="margin"></strong></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -113,14 +168,17 @@
                     <li class="nav-item">
                         <a class="nav-link" id="reimbustTab" href="#" data-tab="reimbust">Reimbust</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="invoiceTab" href="#" data-tab="invoice">invoice</a>
+                    </li>
                 </ul>
 
                 <div class="card-body">
-                    <table id="table" class="table table-bordered table-striped">
+                    <table id="table" style="width: 100%;" class="table table-bordered table-striped">
                         <thead id="table-header">
                             <!-- GENERATE THEAD -->
                         </thead>
-                        <tbody>
+                        <tbody id="table-body">
                         </tbody>
                         <tfoot id="table-footer">
                             <!-- GENERATE TFOOTER -->
@@ -138,10 +196,12 @@
 <script type="text/javascript">
     var table;
 
+    var activeTab = 'pelaporan';
+
+
     // METHOD POST MENAMPILKAN DATA KE DATA TABLE
     $(document).ready(function() {
 
-        var activeTab = $('.nav-link.active').data('tab');
         // $('#labelPengeluaran').text(activeTab.charAt(0).toUpperCase() + activeTab.slice(1));
 
         $('#tgl_awal').on('click', function() {
@@ -180,7 +240,26 @@
             return `${year}-${month}-${day}`;
         }
 
+        function getAjaxUrl(tab) {
+            switch (tab) {
+                case 'pelaporan':
+                    return "<?php echo site_url('bmn_rekapitulasi/get_list_pelaporan') ?>";
+                case 'reimbust':
+                    return "<?php echo site_url('bmn_rekapitulasi/get_list_reimbust') ?>";
+                case 'invoice':
+                    return "<?php echo site_url('bmn_rekapitulasi/get_list_invoice') ?>";
+                default:
+                    return "<?php echo site_url('bmn_rekapitulasi/get_list') ?>"; // fallback
+            }
+        }
+
         function initializeDataTable() {
+            if ($.fn.DataTable.isDataTable('#table')) {
+                $('#table').DataTable().destroy();
+            }
+
+            var ajaxUrl = getAjaxUrl(activeTab)
+
             table = $('#table').DataTable({
                 "destroy": true, // Destroy the previous DataTable instance
                 "responsive": true,
@@ -189,7 +268,7 @@
                 "serverSide": true,
                 "order": [],
                 "ajax": {
-                    "url": "<?php echo site_url('bmn_rekapitulasi/get_list') ?>",
+                    "url": ajaxUrl,
                     "type": "POST",
                     "data": function(d) {
                         let tgl_awal = $('#tgl_awal').val();
@@ -203,21 +282,12 @@
 
                         d.awal = tgl_awal;
                         d.akhir = tgl_akhir;
-                        d.tab = $('.nav-tabs .nav-link.active').data('tab'); // Tambahkan parameter tab ke permintaan server
+                        d.tab = activeTab; // Tambahkan parameter tab ke permintaan server
                     }
                 },
-                "columnDefs": [{
-                        "targets": [1, 2],
-                        "className": 'dt-head-nowrap'
-                    },
-                    {
-                        "targets": [1, 5, 6],
-                        "className": 'dt-body-nowrap'
-                    }, {
-                        "targets": [0],
-                        "orderable": false,
-                    },
-                ],
+                footerCallback: function(row, data, start, end, display) {
+                    // cukup trigger agar footer bisa terpakai
+                },
                 "drawCallback": function(settings) {
                     $.ajax({
                         "url": "<?php echo site_url('bmn_rekapitulasi/get_total') ?>",
@@ -230,11 +300,25 @@
                         success: function(response) {
                             var total = JSON.parse(response);
                             // console.log('Success logging data to second URL' + response);
-                            // console.log(response);
-                            $('#totalPrepayment').text('Rp. ' + parseInt(total.total_prepayment).toLocaleString('id-ID'));
-                            $('#totalReimbust').text('Rp. ' + parseInt(total.total_reimbust).toLocaleString('id-ID'));
-                            $('#totalPelaporan').text('Rp. ' + parseInt(total.total_pelaporan).toLocaleString('id-ID'));
-                            $('#total').text('Rp. ' + parseInt(total.total_pengeluaran).toLocaleString('id-ID'));
+                            console.log(total);
+                            var pengeluaran = total.pengeluaran; // ← INI WAJIB
+                            var pemasukan = total.pemasukan; // (opsional jika kamu mau akses juga)
+                            var totalPrepayment = pengeluaran.total_prepayment ? pengeluaran.total_prepayment : 0;
+                            var totalReimbust = pengeluaran.total_reimbust ? pengeluaran.total_reimbust : 0;
+                            var totalPelaporan = pengeluaran.total_pelaporan ? pengeluaran.total_pelaporan : 0;
+                            var total = pengeluaran.total_pengeluaran ? pengeluaran.total_pengeluaran : 0;
+                            var invoiceLunas = pemasukan.lunas ? pemasukan.lunas : 0;
+                            var invoiceBelumLunas = pemasukan.tidak_lunas ? pemasukan.tidak_lunas : 0;
+
+                            $('#totalPrepayment').text('Rp. ' + parseInt(totalPrepayment).toLocaleString('id-ID'));
+                            $('#totalReimbust').text('Rp. ' + parseInt(totalReimbust).toLocaleString('id-ID'));
+                            $('#totalPelaporan').text('Rp. ' + parseInt(totalPelaporan).toLocaleString('id-ID'));
+                            $('#total').text('Rp. ' + parseInt(total).toLocaleString('id-ID'));
+
+                            $('#invoiceLunas').text('Rp. ' + parseInt(invoiceLunas).toLocaleString('id-ID'));
+                            $('#invoiceBelumLunas').text('Rp. ' + parseInt(invoiceBelumLunas).toLocaleString('id-ID'));
+
+                            $('#margin').text('Rp. ' + parseInt(invoiceLunas - total).toLocaleString('id-ID'));
                         },
                         error: function(error) {
                             console.log('Error logging data to second URL');
@@ -246,60 +330,48 @@
 
         // Function to update the table header based on the active tab
         function updateTableHeader(tab) {
-            var tableHeader = $('#table-header');
-            var tableFooter = $('#table-footer');
-
-            // Clear the current table header
-            tableHeader.empty();
-
-            // Define headers for each tab
-            if (tab === 'pelaporan') {
-                tableHeader.append(`
-                <tr>
-                    <th>No</th>
-                    <th>Kode Prepayment</th>
-                    <th>Kode Reimbust</th>
-                    <th>Nama</th>
-                    <th>Keterangan</th>
-                    <th>Tanggal</th>
-                    <th>Pengeluaran</th>
-                </tr>
-            `);
-                tableFooter.append(`
-                <tr>
-                    <th>No</th>
-                    <th>Kode Prepayment</th>
-                    <th>Kode Reimbust</th>
-                    <th>Nama</th>
-                    <th>Keterangan</th>
-                    <th>Tanggal</th>
-                    <th>Pengeluaran</th>
-                </tr>
-            `);
-            } else if (tab === 'reimbust') {
-                tableHeader.append(`
-                <tr>
-                    <th>No</th>
-                    <th>Kode Prepayment</th>
-                    <th>Kode Reimbust</th>
-                    <th>Nama</th>
-                    <th>Keterangan</th>
-                    <th>Tanggal</th>
-                    <th>Pengeluaran</th>
-                </tr>
-            `);
-                tableFooter.append(`
-                <tr>
-                    <th>No</th>
-                    <th>Kode Prepayment</th>
-                    <th>Kode Reimbust</th>
-                    <th>Nama</th>
-                    <th>Keterangan</th>
-                    <th>Tanggal</th>
-                    <th>Pengeluaran</th>
-                </tr>
-            `);
+            // Destroy DataTable jika sudah ada
+            if ($.fn.DataTable.isDataTable('#table')) {
+                $('#table').DataTable().clear().destroy();
             }
+
+            // Kosongkan header & footer
+            $('#table-header').empty();
+            $('#table-footer').empty();
+
+            // Masukkan header & footer sesuai tab
+            let headerHtml = '';
+            let footerHtml = '';
+
+            if (tab === 'pelaporan' || tab === 'reimbust') {
+                headerHtml = `
+            <tr>
+                <th>No</th>
+                <th>Kode Prepayment</th>
+                <th>Kode Reimbust</th>
+                <th>Tanggal</th>
+                <th>Keterangan</th>
+                <th>Pengeluaran</th>
+            </tr>`;
+                footerHtml = headerHtml;
+            } else if (tab === 'invoice') {
+                headerHtml = `
+            <tr>
+                <th>No</th>
+                <th>Kode Invoice</th>
+                <th>Tanggal Invoice</th>
+                <th>Nama</th>
+                <th>Total</th>
+                <th>Status</th>
+            </tr>`;
+                footerHtml = headerHtml;
+            }
+
+            // Tambahkan ke DOM
+            $('#table-header').html(headerHtml);
+            $('#table-footer').html(footerHtml);
+
+            // Setelah struktur benar, inisialisasi DataTables
             initializeDataTable();
         }
 
@@ -313,29 +385,21 @@
             $(this).addClass('active'); // Tambahkan kelas aktif ke tab yang diklik
 
             // Get the active tab
-            var activeTab = $(this).data('tab');
+            activeTab = $(this).data('tab');
+            // console.log(activeTab);
             // $('#labelPengeluaran').text(activeTab.charAt(0).toUpperCase() + activeTab.slice(1));
 
             // Update the table header based on the active tab
             updateTableHeader(activeTab);
 
             // Reload DataTables to reflect the new header
-            table.ajax.reload();
+            // table.ajax.reload();
         });
     });
 
     // Event listener untuk nav tabs
     $('#tgl_btn').on('click', function(e) {
         e.preventDefault();
-        table.ajax.reload(); // Muat ulang data di DataTable saat tab berubah
-    });
-
-    // Event listener untuk nav tabs
-    $('.nav-tabs a').on('click', function(e) {
-        e.preventDefault();
-        $('.nav-tabs a').removeClass('active'); // Hapus kelas aktif dari semua tab
-        $(this).addClass('active'); // Tambahkan kelas aktif ke tab yang diklik
-
         table.ajax.reload(); // Muat ulang data di DataTable saat tab berubah
     });
 

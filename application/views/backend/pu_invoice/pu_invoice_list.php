@@ -98,11 +98,20 @@
                     <form id="paymentForm">
                         <input type="hidden" class="form-control" id="email" name="email" value="">
                         <input type="hidden" name="invoice_id" id="payment_invoice_id" value="">
+
                         <?php if ($edit == 'Y') { ?>
-                            <div class="form-group">
+                            <!-- Tombol Toggle -->
+                            <div class="mb-3">
+                                <button id="btn-show" class="btn btn-success btn-sm" type="button">Tampilkan Update Invoice</button>
+                                <button id="btn-hide" class="btn btn-danger btn-sm" type="button" style="display: none;">Sembunyikan Update Invoice</button>
+                            </div>
+
+                            <!-- Elemen yang bisa disembunyikan/diperlihatkan -->
+                            <div class="form-group" id="update-pembayaran-box" style="display: none;">
                                 <label for="tgl_update_pembayaran">Tanggal Pembayaran ini digunakan untuk melakukan update</label>
                                 <select class="form-control" id="tgl_update_pembayaran" name="tgl_update_pembayaran">
                                     <option value="" selected disabled>-- Pilih Tanggal Invoice --</option>
+                                    <!-- Tambahkan opsi jika perlu -->
                                 </select>
                             </div>
                         <?php } ?>
@@ -117,17 +126,17 @@
                         </div>
                         <div class="form-group">
                             <label for="nominal_dibayar">Jumlah Pembayaran</label>
-                            <input type="text" class="form-control" id="nominal_dibayar" name="nominal_dibayar" required>
+                            <input type="text" class="form-control" id="nominal_dibayar" name="nominal_dibayar">
                         </div>
                         <div class="form-group">
                             <label for="keterangan">Keterangan</label>
                             <div class="input-group">
-                                <textarea class="form-control" id="keterangan" name="keterangan" rows="2" style="resize: vertical;" autocomplete="off" required></textarea>
+                                <textarea class="form-control" id="keterangan" name="keterangan" rows="2" style="resize: vertical;" autocomplete="off"></textarea>
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="status_pembayaran">Status Pembayaran</label>
-                            <select name="status_pembayaran" id="status_pembayaran" class="form-control" required>
+                            <select name="status_pembayaran" id="status_pembayaran" class="form-control">
                                 <option value="" selected disabled>-- Pilih Status Pembayaran --</option>
                                 <option value="down payment">Down Payment</option>
                                 <option value="pembayaran">Pembayaran</option>
@@ -212,6 +221,24 @@
         });
         $('#paymentModal').modal('show');
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const btnShow = document.getElementById('btn-show');
+        const btnHide = document.getElementById('btn-hide');
+        const box = document.getElementById('update-pembayaran-box');
+
+        btnShow.addEventListener('click', function() {
+            box.style.display = 'block';
+            btnShow.style.display = 'none';
+            btnHide.style.display = 'inline-block';
+        });
+
+        btnHide.addEventListener('click', function() {
+            box.style.display = 'none';
+            btnShow.style.display = 'inline-block';
+            btnHide.style.display = 'none';
+        });
+    });
 
     $('#tgl_update_pembayaran').on('change', function() {
         var selectedValue = $(this).val();
@@ -345,43 +372,64 @@
         $('#paymentForm').on('submit', function(e) {
             e.preventDefault();
 
-            var $tglElement = $('#tgl_update_pembayaran');
-            var selectedValue = $tglElement.length ? $tglElement.val() : null;
-            var isUpdate = $tglElement.length && selectedValue !== null && selectedValue !== "";
+            Swal.fire({
+                title: 'Apakah anda mau menginput?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, input',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Show loading
+                    Swal.fire({
+                        title: 'Memproses...',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
 
-            var actionUrl = isUpdate ?
-                "<?php echo site_url('pu_invoice/update_kwitansi/') ?>" :
-                "<?php echo site_url('pu_invoice/add_kwitansi/') ?>";
+                    var $tglElement = $('#tgl_update_pembayaran');
+                    var selectedValue = $tglElement.length ? $tglElement.val() : null;
+                    var isUpdate = $tglElement.length && selectedValue !== null && selectedValue !== "";
 
+                    var actionUrl = isUpdate ?
+                        "<?php echo site_url('pu_invoice/update_kwitansi/') ?>" :
+                        "<?php echo site_url('pu_invoice/add_kwitansi/') ?>";
 
-            $.ajax({
-                url: actionUrl,
-                type: "POST",
-                data: new FormData(this),
-                processData: false,
-                contentType: false,
-                dataType: "JSON",
-                success: function(data) {
-                    if (data.status) {
-                        Swal.fire({
-                            position: 'center',
-                            icon: 'success',
-                            title: isUpdate ? 'Pembayaran berhasil diupdate' : 'Pembayaran berhasil dilakukan',
-                            showConfirmButton: false,
-                            timer: 1500
-                        }).then((result) => {
-                            location.href = "<?= base_url('pu_invoice') ?>";
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            text: data.message,
-                        });
-                    }
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    alert('Error adding / updating data');
+                    $.ajax({
+                        url: actionUrl,
+                        type: "POST",
+                        data: new FormData(document.getElementById('paymentForm')),
+                        processData: false,
+                        contentType: false,
+                        dataType: "JSON",
+                        success: function(data) {
+                            Swal.close(); // Close loading
+                            if (data.status) {
+                                Swal.fire({
+                                    position: 'center',
+                                    icon: 'success',
+                                    title: isUpdate ? 'Pembayaran berhasil diupdate' : 'Pembayaran berhasil dilakukan',
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                }).then((result) => {
+                                    location.href = "<?= base_url('pu_invoice') ?>";
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Oops...',
+                                    text: data.message,
+                                });
+                            }
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            Swal.close(); // Close loading
+                            alert('Error adding / updating data');
+                        }
+                    });
                 }
             });
         });
@@ -477,8 +525,9 @@
                                     <tr>
                                         <th>No</th>
                                         <th>Kode Invoice</th>
-                                        <th>Tagihan Invoice</td>
                                         <th>Tanggal</th>
+                                        <th>Tagihan Invoice</td>
+                                        <th>Sisa Tagihan</th>
                                         <th>Status</th>
                                         <th class="text-nowrap">Aksi</th>
                                     </tr>
@@ -531,8 +580,9 @@
                             <tr>
                                 <td>${i + 1}</td>
                                 <td>${inv.kode_invoice}</td>
-                                <td>Rp ${Number(inv.total_tagihan).toLocaleString('id-ID')}</td>
                                 <td>${formatTanggalIndonesia(inv.tgl_invoice)}</td>
+                                <td>Rp ${Number(inv.total_tagihan).toLocaleString('id-ID')}</td>
+                                <td>Rp ${Number(inv.total_tagihan - inv.total_dibayar).toLocaleString('id-ID')}</td>
                                 <td>${status}</td>
                                 <td class="text-nowrap">${action}</td>
                             </tr>

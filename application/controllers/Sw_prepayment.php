@@ -336,13 +336,16 @@ class Sw_prepayment extends CI_Controller
                 ->where('id_user', $app->app2_id)
                 ->get()
                 ->row('name'),
-            'app4_name' => $this->db->select('name')
+            'created_at' => date('Y-m-d H:i:s')
+        );
+
+        if ($app->app4_id != null) {
+            $data['app4_name'] = $this->db->select('name')
                 ->from('tbl_data_user')
                 ->where('id_user', $app->app4_id)
                 ->get()
-                ->row('name'),
-            'created_at' => date('Y-m-d H:i:s')
-        );
+                ->row('name');
+        }
 
         if ($valid) {
             $inserted = $this->M_sw_prepayment->save($data);

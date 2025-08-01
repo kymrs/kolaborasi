@@ -115,11 +115,14 @@ class M_pu_invoice extends CI_Model
             $i++;
         }
 
-        if ($_POST['status'] === '1') {
-            $this->db->where('status', 1);
-        } elseif ($_POST['status'] === '0') {
-            $this->db->where('status', 0);
+        if (isset($_POST['status'])) {
+            if ($_POST['status'] === '1') {
+                $this->db->where('pu_order.status', 1);
+            } elseif ($_POST['status'] === '0') {
+                $this->db->where('pu_order.status', 0);
+            }
         }
+
 
         if (isset($_POST['order'])) {
             $this->db->order_by($this->column_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
@@ -248,9 +251,9 @@ class M_pu_invoice extends CI_Model
         }
 
         if ($_POST['status'] === '1') {
-            $this->db->where('status', 1);
+            $this->db->where('pu_order.status', 1);
         } elseif ($_POST['status'] === '0') {
-            $this->db->where('status', 0);
+            $this->db->where('pu_order.status', 0);
         }
 
         if (isset($_POST['order'])) {

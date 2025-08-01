@@ -88,8 +88,8 @@
 <script>
     $('#tgl_deklarasi').datepicker({
         dateFormat: 'dd-mm-yy',
-        minDate: new Date(),
-        maxDate: new Date(),
+        // minDate: new Date(),
+        // maxDate: new Date(),
 
         // MENGENERATE KODE DEKLARASI SETELAH PILIH TANGGAL
         onSelect: function(dateText) {

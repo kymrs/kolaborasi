@@ -161,26 +161,7 @@
                     </div>
 
                     <div class="table-approve">
-                        <table>
-                            <tr>
-                                <td>Yang melakukan</td>
-                                <td>Captain</td>
-                                <td>Mengetahui</td>
-                                <td>Menyetujui</td>
-                            </tr>
-                            <tr style="height: 75px">
-                                <td id="statusMelakukan"></td>
-                                <td id="statusKapten"></td>
-                                <td id="statusMengetahui"></td>
-                                <td id="statusMenyetujui"></td>
-                            </tr>
-                            <tr>
-                                <td id="melakukan"></td>
-                                <td id="kapten"></td>
-                                <td id="mengetahui"></td>
-                                <td id="menyetujui"></td>
-                            </tr>
-                        </table>
+                        <!-- UNTUK TABLE APPROVAL -->
                     </div>
 
                     <div class="keterangan-field">
@@ -427,17 +408,40 @@
                     date4 = moment(data['master']['app4_date']).format('D-MM-YYYY HH:mm:ss');
                 }
 
-                $('#melakukan').html(`<div class="signature-text text-center">${data['nama']}</div>`);
-                $('#kapten').text(`${data['master']['app4_name']}`);
-                $('#mengetahui').html(`<div class="signature-text text-center">${data['master']['app_name']}</div>`);
-                $('#menyetujui').html(`<div class="signature-text text-center">${data['master']['app2_name']}</div>`);
-                $('#statusMelakukan').html(`<div class="signature-text text-center">CREATED<br><span>${data['master']['created_at']}</span></div>`);
-                $('#statusKapten').html(`<div>${data['master']['app4_status'].toUpperCase()}<br><span>${date4}</span></div></div>`);
-                $('#statusMengetahui').html(`<div class="signature-text text-center">${data['master']['app_status'].toUpperCase()}<br><span>${date}</span></div>`);
-                $('#statusMenyetujui').html(`<div class="signature-text text-center">${data['master']['app2_status'].toUpperCase()}<br><span>${date2}</span></div>`);
+                // Only show Captain column if app4_name is not null
+                let app4Name = data['master']['app4_name'];
+                let showCaptain = app4Name && app4Name.trim() !== '' && app4Name.toLowerCase() !== 'null';
 
-                $('#divisiCol').html(data['master']['divisi']);
-                $('#prepaymentCol').html(data['master']['prepayment']);
+                let tableHeader = `<tr>
+                                <td>Yang melakukan</td>`;
+                if (showCaptain) tableHeader += `<td>Captain</td>`;
+                tableHeader += `<td>Mengetahui</td>
+                                <td>Menyetujui</td>
+                            </tr>`;
+
+                let tableStatus = `<tr style="height: 75px">
+                                <td id="statusMelakukan"><div class="signature-text text-center">CREATED<br><span>${data['master']['created_at']}</span></div></td>`;
+                if (showCaptain) tableStatus += `<td id="statusKapten"><div class="signature-text text-center">${data['master']['app4_status'] ? data['master']['app4_status'].toUpperCase() : ''}<br><span>${date4}</span></div></td>`;
+                tableStatus += `<td id="statusMengetahui"><div class="signature-text text-center">${data['master']['app_status'] ? data['master']['app_status'].toUpperCase() : ''}<br><span>${date}</span></div></td>
+                                <td id="statusMenyetujui"><div class="signature-text text-center">${data['master']['app2_status'] ? data['master']['app2_status'].toUpperCase() : ''}<br><span>${date2}</span></div></td>
+                            </tr>`;
+
+                let tableName = `<tr>
+                                <td id="melakukan"><div class="signature-text text-center">${data['nama']}</div></td>`;
+                if (showCaptain) tableName += `<td id="kapten"><div class="signature-text text-center">${data['master']['app4_name']}</div></td>`;
+                tableName += `<td id="mengetahui"><div class="signature-text text-center">${data['master']['app_name']}</div></td>
+                                <td id="menyetujui"><div class="signature-text text-center">${data['master']['app2_name']}</div></td>
+                            </tr>`;
+
+                $('.table-approve').append(`
+                    <table>
+                        ${tableHeader}
+                        ${tableStatus}
+                        ${tableName}
+                    </table>
+                `);
+                // $('#divisiCol').html(data['master']['divisi']);
+                // $('#prepaymentCol').html(data['master']['prepayment']);
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 alert('Error get data from ajax');
