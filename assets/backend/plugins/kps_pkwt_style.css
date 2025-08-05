@@ -1,0 +1,387 @@
+/* CSS Reset */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+@page {
+    size: A4;
+    margin: 20mm;
+}
+
+.page-break {
+  break-after: page;
+}
+
+.page {
+    font-family: 'Courier New', Courier, monospace;
+    background: white;
+    color: #000;
+    width: 210mm;
+    min-height: 297mm;
+    margin: auto;
+    padding: 25mm;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    position: relative;
+    margin-bottom: 35px;
+    font-size: 6.5pt;
+}
+
+.page p {
+    line-height: 10px;
+}
+
+.header {
+    text-align: center;
+}
+
+.header p {
+    margin-bottom: 4px;
+}
+
+.header p:nth-child(3){
+    margin-top: 8px;
+    font-weight: bold;
+    text-decoration: underline;
+    margin-bottom: 10px;
+}
+
+.content-header p {
+    text-align: justify;
+}
+
+.content-header p i {
+    font-weight: bold;
+}
+
+.content-header table {
+    margin: 15px 35px 10px 35px;
+}
+
+.content-header table tr td {
+    padding-bottom: 2px;
+}
+
+.content-header table tr td:nth-child(1){
+    width: 180px;
+}
+
+.content-header table tr td:nth-child(2){
+    padding-right: 7px;
+}
+
+.content-header table tr td:nth-child(3){
+    font-weight: bold;
+}
+
+.pasal-main {
+    margin-top: 14px;
+}
+
+.pasal-main p {
+    text-align: center;
+    font-weight: bold;
+}
+
+.pasal-main ol {
+    margin-top: 3px;
+    padding-left: 14px;
+}
+
+.pasal-main ol li {
+    margin-bottom: 2px;
+    text-align: justify;
+}
+
+/* Signature */
+.signature {
+    margin-top: 50px;
+    font-weight: bold;
+}
+
+.signature table {
+    width: 100%;
+}
+
+.signature table tr:nth-child(1){
+    padding-bottom: 50px;
+}
+
+.signature table tr:nth-child(2) td{
+    padding: 30px 0;
+}
+
+.signature table tr td{
+    width: 50%;
+    text-align: center;
+}
+
+/* Lampiran 1 */
+.lampiran-1 .header-lampiran-1 p {
+    margin-bottom: 10px;
+}
+
+.lampiran-1 .header-lampiran-1 p span {
+    text-decoration: underline;
+}
+
+.lampiran-1 .main-content {
+    margin: 15px 20px;
+}
+
+.lampiran-1 .main-content table tr td {
+    padding-bottom: 2px;
+}
+
+.lampiran-1 .main-content table tr td:nth-child(1) {
+    width: 310px;
+}
+
+.lampiran-1 .main-content table tr td:nth-child(2) {
+    width: 15px;
+}
+
+.lampiran-1 .main-content table tr td:nth-child(3) {
+    font-weight: bold;
+}
+
+.lampiran-1 .main-content table tr td span {
+    padding-right: 17px;
+}
+
+.lampiran-1 .main-content table tr td span.detail {
+    padding-left: 28px;
+    padding-right: 14px;
+}
+
+.lampiran-1 .main-content table tr td span.detail-2 {
+    padding-left: 50px;
+    padding-right: 14px;
+}
+
+.lampiran-1 .main-content p.before-signature {
+    margin: 30px 0 20px;
+    text-align: justify;
+}
+
+.lampiran-1 .main-content table.signature-lampiran-1 {
+    margin-left: 40px;
+}
+
+.lampiran-1 .main-content table.signature-lampiran-1 tr:nth-child(2) td {
+    padding: 20px 0;
+}
+
+.lampiran-1 .main-content .line {
+    height: 2.3px;
+    width: 100%;
+    margin: 20px 0;
+    background-color: #000;
+}
+
+.perjanjian-b {
+    margin: 0 20px;
+}
+
+.perjanjian-b p:nth-child(2){
+    margin: 10px 0 15px;
+}
+
+.perjanjian-b table {
+    width: 100%;
+    border-bottom: 1px solid #000;
+    padding-bottom: 10px;
+}
+
+.perjanjian-b table tr:nth-child(2) {
+    height: 20px;
+}
+
+.perjanjian-b table tr td:nth-child(1) {
+    width: 20%;
+}
+
+.perjanjian-b table tr td:nth-child(3) {
+    font-weight: bold;
+}
+
+.perjanjian-b p.dalam-rangka {
+    text-align: justify;
+    margin-left: 50px;
+    border-bottom: 1px solid #000;
+}
+
+.perjanjian-b h1 {
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.perjanjian-b h2 {
+    font-weight: bold;
+    margin: 10px 0 15px;
+}
+
+.perjanjian-b p.text-space {
+    margin-bottom: 7px;
+    text-align: justify;
+}
+
+.perjanjian-b .signature-lampiran-2 {
+    margin-left: 50px;
+    border: none;
+}
+
+.perjanjian-b table.signature-lampiran-2 tr:nth-child(2) td {
+    padding: 25px 0;
+}
+
+.perjanjian-b .line-2 {
+    width: 100%;
+    height: 1px;
+    background-color: #000;
+}
+
+/* Lampiran 2 */
+.lampiran-2 {
+    font-size: 10pt;
+}
+
+.lampiran-2 .header-lampiran-2 h6 {
+    font-weight: bold;
+}
+
+.lampiran-2 .header-lampiran-2 h6 span {
+    font-size: 12pt;
+}
+
+.lampiran-2 .header-lampiran-2 p {
+    margin: 25px 0 15px;
+    font-weight: bold;
+}
+
+.lampiran-2 .header-lampiran-2 h4 {
+    font-weight: bold;
+}
+
+.lampiran-2 .header-lampiran-2 h4 span {
+    margin-left: 10px;
+}
+
+.lampiran-2 .header-lampiran-2 h5 {
+    font-weight: bold;
+    margin-left: 20px;
+    margin-top: 10px;
+    margin-bottom: 55px;
+    font-size: 12pt;
+}
+
+.lampiran-2 .header-lampiran-2 table tr td:nth-child(2) {
+    padding-left: 70px;
+    padding-right: 10px;
+}
+
+.lampiran-2 .header-lampiran-2 table tr td:nth-child(3) {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.lampiran-2 .content p{
+    margin: 30px 0 20px;
+}
+
+.lampiran-2 .content h2{
+    text-align: justify;
+}
+.lampiran-2 .content h2 span {
+    font-weight: bold;
+}
+
+.lampiran-2 .content table.table-main {
+    margin: 20px 25px 15px;
+}
+
+.lampiran-2 .content table.table-main tr td {
+    padding-bottom: 2px;
+}
+
+.lampiran-2 .content table.table-main tr td:nth-child(2) {
+    padding-left: 20px;
+    padding-bottom: 2px;
+    padding-right: 5px;
+}
+
+.lampiran-2 .content table.table-main tr td:nth-child(3) {
+    font-weight: bold;
+}
+
+.lampiran-2 .content h1 {
+    text-align: justify;
+}
+
+.lampiran-2 .content h3 {
+    margin-top: 20px;
+    margin-bottom: 50px;
+}
+
+.lampiran-2 .content table.signature-content tr:nth-child(2) td {
+    font-weight: bold;
+}
+
+.lampiran-2 .content table.signature-content tr:nth-child(3) td {
+    padding: 35px 0;
+}
+
+.lampiran-2 .content table.signature-content tr:nth-child(4) td {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.lampiran-2 .content .line {
+    width: 100%;
+    height: 1px;
+    background-color:#000;
+    margin-top: 150px;
+}
+
+#previewKertasContent .page {
+    background: #fff;
+    box-shadow: 0 0 16px rgba(0,0,0,0.15);
+    margin: 30px auto;
+    padding: 30px;
+    border-radius: 8px;
+}

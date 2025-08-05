@@ -129,8 +129,8 @@
                                     <div class="col-sm-7">
                                         <select class="form-control" name="jenis_kelamin" id="jenis_kelamin">
                                             <option value="" hidden>Pilih Jenis Kelamin</option>
-                                            <option value="laki-laki">Laki-laki</option>
-                                            <option value="perempuan">Perempuan</option>
+                                            <option value="Laki-laki">Laki-laki</option>
+                                            <option value="Perempuan">Perempuan</option>
                                         </select>
                                     </div>
                                 </div>
@@ -143,7 +143,7 @@
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="tgl_lahir">Tanggal Lahir</label>
                                     <div class="col-sm-7">
-                                        <input type="date" class="form-control datepicker" name="tgl_lahir" id="tgl_lahir">
+                                        <input type="text" class="form-control datepicker" name="tgl_lahir" id="tgl_lahir" autocomplete="off" placeholder="Pilih Tanggal Lahir" style="cursor: pointer">
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -158,18 +158,18 @@
                                     <div class="col-sm-7">
                                         <select id="pendidikan" name="pendidikan" class="form-control">
                                             <option value="" hidden>Pilih Pendidikan Terakhir</option>
-                                            <option value="tidak_sekolah">Tidak/Belum Sekolah</option>
-                                            <option value="belum_sd">Belum Tamat SD/Sederajat</option>
-                                            <option value="sd">SD/Sederajat</option>
-                                            <option value="smp">SMP/Sederajat</option>
-                                            <option value="sma">SMA/SMK/MA/Sederajat</option>
-                                            <option value="diploma1">Diploma I (D1)</option>
-                                            <option value="diploma2">Diploma II (D2)</option>
-                                            <option value="diploma3">Diploma III (D3)</option>
-                                            <option value="sarjana">Sarjana (S1)/Diploma IV (D4)</option>
-                                            <option value="magister">Magister (S2)</option>
-                                            <option value="doktor">Doktor (S3)</option>
-                                            <option value="lainnya">Lainnya</option>
+                                            <option value="Tidak Sekolah">Tidak/Belum Sekolah</option>
+                                            <option value="Belum Tamat SD">Belum Tamat SD/Sederajat</option>
+                                            <option value="SD">SD/Sederajat</option>
+                                            <option value="SMP">SMP/Sederajat</option>
+                                            <option value="SMA">SMA/SMK/MA/Sederajat</option>
+                                            <option value="Diploma I (D1)">Diploma I (D1)</option>
+                                            <option value="Diploma II (D2)">Diploma II (D2)</option>
+                                            <option value="Diploma III (D3)">Diploma III (D3)</option>
+                                            <option value="Sarjana (S1)">Sarjana (S1)/Diploma IV (D4)</option>
+                                            <option value="Magister (S2)">Magister (S2)</option>
+                                            <option value="Doktor (S3)">Doktor (S3)</option>
+                                            <option value="Lainnya">Lainnya</option>
                                         </select>
                                     </div>
                                 </div>
@@ -184,12 +184,12 @@
                                     <div class="col-sm-7">
                                         <select id="status_pernikahan" name="status_pernikahan" class="form-control">
                                             <option value="" hidden>Pilih Status Pernikahan</option>
-                                            <option value="belum menikah">Belum Menikah</option>
-                                            <option value="menikah">Menikah</option>
-                                            <option value="cerai_hidup">Cerai Hidup</option>
-                                            <option value="cerai_mati">Cerai Mati</option>
-                                            <option value="duda">Duda</option>
-                                            <option value="janda">Janda</option>
+                                            <option value="Belum Nikah">Belum Menikah</option>
+                                            <option value="Menikah">Menikah</option>
+                                            <option value="Cerai Hidup">Cerai Hidup</option>
+                                            <option value="Cerai Mati">Cerai Mati</option>
+                                            <option value="Duda">Duda</option>
+                                            <option value="Janda">Janda</option>
                                         </select>
                                     </div>
                                 </div>
@@ -246,7 +246,7 @@
                                             <option value="B">B</option>
                                             <option value="AB">AB</option>
                                             <option value="O">O</option>
-                                            <option value="tidak_tahu">Tidak Tahu</option>
+                                            <option value="Tidak Tahu">Tidak Tahu</option>
                                         </select>
                                     </div>
                                 </div>
@@ -302,7 +302,7 @@
                                     <div class="col-sm-7">
                                         <select id="unit_bisnis" name="unit_bisnis" class="form-control">
                                             <option value="" hidden>Pilih Unit Bisnis</option>
-                                            <option value="kps">Kolaborasi Para Sahabat</option>
+                                            <option value="KPS">Kolaborasi Para Sahabat</option>
                                             <option value="sebelaswarna">sebelaswarna</option>
                                             <option value="pengenumroh">pengenumroh</option>
                                             <option value="qubagift">qubagift</option>
@@ -310,7 +310,7 @@
                                             <option value="sobatwisata">sobatwisata</option>
                                             <option value="mobileautocare">mobileautocare</option>
                                             <option value="carstensz">carstensz</option>
-                                            <option value="sahabat_multi_logistik">Sahabat Multi Logistik</option>
+                                            <option value="sahabat multi logistik">Sahabat Multi Logistik</option>
                                         </select>
                                     </div>
                                 </div>
@@ -329,7 +329,6 @@
                                             <option value="Driver">Driver</option>
                                             <option value="Office Boy">Office Boy</option>
                                         </select>
-
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -337,40 +336,53 @@
                                     <div class="col-sm-7">
                                         <select id="jabatan" name="jabatan" class="form-control">
                                             <option value="" hidden>Pilih Jabatan</option>
-                                            <option value="magang">Magang / Intern</option>
-                                            <option value="staff">Staff</option>
-                                            <option value="supervisor">Supervisor</option>
-                                            <option value="asisten_manager">Asisten Manager</option>
-                                            <option value="manager">Manager</option>
-                                            <option value="senior_manager">Senior Manager</option>
-                                            <option value="kepala_divisi">Kepala Divisi</option>
-                                            <option value="kepala_bagian">Kepala Bagian</option>
-                                            <option value="kepala_cabang">Kepala Cabang</option>
-                                            <option value="kepala_unit">Kepala Unit</option>
-                                            <option value="direktur">Direktur</option>
-                                            <option value="wakil_direktur">Wakil Direktur</option>
-                                            <option value="direktur_utama">Direktur Utama</option>
-                                            <option value="presiden_direktur">Presiden Direktur</option>
-                                            <option value="komisaris">Komisaris</option>
-                                            <option value="komisaris_utama">Komisaris Utama</option>
-                                            <option value="staf_administrasi">Staf Administrasi</option>
-                                            <option value="staf_keuangan">Staf Keuangan</option>
-                                            <option value="staf_pemasaran">Staf Pemasaran</option>
-                                            <option value="staf_hrd">Staf HRD</option>
-                                            <option value="supervisor_produksi">Supervisor Produksi</option>
-                                            <option value="teknisi">Teknisi</option>
-                                            <option value="operator">Operator</option>
-                                            <option value="kepala_proyek">Kepala Proyek</option>
-                                            <option value="direktur_keuangan">Direktur Keuangan</option>
-                                            <option value="direktur_operasional">Direktur Operasional</option>
-                                            <option value="asisten_direktur">Asisten Direktur</option>
+                                            <option value="Magang">Magang / Intern</option>
+                                            <option value="Staff">Staff</option>
+                                            <option value="Supervisor">Supervisor</option>
+                                            <option value="Asisten Manager">Asisten Manager</option>
+                                            <option value="Manager">Manager</option>
+                                            <option value="Senior Manager">Senior Manager</option>
+                                            <option value="Kepala Divisi">Kepala Divisi</option>
+                                            <option value="Kepala Bagian">Kepala Bagian</option>
+                                            <option value="Kepala Cabang">Kepala Cabang</option>
+                                            <option value="Kepala Unit">Kepala Unit</option>
+                                            <option value="Direktur">Direktur</option>
+                                            <option value="Wakil Direktur">Wakil Direktur</option>
+                                            <option value="Direktur Utama">Direktur Utama</option>
+                                            <option value="Presiden Direktur">Presiden Direktur</option>
+                                            <option value="Komisaris">Komisaris</option>
+                                            <option value="Komisaris Utama">Komisaris Utama</option>
+                                            <option value="Staf Administrasi">Staf Administrasi</option>
+                                            <option value="Staf Keuangan">Staf Keuangan</option>
+                                            <option value="Staf Pemasaran">Staf Pemasaran</option>
+                                            <option value="Staf HRD">Staf HRD</option>
+                                            <option value="Supervisor Produksi">Supervisor Produksi</option>
+                                            <option value="Teknisi">Teknisi</option>
+                                            <option value="Operator">Operator</option>
+                                            <option value="Kepala Proyek">Kepala Proyek</option>
+                                            <option value="Direktur Keuangan">Direktur Keuangan</option>
+                                            <option value="Direktur Operasional">Direktur Operasional</option>
+                                            <option value="Asisten Direktur">Asisten Direktur</option>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="department" class="col-sm-5 col-form-label">Department</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" name="department" id="department">
+                                        <select name="department" id="department" class="form-control">
+                                            <option value="">Pilih Departement</option>
+                                            <option value="HRD">HRD</option>
+                                            <option value="Finance">Finance</option>
+                                            <option value="Customer Service">Customer Service</option>
+                                            <option value="IT">IT</option>
+                                            <option value="Marketing">Marketing</option>
+                                            <option value="Produksi">Produksi</option>
+                                            <option value="Operasional">Operasional</option>
+                                            <option value="Logistik">Logistik</option>
+                                            <option value="Purchasing">Purchasing</option>
+                                            <option value="R&D">R&D</option>
+                                            <option value="QA/QC">QA/QC</option>
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -446,31 +458,31 @@
                                 <div class="form-group row">
                                     <label for="tgl_masuk" class="col-sm-5 col-form-label">Tanggal Masuk</label>
                                     <div class="col-sm-7">
-                                        <input type="date" class="form-control datepicker" name="tgl_masuk" id="tgl_masuk">
+                                        <input type="text" class="form-control datepicker" name="tgl_masuk" id="tgl_masuk" placeholder="Pilih Tanggal Masuk" style="cursor: pointer" autocomplete="off">
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="tgl_rekrut" class="col-sm-5 col-form-label">Tanggal Rekrut</label>
                                     <div class="col-sm-7">
-                                        <input type="date" class="form-control datepicker" name="tgl_rekrut" id="tgl_rekrut">
+                                        <input type="text" class="form-control datepicker" name="tgl_rekrut" id="tgl_rekrut" placeholder="Pilih Tanggal Rekrut" style="cursor: pointer" autocomplete="off">
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="tgl_permanen" class="col-sm-5 col-form-label">Tanggal Permanen</label>
                                     <div class="col-sm-7">
-                                        <input type="date" class="form-control datepicker" name="tgl_permanen" id="tgl_permanen">
+                                        <input type="text" class="form-control datepicker" name="tgl_permanen" id="tgl_permanen" placeholder="Pilih Tanggal Permanen" style="cursor: pointer" autocomplete="off">
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="tgl_akhir_kontrak" class="col-sm-5 col-form-label">Tanggal Akhir Kontrak</label>
                                     <div class="col-sm-7">
-                                        <input type="date" class="form-control datepicker" name="tgl_akhir_kontrak" id="tgl_akhir_kontrak">
+                                        <input type="text" class="form-control datepicker" name="tgl_akhir_kontrak" id="tgl_akhir_kontrak" placeholder="Pilih Tanggal Akhir Kontrak" style="cursor: pointer" autocomplete="off">
                                     </div>
                                 </div>
                                 <div class="form-group row" id="tgl_phk_container" style="display: none;">
                                     <label for="tgl_phk" class="col-sm-5 col-form-label">Tanggal PHK</label>
                                     <div class="col-sm-7">
-                                        <input type="date" class="form-control datepicker" name="tgl_phk" id="tgl_phk">
+                                        <input type="text" class="form-control datepicker" name="tgl_phk" id="tgl_phk">
                                     </div>
                                 </div>
                                 <div class="form-group row">

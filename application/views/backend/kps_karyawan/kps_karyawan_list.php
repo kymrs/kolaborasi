@@ -37,15 +37,10 @@
     /* Dropdown Button */
     .btn-group .btn-primary {
         border: none;
-        border-radius: 8px;
+        /* border-radius: 8px; */
         font-size: 14px;
         padding: 6px 14px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        transition: 0.3s;
-    }
-
-    .btn-group .btn-primary:hover {
-        transform: scale(1.02);
     }
 
     .dropdown-menu {
@@ -117,11 +112,11 @@
                                     <a class="dropdown-item" href="<?= base_url('kps_karyawan/add_form_keluarga') ?>">
                                         <i class="fas fa-users mr-2"></i> Data Keluarga
                                     </a>
-                                    <a class="dropdown-item" data-toggle="modal" data-target="#aksi3Modal">
-                                        <i class="fas fa-file-contract mr-2"></i> Data Kontrak
-                                    </a>
                                 <?php endif ?>
                             </div>
+                            <a class="btn btn-primary btn-sm ml-2" style="border-radius: 4px" href="<?= base_url('kps_karyawan/e_pkwt') ?>">
+                                <i class="fa fa-list"></i>&nbsp;&nbsp;Data E-PKWT
+                            </a>
                         </div>
                     <?php } ?>
                     <select name="status_kerja" id="status_kerja" style="padding: 5px; width: 125px; float: right" class="form-control form-control-sm btn-primary btn-header">
@@ -169,45 +164,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Aksi 3 -->
-<div class="modal fade" id="aksi3Modal" tabindex="-1" role="dialog" aria-labelledby="aksi3ModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <form id="form-kontrak">
-                <div class="modal-header bg-primary">
-                    <h5 class="modal-title text-white" id="aksi3ModalLabel">Tambah Kontrak Karyawan</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Tutup">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="selectItem">Nama Karyawan</label>
-                        <select id="selectItem" name="npk" class="form-control select2npk" style="width: 100%" required>
-                            <option value="" selected hidden>Pilih item</option>
-                            <?php foreach ($karyawan as $data) : ?>
-                                <option value="<?= $data['npk'] ?>"><?= $data['nama_lengkap'] ?></option>
-                            <?php endforeach ?>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="tanggalAwal">Tanggal Awal</label>
-                        <input type="date" id="tanggalAwal" name="start" class="form-control datepicker" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="tanggalAkhir">Tanggal Akhir</label>
-                        <input type="date" id="tanggalAkhir" name="end" class="form-control datepicker" required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Tambah</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                </div>
-            </form>
         </div>
     </div>
 </div>
@@ -279,22 +235,6 @@
                 }
             ],
         });
-    });
-
-    $(document).ready(function() {
-        $('.select2').select2({
-            dropdownParent: $('#aksi3Modal') // biar dropdown-nya tampil dalam modal
-        });
-    });
-
-    $('#formAksi3').submit(function(e) {
-        e.preventDefault();
-        let item = $('#selectItem').val();
-        let tglAwal = $('#tanggalAwal').val();
-        let tglAkhir = $('#tanggalAkhir').val();
-
-        alert(`Item: ${item}, Tanggal: ${tglAwal} s/d ${tglAkhir}`);
-        $('#aksi3Modal').modal('hide');
     });
 
     $('#status_kerja').on('change', function() {

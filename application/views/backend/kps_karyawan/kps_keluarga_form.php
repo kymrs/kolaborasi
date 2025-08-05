@@ -171,18 +171,18 @@
                                     <div class="col-sm-7">
                                         <select id="pendidikan" name="pendidikan" class="form-control">
                                             <option value="" hidden>Pilih Pendidikan Terakhir</option>
-                                            <option value="tidak_sekolah">Tidak/Belum Sekolah</option>
-                                            <option value="belum_sd">Belum Tamat SD/Sederajat</option>
-                                            <option value="sd">SD/Sederajat</option>
-                                            <option value="smp">SMP/Sederajat</option>
-                                            <option value="sma">SMA/SMK/MA/Sederajat</option>
-                                            <option value="diploma1">Diploma I (D1)</option>
-                                            <option value="diploma2">Diploma II (D2)</option>
-                                            <option value="diploma3">Diploma III (D3)</option>
-                                            <option value="sarjana">Sarjana (S1)/Diploma IV (D4)</option>
-                                            <option value="magister">Magister (S2)</option>
-                                            <option value="doktor">Doktor (S3)</option>
-                                            <option value="lainnya">Lainnya</option>
+                                            <option value="Tidak Sekolah">Tidak/Belum Sekolah</option>
+                                            <option value="Belum Tamat SD">Belum Tamat SD/Sederajat</option>
+                                            <option value="SD">SD/Sederajat</option>
+                                            <option value="SMP">SMP/Sederajat</option>
+                                            <option value="SMA">SMA/SMK/MA/Sederajat</option>
+                                            <option value="Diploma I (D1)">Diploma I (D1)</option>
+                                            <option value="Diploma II (D2)">Diploma II (D2)</option>
+                                            <option value="Diplom a III (D3)">Diploma III (D3)</option>
+                                            <option value="Sarjana (S1)">Sarjana (S1)/Diploma IV (D4)</option>
+                                            <option value="Magister (S2)">Magister (S2)</option>
+                                            <option value="Doktor (S3)">Doktor (S3)</option>
+                                            <option value="Lainnya">Lainnya</option>
                                         </select>
                                     </div>
                                 </div>
@@ -271,45 +271,6 @@
                 success: function(data) {
                     console.log(data);
                     moment.locale('id');
-                    $('#id').val(data['master'].id);
-                    $('#status_kerja').val(data['master'].status_kerja).change();
-                    $('#npk').val(data['master'].npk);
-                    $('#nama_lengkap').val(data['master'].nama_lengkap);
-                    $('#jenis_kelamin').val(data['master'].jenis_kelamin).change();
-                    $('#tempat_lahir').val(data['master'].tempat_lahir);
-                    $('#tgl_lahir').val(moment(data['master'].tgl_lahir).format('YYYY-MM-DD'));
-                    $('#umur').val(data['master'].umur);
-                    $('#pendidikan').val(data['master'].pendidikan);
-                    $('#no_ktp').val(data['master'].no_ktp);
-                    $('#status_pernikahan').val(data['master'].status_pernikahan);
-                    $('#ktk').val(data['master'].ktk);
-                    $('#alamat_ktp').val(data['master'].alamat_ktp);
-                    $('#domisili').val(data['master'].domisili);
-                    $('#telp_klrga_serumah').val(data['master'].telp_klrga_serumah);
-                    $('#telp_klrga_tdk_serumah').val(data['master'].telp_klrga_tdk_serumah);
-                    $('#gol_darah').val(data['master'].gol_darah);
-                    $('#no_hp').val(data['master'].no_hp);
-                    $('#lokasi_kerja').val(data['master'].lokasi_kerja);
-                    $('#wilayah_kerja').val(data['master'].wilayah_kerja);
-                    $('#posisi').val(data['master'].posisi);
-                    $('#jabatan').val(data['master'].jabatan);
-                    $('#department').val(data['master'].department);
-                    $('#grade').val(data['master'].grade);
-                    $('#status_karyawan').val(data['master'].status_karyawan);
-                    $('#tgl_masuk').val(moment(data['master'].tgl_masuk).format('YYYY-MM-DD'));
-                    $('#tgl_rekrut').val(moment(data['master'].tgl_rekrut).format('YYYY-MM-DD'));
-                    $('#tgl_permanen').val(moment(data['master'].tgl_permanen).format('YYYY-MM-DD'));
-                    $('#tgl_akhir_kontrak').val(moment(data['master'].tgl_akhir_kontrak).format('YYYY-MM-DD'));
-                    $('#tgl_phk').val(moment(data['master'].tgl_phk).format('YYYY-MM-DD'));
-                    $('#masa_kerja').val(data['master'].masa_kerja);
-                    $('#total_bulan').val(data['master'].total_bulan);
-                    $('#no_rek').val(data['master'].no_rek);
-                    $('#nama_pemilik_rek').val(data['master'].nama_pemilik_rek);
-                    $('#nama_bank').val(data['master'].nama_bank);
-                    $('#asal_karyawan').val(data['master'].asal_karyawan);
-                    $('#keahlian').val(data['master'].keahlian);
-                    $('#pelatihan_internal').val(data['master'].pelatihan_internal);
-                    $('#pelatihan_eksternal').val(data['master'].pelatihan_eksternal);
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     alert('Error get data from ajax');
@@ -319,7 +280,6 @@
         }
 
         // Script delete data file gambar
-
         function deleteFile(field) {
             Swal.fire({
                 title: 'Apakah Anda yakin?',

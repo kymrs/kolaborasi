@@ -276,6 +276,7 @@ class Pu_produk_agen extends CI_Controller
         }
 
         // Ambil data dari tabel pu_produk_agen
+        $this->db->order_by('id', 'desc');
         $produk = $this->db->get('pu_produk_agen')->result();
 
         // Kirim data dalam format JSON
