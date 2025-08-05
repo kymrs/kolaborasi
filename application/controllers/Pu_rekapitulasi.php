@@ -54,6 +54,87 @@ class Pu_rekapitulasi extends CI_Controller
         $this->load->view('backend/home', $data);
     }
 
+    public function get_list_pelaporan()
+    {
+        $list = $this->M_pu_rekapitulasi->get_datatables_pelaporan();
+        $data = array();
+        $no = $_POST['start'];
+
+        foreach ($list as $field) {
+            $no++;
+            $row = array();
+            $row[] = $no;
+            $row[] = $field->kode_prepayment ? $field->kode_prepayment : '-';
+            $row[] = !empty($field->kode_reimbust) ? ucfirst($field->kode_reimbust) : '-';
+            $row[] = $this->tgl_indo($field->tgl_pengajuan);
+            $row[] = $field->tujuan;
+            $row[] = 'Rp. ' . number_format($field->total_nominal, 0, ',', '.');
+            $data[] = $row;
+        }
+
+        $output = array(
+            "draw" => $_POST['draw'],
+            "recordsTotal" => $this->M_pu_rekapitulasi->count_all_pelaporan(),
+            "recordsFiltered" => $this->M_pu_rekapitulasi->count_filtered_pelaporan(),
+            "data" => $data,
+        );
+        echo json_encode($output);
+    }
+
+    public function get_list_reimbust()
+    {
+        $list = $this->M_pu_rekapitulasi->get_datatables_reimbust();
+        $data = array();
+        $no = $_POST['start'];
+
+        foreach ($list as $field) {
+            $no++;
+            $row = array();
+            $row[] = $no;
+            $row[] = '-';
+            $row[] = !empty($field->kode_reimbust) ? strtoupper($field->kode_reimbust) : '-';
+            $row[] = $this->tgl_indo($field->tgl_pengajuan);
+            $row[] = $field->tujuan;
+            $row[] = 'Rp. ' . number_format($field->total_jumlah_detail, 0, ',', '.');
+            $data[] = $row;
+        }
+
+        $output = array(
+            "draw" => $_POST['draw'],
+            "recordsTotal" => $this->M_pu_rekapitulasi->count_all_reimbust(),
+            "recordsFiltered" => $this->M_pu_rekapitulasi->count_filtered_reimbust(),
+            "data" => $data,
+        );
+        echo json_encode($output);
+    }
+
+    public function get_list_invoice()
+    {
+        $list = $this->M_pu_rekapitulasi->get_datatables_invoice();
+        $data = array();
+        $no = $_POST['start'];
+
+        foreach ($list as $field) {
+            $no++;
+            $row = array();
+            $row[] = $no;
+            $row[] = !empty($field->kode_invoice) ? $field->kode_invoice : '-';
+            $row[] = $this->tgl_indo($field->tgl_invoice);
+            $row[] = $field->ctc_nama;
+            $row[] = 'Rp. ' . number_format($field->total, 0, ',', '.');
+            $row[] = $field->status == 0 ? 'Lunas' : 'Belum Lunas';
+            $data[] = $row;
+        }
+
+        $output = array(
+            "draw" => $_POST['draw'],
+            "recordsTotal" => $this->M_pu_rekapitulasi->count_all_invoice(),
+            "recordsFiltered" => $this->M_pu_rekapitulasi->count_filtered_invoice(),
+            "data" => $data,
+        );
+        echo json_encode($output);
+    }
+
     function get_list()
     {
         // INISIAI VARIABLE YANG DIBUTUHKAN
@@ -96,7 +177,10 @@ class Pu_rekapitulasi extends CI_Controller
 
     function get_total()
     {
-        $output = $this->M_pu_rekapitulasi->get_total_pengeluaran();
+        $output = array(
+            'pengeluaran' => $this->M_pu_rekapitulasi->get_total_pengeluaran(),
+            'pemasukan' => $this->M_pu_rekapitulasi->get_total_pemasukan()
+        );
 
         //output dalam format JSON
         echo json_encode($output);
@@ -111,6 +195,7 @@ class Pu_rekapitulasi extends CI_Controller
         // Ambil data dari model
         $prepayment = $this->M_pu_rekapitulasi->get_data_prepayment($tgl_awal, $tgl_akhir);
         $reimbust = $this->M_pu_rekapitulasi->get_data_reimbust($tgl_awal, $tgl_akhir);
+        $invoice = $this->M_pu_rekapitulasi->get_data_invoice($tgl_awal, $tgl_akhir);
 
         // Inisialisasi Spreadsheet
         $spreadsheet = new Spreadsheet();
@@ -146,6 +231,14 @@ class Pu_rekapitulasi extends CI_Controller
             $sheet->setCellValue('B' . $row, $data->sifat_pelaporan);
             $sheet->setCellValue('C' . $row, $this->tgl_indo(date("Y-m-j", strtotime($data->tgl_pengajuan))));
             $sheet->setCellValue('D' . $row, $data->total_nominal);
+            $row++;
+        }
+
+        foreach ($invoice as $data) {
+            $sheet->setCellValue('A' . $row, strtoupper($data->kode_invoice));
+            $sheet->setCellValue('B' . $row, 'Invoice');
+            $sheet->setCellValue('C' . $row, $this->tgl_indo(date("Y-m-j", strtotime($data->tgl_invoice))));
+            $sheet->setCellValue('D' . $row, $data->total);
             $row++;
         }
 

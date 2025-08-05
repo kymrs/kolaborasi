@@ -1,4 +1,27 @@
 <style>
+    /* ...existing code... */
+    .tag {
+        display: inline-block;
+        background: #1a2035;
+        color: #fff;
+        border-radius: 15px;
+        padding: 3px 12px 3px 10px;
+        margin: 2px 2px 2px 0;
+        font-size: 0.95em;
+        position: relative;
+    }
+
+    .tag .remove-tag {
+        margin-left: 8px;
+        cursor: pointer;
+        color: #fff;
+        font-weight: bold;
+    }
+
+    .tag .remove-tag:hover {
+        color: red;
+    }
+
     .btn-special {
         transform: translateY(-6px);
         /* background: hsl(134deg 61% 41%); */
@@ -113,26 +136,42 @@
                                 <div class="p-4">
                                     <h4>JAMA'AH:</h4>
                                     <hr style="border-top: 3px solid #000;">
-                                    <div class="row">
+                                    <div class="row mb-3">
                                         <label class="col-sm-4 col-form-label">Contact Person</label>
-                                        <div class="input-group col-sm-7">
+                                        <div class="col-sm-7">
                                             <input type="text" class="form-control" id="ctc_nama" name="ctc_nama" placeholder="Nama jamaah..." aria-label="Recipient's username" aria-describedby="button-addon2">
                                         </div>
                                     </div>
 
                                     <!-- Layanan Termasuk -->
-                                    <div class="row">
-                                        <div class="col-sm-12 mb-3">
-                                            <label class="form-label">Jamaah:</label>
-                                            <div id="jamaah" name="jamaah" class="border p-2" style="height: 200px;"></div>
-                                            <input type="hidden" name="jamaah_item" id="jamaah_item">
+                                    <div class="row mb-3">
+                                        <label class="col-sm-4 col-form-label" for="jamaah">Jamaah</label>
+                                        <div class="col-sm-7">
+                                            <div class="input-group mb-2">
+                                                <input type="text" class="form-control" id="jamaah_input" placeholder="Tambah Jamaah">
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-primary" type="button" id="add_jamaah">
+                                                        <i class="fas fa-plus"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div id="jamaah_tags" class="mb-2"></div>
+                                            <input type="hidden" name="jamaah" id="jamaah" value="">
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <div class="col-sm-12">
-                                            <label class="form-label">Detail Pesanan</label>
-                                            <div id="detail_pesanan" name="detail_pesanan" class="border p-2" style="height: 200px;"></div>
-                                            <input type="hidden" name="pesanan_item" id="pesanan_item">
+                                        <label class="col-sm-4 col-form-label" for="pesanan_input">Paket Perjalanan</label>
+                                        <div class="col-sm-7">
+                                            <div class="input-group mb-2">
+                                                <input type="text" class="form-control" id="pesanan_input" placeholder="Tambah detail pesanan">
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-primary" type="button" id="add_pesanan">
+                                                        <i class="fas fa-plus"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div id="pesanan_tags" class="mb-2"></div>
+                                            <input type="hidden" name="pesanan" id="pesanan" value="">
                                         </div>
                                     </div>
                                     <div class="form-group row">
@@ -249,12 +288,6 @@
                             </div>
                         </div>
 
-                        <!-- Loading indicator -->
-                        <div id="loading" style="display: none;">
-                            <p>Loading...</p>
-                        </div>
-
-
                         <!-- PENENTUAN UPDATE ATAU ADD -->
                         <input type="hidden" name="id" id="id" value="<?= $id ?>">
                         <?php if (!empty($aksi)) { ?>
@@ -339,33 +372,95 @@
         theme: 'snow',
     });
 
-    const quill2 = new Quill('#jamaah', {
-        // modules: {
-        //     toolbar: toolbarOptions
-        // },
-        placeholder: 'Jamaah...',
-        theme: 'snow',
-    });
+    // const quill2 = new Quill('#jamaah', {
+    //     // modules: {
+    //     //     toolbar: toolbarOptions
+    //     // },
+    //     placeholder: 'Jamaah...',
+    //     theme: 'snow',
+    // });
 
-    const quill3 = new Quill('#detail_pesanan', {
-        // modules: {
-        //     toolbar: toolbarOptions
-        // },
-        placeholder: 'Pesanan...',
-        theme: 'snow',
-    });
+    // const quill3 = new Quill('#detail_pesanan', {
+    //     // modules: {
+    //     //     toolbar: toolbarOptions
+    //     // },
+    //     placeholder: 'Pesanan...',
+    //     theme: 'snow',
+    // });
 
     document.getElementById("form").onsubmit = function() {
         // Get HTML content from Quill editor
         var catatanItem = quill.root.innerHTML;
-        var jamaahItem = quill2.root.innerHTML;
-        var pesananItem = quill3.root.innerHTML;
+        // var jamaahItem = quill2.root.innerHTML;
+        // var pesananItem = quill3.root.innerHTML;
 
         // Set it to hidden input
         document.getElementById("catatan_item").value = catatanItem;
-        document.getElementById("jamaah_item").value = jamaahItem;
-        document.getElementById("pesanan_item").value = pesananItem;
+        // document.getElementById("jamaah_item").value = jamaahItem;
+        // document.getElementById("pesanan_item").value = pesananItem;
     };
+
+    function handleTagInput(inputId, addBtnId, tagsDivId, hiddenInputId) {
+        let tags = [];
+
+        // Load dari hidden input saat init
+        let initial = $('#' + hiddenInputId).val();
+        if (initial) {
+            tags = initial.split(',').map(e => e.trim()).filter(e => e);
+            renderTags();
+        }
+
+        function renderTags() {
+            let html = '';
+            tags.forEach((tag, idx) => {
+                html += `<span class="tag">${tag}<span class="remove-tag" data-idx="${idx}">&times;</span></span>`;
+            });
+            $('#' + tagsDivId).html(html);
+            $('#' + hiddenInputId).val(tags.join(', '));
+        }
+
+        // Event input
+        $('#' + addBtnId).off('click').on('click', function() {
+            let val = $('#' + inputId).val().trim();
+            if (val && !tags.includes(val)) {
+                tags.push(val);
+                renderTags();
+                $('#' + inputId).val('');
+            }
+        });
+
+        $('#' + inputId).off('keypress').on('keypress', function(e) {
+            if (e.which === 13) {
+                e.preventDefault();
+                $('#' + addBtnId).click();
+            }
+        });
+
+        $('#' + tagsDivId).off('click', '.remove-tag').on('click', '.remove-tag', function() {
+            let idx = $(this).data('idx');
+            tags.splice(idx, 1);
+            renderTags();
+        });
+
+        return {
+            setTags: function(arrayOfTags) {
+                tags = arrayOfTags;
+                renderTags();
+            },
+            getTags: function() {
+                return tags;
+            }
+        };
+    }
+
+
+    let jamaahHandler, pesananHandler;
+
+    $(document).ready(function() {
+        jamaahHandler = handleTagInput('jamaah_input', 'add_jamaah', 'jamaah_tags', 'jamaah');
+        pesananHandler = handleTagInput('pesanan_input', 'add_pesanan', 'pesanan_tags', 'pesanan');
+    });
+
 
     $(document).ready(function() {
         $('#ctc_nomor').on('input', function() {
@@ -400,7 +495,6 @@
                 },
                 dataType: "JSON",
                 success: function(data) {
-                    console.log(data);
                     $('#kode_invoice').val(data.toUpperCase());
                     $('#kode').val(data);
                 },
@@ -526,7 +620,7 @@
                         <input type="text" class="form-control harga" id="harga-${rowCount}" name="harga[${rowCount}]" value="" placeholder="Harga" />
                     </td>
                     <td>
-                        <input type="text" class="form-control total" id="total-${rowCount}" name="total[${rowCount}]" value="" placeholder="Total" />
+                        <input type="text" class="form-control total" id="total-${rowCount}" name="total[${rowCount}]" value="" placeholder="Total" readonly />
                     </td>
 
                     <td><span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span></td>
@@ -609,8 +703,6 @@
                 deletedRekRows.push(rowRekId);
             }
 
-            console.log(rowRekId);
-
             $(`#rek-${id}`).remove();
             // Reorder rows and update row numbers
             reorderRekRows();
@@ -646,57 +738,6 @@
             addRow();
         });
 
-        // BUTTON ADD ROW jamaa
-        let jamaahCount = 0;
-        $('#btn-jamaah').click(function() {
-            const jamaah = $('#nama_jamaah').val();
-            if (jamaah != '') {
-                const row = `
-                <tr id="jamaah-${jamaahCount}">
-                    <td class="row-number">${jamaahCount + 1}</td>
-                    <td>
-                        <input type="text" class="form-control" name="jamaah[${jamaahCount}]" value="${jamaah}" placeholder="Nama Jamaah" style="border: none; pointer-events: none; color: #666"/>
-                    </td>
-                    <td><span class="btn delete-jamaah btn-danger" data-id="${jamaahCount}">Delete</span></td>
-                </tr>
-                `;
-                $('#jamaah-table tbody').append(row);
-                $('#nama_jamaah').val(''); // Kosongkan input setelah menambah
-                updateSubmitButtonState(); // Perbarui status tombol submit
-                //checkDeleteButtonState(); // Cek tombol delete setelah baris ditambahkan
-                jamaahCount++;
-                //VALIDASI ROW YANG TELAH DI APPEND
-                $("#form").validate().settings.rules[`jamaah[${jamaahCount}]`] = {
-                    required: true
-                };
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Kesalahan',
-                    text: 'Nama Jamaah tidak boleh kosong!',
-                });
-            }
-        });
-        // BUTTON HAPUS JAMA'AH
-        $(document).on('click', '.delete-jamaah', function() {
-            const id = $(this).data('id');
-            $(`#jamaah-${id}`).remove();
-            // Reorder rows and update row numbers
-            reorderJamaahRows();
-            updateSubmitButtonState(); // Perbarui status tombol submit
-        });
-
-        // REORDER JAMA'AH
-        function reorderJamaahRows() {
-            $('#jamaah-table tbody tr').each(function(index) {
-                const newJamaahRowNumber = index + 1;
-                $(this).attr('id', `jamaah-${newJamaahRowNumber}`);
-                $(this).find('.row-number').text(newJamaahRowNumber);
-                $(this).find('.delete-jamaah').attr('data-id', newJamaahRowNumber).text('Delete');
-            });
-            jamaahCount = $('#jamaah-table tbody tr').length;
-        }
-
         function updateSubmitButtonState() {
             const rowCount = $('#input-container tr').length;
             if (rowCount > 0) {
@@ -729,10 +770,37 @@
             // Lanjutkan dengan submit form
         });
 
+        function extractListText(html) {
+            const container = document.createElement('div');
+            container.innerHTML = html;
+
+            const lis = container.querySelectorAll('li');
+            const result = [];
+
+            lis.forEach(li => {
+                // Ambil semua isi LI kecuali <span class="ql-ui">
+                const cloned = li.cloneNode(true);
+                const span = cloned.querySelector('span.ql-ui');
+                if (span) span.remove();
+
+                const text = cloned.textContent.trim();
+                if (text !== '') result.push(text);
+            });
+
+            return result.join(', '); // atau pakai "\n" kalau mau multiline
+        }
+
+
         // MENGISI FORM UPDATE
         if (id == 0) {
             $('.aksi').append('<span class="front front-aksi">Save</span>');
         } else if (aksi == 'new') {
+            // READONLY INPUTAN INPUTAN
+            $('#ctc_nama').prop('readonly', true);
+            $('#jamaah_input').prop('readonly', true);
+            $('#pesanan_input').prop('readonly', true);
+            $('#ctc_alamat').prop('readonly', true);
+
             $('.aksi').append('<span class="front front-aksi">Save</span>');
             $('#total_order').prop('readonly', true);
             $.ajax({
@@ -740,6 +808,17 @@
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
+                    const jamaah = data.master.jamaah;
+                    const list_jamaah = extractListText(jamaah).split(',').map(e => e.trim()).filter(e => e);
+
+                    const pesanan = data.master.detail_pesanan;
+                    const list_pesanan = extractListText(pesanan).split(',').map(e => e.trim()).filter(e => e);
+
+                    $('#jamaah').val(list_jamaah.join(', ')); // isi hidden input
+                    jamaahHandler.setTags(list_jamaah); // tampilkan tags otomatis!
+
+                    $('#pesanan').val(list_pesanan.join(', '));
+                    pesananHandler.setTags(list_pesanan);
                     $('#ctc_email').val(data['master']['ctc_email']);
                     $('#total_order').val((data['master']['total_order'] - data['master']['total_tagihan']).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
                     $('#ctc_nama').val(data['master']['ctc_nama']);
@@ -747,8 +826,8 @@
                     // $('#detail_pesanan').val(data['master']['detail_pesanan']);
                     $('#ctc_alamat').val(data['master']['ctc_alamat']);
                     $('#rekening').val(data['master']['travel_id']).trigger('change.select2');
-                    quill2.clipboard.dangerouslyPasteHTML(data['master']['jamaah']);
-                    quill3.clipboard.dangerouslyPasteHTML(data['master']['detail_pesanan']);
+                    // quill2.clipboard.dangerouslyPasteHTML(data['master']['jamaah']);
+                    // quill3.clipboard.dangerouslyPasteHTML(data['master']['detail_pesanan']);
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     alert('Error get data from ajax');
@@ -762,7 +841,18 @@
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
-                    // console.log(data);
+                    const jamaah = data.master.jamaah;
+                    const list_jamaah = extractListText(jamaah).split(',').map(e => e.trim()).filter(e => e);
+
+                    const pesanan = data.master.detail_pesanan;
+                    const list_pesanan = extractListText(pesanan).split(',').map(e => e.trim()).filter(e => e);
+
+                    $('#jamaah').val(list_jamaah.join(', ')); // isi hidden input
+                    jamaahHandler.setTags(list_jamaah); // tampilkan tags otomatis!
+
+                    $('#pesanan').val(list_pesanan.join(', '));
+                    pesananHandler.setTags(list_pesanan);
+
                     //SET VALUE DATA MASTER PREPAYMENT
                     $('#id').val(data['master']['id']);
                     $('#ctc_email').val(data['master']['ctc_email']);
@@ -779,8 +869,8 @@
                     $('#ctc_alamat').val(data['master']['ctc_alamat']);
                     $('#total_order').val(data['master']['total_order'].toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
                     quill.clipboard.dangerouslyPasteHTML(data['master']['keterangan']);
-                    quill2.clipboard.dangerouslyPasteHTML(data['master']['jamaah']);
-                    quill3.clipboard.dangerouslyPasteHTML(data['master']['detail_pesanan']);
+                    // quill2.clipboard.dangerouslyPasteHTML(data['master']['jamaah']);
+                    // quill3.clipboard.dangerouslyPasteHTML(data['master']['detail_pesanan']);
                     //APPEND DATA pu_rek_invoice DETAIL PREPAYMENT
                     if (aksi == 'update') {
 
@@ -802,7 +892,7 @@
                                     <input type="text" class="form-control harga" id="harga-${index + 1}" name="harga[${index + 1}]" value="${hargaFormatted}" placeholder="Harga" />
                                 </td>
                                 <td>
-                                    <input type="text" class="form-control total" id="total-${index + 1}" name="total[${index + 1}]" value="${totalFormatted}" placeholder="Harga" />
+                                    <input type="text" class="form-control total" id="total-${index + 1}" name="total[${index + 1}]" value="${totalFormatted}" placeholder="Harga" readonly />
                                 </td>
 
                                 <td><span class="btn delete-btn btn-danger" data-id="${index + 1}">Delete</span></td>
@@ -820,20 +910,20 @@
                             });
                         });
 
-                        // detail jamaah
-                        $(data['jamaah']).each(function(index) {
-                            const row = `
-                            <tr id="jamaah-${index + 1}">
-                                <td class="row-number">${index + 1}</td>
-                                <td>
-                                    <input type="text" class="form-control" name="jamaah[${index + 1}]" value="${data['jamaah'][index]}" placeholder="Nama Jamaah" style="border: none; pointer-events: none; color: #666"/>
-                                </td>
-                                <td><span class="btn delete-jamaah btn-danger" data-id="${index + 1}">Delete</span></td>
-                            </tr>
-                            `;
-                            $('#jamaah-table tbody').append(row);
-                            jamaahCount = index + 1;
-                        });
+                        // // detail jamaah
+                        // $(data['jamaah']).each(function(index) {
+                        //     const row = `
+                        //     <tr id="jamaah-${index + 1}">
+                        //         <td class="row-number">${index + 1}</td>
+                        //         <td>
+                        //             <input type="text" class="form-control" name="jamaah[${index + 1}]" value="${data['jamaah'][index]}" placeholder="Nama Jamaah" style="border: none; pointer-events: none; color: #666"/>
+                        //         </td>
+                        //         <td><span class="btn delete-jamaah btn-danger" data-id="${index + 1}">Delete</span></td>
+                        //     </tr>
+                        //     `;
+                        //     $('#jamaah-table tbody').append(row);
+                        //     jamaahCount = index + 1;
+                        // });
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
@@ -891,80 +981,84 @@
             }
 
             const quillText = quill.getText().trim();
-            const quill2Text = quill2.getText().trim();
+            // const quill2Text = quill2.getText().trim();
             // Get HTML content from Quill editor
             var catatanItem = quill.root.innerHTML;
-            var jamaahItem = quill2.root.innerHTML;
+            // var jamaahItem = quill2.root.innerHTML;
 
             // Tampilkan loading
-            $('#loading').show();
+            // $('#loading').show();
 
             $('.aksi').prop('disabled', true);
 
-            // Cek quill
-            if (quill2Text === '') {
-                e.preventDefault(); // batalkan submit
+            Swal.fire({
+                title: 'Konfirmasi',
+                text: 'Apakah Anda yakin ingin menyimpan data ini?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Simpan',
+                cancelButtonText: 'Batal',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                preConfirm: () => {
+                    // Tampilkan loading di swal
+                    Swal.showLoading();
+                    // Disable tombol submit agar tidak bisa diklik berkali-kali
+                    $('.aksi').prop('disabled', true);
 
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Jamaah Kosong',
-                    text: 'Silakan isi Jamaah terlebih dahulu.',
-                    confirmButtonText: 'OK'
-                });
-            } else {
-                $.ajax({
-                    url: url,
-                    type: "POST",
-                    data: $('#form').serialize(),
-                    dataType: "JSON",
-                    success: function(data) {
-                        console.log(data);
-                        // Sembunyikan loading saat respons diterima
-                        $('#loading').hide();
-
-                        if (data.status) //if success close modal and reload ajax table
-                        {
-                            Swal.fire({
-                                position: 'center',
-                                icon: 'success',
-                                title: 'Your data has been saved',
-                                showConfirmButton: false,
-                                timer: 1500
-                            }).then((result) => {
-                                checkNotifications();
-                                location.href = "<?= base_url('pu_invoice') ?>";
-                            })
-                        } else {
-                            // Jika ada error, tampilkan pesan error
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: data.message
-                            });
-                        }
-
-                        // Enable tombol kembali
-                        $('.aksi').prop('disabled', false);
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        // Sembunyikan loading saat respons diterima
-                        $('#loading').hide();
-
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'Error adding / updating data: ' + textStatus
+                    // Kembalikan promise agar swal menunggu ajax selesai
+                    return new Promise((resolve, reject) => {
+                        $.ajax({
+                            url: url,
+                            type: "POST",
+                            data: $('#form').serialize(),
+                            dataType: "JSON",
+                            success: function(data) {
+                                $('#loading').hide();
+                                if (data.status) {
+                                    resolve();
+                                    Swal.fire({
+                                        position: 'center',
+                                        icon: 'success',
+                                        title: 'Your data has been saved',
+                                        showConfirmButton: false,
+                                        timer: 1500
+                                    }).then(() => {
+                                        checkNotifications();
+                                        location.href = "<?= base_url('pu_invoice') ?>";
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: data.message
+                                    });
+                                    $('.aksi').prop('disabled', false);
+                                    reject();
+                                }
+                            },
+                            error: function(jqXHR, textStatus, errorThrown) {
+                                // $('#loading').hide();
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'Error adding / updating data: ' + textStatus
+                                });
+                                $('.aksi').prop('disabled', false);
+                                reject();
+                            }
                         });
-
-                        // Enable tombol kembali
-                        $('.aksi').prop('disabled', false);
-                    }
-                });
-            }
+                    });
+                }
+            });
+            // }
         });
 
         $("#form").validate({
             rules: {
+                ctc_nama: {
+                    required: true,
+                },
                 tgl_invoice: {
                     required: true,
                 },
@@ -985,6 +1079,9 @@
                 }
             },
             messages: {
+                ctc_nama: {
+                    required: "Contact Person is required",
+                },
                 tgl_invoice: {
                     required: "Tanggal Invoice is required",
                 },
@@ -1020,6 +1117,25 @@
             focusInvalid: false, // Disable auto-focus on the first invalid field
         });
 
+        // Delegasi ke container yang sudah ada di awal
+        $('#input-container').on('input', '.jumlah, .harga', function() {
+
+            const currentRow = $(this).closest('tr').attr('id').split('-')[1];
+            const jumlahInput = $(`#jumlah-${currentRow}`);
+            const hargaInput = $(`#harga-${currentRow}`);
+            const totalInput = $(`#total-${currentRow}`);
+
+            // Ambil nilai mentah dan hilangkan titik (format ribuan)
+            let jumlah = jumlahInput.val().replace(/\./g, '').replace(/[^0-9]/g, '');
+            let harga = hargaInput.val().replace(/\./g, '').replace(/[^0-9]/g, '');
+
+            jumlah = parseInt(jumlah) || 0;
+            harga = parseInt(harga) || 0;
+
+            const total = jumlah * harga;
+
+            totalInput.val(new Intl.NumberFormat('id-ID').format(total));
+        });
 
     })
 </script>

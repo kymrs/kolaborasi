@@ -10,6 +10,248 @@ class M_sml_rekapitulasi extends CI_Model
     var $table2 = 'sml_reimbust_detail';
     var $table3 = 'sml_prepayment';
 
+<<<<<<< HEAD
+    private function _get_datatables_query_pelaporan()
+    {
+        // Column order for "pelaporan" tab
+        $this->column_order = array(null, 'sml_reimbust.tgl_pengajuan', 'sml_prepayment.tujuan', 'sml_reimbust.kode_reimbust', 'sml_prepayment.kode_prepayment', 'sml_prepayment.total_nominal');
+        $this->column_search = array('sml_reimbust.tgl_pengajuan', 'sml_prepayment.tujuan', 'sml_reimbust.kode_reimbust', 'sml_prepayment.kode_prepayment', 'sml_prepayment.total_nominal');
+
+        // Query for "pelaporan" tab
+        $this->db->select('sml_reimbust.id, 
+                               sml_prepayment.id as prepayment_id, 
+                               sml_reimbust.kode_reimbust,  
+                               sml_prepayment.tujuan, 
+                               IF(sml_reimbust.kode_prepayment IS NOT NULL, sml_reimbust.tgl_pengajuan, sml_prepayment.tgl_prepayment) AS tgl_pengajuan,  
+                               sml_prepayment.kode_prepayment, 
+                               sml_prepayment.total_nominal, 
+                               SUM(sml_reimbust_detail.jumlah) AS total_jumlah_detail');
+        $this->db->from('sml_prepayment');
+        $this->db->join('sml_reimbust', 'sml_reimbust.kode_prepayment = sml_prepayment.kode_prepayment', 'left');
+        $this->db->join('sml_reimbust_detail', 'sml_reimbust.id = sml_reimbust_detail.reimbust_id', 'left');
+
+        $this->db->group_start();
+        $this->db->group_start();
+        $this->db->where('sml_prepayment.payment_status', 'paid');
+        $this->db->where('sml_reimbust.kode_prepayment IS NULL');
+        $this->db->group_end();
+        $this->db->or_group_start();
+        $this->db->where('sml_prepayment.payment_status', 'paid');
+        $this->db->where('sml_reimbust.kode_prepayment IS NOT NULL');
+        $this->db->group_end();
+        $this->db->or_group_start();
+        $this->db->where('sml_reimbust.payment_status', 'paid');
+        $this->db->where('sml_reimbust.kode_prepayment IS NOT NULL');
+        $this->db->group_end();
+        $this->db->group_end();
+
+
+        // Filter by date range
+        if (!empty($_POST['awal']) && !empty($_POST['akhir'])) {
+            $tgl_awal = date('Y-m-d', strtotime($_POST['awal']));
+            $tgl_akhir = date('Y-m-d', strtotime($_POST['akhir']));
+
+            $this->db->group_start();
+            $this->db->where('sml_reimbust.tgl_pengajuan >=', $tgl_awal);
+            $this->db->where('sml_reimbust.kode_prepayment IS NOT NULL');
+            $this->db->or_where('sml_prepayment.tgl_prepayment >=', $tgl_awal);
+            $this->db->where('sml_reimbust.kode_prepayment IS NULL');
+            $this->db->group_end();
+
+            $this->db->group_start();
+            $this->db->where('sml_reimbust.tgl_pengajuan <=', $tgl_akhir);
+            $this->db->where('sml_reimbust.kode_prepayment IS NOT NULL');
+            $this->db->or_where('sml_prepayment.tgl_prepayment <=', $tgl_akhir);
+            $this->db->where('sml_reimbust.kode_prepayment IS NULL');
+            $this->db->group_end();
+        }
+
+        $this->db->group_by(array('sml_prepayment.id', 'sml_prepayment.kode_prepayment'));
+
+        // Search
+        $i = 0;
+        foreach ($this->column_search as $item) {
+            if ($_POST['search']['value']) {
+                if ($i === 0) {
+                    $this->db->group_start();
+                    $this->db->like($item, $_POST['search']['value']);
+                } else {
+                    $this->db->or_like($item, $_POST['search']['value']);
+                }
+                if (count($this->column_search) - 1 == $i) {
+                    $this->db->group_end();
+                }
+            }
+            $i++;
+        }
+
+        // Order
+        if (isset($_POST['order'])) {
+            $this->db->order_by($this->column_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+        } else {
+            $this->db->order_by('sml_reimbust.tgl_pengajuan', 'DESC');
+        }
+    }
+
+    public function get_datatables_pelaporan()
+    {
+        $this->_get_datatables_query_pelaporan();
+        if ($_POST['length'] != -1)
+            $this->db->limit($_POST['length'], $_POST['start']);
+        $query = $this->db->get();
+        return $query->result();
+    }
+
+    public function count_filtered_pelaporan()
+    {
+        $this->_get_datatables_query_pelaporan();
+        $query = $this->db->get();
+        return $query->num_rows();
+    }
+
+    public function count_all_pelaporan()
+    {
+        $this->_get_datatables_query_pelaporan();
+        return $this->db->count_all_results();
+    }
+
+    private function _get_datatables_query_reimbust()
+    {
+        $this->column_order = array(null, 'sml_reimbust.tgl_pengajuan', 'name', 'tujuan', 'sml_reimbust.kode_reimbust', 'kode_prepayment', 'total_jumlah_detail');
+        $this->column_search = array('sml_reimbust.tgl_pengajuan', 'tbl_data_user.name', 'sml_reimbust.tujuan', 'sml_reimbust.kode_reimbust', 'sml_reimbust.kode_prepayment');
+
+        $this->db->select('sml_reimbust.id, sml_reimbust.tgl_pengajuan, sml_reimbust.tujuan, sml_reimbust.kode_reimbust, sml_reimbust.kode_prepayment, SUM(sml_reimbust_detail.jumlah) AS total_jumlah_detail');
+        $this->db->from('sml_reimbust');
+        $this->db->join('sml_reimbust_detail', 'sml_reimbust.id = sml_reimbust_detail.reimbust_id', 'left');
+        $this->db->where('sml_reimbust.payment_status', 'paid');
+        $this->db->where('sml_reimbust.kode_prepayment', '');
+
+        // Filter by date range
+        if (!empty($_POST['awal']) && !empty($_POST['akhir'])) {
+            $tgl_awal = date('Y-m-d', strtotime($_POST['awal']));
+            $tgl_akhir = date('Y-m-d', strtotime($_POST['akhir']));
+            $this->db->where('sml_reimbust.tgl_pengajuan >=', $tgl_awal);
+            $this->db->where('sml_reimbust.tgl_pengajuan <=', $tgl_akhir);
+        }
+
+        $this->db->group_by('sml_reimbust.id, sml_reimbust.kode_reimbust, sml_reimbust.tgl_pengajuan');
+
+        // Search
+        $i = 0;
+        foreach ($this->column_search as $item) {
+            if ($_POST['search']['value']) {
+                if ($i === 0) {
+                    $this->db->group_start();
+                    $this->db->like($item, $_POST['search']['value']);
+                } else {
+                    $this->db->or_like($item, $_POST['search']['value']);
+                }
+                if (count($this->column_search) - 1 == $i) {
+                    $this->db->group_end();
+                }
+            }
+            $i++;
+        }
+
+        // Order
+        if (isset($_POST['order'])) {
+            $this->db->order_by($this->column_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+        } else {
+            $this->db->order_by('sml_reimbust.tgl_pengajuan', 'DESC');
+        }
+    }
+
+    public function get_datatables_reimbust()
+    {
+        $this->_get_datatables_query_reimbust();
+        if ($_POST['length'] != -1)
+            $this->db->limit($_POST['length'], $_POST['start']);
+        $query = $this->db->get();
+        return $query->result();
+    }
+
+    public function count_filtered_reimbust()
+    {
+        $this->_get_datatables_query_reimbust();
+        $query = $this->db->get();
+        return $query->num_rows();
+    }
+
+    public function count_all_reimbust()
+    {
+        $this->_get_datatables_query_reimbust();
+        return $this->db->count_all_results();
+    }
+
+    private function _get_datatables_query_invoice()
+    {
+        $this->column_order = array(null, 'sml_invoice.id', 'sml_invoice.tgl_invoice', 'sml_invoice.ctc_to', 'sml_invoice.kode_invoice', 'sml_invoice.payment_status');
+        $this->column_search = array('sml_invoice.id', 'sml_invoice.tgl_invoice', 'sml_invoice.ctc_to', 'sml_invoice.kode_invoice', 'sml_invoice.payment_status');
+
+        $this->db->select('sml_invoice.id, sml_invoice.tgl_invoice, sml_invoice.ctc_to, sml_invoice.kode_invoice, sml_invoice.payment_status, SUM(sml_detail_invoice.total) AS total');
+        $this->db->from('sml_invoice');
+        $this->db->join('sml_detail_invoice', 'sml_invoice.id = sml_detail_invoice.invoice_id', 'left');
+        $this->db->where('sml_invoice.payment_status', 1);
+
+        // Filter by date range
+        if (!empty($_POST['awal']) && !empty($_POST['akhir'])) {
+            $tgl_awal = date('Y-m-d', strtotime($_POST['awal']));
+            $tgl_akhir = date('Y-m-d', strtotime($_POST['akhir']));
+            $this->db->where('sml_invoice.tgl_invoice >=', $tgl_awal);
+            $this->db->where('sml_invoice.tgl_invoice <=', $tgl_akhir);
+        }
+
+        $this->db->group_by('sml_invoice.id, sml_invoice.kode_invoice, sml_invoice.tgl_invoice');
+
+        // Search
+        $i = 0;
+        foreach ($this->column_search as $item) {
+            if ($_POST['search']['value']) {
+                if ($i === 0) {
+                    $this->db->group_start();
+                    $this->db->like($item, $_POST['search']['value']);
+                } else {
+                    $this->db->or_like($item, $_POST['search']['value']);
+                }
+                if (count($this->column_search) - 1 == $i) {
+                    $this->db->group_end();
+                }
+            }
+            $i++;
+        }
+
+        // Order
+        if (isset($_POST['order'])) {
+            $this->db->order_by($this->column_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+        } else {
+            $this->db->order_by('sml_invoice.tgl_invoice', 'DESC');
+        }
+    }
+
+    public function get_datatables_invoice()
+    {
+        $this->_get_datatables_query_invoice();
+        if ($_POST['length'] != -1)
+            $this->db->limit($_POST['length'], $_POST['start']);
+        $query = $this->db->get();
+        return $query->result();
+    }
+
+    public function count_filtered_invoice()
+    {
+        $this->_get_datatables_query_invoice();
+        $query = $this->db->get();
+        return $query->num_rows();
+    }
+
+    public function count_all_invoice()
+    {
+        $this->_get_datatables_query_invoice();
+        return $this->db->count_all_results();
+    }
+
+=======
+>>>>>>> 01baacc0bc7ac03d364f8779f5d23138bd323641
     function _get_datatables_query()
     {
         // Define column ordering for different tabs
@@ -69,8 +311,11 @@ class M_sml_rekapitulasi extends CI_Model
                     $this->db->group_end();
                 }
 
+<<<<<<< HEAD
+=======
 
 
+>>>>>>> 01baacc0bc7ac03d364f8779f5d23138bd323641
                 $this->db->group_by(array('sml_prepayment.id', 'sml_prepayment.kode_prepayment'));
             } elseif ($_POST['tab'] == 'reimbust') {
                 // Column order for "reimbust" tab
@@ -147,6 +392,37 @@ class M_sml_rekapitulasi extends CI_Model
             if ($_POST['tab'] == 'pelaporan') {
                 // Column order for "pelaporan" tab
                 $this->column_order = array(null, 'tgl_pengajuan', 'name', 'tujuan', 'kode_reimbust', 'kode_prepayment', 'total_nominal', 'total_jumlah_detail');
+<<<<<<< HEAD
+                $this->column_search = array('sml_reimbust.tgl_pengajuan', 'name', 'sml_prepayment.tujuan', 'kode_reimbust', 'sml_prepayment.kode_prepayment', 'sml_prepayment.total_nominal');
+
+                // Query for "pelaporan" tab
+                $this->db->select('sml_reimbust.id, 
+                               sml_prepayment.id as prepayment_id, 
+                               sml_reimbust.kode_reimbust, 
+                               tbl_data_user.name, 
+                               sml_prepayment.tujuan, 
+                               IF(sml_reimbust.kode_prepayment IS NOT NULL, sml_reimbust.tgl_pengajuan, sml_prepayment.tgl_prepayment) AS tgl_pengajuan,  
+                               sml_prepayment.kode_prepayment, 
+                               sml_prepayment.total_nominal, 
+                               SUM(sml_reimbust_detail.jumlah) AS total_jumlah_detail');
+                $this->db->from('sml_prepayment');
+                $this->db->join('sml_reimbust', 'sml_reimbust.kode_prepayment = sml_prepayment.kode_prepayment', 'left');
+                $this->db->join('sml_reimbust_detail', 'sml_reimbust.id = sml_reimbust_detail.reimbust_id', 'left');
+                $this->db->join('tbl_data_user', 'sml_prepayment.id_user = tbl_data_user.id_user', 'left');
+
+                $this->db->group_start();
+                $this->db->group_start();
+                $this->db->where('sml_prepayment.payment_status', 'paid');
+                $this->db->where('sml_reimbust.kode_prepayment IS NULL');
+                $this->db->group_end();
+                $this->db->or_group_start();
+                $this->db->where('sml_prepayment.payment_status', 'paid');
+                $this->db->where('sml_reimbust.kode_prepayment IS NOT NULL');
+                $this->db->group_end();
+                $this->db->or_group_start();
+                $this->db->where('sml_reimbust.payment_status', 'paid');
+                $this->db->where('sml_reimbust.kode_prepayment IS NOT NULL');
+=======
                 $this->column_search = array('pu_reimbust.tgl_pengajuan', 'name', 'pu_prepayment.tujuan', 'kode_reimbust', 'pu_prepayment.kode_prepayment', 'pu_prepayment.total_nominal');
 
                 // Query for "pelaporan" tab
@@ -176,6 +452,7 @@ class M_sml_rekapitulasi extends CI_Model
                 $this->db->or_group_start();
                 $this->db->where('pu_reimbust.payment_status', 'paid');
                 $this->db->where('pu_reimbust.kode_prepayment IS NOT NULL');
+>>>>>>> 01baacc0bc7ac03d364f8779f5d23138bd323641
                 $this->db->group_end();
                 $this->db->group_end();
 
@@ -185,6 +462,35 @@ class M_sml_rekapitulasi extends CI_Model
                     $tgl_akhir = date('Y-m-d', strtotime($_POST['akhir']));
 
                     $this->db->group_start();
+<<<<<<< HEAD
+                    $this->db->where('sml_reimbust.tgl_pengajuan >=', $tgl_awal);
+                    $this->db->where('sml_reimbust.kode_prepayment IS NOT NULL');
+                    $this->db->or_where('sml_prepayment.tgl_prepayment >=', $tgl_awal);
+                    $this->db->where('sml_reimbust.kode_prepayment IS NULL');
+                    $this->db->group_end();
+
+                    $this->db->group_start();
+                    $this->db->where('sml_reimbust.tgl_pengajuan <=', $tgl_akhir);
+                    $this->db->where('sml_reimbust.kode_prepayment IS NOT NULL');
+                    $this->db->or_where('sml_prepayment.tgl_prepayment <=', $tgl_akhir);
+                    $this->db->where('sml_reimbust.kode_prepayment IS NULL');
+                    $this->db->group_end();
+                }
+
+                $this->db->group_by(array('sml_prepayment.id', 'sml_prepayment.kode_prepayment'));
+            } elseif ($_POST['tab'] == 'reimbust') {
+                // Column order for "reimbust" tab
+                $this->column_order = array(null, 'sml_reimbust.tgl_pengajuan', 'name', 'tujuan', 'sml_reimbust.kode_reimbust', 'kode_prepayment', 'total_jumlah_detail');
+                $this->column_search = array('sml_reimbust.tgl_pengajuan', 'name', 'tujuan', 'sml_reimbust.kode_reimbust', 'kode_prepayment');
+
+                // Query for "reimbust" tab
+                $this->db->select('sml_reimbust.id, sml_reimbust.tgl_pengajuan, tbl_data_user.name, sml_reimbust.tujuan, sml_reimbust.kode_reimbust, sml_reimbust.kode_prepayment, SUM(sml_reimbust_detail.jumlah) AS total_jumlah_detail');
+                $this->db->from('sml_reimbust');
+                $this->db->join('sml_reimbust_detail', 'sml_reimbust.id = sml_reimbust_detail.reimbust_id');
+                $this->db->join('tbl_data_user', 'sml_reimbust.id_user = tbl_data_user.id_user');
+                $this->db->where('sml_reimbust.payment_status', 'paid');
+                $this->db->where('sml_reimbust.kode_prepayment', '');
+=======
                     $this->db->where('pu_reimbust.tgl_pengajuan >=', $tgl_awal);
                     $this->db->where('pu_reimbust.kode_prepayment IS NOT NULL');
                     $this->db->or_where('pu_prepayment.tgl_prepayment >=', $tgl_awal);
@@ -212,17 +518,26 @@ class M_sml_rekapitulasi extends CI_Model
                 $this->db->join('tbl_data_user', 'pu_reimbust.id_user = tbl_data_user.id_user');
                 $this->db->where('pu_reimbust.payment_status', 'paid');
                 $this->db->where('pu_reimbust.kode_prepayment', '');
+>>>>>>> 01baacc0bc7ac03d364f8779f5d23138bd323641
 
                 // Filter by date range
                 if (!empty($_POST['awal']) && !empty($_POST['akhir'])) {
                     $tgl_awal = date('Y-m-d', strtotime($_POST['awal']));
                     $tgl_akhir = date('Y-m-d', strtotime($_POST['akhir']));
 
+<<<<<<< HEAD
+                    $this->db->where('sml_reimbust.tgl_pengajuan >=', $tgl_awal);
+                    $this->db->where('sml_reimbust.tgl_pengajuan <=', $tgl_akhir);
+                }
+
+                $this->db->group_by('sml_reimbust.id, sml_reimbust.kode_reimbust, sml_reimbust.tgl_pengajuan');
+=======
                     $this->db->where('pu_reimbust.tgl_pengajuan >=', $tgl_awal);
                     $this->db->where('pu_reimbust.tgl_pengajuan <=', $tgl_akhir);
                 }
 
                 $this->db->group_by('pu_reimbust.id, pu_reimbust.kode_reimbust, pu_reimbust.tgl_pengajuan');
+>>>>>>> 01baacc0bc7ac03d364f8779f5d23138bd323641
             }
         }
 
@@ -269,8 +584,13 @@ class M_sml_rekapitulasi extends CI_Model
     {
         // Total untuk prepayment
         $this->db->select('SUM(a.total_nominal) AS total_nominal');
+<<<<<<< HEAD
+        $this->db->from('sml_prepayment AS a');
+        $this->db->join('sml_reimbust AS b', 'a.kode_prepayment = b.kode_prepayment', 'left');
+=======
         $this->db->from('pu_prepayment AS a');
         $this->db->join('pu_reimbust AS b', 'a.kode_prepayment = b.kode_prepayment', 'left');
+>>>>>>> 01baacc0bc7ac03d364f8779f5d23138bd323641
         $this->db->where('a.payment_status', 'paid');
         $this->db->where('b.kode_prepayment IS NULL');
 
@@ -296,9 +616,15 @@ class M_sml_rekapitulasi extends CI_Model
 
         // Total untuk pelaporan
         $this->db->select('SUM(b.jumlah) AS total_nominal');
+<<<<<<< HEAD
+        $this->db->from('sml_reimbust AS a');
+        $this->db->join('sml_reimbust_detail AS b', 'a.id = b.reimbust_id', 'left');
+        $this->db->join('sml_prepayment AS c', 'c.kode_prepayment = a.kode_prepayment', 'right');
+=======
         $this->db->from('pu_reimbust AS a');
         $this->db->join('pu_reimbust_detail AS b', 'a.id = b.reimbust_id', 'left');
         $this->db->join('pu_prepayment AS c', 'c.kode_prepayment = a.kode_prepayment', 'right');
+>>>>>>> 01baacc0bc7ac03d364f8779f5d23138bd323641
         $this->db->group_start();
         $this->db->where('a.payment_status', 'paid');
         $this->db->or_where('c.payment_status', 'paid');
@@ -327,8 +653,13 @@ class M_sml_rekapitulasi extends CI_Model
 
         // Total untuk reimbust
         $this->db->select('SUM(b.jumlah) AS total_nominal');
+<<<<<<< HEAD
+        $this->db->from('sml_reimbust AS a');
+        $this->db->join('sml_reimbust_detail AS b', 'a.id = b.reimbust_id', 'left');
+=======
         $this->db->from('pu_reimbust AS a');
         $this->db->join('pu_reimbust_detail AS b', 'a.id = b.reimbust_id', 'left');
+>>>>>>> 01baacc0bc7ac03d364f8779f5d23138bd323641
         $this->db->where('a.payment_status', 'paid');
         $this->db->where('a.kode_prepayment', '');
 
@@ -365,11 +696,71 @@ class M_sml_rekapitulasi extends CI_Model
         return $data;
     }
 
+<<<<<<< HEAD
+    function get_total_pemasukan()
+    {
+        $this->db->select('SUM(total) AS total_pemasukan');
+        $this->db->from('sml_invoice');
+        $this->db->where('payment_status', 1);
+
+        // // Filter by date range if needed
+        if (!empty($_POST['awal']) && !empty($_POST['akhir'])) {
+            $tgl_awal = date('Y-m-d', strtotime($_POST['awal']));
+            $tgl_akhir = date('Y-m-d', strtotime($_POST['akhir']));
+
+            $this->db->group_start();
+
+            if ($tgl_awal == $tgl_akhir) {
+                $this->db->where('tgl_invoice =', $tgl_awal);
+            } else {
+                $this->db->where('tgl_invoice >=', $tgl_awal);
+                $this->db->where('tgl_invoice <=', $tgl_akhir);
+            }
+
+            $this->db->group_end();
+        }
+        $lunas = $this->db->get()->row()->total_pemasukan;
+
+        $this->db->select('SUM(total) AS total_pemasukan');
+        $this->db->from('sml_invoice');
+        $this->db->where('payment_status', 0);
+
+        // // Filter by date range if needed
+        if (!empty($_POST['awal']) && !empty($_POST['akhir'])) {
+            $tgl_awal = date('Y-m-d', strtotime($_POST['awal']));
+            $tgl_akhir = date('Y-m-d', strtotime($_POST['akhir']));
+
+            $this->db->group_start();
+
+            if ($tgl_awal == $tgl_akhir) {
+                $this->db->where('tgl_invoice =', $tgl_awal);
+            } else {
+                $this->db->where('tgl_invoice >=', $tgl_awal);
+                $this->db->where('tgl_invoice <=', $tgl_akhir);
+            }
+
+            $this->db->group_end();
+        }
+        $tidak_lunas = $this->db->get()->row()->total_pemasukan;
+
+        return [
+            'lunas' => $lunas,
+            'tidak_lunas' => $tidak_lunas
+        ];
+    }
+
+    function get_data_prepayment($tgl_awal, $tgl_akhir)
+    {
+        $this->db->select('a.id, a.kode_prepayment, a.tgl_prepayment, a.prepayment, a.total_nominal');
+        $this->db->from('sml_prepayment AS a');
+        $this->db->join('sml_reimbust AS b', 'a.kode_prepayment = b.kode_prepayment', 'left');
+=======
     function get_data_prepayment($tgl_awal, $tgl_akhir)
     {
         $this->db->select('a.id, a.kode_prepayment, a.tgl_prepayment, a.prepayment, a.total_nominal');
         $this->db->from('pu_prepayment AS a');
         $this->db->join('pu_reimbust AS b', 'a.kode_prepayment = b.kode_prepayment', 'left');
+>>>>>>> 01baacc0bc7ac03d364f8779f5d23138bd323641
         $this->db->where('a.payment_status', 'paid');
         $this->db->where('b.kode_prepayment IS NULL');
 
@@ -397,9 +788,15 @@ class M_sml_rekapitulasi extends CI_Model
     function get_data_reimbust($tgl_awal, $tgl_akhir)
     {
         $this->db->select('a.id, a.kode_reimbust, a.tgl_pengajuan, a.sifat_pelaporan, SUM(b.jumlah) AS total_nominal');
+<<<<<<< HEAD
+        $this->db->from('sml_reimbust AS a');
+        $this->db->join('sml_reimbust_detail AS b', 'a.id = b.reimbust_id', 'inner');
+        $this->db->join('sml_prepayment AS c', 'a.kode_prepayment = c.kode_prepayment', 'left');
+=======
         $this->db->from('pu_reimbust AS a');
         $this->db->join('pu_reimbust_detail AS b', 'a.id = b.reimbust_id', 'inner');
         $this->db->join('pu_prepayment AS c', 'a.kode_prepayment = c.kode_prepayment', 'left');
+>>>>>>> 01baacc0bc7ac03d364f8779f5d23138bd323641
         $this->db->where('a.payment_status', 'paid');
         $this->db->or_where('c.payment_status', 'paid');
         $this->db->group_by('a.id');
@@ -424,4 +821,36 @@ class M_sml_rekapitulasi extends CI_Model
         $query = $this->db->get();
         return $query->result();
     }
+<<<<<<< HEAD
+
+    function get_data_invoice($tgl_awal, $tgl_akhir)
+    {
+        $this->db->select('sml_invoice.id, sml_invoice.kode_invoice, sml_invoice.tgl_invoice, sml_invoice.tgl_tempo, sml_invoice.payment_status, sml_invoice.ctc_to, sml_invoice.total');
+        $this->db->from('sml_invoice');
+        $this->db->join('bmn_detail_invoice', 'sml_invoice.id = bmn_detail_invoice.invoice_id', 'left');
+        $this->db->where('sml_invoice.payment_status', 1);
+
+        if (!empty($tgl_awal) && !empty($tgl_akhir)) {
+            $awal = date('Y-m-d', strtotime($tgl_awal));
+            $akhir = date('Y-m-d', strtotime($tgl_akhir));
+
+            $this->db->group_start();
+
+            if ($tgl_awal == $tgl_akhir) {
+                $this->db->where('sml_invoice.tgl_invoice =', $awal);
+            } else {
+                $this->db->where('sml_invoice.tgl_invoice >=', $awal);
+                $this->db->where('sml_invoice.tgl_invoice <=', $akhir);
+            }
+
+            $this->db->group_end();
+        }
+
+        $this->db->group_by('sml_invoice.id');
+
+        $query = $this->db->get();
+        return $query->result();
+    }
+=======
+>>>>>>> 01baacc0bc7ac03d364f8779f5d23138bd323641
 }

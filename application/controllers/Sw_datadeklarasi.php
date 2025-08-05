@@ -234,7 +234,7 @@ class Sw_datadeklarasi extends CI_Controller
 
         $valid = true;
         $confirm = $this->db->select('app_id, app2_id, app4_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
-        if (!empty($confirm) && isset($confirm->app_id, $confirm->app2_id, $confirm->app4_id)) {
+        if (!empty($confirm) && isset($confirm->app_id, $confirm->app2_id)) {
             $app = $confirm;
         } else {
             echo json_encode(array("status" => FALSE, "error" => "Approval Belum Ditentukan, Mohon untuk menghubungi admin."));
@@ -265,13 +265,16 @@ class Sw_datadeklarasi extends CI_Controller
                 ->where('id_user', $app->app2_id)
                 ->get()
                 ->row('name'),
-            'app4_name' => $this->db->select('name')
+            'created_at' => date('Y-m-d H:i:s')
+        );
+
+        if ($app->app4_id != null) {
+            $data['app4_name'] = $this->db->select('name')
                 ->from('tbl_data_user')
                 ->where('id_user', $app->app4_id)
                 ->get()
-                ->row('name'),
-            'created_at' => date('Y-m-d H:i:s')
-        );
+                ->row('name');
+        }
 
         if ($valid) {
             $this->M_sw_datadeklarasi->save($data);

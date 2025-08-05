@@ -263,16 +263,16 @@ class Swi_prepayment extends CI_Controller
                 ->where('id_user', $id)
                 ->get()
                 ->row('jabatan'),
-            'app_name' => $this->db->select('fullname')
-                ->from('tbl_user')
+            'app_name' => $this->db->select('name')
+                ->from('tbl_data_user')
                 ->where('id_user', $app->app_id)
                 ->get()
-                ->row('fullname'),
-            'app2_name' => $this->db->select('fullname')
-                ->from('tbl_user')
+                ->row('name'),
+            'app2_name' => $this->db->select('name')
+                ->from('tbl_data_user')
                 ->where('id_user', $app->app2_id)
                 ->get()
-                ->row('fullname'),
+                ->row('name'),
             'created_at' => date('Y-m-d H:i:s')
         );
 
