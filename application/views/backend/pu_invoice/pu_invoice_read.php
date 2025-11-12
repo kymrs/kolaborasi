@@ -115,7 +115,7 @@
                 <p>Metode Pembayaran</p>
                 <p>Bank : <span><?= $rekening->nama_bank ?></span></p>
                 <p>No rek : <span><?= $rekening->no_rek ?></span></p>
-                <p><b>a/n : <span><?= $rekening->travel ?></span></b></p>
+                <p><b>a/n : <span><?= $rekening->perusahaan ?></span></b></p>
             </div>
             <!-- Tambahkan catatan di bawah metode pembayaran -->
             <div class="catatan-invoice" style="margin-top:20px; margin-bottom:40px;">

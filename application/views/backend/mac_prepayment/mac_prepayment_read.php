@@ -151,10 +151,12 @@
                         <?php if ($user->app_name == $app_name && $user->status == 'approved') { ?>
                             <a class="btn btn-success btn-sm mr-2" id="paymentBtn" data-toggle="modal" data-target="#paymentModal"><i class="fas fa-money-bill"></i>&nbsp;Payment</a>
                         <?php } ?>
-                        <?php if ($user->app_name == $app_name && !in_array($user->app2_status, ['revised', 'rejected']) && !in_array($user->status, ['approved'])) { ?>
+                        <?php if ($user->app_name == $app_name && $user->app4_status = 'approved' && !in_array($user->app2_status, ['rejected', 'revised']) && $user->status != 'approved') { ?>
                             <a class="btn btn-warning btn-sm mr-2" id="appBtn" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
                         <?php } elseif ($user->app2_name == $app2_name && !in_array($user->status, ['rejected', 'approved'])  && $user->app_status == 'approved') { ?>
                             <a class="btn btn-warning btn-sm mr-2" id="appBtn2" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
+                        <?php } elseif ($user->app4_name == $app_name && !in_array($user->app_status, ['rejected', 'revised']) && !in_array($user->app2_status, ['rejected', 'revised']) && $user->status != 'approved') { ?>
+                            <a class="btn btn-warning btn-sm mr-2" id="appBtn3" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
                         <?php } ?>
                         <a class="btn btn-secondary btn-sm" onclick="history.back()"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                     </div>
@@ -226,23 +228,7 @@
                     </div>
 
                     <div class="table-approve">
-                        <table>
-                            <tr>
-                                <td>Yang melakukan</td>
-                                <td>Mengetahui</td>
-                                <td>Menyetujui</td>
-                            </tr>
-                            <tr style="height: 75px">
-                                <td id="statusMelakukan"></td>
-                                <td id="statusMengetahui"></td>
-                                <td id="statusMenyetujui"></td>
-                            </tr>
-                            <tr>
-                                <td id="melakukan"></td>
-                                <td id="mengetahui"></td>
-                                <td id="menyetujui"></td>
-                            </tr>
-                        </table>
+                        <!-- Generate TTD -->
                     </div>
 
                     <div class="keterangan-field">
@@ -422,6 +408,35 @@
             });
         });
 
+        $('#appBtn3').click(function() {
+            $('#app_keterangan').attr('name', 'app4_keterangan').attr('id', 'app4_keterangan');
+            $('#app_status').attr('name', 'app4_status').attr('id', 'app4_status');
+            $('#approvalForm').attr('action', '<?= site_url('mac_prepayment/approve3') ?>');
+
+            $.ajax({
+                url: "<?php echo site_url('mac_prepayment/edit_data') ?>/" + id,
+                type: "GET",
+                dataType: "JSON",
+                success: function(data) {
+                    var nama2, date2, status2, keterangan2;
+                    if (data['master']['app4_status'] == 'waiting') {
+                        $('#app4_status').val();
+                        $('#app4_keterangan').val();
+                    } else {
+                        nama2 = data['master']['app4_name'];
+                        status2 = data['master']['app4_status'];
+                        keterangan2 = data['master']['app4_keterangan'];
+                        $('#app4_status').val(status2);
+                        $('#app2_keterangan').val(keterangan2);
+                        // $('#note_id').append(`<p>* ${keterangan2}</p>`);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    alert('Error get data from ajax');
+                }
+            });
+        });
+
         $('#paymentBtn').click(function() {
             $('#paymentForm').attr('action', '<?= site_url('mac_prepayment/payment') ?>');
 
@@ -466,13 +481,22 @@
                     (data['master']['app2_keterangan'] !== null && data['master']['app2_keterangan'] !== '')) {
                     $('#keterangan').append(`<span>Keterangan :</span>`);
                 }
+                if (data['master']['app4_keterangan'] !== null && data['master']['app4_keterangan'] !== '') {
+                    $('#keterangan').append(`<span class="form-control-plaintext">*(${data['master']['app4_name']}) ${data['master']['app4_keterangan']}</span>`);
+                }
                 if (data['master']['app_keterangan'] !== null && data['master']['app_keterangan'] !== '') {
                     $('#keterangan').append(`<span class="form-control-plaintext">*(${data['master']['app_name']}) ${data['master']['app_keterangan']}</span>`);
                 }
                 if (data['master']['app2_keterangan'] !== null && data['master']['app2_keterangan'] !== '') {
-                    $('#keterangan').append(`<span class="form-control-plaintext">*(${data['master']['app_name']}) ${data['master']['app2_keterangan']}</span>`);
+                    $('#keterangan').append(`<span class="form-control-plaintext">*(${data['master']['app2_name']}) ${data['master']['app2_keterangan']}</span>`);
                 }
                 // DATA APPROVAL PREPAYMENT
+                if (data['master']['app4_date'] == null) {
+                    date4 = '';
+                }
+                if (data['master']['app4_date'] != null) {
+                    date4 = data['master']['app4_date'];
+                }
 
                 if (data['master']['app_date'] == null) {
                     date = '';
@@ -489,16 +513,38 @@
                     date2 = data['master']['app2_date'];
                 }
 
-                $('#melakukan').html(`<div class="signature-text text-center">${data['nama']}</div>`);
-                $('#mengetahui').html(`<div class="signature-text text-center">${data['master']['app_name']}</div>`);
-                $('#menyetujui').html(`<div class="signature-text text-center">${data['master']['app2_name']}</div>`);
-                $('#statusMelakukan').html(`<div class="signature-text text-center">CREATED<br><span>${data['master']['created_at']}</span></div>`);
-                $('#statusMengetahui').html(`<div class="signature-text text-center">${data['master']['app_status'].toUpperCase()}<br><span>${date}</span></div>`);
-                $('#statusMenyetujui').html(`<div class="signature-text text-center">${data['master']['app2_status'].toUpperCase()}<br><span>${date2}</span></div>`);
+                // Only show Captain column if app4_name is not null
+                let app4Name = data['master']['app4_name'];
+                let showCaptain = app4Name && app4Name.trim() !== '' && app4Name.toLowerCase() !== 'null';
 
-                $('#divisiCol').html(data['master']['divisi']);
-                $('#prepaymentCol').html(data['master']['prepayment']);
+                let tableHeader = `<tr>
+                                <td>Yang melakukan</td>`;
+                if (showCaptain) tableHeader += `<td>Memeriksa</td>`;
+                tableHeader += `<td>Mengetahui</td>
+                                <td>Menyetujui</td>
+                            </tr>`;
 
+                let tableStatus = `<tr style="height: 75px">
+                                <td id="statusMelakukan"><div class="signature-text text-center">CREATED<br><span>${data['master']['created_at']}</span></div></td>`;
+                if (showCaptain) tableStatus += `<td id="statusKapten"><div class="signature-text text-center">${data['master']['app4_status'] ? data['master']['app4_status'].toUpperCase() : ''}<br><span>${date4}</span></div></td>`;
+                tableStatus += `<td id="statusMengetahui"><div class="signature-text text-center">${data['master']['app_status'] ? data['master']['app_status'].toUpperCase() : ''}<br><span>${date}</span></div></td>
+                                <td id="statusMenyetujui"><div class="signature-text text-center">${data['master']['app2_status'] ? data['master']['app2_status'].toUpperCase() : ''}<br><span>${date2}</span></div></td>
+                            </tr>`;
+
+                let tableName = `<tr>
+                                <td id="melakukan"><div class="signature-text text-center">${data['nama']}</div></td>`;
+                if (showCaptain) tableName += `<td id="kapten"><div class="signature-text text-center">${data['master']['app4_name']}</div></td>`;
+                tableName += `<td id="mengetahui"><div class="signature-text text-center">${data['master']['app_name']}</div></td>
+                                <td id="menyetujui"><div class="signature-text text-center">${data['master']['app2_name']}</div></td>
+                            </tr>`;
+
+                $('.table-approve').append(`
+                    <table>
+                        ${tableHeader}
+                        ${tableStatus}
+                        ${tableName}
+                    </table>
+                `);
 
                 //DATA PREPAYMENT DETAIL
                 let total = 0;

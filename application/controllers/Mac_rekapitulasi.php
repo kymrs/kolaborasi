@@ -159,7 +159,7 @@ class Mac_rekapitulasi extends CI_Controller
 
         // Set header untuk download file Excel
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="Data Rekapitulasi mobileautocare.xlsx"');
+        header('Content-Disposition: attachment;filename="Data Rekapitulasi MAC.xlsx"');
         header('Cache-Control: max-age=0');
 
         // Simpan file ke output

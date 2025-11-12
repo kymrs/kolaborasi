@@ -22,8 +22,14 @@ class M_kps_karyawan extends CI_Model
 
     private function _get_datatables_query()
     {
-
-        $this->db->from($this->table);
+        if ($this->session->userdata('id_level') == 4 || $this->session->userdata('id_level') == 1) {
+            $this->db->select('*');
+            $this->db->from($this->table);
+        } else if ($this->session->userdata('id_level') != 4 && $this->session->userdata('id_level') != 1) {
+            $this->db->select('*');
+            $this->db->from($this->table);
+            $this->db->where('id_user', $this->session->userdata('id_user'));
+        }
 
         $i = 0;
 
@@ -68,9 +74,16 @@ class M_kps_karyawan extends CI_Model
     private function _get_datatables_query2()
     {
 
-        $this->db->select('a.*, b.*, a.id as id_pkwt, a.created_at as created_at_pkwt');
-        $this->db->from($this->table2 . ' a');
-        $this->db->join($this->table . ' b', 'a.npk = b.npk', 'left');
+        if ($this->session->userdata('id_level') == 4 || $this->session->userdata('id_level') == 1) {
+            $this->db->select('a.*, b.*, a.id as id_pkwt, a.created_at as created_at_pkwt');
+            $this->db->from($this->table2 . ' a');
+            $this->db->join($this->table . ' b', 'a.npk = b.npk', 'left');
+        } else {
+            $this->db->select('a.*, b.*, a.id as id_pkwt, a.created_at as created_at_pkwt');
+            $this->db->from($this->table2 . ' a');
+            $this->db->join($this->table . ' b', 'a.npk = b.npk', 'left');
+            $this->db->where('b.id_user', $this->session->userdata('id_user'));
+        }
 
         $i = 0;
 
@@ -190,5 +203,22 @@ class M_kps_karyawan extends CI_Model
     {
         $this->db->where('id', $id);
         return $this->db->delete('kps_keluarga_karyawan');
+    }
+
+    public function get_expiring($days = 30)
+    {
+        $today = date('Y-m-d');
+        $limitDate = date('Y-m-d', strtotime("+{$days} days"));
+
+        $this->db->select("a.id, a.npk, b.nama_lengkap, DATE(a.jk_akhir) AS tgl_akhir_kontrak", false);
+        $this->db->from('kps_kontrak_pkwt a');
+        $this->db->join('kps_karyawan b', 'a.npk = b.npk', 'left');
+
+        $where = "DATE(a.jk_akhir) BETWEEN '{$today}' AND '{$limitDate}'";
+        $this->db->where($where, null, false);
+
+        $this->db->order_by('a.jk_akhir', 'ASC');
+        $q = $this->db->get();
+        return $q->result_array();
     }
 }

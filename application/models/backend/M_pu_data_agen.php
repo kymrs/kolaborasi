@@ -19,6 +19,7 @@ class M_pu_data_agen extends CI_Model
     private function _get_datatables_query()
     {
 
+        $this->db->order_by('id', 'desc');
         $this->db->from($this->table);
 
         $i = 0;

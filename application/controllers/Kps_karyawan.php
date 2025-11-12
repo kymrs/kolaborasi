@@ -181,6 +181,7 @@ class Kps_karyawan extends CI_Controller
     {
         $data['id'] = 0;
         $data['title_view'] = "Karyawan Form";
+        $data['user'] = $this->db->select('id_user, fullname')->get('tbl_user')->result_array();
         $data['title'] = 'backend/kps_karyawan/kps_karyawan_form';
         $this->load->view('backend/home', $data);
     }
@@ -190,29 +191,32 @@ class Kps_karyawan extends CI_Controller
         $data['id'] = 0;
         $data['aksi'] = 'add';
         $data['title_view'] = "E-PKWT Form";
-        $data['karyawan'] = $this->db->select('npk, nama_lengkap')->get('kps_karyawan')->result_array();
+        $data['karyawan'] = $this->db->select('npk, nama_lengkap, id_user')->get('kps_karyawan')->result_array();
+        $data['user'] = $this->db->select('id_user, fullname')->get('tbl_user')->result_array();
         $data['title'] = 'backend/kps_karyawan/kps_pkwt_form';
         $this->load->view('backend/home', $data);
     }
 
-    function add_form_keluarga()
-    {
-        $data['id'] = 0;
-        $data['karyawan'] = $this->db->select('npk, nama_lengkap')->get('kps_karyawan')->result_array();
-        $data['title_view'] = "Keluarga Karyawan Form";
-        $data['title'] = 'backend/kps_karyawan/kps_keluarga_form';
-        $this->load->view('backend/home', $data);
-    }
+    // function add_form_keluarga()
+    // {
+    //     $data['id'] = 0;
+    //     $data['karyawan'] = $this->db->select('npk, nama_lengkap')->get('kps_karyawan')->result_array();
+    //     $data['title_view'] = "Keluarga Karyawan Form";
+    //     $data['title'] = 'backend/kps_karyawan/kps_keluarga_form';
+    //     $this->load->view('backend/home', $data);
+    // }
 
     function edit_form($id)
     {
+        $data['id'] = $id;
         $data['aksi'] = 'edit';
         $data['id_master'] = $id;
         $data['master'] = $this->M_kps_karyawan->get_by_id($id);
         $data['keluarga'] = $this->db->get_where('kps_keluarga_karyawan', array('npk' => $data['master']->npk))->result();
         $data['kontrak'] = $this->db->get_where('kps_kontrak_pkwt', array('npk' => $data['master']->npk))->result();
+        $data['user'] = $this->db->select('id_user, fullname')->get('tbl_user')->result_array();
         $data['title_view'] = "Edit Data Karyawan";
-        $data['title'] = 'backend/kps_karyawan/kps_karyawan_update';
+        $data['title'] = 'backend/kps_karyawan/kps_karyawan_form';
         $this->load->view('backend/home', $data);
     }
 
@@ -222,6 +226,7 @@ class Kps_karyawan extends CI_Controller
         $data['id'] = $id;
         $data['karyawan'] = $this->db->select('npk, nama_lengkap')->get('kps_karyawan')->result_array();
         $data['transaksi'] = $this->M_kps_karyawan->get_by_id2($id);
+        $data['user'] = $this->db->select('id_user, fullname')->get('tbl_user')->result_array();
         $data['title_view'] = "Edit Data E-PKWT";
         $data['title'] = 'backend/kps_karyawan/kps_pkwt_form';
         $this->load->view('backend/home', $data);
@@ -230,6 +235,7 @@ class Kps_karyawan extends CI_Controller
     function edit_data($id)
     {
         $data['master'] = $this->M_kps_karyawan->get_by_id($id);
+        $data['keluarga'] = $this->db->get_where('kps_keluarga_karyawan', ['npk' => $data['master']->npk])->result_array();
         echo json_encode($data);
     }
 
@@ -243,6 +249,38 @@ class Kps_karyawan extends CI_Controller
     {
         $data = $this->M_kps_karyawan->get_by_id($id);
         echo json_encode($data);
+    }
+
+    public function generate_npk()
+    {
+        // only accept AJAX/post
+        $year = $this->input->post('year');
+        if (empty($year)) {
+            $year = date('y'); // default two-digit year
+        } else {
+            // sanitize: ensure two digits
+            $year = preg_replace('/\D/', '', $year);
+            $year = str_pad(substr($year, -2), 2, '0', STR_PAD_LEFT);
+        }
+
+        // Ambil max npk yang mulai dengan $year
+        $this->db->select('MAX(npk) as max_npk', false);
+        $this->db->where("npk LIKE '".$this->db->escape_like_str($year)."%'");
+        $row = $this->db->get('kps_karyawan')->row_array();
+        $max = isset($row['max_npk']) ? $row['max_npk'] : null;
+
+        if (empty($max)) {
+            // mulai dari 1001
+            $nextSuffix = 1001;
+        } else {
+            // ambil 4 digit terakhir sebagai int
+            $suffix = (int) substr($max, 2);
+            $nextSuffix = $suffix + 1;
+        }
+
+        $nextNpk = $year . str_pad($nextSuffix, 4, '0', STR_PAD_LEFT);
+
+        echo json_encode(['status' => true, 'npk' => $nextNpk]);
     }
 
     public function generate_no_perjanjian()
@@ -274,12 +312,20 @@ class Kps_karyawan extends CI_Controller
         $date1 = new DateTime($jk_awal);
         $date2 = new DateTime($jk_akhir);
         $interval = $date1->diff($date2);
-        $masa_kontrak = $interval->m + ($interval->y * 12);
+
+        // Hitung total bulan
+        $masa_kontrak = ($interval->y * 12) + $interval->m;
+
+        // Jika hari di tanggal awal <= hari di tanggal akhir, tambah 1 bulan (inklusif)
+        if ($date2->format('Y') <= $date1->format('Y')) {
+            $masa_kontrak += 1;
+        }
+
         $masa_kontrak_romawi = $this->to_roman($masa_kontrak);
 
         // Bulan & tahun dokumen
-        $bulan_romawi = $this->to_roman(date('n', strtotime($jk_awal)));
-        $tahun_dok = date('Y', strtotime($jk_awal));
+        $bulan_romawi = $this->to_roman(date('n'));
+        $tahun_dok = date('Y');
 
         // Format: 001/PKWT-KPS/I-III/III/2024
         $no_perjanjian = "{$urut}/{$perusahaan}/{$kontrak_ke_romawi}-{$masa_kontrak_romawi}/{$bulan_romawi}/{$tahun_dok}";
@@ -342,11 +388,21 @@ class Kps_karyawan extends CI_Controller
             $tgl_phk = date('Y-m-d', strtotime($this->input->post('tgl_phk')));
         }
 
+        $raw = $this->input->post('nama_lengkap');
+
+        // ambil hanya huruf (dan spasi), bersihkan spasi berlebih
+        $nama_lengkap = trim(preg_replace('/\s+/', ' ', preg_replace('/[^a-zA-Z\s]/', '', (string) $raw)));
+
+        // ambil hanya angka dari input yang sama untuk id_user
+        $id_user_digits = preg_replace('/\D/', '', (string) $raw);
+        $id_user = ($id_user_digits === '') ? null : (int) $id_user_digits;
+
         $data = array(
             'status_kerja' => $this->input->post('status_kerja'),
             'npk' => $this->input->post('npk'),
+            'id_user' => $id_user,
             'foto' => $foto_name,
-            'nama_lengkap' => $this->input->post('nama_lengkap'),
+            'nama_lengkap' => $nama_lengkap,
             'jenis_kelamin' => $this->input->post('jenis_kelamin'),
             'tempat_lahir' => $this->input->post('tempat_lahir'),
             'tgl_lahir' => date('Y-m-d', strtotime($this->input->post('tgl_lahir'))),
@@ -387,37 +443,56 @@ class Kps_karyawan extends CI_Controller
         );
 
         $this->M_kps_karyawan->save($data);
-        echo json_encode(array("status" => TRUE));
-    }
 
-    public function add_data_keluarga()
-    {
-        $data = array(
-            'npk' => $this->input->post('npk'),
-            'status_wp' => $this->input->post('status_wp'),
-            'nama_anggota' => $this->input->post('nama_anggota'),
-            'jenis_kelamin' => $this->input->post('jenis_kelamin'),
-            'tgl_lahir' => date('Y-m-d', strtotime($this->input->post('tgl_lahir'))),
-            'keanggotaan' => $this->input->post('keanggotaan'),
-            'lokasi_kerja' => $this->input->post('lokasi_kerja'),
-            'wilayah_kerja' => $this->input->post('wilayah_kerja'),
-            'umur' => $this->input->post('umur'),
-            'pendidikan' => $this->input->post('pendidikan'),
-            'created_at' => date('Y-m-d H:i:s')
-        );
+        // Ambil data keluarga dari POST
+        $nama_anggota = $this->input->post('nama_anggota');
+        $jenis_kelamin_kel = $this->input->post('jenis_kelamin_kel');
+        $tgl_lahir_kel = $this->input->post('tgl_lahir_kel');
+        $umur_kel = $this->input->post('umur_kel');
+        $pendidikan_kel = $this->input->post('pendidikan_kel');
+        $keanggotaan = $this->input->post('keanggotaan');
+        $npk = $this->input->post('npk');
 
-        $this->db->insert('kps_keluarga_karyawan', $data);
+        $data_keluarga = [];
+        if (is_array($nama_anggota)) {
+            foreach ($nama_anggota as $i => $val) {
+                $data_keluarga[] = [
+                    'npk' => $npk,
+                    'nama_anggota' => $nama_anggota[$i],
+                    'status_wp' => $this->input->post('ktk'),
+                    'jenis_kelamin' => $jenis_kelamin_kel[$i],
+                    'tgl_lahir' => $tgl_lahir_kel[$i],
+                    'umur' => $umur_kel[$i],
+                    'pendidikan' => $pendidikan_kel[$i],
+                    'keanggotaan' => $keanggotaan[$i],
+                    'lokasi_kerja' => $this->input->post('lokasi_kerja'),
+                    'wilayah_kerja' => $this->input->post('wilayah_kerja'),
+                    'created_at' => date('Y-m-d H:i:s')
+                ];
+            }
+            if (count($data_keluarga) > 0) {
+                $this->db->insert_batch('kps_keluarga_karyawan', $data_keluarga);
+            }
+        }
+
         echo json_encode(array("status" => TRUE));
     }
 
     public function add_kontrak_karyawan()
     {
+        $raw_npk = $this->input->post('npk');
+        $digits = preg_replace('/\D/', '', (string) $raw_npk); // ambil hanya digit
+        $npk = substr($digits, 0, 6); // digit 1..6
+        $id_user = (strlen($digits) > 6) ? (int) substr($digits, 6) : null; // digit 7..akhir (atau null)
+
         $data = [
             'no_perjanjian' => $this->input->post('no_perjanjian'),
-            'npk' => $this->input->post('npk'),
+            'id_user' => $id_user,
+            'npk' => $npk,
             'jk_awal' => date('Y-m-d', strtotime($this->input->post('jk_awal'))),
             'jk_akhir' => date('Y-m-d', strtotime($this->input->post('jk_akhir'))),
             'hari' => $this->input->post('hari'),
+            'tanggal' => $this->input->post('tanggal'),
             'bulan' => $this->input->post('bulan'),
             'tahun' => $this->input->post('tahun'),
             'jangka_waktu' => $this->input->post('jangka_waktu'),
@@ -437,7 +512,7 @@ class Kps_karyawan extends CI_Controller
     public function update()
     {
         $npk = $this->input->post('npk');
-        $id_master = $this->input->post('id_master');
+        $id_master = $this->input->post('id');
 
         // Konfigurasi upload
         $config['upload_path']   = './assets/backend/document/data_karyawan';
@@ -454,22 +529,19 @@ class Kps_karyawan extends CI_Controller
 
         // Ambil data karyawan lama
         $karyawan_lama = $this->db->select('foto')->where('id', $id_master)->get('kps_karyawan')->row_array();
-        $foto_name = $karyawan_lama['foto'];
+        $foto_name = isset($karyawan_lama['foto']) ? $karyawan_lama['foto'] : null;
 
         // Proses upload foto baru jika ada
         if (!empty($_FILES['foto']['name'])) {
             if ($this->upload->do_upload('foto')) {
                 $upload_data = $this->upload->data();
                 $foto_name = $upload_data['file_name'];
-
-                // Hapus foto lama jika ada
-                if (!empty($karyawan_lama['foto'])) {
-                    $file_path = FCPATH . 'assets/backend/document/data_karyawan/' . $karyawan_lama['foto'];
-                    if (file_exists($file_path)) {
-                        unlink($file_path);
-                    }
+                // (Opsional) Hapus foto lama jika perlu
+                if (isset($karyawan_lama['foto']) && $karyawan_lama['foto'] && file_exists($config['upload_path'].'/'.$karyawan_lama['foto'])) {
+                    unlink($config['upload_path'].'/'.$karyawan_lama['foto']);
                 }
             } else {
+                // Jika upload gagal, tampilkan error dan hentikan proses update
                 echo json_encode([
                     "status" => FALSE,
                     "error" => $this->upload->display_errors()
@@ -482,15 +554,24 @@ class Kps_karyawan extends CI_Controller
         if (strtolower($this->input->post('status_kerja')) !== 'aktif') {
             $tgl_phk = date('Y-m-d', strtotime($this->input->post('tgl_phk')));
         }
+        $raw = $this->input->post('nama_lengkap');
+
+        // ambil hanya huruf (dan spasi), bersihkan spasi berlebih
+        $nama_lengkap = trim(preg_replace('/\s+/', ' ', preg_replace('/[^a-zA-Z\s]/', '', (string) $raw)));
+
+        // ambil hanya angka dari input yang sama untuk id_user
+        $id_user_digits = preg_replace('/\D/', '', (string) $raw);
+        $id_user = ($id_user_digits === '') ? null : (int) $id_user_digits;
 
         $data = array(
             'status_kerja' => $this->input->post('status_kerja'),
             'npk' => $npk,
-            'nama_lengkap' => $this->input->post('nama_lengkap'),
+            'id_user' => $id_user,
+            'nama_lengkap' => $nama_lengkap,
             'jenis_kelamin' => $this->input->post('jenis_kelamin'),
             'tempat_lahir' => $this->input->post('tempat_lahir'),
             'tgl_lahir' => date('Y-m-d', strtotime($this->input->post('tgl_lahir'))),
-            'umur' => $this->input->post('umur'),
+            'umur' => $this->input->post('umur'),   
             'pendidikan' => $this->input->post('pendidikan'),
             'no_ktp' => $this->input->post('no_ktp'),
             'status_pernikahan' => $this->input->post('status_pernikahan'),
@@ -532,14 +613,11 @@ class Kps_karyawan extends CI_Controller
 
         $id_keluarga = $this->input->post('id_keluarga');
         $nama_anggota = $this->input->post('nama_anggota');
-        $status_wp = $this->input->post('status_wp');
         $jenis_kelamin_kel = $this->input->post('jenis_kelamin_kel');
         $tgl_lahir_kel = $this->input->post('tgl_lahir_kel');
         $umur_kel = $this->input->post('umur_kel');
         $pendidikan_kel = $this->input->post('pendidikan_kel');
         $keanggotaan = $this->input->post('keanggotaan');
-        $lokasi_kerja_kel = $this->input->post('lokasi_kerja_kel');
-        $wilayah_kerja_kel = $this->input->post('wilayah_kerja_kel');
 
         if (is_array($id_keluarga) && count($id_keluarga) > 0) {
             $data2 = [];
@@ -547,15 +625,15 @@ class Kps_karyawan extends CI_Controller
                 $data2[] = [
                     'id' => $id_keluarga[$i],
                     'npk' => $npk,
-                    'status_wp' => $status_wp[$i],
+                    'status_wp' => $this->input->post('ktk'),
                     'nama_anggota' => $nama_anggota[$i],
                     'jenis_kelamin' => $jenis_kelamin_kel[$i],
                     'tgl_lahir' => $tgl_lahir_kel[$i],
                     'umur' => $umur_kel[$i],
                     'pendidikan' => $pendidikan_kel[$i],
                     'keanggotaan' => $keanggotaan[$i],
-                    'lokasi_kerja' => $lokasi_kerja_kel[$i],
-                    'wilayah_kerja' => $wilayah_kerja_kel[$i],
+                    'lokasi_kerja' => $this->input->post('lokasi_kerja'),
+                    'wilayah_kerja' => $this->input->post('wilayah_kerja'),
                     'updated_at' => date('Y-m-d H:i:s')
                 ];
             }
@@ -568,7 +646,9 @@ class Kps_karyawan extends CI_Controller
     public function update_kontrak_karyawan($id)
     {
         $data = [
+            'id_user' => $this->input->post('id_user'),
             'hari' => $this->input->post('hari'),
+            'tanggal' => $this->input->post('tanggal'),
             'bulan' => $this->input->post('bulan'),
             'tahun' => $this->input->post('tahun'),
             'jangka_waktu' => $this->input->post('jangka_waktu'),
@@ -644,41 +724,119 @@ class Kps_karyawan extends CI_Controller
 
     public function e_pkwt_pdf($id)
     {
-        // Load Dompdf
-        $this->load->library('Pdf');
-        $dompdf = new Dompdf\Dompdf();
+        // Inisialisasi Dompdf
+        $dompdf = $this->load->library('dompdf');
         $dompdf->setPaper('A4', 'portrait');
 
-        // Render view ke string
+        // Ambil data
         $data['transaksi'] = $this->M_kps_karyawan->get_by_id2($id);
-        $data['master'] = $this->db->get_where('kps_karyawan', array('npk' => $data['transaksi']->npk))->row();
+        $data['master'] = $this->db->get_where('kps_karyawan', [
+            'npk' => $data['transaksi']->npk
+        ])->row();
+
+        // Render view jadi HTML string
         $html = $this->load->view('backend/kps_karyawan/e_pkwt_pdf', $data, true);
 
+        // Load ke Dompdf
         $dompdf->loadHtml($html);
         $dompdf->render();
-        $dompdf->stream("contoh_dompdf.pdf", array("Attachment" => false));
+
+        // Stream hasil PDF ke browser
+        $dompdf->stream("e-pkwt.pdf", ["Attachment" => false]);
+    }
+
+    public function get_karyawan_dates()
+    {
+        $npk_raw = $this->input->post('npk');
+        if (empty($npk_raw)) {
+            echo json_encode(['status' => false]);
+            return;
+        }
+
+        // jika value datang seperti "251001-12", ambil bagian npk
+        $npk = explode('-', $npk_raw)[0];
+
+        $row = $this->db->select('tgl_masuk, tgl_akhir_kontrak')
+                        ->where('npk', $npk)
+                        ->get('kps_karyawan')
+                        ->row_array();
+
+        if ($row) {
+            // pastikan format tanggal sesuai yang dipakai di form (yyyy-mm-dd)
+            echo json_encode([
+                'status' => true,
+                'tgl_masuk' => $row['tgl_masuk'],
+                'tgl_akhir_kontrak' => $row['tgl_akhir_kontrak']
+            ]);
+        } else {
+            echo json_encode(['status' => false]);
+        }
     }
 
     public function approve_pkwt()
     {
         $id = $this->input->post('id');
         $app_status = $this->input->post('app_status');
+        $app2_status = $this->input->post('app2_status');
 
-        if (!$id || !$app_status) {
-            echo json_encode(['status' => false, 'message' => 'Data tidak lengkap']);
+        if (!$id) {
+            echo json_encode(['status' => false, 'message' => 'ID tidak ditemukan']);
             return;
         }
 
-        $this->db->where('id', $id);
-        $update = $this->db->update('kps_kontrak_pkwt', [
-            'app_status' => $app_status,
-            'app_date' => date('Y-m-d H:i:s')
-        ]);
-
-        if ($update) {
-            echo json_encode(['status' => true]);
-        } else {
-            echo json_encode(['status' => false, 'message' => 'Gagal update status']);
+        $row = $this->db->get_where('kps_kontrak_pkwt', ['id' => $id])->row();
+        if (!$row) {
+            echo json_encode(['status' => false, 'message' => 'Data tidak ditemukan']);
+            return;
         }
+
+        $update = [];
+
+        // update perusahaan (app_status + app_date) hanya jika berubah
+        if ($app_status !== null && $app_status !== $row->app_status) {
+            $update['app_status'] = $app_status;
+            $update['app_date'] = date('Y-m-d H:i:s');
+        }
+
+        // update karyawan (app2_status + app2_date) hanya jika berubah
+        if ($app2_status !== null && $app2_status !== $row->app2_status) {
+            $update['app2_status'] = $app2_status;
+            $update['app2_date'] = date('Y-m-d H:i:s');
+        }
+
+        if (empty($update)) {
+            echo json_encode(['status' => false, 'message' => 'Tidak ada perubahan status']);
+            return;
+        }
+
+        $this->db->where('id', $id)->update('kps_kontrak_pkwt', $update);
+        if ($this->db->affected_rows() >= 0) {
+            echo json_encode(['status' => true, 'message' => 'Status approval berhasil diperbarui']);
+        } else {
+            echo json_encode(['status' => false, 'message' => 'Gagal memperbarui database']);
+        }
+    }
+
+    public function get_expiring_pkwt()
+    {
+        $days = (int) $this->input->get_post('days') ?: 30;
+        $this->load->model('backend/M_kps_karyawan');
+
+        $rows = $this->M_kps_karyawan->get_expiring($days);
+
+        $now = new DateTime();
+        foreach ($rows as &$r) {
+            // pastikan tgl_akhir_kontrak ada dan valid
+            $endDate = !empty($r['tgl_akhir_kontrak']) ? $r['tgl_akhir_kontrak'] : null;
+            if ($endDate) {
+                $end = new DateTime($endDate);
+                $r['days_left'] = (int) $now->diff($end)->format('%r%a');
+            } else {
+                $r['days_left'] = null;
+            }
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode(['status' => true, 'data' => $rows]);
     }
 }

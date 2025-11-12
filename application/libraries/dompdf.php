@@ -11,7 +11,7 @@ class Pdf
     public function __construct()
     {
         // Load autoloader Dompdf dari third_party
-        require_once APPPATH . 'third_party/dompdf-3.1.0/lib/Cpdf.php';
+        require_once APPPATH . 'third_party/dompdf/lib/Cpdf.php';
 
         // Konfigurasi Dompdf
         $options = new Options();

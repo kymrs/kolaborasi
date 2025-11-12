@@ -113,12 +113,27 @@
                         <i class="fas fa-chevron-left"></i>&nbsp;Back
                     </a>
                     <select id="filter_status" class="form-control d-inline-block btn-primary" style="float:right;width:auto;display:inline-block; font-size: 14px; padding: 6px 7px; border-radius: 4px; margin-right: 10px;">
-                        <option value="">Semua Status</option>
+                        <option value="">Semua Status</option>      
                         <option value="approved">Approved</option>
                         <option value="reject">Reject</option>
                         <option value="on-process">On-Process</option>
                     </select>
                     <label style="float: right;position: relative; top: 7px" for="filter_status" class="font-weight-bold mr-2">Filter Status:</label>
+                    <?php if (in_array($this->session->userdata('id_level'), [1, 4])) : ?>
+                        <div style="float:right; margin-right: 16px;">
+                            <div class="dropdown">
+                                <button id="pkwtNotifBtn" class="btn dropdown-toggle" type="button" data-toggle="dropdown">
+                                    <i class="fas fa-bell"></i>
+                                    <span id="pkwtNotifBadge" class="badge badge-danger" style="display:none;position:relative;top:-8px;left:-8px;"></span>
+                                </button>
+                                <div id="pkwtNotifDropdown" class="dropdown-menu dropdown-menu-right" style="min-width:320px;">
+                                    <div class="px-3 py-2"><strong>Kontrak hampir habis</strong></div>
+                                    <div id="pkwtNotifList" style="max-height:300px; overflow:auto;"></div>
+                                    <div class="dropdown-footer text-center p-2"><a href="<?= site_url('kps_karyawan') ?>">Lihat semua</a></div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif ?>
                 </div>
                 <div class="card-body p-4">
                     <!-- Added padding for spacing -->
@@ -176,6 +191,20 @@
         });
     });
 
+    function formatTanggalIndo(tanggal) {
+        const bulan = [
+            'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        ];
+
+        const tgl = new Date(tanggal);
+        const hari = tgl.getDate();
+        const bln = bulan[tgl.getMonth()];
+        const thn = tgl.getFullYear();
+
+        return `${hari} ${bln} ${thn}`;
+    }
+
     $(document).ready(function() {
         $(document).ready(function() {
             // Inisialisasi semua select2 yang muncul saat ini
@@ -195,7 +224,6 @@
                 }
             });
         });
-
     });
 
     // Set default filter status dari localStorage
@@ -330,6 +358,47 @@
     if (action == 'add') {
         $('#add_btn').click();
     }
+
+    function render(items){
+        var $list = $('#pkwtNotifList').empty();
+        if(!items || !items.length){
+            $list.append('<div class="px-3 py-2 text-muted">Tidak ada kontrak yang hampir habis.</div>');
+            $('#pkwtNotifBadge').hide();
+            return;
+        }
+        items.forEach(function(it){
+            var label = it.days_left > 0 ? it.days_left+' hari lagi' : (it.days_left===0? 'Hari ini' : Math.abs(it.days_left)+' hari lalu');
+            var html = '<a class="dropdown-item" href="<?= site_url("kps_karyawan/read_form_pkwt/") ?>'+it.id+'">'+
+                '<div class="font-weight-bold">'+it.nama_lengkap+'</div>'+
+                '<small class="text-muted">NPK: '+it.npk+' · '+label+' · '+formatTanggalIndo(it.tgl_akhir_kontrak)+'</small>'+
+                '</a>';
+            $list.append(html);
+        });
+        $('#pkwtNotifBadge').text(items.length).show();
+    }
+
+    function fetch(){
+        $.ajax({
+            url: '<?= site_url("kps_karyawan/get_expiring_pkwt") ?>',
+            data: { days: 30 },
+            dataType: 'json',
+            success: function(res){
+                console.log('get_expiring_pkwt response:', res); // <- lihat ini di DevTools Console
+                if(res && res.status) render(res.data);
+            }
+        });
+    }
+
+    // initial fetch and poll every 5 minutes
+    $(function(){
+        fetch();
+        setInterval(fetch, 5*60*1000);
+    });
+
+    // mark seen when dropdown opened
+    $('#pkwtNotifBtn').on('click', function(){
+        $('#pkwtNotifBadge').hide();
+    });
 
     function delete_data(id) {
         Swal.fire({

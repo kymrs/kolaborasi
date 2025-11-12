@@ -10,7 +10,7 @@
 
 
             <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="<?= base_url('dashboard') ?>">
                 <!-- <div class="sidebar-brand-icon">
                     <img src="<?= base_url('assets/backend/img/kolaborasi-sidebar.png') ?>" alt="kps" width="100">
                 </div>

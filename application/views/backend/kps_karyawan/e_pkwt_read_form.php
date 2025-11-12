@@ -291,23 +291,32 @@ function formatTanggalIndo($tanggal)
                 <tr>
                     <td>
                         <!-- Approved Perusahaan -->
-                        <div style="display: inline-block; background-color: #28a745; color: white; padding: 6px 10px; border-radius: 6px; text-align: center; font-size: 13px;">
-                            <div style="font-weight: bold;">Approved</div>
-                            <div style="font-size: 11px;"><?= formatTanggalIndo($transaksi->created_at) ?></div>
-                        </div>
-                    </td>
-                    <td>
                         <?php if ($transaksi->app_status == 'approved') { ?>
                             <!-- Approved Karyawan -->
                             <div style="display: inline-block; background-color: #28a745; color: white; padding: 6px 10px; border-radius: 6px; text-align: center; font-size: 13px;">
                                 <div style="font-weight: bold;"><?= ucfirst($transaksi->app_status) ?></div>
                                 <div style="font-size: 11px;"><?= formatTanggalIndo($transaksi->app_date) ?></div>
-                            </div>
+                            </div>  
                         <?php } else if ($transaksi->app_status == 'reject') { ?>
                             <!-- Rejected Karyawan -->
                             <div style="display: inline-block; background-color: #dc3545; color: white; padding: 6px 10px; border-radius: 6px; text-align: center; font-size: 13px;">
                                 <div style="font-weight: bold;"><?= ucfirst($transaksi->app_status) ?></div>
                                 <div style="font-size: 11px;"><?= formatTanggalIndo($transaksi->app_date) ?></div>
+                            </div>
+                        <?php } ?>
+                    </td>
+                    <td>
+                        <?php if ($transaksi->app2_status == 'approved') { ?>
+                            <!-- Approved Karyawan -->
+                            <div style="display: inline-block; background-color: #28a745; color: white; padding: 6px 10px; border-radius: 6px; text-align: center; font-size: 13px;">
+                                <div style="font-weight: bold;"><?= ucfirst($transaksi->app2_status) ?></div>
+                                <div style="font-size: 11px;"><?= formatTanggalIndo($transaksi->app2_date) ?></div>
+                            </div>  
+                        <?php } else if ($transaksi->app2_status == 'reject') { ?>
+                            <!-- Rejected Karyawan -->
+                            <div style="display: inline-block; background-color: #dc3545; color: white; padding: 6px 10px; border-radius: 6px; text-align: center; font-size: 13px;">
+                                <div style="font-weight: bold;"><?= ucfirst($transaksi->app2_status) ?></div>
+                                <div style="font-size: 11px;"><?= formatTanggalIndo($transaksi->app2_date) ?></div>
                             </div>
                         <?php } ?>
                     </td>
@@ -416,17 +425,17 @@ function formatTanggalIndo($tanggal)
                     </tr>
                     <tr>
                         <td>
-                            <?php if ($transaksi->app_status == 'approved') { ?>
+                            <?php if ($transaksi->app2_status == 'approved') { ?>
                                 <!-- Approved Karyawan -->
                                 <div style="display: inline-block; background-color: #28a745; color: white; padding: 6px 10px; border-radius: 6px; text-align: center; font-size: 13px;">
-                                    <div style="font-weight: bold;"><?= ucfirst($transaksi->app_status) ?></div>
-                                    <div style="font-size: 11px;"><?= formatTanggalIndo($transaksi->app_date) ?></div>
+                                    <div style="font-weight: bold;"><?= ucfirst($transaksi->app2_status) ?></div>
+                                    <div style="font-size: 11px;"><?= formatTanggalIndo($transaksi->app2_date) ?></div>
                                 </div>
-                            <?php } else if ($transaksi->app_status == 'reject') { ?>
+                            <?php } else if ($transaksi->app2_status == 'reject') { ?>
                                 <!-- Rejected Karyawan -->
                                 <div style="display: inline-block; background-color: #dc3545; color: white; padding: 6px 10px; border-radius: 6px; text-align: center; font-size: 13px;">
-                                    <div style="font-weight: bold;"><?= ucfirst($transaksi->app_status) ?></div>
-                                    <div style="font-size: 11px;"><?= formatTanggalIndo($transaksi->app_date) ?></div>
+                                    <div style="font-weight: bold;"><?= ucfirst($transaksi->app2_status) ?></div>
+                                    <div style="font-size: 11px;"><?= formatTanggalIndo($transaksi->app2_date) ?></div>
                                 </div>
                             <?php } ?>
                         </td>
@@ -469,17 +478,17 @@ function formatTanggalIndo($tanggal)
                     </tr>
                     <tr>
                         <td>
-                            <?php if ($transaksi->app_status == 'approved') { ?>
+                            <?php if ($transaksi->app2_status == 'approved') { ?>
                                 <!-- Approved Karyawan -->
                                 <div style="display: inline-block; background-color: #28a745; color: white; padding: 6px 10px; border-radius: 6px; text-align: center; font-size: 13px;">
-                                    <div style="font-weight: bold;"><?= ucfirst($transaksi->app_status) ?></div>
-                                    <div style="font-size: 11px;"><?= formatTanggalIndo($transaksi->app_date) ?></div>
+                                    <div style="font-weight: bold;"><?= ucfirst($transaksi->app2_status) ?></div>
+                                    <div style="font-size: 11px;"><?= formatTanggalIndo($transaksi->app2_date) ?></div>
                                 </div>
-                            <?php } else if ($transaksi->app_status == 'reject') { ?>
+                            <?php } else if ($transaksi->app2_status == 'reject') { ?>
                                 <!-- Rejected Karyawan -->
                                 <div style="display: inline-block; background-color: #dc3545; color: white; padding: 6px 10px; border-radius: 6px; text-align: center; font-size: 13px;">
-                                    <div style="font-weight: bold;"><?= ucfirst($transaksi->app_status) ?></div>
-                                    <div style="font-size: 11px;"><?= formatTanggalIndo($transaksi->app_date) ?></div>
+                                    <div style="font-weight: bold;"><?= ucfirst($transaksi->app2_status) ?></div>
+                                    <div style="font-size: 11px;"><?= formatTanggalIndo($transaksi->app2_date) ?></div>
                                 </div>
                             <?php } ?>
                         </td>
@@ -547,10 +556,19 @@ function formatTanggalIndo($tanggal)
                     </tr>
                     <tr>
                         <td>
-                            <div style="display: inline-block; background-color: #28a745; color: white; padding: 6px 10px; border-radius: 6px; text-align: center; font-size: 13px;">
-                                <div style="font-weight: bold;">Approved</div>
-                                <div style="font-size: 11px;"><?= formatTanggalIndo($transaksi->created_at) ?></div>
-                            </div>
+                            <?php if ($transaksi->app_status == 'approved') { ?>
+                                <!-- Approved Karyawan -->
+                                <div style="display: inline-block; background-color: #28a745; color: white; padding: 6px 10px; border-radius: 6px; text-align: center; font-size: 13px;">
+                                    <div style="font-weight: bold;"><?= ucfirst($transaksi->app_status) ?></div>
+                                    <div style="font-size: 11px;"><?= formatTanggalIndo($transaksi->app_date) ?></div>
+                                </div>
+                            <?php } else if ($transaksi->app_status == 'reject') { ?>
+                                <!-- Rejected Karyawan -->
+                                <div style="display: inline-block; background-color: #dc3545; color: white; padding: 6px 10px; border-radius: 6px; text-align: center; font-size: 13px;">
+                                    <div style="font-weight: bold;"><?= ucfirst($transaksi->app_status) ?></div>
+                                    <div style="font-size: 11px;"><?= formatTanggalIndo($transaksi->app_date) ?></div>
+                                </div>
+                            <?php } ?>
                         </td>
                     </tr>
                     <tr>
@@ -575,11 +593,25 @@ function formatTanggalIndo($tanggal)
                     </button>
                 </div>
                 <div class="modal-body" id="modalApproveBody">
-                    <select id="approval_select" class="form-control">
-                        <option value="waiting" hidden <?= $transaksi->app_status == 'waiting' ? 'selected' : '' ?>>Pilih status</option>
-                        <option value="approved" <?= $transaksi->app_status == 'approved' ? 'selected' : '' ?>>Approved</option>
-                        <option value="reject" <?= $transaksi->app_status == 'reject' ? 'selected' : '' ?>>Reject</option>
-                    </select>
+                    <?php if (in_array($this->session->userdata('id_level'), [1, 4])) : ?>
+                        <div class="form-group">
+                            <label style="padding-bottom: 6px;">Approval Perusahaan</label>
+                            <select id="approval_select" class="form-control">
+                                <option value="waiting" <?= $transaksi->app_status == 'waiting' ? 'selected' : '' ?>>Waiting</option>
+                                <option value="approved" <?= $transaksi->app_status == 'approved' ? 'selected' : '' ?>>Approved</option>
+                                <option value="reject" <?= $transaksi->app_status == 'reject' ? 'selected' : '' ?>>Reject</option>
+                            </select>
+                        </div>
+                    <?php else : ?>
+                        <div class="form-group">
+                            <label style="padding-bottom: 6px;">Approval Karyawan</label>
+                            <select id="approval_select_karyawan" class="form-control">
+                                <option value="waiting" <?= $transaksi->app2_status == 'waiting' ? 'selected' : '' ?>>Waiting</option>
+                                <option value="approved" <?= $transaksi->app2_status == 'approved' ? 'selected' : '' ?>>Approved</option>
+                                <option value="reject" <?= $transaksi->app2_status == 'reject' ? 'selected' : '' ?>>Reject</option>
+                            </select>
+                        </div>
+                    <?php endif ?>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
@@ -591,36 +623,31 @@ function formatTanggalIndo($tanggal)
     <?php $this->load->view('template/script'); ?>
     <script>
         $('.btn-approval').on('click', function() {
-            // Set value select sesuai status terakhir
-            $('#approval_select').val('<?= $transaksi->app_status ?>');
+            // set selects to current status (already set by PHP) and open modal
             $('#modalApprove').modal('show');
         });
 
         $('#btnModalConfirm').on('click', function() {
-            let approveAction = $('#approval_select').val();
-            if (!approveAction) {
-                Swal.fire('Pilih Status', 'Silakan pilih Approve atau Reject terlebih dahulu.', 'warning');
+            let appStatus = $('#approval_select').val();
+            let app2Status = $('#approval_select_karyawan').val();
+            if (!appStatus && !app2Status) {
+                Swal.fire('Pilih Status', 'Silakan pilih minimal satu status.', 'warning');
                 return;
             }
-            // Kirim ke backend
             $.ajax({
                 url: '<?= site_url("kps_karyawan/approve_pkwt") ?>',
                 type: 'POST',
                 data: {
                     id: '<?= $transaksi->id ?>',
-                    app_status: approveAction
+                    app_status: appStatus,
+                    app2_status: app2Status
                 },
                 dataType: 'json',
                 success: function(res) {
                     $('#modalApprove').modal('hide');
                     if (res.status) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Berhasil',
-                            text: 'Status berhasil diupdate!',
-                            timer: 1200,
-                            showConfirmButton: false
-                        }).then(() => location.reload());
+                        Swal.fire({ icon: 'success', title: 'Berhasil', text: res.message || 'Status berhasil diupdate', timer: 1200, showConfirmButton: false })
+                        .then(()=> location.reload());
                     } else {
                         Swal.fire('Gagal', res.message || 'Terjadi kesalahan.', 'error');
                     }

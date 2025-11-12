@@ -29,6 +29,7 @@ class Mac_reimbust extends CI_Controller
             ->from('mac_reimbust')
             ->where('app_name', $name)
             ->or_where('app2_name', $name)
+            ->or_where('app4_name', $name)
             ->get()
             ->row('total_approval');
         $this->load->view('backend/home', $data);
@@ -77,6 +78,8 @@ class Mac_reimbust extends CI_Controller
                 $status = $field->status . ' (' . $field->app2_name . ')';
             } elseif ($field->app_status == 'waiting' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
                 $status = $field->status . ' (' . $field->app_name . ')';
+            } elseif ($field->app4_status == 'waiting' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
+                $status = $field->status . ' (' . $field->app4_name . ')';
             } else {
                 $status = $field->status;
             }
@@ -594,6 +597,7 @@ class Mac_reimbust extends CI_Controller
 
         // Menulis elemen selanjutnya dengan ukuran baris yang lebih kecil
         $pdf->Cell(50, 8.5, $data['user'], 1, 0, 'C');
+        $pdf->Cell(50, 8.5, $data['master']->app4_name, 1, 1, 'C');
         $pdf->Cell(50, 8.5, $data['master']->app_name, 1, 0, 'C');
         $pdf->Cell(50, 8.5, $data['master']->app2_name, 1, 1, 'C');
 
@@ -730,7 +734,7 @@ class Mac_reimbust extends CI_Controller
 
         // Flag untuk menandai apakah ada file yang lebih dari 3 MB
         $valid = true;
-        $allowed_types = ['image/jpeg', 'image/jpg', 'image/png']; // Tipe file yang diizinkan
+        $allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf']; // Tipe file yang diizinkan
 
         // PERULANGAN UNTUK CEK UKURAN FILE
         for ($i = 1; $i <= count($pemakaian); $i++) {
@@ -759,7 +763,7 @@ class Mac_reimbust extends CI_Controller
             ->get('tbl_submenu')
             ->row();
 
-        $confirm = $this->db->select('app_id, app2_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
+        $confirm = $this->db->select('app_id, app2_id, app4_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
         if (!empty($confirm->app_id) && isset($confirm->app_id, $confirm->app2_id)) {
             $app = $confirm;
         } else {
@@ -790,6 +794,11 @@ class Mac_reimbust extends CI_Controller
                 ->where('id_user', $app->app2_id)
                 ->get()
                 ->row('name'),
+            'app4_name' => $this->db->select('name')
+                ->from('tbl_data_user')
+                ->where('id_user', $app->app4_id)
+                ->get()
+                ->row('name'),
             'created_at' =>  date('Y-m-d H:i:s')
         );
         // Hanya simpan ke database jika tidak ada file yang melebihi 3 MB
@@ -810,7 +819,7 @@ class Mac_reimbust extends CI_Controller
                 $_FILES['file']['size'] = $_FILES['kwitansi']['size'][$i];
 
                 $config['upload_path'] = './assets/backend/document/reimbust/kwitansi_mac/';
-                $config['allowed_types'] = 'jpeg|jpg|png';
+                $config['allowed_types'] = 'jpeg|jpg|png|pdf';
                 $config['max_size'] = 3072; // Batasan ukuran file dalam kilobytes (3 MB)
                 $config['encrypt_name'] = TRUE;
 
@@ -1050,6 +1059,31 @@ class Mac_reimbust extends CI_Controller
         }
 
         // UPDATE APPROVAL 2
+        $this->db->where('id', $this->input->post('hidden_id'));
+        $this->db->update('mac_reimbust', $data);
+
+        echo json_encode(array("status" => TRUE));
+    }
+
+    //APPROVE DATA
+    public function approve3()
+    {
+        $data = array(
+            'app4_keterangan' => $this->input->post('app4_keterangan'),
+            'app4_status' => $this->input->post('app4_status'),
+            'app4_date' => date('Y-m-d H:i:s'),
+        );
+
+        // UPDATE STATUS DEKLARASI
+        if ($this->input->post('app4_status') === 'revised') {
+            $data['status'] = 'revised';
+        } elseif ($this->input->post('app4_status') === 'approved') {
+            $data['status'] = 'on-process';
+        } elseif ($this->input->post('app4_status') === 'rejected') {
+            $data['status'] = 'rejected';
+        }
+
+        //UPDATE APPROVAL PERTAMA
         $this->db->where('id', $this->input->post('hidden_id'));
         $this->db->update('mac_reimbust', $data);
 

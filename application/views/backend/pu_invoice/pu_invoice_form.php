@@ -220,7 +220,7 @@
                                         <?php if (!(count($orders) > 1)) { ?>
                                             <label class="col-sm-4 col-form-label">Harga Paket</label>
                                             <div class="col-sm-8">
-                                                <input type="text" class="form-control" id="total_order" name="total_order">
+                                                <input type="text" class="form-control" id="total_order" name="total_order" placeholder="Harga Paket">
                                             </div>
                                         <?php } else { ?>
                                             <label class="col-sm-4 col-form-label">Harga Paket</label>
@@ -228,6 +228,12 @@
                                                 <input type="text" class="form-control" id="total_order" name="total_order" readonly>
                                             </div>
                                         <?php } ?>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-4 col-form-label">Diskon</label>
+                                        <div class="col-sm-8">
+                                            <input type="text" class="form-control" id="diskon" name="diskon" placeholder="Diskon (Rp)">
+                                        </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-4 col-form-label">Email</label>
@@ -551,7 +557,7 @@
 
         $('.js-example-basic-single').select2();
 
-        $('#total_order').on('input', function() {
+        $('#total_order, #diskon').on('input', function() {
             // Ambil nilai input
             let value = $(this).val();
 
@@ -863,7 +869,7 @@
                     $('#tgl_tempo').val(data['master']['tgl_tempo']);
                     $('#tanggal_pembayaran').val(data['master']['tanggal_pembayaran']);
                     $('#rekening').val(data['master']['travel_id']).trigger('change.select2');
-                    // $('#diskon').val(data['master']['diskon']);
+                    $('#diskon').val(data['master']['diskon']);
                     $('#ctc_nama').val(data['master']['ctc_nama']);
                     $('#detail_pesanan').val(data['master']['detail_pesanan']);
                     $('#ctc_alamat').val(data['master']['ctc_alamat']);

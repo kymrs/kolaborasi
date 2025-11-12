@@ -107,21 +107,26 @@
                                     <div class="col-sm-7">
                                         <select class="form-control" name="status_kerja" id="status_kerja">
                                             <option value="" hidden>Pilih Status Kerja</option>
-                                            <option value="aktif">Aktif</option>
-                                            <option value="nonaktif">Non Aktif</option>
+                                            <option value="Aktif" selected>Aktif</option>
+                                            <option value="Non Aktif">Non Aktif</option>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="npk">NPK</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control only-number" name="npk" id="npk">
+                                        <input type="text" class="form-control only-number" name="npk" id="npk" placeholder="NPK">
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="nama_lengkap">Nama Lengkap</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" name="nama_lengkap" id="nama_lengkap">
+                                        <select class="form-control" name="nama_lengkap" id="nama_lengkap">
+                                            <option value="" hidden>Pilih User</option>
+                                            <?php foreach ($user as $data) : ?>
+                                                <option value="<?= $data['fullname'] ?><?= $data['id_user'] ?>"><?= $data['fullname'] ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -137,20 +142,20 @@
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="tempat_lahir">Tempat Lahir</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" name="tempat_lahir" id="tempat_lahir">
+                                        <input type="text" class="form-control" name="tempat_lahir" id="tempat_lahir" placeholder="Tempat Lahir">
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="tgl_lahir">Tanggal Lahir</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control datepicker" name="tgl_lahir" id="tgl_lahir" autocomplete="off" placeholder="Pilih Tanggal Lahir" style="cursor: pointer">
+                                        <input type="text" class="form-control datepicker-tgl-lahir" name="tgl_lahir" id="tgl_lahir" autocomplete="off" placeholder="Pilih Tanggal Lahir" style="cursor: pointer">
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="umur">Umur</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control only-number" name="umur" id="umur" readonly>
-                                    </div>
+                                        <input type="text" class="form-control only-number" name="umur" id="umur" readonly placeholder="Umur">
+                                    </div> 
                                 </div>
 
                                 <div class="form-group row">
@@ -176,7 +181,7 @@
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="no_ktp">No KTP</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control only-number" name="no_ktp" id="no_ktp">
+                                        <input type="text" class="form-control only-number" name="no_ktp" id="no_ktp" placeholder="No KTP">
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -216,25 +221,25 @@
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="alamat_ktp">Alamat KTP</label>
                                     <div class="col-sm-7">
-                                        <textarea class="form-control" name="alamat_ktp" id="alamat_ktp" rows="3"></textarea>
+                                        <textarea class="form-control" name="alamat_ktp" id="alamat_ktp" rows="3" placeholder="Alamat KTP"></textarea>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="domisili">Domisili</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" name="domisili" id="domisili">
+                                        <input type="text" class="form-control" name="domisili" id="domisili" placeholder="Domisili">
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="telp_klrga_serumah">Telp Keluarga Serumah</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control only-number" name="telp_klrga_serumah" id="telp_klrga_serumah">
+                                        <input type="text" class="form-control only-number" name="telp_klrga_serumah" id="telp_klrga_serumah" placeholder="Telp Keluarga Serumah">
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="telp_klrga_tdk_serumah">Telp Keluarga Tidak Serumah</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control only-number" name="telp_klrga_tdk_serumah" id="telp_klrga_tdk_serumah">
+                                        <input type="text" class="form-control only-number" name="telp_klrga_tdk_serumah" id="telp_klrga_tdk_serumah" placeholder="Telp Keluarga Tidak Serumah">
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -253,7 +258,7 @@
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="no_hp">No HP</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control only-number" name="no_hp" id="no_hp">
+                                        <input type="text" class="form-control only-number" name="no_hp" id="no_hp" placeholder="No HP">
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -272,8 +277,8 @@
                                         <select id="wilayah_kerja" name="wilayah_kerja" class="form-control">
                                             <option value="" hidden>Pilih Wilayah Kerja</option>
                                             <option value="Nasional">Nasional</option>
-                                            <option value="Bogor">Bogor (Jabar 1)</option>
-                                            <option value="Bandung">Bandung (Jabar 2)</option>
+                                            <option value="Bogor (Jabar 1)">Bogor (Jabar 1)</option>
+                                            <option value="Bandung (Jabar 2)">Bandung (Jabar 2)</option>
                                             <option value="Gresik">Gresik</option>
                                             <option value="Yogyakarta">Yogyakarta</option>
                                             <option value="Palembang">Palembang</option>
@@ -286,17 +291,20 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="form-group row">
-                                    <label for="wilayah_kerja" class="col-sm-5 col-form-label">Foto</label>
-                                    <div class="col-sm-7">
-                                        <input class="form-control" type="file" name="foto" id="foto">
-                                        <span class="kwitansi-label">Max Size : 3MB</span>
-                                    </div>
-                                </div>
                             </div>
 
                             <div class="col-md-6">
                                 <!-- Second Set of Fields -->
+                                <div class="form-group row">
+                                    <label for="wilayah_kerja" class="col-sm-5 col-form-label">Foto</label>
+                                    <div class="col-sm-7">
+                                        <div id="foto_preview_container" style="margin-bottom:8px; display:none;">
+                                            <img id="foto_preview" src="" alt="Foto Karyawan" style="max-width:120px;max-height:120px;border-radius:8px;border:1px solid #ddd;">
+                                        </div>
+                                        <input class="form-control" type="file" name="foto" id="foto">
+                                        <span class="kwitansi-label">Max Size : 3MB</span>
+                                    </div>
+                                </div>
                                 <div class="form-group row">
                                     <label for="posisi" class="col-sm-5 col-form-label">Unit Bisnis</label>
                                     <div class="col-sm-7">
@@ -305,7 +313,7 @@
                                             <option value="KPS">Kolaborasi Para Sahabat</option>
                                             <option value="sebelaswarna">sebelaswarna</option>
                                             <option value="pengenumroh">pengenumroh</option>
-                                            <option value="qubagift">qubagift</option>
+                                            <option value="qubagift">qubagift</option>  
                                             <option value="by.moment">by.moment</option>
                                             <option value="sobatwisata">sobatwisata</option>
                                             <option value="mobileautocare">mobileautocare</option>
@@ -370,8 +378,8 @@
                                     <label for="department" class="col-sm-5 col-form-label">Department</label>
                                     <div class="col-sm-7">
                                         <select name="department" id="department" class="form-control">
-                                            <option value="">Pilih Departement</option>
-                                            <option value="HRD">HRD</option>
+                                            <option value="" hidden>Pilih Departement</option>
+                                            <optixon value="HRD">HRD</optixon>
                                             <option value="Finance">Finance</option>
                                             <option value="Customer Service">Customer Service</option>
                                             <option value="IT">IT</option>
@@ -456,9 +464,36 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
+                                    <label for="total_bulan" class="col-sm-5 col-form-label">Total Bulan</label>
+                                    <div class="col-sm-7">
+                                        <!-- Interactive month stepper -->
+                                        <div class="d-flex align-items-center">
+                                            <div class="input-group" style="width: 150px;">
+                                                <div class="input-group-prepend" style="z-index: 0;">
+                                                    <button type="button" class="btn btn-outline-primary btn-step" data-step="-1" aria-label="kurangi">−</button>
+                                                </div>
+                                                <!-- default sekarang 0 dan boleh 0 -->
+                                                <input type="number" class="form-control text-center" name="total_bulan" id="total_bulan" min="0" max="120" value="0" aria-label="total bulan">
+                                                <div class="input-group-append" style="z-index: 0;">
+                                                    <button type="button" class="btn btn-outline-primary btn-step" data-step="1" aria-label="tambah">+</button>
+                                                </div>
+                                            </div>
+
+                                            <div class="ml-3" id="total_bulan_label" style="min-width:120px;color:#495057;font-weight:600;">0 bulan</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
                                     <label for="tgl_masuk" class="col-sm-5 col-form-label">Tanggal Masuk</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control datepicker" name="tgl_masuk" id="tgl_masuk" placeholder="Pilih Tanggal Masuk" style="cursor: pointer" autocomplete="off">
+                                        <!-- disabled awal, akan di-enable jika total_bulan > 0 -->
+                                        <input type="text" class="form-control datepicker" name="tgl_masuk" id="tgl_masuk" placeholder="Pilih Tanggal Masuk" style="cursor: pointer" autocomplete="off" disabled>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="tgl_akhir_kontrak" class="col-sm-5 col-form-label">Tanggal Akhir Kontrak</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" name="tgl_akhir_kontrak" id="tgl_akhir_kontrak" readonly placeholder="Tanggal Akhir Kontrak" autocomplete="off">
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -467,16 +502,10 @@
                                         <input type="text" class="form-control datepicker" name="tgl_rekrut" id="tgl_rekrut" placeholder="Pilih Tanggal Rekrut" style="cursor: pointer" autocomplete="off">
                                     </div>
                                 </div>
-                                <div class="form-group row">
+                                <div class="form-group row" id="tgl_permanen_container">
                                     <label for="tgl_permanen" class="col-sm-5 col-form-label">Tanggal Permanen</label>
                                     <div class="col-sm-7">
                                         <input type="text" class="form-control datepicker" name="tgl_permanen" id="tgl_permanen" placeholder="Pilih Tanggal Permanen" style="cursor: pointer" autocomplete="off">
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label for="tgl_akhir_kontrak" class="col-sm-5 col-form-label">Tanggal Akhir Kontrak</label>
-                                    <div class="col-sm-7">
-                                        <input type="text" class="form-control datepicker" name="tgl_akhir_kontrak" id="tgl_akhir_kontrak" placeholder="Pilih Tanggal Akhir Kontrak" style="cursor: pointer" autocomplete="off">
                                     </div>
                                 </div>
                                 <div class="form-group row" id="tgl_phk_container" style="display: none;">
@@ -487,26 +516,23 @@
                                 </div>
                                 <div class="form-group row">
                                     <label for="masa_kerja" class="col-sm-5 col-form-label">Masa Kerja</label>
-                                    <div class="col-sm-7">
-                                        <input type="text" class="form-control only-number" name="masa_kerja" id="masa_kerja">
+                                    <div class="col-sm-3">
+                                        <input type="text" class="form-control only-number" name="masa_kerja" id="masa_kerja" readonly placeholder="Masa Kerja">
                                     </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label for="total_bulan" class="col-sm-5 col-form-label">Total Bulan</label>
-                                    <div class="col-sm-7">
-                                        <input type="text" class="form-control only-number" name="total_bulan" id="total_bulan">
+                                    <div class="col-sm-3">
+                                        <p style="padding-top: 6px;">Tahun</p>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="no_rek" class="col-sm-5 col-form-label">No Rekening</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control only-number" name="no_rek" id="no_rek">
+                                        <input type="text" class="form-control only-number" name="no_rek" id="no_rek" placeholder="No Rekening">
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="nama_pemilik_rek" class="col-sm-5 col-form-label">Nama Pemilik Rekening</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" name="nama_pemilik_rek" id="nama_pemilik_rek">
+                                        <input type="text" class="form-control" name="nama_pemilik_rek" id="nama_pemilik_rek" placeholder="Nama Pemilik Rekening">
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -538,13 +564,13 @@
                                     <label for="keahlian" class="col-sm-5 col-form-label">Keahlian</label>
                                     <div class="col-sm-7">
                                         <div class="input-group mb-2">
-                                            <input type="text" class="form-control" id="keahlian_input" placeholder="Tambah keahlian">
+                                            <input type="text" class="form-control" id="keahlian_input" placeholder="Tambah keahlian">  
                                             <div class="input-group-append">
                                                 <button class="btn btn-primary" type="button" id="add_keahlian"><i class="fas fa-plus"></i></button>
                                             </div>
                                         </div>
                                         <div id="keahlian_tags" class="mb-2"></div>
-                                        <input type="hidden" name="keahlian" id="keahlian" value="">
+                                        <input type="hidden" name="keahlian" id="keahlian">
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -552,12 +578,12 @@
                                     <div class="col-sm-7">
                                         <div class="input-group mb-2">
                                             <input type="text" class="form-control" id="pelatihan_internal_input" placeholder="Tambah pelatihan internal">
-                                            <div class="input-group-append">
+                                            <div class="input-group-append"> 
                                                 <button class="btn btn-primary" type="button" id="add_pelatihan_internal"><i class="fas fa-plus"></i></button>
                                             </div>
                                         </div>
                                         <div id="pelatihan_internal_tags" class="mb-2"></div>
-                                        <input type="hidden" name="pelatihan_internal" id="pelatihan_internal" value="">
+                                        <input type="hidden" name="pelatihan_internal" id="pelatihan_internal">
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -568,12 +594,21 @@
                                             <div class="input-group-append">
                                                 <button class="btn btn-primary" type="button" id="add_pelatihan_eksternal"><i class="fas fa-plus"></i></button>
                                             </div>
-                                        </div>
+                                        </div> 
                                         <div id="pelatihan_eksternal_tags" class="mb-2"></div>
                                         <input type="hidden" name="pelatihan_eksternal" id="pelatihan_eksternal" value="">
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div style="width: 100%; height: 0.1px; background-color: rgba(0,0,0,0.3); margin-bottom: 12px"></div>
+                            <div style="margin-bottom: 16px;">
+                                <h5 class="text-primary text-center" style="margin-bottom: -30px;"><i class="fas fa-users"></i> Data Keluarga</h5>
+                                <button type="button" class="btn btn-primary btn-sm" id="addKeluargaBtn" style="margin-bottom: -8px;"><i class="fas fa-plus"></i> Add</button>
+                            </div>
+                        <div style="width: 100%; height: 0.1px; background-color: rgba(0,0,0,0.3); margin-bottom: 24px"></div>
+                        <div id="keluargaContainer">
+                            <!-- Generate Inputan Keluarga -->
                         </div>
                         <!-- Hidden inputs -->
                         <input type="hidden" name="id" id="id" value="<?= $id ?>">
@@ -608,22 +643,478 @@
 <?php $this->load->view('template/script'); ?>
 
 <script>
-    $(document).on('input', '.only-number', function() {
-        this.value = this.value.replace(/[^0-9]/g, '');
+(function(){
+    var idMonthNames = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+
+    function isoToVisible(iso) {
+        if (!iso) return '';
+        var d = new Date(iso);
+        if (isNaN(d.getTime())) return '';
+        var day = ('0' + d.getDate()).slice(-2);
+        var month = idMonthNames[d.getMonth()];
+        var year = d.getFullYear();
+        return day + ' ' + month + ' ' + year;
+    }
+
+    // Hitung Tanggal Akhir berdasarkan tgl_masuk_iso + total_bulan
+    function computeTglAkhirKontrak() {
+        var startIso = $('#tgl_masuk_iso').val();
+        var months = parseInt($('#total_bulan').val(), 10);
+
+        if (!startIso || isNaN(months) || months <= 0) {
+            $('#tgl_akhir_kontrak_iso').val('');
+            $('#tgl_akhir_kontrak').val('');
+            return;
+        }
+
+        var parts = startIso.split('-');
+        if (parts.length < 3) return;
+
+        var year = parseInt(parts[0], 10);
+        var monthIndex = parseInt(parts[1], 10) - 1;
+        var day = parseInt(parts[2], 10);
+
+        var dt = new Date(year, monthIndex, day);
+        // tambah bulan lalu kurangi 1 hari -> hasil inklusif
+        dt.setMonth(dt.getMonth() + months);
+        dt.setDate(dt.getDate() - 1);
+
+        var y = dt.getFullYear();
+        var m = ('0' + (dt.getMonth() + 1)).slice(-2);
+        var d = ('0' + dt.getDate()).slice(-2);
+        var isoEnd = y + '-' + m + '-' + d;
+
+        $('#tgl_akhir_kontrak_iso').val(isoEnd);
+        $('#tgl_akhir_kontrak').val(isoToVisible(isoEnd));
+    }
+
+    // Jika perlu menghitung total_bulan dari dua tanggal, gunakan fungsi ini (tidak dipanggil otomatis)
+    function calcTotalBulanInclusive(startIso, endIso) {
+        if (!startIso || !endIso) return 0;
+        var s = new Date(startIso);
+        var e = new Date(endIso);
+        if (isNaN(s.getTime()) || isNaN(e.getTime())) return 0;
+        var years = e.getFullYear() - s.getFullYear();
+        var months = years * 12 + (e.getMonth() - s.getMonth());
+        // inklusif jika hari akhir >= hari awal
+        if (e.getDate() >= s.getDate()) months += 1;
+        if (months < 0) months = 0;
+        return months;
+    }
+
+    // Datepicker: set hidden ISO and ONLY compute tgl akhir (jangan ubah total_bulan!)
+    $('#tgl_masuk').datepicker({
+        dateFormat: 'dd MM yy',
+        changeMonth: true,
+        changeYear: true,
+        monthNames: idMonthNames,
+        yearRange: "1900:2099",
+        onSelect: function(dateText) {
+            var d = $(this).datepicker('getDate');
+            if (d) {
+                var iso = $.datepicker.formatDate('yy-mm-dd', d);
+                $('#tgl_masuk_iso').val(iso);
+            }
+            // Hanya hitung tgl akhir dari total_bulan; JANGAN ubah #total_bulan di sini
+            computeTglAkhirKontrak();
+        }
     });
 
-    $(function() {
-        $('.datepicker').datepicker({
-            dateFormat: 'yy-mm-dd', // atau format lain sesuai kebutuhan
+    // event: saat total_bulan berubah -> enable tgl_masuk and recompute tgl akhir
+    $(document).on('input change', '#total_bulan', function() {
+        var val = parseInt($(this).val(), 10);
+        if (isNaN(val) || val <= 0) {
+            $('#tgl_masuk').prop('disabled', true);
+            $('#tgl_masuk_iso').val('');
+            $('#tgl_akhir_kontrak_iso').val('');
+            $('#tgl_akhir_kontrak').val('');
+            return;
+        }
+        $('#tgl_masuk').prop('disabled', false);
+        // recompute only tgl akhir
+        computeTglAkhirKontrak();
+    });
+
+    // Prevent accidental recalculation of total_bulan on click/focus of tgl_masuk
+    // (no handler that recalculates total_bulan should be present)
+    // If you have legacy code that recalculates total_bulan from dates, remove or comment it.
+
+    // init on load
+    $(document).ready(function(){
+        // restore visible from ISO if edit
+        var isoStart = $('#tgl_masuk_iso').val();
+        if (isoStart) $('#tgl_masuk').val(isoToVisible(isoStart));
+        var isoEnd = $('#tgl_akhir_kontrak_iso').val();
+        if (isoEnd) $('#tgl_akhir_kontrak').val(isoToVisible(isoEnd));
+
+        // set disabled state based on initial total_bulan
+        var initial = parseInt($('#total_bulan').val(), 10);
+        if (isNaN(initial) || initial <= 0) $('#tgl_masuk').prop('disabled', true);
+        else $('#tgl_masuk').prop('disabled', false);
+    });
+
+    // expose calc function if needed (optional)
+    window.calcTotalBulanInclusive = calcTotalBulanInclusive;
+    window.computeTglAkhirKontrak = computeTglAkhirKontrak;
+})();
+</script>
+<script>
+    // fix final: normalisasi datepicker #tgl_masuk dan satu compute konsisten
+    (function(){
+        // pastikan idMonthNames & isoToVisible tersedia (ada di atas)
+        // hapus inisialisasi ganda datepicker jika ada
+        try { $('#tgl_masuk').datepicker('destroy'); } catch(e){}
+
+        $('#tgl_masuk').datepicker({
+            dateFormat: 'dd MM yy',
+            altField: '#tgl_masuk_iso',
+            altFormat: 'yy-mm-dd',
             changeMonth: true,
-            yearRange: "1900:2099", // bisa disesuaikan
             changeYear: true,
+            monthNames: idMonthNames,
+            yearRange: "1900:2099",
+            onSelect: function(dateText) {
+                // pastikan iso ter-set
+                var d = $(this).datepicker('getDate');
+                if (d) {
+                    $('#tgl_masuk_iso').val($.datepicker.formatDate('yy-mm-dd', d));
+                }
+                computeTglAkhirKontrak();
+            }
+        });
+
+        // pastikan hanya satu handler untuk total_bulan
+        $(document).off('input change', '#total_bulan').on('input change', '#total_bulan', function(){
+            var val = parseInt($(this).val(), 10);
+            if (isNaN(val) || val <= 0) {
+                $('#tgl_masuk').prop('disabled', true);
+                $('#tgl_masuk_iso').val('');
+                $('#tgl_akhir_kontrak_iso').val('');
+                $('#tgl_akhir_kontrak').val('');
+                return;
+            }
+            $('#tgl_masuk').prop('disabled', false);
+            computeTglAkhirKontrak();
+        });
+
+        // juga pastikan perubahan ISO langsung menghitung ulang
+        $(document).off('change', '#tgl_masuk_iso').on('change', '#tgl_masuk_iso', computeTglAkhirKontrak);
+
+        // konsisten compute function (override jika ada yang lain)
+        window.computeTglAkhirKontrak = function() {
+            var startIso = $('#tgl_masuk_iso').val();
+            var months = parseInt($('#total_bulan').val(), 10);
+
+            if (!startIso || isNaN(months) || months <= 0) {
+                $('#tgl_akhir_kontrak_iso').val('');
+                $('#tgl_akhir_kontrak').val('');
+                return;
+            }
+
+            var parts = startIso.split('-');
+            if (parts.length < 3) {
+                $('#tgl_akhir_kontrak_iso').val('');
+                $('#tgl_akhir_kontrak').val('');
+                return;
+            }
+
+            var year = parseInt(parts[0], 10);
+            var monthIndex = parseInt(parts[1], 10) - 1;
+            var day = parseInt(parts[2], 10);
+
+            var dt = new Date(year, monthIndex, day);
+            // tambah months dan kurangi 1 hari -> inklusif
+            dt.setMonth(dt.getMonth() + months);
+            dt.setDate(dt.getDate() - 1);
+
+            var y = dt.getFullYear();
+            var m = ('0' + (dt.getMonth() + 1)).slice(-2);
+            var d = ('0' + dt.getDate()).slice(-2);
+            var isoEnd = y + '-' + m + '-' + d;
+
+            $('#tgl_akhir_kontrak_iso').val(isoEnd);
+            $('#tgl_akhir_kontrak').val(isoToVisible(isoEnd));
+        };
+
+        // init compute saat load (jika ada nilai)
+        $(function(){ computeTglAkhirKontrak(); });
+    })();
+</script>
+<script>
+    
+    $(document).ready(function() {
+        $(document).on('input', '.only-number', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
+        $(document).on('change', '#tgl_lahir', function() {
+            var tgl = $(this).val();
+            if (tgl) {
+                var birthYear = new Date(tgl).getFullYear();
+                var nowYear = new Date().getFullYear();
+                var umur = nowYear - birthYear;
+                if (umur < 0) umur = 0;
+                $('#umur').val(umur);
+            } else {
+                $('#umur').val('');
+            }
+        });
+
+        // Sembunyikan tanggal permanen di awal
+        $('#tgl_permanen_container').hide();
+
+        // Tampilkan/hide tanggal permanen sesuai status karyawan
+        $('#status_karyawan').on('change', function() {
+            if ($(this).val() === 'permanen') {
+                $('#tgl_permanen_container').show();
+            } else {
+                $('#tgl_permanen_container').hide();
+                $('#tgl_permanen').val('');
+            }
+        });
+
+        // Jika edit, cek status_karyawan dan tampilkan jika perlu
+        if ($('#status_karyawan').val() === 'permanen') {
+            $('#tgl_permanen_container').show();
+        }
+
+        var $wilayah = $('#wilayah_kerja');
+        // Simpan semua option cabang (selain Nasional)
+        var cabangOptions = '';
+        $wilayah.find('option').each(function() {
+            if ($(this).val() !== 'Nasional' && $(this).val() !== '') {
+                cabangOptions += this.outerHTML;
+            }
+        });
+
+        $('#lokasi_kerja').on('change', function() {
+            var val = $(this).val();
+            if (val === 'Kantor Pusat') {
+                // Hanya tampilkan Nasional saja
+                $wilayah.html('<option value="Nasional">Nasional</option>');
+                $wilayah.val('Nasional').trigger('change');
+            } else if (val === 'Cabang') {
+                // Hilangkan Nasional, tampilkan hanya cabang
+                $wilayah.html('<option value="" hidden>Pilih Wilayah Kerja</option>' + cabangOptions);
+                $wilayah.val('').trigger('change');
+            }
+        });
+
+        function hitungMasaKerja() {
+            // prioritas: gunakan total_bulan jika diisi (sumber kebenaran)
+            var totalBulanInput = parseInt($('#total_bulan').val(), 10);
+            if (!isNaN(totalBulanInput) && totalBulanInput > 0) {
+                var masaKerja = Math.floor(totalBulanInput / 12);
+                $('#masa_kerja').val(masaKerja);
+                return;
+            }
+
+            // fallback: jika total_bulan kosong, hitung dari tanggal (tapi JANGAN tulis ke #total_bulan)
+            var startIso = $('#tgl_masuk_iso').val() || '';
+            var endIsoVisible = $('#tgl_akhir_kontrak').val() || $('#tgl_akhir_kontrak_iso').val() || '';
+            var endIso = $('#tgl_akhir_kontrak_iso').val() || endIsoVisible;
+
+            // gunakan fungsi calcTotalBulanInclusive yang sudah ada
+            var totalBulan = calcTotalBulanInclusive(startIso, endIso);
+            var masaKerjaFall = Math.floor(totalBulan / 12);
+            $('#masa_kerja').val(isNaN(masaKerjaFall) ? '' : masaKerjaFall);
+        }
+
+        // update bindings: hitung masa kerja saat total_bulan berubah,
+        // atau saat tgl_akhir/tgl_masuk berubah (tidak akan menimpa total_bulan)
+        $(document).off('input change', '#total_bulan').on('input change', '#total_bulan', function() {
+            // enable/disable tgl_masuk handled elsewhere
+            hitungMasaKerja();
+            computeTglAkhirKontrak(); // maintain end date sync
+        });
+
+        // jika user ubah tanggal (visible atau ISO) recompute masa kerja fallback
+        $(document).off('change', '#tgl_masuk_iso, #tgl_akhir_kontrak_iso, #tgl_masuk, #tgl_akhir_kontrak')
+            .on('change', '#tgl_masuk_iso, #tgl_akhir_kontrak_iso, #tgl_masuk, #tgl_akhir_kontrak', function() {
+                hitungMasaKerja();
+            });
+    });
+
+    function requestGenerateNpk(yearTwoDigits) {
+        $.ajax({
+            url: '<?= site_url("kps_karyawan/generate_npk") ?>',
+            type: 'POST',
+            dataType: 'json',
+            data: { year: yearTwoDigits },
+            success: function(res) {
+                if (res && res.status) {
+                    $('#npk').val(res.npk).prop('readonly', true);
+                }
+            },
+            error: function() {
+                    console.warn('Gagal generate NPK');
+            }
+        });
+    }
+
+    function getYearTwoDigitsFromDateInput(dateStr) {
+        if (!dateStr) return ('' + new Date().getFullYear()).slice(-2);
+        var d = new Date(dateStr);
+        if (isNaN(d.getTime())) return ('' + new Date().getFullYear()).slice(-2);
+        return ('' + d.getFullYear()).slice(-2);
+    }
+
+    // only run on add page (id == 0)
+    var isAdd = ( $('#id').val() == '0' || $('#id').val() === '' );
+    if (isAdd) {
+        // generate on load using tgl_masuk if present or current year
+        var initialYear = getYearTwoDigitsFromDateInput($('#tgl_masuk').val());
+        requestGenerateNpk(initialYear);
+
+        // regenerate when tgl_masuk changes
+        $('#tgl_masuk').on('change', function() {
+            var y = getYearTwoDigitsFromDateInput($(this).val());
+            requestGenerateNpk(y);
+        });
+    }
+
+    var $input = $('#total_bulan');
+    var $label = $('#total_bulan_label');
+    var MIN = parseInt($input.attr('min')) || 0;
+    var MAX = parseInt($input.attr('max')) || 120;
+
+    function setTotalBulan(val, trigger) {
+        val = parseInt(val);
+        if (isNaN(val)) val = MIN;
+        if (val < MIN) val = MIN;
+        if (val > MAX) val = MAX;
+
+        $input.val(val);
+        $label.text(val + ' ' + (val > 1 ? 'bulan' : 'bulan'));
+
+        // enable/disable tgl_masuk sesuai total_bulan
+        if (val > 0) {
+            $('#tgl_masuk').prop('disabled', false);
+        } else {
+            $('#tgl_masuk').prop('disabled', true).val('');
+            $('#tgl_akhir_kontrak').val('');
+        }
+
+        if (trigger) $input.trigger('change');
+    }
+
+    // stepper buttons
+        $(document).on('click', '.btn-step', function(e) {
+            e.preventDefault();
+            var step = parseInt($(this).data('step')) || 0;
+            var current = parseInt($input.val()) || MIN;
+            setTotalBulan(current + step, true);
+        });
+
+        // input number manual
+        $(document).on('input', '#total_bulan', function() {
+            var v = $(this).val().replace(/[^0-9]/g, '');
+            $(this).val(v);
+            setTotalBulan(v, true);
+        });
+
+        // when leaving the input, normalize and trigger compute
+        $(document).on('change', '#total_bulan', function() {
+            setTotalBulan($(this).val(), true);
+        });
+
+        // range slider (jika ada)
+        $(document).on('input change', '#total_bulan_range', function() {
+            if ($(this).length) setTotalBulan($(this).val(), true);
+        });
+
+        // initialize from existing value (if any)
+        $(document).ready(function() {
+            var initial = parseInt($input.val());
+            if (isNaN(initial)) initial = MIN;
+            setTotalBulan(initial, true);
+        });
+
+        // computeTglAkhirKontrak sudah ada, pastikan dipanggil saat total_bulan berubah
+        $(document).on('change keyup', '#tgl_masuk, #total_bulan', function() {
+            if (!$('#tgl_masuk').prop('disabled')) {
+                if (typeof computeTglAkhirKontrak === 'function') computeTglAkhirKontrak();
+            }
+        });
+
+    function computeTglAkhirKontrak() {
+            var start = $('#tgl_masuk').val();
+            var months = parseInt($('#total_bulan').val(), 10);
+
+            if (!start || isNaN(months) || months <= 0) {
+                $('#tgl_akhir_kontrak').val('');
+                return;
+            }
+
+            // parse yyyy-mm-dd
+            var parts = start.split('-');
+            if (parts.length < 3) {
+                $('#tgl_akhir_kontrak').val('');
+                return;
+            }
+
+            var year = parseInt(parts[0], 10);
+            var monthIndex = parseInt(parts[1], 10) - 1; // JS month 0-based
+            var day = parseInt(parts[2], 10);
+
+            var dt = new Date(year, monthIndex, day);
+
+            // tambahkan months
+            dt.setMonth(dt.getMonth() + months);
+
+            // kurangi 1 hari untuk mendapatkan tanggal akhir inklusif
+            dt.setDate(dt.getDate() - 1);
+
+            // format yyyy-mm-dd
+            var y = dt.getFullYear();
+            var m = ('0' + (dt.getMonth() + 1)).slice(-2);
+            var d = ('0' + dt.getDate()).slice(-2);
+
+            $('#tgl_akhir_kontrak').val(y + '-' + m + '-' + d).trigger('change');
+        }
+
+        // event: saat tgl_masuk atau total_bulan berubah
+        $(document).on('change keyup', '#tgl_masuk, #total_bulan', function() {
+            computeTglAkhirKontrak();
+        });
+
+        // hitung awal jika sudah ada nilai saat load
+        $(document).ready(function() {
+            computeTglAkhirKontrak();
+        });
+
+    $('.datepicker-tgl-lahir').datepicker({
+        dateFormat: 'yy-mm-dd', // atau format lain sesuai kebutuhan
+        changeMonth: true,
+        yearRange: "1900:2099", // bisa disesuaikan
+        changeYear: true,
+        autoclose: true
+    });
+
+    $('.datepicker').datepicker({
+        dateFormat: 'yy-mm-dd', // atau format lain sesuai kebutuhan
+        changeMonth: true,
+        yearRange: "1900:2099", // bisa disesuaikan
+        changeYear: true,
+        autoclose: true,
+        onSelect: function() {
+            // panggil compute segera setelah datepicker memilih tanggal
+            if (typeof computeTglAkhirKontrak === 'function') computeTglAkhirKontrak();
+        }
+    });
+
+    function initKeluargaDatepicker() {
+        $('.tgl-lahir-kel').datepicker({
+            dateFormat: 'yy-mm-dd',
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "1900:2099",
             autoclose: true
         });
-    });
+    }
 
     $('#status_kerja').on('change', function() {
-        if ($(this).val() == 'nonaktif') {
+        if ($(this).val() == 'Non Aktif') {
             $('#tgl_phk_container').show();
         } else {
             $('#tgl_phk_container').hide();
@@ -660,19 +1151,10 @@
             placeholder: "Pilih Grade",
             allowClear: true
         });
-    });
-
-    $(document).on('change', '#tgl_lahir', function() {
-        var tgl = $(this).val();
-        if (tgl) {
-            var birthYear = new Date(tgl).getFullYear();
-            var nowYear = new Date().getFullYear();
-            var umur = nowYear - birthYear;
-            if (umur < 0) umur = 0;
-            $('#umur').val(umur);
-        } else {
-            $('#umur').val('');
-        }
+        $('#nama_lengkap').select2({
+            placeholder: "Pilih User",
+            allowClear: true
+        });
     });
 
     function handleTagInput(inputId, addBtnId, tagsDivId, hiddenInputId) {
@@ -747,6 +1229,7 @@
                     // // ISI FIELD PRODUK AGEN
                     $('#status_kerja').val(data['master'].status_kerja).change();
                     $('#npk').val(data['master'].npk);
+                    $('#id_user').val(data['master'].id_user).change();
                     $('#nama_lengkap').val(data['master'].nama_lengkap);
                     $('#jenis_kelamin').val(data['master'].jenis_kelamin).change();
                     $('#tempat_lahir').val(data['master'].tempat_lahir);
@@ -764,10 +1247,11 @@
                     $('#no_hp').val(data['master'].no_hp);
                     $('#lokasi_kerja').val(data['master'].lokasi_kerja);
                     $('#wilayah_kerja').val(data['master'].wilayah_kerja);
+                    $('#unit_bisnis').val(data['master'].unit_bisnis);
                     $('#posisi').val(data['master'].posisi);
-                    $('#jabatan').val(data['master'].jabatan);
+                    $('#jabatan').val(data['master'].jabatan).change();
                     $('#department').val(data['master'].department);
-                    $('#grade').val(data['master'].grade);
+                    $('#grade').val(data['master'].grade).change();
                     $('#status_karyawan').val(data['master'].status_karyawan);
                     $('#tgl_masuk').val(moment(data['master'].tgl_masuk).format('YYYY-MM-DD'));
                     $('#tgl_rekrut').val(moment(data['master'].tgl_rekrut).format('YYYY-MM-DD'));
@@ -778,17 +1262,51 @@
                     $('#total_bulan').val(data['master'].total_bulan);
                     $('#no_rek').val(data['master'].no_rek);
                     $('#nama_pemilik_rek').val(data['master'].nama_pemilik_rek);
-                    $('#nama_bank').val(data['master'].nama_bank);
                     $('#asal_karyawan').val(data['master'].asal_karyawan);
+                    $('#nama_bank').val(data['master'].nama_bank).change();
                     $('#keahlian').val(data['master'].keahlian);
                     $('#pelatihan_internal').val(data['master'].pelatihan_internal);
                     $('#pelatihan_eksternal').val(data['master'].pelatihan_eksternal);
+
+                    if (data['master'].foto) {
+                        $('#foto_preview').attr('src', '<?= base_url("assets/backend/document/data_karyawan/") ?>' + data['master'].foto);
+                        $('#foto_preview_container').show();
+                    } else {
+                        $('#foto_preview_container').hide();
+                    }
+
+                    handleTagInput('keahlian_input', 'add_keahlian', 'keahlian_tags', 'keahlian');
+                    handleTagInput('pelatihan_internal_input', 'add_pelatihan_internal', 'pelatihan_internal_tags', 'pelatihan_internal');
+                    handleTagInput('pelatihan_eksternal_input', 'add_pelatihan_eksternal', 'pelatihan_eksternal_tags', 'pelatihan_eksternal');
+
+                    // Hapus baris keluarga lama
+                    $('#keluargaContainer').empty();
+                    if (data.keluarga && data.keluarga.length > 0) {
+                        data.keluarga.forEach(function(item, idx) {
+                            var html = $(getKeluargaTemplate(idx + 1));
+                            html.find('input[name="id_keluarga[]"]').val(item.id);
+                            html.find('input[name="nama_anggota[]"]').val(item.nama_anggota);
+                            html.find('select[name="status_wp_kel[]"]').val(item.status_wp);
+                            html.find('select[name="jenis_kelamin_kel[]"]').val(item.jenis_kelamin);
+                            html.find('input[name="tgl_lahir_kel[]"]').val(item.tgl_lahir);
+                            html.find('input[name="umur_kel[]"]').val(item.umur);
+                            html.find('select[name="pendidikan_kel[]"]').val(item.pendidikan);
+                            html.find('select[name="keanggotaan[]"]').val(item.keanggotaan);
+                            html.find('select[name="lokasi_kerja_kel[]"]').val(item.lokasi_kerja);
+                            html.find('select[name="wilayah_kerja_kel[]"]').val(item.wilayah_kerja);
+                            $('#keluargaContainer').append(html);
+                        });
+                        initKeluargaDatepicker();
+                    } else {
+                        $('#keluargaContainer').append(getKeluargaTemplate(1));
+                        $('#keluargaContainer .removeKeluargaBtn').hide();
+                        initKeluargaDatepicker();
+                    }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     alert('Error get data from ajax');
                 }
             });
-
         }
 
         // Script delete data file gambar
@@ -837,16 +1355,163 @@
             $('.aksi').hide(); // Sembunyikan tombol aksi jika mode read
         }
 
+        // Template baris keluarga
+        function getKeluargaTemplate(no) {
+            return `
+            <div class="keluarga-item" style="border:1px solid #e9e9e9ff; padding:16px; margin-bottom:12px; border-radius:8px; position:relative;">
+                <button type="button" class="btn btn-danger btn-sm removeKeluargaBtn" style="position:absolute;top:8px;right:8px;display:none;"><i class="fas fa-trash"></i></button>
+                <div style="font-weight:bold; font-size:1.1em; margin-bottom:12px; color:#1a2035;">Anggota ke-${no}</div>
+                <div class="row" style="margin-top: 0;">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-5">Nama Anggota</label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control" name="nama_anggota[]" required placeholder="Nama Anggota">
+                                <input type="hidden" class="form-control" name="id_keluarga[]" required>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-5">Jenis Kelamin</label>
+                            <div class="col-sm-7">
+                                <select class="form-control" name="jenis_kelamin_kel[]" required>
+                                    <option value="" hidden>Pilih Jenis Kelamin</option>
+                                    <option value="Laki-laki">Laki-laki</option>
+                                    <option value="Perempuan">Perempuan</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-5">Tanggal Lahir</label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control tgl-lahir-kel" name="tgl_lahir_kel[]" autocomplete="off" required placeholder="Pilih Tanggal Lahir" style="cursor: pointer">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-5">Pendidikan</label>
+                            <div class="col-sm-7">
+                                <select class="form-control" name="pendidikan_kel[]" required>
+                                    <option value="" hidden>Pilih Pendidikan Terakhir</option>
+                                    <option value="Tidak Sekolah">Tidak/Belum Sekolah</option>
+                                    <option value="Belum Tamat SD">Belum Tamat SD/Sederajat</option>
+                                    <option value="SD">SD/Sederajat</option>
+                                    <option value="SMP">SMP/Sederajat</option>
+                                    <option value="SMA">SMA/SMK/MA/Sederajat</option>
+                                    <option value="Diploma I (D1)">Diploma I (D1)</option>
+                                    <option value="Diploma II (D2)">Diploma II (D2)</option>
+                                    <option value="Diploma III (D3)">Diploma III (D3)</option>
+                                    <option value="Sarjana (S1)">Sarjana (S1)/Diploma IV (D4)</option>
+                                    <option value="Magister (S2)">Magister (S2)</option>
+                                    <option value="Doktor (S3)">Doktor (S3)</option>
+                                    <option value="Lainnya">Lainnya</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-5">Keanggotaan</label>
+                            <div class="col-sm-7">
+                                <select class="form-control" name="keanggotaan[]" required>
+                                    <option value="" hidden>Pilih Keanggotaan</option>
+                                    <option value="Pasangan">Pasangan</option>
+                                    <option value="Anak">Anak</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-5">Umur</label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control only-number" name="umur_kel[]" readonly placeholder="Umur">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+        }
+
+        $(document).ready(function() {
+            // Tambahkan satu baris keluarga saat load
+            $('#keluargaContainer').append(getKeluargaTemplate(1));
+            $('#keluargaContainer .removeKeluargaBtn').hide();
+            initKeluargaDatepicker();
+
+            // Add keluarga
+            $('#addKeluargaBtn').on('click', function() {
+                var no = $('#keluargaContainer .keluarga-item').length + 1;
+                $('#keluargaContainer').append(getKeluargaTemplate(no));
+                $('#keluargaContainer .removeKeluargaBtn').show();
+                initKeluargaDatepicker();
+            });
+
+            // Remove keluarga
+            $('#keluargaContainer').on('click', '.removeKeluargaBtn', function() {
+                $(this).closest('.keluarga-item').remove();
+                // Update judul anggota setelah hapus
+                $('#keluargaContainer .keluarga-item').each(function(idx) {
+                    $(this).find('div[style*="font-weight:bold"]').text('Anggota ke-' + (idx + 1));
+                });
+                // Sembunyikan tombol remove jika hanya satu baris tersisa
+                if ($('#keluargaContainer .keluarga-item').length === 1) {
+                    $('#keluargaContainer .removeKeluargaBtn').hide();
+                }
+            });
+
+            // Otomatis hitung umur keluarga
+            $('#keluargaContainer').on('change', 'input[name="tgl_lahir_kel[]"]', function() {
+                var tgl = $(this).val();
+                var umurInput = $(this).closest('.keluarga-item').find('input[name="umur_kel[]"]');
+                if (tgl) {
+                    var birthYear = new Date(tgl).getFullYear();
+                    var nowYear = new Date().getFullYear();
+                    var umur = nowYear - birthYear;
+                    if (umur < 0) umur = 0;
+                    umurInput.val(umur);
+                } else {
+                    umurInput.val('');
+                }
+            });
+
+            $('#keluargaContainer').on('change', 'select[name="lokasi_kerja_kel[]"]', function() {
+                var $row = $(this).closest('.keluarga-item');
+                var $wilayah = $row.find('select[name="wilayah_kerja_kel[]"]');
+                // Simpan semua opsi cabang (selain Nasional)
+                if (!$wilayah.data('cabangOptions')) {
+                    var cabangOptions = '';
+                    $wilayah.find('option').each(function() {
+                        if ($(this).val() !== 'Nasional' && $(this).val() !== '') {
+                            cabangOptions += this.outerHTML;
+                        }
+                    });
+                    $wilayah.data('cabangOptions', cabangOptions);
+                } else {
+                    var cabangOptions = $wilayah.data('cabangOptions');
+                }
+
+                var val = $(this).val();
+                if (val === 'Kantor Pusat') {
+                    // Hanya tampilkan Nasional saja
+                    $wilayah.html('<option value="Nasional">Nasional</option>');
+                    $wilayah.val('Nasional').trigger('change');
+                } else if (val === 'Cabang') {
+                    // Hilangkan Nasional, tampilkan hanya cabang
+                    $wilayah.html('<option value="" hidden>Pilih Wilayah Kerja</option>' + cabangOptions);
+                    $wilayah.val('').trigger('change');
+                }
+            });
+        });
+
         $("#form").submit(function(e) {
             e.preventDefault();
             var $form = $(this);
             if (!$form.valid()) return false;
 
+
             var url;
             if (id == 0) {
                 url = "<?php echo site_url('kps_karyawan/add_data_karyawan') ?>";
             } else {
-                url = "<?php echo site_url('kps_karyawan/update_data_karyawan') ?>";
+                url = "<?php echo site_url('kps_karyawan/update') ?>";
             }
 
             // Gunakan FormData untuk menangani file upload
@@ -880,7 +1545,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then(() => {
-                            location.href = "<?= base_url('kps_karyawan/add_form_keluarga') ?>";
+                            location.href = "<?= base_url('kps_karyawan') ?>";
                         });
                     }
                 },

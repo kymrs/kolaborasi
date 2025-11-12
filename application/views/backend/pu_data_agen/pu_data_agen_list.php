@@ -109,7 +109,7 @@
                                 <input type="text" class="form-control" id="no_telp" name="no_telp" placeholder="No Telepon" required>
                             </div>
                         </div>
-                        <div class="form-group row" id="form-group-kode-referral2" style="display:none;">
+                        <div class="form-group row">
                             <label for="" class="col-sm-3 col-form-label">Kode Referral</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control" id="kode_referral2" name="kode_referral" placeholder="Kode Referral">
@@ -128,6 +128,12 @@
                             </div>
                         </div>
                         <div class="form-group row">
+                            <label for="" class="col-sm-3 col-form-label">Kota/Kabupaten</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="kota" name="kota" placeholder="Kota" required>
+                            </div>
+                        </div>
+                        <div class="form-group row">
                             <label for="" class="col-sm-3 col-form-label">Provinsi</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control" id="provinsi" name="provinsi" placeholder="Provinsi" required>
@@ -140,7 +146,7 @@
                                 <input type="file" class="form-control" id="ktp" name="ktp" accept=".jpg, .jpeg, .png">
                             </div>
                         </div>
-                        <div class="form-group row">
+                        <div class="form-group row" id="password-container">
                             <label for="" class="col-sm-3 col-form-label">Password</label>
                             <div class="col-sm-9">
                                 <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
@@ -471,7 +477,8 @@
         var validator = $("#modalform").validate();
         $('#imgKTPEdit').hide();
         validator.resetForm();
-        $('#form-group-kode-referral2').hide(); // Sembunyikan input kode referral saat tambah data
+        $('.card-title').text('Tambah Data Agen');
+        $('.aksi').text('Save');
     };
 
     // Mengambil URL saat ini
@@ -505,17 +512,13 @@
                 $('[name="id"]').val(data.id);
                 $('[name="nama_agen"]').val(data.nama);
                 $('[name="no_telp"]').val(data.no_telp);
+                $('[name="kode_referral"]').val(data.kode_referral);
                 $('[name="alamat"]').val(data.alamat);
+                $('[name="kota"]').val(data.kota);
                 $('[name="kelurahan"]').val(data.kelurahan);
                 $('[name="provinsi"]').val(data.provinsi);
 
-                // Kode referral
-                $('#kode_referral2').val(data.kode_referral);
-                if (data.kode_referral && data.kode_referral.trim() !== '') {
-                    $('#form-group-kode-referral2').show();
-                } else {
-                    $('#form-group-kode-referral2').hide();
-                }
+                console.log(data.kota)
 
                 // Preview gambar KTP jika ada
                 if (data.ktp) {

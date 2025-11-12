@@ -158,11 +158,13 @@ class Pu_data_agen extends CI_Controller
         $data = array(
             'nama'      => $this->input->post('nama_agen'),
             'no_telp'   => $this->input->post('no_telp'),
+            'kode_referral'   => $this->input->post('kode_referral'),
             'alamat'    => $this->input->post('alamat'),
-            'kelurahan' => $this->input->post('kelurahan'), // tambah ini
-            'provinsi'  => $this->input->post('provinsi'),  // tambah ini
+            'kelurahan' => $this->input->post('kelurahan'),
+            'kota' => $this->input->post('kota'),
+            'provinsi'  => $this->input->post('provinsi'),
             'ktp'       => $ktp_file,
-            'password'  => $this->input->post('password'),
+            'password'  => md5($this->input->post('password')),
             'created_at' => date('Y-m-d H:i:s')
         );
 
@@ -204,11 +206,13 @@ class Pu_data_agen extends CI_Controller
         $data = array(
             'nama'      => $this->input->post('nama_agen'),
             'no_telp'   => $this->input->post('no_telp'),
+            'kode_referral'   => $this->input->post('kode_referral'),
             'alamat'    => $this->input->post('alamat'),
-            'kelurahan' => $this->input->post('kelurahan'), // tambah ini
-            'provinsi'  => $this->input->post('provinsi'),  // tambah ini
+            'kelurahan' => $this->input->post('kelurahan'),
+            'kota' => $this->input->post('kota'),
+            'password'  => md5($this->input->post('password')),
+            'provinsi'  => $this->input->post('provinsi'), 
             'ktp'       => $ktp_file,
-            'password'  => $this->input->post('password'),
             'created_at' => $agen->created_at // atau update field lain sesuai kebutuhan
         );
 
@@ -300,7 +304,7 @@ class Pu_data_agen extends CI_Controller
             header("Access-Control-Allow-Headers: Content-Type, Authorization");
         }
 
-        // Validasi method
+        // // Validasi method
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             echo json_encode(['status' => false, 'message' => 'Invalid request method']);
             return;
@@ -312,6 +316,7 @@ class Pu_data_agen extends CI_Controller
         $alamat   = $this->input->post('alamat', TRUE);
         $alamat   = $this->input->post('alamat', TRUE);
         $kelurahan   = $this->input->post('kelurahan', TRUE);
+        $kota   = $this->input->post('kota', TRUE);
         $provinsi   = $this->input->post('provinsi', TRUE);
         $password = $this->input->post('password', TRUE);
 
@@ -347,6 +352,7 @@ class Pu_data_agen extends CI_Controller
             'alamat'    => $alamat,
             'kelurahan'    => $kelurahan,
             'provinsi'    => $provinsi,
+            'kota'    => $kota,
             'password'  => $password_hash, // simpan hash MD5
             'ktp'       => $ktp_path,
             'is_active' => 0,
@@ -526,23 +532,23 @@ class Pu_data_agen extends CI_Controller
     public function api_tambah_pencairan()
     {
         // // CORS untuk domain tertentu
-        // if (isset($_SERVER['HTTP_ORIGIN']) && $_SERVER['HTTP_ORIGIN'] === 'https://agen.pengenumroh.com') {
-        //     header("Access-Control-Allow-Origin: https://agen.pengenumroh.com");
-        //     header("Access-Control-Allow-Methods: POST, OPTIONS");
-        //     header("Access-Control-Allow-Headers: Content-Type, Authorization");
-        // }
+        if (isset($_SERVER['HTTP_ORIGIN']) && $_SERVER['HTTP_ORIGIN'] === 'https://agen.pengenumroh.com') {
+            header("Access-Control-Allow-Origin: https://agen.pengenumroh.com");
+            header("Access-Control-Allow-Methods: POST, OPTIONS");
+            header("Access-Control-Allow-Headers: Content-Type, Authorization");
+        }
 
-        // // Handle preflight OPTIONS
-        // if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-        //     http_response_code(200);
-        //     exit();
-        // }
+        // Handle preflight OPTIONS
+        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+            http_response_code(200);
+            exit();
+        }
 
-        // // Validasi method
-        // if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        //     echo json_encode(['status' => false, 'message' => 'Invalid request method']);
-        //     return;
-        // }
+        // Validasi method
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            echo json_encode(['status' => false, 'message' => 'Invalid request method']);
+            return;
+        }
 
         // Ambil data POST
         $no_telp = $this->input->post('no_telp', TRUE);
@@ -686,14 +692,14 @@ class Pu_data_agen extends CI_Controller
 
     public function getHistoryTransaksi($no_telp)
     {
-        // if (isset($_SERVER['HTTP_ORIGIN']) && $_SERVER['HTTP_ORIGIN'] === 'https://agen.pengenumroh.com') {
-        //     header("Access-Control-Allow-Origin: https://agen.pengenumroh.com");
-        //     header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-        //     header("Access-Control-Allow-Headers: Content-Type, Authorization");
-        // } else {
-        //     echo json_encode(['status' => false, 'message' => 'Akses ditolak']);
-        //     return;
-        // }
+        if (isset($_SERVER['HTTP_ORIGIN']) && $_SERVER['HTTP_ORIGIN'] === 'https://agen.pengenumroh.com') {
+            header("Access-Control-Allow-Origin: https://agen.pengenumroh.com");
+            header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+            header("Access-Control-Allow-Headers: Content-Type, Authorization");
+        } else {
+            echo json_encode(['status' => false, 'message' => 'Akses ditolak']);
+            return;
+        }
 
         // Handle preflight OPTIONS
         if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {

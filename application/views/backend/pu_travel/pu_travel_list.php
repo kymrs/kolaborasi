@@ -48,6 +48,7 @@
                                 <tr>
                                     <th>No</th>
                                     <th style="width: 120px;">Action</th>
+                                    <th>Nama Perusahaan</th>
                                     <th>Nama Travel</th>
                                     <th>Created At</th>
                                 </tr>
@@ -59,6 +60,7 @@
                                 <tr>
                                     <th>No</th>
                                     <th style="width: 120px;">Action</th>
+                                    <th>Nama Perusahaan</th>
                                     <th>Nama Travel</th>
                                     <th>Created At</th>
                                 </tr>
@@ -85,10 +87,16 @@
                     <div class="modal-body">
                         <input type="hidden" name="id" />
                         <div class="form-group row">
+                            <label for="" class="col-sm-3 col-form-label">Perusahaan</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="perusahaan" name="perusahaan" placeholder="Nama Perusahaan" required>
+                                <input type="hidden" class="form-control" id="id" name="id" placeholder="id">
+                            </div>
+                        </div>
+                        <div class="form-group row">
                             <label for="" class="col-sm-3 col-form-label">Travel</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control" id="travel" name="travel" placeholder="Nama Travel" required>
-                                <input type="hidden" class="form-control" id="id" name="id" placeholder="id">
                             </div>
                         </div>
                         <div class="form-group row">
@@ -223,6 +231,7 @@
             dataType: "JSON",
             success: function(data) {
                 $('[name="id"]').val(data.id);
+                $('[name="perusahaan"]').val(data.perusahaan);
                 $('[name="travel"]').val(data.travel);
                 $('[name="nama_bank"]').val(data.nama_bank);
                 $('[name="no_rek"]').val(data.no_rek);

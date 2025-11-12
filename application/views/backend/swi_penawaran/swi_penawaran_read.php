@@ -56,11 +56,11 @@
                     </div>
                     <div class="data-container">
                         <?php foreach ($data_detail as $data) : ?>
-                            <div class="data">
-                                <span style="width: 37%;"><?= $data['tgl_keberangkatan'] ?></span>
+                            <div class="data"> 
+                                <span style="width: 37%;"><?= date('d F Y', strtotime($data['tgl_keberangkatan'])) ?></span>
                                 <span style="width: 15%; position: relative; right: 25px"><?= $data['jenis'] ?></span>
                                 <span style="width: 15%; position: relative; right: 5px"><?= $data['jumlah'] ?></span>
-                                <span style="width: 24%;"><?= $data['harga'] ?></span>
+                                <span style="width: 24%;"><?= number_format($data['harga'], 0, ',', '.') ?></span>
                                 <span style="width: 24%;"><?= $data['keterangan'] ?></span>
                             </div>
                         <?php endforeach ?>

@@ -41,6 +41,7 @@ class Pu_travel extends CI_Controller
             $row = array();
             $row[] = $no;
             $row[] = $action;
+            $row[] = $field->perusahaan;
             $row[] = $field->travel;
             $row[] = $field->created_at;
             $data[] = $row;
@@ -65,6 +66,7 @@ class Pu_travel extends CI_Controller
     public function add()
     {
         $data = array(
+            'perusahaan' => $this->input->post('perusahaan'),
             'travel' => $this->input->post('travel'),
             'nama_bank' => $this->input->post('nama_bank'),
             'no_rek' => $this->input->post('no_rek'),
@@ -77,6 +79,7 @@ class Pu_travel extends CI_Controller
     public function update()
     {
         $data = array(
+            'perusahaan' => $this->input->post('perusahaan'),
             'travel' => $this->input->post('travel'),
             'nama_bank' => $this->input->post('nama_bank'),
             'no_rek' => $this->input->post('no_rek'),

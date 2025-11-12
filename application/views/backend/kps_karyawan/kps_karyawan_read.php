@@ -335,7 +335,7 @@ function formatTanggalIndo($tanggal)
                 <tr>
                     <th>Tempat, Tanggal Lahir</th>
                     <th>:</th>
-                    <td><?= $master->tempat_lahir ?>, <?= date('d F Y', strtotime($master->tgl_lahir)) ?></td>
+                    <td><?= $master->tempat_lahir ?>, <?= formatTanggalIndo($master->tgl_lahir) ?></td>
                 </tr>
                 <tr>
                     <th>Jenis Kelamin</th>
@@ -351,6 +351,11 @@ function formatTanggalIndo($tanggal)
                     <th>Pendidikan</th>
                     <th>:</th>
                     <td><?= $master->pendidikan ?></td>
+                </tr>
+                <tr>
+                    <th>Status Wajib Pajak</th>
+                    <th>:</th>
+                    <td><?= $master->ktk ?></td>
                 </tr>
                 <tr>
                     <th>No. KTP</th>
@@ -414,14 +419,19 @@ function formatTanggalIndo($tanggal)
                     <td><?= $master->unit_bisnis ?></td>
                 </tr>
                 <tr>
+                    <th>Tanggal Rekrut</th>
+                    <th>:</th>
+                    <td><?= formatTanggalIndo($master->tgl_rekrut) ?></td>
+                </tr>
+                <tr>
                     <th>Tanggal Masuk</th>
                     <th>:</th>
-                    <td><?= date('d F Y', strtotime($master->tgl_masuk)) ?></td>
+                    <td><?= formatTanggalIndo($master->tgl_masuk) ?></td>
                 </tr>
                 <tr>
                     <th>Tanggal Akhir Kontrak</th>
                     <th>:</th>
-                    <td><?= date('d F Y', strtotime($master->tgl_akhir_kontrak)) ?></td>
+                    <td><?= formatTanggalIndo($master->tgl_akhir_kontrak) ?></td>
                 </tr>
                 <tr>
                     <th>Masa Kerja</th>
@@ -491,8 +501,8 @@ function formatTanggalIndo($tanggal)
             <div class="contract-card">
                 <h3>Kontrak Tahap ke-<?= $i++ ?></h3>
                 <div class="grid">
-                    <div class="field-kontrak"><span>Tanggal Awal:</span> <?= formatTanggalIndo($data->jk_awal) ?></div>
-                    <div class="field-kontrak"><span>Tanggal Akhir:</span> <?= formatTanggalIndo($data->jk_akhir) ?></div>
+                    <div class="field-kontrak"><span>Tanggal Awal</span>: <?= formatTanggalIndo($data->jk_awal) ?></div>
+                    <div class="field-kontrak"><span>Tanggal Akhir</span>: <?= formatTanggalIndo($data->jk_akhir) ?></div>
                 </div>
             </div>
         <?php endforeach ?>
@@ -508,14 +518,14 @@ function formatTanggalIndo($tanggal)
             <div class="family-card">
                 <h3><?= $data->nama_anggota ?> (<?= $data->keanggotaan ?>)</h3>
                 <div class="grid">
-                    <div class="field-keluarga"><span>Status Wajib Pajak:</span> <?= $data->status_wp ?></div>
-                    <div class="field-keluarga"><span>Jenis Kelamin:</span> <?= $data->jenis_kelamin ?></div>
-                    <div class="field-keluarga"><span>Tanggal Lahir:</span> <?= formatTanggalIndo($data->tgl_lahir)  ?></div>
-                    <div class="field-keluarga"><span>Umur:</span> <?= $data->umur ?> Tahun</div>
-                    <div class="field-keluarga"><span>Pendidikan:</span> <?= $data->pendidikan ?></div>
-                    <div class="field-keluarga"><span>Keanggotaan:</span> <?= $data->keanggotaan ?></div>
-                    <div class="field-keluarga"><span>Lokasi Kerja:</span> <?= $data->lokasi_kerja ?></div>
-                    <div class="field-keluarga"><span>Wilayah Kerja:</span> <?= $data->wilayah_kerja ?></div>
+                    <div class="field-keluarga"><span>Status Wajib Pajak</span>: <?= $data->status_wp ?></div>
+                    <div class="field-keluarga"><span>Jenis Kelamin</span>: <?= $data->jenis_kelamin ?></div>
+                    <div class="field-keluarga"><span>Tanggal Lahir</span>: <?= formatTanggalIndo($data->tgl_lahir)  ?></div>
+                    <div class="field-keluarga"><span>Umur</span>: <?= $data->umur ?> Tahun</div>
+                    <div class="field-keluarga"><span>Pendidikan</span>: <?= $data->pendidikan ?></div>
+                    <div class="field-keluarga"><span>Keanggotaan</span>: <?= $data->keanggotaan ?></div>
+                    <div class="field-keluarga"><span>Lokasi Kerja</span>: <?= $data->lokasi_kerja ?></div>
+                    <div class="field-keluarga"><span>Wilayah Kerja</span>: <?= $data->wilayah_kerja ?></div>
                 </div>
             </div>
         <?php endforeach ?>

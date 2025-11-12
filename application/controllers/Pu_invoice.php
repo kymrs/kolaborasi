@@ -13,7 +13,7 @@ class T_cpdf2 extends TCPDf
     function Header()
     {
         // Logo
-        $this->SetFont('helvetica', 'B', 12);
+        $this->SetFont('helvetica', 'B', 12); 
         $this->Image(base_url('assets/backend/img/header.png'), 49, 5, 160, 30);
         $this->Ln(5);
     }
@@ -376,10 +376,22 @@ class Pu_invoice extends CI_Controller
         $kode_order = 'ORD' . $year . $urutan_order;
         $kode_invoice = 'INVPU' . $year . $month . $urutan;
 
+        // Ambil diskon dari input (pastikan sudah diambil dan di-clean)
+        $diskon = preg_replace('/\D/', '', $this->input->post('diskon'));
+        $total_order_input = preg_replace('/\D/', '', $this->input->post('total_order'));
+
+        // Hitung total order setelah diskon
+        if (!empty($diskon)) {
+            $total_order = $total_order_input - $diskon;
+        } else {
+            $total_order = $total_order_input;
+        }
+
         $data = array(
             'tgl_invoice' => date('Y-m-d', strtotime($this->input->post('tgl_invoice'))),
             'kode_invoice' => $kode_invoice,
-            'total_order' => preg_replace('/\D/', '', $this->input->post('total_order')),
+            'total_order' => $total_order,
+            'diskon' => $diskon,
             'tgl_tempo' => date('Y-m-d', strtotime($this->input->post('tgl_tempo'))),
             'ctc_nama' => $this->input->post('ctc_nama'),
             'ctc_email' => $this->input->post('ctc_email'),
@@ -405,9 +417,9 @@ class Pu_invoice extends CI_Controller
         if (!empty($_POST['catatan_item'])) {
             $data['keterangan'] = $this->input->post('catatan_item');
         }
-        if (!empty($_POST['diskon'])) {
-            $data['diskon'] = $this->input->post('diskon');
-        }
+        // if (!empty($_POST['diskon'])) {
+        //     $data['diskon'] = $this->input->post('diskon');
+        // }
 
         // INISIASI VARIABEL UNTUK MENGHITUNG TOTAL TAGIHAN
         $grand_total = 0;
@@ -428,7 +440,7 @@ class Pu_invoice extends CI_Controller
                     exit();
                 }
             }
-            if ($grand_total > preg_replace('/\D/', '', $this->input->post('total_order'))) {
+            if ($grand_total > $total_order) {
                 echo json_encode(array("status" => FALSE, "message" => "Total tagihan tidak boleh lebih besar dari total order"));
                 exit();
             }
@@ -441,7 +453,7 @@ class Pu_invoice extends CI_Controller
         if (empty($this->input->post('id'))) {
             $order = array(
                 'kode_order' => $kode_order,
-                'total_order' => preg_replace('/\D/', '', $this->input->post('total_order')),
+                'total_order' => $total_order,
                 'created_at' => date('Y-m-d', strtotime($this->input->post('tgl_invoice')))
             );
             $this->db->insert('pu_order', $order);
@@ -564,6 +576,7 @@ class Pu_invoice extends CI_Controller
         }
 
 
+
         $data = array(
             'id_invoice' => $this->input->post('invoice_id'),
             'tanggal_pembayaran' => date('Y-m-d', strtotime($this->input->post('tanggal_pembayaran'))),
@@ -632,6 +645,7 @@ class Pu_invoice extends CI_Controller
             echo json_encode(array("status" => FALSE, "message" => "Status Pembayaran Harus Diisi"));
             return;
         }
+
 
         $data = array(
             'id_invoice' => $this->input->post('invoice_id'),
@@ -780,27 +794,19 @@ class Pu_invoice extends CI_Controller
         }
         $html_pesanan .= "</ol>";
 
-        // INSERT KODE PREPAYMENT SAAT SUBMIT
-        $date = $this->input->post('tgl_invoice');
+        $diskon = preg_replace('/\D/', '', $this->input->post('diskon'));
+        $total_order_input = preg_replace('/\D/', '', $this->input->post('total_order'));
 
-        $kode = $this->M_pu_invoice->max_kode($date)->row();
-
-        if (empty($kode->kode_invoice)) {
-            $no_urut = 1;
+        if (!empty($diskon) && $diskon > 0) {
+            $total_order = $total_order_input - $diskon;
         } else {
-            $bln = substr($kode->kode_invoice, 5, 2);
-            $no_urut = substr($kode->kode_invoice, 10) + 1;
+            $total_order = $total_order_input;
         }
-        $urutan = str_pad($no_urut, 4, "0", STR_PAD_LEFT);
-        $year = substr($date, 8, 2);
-        $month = substr($date, 3, 2);
-
-        $kode_invoice = 'INVPU' . $year . $month . $urutan;
 
         $data = array(
             'tgl_invoice' => date('Y-m-d', strtotime($this->input->post('tgl_invoice'))),
-            'kode_invoice' => $kode_invoice,
-            'total_order' => preg_replace('/\D/', '', $this->input->post('total_order')),
+            'total_order' => $total_order,
+            'diskon' => $diskon,
             'tgl_tempo' => date('Y-m-d', strtotime($this->input->post('tgl_tempo'))),
             'ctc_nama' => $this->input->post('ctc_nama'),
             'ctc_email' => $this->input->post('ctc_email'),
@@ -826,10 +832,6 @@ class Pu_invoice extends CI_Controller
             $data['keterangan'] = $this->input->post('catatan_item');
         }
 
-        if (!empty($_POST['diskon'])) {
-            $data['diskon'] = $this->input->post('diskon');
-        }
-
         // INISIASI VARIABEL UNTUK MENGHITUNG TOTAL TAGIHAN
         $grand_total = 0;
         $deskripsi = $this->input->post('deskripsi[]');
@@ -849,7 +851,7 @@ class Pu_invoice extends CI_Controller
                     exit();
                 }
             }
-            if ($grand_total > preg_replace('/\D/', '', $this->input->post('total_order'))) {
+            if ($grand_total > $total_order) {
                 echo json_encode(array("status" => FALSE, "message" => "Total tagihan tidak boleh lebih besar dari total order"));
                 exit();
             }
@@ -866,7 +868,7 @@ class Pu_invoice extends CI_Controller
                 ->row('order_id');
 
             $order = array(
-                'total_order' => preg_replace('/\D/', '', $this->input->post('total_order')),
+                'total_order' => $total_order,
             );
 
             $this->db->where('id', $order_id);
@@ -1227,23 +1229,23 @@ class Pu_invoice extends CI_Controller
 
         $t_cpdf2->SetFont('Poppins-Regular', '', 11);
         $t_cpdf2->SetX(114);
-        $t_cpdf2->Cell(45, 9, 'No. Invoice', 0, 0, 'R');
-        $t_cpdf2->Cell(20, 9, ':', 0, 0);
-        $t_cpdf2->Cell(19, 9, $invoice->kode_invoice, 0, 0, 'R');
+        $t_cpdf2->Cell(45, 10, 'No. Invoice', 0, 0, 'R');
+        $t_cpdf2->Cell(20, 10, ':', 0, 0);
+        $t_cpdf2->Cell(19, 10, $invoice->kode_invoice, 0, 0, 'R');
 
         $t_cpdf2->SetY($t_cpdf2->GetY());
         $t_cpdf2->SetX(114);
         $t_cpdf2->SetFont('Poppins-Regular', '', 10);
-        $t_cpdf2->Cell(45, 20, 'Tanggal Invoice', 0, 0, 'R');
-        $t_cpdf2->Cell(20, 20, ':', 0, 0);
-        $t_cpdf2->Cell(19, 20, $this->tgl_indo(date('Y-m-j', strtotime($invoice->tgl_invoice))), 0, 0, 'R');
+        $t_cpdf2->Cell(45, 23, 'Tanggal Invoice', 0, 0, 'R');
+        $t_cpdf2->Cell(20, 23, ':', 0, 0);
+        $t_cpdf2->Cell(19, 23, $this->tgl_indo(date('Y-m-j', strtotime($invoice->tgl_invoice))), 0, 0, 'R');
         $t_cpdf2->SetY($t_cpdf2->GetY() + 13);
         $t_cpdf2->SetX(114);
         $t_cpdf2->SetFont('Poppins-Bold', '', 14);
         $t_cpdf2->SetFont('Poppins-Regular', '', 10);
-        $t_cpdf2->Cell(45, 5, 'Tanggal Jatuh Tempo', 0, 0, 'R');
-        $t_cpdf2->Cell(20, 5, ':', 0, 0);
-        $t_cpdf2->Cell(19, 5, $this->tgl_indo(date('Y-m-j', strtotime($invoice->tgl_tempo))), 0, 1, 'R');
+        $t_cpdf2->Cell(45, 10, 'Tanggal Jatuh Tempo', 0, 0, 'R');
+        $t_cpdf2->Cell(20, 10, ':', 0, 0);
+        $t_cpdf2->Cell(19, 10, $this->tgl_indo(date('Y-m-j', strtotime($invoice->tgl_tempo))), 0, 1, 'R');
 
         $total = 0;
         $diskon = $invoice->diskon;
@@ -1267,25 +1269,25 @@ class Pu_invoice extends CI_Controller
 
         // CONTENT DDATA PEMESAN
         $t_cpdf2->SetFont('Poppins-Regular', '', 10);
-        $t_cpdf2->SetY($t_cpdf2->GetY() + 2);
+        $t_cpdf2->SetY($t_cpdf2->GetY() + 3);
         $t_cpdf2->SetX(15);
-        $t_cpdf2->Cell(0, 0, 'Kpd Yth.', 0, 1);
+        $t_cpdf2->Cell(0, 9, 'Kpd Yth.', 0, 1);
 
-        $t_cpdf2->SetFont('Poppins-Regular', 'B', 15);
+        $t_cpdf2->SetFont('Poppins-Regular', 'B', 16);
         $t_cpdf2->SetX(15);
         $t_cpdf2->Cell(0, 0, $invoice->ctc_nama, 0, 0);
-        $t_cpdf2->Cell(0, 0, number_format($total ?? 0, 0, ',', '.'), 0, 1, 'R');
+        $t_cpdf2->Cell(0, 0, "Rp. " . number_format($total ?? 0, 0, ',', '.'), 0, 1, 'R');
 
         $t_cpdf2->SetFont('Poppins-Regular', '', 10);
         $t_cpdf2->SetY($t_cpdf2->GetY() + 1);
         $t_cpdf2->SetX(15);
-        $t_cpdf2->Cell(0, 0, 'Alamat', 0, 0);
+        $t_cpdf2->Cell(0, 8, 'Alamat', 0, 0);
         $t_cpdf2->SetY($t_cpdf2->GetY());
         $t_cpdf2->SetX(29);
-        $t_cpdf2->Cell(0, 0, ':', 0, 0);
-        $t_cpdf2->SetY($t_cpdf2->GetY());
+        $t_cpdf2->Cell(0, 8, ':', 0, 0);
+        $t_cpdf2->SetY($t_cpdf2->GetY() + 2);
         $t_cpdf2->SetX(31);
-        $t_cpdf2->MultiCell(58, 0, $invoice->ctc_alamat, 0, 'L');
+        $t_cpdf2->MultiCell(58, 10, $invoice->ctc_alamat, 0, 'L');
 
         $t_cpdf2->SetY($t_cpdf2->GetY() + 2);
         // HEADER DETAIL JAMAAH
@@ -1300,10 +1302,10 @@ class Pu_invoice extends CI_Controller
         // CONTENT DATA JAMAAH
         // ========== KOLOM KIRI =============
         $t_cpdf2->SetFont('Poppins-Regular', '', 10);
-        $t_cpdf2->SetY($t_cpdf2->GetY() + 5); // Tambah jarak aman dari header
+        $t_cpdf2->SetY($t_cpdf2->GetY() + 8); // Tambah jarak aman dari header
         $t_cpdf2->writeHTMLCell(
             80,
-            0,
+            12,
             4,
             $t_cpdf2->GetY() - 3,
             $invoice->jamaah,
@@ -1320,9 +1322,9 @@ class Pu_invoice extends CI_Controller
         $t_cpdf2->SetFont('Poppins-Regular', '', 10);
         $t_cpdf2->SetY($t_cpdf2->GetY() - ($t_cpdf2->getLastH() ?? 0)); // Kembali ke posisi Y semula
         $t_cpdf2->writeHTMLCell(
-            80,
+            65,
             0,
-            150,
+            130,
             $t_cpdf2->GetY(),
             $invoice->detail_pesanan,
             0,
@@ -1343,7 +1345,7 @@ class Pu_invoice extends CI_Controller
         $t_cpdf2->SetFillColor(252, 118, 19);
         $t_cpdf2->SetTextColor(255, 255, 255);
         $t_cpdf2->SetX(15);
-        $t_cpdf2->Cell(182, 10, $y_kanan, 0, 1, 'L', true);
+        $t_cpdf2->Cell(182, 10, 'Detail Pemesanan', 0, 1, 'L', true);
         $t_cpdf2->SetTextColor(0, 0, 0);
 
         $tbl = <<<EOD
@@ -1371,7 +1373,7 @@ class Pu_invoice extends CI_Controller
 </table>
 EOD;
 
-        $t_cpdf2->writeHTMLCell(184, 0, 14, $t_cpdf2->GetY() + 4, $tbl, 0, 1, false, true, 'L', true);
+        $t_cpdf2->writeHTMLCell(184, 0, 14, $t_cpdf2->GetY() + 6, $tbl, 0, 1, false, true, 'L', true);
 
         $table2 = <<<EOD
             <table>
@@ -1407,7 +1409,7 @@ EOD;
 
         $t_cpdf2->writeHTMLCell(184, 0, 14, $t_cpdf2->GetY(), $table2, 0, 1, false, true, 'L', true);
 
-        $t_cpdf2->SetY($t_cpdf2->GetY() + 1);
+        $t_cpdf2->SetY($t_cpdf2->GetY() + 3);
         $t_cpdf2->SetX(13);
         $t_cpdf2->SetFont('Poppins-Bold', '', 11);
         $t_cpdf2->Cell(0, 8, 'Metode Pembayaran', 0, 1);
@@ -1421,7 +1423,7 @@ EOD;
         $t_cpdf2->SetX(13);
 
         $t_cpdf2->SetFont('Poppins-Bold', '', 11);
-        $t_cpdf2->Cell(0, 5, 'a/n : ' . $invoice_rek->travel, 0, 1);
+        $t_cpdf2->Cell(0, 5, 'a/n : ' . $invoice_rek->perusahaan, 0, 1);
 
         $t_cpdf2->setY($t_cpdf2->GetY());
         $t_cpdf2->SetX(13);
@@ -1483,21 +1485,21 @@ EOD;
         $t_cpdf2->SetFont('Poppins-Regular', '', 11);
         // $t_cpdf2->SetX(114);
         $t_cpdf2->Cell(45, 9, 'No. Invoice', 0, 0, 'L');
-        $t_cpdf2->Cell(20, 9, ':', 0, 0);
+        $t_cpdf2->Cell(3, 9, ':', 0, 0);
         $t_cpdf2->Cell(19, 9, $invoice->kode_invoice, 0, 0, 'L');
 
         $t_cpdf2->SetY($t_cpdf2->GetY());
         // $t_cpdf2->SetX(114);
         $t_cpdf2->SetFont('Poppins-Regular', '', 10);
         $t_cpdf2->Cell(45, 20, 'Tanggal Invoice', 0, 0, 'L');
-        $t_cpdf2->Cell(20, 20, ':', 0, 0);
+        $t_cpdf2->Cell(3, 20, ':', 0, 0);
         $t_cpdf2->Cell(19, 20, $this->tgl_indo(date('Y-m-d', strtotime($invoice->tgl_invoice))), 0, 0, 'L');
         $t_cpdf2->SetY($t_cpdf2->GetY() + 13);
         // $t_cpdf2->SetX(114);
         $t_cpdf2->SetFont('Poppins-Bold', '', 14);
         $t_cpdf2->SetFont('Poppins-Regular', '', 10);
         $t_cpdf2->Cell(45, 5, 'Tanggal Jatuh Tempo', 0, 0, 'L');
-        $t_cpdf2->Cell(20, 5, ':', 0, 0);
+        $t_cpdf2->Cell(3, 5, ':', 0, 0);
         $t_cpdf2->Cell(19, 5, $this->tgl_indo(date('Y-m-d', strtotime($invoice->tgl_tempo))), 0, 1, 'L');
 
         $t_cpdf2->SetY($t_cpdf2->GetY() + 2);
@@ -1570,13 +1572,13 @@ EOD;
         if (!empty($kwitansi->bukti_pembayaran)) {
             $bukti_path = FCPATH . 'assets/backend/uploads/bukti_pembayaran_pu/' . $kwitansi->bukti_pembayaran;
             if (file_exists($bukti_path)) {
-                $t_cpdf2->SetY($t_cpdf2->GetY() + 2);
+                $t_cpdf2->SetY($t_cpdf2->GetY() + 10);
                 // Maksimal panjang gambar (width) 100mm, tinggi otomatis proporsional
                 $t_cpdf2->Image(
                     base_url('assets/backend/uploads/bukti_pembayaran_pu/' . $kwitansi->bukti_pembayaran),
-                    33, // X
+                    80, // X
                     $t_cpdf2->GetY(), // Y
-                    140, // width max 100mm
+                    55, // width max 100mm
                     0,   // height auto
                     '',  // type auto
                     '',  // link

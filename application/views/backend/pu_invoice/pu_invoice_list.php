@@ -75,12 +75,12 @@
     </div>
 
     <div id="floatingDropdown" class="dropdown-menu" style="position:absolute; display:none; z-index:9999;">
-        <a class="dropdown-item" href="pu_invoice/read_invoice" id="lihatInvoice" target="_blank"><i class="fas fa-file-invoice"></i> Lihat Invoice</a>
-        <a class="dropdown-item" href="pu_invoice/read_kwitansi" id="lihatKwitansi" target="_blank"><i class="fas fa-receipt"></i> Lihat Kwitansi</a>
+        <a class="dropdown-item" href="pu_invoice/read_invoice" id="lihatInvoice"><i class="fas fa-file-invoice"></i> Lihat Invoice</a>
+        <a class="dropdown-item" href="pu_invoice/read_kwitansi" id="lihatKwitansi"><i class="fas fa-receipt"></i> Lihat Kwitansi</a>
     </div>
     <div id="floatingPrintDropdown" class="dropdown-menu" style="position:absolute; display:none; z-index:9999;">
-        <a class="dropdown-item" href="#" id="cetakInvoice" target="_blank"><i class="fas fa-file-invoice"></i> Cetak Invoice</a>
-        <a class="dropdown-item" href="#" id="cetakKwitansi" target="_blank"><i class="fas fa-receipt"></i> Cetak Kwitansi</a>
+        <a class="dropdown-item" href="#" id="cetakInvoice"><i class="fas fa-file-invoice"></i> Cetak Invoice</a>
+        <a class="dropdown-item" href="#" id="cetakKwitansi"><i class="fas fa-receipt"></i> Cetak Kwitansi</a>
     </div>
 
 

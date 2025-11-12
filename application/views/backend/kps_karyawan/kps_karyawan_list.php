@@ -100,25 +100,13 @@
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
                     <?php if ($add == 'Y') { ?>
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-                                <i class="fa fa-plus"></i>&nbsp; Add Data
-                            </button>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" href="<?= base_url('kps_karyawan/add_form') ?>">
-                                    <i class="fas fa-user mr-2"></i> Data Karyawan
-                                </a>
-                                <?php if (!empty($karyawan)) : ?>
-                                    <a class="dropdown-item" href="<?= base_url('kps_karyawan/add_form_keluarga') ?>">
-                                        <i class="fas fa-users mr-2"></i> Data Keluarga
-                                    </a>
-                                <?php endif ?>
-                            </div>
-                            <a class="btn btn-primary btn-sm ml-2" style="border-radius: 4px" href="<?= base_url('kps_karyawan/e_pkwt') ?>">
-                                <i class="fa fa-list"></i>&nbsp;&nbsp;Data E-PKWT
-                            </a>
-                        </div>
-                    <?php } ?>
+                        <a class="btn btn-primary btn-sm" href="<?= base_url('kps_karyawan/add_form') ?>">
+                            <i class="fa fa-plus"></i>&nbsp;&nbsp;Add Data
+                        </a>
+                        <?php } ?>
+                    <a class="btn btn-primary btn-sm ml-2" style="border-radius: 4px" href="<?= base_url('kps_karyawan/e_pkwt') ?>">
+                        <i class="fa fa-list"></i>&nbsp;&nbsp;E-PKWT
+                    </a>
                     <select name="status_kerja" id="status_kerja" style="padding: 5px; width: 125px; float: right" class="form-control form-control-sm btn-primary btn-header">
                         <option value="">Semua Status</option>
                         <option value="aktif">Aktif</option>
@@ -210,7 +198,7 @@
             "scrollX": true,
             "processing": true,
             "serverSide": true,
-            "order": [],
+            "order": [],    
             "ajax": {
                 "url": "<?php echo site_url('kps_karyawan/get_list') ?>",
                 "type": "POST",

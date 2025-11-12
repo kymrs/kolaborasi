@@ -89,7 +89,8 @@ class M_notifikasi extends CI_Model
         $notif_menu = [];
 
         foreach ($tbl as $link => $jumlah) {
-            // Cari nama_menu dari $tbl_notifikasi
+            $nama_menu = null;
+
             foreach ($tbl_notifikasi as $row) {
                 if ($row->link == $link) {
                     $nama_menu = $row->nama_menu;
@@ -97,12 +98,13 @@ class M_notifikasi extends CI_Model
                 }
             }
 
-            // Akumulasi jumlah ke nama_menu
-            if (!isset($notif_menu[$nama_menu])) {
-                $notif_menu[$nama_menu] = 0;
-            }
+            if ($nama_menu !== null) {
+                if (!isset($notif_menu[$nama_menu])) {
+                    $notif_menu[$nama_menu] = 0;
+                }
 
-            $notif_menu[$nama_menu] += (int)$jumlah;
+                $notif_menu[$nama_menu] += (int)$jumlah;
+            }
         }
 
         $data['notif_pending'] = $tbl;

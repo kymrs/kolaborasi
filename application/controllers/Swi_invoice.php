@@ -157,8 +157,8 @@ class Swi_invoice extends CI_Controller
         if (empty($kode->kode_invoice)) {
             $no_urut = 1;
         } else {
-            $bln = substr($kode->kode_invoice, 3, 2);
-            $no_urut = substr($kode->kode_invoice, 7) + 1;
+            $last_urut = intval(substr($kode->kode_invoice, 5, 3));
+            $no_urut = $last_urut + 1;
         }
         $urutan = str_pad($no_urut, 3, "0", STR_PAD_LEFT);
         $year = substr($date, 8, 2);
@@ -204,9 +204,9 @@ class Swi_invoice extends CI_Controller
         if (empty($kode->kode_invoice)) {
             $no_urut = 1;
         } else {
-            $bln = substr($kode->kode_invoice, 3, 2);
-            $no_urut = substr($kode->kode_invoice, 7) + 1;
-        }
+            $last_urut = intval(substr($kode->kode_invoice, 5, 3));
+            $no_urut = $last_urut + 1;
+        } 
         $urutan = str_pad($no_urut, 3, "0", STR_PAD_LEFT);
         $year = substr($date, 8, 2);
         $month = substr($date, 3, 2);

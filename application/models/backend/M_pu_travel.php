@@ -7,8 +7,8 @@ class M_pu_travel extends CI_Model
 {
     var $id = 'id';
     var $table = 'pu_travel'; //nama tabel dari database
-    var $column_order = array(null, null, 'travel', 'created_at');
-    var $column_search = array('travel', 'created_at'); //field yang diizin untuk pencarian 
+    var $column_order = array(null, null, 'perusahaan', 'travel', 'created_at');
+    var $column_search = array('perusahaan', 'travel', 'created_at'); //field yang diizin untuk pencarian 
     var $order = array('id' => 'desc'); // default order 
 
     public function __construct()

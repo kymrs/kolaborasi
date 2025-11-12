@@ -114,67 +114,230 @@
                                         <select class="form-control" name="npk" id="npk">
                                             <option value="" hidden>Pilih Karyawan</option>
                                             <?php foreach ($karyawan as $data) : ?>
-                                                <option value="<?= $data['npk'] ?>"><?= $data['nama_lengkap'] ?></option>
+                                                <option value="<?= $data['npk'] ?>-<?= $data['id_user'] ?>"><?= $data['nama_lengkap'] ?></option>
                                             <?php endforeach; ?>
                                         </select>
                                     </div>
                                 </div>
+                                <!-- <div class="form-group row">
+                                    <label class="col-sm-5" for="npk">Nama User Sistem</label>
+                                    <div class="col-sm-7">
+                                        <select class="form-control" name="id_user" id="id_user">
+                                            <option value="" hidden>Pilih User</option>
+                                            <?php foreach ($user as $data) : ?>
+                                                <option value="<?= $data['id_user'] ?>"><?= $data['fullname'] ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                </div> -->
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="jk_awal">Kontrak Awal</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control datepicker" name="jk_awal" id="jk_awal" placeholder="Pilih Tanggal Kontrak Awal" style="cursor: pointer">
+                                        <input type="text" class="form-control datepicker" name="jk_awal" id="jk_awal" placeholder="Pilih Tanggal Kontrak Awal" style="cursor: pointer" autocomplete="off">
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="jk_akhir">Kontrak Akhir</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control datepicker" name="jk_akhir" id="jk_akhir" placeholder="Pilih Tanggal Kontrak Akhir" style="cursor: pointer">
+                                        <input type="text" class="form-control datepicker" name="jk_akhir" id="jk_akhir" placeholder="Pilih Tanggal Kontrak Akhir" style="cursor: pointer" autocomplete="off">
                                     </div>
                                 </div>
-                                <div class="form-group row">
+                                <div class="form-group row" style="display: none;">
                                     <label class="col-sm-5" for="hari">Hari</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" name="hari" id="hari" placeholder="Hari">
+                                        <select name="hari" id="hari" class="form-control">
+                                            <option value="" hidden>Pilih Hari</option>
+                                            <option value="Senin">Senin</option>
+                                            <option value="Selasa">Selasa</option>
+                                            <option value="Rabu">Rabu</option>
+                                            <option value="Kamis">Kamis</option>
+                                            <option value="Jumat">Jumat</option>
+                                            <option value="Sabtu">Sabtu</option>
+                                            <option value="Minggu">Minggu</option>
+                                        </select>
                                     </div>
                                 </div>
-                                <div class="form-group row">
+                                <div class="form-group row" style="display: none;">
+                                    <label class="col-sm-5" for="tanggal">Tanggal</label>
+                                    <div class="col-sm-7">
+                                        <select name="tanggal" id="tanggal" class="form-control">
+                                            <option value="" hidden>Pilih Tanggal</option>
+                                            <option value="Satu">Satu</option>
+                                            <option value="Dua">Dua</option>
+                                            <option value="Tiga">Tiga</option>
+                                            <option value="Empat">Empat</option>
+                                            <option value="Lima">Lima</option>
+                                            <option value="Enam">Enam</option>
+                                            <option value="Tujuh">Tujuh</option>
+                                            <option value="Delapan">Delapan</option>
+                                            <option value="Sembilan">Sembilan</option>
+                                            <option value="Sepuluh">Sepuluh</option>
+                                            <option value="Sebelas">Sebelas</option>
+                                            <option value="Dua Belas">Dua Belas</option>
+                                            <option value="Tiga Belas">Tiga Belas</option>
+                                            <option value="Empat Belas">Empat Belas</option>
+                                            <option value="Lima Belas">Lima Belas</option>
+                                            <option value="Enam Belas">Enam Belas</option>
+                                            <option value="Tujuh Belas">Tujuh Belas</option>
+                                            <option value="Delapan Belas">Delapan Belas</option>
+                                            <option value="Sembilan Belas">Sembilan Belas</option>
+                                            <option value="Dua Puluh">Dua Puluh</option>
+                                            <option value="Dua Puluh Satu">Dua Puluh Satu</option>
+                                            <option value="Dua Puluh Dua">Dua Puluh Dua</option>
+                                            <option value="Dua Puluh Tiga">Dua Puluh Tiga</option>
+                                            <option value="Dua Puluh Empat">Dua Puluh Empat</option>
+                                            <option value="Dua Puluh Lima">Dua Puluh Lima</option>
+                                            <option value="Dua Puluh Enam">Dua Puluh Enam</option>
+                                            <option value="Dua Puluh Tujuh">Dua Puluh Tujuh</option>
+                                            <option value="Dua Puluh Delapan">Dua Puluh Delapan</option>
+                                            <option value="Dua Puluh Sembilan">Dua Puluh Sembilan</option>
+                                            <option value="Tiga Puluh">Tiga Puluh</option>
+                                            <option value="Tiga Puluh Satu">Tiga Puluh Satu</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row" style="display: none;">
                                     <label class="col-sm-5" for="bulan">Bulan</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" name="bulan" id="bulan" placeholder="Bulan">
+                                        <select name="bulan" id="bulan" class="form-control">
+                                            <option value="" hidden>Pilih Bulan</option>
+                                            <option value="Januari">Januari</option>
+                                            <option value="Februari">Februari</option>
+                                            <option value="Maret">Maret</option>
+                                            <option value="April">April</option>
+                                            <option value="Mei">Mei</option>
+                                            <option value="Juni">Juni</option>
+                                            <option value="Juli">Juli</option>
+                                            <option value="Agustus">Agustus</option>
+                                            <option value="September">September</option>
+                                            <option value="Oktober">Oktober</option>
+                                            <option value="November">November</option>
+                                            <option value="Desember">Desember</option>
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-sm-5" for="tahun">Tahun</label>
+                                    <label class="col-sm-5" for="gaji">Gaji</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" name="tahun" id="tahun" placeholder="Tahun">
+                                        <input type="text" class="form-control rupiah" name="gaji" id="gaji" placeholder="Gaji" autocomplete="off">
                                     </div>
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <!-- Second Set of Fields -->
-                                <div class="form-group row">
-                                    <label class="col-sm-5" for="jangka_waktu">Jangka Waktu</label>
+                                <div class="form-group row" style="display: none;">
+                                    <label class="col-sm-5" for="tahun">Tahun</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control" name="jangka_waktu" id="jangka_waktu">
+                                        <select name="tahun" id="tahun" class="form-control">
+                                            <option value="" hidden>Pilih Tahun</option>
+                                            <option value="Dua Ribu Dua Puluh Lima">2025</option>
+                                            <option value="Dua Ribu Dua Puluh Enam">2026</option>
+                                            <option value="Dua Ribu Dua Puluh Tujuh">2027</option>
+                                            <option value="Dua Ribu Dua Puluh Delapan">2028</option>
+                                            <option value="Dua Ribu Dua Puluh Sembilan">2029</option>
+                                            <option value="Dua Ribu Tiga Puluh">2030</option>
+                                            <option value="Dua Ribu Tiga Puluh Satu">2031</option>
+                                            <option value="Dua Ribu Tiga Puluh Dua">2032</option>
+                                            <option value="Dua Ribu Tiga Puluh Tiga">2033</option>
+                                            <option value="Dua Ribu Tiga Puluh Empat">2034</option>
+                                            <option value="Dua Ribu Tiga Puluh Lima">2035</option>
+                                            <option value="Dua Ribu Tiga Puluh Enam">2036</option>
+                                            <option value="Dua Ribu Tiga Puluh Tujuh">2037</option>
+                                            <option value="Dua Ribu Tiga Puluh Delapan">2038</option>
+                                            <option value="Dua Ribu Tiga Puluh Sembilan">2039</option>
+                                            <option value="Dua Ribu Empat Puluh">2040</option>
+                                            <option value="Dua Ribu Empat Puluh Satu">2041</option>
+                                            <option value="Dua Ribu Empat Puluh Dua">2042</option>
+                                            <option value="Dua Ribu Empat Puluh Tiga">2043</option>
+                                            <option value="Dua Ribu Empat Puluh Empat">2044</option>
+                                            <option value="Dua Ribu Empat Puluh Lima">2045</option>
+                                            <option value="Dua Ribu Empat Puluh Enam">2046</option>
+                                            <option value="Dua Ribu Empat Puluh Tujuh">2047</option>
+                                            <option value="Dua Ribu Empat Puluh Delapan">2048</option>
+                                            <option value="Dua Ribu Empat Puluh Sembilan">2049</option>
+                                            <option value="Dua Ribu Lima Puluh">2050</option>
+                                        </select>
                                     </div>
                                 </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-5" for="gaji">Gaji</label>
+                                <div class="form-group row" style="display: none;">
+                                    <label class="col-sm-5" for="jangka_waktu">Jangka Waktu</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control rupiah" name="gaji" id="gaji">
+                                        <select name="jangka_waktu" id="jangka_waktu" class="form-control">
+                                            <option value="" hidden>Pilih Jangka Waktu</option>
+                                            <option value="1 (Satu) bulan">1 bulan</option>
+                                            <option value="2 (Dua) bulan">2 bulan</option>
+                                            <option value="3 (Tiga) bulan">3 bulan</option>
+                                            <option value="4 (Empat) bulan">4 bulan</option>
+                                            <option value="5 (Lima) bulan">5 bulan</option>
+                                            <option value="6 (Enam) bulan">6 bulan</option>
+                                            <option value="7 (Tujuh) bulan">7 bulan</option>
+                                            <option value="8 (Delapan) bulan">8 bulan</option>
+                                            <option value="9 (Sembilan) bulan">9 bulan</option>
+                                            <option value="10 (Sepuluh) bulan">10 bulan</option>
+                                            <option value="11 (Sebelas) bulan">11 bulan</option>
+                                            <option value="12 (Dua Belas) bulan">12 bulan</option>
+                                            <option value="13 (Tiga Belas) bulan">13 bulan</option>
+                                            <option value="14 (Empat Belas) bulan">14 bulan</option>
+                                            <option value="15 (Lima Belas) bulan">15 bulan</option>
+                                            <option value="16 (Enam Belas) bulan">16 bulan</option>
+                                            <option value="17 (Tujuh Belas) bulan">17 bulan</option>
+                                            <option value="18 (Delapan Belas) bulan">18 bulan</option>
+                                            <option value="19 (Sembilan Belas) bulan">19 bulan</option>
+                                            <option value="20 (Dua Puluh) bulan">20 bulan</option>
+                                            <option value="21 (Dua Puluh Satu) bulan">21 bulan</option>
+                                            <option value="22 (Dua Puluh Dua) bulan">22 bulan</option>
+                                            <option value="23 (Dua Puluh Tiga) bulan">23 bulan</option>
+                                            <option value="24 (Dua Puluh Empat) bulan">24 bulan</option>
+                                            <option value="25 (Dua Puluh Lima) bulan">25 bulan</option>
+                                            <option value="26 (Dua Puluh Enam) bulan">26 bulan</option>
+                                            <option value="27 (Dua Puluh Tujuh) bulan">27 bulan</option>
+                                            <option value="28 (Dua Puluh Delapan) bulan">28 bulan</option>
+                                            <option value="29 (Dua Puluh Sembilan) bulan">29 bulan</option>
+                                            <option value="30 (Tiga Puluh) bulan">30 bulan</option>
+                                            <option value="31 (Tiga Puluh Satu) bulan">31 bulan</option>
+                                            <option value="32 (Tiga Puluh Dua) bulan">32 bulan</option>
+                                            <option value="33 (Tiga Puluh Tiga) bulan">33 bulan</option>
+                                            <option value="34 (Tiga Puluh Empat) bulan">34 bulan</option>
+                                            <option value="35 (Tiga Puluh Lima) bulan">35 bulan</option>
+                                            <option value="36 (Tiga Puluh Enam) bulan">36 bulan</option>
+                                            <option value="37 (Tiga Puluh Tujuh) bulan">37 bulan</option>
+                                            <option value="38 (Tiga Puluh Delapan) bulan">38 bulan</option>
+                                            <option value="39 (Tiga Puluh Sembilan) bulan">39 bulan</option>
+                                            <option value="40 (Empat Puluh) bulan">40 bulan</option>
+                                            <option value="41 (Empat Puluh Satu) bulan">41 bulan</option>
+                                            <option value="42 (Empat Puluh Dua) bulan">42 bulan</option>
+                                            <option value="43 (Empat Puluh Tiga) bulan">43 bulan</option>
+                                            <option value="44 (Empat Puluh Empat) bulan">44 bulan</option>
+                                            <option value="45 (Empat Puluh Lima) bulan">45 bulan</option>
+                                            <option value="46 (Empat Puluh Enam) bulan">46 bulan</option>
+                                            <option value="47 (Empat Puluh Tujuh) bulan">47 bulan</option>
+                                            <option value="48 (Empat Puluh Delapan) bulan">48 bulan</option>
+                                            <option value="49 (Empat Puluh Sembilan) bulan">49 bulan</option>
+                                            <option value="50 (Lima Puluh) bulan">50 bulan</option>
+                                            <option value="51 (Lima Puluh Satu) bulan">51 bulan</option>
+                                            <option value="52 (Lima Puluh Dua) bulan">52 bulan</option>
+                                            <option value="53 (Lima Puluh Tiga) bulan">53 bulan</option>
+                                            <option value="54 (Lima Puluh Empat) bulan">54 bulan</option>
+                                            <option value="55 (Lima Puluh Lima) bulan">55 bulan</option>
+                                            <option value="56 (Lima Puluh Enam) bulan">56 bulan</option>
+                                            <option value="57 (Lima Puluh Tujuh) bulan">57 bulan</option>
+                                            <option value="58 (Lima Puluh Delapan) bulan">58 bulan</option>
+                                            <option value="59 (Lima Puluh Sembilan) bulan">59 bulan</option>
+                                            <option value="60 (Enam Puluh) bulan">60 bulan</option>
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="tj_pulsa">Tunjangan Pulsa</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control rupiah" name="tj_pulsa" id="tj_pulsa">
+                                        <input type="text" class="form-control rupiah" name="tj_pulsa" id="tj_pulsa" placeholder="Tunjangan Pulsa" autocomplete="off">
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="tj_ops">Tunjangan Operasional</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control rupiah" name="tj_ops" id="tj_ops">
+                                        <input type="text" class="form-control rupiah" name="tj_ops" id="tj_ops" placeholder="Tunjangan Operasional" autocomplete="off">
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -190,7 +353,7 @@
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="tj_kehadiran">Tunjangan Kehadiran</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control rupiah" name="tj_kehadiran" id="tj_kehadiran">
+                                        <input type="text" class="form-control rupiah" name="tj_kehadiran" id="tj_kehadiran" placeholder="Tunjangan Kehadiran" autocomplete="off">
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -244,6 +407,171 @@
 
     $(document).on('input', '.only-number', function() {
         this.value = this.value.replace(/[^0-9]/g, '');
+    });
+
+    $(document).ready(function() {
+        $('#tanggal').select2({
+            placeholder: "Pilih Tanggal",
+            allowClear: true
+        });
+        $('#tahun').select2({
+            placeholder: "Pilih Tahun",
+            allowClear: true
+        });
+        $('#id_user').select2({
+            placeholder: "Pilih User",
+            allowClear: true
+        });
+    });
+
+    $('#npk').on('change', function() {
+    var val = $(this).val() || '';
+    // jika option value disimpan sebagai "npk-id_user", ambil bagian npk sebelum '-'
+    var npk = val.split('-')[0];
+
+    if (!npk) {
+        // kosongkan jika tidak ada pilihan
+        $('#jk_awal').val('');
+        $('#jk_akhir').val('');
+        $('#tgl_masuk_iso').val('');
+        $('#tgl_akhir_kontrak_iso').val('');
+        return;
+    }
+
+    $.ajax({
+            url: '<?= site_url("kps_karyawan/get_karyawan_dates") ?>',
+            method: 'POST',
+            dataType: 'json',
+            data: { npk: npk },
+            success: function(res) {
+                if (res && res.status) {
+                    // isi visible inputs (format sesuai datepicker; di project kamu umumnya 'yy-mm-dd' or 'dd MM yy')
+                    $('#jk_awal').val(res.tgl_masuk).trigger('change');
+                    $('#jk_akhir').val(res.tgl_akhir_kontrak).trigger('change');
+
+                    // isi hidden ISO fields jika ada
+                    if ($('#tgl_masuk_iso').length) $('#tgl_masuk_iso').val(res.tgl_masuk);
+                    if ($('#tgl_akhir_kontrak_iso').length) $('#tgl_akhir_kontrak_iso').val(res.tgl_akhir_kontrak);
+
+                    // jalankan compute jika perlu
+                    if (typeof computeTglAkhirKontrak === 'function') computeTglAkhirKontrak();
+                    if (typeof hitungMasaKerja === 'function') hitungMasaKerja();
+                } else {
+                    $('#jk_awal').val('');
+                    $('#jk_akhir').val('');
+                    $('#tgl_masuk_iso').val('');
+                    $('#tgl_akhir_kontrak_iso').val('');
+                }
+            },
+            error: function() {
+                console.warn('Gagal ambil tanggal karyawan');
+            }
+        });
+    });
+
+    $('#jk_awal, #jk_akhir').on('change', function() {
+    var jk_awal = $('#jk_awal').val();
+    var jk_akhir = $('#jk_akhir').val();
+
+    if (jk_awal && jk_akhir) {
+        var awal = new Date(jk_awal);
+        var akhir = new Date(jk_akhir);
+
+        var tahunAwal = awal.getFullYear();
+        var tahunAkhir = akhir.getFullYear();
+        var bulanAwal = awal.getMonth();
+        var bulanAkhir = akhir.getMonth();
+
+        // Hitung total bulan (inklusif)
+        var totalBulan = (tahunAkhir - tahunAwal) * 12 + (bulanAkhir - bulanAwal) + 1;
+        if (totalBulan < 1) totalBulan = 1;
+
+        // Pilih jangka waktu sesuai hasil
+        $('#jangka_waktu').val(totalBulan + ' (' + getBulanTerbilang(totalBulan) + ') bulan').trigger('change');
+    }
+    });
+
+    // Fungsi untuk mengubah angka ke terbilang Indonesia
+    function getBulanTerbilang(num) {
+        var arr = [
+            '', 'Satu', 'Dua', 'Tiga', 'Empat', 'Lima', 'Enam',
+            'Tujuh', 'Delapan', 'Sembilan', 'Sepuluh', 'Sebelas', 'Dua Belas',
+            'Tiga Belas', 'Empat Belas', 'Lima Belas', 'Enam Belas', 'Tujuh Belas', 'Delapan Belas', 'Sembilan Belas', 'Dua Puluh',
+            'Dua Puluh Satu', 'Dua Puluh Dua', 'Dua Puluh Tiga', 'Dua Puluh Empat', 'Dua Puluh Lima', 'Dua Puluh Enam', 'Dua Puluh Tujuh', 'Dua Puluh Delapan', 'Dua Puluh Sembilan',
+            'Tiga Puluh', 'Tiga Puluh Satu', 'Tiga Puluh Dua', 'Tiga Puluh Tiga', 'Tiga Puluh Empat', 'Tiga Puluh Lima', 'Tiga Puluh Enam', 'Tiga Puluh Tujuh', 'Tiga Puluh Delapan', 'Tiga Puluh Sembilan',
+            'Empat Puluh', 'Empat Puluh Satu', 'Empat Puluh Dua', 'Empat Puluh Tiga', 'Empat Puluh Empat', 'Empat Puluh Lima', 'Empat Puluh Enam', 'Empat Puluh Tujuh', 'Empat Puluh Delapan', 'Empat Puluh Sembilan',
+            'Lima Puluh', 'Lima Puluh Satu', 'Lima Puluh Dua', 'Lima Puluh Tiga', 'Lima Puluh Empat', 'Lima Puluh Lima', 'Lima Puluh Enam', 'Lima Puluh Tujuh', 'Lima Puluh Delapan', 'Lima Puluh Sembilan',
+            'Enam Puluh'
+        ];
+        return arr[num] || num;
+    }
+
+    function getTahunTerbilang(year) {
+        var map = {
+            2025: "Dua Ribu Dua Puluh Lima",
+            2026: "Dua Ribu Dua Puluh Enam",
+            2027: "Dua Ribu Dua Puluh Tujuh",
+            2028: "Dua Ribu Dua Puluh Delapan",
+            2029: "Dua Ribu Dua Puluh Sembilan",
+            2030: "Dua Ribu Tiga Puluh",
+            2031: "Dua Ribu Tiga Puluh Satu",
+            2032: "Dua Ribu Tiga Puluh Dua",
+            2033: "Dua Ribu Tiga Puluh Tiga",
+            2034: "Dua Ribu Tiga Puluh Empat",
+            2035: "Dua Ribu Tiga Puluh Lima",
+            2036: "Dua Ribu Tiga Puluh Enam",
+            2037: "Dua Ribu Tiga Puluh Tujuh",
+            2038: "Dua Ribu Tiga Puluh Delapan",
+            2039: "Dua Ribu Tiga Puluh Sembilan",
+            2040: "Dua Ribu Empat Puluh",
+            2041: "Dua Ribu Empat Puluh Satu",
+            2042: "Dua Ribu Empat Puluh Dua",
+            2043: "Dua Ribu Empat Puluh Tiga",
+            2044: "Dua Ribu Empat Puluh Empat",
+            2045: "Dua Ribu Empat Puluh Lima",
+            2046: "Dua Ribu Empat Puluh Enam",
+            2047: "Dua Ribu Empat Puluh Tujuh",
+            2048: "Dua Ribu Empat Puluh Delapan",
+            2049: "Dua Ribu Empat Puluh Sembilan",
+            2050: "Dua Ribu Lima Puluh"
+        };
+        return map[year] || year;
+    }
+
+    $('#jk_awal').on('change', function() {
+        var jk_awal = $(this).val();
+        if (jk_awal) {
+            var tanggalObj = new Date(jk_awal);
+
+            // Hari (Senin, Selasa, dst)
+            var hariArr = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            var hari = hariArr[tanggalObj.getDay()];
+            $('#hari').val(hari).trigger('change');
+
+            // Tanggal (Satu, Dua, dst)
+            var tanggalNum = tanggalObj.getDate();
+            var tanggalArr = [
+                '', 'Satu', 'Dua', 'Tiga', 'Empat', 'Lima', 'Enam', 'Tujuh', 'Delapan', 'Sembilan', 'Sepuluh',
+                'Sebelas', 'Dua Belas', 'Tiga Belas', 'Empat Belas', 'Lima Belas', 'Enam Belas', 'Tujuh Belas',
+                'Delapan Belas', 'Sembilan Belas', 'Dua Puluh', 'Dua Puluh Satu', 'Dua Puluh Dua', 'Dua Puluh Tiga',
+                'Dua Puluh Empat', 'Dua Puluh Lima', 'Dua Puluh Enam', 'Dua Puluh Tujuh', 'Dua Puluh Delapan',
+                'Dua Puluh Sembilan', 'Tiga Puluh', 'Tiga Puluh Satu'
+            ];
+            $('#tanggal').val(tanggalArr[tanggalNum]).trigger('change');
+
+            // Bulan (Januari, dst)
+            var bulanArr = [
+                'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+            ];
+            var bulan = bulanArr[tanggalObj.getMonth()];
+            $('#bulan').val(bulan).trigger('change');
+
+            // Tahun (2025, dst)
+            var tahunNum = tanggalObj.getFullYear();
+            var tahunTerbilang = getTahunTerbilang(tahunNum);
+            $('#tahun').val(tahunTerbilang).trigger('change');
+        }
     });
 
     function getRoman(num) {
@@ -405,13 +733,15 @@
                 success: function(data) {
                     $('#id').val(data['transaksi'].id);
                     // // ISI FIELD PRODUK AGEN
+                    $('#id_user').val(data['transaksi'].id_user).change();
                     $('#npk').val(data['transaksi'].npk).change();
                     $('#no_perjanjian').val(data['transaksi'].no_perjanjian);
                     $('#jk_awal').val(data['transaksi'].jk_awal);
                     $('#jk_akhir').val(data['transaksi'].jk_akhir);
                     $('#hari').val(data['transaksi'].hari);
+                    $('#tanggal').val(data['transaksi'].tanggal).change();
                     $('#bulan').val(data['transaksi'].bulan);
-                    $('#tahun').val(data['transaksi'].tahun);
+                    $('#tahun').val(data['transaksi'].tahun).change();
                     $('#jangka_waktu').val(data['transaksi'].jangka_waktu);
                     $('#gaji').val(data['transaksi']['gaji'].replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
                     $('#tj_pulsa').val(data['transaksi']['tj_pulsa'].replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
