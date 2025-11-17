@@ -57,7 +57,7 @@
 
     .dropdown-item:hover {
         background-color: #242d4a;
-        font-weight: 500;
+        font-weight: 500; 
         color: #fff;
         cursor: pointer;
     }

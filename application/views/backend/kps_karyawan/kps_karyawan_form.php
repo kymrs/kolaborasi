@@ -291,17 +291,57 @@
                                         </select>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <!-- Second Set of Fields -->
                                 <div class="form-group row">
-                                    <label for="wilayah_kerja" class="col-sm-5 col-form-label">Foto</label>
+                                    <label class="col-sm-5 col-form-label">Pas Foto</label>
                                     <div class="col-sm-7">
                                         <div id="foto_preview_container" style="margin-bottom:8px; display:none;">
                                             <img id="foto_preview" src="" alt="Foto Karyawan" style="max-width:120px;max-height:120px;border-radius:8px;border:1px solid #ddd;">
                                         </div>
                                         <input class="form-control" type="file" name="foto" id="foto">
+                                        <span class="kwitansi-label">Max Size : 3MB</span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5 col-form-label">Kartu Keluarga</label>
+                                    <div class="col-sm-7">
+                                        <div id="kk_preview_container" style="margin-bottom:8px; display:none;">
+                                            <img id="kk_preview" src="" alt="KK Karyawan" style="max-width:120px;max-height:120px;border-radius:8px;border:1px solid #ddd;">
+                                        </div>
+                                        <input class="form-control" type="file" name="kk" id="kk">
+                                        <span class="kwitansi-label">Max Size : 3MB</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <!-- Second Set of Fields -->
+                                <div class="form-group row">
+                                    <label class="col-sm-5 col-form-label">KTP</label>
+                                    <div class="col-sm-7">
+                                        <div id="ktp_preview_container" style="margin-bottom:8px; display:none;">
+                                            <img id="ktp_preview" src="" alt="KTP Karyawan" style="max-width:120px;max-height:120px;border-radius:8px;border:1px solid #ddd;">
+                                        </div>
+                                        <input class="form-control" type="file" name="ktp" id="ktp">
+                                        <span class="kwitansi-label">Max Size : 3MB</span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5 col-form-label">NPWP</label>
+                                    <div class="col-sm-7">
+                                        <div id="npwp_preview_container" style="margin-bottom:8px; display:none;">
+                                            <img id="npwp_preview" src="" alt="NPWP Karyawan" style="max-width:120px;max-height:120px;border-radius:8px;border:1px solid #ddd;">
+                                        </div>
+                                        <input class="form-control" type="file" name="npwp" id="npwp">
+                                        <span class="kwitansi-label">Max Size : 3MB</span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5 col-form-label">Ijazah Terakhir</label>
+                                    <div class="col-sm-7">
+                                        <div id="ijazah_preview_container" style="margin-bottom:8px; display:none;">
+                                            <img id="ijazah_preview" src="" alt="Ijazah Karyawan" style="max-width:120px;max-height:120px;border-radius:8px;border:1px solid #ddd;">
+                                        </div>
+                                        <input class="form-control" type="file" name="ijazah" id="ijazah">
                                         <span class="kwitansi-label">Max Size : 3MB</span>
                                     </div>
                                 </div>
@@ -1268,11 +1308,44 @@
                     $('#pelatihan_internal').val(data['master'].pelatihan_internal);
                     $('#pelatihan_eksternal').val(data['master'].pelatihan_eksternal);
 
+                    // Pas Foto
                     if (data['master'].foto) {
-                        $('#foto_preview').attr('src', '<?= base_url("assets/backend/document/data_karyawan/") ?>' + data['master'].foto);
+                        $('#foto_preview').attr('src', '<?= base_url("assets/backend/document/data_karyawan/foto/") ?>' + data['master'].foto);
                         $('#foto_preview_container').show();
                     } else {
                         $('#foto_preview_container').hide();
+                    }
+
+                    // Kartu Keluarga
+                    if (data['master'].kk) {
+                        $('#kk_preview').attr('src', '<?= base_url("assets/backend/document/data_karyawan/kk/") ?>' + data['master'].kk);
+                        $('#kk_preview_container').show();
+                    } else {
+                        $('#kk_preview_container').hide();
+                    }
+
+                    // KTP
+                    if (data['master'].ktp) {
+                        $('#ktp_preview').attr('src', '<?= base_url("assets/backend/document/data_karyawan/ktp/") ?>' + data['master'].ktp);
+                        $('#ktp_preview_container').show();
+                    } else {
+                        $('#ktp_preview_container').hide();
+                    }
+
+                    // NPWP
+                    if (data['master'].npwp) {
+                        $('#npwp_preview').attr('src', '<?= base_url("assets/backend/document/data_karyawan/npwp/") ?>' + data['master'].npwp);
+                        $('#npwp_preview_container').show();
+                    } else {
+                        $('#npwp_preview_container').hide();
+                    }
+
+                    // Ijazah
+                    if (data['master'].ijazah) {
+                        $('#ijazah_preview').attr('src', '<?= base_url("assets/backend/document/data_karyawan/ijazah/") ?>' + data['master'].ijazah);
+                        $('#ijazah_preview_container').show();
+                    } else {
+                        $('#ijazah_preview_container').hide();
                     }
 
                     handleTagInput('keahlian_input', 'add_keahlian', 'keahlian_tags', 'keahlian');

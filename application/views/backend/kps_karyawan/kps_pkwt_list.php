@@ -380,7 +380,7 @@
     function fetch(){
         $.ajax({
             url: '<?= site_url("kps_karyawan/get_expiring_pkwt") ?>',
-            data: { days: 30 },
+            data: { days: 46 },
             dataType: 'json',
             success: function(res){
                 console.log('get_expiring_pkwt response:', res); // <- lihat ini di DevTools Console
