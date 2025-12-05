@@ -28,7 +28,7 @@
         color: white;
     }
 
-    /* ...existing code... */
+    /* Tag styles */
     .tag {
         display: inline-block;
         background: #1a2035;
@@ -50,8 +50,6 @@
     .tag .remove-tag:hover {
         color: red;
     }
-
-    /* ...existing code... */
 
     /* Styling placeholder */
     .select2-container--default .select2-selection--single .select2-selection__placeholder {
@@ -82,6 +80,42 @@
     .rating label:hover,
     .rating label:hover~label {
         color: #f5b301;
+    }
+
+    /* Stepper styles for Total Bulan */
+    .input-step {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .input-step .step-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 8px;
+        border: 1px solid #ced4da;
+        background: #ffffff;
+        color: #212529;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        cursor: pointer;
+        user-select: none;
+    }
+    .input-step .step-btn:active {
+        transform: translateY(1px);
+    }
+    .input-step input[type="number"] {
+        text-align: center;
+        border: 1px solid #ced4da;
+        border-radius: 8px;
+        padding: 6px 10px;
+        width: 110px;
+        font-weight: 600;
+    }
+    .input-step .step-btn[aria-disabled="true"] {
+        opacity: 0.45;
+        cursor: not-allowed;
     }
 </style>
 <div class="container-fluid">
@@ -119,27 +153,29 @@
                                         </select>
                                     </div>
                                 </div>
-                                <!-- <div class="form-group row">
-                                    <label class="col-sm-5" for="npk">Nama User Sistem</label>
+
+                                <!-- NEW: Total Bulan with stepper -->
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="total_bulan">Total Bulan</label>
                                     <div class="col-sm-7">
-                                        <select class="form-control" name="id_user" id="id_user">
-                                            <option value="" hidden>Pilih User</option>
-                                            <?php foreach ($user as $data) : ?>
-                                                <option value="<?= $data['id_user'] ?>"><?= $data['fullname'] ?></option>
-                                            <?php endforeach; ?>
-                                        </select>
+                                        <div class="input-step">
+                                            <button type="button" class="step-btn" id="btn_decrease" aria-label="Kurangi bulan" aria-disabled="true">−</button>
+                                            <input type="number" class="form-control" name="total_bulan" id="total_bulan" min="0" max="120" value="0" />
+                                            <button type="button" class="step-btn" id="btn_increase" aria-label="Tambah bulan">+</button>
+                                        </div>
                                     </div>
-                                </div> -->
+                                </div>
+
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="jk_awal">Kontrak Awal</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control datepicker" name="jk_awal" id="jk_awal" placeholder="Pilih Tanggal Kontrak Awal" style="cursor: pointer" autocomplete="off">
+                                        <input type="text" class="form-control datepicker" name="jk_awal" id="jk_awal" placeholder="Pilih Tanggal Kontrak Awal" style="cursor: pointer" autocomplete="off" readonly>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-5" for="jk_akhir">Kontrak Akhir</label>
                                     <div class="col-sm-7">
-                                        <input type="text" class="form-control datepicker" name="jk_akhir" id="jk_akhir" placeholder="Pilih Tanggal Kontrak Akhir" style="cursor: pointer" autocomplete="off">
+                                        <input type="text" class="form-control datepicker" name="jk_akhir" id="jk_akhir" placeholder="Tanggal Kontrak Akhir" style="cursor: pointer" autocomplete="off" readonly>
                                     </div>
                                 </div>
                                 <div class="form-group row" style="display: none;">
@@ -401,15 +437,17 @@
 <?php $this->load->view('template/script'); ?>
 
 <script>
-    $('#npk').select2({
-        placeholder: 'Pilih Karyawan'
-    });
-
-    $(document).on('input', '.only-number', function() {
-        this.value = this.value.replace(/[^0-9]/g, '');
-    });
-
     $(document).ready(function() {
+        $('#npk').select2({
+            placeholder: 'Pilih Karyawan',
+            allowClear: true,
+            width: '100%'
+        });
+
+        $(document).on('input', '.only-number', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
         $('#tanggal').select2({
             placeholder: "Pilih Tanggal",
             allowClear: true
@@ -424,85 +462,458 @@
         });
     });
 
-    $('#npk').on('change', function() {
-    var val = $(this).val() || '';
-    // jika option value disimpan sebagai "npk-id_user", ambil bagian npk sebelum '-'
-    var npk = val.split('-')[0];
-
-    if (!npk) {
-        // kosongkan jika tidak ada pilihan
-        $('#jk_awal').val('');
-        $('#jk_akhir').val('');
-        $('#tgl_masuk_iso').val('');
-        $('#tgl_akhir_kontrak_iso').val('');
-        return;
+    // Helpers to toggle form state and show message
+    function disableForm(message) {
+        $('#form input, #form select, #form textarea, #form button, .aksi').prop('disabled', true).css('pointer-events', 'none');
+        $('.btn-secondary').prop('disabled', false); // keep Back button enabled
+        Swal.fire({
+            icon: 'info',
+            title: 'Informasi',
+            html: message,
+            confirmButtonColor: "#0e131d"
+        });
     }
 
-    $.ajax({
+    function enableForm() {
+        $('#form input, #form select, #form textarea, #form button, .aksi').prop('disabled', false).css('pointer-events', 'auto');
+    }
+
+    // Hitung max bulan yang bisa ditambah berdasarkan total_bulan existing
+    function getMaxAllowedBulan() {
+        var summary = window._contractSummary;
+        if (!summary || !summary.status) return 120; // default max jika tidak ada summary
+        
+        var existingBulan = parseInt(summary.total_bulan, 10) || 0;
+        var maxTotalBulan = 60; // 5 tahun
+        var maxNewBulan = maxTotalBulan - existingBulan; // sisa bulan yang bisa ditambah
+        
+        return Math.max(0, maxNewBulan); // jangan negative
+    }
+
+    // Update stepper state based on existing kontrak
+    function updateTotalBulanConstraint() {
+        var maxAllowed = getMaxAllowedBulan();
+        var $total = $('#total_bulan');
+        var $inc = $('#btn_increase');
+        var $dec = $('#btn_decrease');
+
+        $total.attr('max', maxAllowed);
+
+        // jika nilai sekarang melebihi max -> clamp
+        var currentVal = parseInt($total.val(), 10) || 0;
+        if (currentVal > maxAllowed) {
+            $total.val(maxAllowed);
+        }
+
+        // update button state
+        var val = parseInt($total.val(), 10) || 0;
+        $dec.attr('aria-disabled', val <= 0).prop('disabled', val <= 0);
+        $inc.attr('aria-disabled', val >= maxAllowed).prop('disabled', val >= maxAllowed);
+    }
+
+    // Stepper behavior for Total Bulan
+    (function(){
+        var $total = $('#total_bulan');
+        var $inc = $('#btn_increase');
+        var $dec = $('#btn_decrease');
+
+        const MIN_MONTHS = 0;
+
+        function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+        
+        function updateButtons(){
+            var maxAllowed = getMaxAllowedBulan();
+            var val = parseInt($total.val(),10) || 0;
+            $dec.attr('aria-disabled', val <= MIN_MONTHS).prop('disabled', val <= MIN_MONTHS);
+            $inc.attr('aria-disabled', val >= maxAllowed).prop('disabled', val >= maxAllowed);
+        }
+
+        function showMaxReachedAlert() {
+            var maxAllowed = getMaxAllowedBulan();
+            var summary = window._contractSummary;
+            var existingBulan = (summary && summary.status) ? parseInt(summary.total_bulan, 10) || 0 : 0;
+            
+            Swal.fire({
+                icon: 'warning',
+                title: 'Maksimal 5 tahun (60 bulan)',
+                html: 'Total kontrak karyawan sudah ' + existingBulan + ' bulan. <br>Hanya bisa menambah ' + maxAllowed + ' bulan lagi untuk mencapai 60 bulan.',
+                confirmButtonColor: "#0e131d"
+            });
+        }
+
+        // increase: +1 (BUKAN +2)
+        $inc.on('click', function(){
+            var maxAllowed = getMaxAllowedBulan();
+            var val = parseInt($total.val(),10) || 0;
+            if (val < maxAllowed) {
+                $total.val(val + 1).trigger('change');
+                if (val + 1 === maxAllowed) {
+                    showMaxReachedAlert();
+                }
+            }
+            updateButtons();
+            if (typeof computeJkAkhirFromStart === 'function') computeJkAkhirFromStart();
+        });
+
+        // decrease: -1
+        $dec.on('click', function(){
+            var val = parseInt($total.val(),10) || 0;
+            if (val > MIN_MONTHS) {
+                $total.val(val - 1).trigger('change');
+            }
+            updateButtons();
+            if (typeof computeJkAkhirFromStart === 'function') computeJkAkhirFromStart();
+        });
+
+        // keyboard support: arrow up/down
+        $total.on('keydown', function(e){
+            if (e.key === 'ArrowUp') { e.preventDefault(); $inc.trigger('click'); }
+            if (e.key === 'ArrowDown') { e.preventDefault(); $dec.trigger('click'); }
+        });
+
+        // ensure value within range and update UI on manual input
+        $total.on('input change', function(){
+            var maxAllowed = getMaxAllowedBulan();
+            var val = parseInt($total.val(),10);
+            if (isNaN(val)) val = MIN_MONTHS;
+            if (val > maxAllowed) {
+                $total.val(maxAllowed);
+                showMaxReachedAlert();
+                val = maxAllowed;
+            } else {
+                val = clamp(val, MIN_MONTHS, maxAllowed);
+                $total.val(val);
+            }
+            updateButtons();
+
+            // update start state dan recompute akhir kontrak
+            if (typeof updateStartState === 'function') updateStartState();
+            if (typeof computeJkAkhirFromStart === 'function') computeJkAkhirFromStart();
+        });
+
+        // init
+        $(function(){ updateButtons(); });
+    })();
+
+    (function(){
+        // pastikan state awal dan fungsi compute tersedia
+        function updateStartState() {
+            var months = parseInt($('#total_bulan').val(), 10);
+            var isEdit = ($('#id').length && $('#id').val() && $('#id').val() != '0');
+            if (isNaN(months) || months <= 0) {
+                if (!isEdit) {
+                    $('#jk_awal').prop('readonly', true).css('pointer-events', 'none').val('');
+                } else {
+                    $('#jk_awal').prop('readonly', true).css('pointer-events', 'none');
+                }
+                $('#jk_akhir').val('');
+            } else {
+                $('#jk_awal').prop('readonly', false).css('pointer-events', 'auto');
+            }
+        }
+
+        function computeJkAkhirFromStart() {
+            var months = parseInt($('#total_bulan').val(), 10);
+            var startVal = $('#jk_awal').val();
+            if (!startVal || isNaN(months) || months <= 0) {
+                $('#jk_akhir').val('');
+                return;
+            }
+
+            var start = null;
+            var parts = startVal.split('-');
+            if (parts.length === 3) {
+                start = new Date(parseInt(parts[0],10), parseInt(parts[1],10)-1, parseInt(parts[2],10));
+            } else {
+                start = new Date(startVal);
+            }
+            if (!start || isNaN(start.getTime())) {
+                $('#jk_akhir').val('');
+                return;
+            }
+
+            var dt = new Date(start.getTime());
+            dt.setMonth(dt.getMonth() + months);
+            dt.setDate(dt.getDate() - 1);
+
+            var y = dt.getFullYear();
+            var m = ('0' + (dt.getMonth() + 1)).slice(-2);
+            var d = ('0' + dt.getDate()).slice(-2);
+            var iso = y + '-' + m + '-' + d;
+
+            $('#jk_akhir').val(iso).trigger('change');
+        }
+
+        $(function(){
+            updateStartState();
+            if ($('#jk_awal').val()) computeJkAkhirFromStart();
+        });
+
+        $(document).off('input change', '#total_bulan').on('input change', '#total_bulan', function(){
+            var isEdit = ($('#id').length && $('#id').val() && $('#id').val() != '0');
+            
+            updateStartState();
+            
+            // Jika edit mode: jangan ubah jk_awal, hanya recompute jk_akhir
+            if (isEdit && typeof computeJkAkhirFromStart === 'function') {
+                computeJkAkhirFromStart();
+            } else if (!isEdit && typeof computeJkAkhirFromStart === 'function') {
+                // Create mode: compute normally
+                computeJkAkhirFromStart();
+            }
+        });
+
+        $(document).off('change', '#jk_awal').on('change', '#jk_awal', function(){
+            computeJkAkhirFromStart();
+        });
+    })();
+</script>
+<script>
+    (function(){
+        // pastikan state awal dan fungsi compute tersedia
+        function updateStartState() {
+            var months = parseInt($('#total_bulan').val(), 10);
+            var isEdit = ($('#id').length && $('#id').val() && $('#id').val() != '0');
+            if (isNaN(months) || months <= 0) {
+                if (!isEdit) {
+                    $('#jk_awal').prop('readonly', true).css('pointer-events', 'none').val('');
+                } else {
+                    $('#jk_awal').prop('readonly', true).css('pointer-events', 'none');
+                }
+                $('#jk_akhir').val('');
+            } else {
+                $('#jk_awal').prop('readonly', false).css('pointer-events', 'auto');
+            }
+        }
+
+        function computeJkAkhirFromStart() {
+            var months = parseInt($('#total_bulan').val(), 10);
+            var startVal = $('#jk_awal').val();
+            if (!startVal || isNaN(months) || months <= 0) {
+                $('#jk_akhir').val('');
+                return;
+            }
+
+            var start = null;
+            var parts = startVal.split('-');
+            if (parts.length === 3) {
+                start = new Date(parseInt(parts[0],10), parseInt(parts[1],10)-1, parseInt(parts[2],10));
+            } else {
+                start = new Date(startVal);
+            }
+            if (!start || isNaN(start.getTime())) {
+                $('#jk_akhir').val('');
+                return;
+            }
+
+            var dt = new Date(start.getTime());
+            dt.setMonth(dt.getMonth() + months);
+            dt.setDate(dt.getDate() - 1);
+
+            var y = dt.getFullYear();
+            var m = ('0' + (dt.getMonth() + 1)).slice(-2);
+            var d = ('0' + dt.getDate()).slice(-2);
+            var iso = y + '-' + m + '-' + d;
+
+            $('#jk_akhir').val(iso).trigger('change');
+        }
+
+        // inisialisasi saat load
+        $(function(){
+            updateStartState();
+            // jika ada nilai awal (edit), hitung ulang
+            if ($('#jk_awal').val()) computeJkAkhirFromStart();
+        });
+
+        // sambungkan dengan event yang sudah ada
+        $(document).off('input change', '#total_bulan').on('input change', '#total_bulan', function(){
+            var isEdit = ($('#id').length && $('#id').val() && $('#id').val() != '0');
+            
+            updateStartState();
+            
+            // Jika edit mode: jangan ubah jk_awal, hanya recompute jk_akhir
+            if (isEdit && typeof computeJkAkhirFromStart === 'function') {
+                computeJkAkhirFromStart();
+            } else if (!isEdit && typeof computeJkAkhirFromStart === 'function') {
+                // Create mode: compute normally
+                computeJkAkhirFromStart();
+            }
+        });
+
+        // saat pengguna memilih tanggal awal
+        $(document).off('change', '#jk_awal').on('change', '#jk_awal', function(){
+            computeJkAkhirFromStart();
+        });
+    })();
+</script>
+<script>
+    $('#npk').off('change').on('change', function() {
+        var val = $(this).val() || '';
+        var npk = val.split('-')[0];
+        var isEdit = ($('#id').length && $('#id').val() && $('#id').val() != '0');
+
+        // jika mode edit, jangan reset atau ubah tanggal -> keluar langsung
+        if (isEdit) {
+            console.log('Edit mode: skip npk change handler');
+            return;
+        }
+
+        window._contractSummary = null;
+        enableForm();
+        updateTotalBulanConstraint(); // reset constraint
+
+        if (!npk) {
+            $('#jk_awal').val('');
+            $('#jk_akhir').val('');
+            $('#tgl_masuk_iso').val('');
+            $('#tgl_akhir_kontrak_iso').val('');
+            updateTotalBulanConstraint();
+            return;
+        }
+
+        $.ajax({
             url: '<?= site_url("kps_karyawan/get_karyawan_dates") ?>',
             method: 'POST',
             dataType: 'json',
             data: { npk: npk },
             success: function(res) {
                 if (res && res.status) {
-                    // isi visible inputs (format sesuai datepicker; di project kamu umumnya 'yy-mm-dd' or 'dd MM yy')
-                    $('#jk_awal').val(res.tgl_masuk).trigger('change');
-                    $('#jk_akhir').val(res.tgl_akhir_kontrak).trigger('change');
-
-                    // isi hidden ISO fields jika ada
-                    if ($('#tgl_masuk_iso').length) $('#tgl_masuk_iso').val(res.tgl_masuk);
-                    if ($('#tgl_akhir_kontrak_iso').length) $('#tgl_akhir_kontrak_iso').val(res.tgl_akhir_kontrak);
-
-                    // jalankan compute jika perlu
-                    if (typeof computeTglAkhirKontrak === 'function') computeTglAkhirKontrak();
-                    if (typeof hitungMasaKerja === 'function') hitungMasaKerja();
-                } else {
-                    $('#jk_awal').val('');
-                    $('#jk_akhir').val('');
-                    $('#tgl_masuk_iso').val('');
-                    $('#tgl_akhir_kontrak_iso').val('');
+                    if (res.tgl_masuk) {
+                        if ($('#tgl_masuk_iso').length) $('#tgl_masuk_iso').val(res.tgl_masuk);
+                    }
+                    if (res.tgl_akhir_kontrak) {
+                        if ($('#tgl_akhir_kontrak_iso').length) $('#tgl_akhir_kontrak_iso').val(res.tgl_akhir_kontrak);
+                    }
                 }
+
+                $.ajax({
+                    url: '<?= site_url("kps_karyawan/get_contract_summary") ?>',
+                    method: 'POST',
+                    dataType: 'json',
+                    data: { npk: npk },
+                    success: function(summary) {
+                        window._contractSummary = summary && summary.status ? summary : null;
+                        updateTotalBulanConstraint(); // update max bulan based on existing kontrak
+
+                        if (summary && summary.status && summary.last_end) {
+                            var last = new Date(summary.last_end);
+                            var nextStart = new Date(last);
+                            nextStart.setDate(nextStart.getDate() + 1);
+
+                            if (parseInt(summary.total_bulan, 10) >= 60) {
+                                var gapDate = new Date(summary.last_end);
+                                gapDate.setDate(gapDate.getDate() + 31);
+                                var today = new Date();
+                                if (today < gapDate) {
+                                    var y = gapDate.getFullYear();
+                                    var m = ('0' + (gapDate.getMonth() + 1)).slice(-2);
+                                    var d = ('0' + gapDate.getDate()).slice(-2);
+                                    var allowedIso = y + '-' + m + '-' + d;
+                                    $('#jk_awal').val(allowedIso).trigger('change');
+                                    disableForm('Karyawan sudah mencapai 5 tahun kontrak. Kontrak baru hanya boleh dimulai setelah ' + allowedIso + '.');
+                                    return;
+                                } else {
+                                    nextStart = gapDate > nextStart ? gapDate : nextStart;
+                                }
+                            }
+
+                            var y2 = nextStart.getFullYear();
+                            var m2 = ('0' + (nextStart.getMonth() + 1)).slice(-2);
+                            var d2 = ('0' + nextStart.getDate()).slice(-2);
+                            var nextDayIso = y2 + '-' + m2 + '-' + d2;
+                            $('#jk_awal').val(nextDayIso).trigger('change');
+                            if ($('#tgl_masuk_iso').length) $('#tgl_masuk_iso').val(nextDayIso);
+                            if (typeof computeJkAkhirFromStart === 'function') computeJkAkhirFromStart();
+                        } else {
+                            if (res && res.status && res.tgl_masuk) {
+                                $('#jk_awal').val(res.tgl_masuk).trigger('change');
+                                if ($('#tgl_masuk_iso').length) $('#tgl_masuk_iso').val(res.tgl_masuk);
+                                if (typeof computeJkAkhirFromStart === 'function') computeJkAkhirFromStart();
+                            } else {
+                                $('#jk_awal').val('').trigger('change');
+                                $('#jk_akhir').val('').trigger('change');
+                            }
+                        }
+                    },
+                    error: function() {
+                        window._contractSummary = null;
+                        updateTotalBulanConstraint();
+                    }
+                });
             },
             error: function() {
-                console.warn('Gagal ambil tanggal karyawan');
+                console.warn('Gagal ambil data karyawan');
+                updateTotalBulanConstraint();
             }
         });
     });
 
+    // Re-check on submit
+    $("#form").on('submit', function(e) {
+        var summary = window._contractSummary;
+        if (summary && summary.status && parseInt(summary.total_bulan, 10) >= 60 && summary.last_end) {
+            var allowedDate = new Date(summary.last_end);
+            allowedDate.setDate(allowedDate.getDate() + 31);
+            var jk_awal_val = $('#jk_awal').val();
+            var cand = jk_awal_val ? new Date(jk_awal_val) : null;
+            if (!cand || cand < allowedDate) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Dilarang',
+                    text: 'Karyawan telah mencapai 5 tahun kontrak. Kontrak baru hanya boleh dimulai minimal 1 bulan setelah kontrak terakhir (' + allowedDate.toISOString().slice(0,10) + ').'
+                });
+                return false;
+            }
+        }
+
+        // Cek total_bulan tidak melebihi sisa yang diperbolehkan
+        var totalBulanVal = parseInt($('#total_bulan').val(), 10) || 0;
+        var maxAllowed = getMaxAllowedBulan();
+        if (totalBulanVal > maxAllowed) {
+            e.preventDefault();
+            Swal.fire({
+                icon: 'error',
+                title: 'Total Bulan Melebihi Batas',
+                text: 'Total bulan tidak boleh melebihi ' + maxAllowed + ' bulan.'
+            });
+            return false;
+        }
+    });
     $('#jk_awal, #jk_akhir').on('change', function() {
-    var jk_awal = $('#jk_awal').val();
-    var jk_akhir = $('#jk_akhir').val();
+        var jk_awal = $('#jk_awal').val();
+        var jk_akhir = $('#jk_akhir').val();
 
-    if (jk_awal && jk_akhir) {
-        var awal = new Date(jk_awal);
-        var akhir = new Date(jk_akhir);
+        if (jk_awal && jk_akhir) {
+            var awal = new Date(jk_awal);
+            var akhir = new Date(jk_akhir);
 
-        var tahunAwal = awal.getFullYear();
-        var tahunAkhir = akhir.getFullYear();
-        var bulanAwal = awal.getMonth();
-        var bulanAkhir = akhir.getMonth();
+            var tahunAwal = awal.getFullYear();
+            var tahunAkhir = akhir.getFullYear();
+            var bulanAwal = awal.getMonth();
+            var bulanAkhir = akhir.getMonth();
 
-        // Hitung total bulan (inklusif)
-        var totalBulan = (tahunAkhir - tahunAwal) * 12 + (bulanAkhir - bulanAwal) + 1;
-        if (totalBulan < 1) totalBulan = 1;
+            // Hitung total bulan (inklusif)
+            var totalBulan = (tahunAkhir - tahunAwal) * 12 + (bulanAkhir - bulanAwal) + 1;
+            if (totalBulan < 1) totalBulan = 1;
 
-        // Pilih jangka waktu sesuai hasil
-        $('#jangka_waktu').val(totalBulan + ' (' + getBulanTerbilang(totalBulan) + ') bulan').trigger('change');
-    }
+            // Pilih jangka waktu sesuai hasil
+            $('#jangka_waktu').val(totalBulan + ' (' + getBulanTerbilang(totalBulan) + ') bulan').trigger('change');
+        }
     });
 
     // Fungsi untuk mengubah angka ke terbilang Indonesia
     function getBulanTerbilang(num) {
         var arr = [
-            '', 'Satu', 'Dua', 'Tiga', 'Empat', 'Lima', 'Enam',
-            'Tujuh', 'Delapan', 'Sembilan', 'Sepuluh', 'Sebelas', 'Dua Belas',
-            'Tiga Belas', 'Empat Belas', 'Lima Belas', 'Enam Belas', 'Tujuh Belas', 'Delapan Belas', 'Sembilan Belas', 'Dua Puluh',
-            'Dua Puluh Satu', 'Dua Puluh Dua', 'Dua Puluh Tiga', 'Dua Puluh Empat', 'Dua Puluh Lima', 'Dua Puluh Enam', 'Dua Puluh Tujuh', 'Dua Puluh Delapan', 'Dua Puluh Sembilan',
-            'Tiga Puluh', 'Tiga Puluh Satu', 'Tiga Puluh Dua', 'Tiga Puluh Tiga', 'Tiga Puluh Empat', 'Tiga Puluh Lima', 'Tiga Puluh Enam', 'Tiga Puluh Tujuh', 'Tiga Puluh Delapan', 'Tiga Puluh Sembilan',
-            'Empat Puluh', 'Empat Puluh Satu', 'Empat Puluh Dua', 'Empat Puluh Tiga', 'Empat Puluh Empat', 'Empat Puluh Lima', 'Empat Puluh Enam', 'Empat Puluh Tujuh', 'Empat Puluh Delapan', 'Empat Puluh Sembilan',
-            'Lima Puluh', 'Lima Puluh Satu', 'Lima Puluh Dua', 'Lima Puluh Tiga', 'Lima Puluh Empat', 'Lima Puluh Lima', 'Lima Puluh Enam', 'Lima Puluh Tujuh', 'Lima Puluh Delapan', 'Lima Puluh Sembilan',
-            'Enam Puluh'
+        "", "Satu","Dua","Tiga","Empat","Lima","Enam","Tujuh","Delapan","Sembilan",
+        "Sepuluh","Sebelas","Dua Belas","Tiga Belas","Empat Belas","Lima Belas","Enam Belas","Tujuh Belas","Delapan Belas","Sembilan Belas",
+        "Dua Puluh","Dua Puluh Satu","Dua Puluh Dua","Dua Puluh Tiga","Dua Puluh Empat","Dua Puluh Lima","Dua Puluh Enam","Dua Puluh Tujuh","Dua Puluh Delapan","Dua Puluh Sembilan",
+        "Tiga Puluh","Tiga Puluh Satu","Tiga Puluh Dua","Tiga Puluh Tiga","Tiga Puluh Empat","Tiga Puluh Lima","Tiga Puluh Enam","Tiga Puluh Tujuh","Tiga Puluh Delapan","Tiga Puluh Sembilan",
+        "Empat Puluh","Empat Puluh Satu","Empat Puluh Dua","Empat Puluh Tiga","Empat Puluh Empat","Empat Puluh Lima","Empat Puluh Enam","Empat Puluh Tujuh","Empat Puluh Delapan","Empat Puluh Sembilan",
+        "Lima Puluh","Lima Puluh Satu","Lima Puluh Dua","Lima Puluh Tiga","Lima Puluh Empat","Lima Puluh Lima","Lima Puluh Enam","Lima Puluh Tujuh","Lima Puluh Delapan","Lima Puluh Sembilan",
+        "Enam Puluh"
         ];
+
         return arr[num] || num;
     }
 
@@ -618,16 +1029,31 @@
             let awal = new Date(jk_awal);
             let akhir = new Date(jk_akhir);
 
-            if (awal.getMonth() === akhir.getMonth() && awal.getFullYear() === akhir.getFullYear()) {
+            // jika tanggal akhir sebelum tanggal awal -> error
+            if (akhir < awal) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Perhatian',
-                    text: 'Tanggal kontrak awal dan kontrak akhir tidak boleh berada di bulan yang sama!',
-                    showConfirmButton: true
+                    text: 'Tanggal akhir harus sama atau setelah tanggal awal.',
+                    confirmButtonColor: "#0e131d"
                 });
-                $('#jk_awal').val('')
-                $('#jk_akhir').val('')
+                $('#jk_akhir').val('');
+                // update jangka waktu juga bersih jika perlu
+                $('#jangka_waktu').val('').trigger('change');
+                return;
             }
+
+            // hitung total bulan inklusif
+            var tahunAwal = awal.getFullYear();
+            var tahunAkhir = akhir.getFullYear();
+            var bulanAwal = awal.getMonth();
+            var bulanAkhir = akhir.getMonth();
+
+            // Hitung total bulan
+            var totalBulan = (tahunAkhir - tahunAwal) * 12 + (bulanAkhir - bulanAwal) + 1;
+            if (totalBulan < 1) totalBulan = 1;
+
+            $('#jangka_waktu').val(totalBulan + ' (' + getBulanTerbilang(totalBulan) + ') bulan').trigger('change');
         }
     });
 
@@ -734,7 +1160,17 @@
                     $('#id').val(data['transaksi'].id);
                     // // ISI FIELD PRODUK AGEN
                     $('#id_user').val(data['transaksi'].id_user).change();
-                    $('#npk').val(data['transaksi'].npk).change();
+                    var npkVal = data['transaksi'].npk + '-' + data['transaksi'].id_user;
+                    var npkText = data['transaksi'].nama_lengkap || npkVal;
+                    if ($('#npk option[value="' + npkVal + '"]').length === 0) {
+                        // buat option baru (selected)
+                        var newOption = new Option(npkText, npkVal, true, true);
+                        $('#npk').append(newOption).trigger('change');
+                    } else {
+                        $('#npk').val(npkVal).trigger('change');
+                    }
+                    // jika ingin men-disable select tetap tampil selection-nya
+                    $('#npk').prop('disabled', true).trigger('change.select2');
                     $('#no_perjanjian').val(data['transaksi'].no_perjanjian);
                     $('#jk_awal').val(data['transaksi'].jk_awal);
                     $('#jk_akhir').val(data['transaksi'].jk_akhir);

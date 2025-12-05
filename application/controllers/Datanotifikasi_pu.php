@@ -341,7 +341,7 @@ class Datanotifikasi_pu extends CI_Controller
         echo json_encode(array("status" => TRUE));
     }
 
-    function approve2()
+    function approve2() 
     {
         $data = array(
             'app2_keterangan' => $this->input->post('app2_keterangan'),

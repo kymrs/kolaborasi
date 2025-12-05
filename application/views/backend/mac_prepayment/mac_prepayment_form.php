@@ -453,13 +453,27 @@
                     $('#kode_prepayment').val(data['master']['kode_prepayment'].toUpperCase()).attr('readonly', true);
                     $('#tgl_prepayment').val(moment(data['master']['tgl_prepayment']).format('DD-MM-YYYY'));
                     $('#nama').val(data['master']['nama']);
-                    $('#rekening').val(data['master']['no_rek']).trigger('change');
-                    var parts = data['master']['no_rek'].split("-"); // Pisahkan berdasarkan "-"
 
-                    if (parts.length === 3) {
-                        $("#nama_rek").val(parts[0]);
-                        $("#nama_bank").val(parts[1]);
-                        $("#nomor_rekening").val(parts[2]);
+                    // safe-check no_rek before splitting to avoid errors if empty or null
+                    var noRekRaw = (data['master']['no_rek'] || '').toString();
+                    $('#rekening').val(noRekRaw).trigger('change');
+                    if (noRekRaw.trim() !== '') {
+                        var parts = noRekRaw.split("-");
+                        if (parts.length === 3) {
+                            $("#nama_rek").val(parts[0]);
+                            $("#nama_bank").val(parts[1]);
+                            $("#nomor_rekening").val(parts[2]);
+                        } else {
+                            // fallback: if format not "a-b-c", set the whole value into nomor_rekening
+                            $("#nama_rek").val('');
+                            $("#nama_bank").val('');
+                            $("#nomor_rekening").val(noRekRaw);
+                        }
+                    } else {
+                        // clear fields when no_rek is empty
+                        $("#nama_rek").val('');
+                        $("#nama_bank").val('');
+                        $("#nomor_rekening").val('');
                     }
                     $('#prepayment').val(data['master']['prepayment']);
                     $('#tujuan').val(data['master']['tujuan']);

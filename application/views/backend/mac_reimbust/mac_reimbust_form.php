@@ -1100,7 +1100,8 @@
                         //APPEND DATA TRANSAKSI DETAIL REIMBUST
                         $(data['transaksi']).each(function(index) {
                             // Nilai jumlah diformat menggunakan pemisah ribuan sebelum dimasukkan ke dalam elemen input.
-                            const jumlahFormatted = data['transaksi'][index]['jumlah'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                            const jumlahFormatted = data['transaksi'][index]['jumlah']?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') ?? '-';
+
                             const tglNotaFormatted = moment(data['transaksi'][index]['tgl_nota']).format('DD-MM-YYYY');
 
                             // Cek apakah deklarasi ada datanya
@@ -1122,8 +1123,8 @@
                                             autocomplete="off" value="${tglNotaFormatted}" ${isDeklarasiFilled ? 'readonly' : ''}>
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control jumlah-${index + 1}" id="jumlah-${index}" value="${jumlahFormatted}" name="jml[${index + 1}]" autocomplete="off">
-                                        <input class="hidden_jumlah${index + 1}" type="hidden" id="hidden_jumlah${index}" name="jumlah[${index + 1}]" value="${data['transaksi'][index]['jumlah']}">
+                                        <input type="text" class="form-control jumlah-${index + 1}" id="jumlah-${index}" value="${jumlahFormatted}"  name="jml[${index + 1}]" autocomplete="off">
+                                        <input class="hidden_jumlah${index + 1}" type="hidden" id="hidden_jumlah${index}" name="jumlah[${index + 1}]" value="${data['transaksi'][index]['jumlah'] ?? ''}">
                                     </td>
                                     <td id="kwitansi-upload${index + 1}">
                                         <div class="custom-file">

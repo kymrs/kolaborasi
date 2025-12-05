@@ -625,7 +625,12 @@
                                     <tr>
                                         <td colspan="2">${index + 1}. ${data['transaksi'][index]['pemakaian']}</td>
                                         <td style="text-align: center">${getFormattedDate(moment(data['transaksi'][index]['tgl_nota']).format('DD MM YYYY'))}</td>
-                                        <td style="text-align: center">${data['transaksi'][index]['jumlah'].replace(/\B(?=(\d{3})+(?!\d))/g, '.')}</td>
+                                        <td style="text-align: center">
+                                            ${(data['transaksi'][index]['jumlah'] ?? '-')
+                                                .toString()
+                                                .replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+                                            }
+                                        </td>
                                         <td>
                                             <div style="scale: 0.8; text-align: center" class="openModal" data-kwitansi="${data['transaksi'][index]['kwitansi']}">${data['transaksi'][index]['kwitansi'] ? '<div class="btn btn-primary btn-block btn-sm ">Lihat Foto</div>' : '-'}</div>
                                         </td>

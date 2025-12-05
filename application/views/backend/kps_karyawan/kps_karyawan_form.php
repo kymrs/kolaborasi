@@ -1270,7 +1270,7 @@
                     $('#status_kerja').val(data['master'].status_kerja).change();
                     $('#npk').val(data['master'].npk);
                     $('#id_user').val(data['master'].id_user).change();
-                    $('#nama_lengkap').val(data['master'].nama_lengkap);
+                    $('#nama_lengkap').val(data['master'].nama_lengkap + data['master'].id_user).change();
                     $('#jenis_kelamin').val(data['master'].jenis_kelamin).change();
                     $('#tempat_lahir').val(data['master'].tempat_lahir);
                     $('#tgl_lahir').val(moment(data['master'].tgl_lahir).format('YYYY-MM-DD'));
@@ -1690,6 +1690,18 @@
                     required: true,
                 },
                 wilayah_kerja: {
+                    required: true,
+                },
+                foto: {
+                    required: true,
+                },
+                kk: {
+                    required: true,
+                },
+                ktp: {
+                    required: true,
+                },
+                ijazah: {
                     required: true,
                 },
                 posisi: {

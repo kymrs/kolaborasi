@@ -281,6 +281,25 @@ function formatTanggalIndo($tanggal)
 
     return $tgl . ' ' . $bulanIndo[$bln] . ' ' . $thn;
 }
+
+// helper: return base_url if file exists, else placeholder
+function asset_if_exists($relPath, $filename, $placeholder = 'assets/backend/img/no-image.png')
+{
+    if (empty($filename)) return base_url($placeholder);
+    $full = FCPATH . $relPath . '/' . $filename;
+    if (file_exists($full) && is_file($full)) {
+        return base_url($relPath . '/' . $filename);
+    }
+    return base_url($placeholder);
+}
+
+// helper: check file existence (rel path)
+function file_exists_rel($relPath, $filename)
+{
+    if (empty($filename)) return false;
+    $full = FCPATH . $relPath . '/' . $filename;
+    return (file_exists($full) && is_file($full));
+}
 ?>
 <a style="background-color: rgb(36, 44, 73); float: right; margin-right: 5%" class="btn btn-secondary btn-sm" href="<?= base_url('kps_karyawan') ?>">
     <i class="fas fa-chevron-left"></i>&nbsp;Back
@@ -288,7 +307,8 @@ function formatTanggalIndo($tanggal)
 <div style="clear: both"></div>
 <div class="container">
     <div class="left">
-        <img src="<?= base_url('assets/backend/document/data_karyawan/' . $master->foto) ?>" alt="Foto Karyawan">
+        <?php $foto_url = asset_if_exists('assets/backend/document/data_karyawan/foto', $master->foto); ?>
+        <img src="<?= $foto_url ?>" alt="Foto Karyawan">
         <h2 style="text-align: center;"><?= $master->nama_lengkap ?></h2>
         <p style="text-align: center;"><?= $master->posisi ?></p>
 
@@ -371,6 +391,62 @@ function formatTanggalIndo($tanggal)
                     <th>Domisili</th>
                     <th>:</th>
                     <td><?= $master->domisili ?></td>
+                </tr>
+                <tr>
+                    <th>Kartu Keluarga</th>
+                    <th>:</th>
+                    <td>
+                        <?php
+                            $rel = 'assets/backend/document/data_karyawan/kk';
+                            if (file_exists_rel($rel, $master->kk)) {
+                                echo '<a href="#" class="preview-file" data-file="'.base_url($rel.'/'.$master->kk).'">Lihat File</a>';
+                            } else {
+                                echo 'Tidak ada';
+                            }
+                        ?>
+                    </td>
+                </tr>
+                <tr>
+                    <th>KTP</th>
+                    <th>:</th>
+                    <td>
+                        <?php
+                            $rel2 = 'assets/backend/document/data_karyawan/ktp';
+                            if (file_exists_rel($rel2, $master->ktp)) {
+                                echo '<a href="#" class="preview-file" data-file="'.base_url($rel2.'/'.$master->ktp).'">Lihat File</a>';
+                            } else {
+                                echo 'Tidak ada';
+                            }
+                        ?>
+                    </td>
+                </tr>
+                <tr>
+                    <th>NPWP</th>
+                    <th>:</th>
+                    <td>
+                        <?php
+                            $rel3 = 'assets/backend/document/data_karyawan/npwp';
+                            if (file_exists_rel($rel3, $master->npwp)) {
+                                echo '<a href="#" class="preview-file" data-file="'.base_url($rel3.'/'.$master->npwp).'">Lihat File</a>';
+                            } else {
+                                echo 'Tidak ada';
+                            }
+                        ?>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Ijazah</th>
+                    <th>:</th>
+                    <td>
+                        <?php
+                            $rel4 = 'assets/backend/document/data_karyawan/ijazah';
+                            if (file_exists_rel($rel4, $master->ijazah)) {
+                                echo '<a href="#" class="preview-file" data-file="'.base_url($rel4.'/'.$master->ijazah).'">Lihat File</a>';
+                            } else {
+                                echo 'Tidak ada';
+                            }
+                        ?>
+                    </td>
                 </tr>
             </table>
         </div>
@@ -532,3 +608,135 @@ function formatTanggalIndo($tanggal)
         <!-- Tambah anggota keluarga lain tinggal duplikat family-card -->
     </div>
 <?php endif ?>
+
+<!-- File preview modal -->
+<div id="filePreviewModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:2000;align-items:center;justify-content:center;">
+    <!-- .preview-content = area considered "inside" modal (clicks inside won't close) -->
+    <div class="preview-content" style="position:relative;max-width:90%;max-height:90%;width:auto;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;">
+        <button id="filePreviewClose" style="position:absolute;right:10px;top:10px;background:#fff;border-radius:50%;border:none;width:36px;height:36px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.2);">✕</button>
+        <img id="previewImg" src="" alt="Preview" style="display:none;max-width:100%;max-height:90vh;border-radius:8px;box-shadow:0 6px 30px rgba(0,0,0,0.4);" />
+        <iframe id="previewIframe" src="" style="display:none;border:none;max-width:100%;height:90vh;border-radius:8px;box-shadow:0 6px 30px rgba(0,0,0,0.4);"></iframe>
+        <div id="previewSpinner" style="display:none;position:absolute;color:#fff;">Loading...</div>
+    </div>
+</div>
+<?php $this->load->view('template/script'); ?>
+
+
+<script>
+(function(){
+    // flag supaya error handler tahu jika modal sedang ditutup
+    var previewClosing = false;
+
+    // klik preview
+    $(document).off('click', '.preview-file').on('click', '.preview-file', function(e){
+        e.preventDefault();
+        previewClosing = false;
+
+        var src = $(this).data('file');
+        console.log('preview-file clicked, src=', src);
+
+        if (!src) {
+            alert('URL file kosong.');
+            return;
+        }
+
+        src = src.replace(/([^:]\/)\/+/g, '$1');
+
+        // coba HEAD untuk tahu content-type, fallback ke image loader jika gagal
+        fetch(src, { method: 'HEAD' })
+            .then(function(res) {
+                if (!res.ok) {
+                    console.warn('HEAD request returned status', res.status);
+                    alert('File tidak ditemukan di server (HTTP ' + res.status + ').');
+                    return;
+                }
+
+                var ct = (res.headers.get('content-type') || '').toLowerCase();
+                console.log('content-type:', ct);
+
+                if (ct.indexOf('image') !== -1) {
+                    showImageModal(src);
+                } else if (ct.indexOf('pdf') !== -1) {
+                    // untuk PDF tetap buka di tab baru (tidak otomatis saat close)
+                    window.open(encodeURI(src), '_blank');
+                } else {
+                    showImageModal(src);
+                }
+            })
+            .catch(function(err){
+                console.warn('HEAD fetch failed, fallback to image loader', err);
+                loadImageAndShow(src);
+            });
+
+        function showImageModal(url){
+            $('#previewIframe').hide().attr('src', '');
+            $('#previewImg').hide().attr('src', '');
+            $('#previewSpinner').show().text('Memuat gambar...');
+            $('#filePreviewModal').css({'display':'flex','opacity':0}).animate({opacity:1},150);
+
+            var $img = $('#previewImg');
+            // gunakan namespace untuk mudah unbind jika perlu
+            $img.off('load.preview error.preview').on('load.preview', function(){
+                if (previewClosing) { $('#previewSpinner').hide(); return; }
+                $('#previewSpinner').hide();
+                $img.show();
+            }).on('error.preview', function(){
+                if (previewClosing) { $('#previewSpinner').hide(); return; }
+                $('#previewSpinner').hide();
+                $img.hide();
+                console.warn('Gagal memuat gambar');
+                // tampilkan pesan singkat, JANGAN buka tab baru otomatis
+                alert('Gagal memuat gambar.');
+                $('#filePreviewModal').hide();
+            }).attr('src', url);
+        }
+
+        function loadImageAndShow(url){
+            var img = new Image();
+            $('#previewSpinner').show().text('Memuat gambar...');
+            $('#filePreviewModal').css({'display':'flex','opacity':0}).animate({opacity:1},150);
+
+            img.onload = function(){
+                if (previewClosing) { $('#previewSpinner').hide(); return; }
+                $('#previewSpinner').hide();
+                $('#previewImg').attr('src', url).show();
+            };
+            img.onerror = function(){
+                if (previewClosing) { $('#previewSpinner').hide(); return; }
+                $('#previewSpinner').hide();
+                $('#previewImg').hide().attr('src','');
+                console.warn('Gagal memuat gambar (error loading)');
+                alert('Gagal memuat gambar.');
+                $('#filePreviewModal').hide();
+            };
+            img.src = url;
+        }
+    });
+
+    // close handlers: set flag previewClosing true supaya handler load/error mengabaikan
+    $(document).off('click', '#filePreviewClose').on('click', '#filePreviewClose', function(){
+        previewClosing = true;
+        $('#filePreviewModal').fadeOut(120, function(){
+            $('#previewImg').attr('src','').hide();
+            $('#previewIframe').attr('src','').hide();
+            $('#previewSpinner').hide();
+        });
+    });
+
+    // klik di luar .preview-content (area gambar/iframe) menutup modal
+    $(document).off('click', '#filePreviewModal').on('click', '#filePreviewModal', function(e){
+        // jika klik terjadi di luar elemen .preview-content, close
+        if ($(e.target).closest('.preview-content').length === 0) {
+            previewClosing = true;
+            $('#filePreviewClose').trigger('click');
+        }
+    });
+
+    $(document).off('keydown').on('keydown', function(e){
+        if (e.key === 'Escape' && $('#filePreviewModal').is(':visible')) {
+            previewClosing = true;
+            $('#filePreviewClose').trigger('click');
+        }
+    });
+})();
+</script>

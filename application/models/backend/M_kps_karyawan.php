@@ -14,6 +14,7 @@ class M_kps_karyawan extends CI_Model
     var $table2 = 'kps_kontrak_pkwt';
     var $column_order2 = array(null, null, 'a.npk', 'b.nama_lengkap', 'b.jenis_kelamin', 'b.tgl_lahir', 'a.jk_awal', 'a.jk_akhir', 'a.created_at');
     var $column_search2 = array('a.npk', 'b.nama_lengkap', 'b.jenis_kelamin', 'b.tgl_lahir', 'a.jk_awal', 'a.jk_akhir', 'a.created_at'); //field yang diizin untuk pencarian
+    var $order2 = array('a.id' => 'desc');
 
     public function __construct()
     {
