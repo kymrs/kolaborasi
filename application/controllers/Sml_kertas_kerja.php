@@ -70,7 +70,7 @@ class Sml_kertas_kerja extends CI_Controller
     function add_form()
     {
         $data['id'] = 0;
-        $data['title_view'] = "Data Minutes Of Meeting";
+        $data['title_view'] = "Kertas Kerja Form";
         $data['title'] = 'backend/sml_kertas_kerja/sml_kertas_kerja_form';
         $this->load->view('backend/home', $data);
     }

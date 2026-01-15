@@ -15,7 +15,7 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header text-right">
-                    <a class="btn btn-secondary btn-sm" href="<?= base_url('sml_kertas_kerja') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+                    <a class="btn btn-primary btn-sm" href="<?= base_url('sml_kertas_kerja') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
                     <form id="form">
@@ -27,70 +27,12 @@
                                         <input type="text" class="form-control" id="no_dok" name="no_dok">
                                     </div>
                                 </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-3">Agenda</label>
-                                    <div class="col-sm-9">
-                                        <input type="text" class="form-control" id="agenda" name="agenda" placeholder="Agenda" required>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-3">Date</label>
-                                    <div class="col-sm-9">
-                                        <div class="input-group date">
-                                            <input type="text" class="form-control" name="date" id="date" placeholder="DD-MM-YYYY" autocomplete="off" style="cursor:pointer;" required />
-                                            <div class="input-group-append">
-                                                <div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group row">
-                                    <label class="col-sm-3">Time</label>
-                                    <div class="col-sm-4 input-group date" id="st" data-target-input="nearest" onchange="cek1()">
-                                        <input type="text" class="form-control datetimepicker-input" data-toggle="datetimepicker" data-target="#st" name="start_time" id="start_time" placeholder="HH:MM" autocomplete="off" required />
-                                        <div class="input-group-append" data-target="#st" data-toggle="datetimepicker">
-                                            <div class="input-group-text"><i class="far fa-clock"></i></div>
-                                        </div>
-                                    </div>
-                                    <label for="" class="col-form-label col-sm-1">sd</label>
-                                    <div class="col-sm-4 input-group date" id="et" data-target-input="nearest" onchange="cek2()">
-                                        <input type="text" class="form-control datetimepicker-input" data-toggle="datetimepicker" data-target="#et" name="end_time" id="end_time" placeholder="HH:MM" autocomplete="off" required />
-                                        <div class="input-group-append" data-target="#et" data-toggle="datetimepicker">
-                                            <div class="input-group-text"><i class="far fa-clock"></i></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-3">Lokasi</label>
+                                    <label class="col-sm-3">No. Dokumen</label>
                                     <div class="col-sm-9">
-                                        <textarea class="form-control" name="lokasi" id="lokasi" placeholder="Lokasi" required></textarea>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-3 col-form-label">Foto</label>
-                                    <div class="col-sm-9">
-                                        <div class="custom-file">
-                                            <input type="file" class="custom-file-input" name="foto" id="foto" required>
-                                            <label class="custom-file-label" id="foto_label" for="customFile">Choose file</label>
-                                            <p class="small text-danger">*jpg, jpeg, png</p>
-                                            <a id="lihat_foto" class="btn btn-sm btn-info" style="margin-top:-20px;">Lihat</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-12 mt-4">
-                                <div class="form-group row">
-                                    <label class="col-sm-2">Peserta</label>
-                                    <div class="col-sm-10">
-                                        <textarea class="form-control" name="peserta" id="peserta"><?= (!empty($data) ? $data->peserta : '') ?></textarea>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-2">Konten</label>
-                                    <div class="col-sm-10">
-                                        <textarea class="form-control" name="konten" id="konten"><?= (!empty($data) ? $data->konten : '') ?></textarea>
+                                        <input type="text" class="form-control" id="no_dok" name="no_dok">
                                     </div>
                                 </div>
                             </div>
@@ -98,9 +40,6 @@
                         <input type="hidden" name="id" id="id" value="<?= $id ?>">
                         <?php if (!empty($aksi)) { ?>
                             <input type="hidden" name="aksi" id="aksi" value="<?= $aksi ?>">
-                        <?php } ?>
-                        <?php if ($id == 0) { ?>
-                            <input type="hidden" name="kode" id="kode" value="<?= $kode ?>">
                         <?php } ?>
                         <button type="submit" class="btn btn-primary btn-sm aksi"></button>
                     </form>
