@@ -3,7 +3,7 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-class M_rekapitulasi_qbg extends CI_Model
+class M_qbg_rekapitulasi extends CI_Model
 {
     var $id = 'id';
     var $table = 'qbg_reimbust';

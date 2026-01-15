@@ -6,7 +6,7 @@ if (!defined('BASEPATH'))
 class M_pu_datadeklarasi extends CI_Model
 {
     var $id = 'id';
-    var $table = 'tbl_deklarasi_pu'; //nama tabel dari database
+    var $table = 'pu_deklarasi'; //nama tabel dari database
     var $column_order = array(null, null, 'kode_deklarasi', 'tgl_deklarasi', 'name', 'jabatan', 'nama_dibayar', 'tujuan', 'sebesar', 'status');
     var $column_search = array('kode_deklarasi', 'tgl_deklarasi', 'name', 'jabatan', 'nama_dibayar', 'tujuan', 'sebesar', 'status'); //field yang diizin untuk pencarian 
     var $order = array('id' => 'desc'); // default order 
@@ -20,9 +20,9 @@ class M_pu_datadeklarasi extends CI_Model
     {
 
         // $this->db->from($this->table);
-        $this->db->select('tbl_deklarasi_pu.*, tbl_data_user.name');
+        $this->db->select('pu_deklarasi.*, tbl_data_user.name');
         $this->db->from($this->table);
-        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_deklarasi_pu.id_pengaju', 'left');
+        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = pu_deklarasi.id_pengaju', 'left');
 
         $i = 0;
         $alias = $this->session->userdata('username');
@@ -38,13 +38,13 @@ class M_pu_datadeklarasi extends CI_Model
                     if ($item == 'name') {
                         $this->db->like('tbl_data_user.' . $item, $_POST['search']['value']);
                     } else {
-                        $this->db->like('tbl_deklarasi_pu.' . $item, $_POST['search']['value']);
+                        $this->db->like('pu_deklarasi.' . $item, $_POST['search']['value']);
                     }
                 } else {
                     if ($item == 'name') {
                         $this->db->or_like('tbl_data_user.' . $item, $_POST['search']['value']);
                     } else {
-                        $this->db->or_like('tbl_deklarasi_pu.' . $item, $_POST['search']['value']);
+                        $this->db->or_like('pu_deklarasi.' . $item, $_POST['search']['value']);
                     }
                 }
 
@@ -66,7 +66,7 @@ class M_pu_datadeklarasi extends CI_Model
                 if ($alias != "eko") {
                     $this->db->where('app_status', 'waiting')
                         ->where('app2_status', 'waiting')
-                        ->or_where('tbl_deklarasi_pu.id_pengaju =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
+                        ->or_where('pu_deklarasi.id_pengaju =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
                         ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
                 } else {
                     $this->db->where('status = "on-process"');
@@ -84,7 +84,7 @@ class M_pu_datadeklarasi extends CI_Model
                 if ($alias != "eko") {
                     $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
                         ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "revised")', NULL, FALSE)
-                        ->or_where('tbl_deklarasi_pu.id_pengaju =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
+                        ->or_where('pu_deklarasi.id_pengaju =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
                 } else {
                     $this->db->where('status = "revised"');
                 }
@@ -98,14 +98,14 @@ class M_pu_datadeklarasi extends CI_Model
         // Tambahkan kondisi berdasarkan tab yang dipilih
         if (!empty($_POST['tab'])) {
             if ($_POST['tab'] == 'personal') {
-                $this->db->where('tbl_deklarasi_pu.id_pengaju', $this->session->userdata('id_user'));
+                $this->db->where('pu_deklarasi.id_pengaju', $this->session->userdata('id_user'));
             } elseif ($_POST['tab'] == 'employee') {
                 if ($alias != "eko") {
                     $this->db->group_start()
-                        ->where('tbl_deklarasi_pu.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-                        ->where('tbl_deklarasi_pu.id_pengaju !=', $this->session->userdata('id_user'))
-                        ->or_where('tbl_deklarasi_pu.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_deklarasi_pu.app_status = 'approved'", FALSE)
-                        ->where('tbl_deklarasi_pu.id_pengaju !=', $this->session->userdata('id_user'))
+                        ->where('pu_deklarasi.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                        ->where('pu_deklarasi.id_pengaju !=', $this->session->userdata('id_user'))
+                        ->or_where('pu_deklarasi.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && pu_deklarasi.app_status = 'approved'", FALSE)
+                        ->where('pu_deklarasi.id_pengaju !=', $this->session->userdata('id_user'))
                         ->group_end();
                 }
             }
@@ -137,9 +137,9 @@ class M_pu_datadeklarasi extends CI_Model
 
     public function count_all()
     {
-        $this->db->select('tbl_deklarasi_pu.*, tbl_data_user.name');
+        $this->db->select('pu_deklarasi.*, tbl_data_user.name');
         $this->db->from($this->table);
-        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_deklarasi_pu.id_pengaju', 'left');
+        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = pu_deklarasi.id_pengaju', 'left');
 
         // Tambahkan pemfilteran berdasarkan status
         // Tambahkan kondisi jika id_user login sesuai dengan app2_name
@@ -154,7 +154,7 @@ class M_pu_datadeklarasi extends CI_Model
                 if ($alias != "eko") {
                     $this->db->where('app_status', 'waiting')
                         ->where('app2_status', 'waiting')
-                        ->or_where('tbl_deklarasi_pu.id_pengaju =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
+                        ->or_where('pu_deklarasi.id_pengaju =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
                         ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
                 } else {
                     $this->db->where('status = "on-process"');
@@ -172,7 +172,7 @@ class M_pu_datadeklarasi extends CI_Model
                 if ($alias != "eko") {
                     $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
                         ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "revised")', NULL, FALSE)
-                        ->or_where('tbl_deklarasi_pu.id_pengaju =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
+                        ->or_where('pu_deklarasi.id_pengaju =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
                 } else {
                     $this->db->where('status = "revised"');
                 }
@@ -186,14 +186,14 @@ class M_pu_datadeklarasi extends CI_Model
         // Tambahkan kondisi berdasarkan tab yang dipilih
         if (!empty($_POST['tab'])) {
             if ($_POST['tab'] == 'personal') {
-                $this->db->where('tbl_deklarasi_pu.id_pengaju', $this->session->userdata('id_user'));
+                $this->db->where('pu_deklarasi.id_pengaju', $this->session->userdata('id_user'));
             } elseif ($_POST['tab'] == 'employee') {
                 if ($alias != "eko") {
                     $this->db->group_start()
-                        ->where('tbl_deklarasi_pu.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-                        ->where('tbl_deklarasi_pu.id_pengaju !=', $this->session->userdata('id_user'))
-                        ->or_where('tbl_deklarasi_pu.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_deklarasi_pu.app_status = 'approved'", FALSE)
-                        ->where('tbl_deklarasi_pu.id_pengaju !=', $this->session->userdata('id_user'))
+                        ->where('pu_deklarasi.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                        ->where('pu_deklarasi.id_pengaju !=', $this->session->userdata('id_user'))
+                        ->or_where('pu_deklarasi.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && pu_deklarasi.app_status = 'approved'", FALSE)
+                        ->where('pu_deklarasi.id_pengaju !=', $this->session->userdata('id_user'))
                         ->group_end();
                 }
             }
@@ -212,9 +212,9 @@ class M_pu_datadeklarasi extends CI_Model
     {
         $formatted_date = date('ym', strtotime($date));
         $this->db->select('kode_deklarasi');
-        $where = 'id=(SELECT max(id) FROM tbl_deklarasi_pu where SUBSTRING(kode_deklarasi, 2, 4) = ' . $formatted_date . ')';
+        $where = 'id=(SELECT max(id) FROM pu_deklarasi where SUBSTRING(kode_deklarasi, 2, 4) = ' . $formatted_date . ')';
         $this->db->where($where);
-        $query = $this->db->get('tbl_deklarasi_pu');
+        $query = $this->db->get('pu_deklarasi');
         return $query;
     }
 

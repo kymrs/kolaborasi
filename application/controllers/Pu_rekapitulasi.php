@@ -18,6 +18,11 @@ class Pu_rekapitulasi extends CI_Controller
 
     function tgl_indo($tanggal)
     {
+        // Jika tanggal kosong atau null, return tanda "-"
+        if (empty($tanggal)) {
+            return '-';
+        }
+
         $bulan = array(
             1 =>   'Januari',
             'Februari',
@@ -32,13 +37,26 @@ class Pu_rekapitulasi extends CI_Controller
             'November',
             'Desember'
         );
+
+        // Handle berbagai format tanggal
+        // Format bisa YYYY-MM-DD atau Y-M-D
         $pecahkan = explode('-', $tanggal);
+        
+        // Validasi bahwa ada 3 elemen (tahun, bulan, tanggal)
+        if (count($pecahkan) < 3) {
+            return '-'; // Return tanda "-" jika format tidak sesuai
+        }
 
-        // variabel pecahkan 0 = tanggal
-        // variabel pecahkan 1 = bulan
-        // variabel pecahkan 2 = tahun
+        $tahun = $pecahkan[0];
+        $bulan_num = (int)$pecahkan[1];
+        $tanggal_num = $pecahkan[2];
 
-        return $pecahkan[2] . ' ' . $bulan[(int)$pecahkan[1]] . ' ' . $pecahkan[0];
+        // Validasi bulan
+        if ($bulan_num < 1 || $bulan_num > 12) {
+            return '-';
+        }
+
+        return $tanggal_num . ' ' . $bulan[$bulan_num] . ' ' . $tahun;
     }
 
     public function index()

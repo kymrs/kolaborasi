@@ -421,10 +421,10 @@ INSERT INTO `tbl_data_user` (`id_user`, `name`, `divisi`, `jabatan`, `app_id`, `
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_deklarasi`
+-- Table structure for table `sw_deklarasi`
 --
 
-CREATE TABLE `tbl_deklarasi` (
+CREATE TABLE `sw_deklarasi` (
   `id` int(11) NOT NULL,
   `kode_deklarasi` varchar(126) NOT NULL,
   `tgl_deklarasi` date DEFAULT NULL,
@@ -447,10 +447,10 @@ CREATE TABLE `tbl_deklarasi` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tbl_deklarasi`
+-- Dumping data for table `sw_deklarasi`
 --
 
-INSERT INTO `tbl_deklarasi` (`id`, `kode_deklarasi`, `tgl_deklarasi`, `id_pengaju`, `jabatan`, `nama_dibayar`, `tujuan`, `sebesar`, `app_name`, `app_status`, `app_keterangan`, `app_date`, `app2_name`, `app2_status`, `app2_keterangan`, `app2_date`, `status`, `is_active`, `created_at`) VALUES
+INSERT INTO `sw_deklarasi` (`id`, `kode_deklarasi`, `tgl_deklarasi`, `id_pengaju`, `jabatan`, `nama_dibayar`, `tujuan`, `sebesar`, `app_name`, `app_status`, `app_keterangan`, `app_date`, `app2_name`, `app2_status`, `app2_keterangan`, `app2_date`, `status`, `is_active`, `created_at`) VALUES
 (71, 'D2409001', '2024-09-12', 3, 'Staff', 'Gunawan', 'Bensin', 100000, 'Rahmatullah', 'approved', '', '2024-09-12 10:19:50', 'Arya Wijaya', 'approved', '', '2024-09-12 10:20:22', 'approved', 0, '2024-09-12 03:18:07'),
 (72, 'D2409002', '2024-09-12', 3, 'Staff', 'Basreng', 'Toll', 75000, 'Rahmatullah', 'approved', '', '2024-09-12 10:19:43', 'Arya Wijaya', 'approved', '', '2024-09-12 10:20:15', 'approved', 0, '2024-09-12 03:18:22'),
 (73, 'D2409003', '2024-09-12', 3, 'Staff', 'Gunawan', 'Kertas', 34000, 'Rahmatullah', 'approved', '', '2024-09-12 10:19:37', 'Arya Wijaya', 'approved', '', '2024-09-12 10:20:08', 'approved', 0, '2024-09-12 03:18:46'),
@@ -471,10 +471,10 @@ INSERT INTO `tbl_deklarasi` (`id`, `kode_deklarasi`, `tgl_deklarasi`, `id_pengaj
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_deklarasi_pu`
+-- Table structure for table `pu_deklarasi`
 --
 
-CREATE TABLE `tbl_deklarasi_pu` (
+CREATE TABLE `pu_deklarasi` (
   `id` int(11) NOT NULL,
   `kode_deklarasi` varchar(126) NOT NULL,
   `tgl_deklarasi` date DEFAULT NULL,
@@ -497,10 +497,10 @@ CREATE TABLE `tbl_deklarasi_pu` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tbl_deklarasi_pu`
+-- Dumping data for table `pu_deklarasi`
 --
 
-INSERT INTO `tbl_deklarasi_pu` (`id`, `kode_deklarasi`, `tgl_deklarasi`, `id_pengaju`, `jabatan`, `nama_dibayar`, `tujuan`, `sebesar`, `app_name`, `app_status`, `app_keterangan`, `app_date`, `app2_name`, `app2_status`, `app2_keterangan`, `app2_date`, `status`, `is_active`, `created_at`) VALUES
+INSERT INTO `pu_deklarasi` (`id`, `kode_deklarasi`, `tgl_deklarasi`, `id_pengaju`, `jabatan`, `nama_dibayar`, `tujuan`, `sebesar`, `app_name`, `app_status`, `app_keterangan`, `app_date`, `app2_name`, `app2_status`, `app2_keterangan`, `app2_date`, `status`, `is_active`, `created_at`) VALUES
 (68, 'D2409001', '2024-09-12', 3, 'Staff', 'Basreng', 'hub assy', 200000, 'Rahmatullah', 'approved', '', '2024-09-12 10:32:30', 'Arya Wijaya', 'approved', '', '2024-09-12 10:32:39', 'approved', 1, '2024-09-12 03:31:26'),
 (69, 'D2409002', '2024-09-12', 4, 'Staff', 'Gunawan', 'Bensin', 45000, 'Rahmatullah', 'approved', '', '2024-09-12 11:41:58', 'Arya Wijaya', 'approved', '', '2024-09-12 11:44:56', 'approved', 0, '2024-09-12 04:40:11'),
 (70, 'D2409003', '2024-09-12', 4, 'Staff', 'Gunawan', 'Toll', 100000, 'Rahmatullah', 'approved', '', '2024-09-12 11:41:51', 'Arya Wijaya', 'approved', '', '2024-09-12 11:44:47', 'approved', 0, '2024-09-12 04:41:13'),
@@ -516,10 +516,10 @@ INSERT INTO `tbl_deklarasi_pu` (`id`, `kode_deklarasi`, `tgl_deklarasi`, `id_pen
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_deklarasi_pw`
+-- Table structure for table `sw_deklarasi_pw`
 --
 
-CREATE TABLE `tbl_deklarasi_pw` (
+CREATE TABLE `sw_deklarasi_pw` (
   `id` int(11) NOT NULL,
   `kode_deklarasi` varchar(126) NOT NULL,
   `tgl_deklarasi` date DEFAULT NULL,
@@ -542,10 +542,10 @@ CREATE TABLE `tbl_deklarasi_pw` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tbl_deklarasi_pw`
+-- Dumping data for table `sw_deklarasi_pw`
 --
 
-INSERT INTO `tbl_deklarasi_pw` (`id`, `kode_deklarasi`, `tgl_deklarasi`, `id_pengaju`, `jabatan`, `nama_dibayar`, `tujuan`, `sebesar`, `app_name`, `app_status`, `app_keterangan`, `app_date`, `app2_name`, `app2_status`, `app2_keterangan`, `app2_date`, `status`, `is_active`, `created_at`) VALUES
+INSERT INTO `sw_deklarasi_pw` (`id`, `kode_deklarasi`, `tgl_deklarasi`, `id_pengaju`, `jabatan`, `nama_dibayar`, `tujuan`, `sebesar`, `app_name`, `app_status`, `app_keterangan`, `app_date`, `app2_name`, `app2_status`, `app2_keterangan`, `app2_date`, `status`, `is_active`, `created_at`) VALUES
 (79, 'D2411001', '2024-11-04', 2, 'Staff', 'tes', 'tes', 1000000, 'Rahmatullah', 'waiting', '', NULL, 'Arya Wijaya', 'waiting', '', NULL, 'approved', 1, '2024-11-04 06:28:38');
 
 -- --------------------------------------------------------
@@ -732,10 +732,10 @@ INSERT INTO `tbl_notifikasi` (`id`, `kode_notifikasi`, `id_user`, `jabatan`, `de
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_notifikasi_pu`
+-- Table structure for table `pu_notifikasi`
 --
 
-CREATE TABLE `tbl_notifikasi_pu` (
+CREATE TABLE `pu_notifikasi` (
   `id` int(11) NOT NULL,
   `kode_notifikasi` varchar(30) NOT NULL,
   `id_user` int(11) NOT NULL,
@@ -759,10 +759,10 @@ CREATE TABLE `tbl_notifikasi_pu` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tbl_notifikasi_pu`
+-- Dumping data for table `pu_notifikasi`
 --
 
-INSERT INTO `tbl_notifikasi_pu` (`id`, `kode_notifikasi`, `id_user`, `jabatan`, `departemen`, `pengajuan`, `tgl_notifikasi`, `waktu`, `alasan`, `status`, `catatan`, `app_hc_name`, `app_hc_status`, `app_hc_keterangan`, `app_hc_date`, `app2_name`, `app2_status`, `app2_keterangan`, `app2_date`, `created_at`) VALUES
+INSERT INTO `pu_notifikasi` (`id`, `kode_notifikasi`, `id_user`, `jabatan`, `departemen`, `pengajuan`, `tgl_notifikasi`, `waktu`, `alasan`, `status`, `catatan`, `app_hc_name`, `app_hc_status`, `app_hc_keterangan`, `app_hc_date`, `app2_name`, `app2_status`, `app2_keterangan`, `app2_date`, `created_at`) VALUES
 (75, 'N2409004', 4, 'Staff', 'General Affair', 'izin', '2024-09-12', '15:21', 'Sakit pinggang', 'on-process', NULL, 'Rahmatullah', 'waiting', NULL, NULL, 'Arya Wijaya', 'waiting', NULL, NULL, '2024-09-12 04:17:15'),
 (76, 'N2409005', 4, 'Staff', 'General Affair', 'datang terlambat', '2024-09-12', '15:21', 'Terjebak hujan', 'revised', 'AASF', 'Rahmatullah', 'approved', '', '2024-09-12 14:11:54', 'Arya Wijaya', 'revised', '', '2024-09-19 09:17:00', '2024-09-12 04:17:33'),
 (77, 'N2409006', 4, 'Staff', 'General Affair', 'datang terlambat', '2024-09-12', '16:22', 'Menyebrangkan orang', 'rejected', 'sasaff', 'Rahmatullah', 'approved', 'sasaf', '2024-09-12 11:21:01', 'Arya Wijaya', 'rejected', '', '2024-09-12 11:21:16', '2024-09-12 04:17:46'),
@@ -885,10 +885,10 @@ INSERT INTO `tbl_penawaran_detail` (`id`, `id_penawaran`, `id_layanan`, `is_acti
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_prepayment`
+-- Table structure for table `sw_prepayment`
 --
 
-CREATE TABLE `tbl_prepayment` (
+CREATE TABLE `sw_prepayment` (
   `id` int(11) NOT NULL,
   `kode_prepayment` varchar(10) NOT NULL,
   `id_user` int(11) NOT NULL,
@@ -917,10 +917,10 @@ CREATE TABLE `tbl_prepayment` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
--- Dumping data for table `tbl_prepayment`
+-- Dumping data for table `sw_prepayment`
 --
 
-INSERT INTO `tbl_prepayment` (`id`, `kode_prepayment`, `id_user`, `jabatan`, `divisi`, `event`, `tujuan`, `tgl_prepayment`, `total_nominal`, `payment_status`, `app_name`, `app_status`, `app_date`, `app_keterangan`, `app2_name`, `app2_status`, `app2_date`, `app2_keterangan`, `app4_name`, `app4_status`, `app4_date`, `app4_keterangan`, `status`, `created_at`, `is_active`) VALUES
+INSERT INTO `sw_prepayment` (`id`, `kode_prepayment`, `id_user`, `jabatan`, `divisi`, `event`, `tujuan`, `tgl_prepayment`, `total_nominal`, `payment_status`, `app_name`, `app_status`, `app_date`, `app_keterangan`, `app2_name`, `app2_status`, `app2_date`, `app2_keterangan`, `app4_name`, `app4_status`, `app4_date`, `app4_keterangan`, `status`, `created_at`, `is_active`) VALUES
 (164, 'P24100001', 2, 'Staff', 'IT', 2, 'Kanvasing', '2024-10-29', 24500, 'paid', 'Rahmatullah', 'approved', '2024-10-29 08:57:39', '', 'Arya Wijaya', 'approved', '2024-10-29 09:20:45', '', 'Tyas', 'approved', '2024-10-29 08:57:15', '', 'approved', '2024-10-29 01:35:50', 0),
 (165, 'P24100002', 2, 'Staff', 'IT', 4, 'Kanvasing', '2024-10-29', 75000, 'unpaid', 'Rahmatullah', 'approved', '2024-10-29 10:15:59', '', 'Arya Wijaya', 'approved', '2024-10-29 10:18:18', '', 'Tyas', 'approved', '2024-10-29 10:04:30', '', 'approved', '2024-10-29 02:24:38', 0),
 (166, 'P24100003', 2, 'Staff', 'IT', 6, 'Kanvasing', '2024-10-29', 30000, 'unpaid', 'Rahmatullah', 'approved', '2024-10-29 10:24:56', '', 'Arya Wijaya', 'approved', '2024-10-29 10:25:36', '', 'Tyas', 'approved', '2024-10-29 10:22:26', '', 'approved', '2024-10-29 03:22:13', 0),
@@ -929,10 +929,10 @@ INSERT INTO `tbl_prepayment` (`id`, `kode_prepayment`, `id_user`, `jabatan`, `di
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_prepayment_detail`
+-- Table structure for table `sw_prepayment_detail`
 --
 
-CREATE TABLE `tbl_prepayment_detail` (
+CREATE TABLE `sw_prepayment_detail` (
   `id` int(11) NOT NULL,
   `prepayment_id` int(11) NOT NULL,
   `rincian` text NOT NULL,
@@ -941,10 +941,10 @@ CREATE TABLE `tbl_prepayment_detail` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
--- Dumping data for table `tbl_prepayment_detail`
+-- Dumping data for table `sw_prepayment_detail`
 --
 
-INSERT INTO `tbl_prepayment_detail` (`id`, `prepayment_id`, `rincian`, `nominal`, `keterangan`) VALUES
+INSERT INTO `sw_prepayment_detail` (`id`, `prepayment_id`, `rincian`, `nominal`, `keterangan`) VALUES
 (253, 143, 'Bensin', 200000, ''),
 (255, 143, 'Toll', 75000, ''),
 (256, 144, 'Kertas', 55700, ''),
@@ -967,10 +967,10 @@ INSERT INTO `tbl_prepayment_detail` (`id`, `prepayment_id`, `rincian`, `nominal`
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_prepayment_detail_pu`
+-- Table structure for table `pu_prepayment_detail`
 --
 
-CREATE TABLE `tbl_prepayment_detail_pu` (
+CREATE TABLE `pu_prepayment_detail` (
   `id` int(11) NOT NULL,
   `prepayment_id` int(11) NOT NULL,
   `rincian` text NOT NULL,
@@ -979,10 +979,10 @@ CREATE TABLE `tbl_prepayment_detail_pu` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
--- Dumping data for table `tbl_prepayment_detail_pu`
+-- Dumping data for table `pu_prepayment_detail`
 --
 
-INSERT INTO `tbl_prepayment_detail_pu` (`id`, `prepayment_id`, `rincian`, `nominal`, `keterangan`) VALUES
+INSERT INTO `pu_prepayment_detail` (`id`, `prepayment_id`, `rincian`, `nominal`, `keterangan`) VALUES
 (246, 142, 'Hub Assy', 200000, ''),
 (247, 143, 'sasgags', 24242424, ''),
 (248, 144, 'Bensin', 230000, ''),
@@ -1001,10 +1001,10 @@ INSERT INTO `tbl_prepayment_detail_pu` (`id`, `prepayment_id`, `rincian`, `nomin
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_prepayment_detail_pw`
+-- Table structure for table `sw_prepayment_detail_pw`
 --
 
-CREATE TABLE `tbl_prepayment_detail_pw` (
+CREATE TABLE `sw_prepayment_detail_pw` (
   `id` int(11) NOT NULL,
   `prepayment_id` int(11) NOT NULL,
   `rincian` text NOT NULL,
@@ -1013,19 +1013,19 @@ CREATE TABLE `tbl_prepayment_detail_pw` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
--- Dumping data for table `tbl_prepayment_detail_pw`
+-- Dumping data for table `sw_prepayment_detail_pw`
 --
 
-INSERT INTO `tbl_prepayment_detail_pw` (`id`, `prepayment_id`, `rincian`, `nominal`, `keterangan`) VALUES
+INSERT INTO `sw_prepayment_detail_pw` (`id`, `prepayment_id`, `rincian`, `nominal`, `keterangan`) VALUES
 (260, 154, 'tes', 10000, 'tes');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_prepayment_pu`
+-- Table structure for table `pu_prepayment`
 --
 
-CREATE TABLE `tbl_prepayment_pu` (
+CREATE TABLE `pu_prepayment` (
   `id` int(11) NOT NULL,
   `kode_prepayment` varchar(10) NOT NULL,
   `id_user` int(11) NOT NULL,
@@ -1050,10 +1050,10 @@ CREATE TABLE `tbl_prepayment_pu` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
--- Dumping data for table `tbl_prepayment_pu`
+-- Dumping data for table `pu_prepayment`
 --
 
-INSERT INTO `tbl_prepayment_pu` (`id`, `kode_prepayment`, `id_user`, `jabatan`, `divisi`, `prepayment`, `tujuan`, `tgl_prepayment`, `total_nominal`, `payment_status`, `app_name`, `app_status`, `app_date`, `app_keterangan`, `app2_name`, `app2_status`, `app2_date`, `app2_keterangan`, `status`, `created_at`, `is_active`) VALUES
+INSERT INTO `pu_prepayment` (`id`, `kode_prepayment`, `id_user`, `jabatan`, `divisi`, `prepayment`, `tujuan`, `tgl_prepayment`, `total_nominal`, `payment_status`, `app_name`, `app_status`, `app_date`, `app_keterangan`, `app2_name`, `app2_status`, `app2_date`, `app2_keterangan`, `status`, `created_at`, `is_active`) VALUES
 (142, 'P24090001', 3, 'Staff', 'General Affair', 'Distribusi', 'sasfasf', '2024-09-12', 200000, 'unpaid', 'Rahmatullah', 'approved', '2024-09-12 10:32:06', '', 'Arya Wijaya', 'approved', '2024-09-12 10:32:15', '', 'approved', '2024-09-12 03:31:12', 0),
 (143, 'P24090002', 3, 'Staff', 'General Affair', 'Distribusi', 'wfasfa', '2024-09-12', 24242424, 'unpaid', 'Rahmatullah', 'approved', '2024-10-02 09:08:16', '', 'Arya Wijaya', 'approved', '2024-10-02 09:08:26', '', 'approved', '2024-09-12 04:16:37', 0),
 (144, 'P24090003', 5, 'Supervisor', 'Finance', 'Kunjungan', 'kunjungan ke industri', '2024-09-12', 230000, 'unpaid', 'Rahmatullah', 'approved', '2024-09-12 11:32:31', NULL, 'Tyas', 'waiting', NULL, NULL, 'on-process', '2024-09-12 04:32:31', 1),
@@ -1070,10 +1070,10 @@ INSERT INTO `tbl_prepayment_pu` (`id`, `kode_prepayment`, `id_user`, `jabatan`, 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_prepayment_pw`
+-- Table structure for table `sw_prepayment_pw`
 --
 
-CREATE TABLE `tbl_prepayment_pw` (
+CREATE TABLE `sw_prepayment_pw` (
   `id` int(11) NOT NULL,
   `kode_prepayment` varchar(10) NOT NULL,
   `id_user` int(11) NOT NULL,
@@ -1098,10 +1098,10 @@ CREATE TABLE `tbl_prepayment_pw` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
--- Dumping data for table `tbl_prepayment_pw`
+-- Dumping data for table `sw_prepayment_pw`
 --
 
-INSERT INTO `tbl_prepayment_pw` (`id`, `kode_prepayment`, `id_user`, `jabatan`, `divisi`, `prepayment`, `tujuan`, `tgl_prepayment`, `total_nominal`, `payment_status`, `app_name`, `app_status`, `app_date`, `app_keterangan`, `app2_name`, `app2_status`, `app2_date`, `app2_keterangan`, `status`, `created_at`, `is_active`) VALUES
+INSERT INTO `sw_prepayment_pw` (`id`, `kode_prepayment`, `id_user`, `jabatan`, `divisi`, `prepayment`, `tujuan`, `tgl_prepayment`, `total_nominal`, `payment_status`, `app_name`, `app_status`, `app_date`, `app_keterangan`, `app2_name`, `app2_status`, `app2_date`, `app2_keterangan`, `status`, `created_at`, `is_active`) VALUES
 (154, 'P24100001', 2, 'Staff', 'IT', 'tes', 'tes', '2024-10-10', 10000, 'unpaid', 'Rahmatullah', 'waiting', NULL, NULL, 'Arya Wijaya', 'waiting', NULL, NULL, 'approved', '2024-10-10 09:01:23', 1);
 
 -- --------------------------------------------------------
@@ -1135,10 +1135,10 @@ INSERT INTO `tbl_produk` (`id`, `nama`, `deskripsi`, `layanan_termasuk`, `layana
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_reimbust`
+-- Table structure for table `sw_reimbust`
 --
 
-CREATE TABLE `tbl_reimbust` (
+CREATE TABLE `sw_reimbust` (
   `id` int(11) NOT NULL,
   `kode_reimbust` varchar(10) NOT NULL,
   `kode_prepayment` varchar(10) DEFAULT NULL,
@@ -1167,10 +1167,10 @@ CREATE TABLE `tbl_reimbust` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tbl_reimbust`
+-- Dumping data for table `sw_reimbust`
 --
 
-INSERT INTO `tbl_reimbust` (`id`, `kode_reimbust`, `kode_prepayment`, `id_user`, `jabatan`, `departemen`, `sifat_pelaporan`, `tgl_pengajuan`, `tujuan`, `jumlah_prepayment`, `payment_status`, `app_name`, `app_status`, `app_date`, `app_keterangan`, `app2_name`, `app2_status`, `app2_date`, `app2_keterangan`, `app4_name`, `app4_status`, `app4_date`, `app4_keterangan`, `status`, `created_at`) VALUES
+INSERT INTO `sw_reimbust` (`id`, `kode_reimbust`, `kode_prepayment`, `id_user`, `jabatan`, `departemen`, `sifat_pelaporan`, `tgl_pengajuan`, `tujuan`, `jumlah_prepayment`, `payment_status`, `app_name`, `app_status`, `app_date`, `app_keterangan`, `app2_name`, `app2_status`, `app2_date`, `app2_keterangan`, `app4_name`, `app4_status`, `app4_date`, `app4_keterangan`, `status`, `created_at`) VALUES
 (725, 'r24100003', 'P24100002', 2, 'Staff', 'IT', 'Pelaporan', '2024-10-29', 'Kanvasing', 75000, 'paid', 'Rahmatullah', 'approved', '2024-10-29 11:35:53', '', 'Arya Wijaya', 'approved', '2024-10-29 11:36:11', '', 'Tyas', 'approved', '2024-10-29 11:30:17', '', 'approved', '2024-10-29 11:10:40'),
 (726, 'r24100004', 'P24100003', 2, 'Staff', 'IT', 'Pelaporan', '2024-10-29', 'Kanvasing', 30000, 'paid', 'Rahmatullah', 'approved', '2024-10-29 11:48:41', '', 'Arya Wijaya', 'approved', '2024-10-29 11:49:03', '', 'Tyas', 'approved', '2024-10-29 11:40:14', '', 'approved', '2024-10-29 11:37:59'),
 (727, 'r24100005', '', 2, 'Staff', 'IT', 'Reimbust', '2024-10-29', 'Kanvasing', 0, 'paid', 'Rahmatullah', 'approved', '2024-10-29 14:02:49', '', 'Arya Wijaya', 'approved', '2024-10-29 14:03:01', '', 'Tyas', 'approved', '2024-10-29 14:01:35', '', 'approved', '2024-10-29 14:01:07'),
@@ -1181,10 +1181,10 @@ INSERT INTO `tbl_reimbust` (`id`, `kode_reimbust`, `kode_prepayment`, `id_user`,
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_reimbust_detail`
+-- Table structure for table `sw_reimbust_detail`
 --
 
-CREATE TABLE `tbl_reimbust_detail` (
+CREATE TABLE `sw_reimbust_detail` (
   `id` int(11) NOT NULL,
   `reimbust_id` int(11) DEFAULT NULL,
   `pemakaian` text DEFAULT NULL,
@@ -1195,10 +1195,10 @@ CREATE TABLE `tbl_reimbust_detail` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tbl_reimbust_detail`
+-- Dumping data for table `sw_reimbust_detail`
 --
 
-INSERT INTO `tbl_reimbust_detail` (`id`, `reimbust_id`, `pemakaian`, `tgl_nota`, `jumlah`, `kwitansi`, `deklarasi`) VALUES
+INSERT INTO `sw_reimbust_detail` (`id`, `reimbust_id`, `pemakaian`, `tgl_nota`, `jumlah`, `kwitansi`, `deklarasi`) VALUES
 (1170, 714, 'Bensin', '2024-09-12', 100000, NULL, 'D2409001'),
 (1171, 714, 'Toll', '2024-09-12', 75000, NULL, 'D2409002'),
 (1172, 715, 'Kertas', '2024-09-12', 34000, NULL, 'D2409003'),
@@ -1229,10 +1229,10 @@ INSERT INTO `tbl_reimbust_detail` (`id`, `reimbust_id`, `pemakaian`, `tgl_nota`,
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_reimbust_detail_pu`
+-- Table structure for table `pu_reimbust_detail`
 --
 
-CREATE TABLE `tbl_reimbust_detail_pu` (
+CREATE TABLE `pu_reimbust_detail` (
   `id` int(11) NOT NULL,
   `reimbust_id` int(11) DEFAULT NULL,
   `pemakaian` text DEFAULT NULL,
@@ -1243,10 +1243,10 @@ CREATE TABLE `tbl_reimbust_detail_pu` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tbl_reimbust_detail_pu`
+-- Dumping data for table `pu_reimbust_detail`
 --
 
-INSERT INTO `tbl_reimbust_detail_pu` (`id`, `reimbust_id`, `pemakaian`, `tgl_nota`, `jumlah`, `kwitansi`, `deklarasi`) VALUES
+INSERT INTO `pu_reimbust_detail` (`id`, `reimbust_id`, `pemakaian`, `tgl_nota`, `jumlah`, `kwitansi`, `deklarasi`) VALUES
 (1168, 713, 'hub assy', '2024-09-12', 200000, NULL, 'D2409001'),
 (1169, 714, 'afsaf', '2024-09-12', 335353, '7bb8a50021375f86b004c2896d83face.jpg', ''),
 (1170, 715, 'Bensin', '2024-09-12', 45000, NULL, 'D2409002'),
@@ -1271,10 +1271,10 @@ INSERT INTO `tbl_reimbust_detail_pu` (`id`, `reimbust_id`, `pemakaian`, `tgl_not
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_reimbust_detail_pw`
+-- Table structure for table `sw_reimbust_detail_pw`
 --
 
-CREATE TABLE `tbl_reimbust_detail_pw` (
+CREATE TABLE `sw_reimbust_detail_pw` (
   `id` int(11) NOT NULL,
   `reimbust_id` int(11) DEFAULT NULL,
   `pemakaian` text DEFAULT NULL,
@@ -1285,10 +1285,10 @@ CREATE TABLE `tbl_reimbust_detail_pw` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tbl_reimbust_detail_pw`
+-- Dumping data for table `sw_reimbust_detail_pw`
 --
 
-INSERT INTO `tbl_reimbust_detail_pw` (`id`, `reimbust_id`, `pemakaian`, `tgl_nota`, `jumlah`, `kwitansi`, `deklarasi`) VALUES
+INSERT INTO `sw_reimbust_detail_pw` (`id`, `reimbust_id`, `pemakaian`, `tgl_nota`, `jumlah`, `kwitansi`, `deklarasi`) VALUES
 (1190, 741, 'tes', '2024-10-23', 1, 'f78cfb514a36aa52b98c456875fa62db.jpg', ''),
 (1191, 742, 'tes', '2024-11-20', 87676, 'd6fd3d1dadce99366798f1e7fa74db40.jpg', ''),
 (1192, 743, 'afadf', '2024-11-21', 245246, 'a2c72242f7fad50166d05c969feb50cf.jpg', '');
@@ -1296,10 +1296,10 @@ INSERT INTO `tbl_reimbust_detail_pw` (`id`, `reimbust_id`, `pemakaian`, `tgl_not
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_reimbust_pu`
+-- Table structure for table `pu_reimbust`
 --
 
-CREATE TABLE `tbl_reimbust_pu` (
+CREATE TABLE `pu_reimbust` (
   `id` int(11) NOT NULL,
   `kode_reimbust` varchar(10) NOT NULL,
   `kode_prepayment` varchar(10) DEFAULT NULL,
@@ -1324,10 +1324,10 @@ CREATE TABLE `tbl_reimbust_pu` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tbl_reimbust_pu`
+-- Dumping data for table `pu_reimbust`
 --
 
-INSERT INTO `tbl_reimbust_pu` (`id`, `kode_reimbust`, `kode_prepayment`, `id_user`, `jabatan`, `departemen`, `sifat_pelaporan`, `tgl_pengajuan`, `tujuan`, `jumlah_prepayment`, `payment_status`, `app_name`, `app_status`, `app_date`, `app_keterangan`, `app2_name`, `app2_status`, `app2_date`, `app2_keterangan`, `status`, `created_at`) VALUES
+INSERT INTO `pu_reimbust` (`id`, `kode_reimbust`, `kode_prepayment`, `id_user`, `jabatan`, `departemen`, `sifat_pelaporan`, `tgl_pengajuan`, `tujuan`, `jumlah_prepayment`, `payment_status`, `app_name`, `app_status`, `app_date`, `app_keterangan`, `app2_name`, `app2_status`, `app2_date`, `app2_keterangan`, `status`, `created_at`) VALUES
 (713, 'r24090001', 'P24090001', 3, 'Staff', 'General Affair', 'Pelaporan', '2024-09-12', 'Distribusi', 200000, 'unpaid', 'Rahmatullah', 'approved', '2024-10-02 13:59:15', 'asfasff', 'Arya Wijaya', 'waiting', NULL, NULL, 'on-process', '2024-09-12 10:32:53'),
 (714, 'r24090002', 'P24090001', 3, 'Staff', 'General Affair', 'Pelaporan', '2024-09-12', 'Distribusi', 200000, 'unpaid', 'Rahmatullah', 'approved', '2024-10-02 09:07:39', '', 'Arya Wijaya', 'waiting', NULL, NULL, 'on-process', '2024-09-12 10:59:21'),
 (715, 'r24090003', 'P24090005', 4, 'Staff', 'General Affair', 'Pelaporan', '2024-09-12', 'Distribusi', 401700, 'unpaid', 'Rahmatullah', 'waiting', NULL, NULL, 'Arya Wijaya', 'waiting', NULL, NULL, 'on-process', '2024-09-12 11:51:37'),
@@ -1347,10 +1347,10 @@ INSERT INTO `tbl_reimbust_pu` (`id`, `kode_reimbust`, `kode_prepayment`, `id_use
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_reimbust_pw`
+-- Table structure for table `sw_reimbust_pw`
 --
 
-CREATE TABLE `tbl_reimbust_pw` (
+CREATE TABLE `sw_reimbust_pw` (
   `id` int(11) NOT NULL,
   `kode_reimbust` varchar(10) NOT NULL,
   `kode_prepayment` varchar(10) DEFAULT NULL,
@@ -1375,10 +1375,10 @@ CREATE TABLE `tbl_reimbust_pw` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tbl_reimbust_pw`
+-- Dumping data for table `sw_reimbust_pw`
 --
 
-INSERT INTO `tbl_reimbust_pw` (`id`, `kode_reimbust`, `kode_prepayment`, `id_user`, `jabatan`, `departemen`, `sifat_pelaporan`, `tgl_pengajuan`, `tujuan`, `jumlah_prepayment`, `payment_status`, `app_name`, `app_status`, `app_date`, `app_keterangan`, `app2_name`, `app2_status`, `app2_date`, `app2_keterangan`, `status`, `created_at`) VALUES
+INSERT INTO `sw_reimbust_pw` (`id`, `kode_reimbust`, `kode_prepayment`, `id_user`, `jabatan`, `departemen`, `sifat_pelaporan`, `tgl_pengajuan`, `tujuan`, `jumlah_prepayment`, `payment_status`, `app_name`, `app_status`, `app_date`, `app_keterangan`, `app2_name`, `app2_status`, `app2_date`, `app2_keterangan`, `status`, `created_at`) VALUES
 (741, 'r24100001', '', 2, 'Staff', 'IT', 'Reimbust', '2024-10-11', 'tes', 0, 'unpaid', 'Rahmatullah', 'waiting', NULL, NULL, 'Arya Wijaya', 'waiting', NULL, NULL, 'on-process', '2024-10-11 13:51:21'),
 (742, 'r24110001', '', 5, 'Supervisor', 'Finance', 'Reimbust', '2024-11-01', 'tes', 0, 'unpaid', 'Rahmatullah', 'waiting', NULL, NULL, 'Tyas', 'waiting', NULL, NULL, 'on-process', '2024-11-01 08:33:14'),
 (743, 'r24110002', '', 5, 'Supervisor', 'Finance', 'Reimbust', '2024-11-01', 'adfadfadf', 0, 'unpaid', 'Rahmatullah', 'waiting', NULL, NULL, 'Tyas', 'waiting', NULL, NULL, 'on-process', '2024-11-01 08:33:35');
@@ -1413,7 +1413,7 @@ INSERT INTO `tbl_submenu` (`id_submenu`, `nama_submenu`, `link`, `icon`, `id_men
 (12, 'Deklarasi SW', 'datadeklarasi_sw', 'fa fa-file', 5, 'Y', 7),
 (13, 'Deklarasi PU', 'datadeklarasi_pu', 'fa fa-file', 4, 'Y', 8),
 (14, 'Notifikasi SW', 'datanotifikasi_sw', 'fa fa-file', 5, 'Y', 9),
-(15, 'Notifikasi PU', 'datanotifikasi_pu', 'fa fa-file', 4, 'Y', 10),
+(15, 'Notifikasi PU', 'pu_datanotifikasi', 'fa fa-file', 4, 'Y', 10),
 (16, 'Reimbust SW', 'reimbust_sw', 'fa fa-file', 5, 'Y', 11),
 (17, 'Reimbust PU', 'reimbust_pu', 'fa fa-file', 4, 'Y', 12),
 (18, 'Approval', 'approval_sw', 'fa fa-file', 3, 'Y', 13),
@@ -1561,21 +1561,21 @@ ALTER TABLE `tbl_data_user`
   ADD UNIQUE KEY `id_user` (`id_user`);
 
 --
--- Indexes for table `tbl_deklarasi`
+-- Indexes for table `sw_deklarasi`
 --
-ALTER TABLE `tbl_deklarasi`
+ALTER TABLE `sw_deklarasi`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `tbl_deklarasi_pu`
+-- Indexes for table `pu_deklarasi`
 --
-ALTER TABLE `tbl_deklarasi_pu`
+ALTER TABLE `pu_deklarasi`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `tbl_deklarasi_pw`
+-- Indexes for table `sw_deklarasi_pw`
 --
-ALTER TABLE `tbl_deklarasi_pw`
+ALTER TABLE `sw_deklarasi_pw`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -1609,9 +1609,9 @@ ALTER TABLE `tbl_notifikasi`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `tbl_notifikasi_pu`
+-- Indexes for table `pu_notifikasi`
 --
-ALTER TABLE `tbl_notifikasi_pu`
+ALTER TABLE `pu_notifikasi`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -1633,39 +1633,39 @@ ALTER TABLE `tbl_penawaran_detail`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `tbl_prepayment`
+-- Indexes for table `sw_prepayment`
 --
-ALTER TABLE `tbl_prepayment`
+ALTER TABLE `sw_prepayment`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `tbl_prepayment_detail`
+-- Indexes for table `sw_prepayment_detail`
 --
-ALTER TABLE `tbl_prepayment_detail`
+ALTER TABLE `sw_prepayment_detail`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `tbl_prepayment_detail_pu`
+-- Indexes for table `pu_prepayment_detail`
 --
-ALTER TABLE `tbl_prepayment_detail_pu`
+ALTER TABLE `pu_prepayment_detail`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `tbl_prepayment_detail_pw`
+-- Indexes for table `sw_prepayment_detail_pw`
 --
-ALTER TABLE `tbl_prepayment_detail_pw`
+ALTER TABLE `sw_prepayment_detail_pw`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `tbl_prepayment_pu`
+-- Indexes for table `pu_prepayment`
 --
-ALTER TABLE `tbl_prepayment_pu`
+ALTER TABLE `pu_prepayment`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `tbl_prepayment_pw`
+-- Indexes for table `sw_prepayment_pw`
 --
-ALTER TABLE `tbl_prepayment_pw`
+ALTER TABLE `sw_prepayment_pw`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -1675,39 +1675,39 @@ ALTER TABLE `tbl_produk`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `tbl_reimbust`
+-- Indexes for table `sw_reimbust`
 --
-ALTER TABLE `tbl_reimbust`
+ALTER TABLE `sw_reimbust`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `tbl_reimbust_detail`
+-- Indexes for table `sw_reimbust_detail`
 --
-ALTER TABLE `tbl_reimbust_detail`
+ALTER TABLE `sw_reimbust_detail`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `tbl_reimbust_detail_pu`
+-- Indexes for table `pu_reimbust_detail`
 --
-ALTER TABLE `tbl_reimbust_detail_pu`
+ALTER TABLE `pu_reimbust_detail`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `tbl_reimbust_detail_pw`
+-- Indexes for table `sw_reimbust_detail_pw`
 --
-ALTER TABLE `tbl_reimbust_detail_pw`
+ALTER TABLE `sw_reimbust_detail_pw`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `tbl_reimbust_pu`
+-- Indexes for table `pu_reimbust`
 --
-ALTER TABLE `tbl_reimbust_pu`
+ALTER TABLE `pu_reimbust`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `tbl_reimbust_pw`
+-- Indexes for table `sw_reimbust_pw`
 --
-ALTER TABLE `tbl_reimbust_pw`
+ALTER TABLE `sw_reimbust_pw`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -1775,21 +1775,21 @@ ALTER TABLE `tbl_customer_pu`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=76;
 
 --
--- AUTO_INCREMENT for table `tbl_deklarasi`
+-- AUTO_INCREMENT for table `sw_deklarasi`
 --
-ALTER TABLE `tbl_deklarasi`
+ALTER TABLE `sw_deklarasi`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=87;
 
 --
--- AUTO_INCREMENT for table `tbl_deklarasi_pu`
+-- AUTO_INCREMENT for table `pu_deklarasi`
 --
-ALTER TABLE `tbl_deklarasi_pu`
+ALTER TABLE `pu_deklarasi`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=79;
 
 --
--- AUTO_INCREMENT for table `tbl_deklarasi_pw`
+-- AUTO_INCREMENT for table `sw_deklarasi_pw`
 --
-ALTER TABLE `tbl_deklarasi_pw`
+ALTER TABLE `sw_deklarasi_pw`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=80;
 
 --
@@ -1823,9 +1823,9 @@ ALTER TABLE `tbl_notifikasi`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=87;
 
 --
--- AUTO_INCREMENT for table `tbl_notifikasi_pu`
+-- AUTO_INCREMENT for table `pu_notifikasi`
 --
-ALTER TABLE `tbl_notifikasi_pu`
+ALTER TABLE `pu_notifikasi`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=90;
 
 --
@@ -1847,39 +1847,39 @@ ALTER TABLE `tbl_penawaran_detail`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
--- AUTO_INCREMENT for table `tbl_prepayment`
+-- AUTO_INCREMENT for table `sw_prepayment`
 --
-ALTER TABLE `tbl_prepayment`
+ALTER TABLE `sw_prepayment`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=168;
 
 --
--- AUTO_INCREMENT for table `tbl_prepayment_detail`
+-- AUTO_INCREMENT for table `sw_prepayment_detail`
 --
-ALTER TABLE `tbl_prepayment_detail`
+ALTER TABLE `sw_prepayment_detail`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=272;
 
 --
--- AUTO_INCREMENT for table `tbl_prepayment_detail_pu`
+-- AUTO_INCREMENT for table `pu_prepayment_detail`
 --
-ALTER TABLE `tbl_prepayment_detail_pu`
+ALTER TABLE `pu_prepayment_detail`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=260;
 
 --
--- AUTO_INCREMENT for table `tbl_prepayment_detail_pw`
+-- AUTO_INCREMENT for table `sw_prepayment_detail_pw`
 --
-ALTER TABLE `tbl_prepayment_detail_pw`
+ALTER TABLE `sw_prepayment_detail_pw`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=261;
 
 --
--- AUTO_INCREMENT for table `tbl_prepayment_pu`
+-- AUTO_INCREMENT for table `pu_prepayment`
 --
-ALTER TABLE `tbl_prepayment_pu`
+ALTER TABLE `pu_prepayment`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=154;
 
 --
--- AUTO_INCREMENT for table `tbl_prepayment_pw`
+-- AUTO_INCREMENT for table `sw_prepayment_pw`
 --
-ALTER TABLE `tbl_prepayment_pw`
+ALTER TABLE `sw_prepayment_pw`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=155;
 
 --
@@ -1889,39 +1889,39 @@ ALTER TABLE `tbl_produk`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `tbl_reimbust`
+-- AUTO_INCREMENT for table `sw_reimbust`
 --
-ALTER TABLE `tbl_reimbust`
+ALTER TABLE `sw_reimbust`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=742;
 
 --
--- AUTO_INCREMENT for table `tbl_reimbust_detail`
+-- AUTO_INCREMENT for table `sw_reimbust_detail`
 --
-ALTER TABLE `tbl_reimbust_detail`
+ALTER TABLE `sw_reimbust_detail`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1226;
 
 --
--- AUTO_INCREMENT for table `tbl_reimbust_detail_pu`
+-- AUTO_INCREMENT for table `pu_reimbust_detail`
 --
-ALTER TABLE `tbl_reimbust_detail_pu`
+ALTER TABLE `pu_reimbust_detail`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1210;
 
 --
--- AUTO_INCREMENT for table `tbl_reimbust_detail_pw`
+-- AUTO_INCREMENT for table `sw_reimbust_detail_pw`
 --
-ALTER TABLE `tbl_reimbust_detail_pw`
+ALTER TABLE `sw_reimbust_detail_pw`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1194;
 
 --
--- AUTO_INCREMENT for table `tbl_reimbust_pu`
+-- AUTO_INCREMENT for table `pu_reimbust`
 --
-ALTER TABLE `tbl_reimbust_pu`
+ALTER TABLE `pu_reimbust`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=745;
 
 --
--- AUTO_INCREMENT for table `tbl_reimbust_pw`
+-- AUTO_INCREMENT for table `sw_reimbust_pw`
 --
-ALTER TABLE `tbl_reimbust_pw`
+ALTER TABLE `sw_reimbust_pw`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=745;
 
 --

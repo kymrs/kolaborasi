@@ -295,13 +295,17 @@ function formatTanggalIndo($tanggal)
                             <!-- Approved Karyawan -->
                             <div style="display: inline-block; background-color: #28a745; color: white; padding: 6px 10px; border-radius: 6px; text-align: center; font-size: 13px;">
                                 <div style="font-weight: bold;"><?= ucfirst($transaksi->app_status) ?></div>
-                                <div style="font-size: 11px;"><?= formatTanggalIndo($transaksi->app_date) ?></div>
+                                <?php if (!empty($transaksi->app_date)) : ?>
+                                    <div style="font-size: 11px;"><?= formatTanggalIndo($transaksi->app_date) ?></div>
+                                <?php endif; ?>
                             </div>  
                         <?php } else if ($transaksi->app_status == 'reject') { ?>
                             <!-- Rejected Karyawan -->
                             <div style="display: inline-block; background-color: #dc3545; color: white; padding: 6px 10px; border-radius: 6px; text-align: center; font-size: 13px;">
                                 <div style="font-weight: bold;"><?= ucfirst($transaksi->app_status) ?></div>
-                                <div style="font-size: 11px;"><?= formatTanggalIndo($transaksi->app_date) ?></div>
+                                <?php if (!empty($transaksi->app_date)) : ?>
+                                    <div style="font-size: 11px;"><?= formatTanggalIndo($transaksi->app_date) ?></div>
+                                <?php endif; ?>
                             </div>
                         <?php } ?>
                     </td>
@@ -310,13 +314,17 @@ function formatTanggalIndo($tanggal)
                             <!-- Approved Karyawan -->
                             <div style="display: inline-block; background-color: #28a745; color: white; padding: 6px 10px; border-radius: 6px; text-align: center; font-size: 13px;">
                                 <div style="font-weight: bold;"><?= ucfirst($transaksi->app2_status) ?></div>
-                                <div style="font-size: 11px;"><?= formatTanggalIndo($transaksi->app2_date) ?></div>
+                                <?php if (!empty($transaksi->app2_date)) : ?>
+                                    <div style="font-size: 11px;"><?= formatTanggalIndo($transaksi->app2_date) ?></div>
+                                <?php endif; ?>
                             </div>  
                         <?php } else if ($transaksi->app2_status == 'reject') { ?>
                             <!-- Rejected Karyawan -->
                             <div style="display: inline-block; background-color: #dc3545; color: white; padding: 6px 10px; border-radius: 6px; text-align: center; font-size: 13px;">
                                 <div style="font-weight: bold;"><?= ucfirst($transaksi->app2_status) ?></div>
-                                <div style="font-size: 11px;"><?= formatTanggalIndo($transaksi->app2_date) ?></div>
+                                <?php if (!empty($transaksi->app2_date)) : ?>
+                                    <div style="font-size: 11px;"><?= formatTanggalIndo($transaksi->app2_date) ?></div>
+                                <?php endif; ?>
                             </div>
                         <?php } ?>
                     </td>
@@ -429,13 +437,17 @@ function formatTanggalIndo($tanggal)
                                 <!-- Approved Karyawan -->
                                 <div style="display: inline-block; background-color: #28a745; color: white; padding: 6px 10px; border-radius: 6px; text-align: center; font-size: 13px;">
                                     <div style="font-weight: bold;"><?= ucfirst($transaksi->app2_status) ?></div>
-                                    <div style="font-size: 11px;"><?= formatTanggalIndo($transaksi->app2_date) ?></div>
+                                    <?php if (!empty($transaksi->app2_date)) : ?>
+                                        <div style="font-size: 11px;"><?= formatTanggalIndo($transaksi->app2_date) ?></div>
+                                    <?php endif; ?>
                                 </div>
                             <?php } else if ($transaksi->app2_status == 'reject') { ?>
                                 <!-- Rejected Karyawan -->
                                 <div style="display: inline-block; background-color: #dc3545; color: white; padding: 6px 10px; border-radius: 6px; text-align: center; font-size: 13px;">
                                     <div style="font-weight: bold;"><?= ucfirst($transaksi->app2_status) ?></div>
-                                    <div style="font-size: 11px;"><?= formatTanggalIndo($transaksi->app2_date) ?></div>
+                                    <?php if (!empty($transaksi->app2_date)) : ?>
+                                        <div style="font-size: 11px;"><?= formatTanggalIndo($transaksi->app2_date) ?></div>
+                                    <?php endif; ?>
                                 </div>
                             <?php } ?>
                         </td>
@@ -482,13 +494,17 @@ function formatTanggalIndo($tanggal)
                                 <!-- Approved Karyawan -->
                                 <div style="display: inline-block; background-color: #28a745; color: white; padding: 6px 10px; border-radius: 6px; text-align: center; font-size: 13px;">
                                     <div style="font-weight: bold;"><?= ucfirst($transaksi->app2_status) ?></div>
-                                    <div style="font-size: 11px;"><?= formatTanggalIndo($transaksi->app2_date) ?></div>
+                                    <?php if (!empty($transaksi->app2_date)) : ?>
+                                        <div style="font-size: 11px;"><?= formatTanggalIndo($transaksi->app2_date) ?></div>
+                                    <?php endif; ?>
                                 </div>
                             <?php } else if ($transaksi->app2_status == 'reject') { ?>
                                 <!-- Rejected Karyawan -->
                                 <div style="display: inline-block; background-color: #dc3545; color: white; padding: 6px 10px; border-radius: 6px; text-align: center; font-size: 13px;">
                                     <div style="font-weight: bold;"><?= ucfirst($transaksi->app2_status) ?></div>
-                                    <div style="font-size: 11px;"><?= formatTanggalIndo($transaksi->app2_date) ?></div>
+                                    <?php if (!empty($transaksi->app2_date)) : ?>
+                                        <div style="font-size: 11px;"><?= formatTanggalIndo($transaksi->app2_date) ?></div>
+                                    <?php endif; ?>
                                 </div>
                             <?php } ?>
                         </td>
@@ -557,16 +573,20 @@ function formatTanggalIndo($tanggal)
                     <tr>
                         <td>
                             <?php if ($transaksi->app_status == 'approved') { ?>
-                                <!-- Approved Karyawan -->
+                                <!-- Approved Perusahaan -->
                                 <div style="display: inline-block; background-color: #28a745; color: white; padding: 6px 10px; border-radius: 6px; text-align: center; font-size: 13px;">
                                     <div style="font-weight: bold;"><?= ucfirst($transaksi->app_status) ?></div>
-                                    <div style="font-size: 11px;"><?= formatTanggalIndo($transaksi->app_date) ?></div>
+                                    <?php if (!empty($transaksi->app_date)) : ?>
+                                        <div style="font-size: 11px;"><?= formatTanggalIndo($transaksi->app_date) ?></div>
+                                    <?php endif; ?>
                                 </div>
                             <?php } else if ($transaksi->app_status == 'reject') { ?>
-                                <!-- Rejected Karyawan -->
+                                <!-- Rejected Perusahaan -->
                                 <div style="display: inline-block; background-color: #dc3545; color: white; padding: 6px 10px; border-radius: 6px; text-align: center; font-size: 13px;">
                                     <div style="font-weight: bold;"><?= ucfirst($transaksi->app_status) ?></div>
-                                    <div style="font-size: 11px;"><?= formatTanggalIndo($transaksi->app_date) ?></div>
+                                    <?php if (!empty($transaksi->app_date)) : ?>
+                                        <div style="font-size: 11px;"><?= formatTanggalIndo($transaksi->app_date) ?></div>
+                                    <?php endif; ?>
                                 </div>
                             <?php } ?>
                         </td>

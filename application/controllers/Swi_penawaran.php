@@ -200,6 +200,7 @@ class Swi_penawaran extends CI_Controller
             'asal' => $this->input->post('asal'),
             'tujuan' => $this->input->post('tujuan'),
             'kendaraan' => $this->input->post('kendaraan'),
+            'total_nominal' => $this->input->post('total_nominal')
         );
 
         // INISIASI VARIABLE DETAIL
@@ -319,7 +320,7 @@ class Swi_penawaran extends CI_Controller
         $data = array(
             'app2_keterangan' => $this->input->post('app2_keterangan'),
             'app2_status' => $this->input->post('app2_status'),
-            'app2_date' => date('Y-m-d H:i:s'),
+            'app2_date' => date('Y-m-d H:i:s')
         );
 
         // UPDATE STATUS DEKLARASI
@@ -389,7 +390,7 @@ class Swi_penawaran extends CI_Controller
         // Tambahkan halaman baru
         $t_cpdf2->AddPage();
 
-        $t_cpdf2->SetFont('Poppins-Regular', '');
+        $t_cpdf2->SetFont('Poppins-Regular', '', 10);
 
         // No & Tanggal
         $t_cpdf2->SetXY(15, 10);
@@ -414,7 +415,7 @@ class Swi_penawaran extends CI_Controller
         $t_cpdf2->Cell(0, 5, 'Di Tempat', 0, 1, 'L');
 
         // Isi Surat
-        $t_cpdf2->SetXY(15, 63);
+        $t_cpdf2->SetXY(15, 58);
         $t_cpdf2->MultiCell(0, 5, "Dengan hormat,\n\nBersama surat ini kami sampaikan penawaran penyewaan Armada " . $penawaran->kendaraan . " untuk kebutuhan perjalanan dari " . $penawaran->asal . " ke " . $penawaran->tujuan . " dengan rincian sebagai berikut:", 0, 'L');
         $Y_position = $t_cpdf2->GetY();
 
@@ -427,6 +428,7 @@ class Swi_penawaran extends CI_Controller
         <table border="0" cellpadding="3">
             <tbody>
     EOD;
+        $total_harga = 0;
         foreach ($penawaran_details as $detail) {
             $bulan_awal = date("m", strtotime($detail->tgl_keberangkatan));
             $bulan_kedua = date("m", strtotime($detail->tgl_kepulangan));
@@ -435,6 +437,8 @@ class Swi_penawaran extends CI_Controller
             } else {
                 $date_use = $this->tgl_indo(date("m-j", strtotime($detail->tgl_keberangkatan))) . " - " . $this->tgl_indo(date("Y-m-j", strtotime($detail->tgl_kepulangan)));
             }
+            $total_harga += $detail->jumlah * $detail->harga;
+            
             $tbl .= '<tr>';
             $tbl .= '<td width="20%">' . $date_use . '</td>';
             $tbl .= '<td width="20%" style="text-align: center">' . $detail->jenis . '</td>';
@@ -443,6 +447,14 @@ class Swi_penawaran extends CI_Controller
             $tbl .= '<td width="20%" style="text-align: center">' . $detail->keterangan . '</td>';
             $tbl .= '</tr>';
         }
+        // Tambah baris total
+        $tbl .= '<tr style="font-weight: bold;">';
+        $tbl .= '<td width="20%"></td>';
+        $tbl .= '<td width="20%" style="text-align: center"></td>';
+        $tbl .= '<td width="15%" style="text-align: center"></td>';
+        $tbl .= '<td width="25%" style="text-align: center">Total</td>';
+        $tbl .= '<td width="20%" style="text-align: center">' . 'Rp. ' . number_format($total_harga, 0, ',', '.') . '</td>';
+        $tbl .= '</tr>';
         $tbl .= <<<EOD
     </tbody>
 </table>
@@ -456,16 +468,19 @@ EOD;
         $note = "Note:\n" .
             "- DP Minimal 30%\n" .
             str_repeat(" ", 0) . "- Pelunasan H-5 sebelum hari keberangkatan\n" .
-            str_repeat(" ", 0) . "- Pembayaran melalui transfer ke BCA PT Quick Project Indonesia\n" .
-            str_repeat(" ", 3) . "dengan nomor rekening 713 172 8003\n" .
-            str_repeat(" ", 0) . "- Harga dan ketersediaan unit tidak mengikat jika tidak\n" .
-            str_repeat(" ", 3) . "melakukan pembayaran DP\n\n" .
+            str_repeat(" ", 0) . "- Harga dan ketersediaan unit tidak mengikat jika tidak melakukan pembayaran DP.\n" .
+            str_repeat(" ", 0) . "- Pembayaran melalui transfer dengan nomor rekening :\n" .
+            str_repeat(" ", 3) . "BCA\n" .
+            str_repeat(" ", 3) . "713 225 2222 - SOBAT WISATA DUNIA PT\n" .
+            str_repeat(" ", 3) . "MANDIRI\n" .
+            str_repeat(" ", 3) . "127 001 463 6029 - PT SOBAT WISATA DUNIA\n\n" . 
             "Demikian Surat penawaran harga ini kami buat, kami tunggu kabar baik dari Bapak/Ibu, atas perhatiannya kami ucapkan terima kasih.";
+            
 
         $t_cpdf2->MultiCell(0, 5, $note, 0, 'L');
 
         $t_cpdf2->Cell(0, 15, 'Hormat kami,', 0, 1, 'R');
-        $t_cpdf2->Cell(0, 40, 'Sobat Wisata', 0, 1, 'R');
+        $t_cpdf2->Cell(0, 25, 'Sobat Wisata', 0, 1, 'R');
 
         //PAGE SELANJUTNYA
         $t_cpdf2->setPrintHeader(false);

@@ -11,15 +11,168 @@
             <img class="img-profile rounded-circle" src="<?= ($this->session->userdata('image') != '' ? base_url('assets/backend/img/user/') . $this->session->userdata('image') : base_url('assets/backend/img/') . 'default.jpg'); ?>" class="img-circle elevation-2" alt="User Image">
           </a>
           <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#changePasswordModal">
+              <i class="fas fa-key fa-sm fa-fw mr-2 text-gray-400"></i>
+              Ubah Password
+            </a>
+            <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
               <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
               Logout
             </a>
-            <a class="dropdown-item" target="_blank" href="<?= base_url() ?>assets/backend/document/tata_cara_approval.pdf">
+            <!-- <a class="dropdown-item" target="_blank" href="<?= base_url() ?>assets/backend/document/tata_cara_approval.pdf">
               <i class="fas fa-file-pdf fa-sm fa-fw mr-2 text-gray-400"></i>
               Tatacara
-            </a>
+            </a> -->
           </div>
         </li>
       </ul>
     </nav>
+    
+    <!-- Modal Change Password -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" role="dialog" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="changePasswordModalLabel">Ubah Password</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <form id="formChangePassword">
+            <div class="modal-body">
+              <div id="changePasswordAlert"></div>
+              <!-- Hidden username field for accessibility and password manager support -->
+              <input type="hidden" name="username" value="<?= $this->session->userdata('username') ?>">
+              <div class="form-group">
+                <label for="current_password">Password Saat Ini</label>
+                <input type="password" class="form-control" id="current_password" name="current_password" autocomplete="current-password" required>
+                <small class="form-text text-muted">Masukkan password saat ini</small>
+              </div>
+              <div class="form-group">
+                <label for="new_password">Password Baru</label>
+                <input type="password" class="form-control" id="new_password" name="new_password" autocomplete="new-password" required>
+                <small class="form-text text-muted">Password minimal 3 karakter</small>
+              </div>
+              <div class="form-group">
+                <label for="confirm_password">Konfirmasi Password Baru</label>
+                <input type="password" class="form-control" id="confirm_password" name="confirm_password" autocomplete="new-password" required>
+                <small class="form-text text-muted">Ulangi password baru</small>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+              <button type="button" class="btn btn-primary" id="btnChangePassword">Ubah Password</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script>
+    // Tunggu hingga DOM dan jQuery siap
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM Content Loaded - Change password script initializing');
+        
+        var btnChangePassword = document.getElementById('btnChangePassword');
+        
+        if (btnChangePassword) {
+            btnChangePassword.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                var current_password = document.getElementById('current_password').value;
+                var new_password = document.getElementById('new_password').value;
+                var confirm_password = document.getElementById('confirm_password').value;
+                
+                console.log('Button clicked');
+                console.log('Current password filled:', !!current_password);
+                console.log('New password filled:', !!new_password);
+                console.log('Confirm password filled:', !!confirm_password);
+                
+                // Validasi field tidak boleh kosong
+                if (!current_password || !new_password || !confirm_password) {
+                    showAlert('danger', 'Semua field harus diisi!');
+                    return false;
+                }
+                
+                // Validasi password baru minimal 6 karakter
+                if (new_password.length < 3) {
+                    showAlert('danger', 'Password baru minimal harus 3 karakter!');
+                    return false;
+                }
+                
+                // Validasi konfirmasi password
+                if (new_password !== confirm_password) {
+                    showAlert('danger', 'Password baru dan konfirmasi password tidak cocok!');
+                    return false;
+                }
+                
+                // Disable button saat loading
+                btnChangePassword.disabled = true;
+                btnChangePassword.textContent = 'Memproses...';
+                
+                console.log('Sending AJAX request...');
+                
+                // Simple AJAX request menggunakan fetch API
+                var ajaxUrl = '<?= base_url("Auth/change_password") ?>';
+                console.log('URL:', ajaxUrl);
+                
+                fetch(ajaxUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        current_password: current_password,
+                        new_password: new_password,
+                        confirm_password: confirm_password
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Response received:', data);
+                    
+                    if (data.success === true) {
+                        showAlert('success', data.message);
+                        document.getElementById('formChangePassword').reset();
+                        
+                        setTimeout(function() {
+                            if (typeof jQuery !== 'undefined') {
+                                jQuery('#changePasswordModal').modal('hide');
+                            }
+                            document.getElementById('changePasswordAlert').innerHTML = '';
+                        }, 2000);
+                    } else {
+                        showAlert('danger', data.message);
+                        btnChangePassword.disabled = false;
+                        btnChangePassword.textContent = 'Ubah Password';
+                    }
+                })
+                .catch(error => {
+                    console.error('Fetch Error:', error);
+                    showAlert('danger', 'Error: ' + error.message);
+                    btnChangePassword.disabled = false;
+                    btnChangePassword.textContent = 'Ubah Password';
+                });
+                
+                return false;
+            });
+        } else {
+            console.warn('Button #btnChangePassword tidak ditemukan');
+        }
+        
+        function showAlert(type, message) {
+            var alertDiv = document.getElementById('changePasswordAlert');
+            var alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+            
+            alertDiv.innerHTML = '<div class="alert ' + alertClass + ' alert-dismissible fade show" role="alert">' +
+                message +
+                '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+                '<span aria-hidden="true">&times;</span>' +
+                '</button>' +
+                '</div>';
+            
+            console.log('Alert shown [' + type + ']:', message);
+        }
+    });
+    </script>

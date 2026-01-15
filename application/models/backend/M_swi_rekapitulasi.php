@@ -857,7 +857,7 @@ class M_swi_rekapitulasi extends CI_Model
 
     function get_data_prepayment($tgl_awal, $tgl_akhir)
     {
-        $this->db->select('a.id, a.kode_prepayment, a.tgl_prepayment, a.prepayment, a.total_nominal');
+        $this->db->select('a.id, a.kode_prepayment, a.tgl_prepayment, a.tujuan, a.prepayment, a.total_nominal');
         $this->db->from('swi_prepayment AS a');
         $this->db->join('swi_reimbust AS b', 'a.kode_prepayment = b.kode_prepayment', 'left');
         $this->db->where('a.payment_status', 'paid');
@@ -886,7 +886,7 @@ class M_swi_rekapitulasi extends CI_Model
 
     function get_data_reimbust($tgl_awal, $tgl_akhir)
     {
-        $this->db->select('a.id, a.kode_reimbust, a.tgl_pengajuan, a.sifat_pelaporan, SUM(b.jumlah) AS total_nominal');
+        $this->db->select('a.id, a.kode_reimbust, a.tgl_pengajuan, a.tujuan, a.sifat_pelaporan, SUM(b.jumlah) AS total_nominal');
         $this->db->from('swi_reimbust AS a');
         $this->db->join('swi_reimbust_detail AS b', 'a.id = b.reimbust_id', 'inner');
         $this->db->join('swi_prepayment AS c', 'a.kode_prepayment = c.kode_prepayment', 'left');

@@ -1159,7 +1159,7 @@ class Pu_invoice extends CI_Controller
 
         //UPDATE APPROVAL PERTAMA
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_prepayment_pu', $data);
+        $this->db->update('pu_prepayment', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -1183,7 +1183,7 @@ class Pu_invoice extends CI_Controller
 
         // UPDATE APPROVAL 2
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_prepayment_pu', $data);
+        $this->db->update('pu_prepayment', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -1219,15 +1219,15 @@ class Pu_invoice extends CI_Controller
 
         $t_cpdf2->SetY($t_cpdf2->getMargins()['top']);
 
-        // Pilih font untuk isi
-        $t_cpdf2->SetFont('Poppins-Bold', '', 15);
+        // Ganti Poppins dengan Helvetica (standar TCPDF)
+        $t_cpdf2->SetFont('helvetica', 'B', 15);
         $t_cpdf2->Cell(100, 10, 'PT. KOLABORASI PARA SAHABAT', 0, 0, 'L');
 
-        $t_cpdf2->SetFont('Poppins-Bold', '', 22);
+        $t_cpdf2->SetFont('helvetica', 'B', 22);
         $t_cpdf2->SetX(164);
         $t_cpdf2->Cell(100, 10, 'INVOICE', 0, 1, 'L');
 
-        $t_cpdf2->SetFont('Poppins-Regular', '', 11);
+        $t_cpdf2->SetFont('helvetica', '', 11);
         $t_cpdf2->SetX(114);
         $t_cpdf2->Cell(45, 10, 'No. Invoice', 0, 0, 'R');
         $t_cpdf2->Cell(20, 10, ':', 0, 0);
@@ -1235,14 +1235,14 @@ class Pu_invoice extends CI_Controller
 
         $t_cpdf2->SetY($t_cpdf2->GetY());
         $t_cpdf2->SetX(114);
-        $t_cpdf2->SetFont('Poppins-Regular', '', 10);
+        $t_cpdf2->SetFont('helvetica', '', 10);
         $t_cpdf2->Cell(45, 23, 'Tanggal Invoice', 0, 0, 'R');
         $t_cpdf2->Cell(20, 23, ':', 0, 0);
         $t_cpdf2->Cell(19, 23, $this->tgl_indo(date('Y-m-j', strtotime($invoice->tgl_invoice))), 0, 0, 'R');
         $t_cpdf2->SetY($t_cpdf2->GetY() + 13);
         $t_cpdf2->SetX(114);
-        $t_cpdf2->SetFont('Poppins-Bold', '', 14);
-        $t_cpdf2->SetFont('Poppins-Regular', '', 10);
+        $t_cpdf2->SetFont('helvetica', 'B', 14);
+        $t_cpdf2->SetFont('helvetica', '', 10);
         $t_cpdf2->Cell(45, 10, 'Tanggal Jatuh Tempo', 0, 0, 'R');
         $t_cpdf2->Cell(20, 10, ':', 0, 0);
         $t_cpdf2->Cell(19, 10, $this->tgl_indo(date('Y-m-j', strtotime($invoice->tgl_tempo))), 0, 1, 'R');
@@ -1259,7 +1259,7 @@ class Pu_invoice extends CI_Controller
 
         $t_cpdf2->SetY($t_cpdf2->GetY() + 2);
         // HEADER DATA PEMESAN
-        $t_cpdf2->SetFont('Poppins-Regular', '', 11);
+        $t_cpdf2->SetFont('helvetica', '', 11);
         $t_cpdf2->SetFillColor(252, 118, 19);
         $t_cpdf2->SetTextColor(255, 255, 255);
         $t_cpdf2->SetX(15);
@@ -1268,17 +1268,17 @@ class Pu_invoice extends CI_Controller
         $t_cpdf2->SetTextColor(0, 0, 0);
 
         // CONTENT DDATA PEMESAN
-        $t_cpdf2->SetFont('Poppins-Regular', '', 10);
+        $t_cpdf2->SetFont('helvetica', '', 10);
         $t_cpdf2->SetY($t_cpdf2->GetY() + 3);
         $t_cpdf2->SetX(15);
         $t_cpdf2->Cell(0, 9, 'Kpd Yth.', 0, 1);
 
-        $t_cpdf2->SetFont('Poppins-Regular', 'B', 16);
+        $t_cpdf2->SetFont('helvetica', 'B', 16);
         $t_cpdf2->SetX(15);
         $t_cpdf2->Cell(0, 0, $invoice->ctc_nama, 0, 0);
         $t_cpdf2->Cell(0, 0, "Rp. " . number_format($total ?? 0, 0, ',', '.'), 0, 1, 'R');
 
-        $t_cpdf2->SetFont('Poppins-Regular', '', 10);
+        $t_cpdf2->SetFont('helvetica', '', 10);
         $t_cpdf2->SetY($t_cpdf2->GetY() + 1);
         $t_cpdf2->SetX(15);
         $t_cpdf2->Cell(0, 8, 'Alamat', 0, 0);
@@ -1291,7 +1291,7 @@ class Pu_invoice extends CI_Controller
 
         $t_cpdf2->SetY($t_cpdf2->GetY() + 2);
         // HEADER DETAIL JAMAAH
-        $t_cpdf2->SetFont('Poppins-Regular', '', 11);
+        $t_cpdf2->SetFont('helvetica', '', 11);
         $t_cpdf2->SetFillColor(252, 118, 19);
         $t_cpdf2->SetTextColor(255, 255, 255);
         $t_cpdf2->SetX(15);
@@ -1301,7 +1301,7 @@ class Pu_invoice extends CI_Controller
 
         // CONTENT DATA JAMAAH
         // ========== KOLOM KIRI =============
-        $t_cpdf2->SetFont('Poppins-Regular', '', 10);
+        $t_cpdf2->SetFont('helvetica', '', 10);
         $t_cpdf2->SetY($t_cpdf2->GetY() + 8); // Tambah jarak aman dari header
         $t_cpdf2->writeHTMLCell(
             80,
@@ -1319,7 +1319,7 @@ class Pu_invoice extends CI_Controller
         $y_kiri = $t_cpdf2->GetY(); // Ambil Y setelah tulis kolom kiri
 
         // ========== KOLOM KANAN =============
-        $t_cpdf2->SetFont('Poppins-Regular', '', 10);
+        $t_cpdf2->SetFont('helvetica', '', 10);
         $t_cpdf2->SetY($t_cpdf2->GetY() - ($t_cpdf2->getLastH() ?? 0)); // Kembali ke posisi Y semula
         $t_cpdf2->writeHTMLCell(
             65,
@@ -1341,7 +1341,7 @@ class Pu_invoice extends CI_Controller
 
 
         // HEADER DETAIL PEMESANAN
-        $t_cpdf2->SetFont('Poppins-Regular', '', 11);
+        $t_cpdf2->SetFont('helvetica', '', 11);
         $t_cpdf2->SetFillColor(252, 118, 19);
         $t_cpdf2->SetTextColor(255, 255, 255);
         $t_cpdf2->SetX(15);
@@ -1411,10 +1411,10 @@ EOD;
 
         $t_cpdf2->SetY($t_cpdf2->GetY() + 3);
         $t_cpdf2->SetX(13);
-        $t_cpdf2->SetFont('Poppins-Bold', '', 11);
+        $t_cpdf2->SetFont('helvetica', 'B', 11);
         $t_cpdf2->Cell(0, 8, 'Metode Pembayaran', 0, 1);
         $t_cpdf2->SetX(13);
-        $t_cpdf2->SetFont('Poppins-Bold', '', 10);
+        $t_cpdf2->SetFont('helvetica', 'B', 10);
         $t_cpdf2->Cell(0, 5, 'Bank : ' . $invoice_rek->nama_bank, 0, 1);
         $t_cpdf2->SetX(13);
         $t_cpdf2->Cell(0, 8, 'No. Rekening : ' . $invoice_rek->no_rek, 0, 1);
@@ -1422,13 +1422,13 @@ EOD;
         $t_cpdf2->SetY($t_cpdf2->GetY() - 1);
         $t_cpdf2->SetX(13);
 
-        $t_cpdf2->SetFont('Poppins-Bold', '', 11);
+        $t_cpdf2->SetFont('helvetica', 'B', 11);
         $t_cpdf2->Cell(0, 5, 'a/n : ' . $invoice_rek->perusahaan, 0, 1);
 
         $t_cpdf2->setY($t_cpdf2->GetY());
         $t_cpdf2->SetX(13);
 
-        $t_cpdf2->SetFont('Poppins-Regular', '', 10);
+        $t_cpdf2->SetFont('helvetica', '', 10);
         $t_cpdf2->Cell(19, 9, 'Catatan :', 0, 1);
         if ($invoice->keterangan != '') {
             $catatan = $invoice->keterangan;
@@ -1479,10 +1479,10 @@ EOD;
         $t_cpdf2->SetY($t_cpdf2->getMargins()['top']);
 
         // Pilih font untuk isi
-        $t_cpdf2->SetFont('Poppins-Bold', '', 15);
+        $t_cpdf2->SetFont('helvetica', 'B', 15);
         $t_cpdf2->Cell(100, 10, 'BUKTI TERIMA PEMBAYARAN', 0, 1, 'L');
 
-        $t_cpdf2->SetFont('Poppins-Regular', '', 11);
+        $t_cpdf2->SetFont('helvetica', '', 11);
         // $t_cpdf2->SetX(114);
         $t_cpdf2->Cell(45, 9, 'No. Invoice', 0, 0, 'L');
         $t_cpdf2->Cell(3, 9, ':', 0, 0);
@@ -1490,21 +1490,21 @@ EOD;
 
         $t_cpdf2->SetY($t_cpdf2->GetY());
         // $t_cpdf2->SetX(114);
-        $t_cpdf2->SetFont('Poppins-Regular', '', 10);
+        $t_cpdf2->SetFont('helvetica', '', 10);
         $t_cpdf2->Cell(45, 20, 'Tanggal Invoice', 0, 0, 'L');
         $t_cpdf2->Cell(3, 20, ':', 0, 0);
         $t_cpdf2->Cell(19, 20, $this->tgl_indo(date('Y-m-d', strtotime($invoice->tgl_invoice))), 0, 0, 'L');
         $t_cpdf2->SetY($t_cpdf2->GetY() + 13);
         // $t_cpdf2->SetX(114);
-        $t_cpdf2->SetFont('Poppins-Bold', '', 14);
-        $t_cpdf2->SetFont('Poppins-Regular', '', 10);
+        $t_cpdf2->SetFont('helvetica', 'B', 14);
+        $t_cpdf2->SetFont('helvetica', '', 10);
         $t_cpdf2->Cell(45, 5, 'Tanggal Jatuh Tempo', 0, 0, 'L');
         $t_cpdf2->Cell(3, 5, ':', 0, 0);
         $t_cpdf2->Cell(19, 5, $this->tgl_indo(date('Y-m-d', strtotime($invoice->tgl_tempo))), 0, 1, 'L');
 
         $t_cpdf2->SetY($t_cpdf2->GetY() + 2);
         // HEADER DATA PEMESAN
-        $t_cpdf2->SetFont('Poppins-Regular', '', 11);
+        $t_cpdf2->SetFont('helvetica', '', 11);
         $t_cpdf2->SetFillColor(252, 118, 19);
         $t_cpdf2->SetTextColor(255, 255, 255);
         $t_cpdf2->SetX(15);
@@ -1513,12 +1513,12 @@ EOD;
         $t_cpdf2->SetTextColor(0, 0, 0);
 
         // CONTENT DDATA PEMSAN
-        $t_cpdf2->SetFont('Poppins-Regular', '', 10);
+        $t_cpdf2->SetFont('helvetica', '', 10);
         $t_cpdf2->SetY($t_cpdf2->GetY() + 2);
         $t_cpdf2->SetX(15);
         $t_cpdf2->Cell(0, 0, 'Kpd Yth.', 0, 1);
 
-        $t_cpdf2->SetFont('Poppins-Regular', 'B', 15);
+        $t_cpdf2->SetFont('helvetica', 'B', 15);
         $t_cpdf2->SetX(15);
         $t_cpdf2->Cell(0, 0, $invoice->ctc_nama, 0, 0);
         $t_cpdf2->Cell(0, 0, strtoupper($kwitansi->status_pembayaran), 0, 1, 'R');
@@ -1526,7 +1526,7 @@ EOD;
         $t_cpdf2->SetY($t_cpdf2->GetY() + 2);
         $t_cpdf2->SetY($t_cpdf2->GetY() + 2);
         // HEADER DETAIL PEMESANAN
-        $t_cpdf2->SetFont('Poppins-Regular', '', 11);
+        $t_cpdf2->SetFont('helvetica', '', 11);
         $t_cpdf2->SetFillColor(252, 118, 19);
         $t_cpdf2->SetTextColor(255, 255, 255);
         $t_cpdf2->SetX(15);

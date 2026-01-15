@@ -178,10 +178,12 @@
                                     <label class="col-sm-5">Title</label>
                                     <div class="col-sm-7">
                                         <select name="title" id="title" class="form-control" style="cursor: pointer;">
-                                            <option selected value="" hidden>Pilih Title</option>
+                                            <option selected value="">Pilih Title</option>
                                             <option value="Ny">Ny.</option>
                                             <option value="Nn">Nn.</option>
                                             <option value="Tn">Tn.</option>
+                                            <option value="PT">PT.</option>
+                                            <option value="CV">CV.</option>
                                         </select>
                                     </div>
                                 </div>
@@ -209,14 +211,14 @@
                                         <textarea id="deskripsi" rows="4" name="deskripsi" class="form-control" placeholder="Deskripsi"></textarea>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-md-6">
                                 <div class="form-group row">
-                                    <label class="col-sm-4">Tanggal Berlaku</label>
-                                    <div class="col-sm-8">
+                                    <label class="col-sm-5">Tanggal Berlaku</label>
+                                    <div class="col-sm-7">
                                         <input type="text" placeholder="Tanggal Berlaku" class="input-date-style form-control" name="tgl_berlaku" id="tgl_berlaku" autocomplete="off" style="cursor: pointer;">
                                     </div>
                                 </div>
+                            </div>
+                            <div class="col-md-6">
                                 <div class="form-group row">
                                     <label class="col-sm-4">Durasi</label>
                                     <div class="col-sm-8">
@@ -267,6 +269,12 @@
                                     <label class="col-sm-4"><i class="fas fa-plane"></i>Kepulangan</label>
                                     <div class="col-sm-8">
                                         <input type="text" id="kepulangan" name="kepulangan" placeholder="Kepulangan" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4">Notes</label>
+                                    <div class="col-sm-8">
+                                        <textarea id="notes" rows="4" name="notes" class="form-control" placeholder="Notes"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -746,6 +754,9 @@
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
+                    // debug cepat: log seluruh response di awal supaya terlihat walau ada error di blok lain
+                    console.log('edit_data response:', data);
+
                     // Set data master
                     $('#no_pelayanan').val(data['master']['no_pelayanan']);
                     $('#pelanggan').val(data['master']['pelanggan'].substring(4));
@@ -761,88 +772,91 @@
                     $('#pkt_double').val(formatRupiah(data['master']['pkt_double'])).trigger('change');
                     $('#keberangkatan').val(data['master']['keberangkatan']).trigger('change');
                     $('#kepulangan').val(data['master']['kepulangan']).trigger('change');
+                    $('#notes').val(data['master']['notes']).trigger('change');
 
 
                     // Set status layanan (Y/N) dan nominal
-                    data['layanan'].forEach(function(layanan) {
-                        const button = document.getElementById('buttonLayanan-' + layanan.id_layanan);
-                        const inputField = document.getElementById('inputLayanan-' + layanan.id_layanan);
-                        const extraInput = document.getElementById('extra-input-' + layanan.id_layanan);
-                        const icon = button.querySelector('i');
+                    try {
+                        if (Array.isArray(data['layanan'])) {
+                            data['layanan'].forEach(function(layanan) {
+                                var btnId = 'buttonLayanan-' + layanan.id_layanan;
+                                const button = document.getElementById(btnId);
+                                if (!button) {
+                                    console.warn('button not found:', btnId);
+                                    return; // skip jika elemen tidak ada
+                                }
+                                const inputField = document.getElementById('inputLayanan-' + layanan.id_layanan) || { value: '' };
+                                const extraInput = document.getElementById('extra-input-' + layanan.id_layanan) || { style: { display: 'none' } };
+                                const icon = button.querySelector('i');
 
-                        // Set status layanan (Y/N)
-                        if (layanan.is_active.startsWith('Y')) {
-                            // Update tampilan untuk status "checked"
-                            button.classList.remove('uncheck');
-                            button.classList.add('check');
-                            icon.classList.remove('fa-square');
-                            icon.classList.add('fa-check');
-                            inputField.value = 'Y'; // Set input value to 'Y'
-
-                            // Sembunyikan input tambahan (nominal)
-                            if (layanan.id_layanan === 9) {
-                                extraInput.style.display = 'none'; // Sembunyikan jika id_layanan 9
-                            }
-                        } else if (layanan.is_active.startsWith('N')) {
-                            // Update tampilan untuk status "times"
-                            button.classList.remove('uncheck');
-                            button.classList.add('times');
-                            icon.classList.remove('fa-square');
-                            icon.classList.add('fa-times');
-                            inputField.value = 'N'; // Set input value to 'N'
-
-                            // Tampilkan input tambahan (nominal) hanya untuk id_layanan 9
-                            if (layanan.id_layanan == 9) {
-                                extraInput.style.display = 'block'; // Tampilkan input tambahan
-                                // Ambil nilai nominal dari is_active dan format
-                                const nominal = layanan.is_active.split(' ')[1]; // Ambil nominal setelah 'Y'
-                                extraInput.value = formatRupiah(nominal); // Format nominal
-                            } else {
-                                extraInput.style.display = 'none'; // Sembunyikan jika bukan id_layanan 9
-                            }
-
-                        } else {
-                            // Update tampilan untuk status "uncheck" (default)
-                            button.classList.add('uncheck');
-                            icon.classList.add('fa-square');
-                            inputField.value = ''; // Kosongkan jika tidak aktif
-
-                            // Sembunyikan input tambahan jika tidak diperlukan
-                            extraInput.style.display = 'none';
+                                // guarded logic
+                                if (typeof layanan.is_active === 'string' && layanan.is_active.startsWith('Y')) {
+                                    button.classList.remove('uncheck'); button.classList.add('check');
+                                    if (icon) { icon.classList.remove('fa-square'); icon.classList.add('fa-check'); }
+                                    inputField.value = 'Y';
+                                    if (layanan.id_layanan === 9 && extraInput) extraInput.style.display = 'none';
+                                } else if (typeof layanan.is_active === 'string' && layanan.is_active.startsWith('N')) {
+                                    button.classList.remove('uncheck'); button.classList.add('times');
+                                    if (icon) { icon.classList.remove('fa-square'); icon.classList.add('fa-times'); }
+                                    inputField.value = 'N';
+                                    if (layanan.id_layanan == 9 && extraInput) {
+                                        extraInput.style.display = 'block';
+                                        const parts = (layanan.is_active || '').split(' ');
+                                        const nominal = parts[1] || '';
+                                        extraInput.value = nominal ? formatRupiah(nominal) : '';
+                                    } else if (extraInput) {
+                                        extraInput.style.display = 'none';
+                                    }
+                                } else {
+                                    button.classList.add('uncheck');
+                                    if (icon) icon.classList.add('fa-square');
+                                    inputField.value = '';
+                                    if (extraInput) extraInput.style.display = 'none';
+                                }
+                            });
                         }
-                    });
+                    } catch (err) {
+                        console.error('Error applying layanan state:', err, data['layanan']);
+                    }
 
                     // Set status hotel (Y) dan nominal
-                    data['hotel'].forEach(function(hotel) {
-                        const button2 = document.getElementById('buttonHotel-' + hotel.id_hotel);
-                        const inputField2 = document.getElementById('inputHotel-' + hotel.id_hotel);
-                        const icon2 = button2.querySelector('i');
-
-                        // Set status hotel (Y/N)
-                        if (hotel.is_active.startsWith('Y')) {
-                            button2.classList.add('check');
-                            icon2.classList.remove('fa-square');
-                            icon2.classList.add('fa-check');
-
-                            inputField2.value = 'Y'; // Set input value to 'Y'
+                    try {
+                        if (Array.isArray(data['hotel'])) {
+                            data['hotel'].forEach(function(hotel) {
+                                var btnId2 = 'buttonHotel-' + hotel.id_hotel;
+                                const button2 = document.getElementById(btnId2);
+                                if (!button2) {
+                                    console.warn('hotel button not found:', btnId2);
+                                    return;
+                                }
+                                const inputField2 = document.getElementById('inputHotel-' + hotel.id_hotel);
+                                const icon2 = button2.querySelector('i');
+                                if (hotel.is_active && hotel.is_active.startsWith('Y')) {
+                                    button2.classList.add('check');
+                                    if (icon2) { icon2.classList.remove('fa-square'); icon2.classList.add('fa-check'); }
+                                    if (inputField2) inputField2.value = 'Y';
+                                }
+                            });
                         }
-                    });
+                    } catch (err) {
+                        console.error('Error applying hotel state:', err, data['hotel']);
+                    }
 
-                    // Set Rundown
-                    // console.log(data);
-                    for (let index = 0; index <= data['rundowns'].length; index++) {
+                    // Set Rundown (tetap dijalankan walau ada masalah di layanan/hotel)
+                    console.log('Rundown data:', data['rundowns']);
+                    for (let index = 0; index < (data['rundowns'] || []).length; index++) {
                         const row = `
                             <tr id="row-${index+1}">
                                 <td class="row-number">${index+1}</td>
                                 <td>
-                                    <input type="text" class="form-control" name="hari[${index+1}]" placeholder="Input here..." value="${data['rundowns'][index]['hari']}" />
+                                    <input type="text" class="form-control" name="hari[${index+1}]" placeholder="Input here..." value="${data['rundowns'][index]['hari'] || ''}" />
                                 </td>
                                 <td>
-                                    <input type="date" class="form-control" id="tanggal-${index+1}" name="tanggal[${index+1}]" placeholder="Input here..." value="${data['rundowns'][index]['tanggal']}" />
-                                    <input type="hidden" id="hidden_id${index+1}" name="hidden_id[${index+1}]" value="${data['rundowns'][index]['id']}">
+                                    <input type="date" class="form-control" id="tanggal-${index+1}" name="tanggal[${index+1}]" placeholder="Input here..." value="${data['rundowns'][index]['tanggal'] || ''}" />
+                                    <input type="hidden" id="hidden_id${index+1}" name="hidden_id[${index+1}]" value="${data['rundowns'][index]['id'] || ''}">
                                 </td>
                                 <td>
-                                    <div id="kegiatan-${index+1}" class="border p-2" style="height: 200px;">${data['rundowns'][index]['kegiatan']}</div>
+                                    <div id="kegiatan-${index+1}" class="border p-2" style="height: 200px;">${data['rundowns'][index]['kegiatan'] || ''}</div>
                                     <input type="hidden" name="hidden_kegiatan_[${index+1}]" id="hidden_kegiatan_${index+1}" value="">
                                 </td>
                                 <td>
@@ -855,10 +869,13 @@
                         $('#input-container').append(row);
 
                         // Inisialisasi Quill
-                        initializeQuill(index + 1);
+                        try {
+                            initializeQuill(index + 1);
+                        } catch(err) {
+                            console.error('Error initializing Quill for row ' + (index + 1) + ':', err);
+                        }
 
                         rowCount = index + 1;
-
                     }
 
                 },
@@ -1072,9 +1089,6 @@
                 pelanggan: {
                     required: true,
                 },
-                title: {
-                    required: true,
-                },
                 produk: {
                     required: true,
                 },
@@ -1115,9 +1129,6 @@
                 },
                 pelanggan: {
                     required: "Pelanggan is required",
-                },
-                title: {
-                    required: "Title is required",
                 },
                 produk: {
                     required: "Produk is required",

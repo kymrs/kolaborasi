@@ -27,7 +27,7 @@ class Sw_reimbust extends CI_Controller
             ->get()
             ->row('name');
         $data['approval'] = $this->db->select('COUNT(*) as total_approval')
-            ->from('tbl_reimbust')
+            ->from('sw_reimbust')
             ->where('app_name', $name)
             ->or_where('app2_name', $name)
             ->or_where('app4_name', $name)
@@ -284,7 +284,7 @@ class Sw_reimbust extends CI_Controller
         $data['title'] = 'backend/sw_reimbust/sw_reimbust_read';
         $this->db->select('kwitansi');
         $this->db->where('reimbust_id', $id);
-        $data['kwitansi'] = $this->db->get('tbl_reimbust_detail')->result_array();
+        $data['kwitansi'] = $this->db->get('sw_reimbust_detail')->result_array();
         $this->load->view('backend/home', $data);
     }
 
@@ -604,7 +604,7 @@ class Sw_reimbust extends CI_Controller
             $deklarasi = $this->input->post('deklarasi');
 
             // Mengambil data deklarasi dari database
-            $deklarasiRecord = $this->db->get_where('tbl_deklarasi', ['kode_deklarasi' => $deklarasi])->row_array();
+            $deklarasiRecord = $this->db->get_where('sw_deklarasi', ['kode_deklarasi' => $deklarasi])->row_array();
 
             // Debug log
             log_message('debug', 'Deklarasi: ' . print_r($deklarasi, true));
@@ -788,15 +788,13 @@ class Sw_reimbust extends CI_Controller
             // Update data deklarasi yang di tampilkan di modal, jika gambar di submit maka is active akan menjadi 0
             $this->db->set('is_active', 0);
             $this->db->where('kode_deklarasi', $deklarasi[$i]);
-            $this->db->update('tbl_deklarasi');
+            $this->db->update('sw_deklarasi');
         }
         $this->db->set('is_active', 0);
         $this->db->where('kode_prepayment', $this->input->post('kode_prepayment'));
-        $this->db->update('tbl_prepayment');
+        $this->db->update('sw_prepayment');
 
         $this->M_sw_reimbust->save_detail($data2);
-
-
         echo json_encode(array("status" => TRUE));
     }
 
@@ -846,12 +844,12 @@ class Sw_reimbust extends CI_Controller
         $deklarasi = $this->input->post('deklarasi');
         $deklarasi_old = $this->input->post('deklarasi_old');
 
-        if ($this->db->update('tbl_reimbust', $data)) {
+        if ($this->db->update('sw_reimbust', $data)) {
             // 1. Hapus Baris yang Telah Dihapus
             $deletedRows = json_decode($this->input->post('deleted_rows'), true);
             if (!empty($deletedRows)) {
                 foreach ($deletedRows as $id2) {
-                    $reimbust_detail = $this->db->get_where('tbl_reimbust_detail', ['id' => $id2])->row_array();
+                    $reimbust_detail = $this->db->get_where('sw_reimbust_detail', ['id' => $id2])->row_array();
 
                     if ($reimbust_detail) {
                         $old_image = $reimbust_detail['kwitansi'];
@@ -860,10 +858,10 @@ class Sw_reimbust extends CI_Controller
                         }
 
                         $this->db->where('id', $id2);
-                        $this->db->delete('tbl_reimbust_detail');
+                        $this->db->delete('sw_reimbust_detail');
 
                         $kode_deklarasi = $reimbust_detail['deklarasi'];
-                        $this->db->update('tbl_deklarasi', ['is_active' => 1], ['kode_deklarasi' => $kode_deklarasi]);
+                        $this->db->update('sw_deklarasi', ['is_active' => 1], ['kode_deklarasi' => $kode_deklarasi]);
                     }
                 }
             }
@@ -895,7 +893,7 @@ class Sw_reimbust extends CI_Controller
                     if ($this->upload->do_upload('file')) {
                         $id = !empty($detail_id[$i]) ? $detail_id[$i] : NULL;
 
-                        $reimbust_detail = $this->db->get_where('tbl_reimbust_detail', ['id' => $id])->row_array();
+                        $reimbust_detail = $this->db->get_where('sw_reimbust_detail', ['id' => $id])->row_array();
 
                         if ($reimbust_detail) {
                             $old_image = $reimbust_detail['kwitansi'];
@@ -930,25 +928,25 @@ class Sw_reimbust extends CI_Controller
                 // Mengubah data prepayment is_active menjadi 0 pada data prepayment terbaru, jika kode_prepayment ada
                 $kode_prepayment = $this->input->post('kode_prepayment');
                 if (!empty($kode_prepayment)) {
-                    $this->db->update('tbl_prepayment', ['is_active' => 0], ['kode_prepayment' => $kode_prepayment]);
+                    $this->db->update('sw_prepayment', ['is_active' => 0], ['kode_prepayment' => $kode_prepayment]);
                 }
 
                 // Mengubah data prepayment is_active menjadi 1 pada data prepayment terlama, jika kode_prepayment_old ada
                 $kode_prepayment_old = $this->input->post('kode_prepayment_old');
                 if ($kode_prepayment != $kode_prepayment_old && !empty($kode_prepayment_old)) {
-                    $this->db->update('tbl_prepayment', ['is_active' => 1], ['kode_prepayment' => $kode_prepayment_old]);
+                    $this->db->update('sw_prepayment', ['is_active' => 1], ['kode_prepayment' => $kode_prepayment_old]);
                 }
 
-                // Replace data di tbl_reimbust_detail
-                $this->db->replace('tbl_reimbust_detail', $data2);
+                // Replace data di sw_reimbust_detail
+                $this->db->replace('sw_reimbust_detail', $data2);
 
                 // mengubah is_active deklarasi awal menjadi 1, dan deklarasi baru menjadi 0
                 if (isset($deklarasi_old[$i])) {
                     if ($deklarasi_old[$i]) {
-                        $this->db->update('tbl_deklarasi', ['is_active' => 1], ['kode_deklarasi' => $deklarasi_old[$i]]);
-                        $this->db->update('tbl_deklarasi', ['is_active' => 0], ['kode_deklarasi' => $deklarasi[$i]]);
+                        $this->db->update('sw_deklarasi', ['is_active' => 1], ['kode_deklarasi' => $deklarasi_old[$i]]);
+                        $this->db->update('sw_deklarasi', ['is_active' => 0], ['kode_deklarasi' => $deklarasi[$i]]);
                     } else {
-                        $this->db->update('tbl_deklarasi', ['is_active' => 0], ['kode_deklarasi' => $deklarasi[$i]]);
+                        $this->db->update('sw_deklarasi', ['is_active' => 0], ['kode_deklarasi' => $deklarasi[$i]]);
                     }
                 }
             }
@@ -982,7 +980,7 @@ class Sw_reimbust extends CI_Controller
 
         //UPDATE APPROVAL PERTAMA
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_reimbust', $data);
+        $this->db->update('sw_reimbust', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -1006,7 +1004,7 @@ class Sw_reimbust extends CI_Controller
 
         //UPDATE APPROVAL PERTAMA
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_reimbust', $data);
+        $this->db->update('sw_reimbust', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -1030,7 +1028,7 @@ class Sw_reimbust extends CI_Controller
 
         // UPDATE APPROVAL 2
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_reimbust', $data);
+        $this->db->update('sw_reimbust', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -1039,7 +1037,7 @@ class Sw_reimbust extends CI_Controller
     {
         // UPDATE APPROVAL 2
         $this->db->where('id', $this->input->post('id'));
-        $this->db->update('tbl_reimbust', ['payment_status' => $this->input->post('payment_status')]);
+        $this->db->update('sw_reimbust', ['payment_status' => $this->input->post('payment_status')]);
 
         echo json_encode(array("status" => TRUE));
     }

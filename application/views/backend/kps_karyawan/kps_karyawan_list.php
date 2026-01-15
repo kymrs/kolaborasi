@@ -109,8 +109,8 @@
                     </a>
                     <select name="status_kerja" id="status_kerja" style="padding: 5px; width: 125px; float: right" class="form-control form-control-sm btn-primary btn-header">
                         <option value="">Semua Status</option>
-                        <option value="aktif">Aktif</option>
-                        <option value="nonaktif">Tidak Aktif</option>
+                        <option value="Aktif">Aktif</option>
+                        <option value="Non Aktif">Tidak Aktif</option>
                     </select>
                 </div>
                 <div class="card-body p-4">

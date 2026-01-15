@@ -119,7 +119,7 @@ class Pu_penawaran extends CI_Controller
 
             // Pass data to view
             $data['title'] = 'backend/pu_penawaran/pu_penawaran_read';
-            $data['title_view'] = 'Prepayment';
+            $data['title_view'] = 'Penawaran';
             $this->load->view('backend/home', $data);
         }
     }
@@ -143,7 +143,7 @@ class Pu_penawaran extends CI_Controller
 
         $data['id'] = $id;
         $data['aksi'] = 'update';
-        $data['title_view'] = "Edit Data Prepayment";
+        $data['title_view'] = "Edit Data Penawaran";
         $data['title'] = 'backend/pu_penawaran/pu_penawaran_form';
         $data['hotel'] = $this->db->get('pu_hotel')->result_array();
         $this->db->order_by('nama_layanan', 'ASC');
@@ -240,7 +240,8 @@ class Pu_penawaran extends CI_Controller
             'pkt_triple' => preg_replace('/\D/', '', $this->input->post('pkt_triple')),
             'pkt_double' => preg_replace('/\D/', '', $this->input->post('pkt_double')),
             'keberangkatan' => $this->input->post('keberangkatan'),
-            'kepulangan' => $this->input->post('kepulangan')
+            'kepulangan' => $this->input->post('kepulangan'),
+            'notes' => $this->input->post('notes')
         );
 
         // Simpan data ke tabel penawaran dan ambil ID penawaran yang baru disimpan
@@ -395,7 +396,8 @@ class Pu_penawaran extends CI_Controller
             'pkt_triple' => preg_replace('/\D/', '', $this->input->post('pkt_triple')),
             'pkt_double' => preg_replace('/\D/', '', $this->input->post('pkt_double')),
             'keberangkatan' => $this->input->post('keberangkatan'),
-            'kepulangan' => $this->input->post('kepulangan')
+            'kepulangan' => $this->input->post('kepulangan'),
+            'notes' => $this->input->post('notes')
         );
 
         // Update data penawaran
@@ -783,7 +785,7 @@ class Pu_penawaran extends CI_Controller
             if (isset($data_layanan_termasuk[$i])) {
                 $nomorTermasuk = $i + 1;
                 $t_cpdf->Cell(4, 5, $nomorTermasuk . '.', 0, 0, 'L'); // Nomor
-                $t_cpdf->Cell(106, 5, $data_layanan_termasuk[$i]['nama_layanan'], 0, 1, 'L'); // Nama layanan
+                $t_cpdf->MultiCell(100, 5, $data_layanan_termasuk[$i]['nama_layanan'], 0, 'L', 0, 1);
             } else {
                 $t_cpdf->Cell(110, 5, '', 0, 0); // Kosongkan cell jika data habis
             }
@@ -792,16 +794,18 @@ class Pu_penawaran extends CI_Controller
 
         $t_cpdf->SetY($colomn_layanan_Y - 5); // Pindahkan posisi ke kolom kanan
         $t_cpdf->SetX($right_column_x); // Pindahkan posisi ke kolom kanan
-        $t_cpdf->Cell(90, 5, 'Layanan Tidak Termasuk:', 0, 1, 'L'); // Header kanan
-        for ($i = 0; $i < count($data_layanan_tidak_termasuk); $i++) {
-            // Kolom Layanan Tidak Termasuk
-            if (isset($data_layanan_tidak_termasuk[$i])) {
-                $nomorTidakTermasuk = $i + 1;
-                $t_cpdf->SetX($right_column_x); // Pindahkan posisi ke kolom kanan
-                $t_cpdf->Cell(4, 5, $nomorTidakTermasuk . '.', 0, 0, 'L'); // Nomor
-                $t_cpdf->Cell(100, 5, $data_layanan_tidak_termasuk[$i]['nama_layanan'], 0, 1, 'L'); // Nama layanan
-            } else {
-                $t_cpdf->Cell(90, 5, '', 0, 1); // Kosongkan cell jika data habis
+        if (count($data_layanan_tidak_termasuk) > 0) {
+            $t_cpdf->Cell(90, 5, 'Layanan Tidak Termasuk:', 0, 1, 'L'); // Header kanan
+            for ($i = 0; $i < count($data_layanan_tidak_termasuk); $i++) {
+                // Kolom Layanan Tidak Termasuk
+                if (isset($data_layanan_tidak_termasuk[$i])) {
+                    $nomorTidakTermasuk = $i + 1;
+                    $t_cpdf->SetX($right_column_x); // Pindahkan posisi ke kolom kanan
+                    $t_cpdf->Cell(4, 5, $nomorTidakTermasuk . '.', 0, 0, 'L'); // Nomor
+                    $t_cpdf->MultiCell(70, 5, $data_layanan_tidak_termasuk[$i]['nama_layanan'], 0, 'L', 0, 1); // Nama layanan
+                } else {
+                    $t_cpdf->Cell(90, 5, '', 0, 1); // Kosongkan cell jika data habis
+                }
             }
         }
 
@@ -969,6 +973,13 @@ EOD;
 
         // Cetak tabel ke PDF dengan writeHTMLCell agar border tidak terpotong
         $t_cpdf->writeHTMLCell(0, 0, '', '', $html, 0, 1, false, true, '');
+
+        // Tambahkan bagian NOTES setelah rundown
+        $t_cpdf->Ln(5);
+        $t_cpdf->SetFont('poppins-regular', '', 11);
+
+        $notes = isset($penawaran->notes) ? $penawaran->notes : '';
+        $t_cpdf->MultiCell(0, 5, 'Note : ' . $notes, 0, 'L');
 
         // Output PDF (tampilkan di browser)
         $t_cpdf->Output('Penawaran', 'I'); // 'I' untuk menampilkan di browser

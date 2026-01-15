@@ -423,7 +423,7 @@ class Pu_invoice extends CI_Controller
 
         //UPDATE APPROVAL PERTAMA
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_prepayment_pu', $data);
+        $this->db->update('pu_prepayment', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -447,7 +447,7 @@ class Pu_invoice extends CI_Controller
 
         // UPDATE APPROVAL 2
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_prepayment_pu', $data);
+        $this->db->update('pu_prepayment', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -676,7 +676,7 @@ EOD;
     function payment()
     {
         $this->db->where('id', $this->input->post('id'));
-        $this->db->update('tbl_prepayment_pu', ['payment_status' => $this->input->post('payment_status')]);
+        $this->db->update('pu_prepayment', ['payment_status' => $this->input->post('payment_status')]);
 
         echo json_encode(array("status" => TRUE));
     }

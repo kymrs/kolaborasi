@@ -7,8 +7,8 @@ class M_prepayment_pu extends CI_Model
 {
     // INISIASI VARIABLE
     var $id = 'id';
-    var $table = 'tbl_prepayment_pu';
-    var $table2 = 'tbl_prepayment_detail_pu';
+    var $table = 'pu_prepayment';
+    var $table2 = 'pu_prepayment_detail';
     var $column_order = array(null, null, 'kode_prepayment', 'name', 'divisi', 'jabatan', 'tgl_prepayment', 'prepayment', 'total_nominal', 'payment_status', 'status');
     var $column_search = array('kode_prepayment', 'name', 'divisi', 'jabatan', 'tgl_prepayment', 'prepayment', 'total_nominal', 'payment_status', 'status'); //field yang diizin untuk pencarian
     var $order = array('id' => 'desc');
@@ -16,9 +16,9 @@ class M_prepayment_pu extends CI_Model
     // UNTUK QUERY DATA TABLE
     function _get_datatables_query()
     {
-        $this->db->select('tbl_prepayment_pu.*, tbl_data_user.name'); // Memilih kolom dari kedua tabel
+        $this->db->select('pu_prepayment.*, tbl_data_user.name'); // Memilih kolom dari kedua tabel
         $this->db->from($this->table);
-        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_prepayment_pu.id_user', 'left'); // JOIN dengan tabel tbl_user
+        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = pu_prepayment.id_user', 'left'); // JOIN dengan tabel tbl_user
 
         $i = 0;
         $alias = $this->session->userdata('username');
@@ -34,13 +34,13 @@ class M_prepayment_pu extends CI_Model
                     if ($item == 'name') {
                         $this->db->like('tbl_data_user.' . $item, $_POST['search']['value']);
                     } else {
-                        $this->db->like('tbl_prepayment_pu.' . $item, $_POST['search']['value']);
+                        $this->db->like('pu_prepayment.' . $item, $_POST['search']['value']);
                     }
                 } else {
                     if ($item == 'name') {
                         $this->db->or_like('tbl_data_user.' . $item, $_POST['search']['value']);
                     } else {
-                        $this->db->or_like('tbl_prepayment_pu.' . $item, $_POST['search']['value']);
+                        $this->db->or_like('pu_prepayment.' . $item, $_POST['search']['value']);
                     }
                 }
 
@@ -63,7 +63,7 @@ class M_prepayment_pu extends CI_Model
                 if ($alias != "eko") {
                     $this->db->where('app_status', 'waiting')
                         ->where('app2_status', 'waiting')
-                        ->or_where('tbl_prepayment_pu.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
+                        ->or_where('pu_prepayment.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
                         ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
                 } else {
                     $this->db->where('status = "on-process"');
@@ -77,7 +77,7 @@ class M_prepayment_pu extends CI_Model
                 if ($alias != "eko") {
                     $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
                         ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "revised")', NULL, FALSE)
-                        ->or_where('tbl_prepayment_pu.id_user =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
+                        ->or_where('pu_prepayment.id_user =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
                 } else {
                     $this->db->where('status = "revised"');
                 }
@@ -91,14 +91,14 @@ class M_prepayment_pu extends CI_Model
         // Tambahkan kondisi berdasarkan tab yang dipilih
         if (!empty($_POST['tab'])) {
             if ($_POST['tab'] == 'personal') {
-                $this->db->where('tbl_prepayment_pu.id_user', $this->session->userdata('id_user'));
+                $this->db->where('pu_prepayment.id_user', $this->session->userdata('id_user'));
             } elseif ($_POST['tab'] == 'employee') {
                 if ($alias != "eko") {
                     $this->db->group_start()
-                        ->where('tbl_prepayment_pu.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-                        ->where('tbl_prepayment_pu.id_user !=', $this->session->userdata('id_user'))
-                        ->or_where('tbl_prepayment_pu.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_prepayment_pu.app_status = 'approved'", FALSE)
-                        ->where('tbl_prepayment_pu.id_user !=', $this->session->userdata('id_user'))
+                        ->where('pu_prepayment.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                        ->where('pu_prepayment.id_user !=', $this->session->userdata('id_user'))
+                        ->or_where('pu_prepayment.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && pu_prepayment.app_status = 'approved'", FALSE)
+                        ->where('pu_prepayment.id_user !=', $this->session->userdata('id_user'))
                         ->group_end();
                 }
             }
@@ -131,9 +131,9 @@ class M_prepayment_pu extends CI_Model
 
     public function count_all()
     {
-        $this->db->select('tbl_prepayment_pu.*, tbl_data_user.name'); // Memilih kolom dari kedua tabel
+        $this->db->select('pu_prepayment.*, tbl_data_user.name'); // Memilih kolom dari kedua tabel
         $this->db->from($this->table);
-        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = tbl_prepayment_pu.id_user', 'left'); // JOIN dengan tabel tbl_user
+        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = pu_prepayment.id_user', 'left'); // JOIN dengan tabel tbl_user
         // Tambahkan pemfilteran berdasarkan status
         // Tambahkan pemfilteran berdasarkan status
         // Tambahkan kondisi jika id_user login sesuai dengan app2_name
@@ -148,7 +148,7 @@ class M_prepayment_pu extends CI_Model
                 if ($alias != "eko") {
                     $this->db->where('app_status', 'waiting')
                         ->where('app2_status', 'waiting')
-                        ->or_where('tbl_prepayment_pu.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
+                        ->or_where('pu_prepayment.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
                         ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
                 } else {
                     $this->db->where('status = "on-process"');
@@ -162,7 +162,7 @@ class M_prepayment_pu extends CI_Model
                 if ($alias != "eko") {
                     $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
                         ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "revised")', NULL, FALSE)
-                        ->or_where('tbl_prepayment_pu.id_user =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
+                        ->or_where('pu_prepayment.id_user =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
                 } else {
                     $this->db->where('status != "revised"');
                 }
@@ -176,14 +176,14 @@ class M_prepayment_pu extends CI_Model
         // Tambahkan kondisi berdasarkan tab yang dipilih
         if (!empty($_POST['tab'])) {
             if ($_POST['tab'] == 'personal') {
-                $this->db->where('tbl_prepayment_pu.id_user', $this->session->userdata('id_user'));
+                $this->db->where('pu_prepayment.id_user', $this->session->userdata('id_user'));
             } elseif ($_POST['tab'] == 'employee') {
                 if ($alias != "eko") {
                     $this->db->group_start()
-                        ->where('tbl_prepayment_pu.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-                        ->where('tbl_prepayment_pu.id_user !=', $this->session->userdata('id_user'))
-                        ->or_where('tbl_prepayment_pu.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_prepayment_pu.app_status = 'approved'", FALSE)
-                        ->where('tbl_prepayment_pu.id_user !=', $this->session->userdata('id_user'))
+                        ->where('pu_prepayment.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                        ->where('pu_prepayment.id_user !=', $this->session->userdata('id_user'))
+                        ->or_where('pu_prepayment.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && pu_prepayment.app_status = 'approved'", FALSE)
+                        ->where('pu_prepayment.id_user !=', $this->session->userdata('id_user'))
                         ->group_end();
                 }
             }
@@ -210,9 +210,9 @@ class M_prepayment_pu extends CI_Model
     {
         $formatted_date = date('ym', strtotime($date));
         $this->db->select('kode_prepayment');
-        $where = 'id=(SELECT max(id) FROM tbl_prepayment_pu where SUBSTRING(kode_prepayment, 2, 4) = ' . $formatted_date . ')';
+        $where = 'id=(SELECT max(id) FROM pu_prepayment where SUBSTRING(kode_prepayment, 2, 4) = ' . $formatted_date . ')';
         $this->db->where($where);
-        $query = $this->db->get('tbl_prepayment_pu');
+        $query = $this->db->get('pu_prepayment');
         return $query;
     }
 
@@ -257,6 +257,6 @@ class M_prepayment_pu extends CI_Model
     // OPSI REKENING
     public function options($id)
     {
-        return $this->db->distinct()->select('no_rek')->where('id_user', $id)->from('tbl_prepayment_pu')->get();
+        return $this->db->distinct()->select('no_rek')->where('id_user', $id)->from('pu_prepayment')->get();
     }
 }

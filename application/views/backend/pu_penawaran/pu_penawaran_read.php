@@ -9,6 +9,7 @@
 
 <body>
     <div class="container">
+        <a class="btn btn-secondary btn-sm float-right" style="background-color: rgb(36, 44, 73);" href="<?= base_url('pu_penawaran') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
         <div class="canvas">
             <div class="header-logo">
                 <img src="<?= base_url('assets/backend/img/header.png') ?>" alt="header pengenumroh">
@@ -89,6 +90,7 @@
                             </ol>
                         </div>
                         <div class="right-side">
+                            <?php if($layanan_tidak_termasuk) : ?>
                             <p>Layanan Tidak Termasuk :</p>
                             <ol>
                                 <?php foreach ($layanan_tidak_termasuk as $data) : ?>
@@ -104,6 +106,7 @@
                                     <?php endif ?>
                                 <?php endforeach ?>
                             </ol>
+                            <?php endif; ?>
                             <div class="extra-content">
                                 <table>
                                     <?php foreach ($hotel as $data) : ?>
@@ -182,7 +185,7 @@
                             </ol>
                         </div>
                         <div class="right-side">
-                            <ol>
+                            <ol start="5">
                                 <li>Gratis Handling Keberangkatan</li>
                                 <li>Gratis Handling Kepulangan</li>
                                 <li>Jaminan Pasti Berangkat</li>
@@ -218,6 +221,7 @@
                     <?php endforeach ?>
                 </table>
             </main>
+            <p style="margin: 0 16px 16px 16px">Note : <?= $penawaran['notes'] ?></p>
             <div class="footer-logo">
                 <img src="<?= base_url('assets/backend/img/footer.png') ?>" alt="footer pengenumroh">
             </div>

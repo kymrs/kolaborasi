@@ -52,7 +52,7 @@ class Pu_prepayment extends CI_Controller
             ->get()
             ->row('name');
         $data['approval'] = $this->db->select('COUNT(*) as total_approval')
-            ->from('tbl_prepayment_pu')
+            ->from('pu_prepayment')
             ->where('app_name', $name)
             ->or_where('app2_name', $name)
             ->get()
@@ -355,14 +355,14 @@ class Pu_prepayment extends CI_Controller
         $rincian = $this->input->post('rincian[]');
         $nominal = $this->input->post('hidden_nominal[]');
         $keterangan = $this->input->post('keterangan[]');
-        if ($this->db->update('tbl_prepayment_pu', $data)) {
+        if ($this->db->update('pu_prepayment', $data)) {
             // UNTUK MENGHAPUS ROW YANG TELAH DIDELETE
             $deletedRows = json_decode($this->input->post('deleted_rows'), true);
             if (!empty($deletedRows)) {
                 foreach ($deletedRows as $id2) {
                     // Hapus row dari database berdasarkan ID
                     $this->db->where('id', $id2);
-                    $this->db->delete('tbl_prepayment_detail_pu');
+                    $this->db->delete('pu_prepayment_detail');
                 }
             }
 
@@ -378,7 +378,7 @@ class Pu_prepayment extends CI_Controller
                     'keterangan' => $keterangan[$i]
                 );
                 // Menggunakan db->replace untuk memasukkan atau menggantikan data
-                $this->db->replace('tbl_prepayment_detail_pu', $data2[$i - 1]);
+                $this->db->replace('pu_prepayment_detail', $data2[$i - 1]);
             }
         }
         echo json_encode(array("status" => TRUE));
@@ -412,7 +412,7 @@ class Pu_prepayment extends CI_Controller
 
         //UPDATE APPROVAL PERTAMA
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_prepayment_pu', $data);
+        $this->db->update('pu_prepayment', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -436,7 +436,7 @@ class Pu_prepayment extends CI_Controller
 
         // UPDATE APPROVAL 2
         $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('tbl_prepayment_pu', $data);
+        $this->db->update('pu_prepayment', $data);
 
         echo json_encode(array("status" => TRUE));
     }
@@ -669,7 +669,7 @@ class Pu_prepayment extends CI_Controller
     function payment()
     {
         $this->db->where('id', $this->input->post('id'));
-        $this->db->update('tbl_prepayment_pu', ['payment_status' => $this->input->post('payment_status')]);
+        $this->db->update('pu_prepayment', ['payment_status' => $this->input->post('payment_status')]);
 
         echo json_encode(array("status" => TRUE));
     }

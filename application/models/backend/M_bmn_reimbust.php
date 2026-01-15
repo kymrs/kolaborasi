@@ -333,7 +333,7 @@ class M_bmn_reimbust extends CI_Model
                 $this->db->group_start()
                     ->where('bmn_prepayment.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
                     ->where('bmn_prepayment.id_user !=', $this->session->userdata('id_user'))
-                    ->or_where('bmn_prepayment.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_prepayment.app_status = 'approved'", FALSE)
+                    ->or_where('bmn_prepayment.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && sw_prepayment.app_status = 'approved'", FALSE)
                     ->where('bmn_prepayment.id_user !=', $this->session->userdata('id_user'))
                     ->group_end();
             }
@@ -423,7 +423,7 @@ class M_bmn_reimbust extends CI_Model
 
     public function delete($id)
     {
-        // Ambil data tbl_reimbust_detail berdasarkan reimbust_id
+        // Ambil data bmn_reimbust_detail berdasarkan reimbust_id
         $detail = $this->db->get_where('bmn_reimbust_detail', ['reimbust_id' => $id])->result_array();
 
         // untuk menghapus file gambar
@@ -450,7 +450,7 @@ class M_bmn_reimbust extends CI_Model
             }
         }
 
-        // Ambil data tbl_reimbust berdasarkan reimbust_id
+        // Ambil data bmn_reimbust berdasarkan reimbust_id
         $reimbust = $this->db->get_where('bmn_reimbust', ['id' => $id])->row_array();
 
         // ambil data prepayment pada table reimbust

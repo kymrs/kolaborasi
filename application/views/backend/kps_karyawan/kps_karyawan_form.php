@@ -247,7 +247,9 @@
                                     <div class="col-sm-7">
                                         <select id="gol_darah" name="gol_darah" class="form-control">
                                             <option value="" hidden>Pilih Golongan Darah</option>
+                                            <option value="-">-</option>
                                             <option value="A">A</option>
+                                            <option value="A+">A+</option>
                                             <option value="B">B</option>
                                             <option value="AB">AB</option>
                                             <option value="O">O</option>
@@ -266,6 +268,7 @@
                                     <div class="col-sm-7">
                                         <select id="lokasi_kerja" name="lokasi_kerja" class="form-control">
                                             <option value="" hidden>Pilih Lokasi Kerja</option>
+                                            <option value="HEAD OFFICE">Head Office</option>
                                             <option value="Kantor Pusat">Kantor Pusat</option>
                                             <option value="Cabang">Cabang</option>
                                         </select>
@@ -275,6 +278,7 @@
                                     <label for="wilayah_kerja" class="col-sm-5 col-form-label">Wilayah Kerja</label>
                                     <div class="col-sm-7">
                                         <select id="wilayah_kerja" name="wilayah_kerja" class="form-control">
+                                            <option value="HEAD OFFICE">Head Office</option>
                                             <option value="" hidden>Pilih Wilayah Kerja</option>
                                             <option value="Nasional">Nasional</option>
                                             <option value="Bogor (Jabar 1)">Bogor (Jabar 1)</option>
@@ -346,10 +350,11 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="posisi" class="col-sm-5 col-form-label">Unit Bisnis</label>
+                                    <label for="unit_bisnis" class="col-sm-5 col-form-label">Unit Bisnis</label>
                                     <div class="col-sm-7">
                                         <select id="unit_bisnis" name="unit_bisnis" class="form-control">
                                             <option value="" hidden>Pilih Unit Bisnis</option>
+                                            <option value="-">-</option>
                                             <option value="KPS">Kolaborasi Para Sahabat</option>
                                             <option value="sebelaswarna">sebelaswarna</option>
                                             <option value="pengenumroh">pengenumroh</option>
@@ -367,11 +372,17 @@
                                     <div class="col-sm-7">
                                         <select name="posisi" id="posisi" class="form-control" required>
                                             <option value="" hidden>Pilih Posisi</option>
+                                            <option value="Director">Director</option>
+                                            <option value="Finance Manager">Finance Manager</option>
+                                            <option value="HCGA Manager">HCGA Manager</option>
+                                            <option value="Customer Service">Customer Service</option>
+                                            <option value="IT Support">IT Support</option>
+                                            <option value="Staff Human Capital">Staff Human Capital</option>
+                                            <option value="Recruitment & Training Development Officer">Recruitment & Training Development Officer</option>
                                             <option value="Admin HRD">Admin HRD</option>
                                             <option value="Staff Keuangan">Staff Keuangan</option>
                                             <option value="Marketing Digital">Marketing Digital</option>
                                             <option value="Teknisi Lapangan">Teknisi Lapangan</option>
-                                            <option value="Customer Service">Customer Service</option>
                                             <option value="Content Writer">Content Writer</option>
                                             <option value="Operator Produksi">Operator Produksi</option>
                                             <option value="Driver">Driver</option>
@@ -386,6 +397,8 @@
                                             <option value="" hidden>Pilih Jabatan</option>
                                             <option value="Magang">Magang / Intern</option>
                                             <option value="Staff">Staff</option>
+                                            <option value="Junior Administrator">Junior Administrator</option>
+                                            <option value="Administrator">Administrator</option>
                                             <option value="Supervisor">Supervisor</option>
                                             <option value="Asisten Manager">Asisten Manager</option>
                                             <option value="Manager">Manager</option>
@@ -394,7 +407,7 @@
                                             <option value="Kepala Bagian">Kepala Bagian</option>
                                             <option value="Kepala Cabang">Kepala Cabang</option>
                                             <option value="Kepala Unit">Kepala Unit</option>
-                                            <option value="Direktur">Direktur</option>
+                                            <option value="Director">Director</option>
                                             <option value="Wakil Direktur">Wakil Direktur</option>
                                             <option value="Direktur Utama">Direktur Utama</option>
                                             <option value="Presiden Direktur">Presiden Direktur</option>
@@ -419,13 +432,15 @@
                                     <div class="col-sm-7">
                                         <select name="department" id="department" class="form-control">
                                             <option value="" hidden>Pilih Departement</option>
-                                            <optixon value="HRD">HRD</optixon>
-                                            <option value="Finance">Finance</option>
+                                            <option value="Human Capital">Human Capital</option>
+                                            <option value="Finance and Accounting">Finance and Accounting</option>
+                                            <option value="Business Support">Business Support</option>
+                                            <option value="Marketing">Marketing</option>
                                             <option value="Customer Service">Customer Service</option>
-                                            <option value="IT">IT</option>
+                                            <option value="Information Technology">Information Technology</option>
                                             <option value="Marketing">Marketing</option>
                                             <option value="Produksi">Produksi</option>
-                                            <option value="Operasional">Operasional</option>
+                                            <option value="Operational">Operational</option>
                                             <option value="Logistik">Logistik</option>
                                             <option value="Purchasing">Purchasing</option>
                                             <option value="R&D">R&D</option>
@@ -488,8 +503,8 @@
                                     <div class="col-sm-7">
                                         <select class="form-control" name="status_karyawan" id="status_karyawan">
                                             <option value="" selected hidden>Pilih Status Karyawan</option>
-                                            <option value="kontrak">Kontrak</option>
-                                            <option value="permanen">Permanen</option>
+                                            <option value="Kontrak">Kontrak</option>
+                                            <option value="Permanen">Permanen</option>
                                         </select>
                                     </div>
                                 </div>

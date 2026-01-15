@@ -664,14 +664,9 @@
                         const baseUrl = '<?= base_url() ?>assets/backend/document/reimbust/kwitansi_mac/';
                         const fileUrl = baseUrl + kwitansi;
 
-                        // Jika PDF -> force download
+                        // Jika PDF -> preview
                         if (ext === 'pdf') {
-                            const link = document.createElement('a');
-                            link.href = fileUrl;
-                            link.download = kwitansi;
-                            document.body.appendChild(link);
-                            link.click();
-                            document.body.removeChild(link);
+                            window.open(fileUrl, '_blank');
                             return;
                         }
 

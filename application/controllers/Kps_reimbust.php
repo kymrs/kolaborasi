@@ -984,7 +984,7 @@ class Kps_reimbust extends CI_Controller
                     $this->db->update('kps_prepayment', ['is_active' => 1], ['kode_prepayment' => $kode_prepayment_old]);
                 }
 
-                // Replace data di tbl_reimbust_detail
+                // Replace data di tabel
                 $this->db->replace('kps_reimbust_detail', $data2);
 
                 // mengubah is_active deklarasi awal menjadi 1, dan deklarasi baru menjadi 0

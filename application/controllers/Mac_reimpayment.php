@@ -1003,7 +1003,7 @@ class Mac_reimpayment extends CI_Controller
     //                 $this->db->update('mac_prepayment', ['is_active' => 1], ['kode_prepayment' => $kode_prepayment_old]);
     //             }
 
-    //             // Replace data di tbl_reimbust_detail
+    //             // Replace data di 
     //             $this->db->replace('mac_reimbust_detail', $data2);
 
     //             // mengubah is_active deklarasi awal menjadi 1, dan deklarasi baru menjadi 0

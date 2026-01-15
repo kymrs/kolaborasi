@@ -983,7 +983,7 @@ class Swi_reimbust extends CI_Controller
                     $this->db->update('swi_prepayment', ['is_active' => 1], ['kode_prepayment' => $kode_prepayment_old]);
                 }
 
-                // Replace data di tbl_reimbust_detail
+                // Replace data di swi_reimbust_detail
                 $this->db->replace('swi_reimbust_detail', $data2);
 
                 // mengubah is_active deklarasi awal menjadi 1, dan deklarasi baru menjadi 0

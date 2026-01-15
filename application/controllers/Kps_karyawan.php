@@ -62,13 +62,28 @@ class Kps_karyawan extends CI_Controller
             $row = array();
             $row[] = $no;
             $row[] = $action;
-            $row[] = $field->npk;
+            if (empty($field->npk) || strlen($field->npk) == 1) {
+                $row[] = '-';
+            } else {
+                $row[] = $field->npk;
+            }
             $row[] = $field->nama_lengkap;
             $row[] = ucfirst($field->jenis_kelamin);
+
             $row[] = $field->tempat_lahir;
-            $row[] = date('d-m-Y', strtotime($field->tgl_lahir));
+            // Cek tgl_lahir tidak kosong/null sebelum format
+            if (!empty($field->tgl_lahir)) {
+                $row[] = date('d-m-Y', strtotime($field->tgl_lahir));
+            } else {
+                $row[] = '-';
+            }
             $row[] = $field->umur;
-            $row[] = date('H:i:s d-m-Y', strtotime($field->created_at));;
+            // Cek created_at tidak kosong/null sebelum format
+            if (!empty($field->created_at)) {
+                $row[] = date('H:i:s d-m-Y', strtotime($field->created_at));
+            } else {
+                $row[] = '-';
+            }
 
             $data[] = $row;
         }
@@ -91,7 +106,10 @@ class Kps_karyawan extends CI_Controller
                 1 => 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
                 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
             ];
-
+            // Cek tanggal tidak kosong/null sebelum proses
+            if (empty($tanggal)) {
+                return '-';
+            }
             $pecah = explode('-', date('Y-m-d', strtotime($tanggal)));
             $tahun = $pecah[0];
             $bulan_angka = (int)$pecah[1];
@@ -133,13 +151,22 @@ class Kps_karyawan extends CI_Controller
             $row = array();
             $row[] = $no;
             $row[] = $action;
-            $row[] = $field->npk;
+            if (empty($field->npk) || strlen($field->npk) == 1) {
+                $row[] = '-';
+            } else {
+                $row[] = $field->npk;
+            }
             $row[] = $field->nama_lengkap;
-            $row[] = ucfirst($field->jenis_kelamin);
-            $row[] = tanggal_indo($field->tgl_lahir);
-            $row[] = tanggal_indo($field->jk_awal);
-            $row[] = tanggal_indo($field->jk_akhir);
-            $row[] = date('H:i:s d-m-Y', strtotime($field->created_at_pkwt));
+            // Cek jenis_kelamin tidak null sebelum ucfirst
+            $row[] = !empty($field->jenis_kelamin) ? ucfirst($field->jenis_kelamin) : '-';
+            // Cek tgl_lahir tidak null sebelum tanggal_indo
+            $row[] = !empty($field->tgl_lahir) ? tanggal_indo($field->tgl_lahir) : '-';
+            // Cek jk_awal tidak null sebelum tanggal_indo
+            $row[] = !empty($field->jk_awal) ? tanggal_indo($field->jk_awal) : '-';
+            // Cek jk_akhir tidak null sebelum tanggal_indo
+            $row[] = !empty($field->jk_akhir) ? tanggal_indo($field->jk_akhir) : '-';
+            // Cek created_at_pkwt tidak null sebelum strtotime
+            $row[] = !empty($field->created_at_pkwt) ? date('H:i:s d-m-Y', strtotime($field->created_at_pkwt)) : '-';
 
             $data[] = $row;
         }
@@ -208,7 +235,7 @@ class Kps_karyawan extends CI_Controller
 
     function edit_form($id)
     {
-        $data['id'] = $id;
+        $data['id'] = $id;  
         $data['aksi'] = 'edit';
         $data['id_master'] = $id;
         $data['master'] = $this->M_kps_karyawan->get_by_id($id);
@@ -767,7 +794,7 @@ class Kps_karyawan extends CI_Controller
         $data = [
             'no_perjanjian' => $this->input->post('no_perjanjian'),
             'id_user' => $this->input->post('id_user'),
-            'npk' => $npk,
+            'npk' => $npk,  
             'jk_awal' => date('Y-m-d', strtotime($this->input->post('jk_awal'))),
             'jk_akhir' => date('Y-m-d', strtotime($this->input->post('jk_akhir'))),
             'hari' => $this->input->post('hari'),

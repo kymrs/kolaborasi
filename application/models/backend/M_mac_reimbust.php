@@ -345,7 +345,7 @@ class M_mac_reimbust extends CI_Model
                 $this->db->group_start()
                     ->where('mac_prepayment.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
                     ->where('mac_prepayment.id_user !=', $this->session->userdata('id_user'))
-                    ->or_where('mac_prepayment.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && tbl_prepayment.app_status = 'approved'", FALSE)
+                    ->or_where('mac_prepayment.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && sw_prepayment.app_status = 'approved'", FALSE)
                     ->where('mac_prepayment.id_user !=', $this->session->userdata('id_user'))
                     ->group_end();
             }

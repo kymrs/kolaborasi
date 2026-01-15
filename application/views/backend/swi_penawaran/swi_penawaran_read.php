@@ -1,5 +1,32 @@
 <?php $this->load->view('template/header'); ?>
 
+<?php
+// Helper function untuk format tanggal bahasa Indonesia
+function format_date_indo($date_str) {
+    $bulan = array(
+        1 => 'Januari',
+        2 => 'Februari', 
+        3 => 'Maret',
+        4 => 'April',
+        5 => 'Mei',
+        6 => 'Juni',
+        7 => 'Juli',
+        8 => 'Agustus',
+        9 => 'September',
+        10 => 'Oktober',
+        11 => 'November',
+        12 => 'Desember'
+    );
+    
+    $date = new DateTime($date_str);
+    $hari = $date->format('d');
+    $bulan_num = (int)$date->format('m');
+    $tahun = $date->format('Y');
+    
+    return $hari . ' ' . $bulan[$bulan_num] . ' ' . $tahun;
+}
+?>
+
 <head>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -8,7 +35,7 @@
 </head>
 
 <body>
-    <a class="btn btn-secondary btn-sm btn-back" onclick="history.back()"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+    <a class="btn btn-primary btn-sm btn-back" onclick="history.back()"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
     <div style="clear: both;"></div>
     <div class="container">
         <div class="canvas-bg-swi-penawaran">
@@ -19,12 +46,12 @@
                         <tr>
                             <td>No</td>
                             <td>:</td>
-                            <td>2525875456</td>
+                            <td><?= $data['kode'] ?></td>
                         </tr>
                         <tr>
                             <td>Tgl</td>
                             <td>:</td>
-                            <td>12 Februari 1893</td>
+                            <td><?= format_date_indo($data['created_at']) ?></td>
                         </tr>
                         <tr>
                             <td>Perihal</td>
@@ -55,15 +82,28 @@
                         <span style="width: 24%;">KETERANGAN</span>
                     </div>
                     <div class="data-container">
-                        <?php foreach ($data_detail as $data) : ?>
+                        <?php foreach ($data_detail as $detail) : ?>
                             <div class="data"> 
-                                <span style="width: 37%;"><?= date('d F Y', strtotime($data['tgl_keberangkatan'])) ?></span>
-                                <span style="width: 15%; position: relative; right: 25px"><?= $data['jenis'] ?></span>
-                                <span style="width: 15%; position: relative; right: 5px"><?= $data['jumlah'] ?></span>
-                                <span style="width: 24%;"><?= number_format($data['harga'], 0, ',', '.') ?></span>
-                                <span style="width: 24%;"><?= $data['keterangan'] ?></span>
+                                <span style="width: 37%;"><?= date('d F Y', strtotime($detail['tgl_keberangkatan'])) ?></span>
+                                <span style="width: 15%; position: relative; right: 25px"><?= $detail['jenis'] ?></span>
+                                <span style="width: 15%; position: relative; right: 5px"><?= $detail['jumlah'] ?></span>
+                                <span style="width: 24%;"><?= number_format($detail['harga'], 0, ',', '.') ?></span>
+                                <span style="width: 24%;"><?= $detail['keterangan'] ?></span>
                             </div>
                         <?php endforeach ?>
+                        <div class="data" style="font-weight: bold;">
+                            <span style="width: 37%;"></span>
+                            <span style="width: 15%; position: relative; right: 25px"></span>
+                            <span style="width: 15%; position: relative; right: 5px"></span>
+                            <span style="width: 24%;">Total</span>
+                            <span style="width: 24%;"><?php 
+                                $total = 0;
+                                foreach ($data_detail as $detail) {
+                                    $total += $detail['jumlah'] * $detail['harga'];
+                                }
+                                echo number_format($total, 0, ',', '.');
+                            ?></span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -72,8 +112,12 @@
                 <ul>
                     <li>DP Minimal 30%</li>
                     <li>Pelunasan H-5 sebelum hari keberangkatan</li>
-                    <li>Pembayaran melalui transfer ke BCA PT Quick Project Indonesia dengan nomor rekening 713 172 8003</li>
                     <li>Harga dan ketersediaan unit tidak mengikat jika tidak melakukan pembayaran DP</li>
+                    <li>Pembayaran melalui transfer dengan nomor rekening :</li>
+                    <li style="list-style: none;">BCA</li>
+                    <li style="list-style: none;">713 225 2222 - SOBAT WISATA DUNIA PT</li>
+                    <li style="list-style: none;">MANDIRI</li>
+                    <li style="list-style: none;">127 001 463 6029 - PT SOBAT WISATA DUNIA</li>
                 </ul>
                 Demikian Surat penawaran harga ini kami buat, kami tunggu kabar baik dari Bapak/Ibu, atas perhatiannya kamu ucapkan terimakasih.
                 <div class="sign">

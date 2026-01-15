@@ -75,7 +75,81 @@ class Auth extends CI_Controller
 		}
 	}
 
-	public function logout()
+	public function change_password()
+	{
+		header('Content-Type: application/json', true);
+
+		try {
+			// Check if user is logged in
+			if (!$this->session->userdata('log')) {
+				http_response_code(401);
+				echo json_encode(array('success' => false, 'message' => 'User tidak ter-autentikasi'));
+				return;
+			}
+
+			// Get input from POST
+			$current_password = $this->input->post('current_password', TRUE);
+			$new_password = $this->input->post('new_password', TRUE);
+			$confirm_password = $this->input->post('confirm_password', TRUE);
+			$username = $this->session->userdata('username');
+
+			// Validasi input tidak kosong
+			if (empty($current_password) || empty($new_password) || empty($confirm_password)) {
+				echo json_encode(array('success' => false, 'message' => 'Semua field harus diisi!'));
+				return;
+			}
+
+			// Validasi password minimal 6 karakter
+			if (strlen($new_password) < 3) {
+				echo json_encode(array('success' => false, 'message' => 'Password baru minimal 3 karakter!'));
+				return;
+			}
+
+			// Validasi password cocok
+			if ($new_password !== $confirm_password) {
+				echo json_encode(array('success' => false, 'message' => 'Password baru dan konfirmasi tidak cocok!'));
+				return;
+			}
+
+			// Get user dari database
+			$user = $this->db->select('password')
+				->from('tbl_user')
+				->where('username', $username)
+				->get()
+				->row();
+
+			if (!$user) {
+				echo json_encode(array('success' => false, 'message' => 'User tidak ditemukan!'));
+				return;
+			}
+
+			// Verify current password
+			$current_password_hash = md5($current_password);
+			if ($user->password !== $current_password_hash) {
+				echo json_encode(array('success' => false, 'message' => 'Password saat ini salah!'));
+				return;
+			}
+
+			// Update password baru
+			$new_password_hash = md5($new_password);
+			$update = $this->db->update('tbl_user', 
+				array('password' => $new_password_hash), 
+				array('username' => $username)
+			);
+
+			if ($update) {
+				echo json_encode(array('success' => true, 'message' => 'Password berhasil diubah!'));
+			} else {
+				echo json_encode(array('success' => false, 'message' => 'Gagal mengubah password!'));
+			}
+
+		} catch (Exception $e) {
+			http_response_code(500);
+			echo json_encode(array('success' => false, 'message' => 'Error: ' . $e->getMessage()));
+		}
+	}
+
+	function logout()
 	{
 		// $this->session->unset_userdata('username');
 		$this->session->sess_destroy();

@@ -388,6 +388,16 @@ function file_exists_rel($relPath, $filename)
                     <td><?= $master->alamat_ktp ?></td>
                 </tr>
                 <tr>
+                    <th><i class="fas fa-phone"></i> Keluarga Serumah</th>
+                    <th>:</th>
+                    <td><?= $master->telp_klrga_serumah ?></td>
+                </tr>
+                <tr>
+                    <th><i class="fas fa-phone"></i> Tidak Serumah</th>
+                    <th>:</th>
+                    <td><?= $master->telp_klrga_tdk_serumah ?></td>
+                </tr>
+                <tr>
                     <th>Domisili</th>
                     <th>:</th>
                     <td><?= $master->domisili ?></td>
@@ -457,7 +467,11 @@ function file_exists_rel($relPath, $filename)
                 <tr>
                     <th>NPK</th>
                     <th>:</th>
-                    <td><?= $master->npk ?></td>
+                    <?php if (empty($master->npk) || strlen($master->npk) == 1) { ?>
+                        <td>-</td>
+                    <?php } else { ?>
+                        <td><?= $master->npk ?></td>
+                    <?php } ?>
                 </tr>
                 <tr>
                     <th>Lokasi Kerja</th>
@@ -495,7 +509,7 @@ function file_exists_rel($relPath, $filename)
                     <td><?= $master->unit_bisnis ?></td>
                 </tr>
                 <tr>
-                    <th>Tanggal Rekrut</th>
+                    <th>Tanggal Rekrut</th> 
                     <th>:</th>
                     <td><?= formatTanggalIndo($master->tgl_rekrut) ?></td>
                 </tr>
