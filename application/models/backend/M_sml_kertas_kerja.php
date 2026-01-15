@@ -6,9 +6,9 @@ if (!defined('BASEPATH'))
 class M_sml_kertas_kerja extends CI_Model
 {
     var $id = 'id';
-    var $table = 'sml_kertas_kerja'; //nama tabel dari database
-    var $column_order = array(null, null);
-    var $column_search = array(); //field yang diizin untuk pencarian 
+    var $table = 'sml_kertas_Kerja'; //nama tabel dari database
+    var $column_order = array(null, null, 'no_dok', 'agenda', 'date', 'start_time', 'end_time', 'lokasi', 'peserta');
+    var $column_search = array('no_dok', 'agenda', 'date', 'start_time', 'end_time', 'lokasi', 'peserta'); //field yang diizin untuk pencarian 
     var $order = array('id' => 'desc'); // default order 
 
     public function __construct()
@@ -19,6 +19,7 @@ class M_sml_kertas_kerja extends CI_Model
     private function _get_datatables_query()
     {
 
+        $this->db->where('user', $this->session->userdata('fullname'));
         $this->db->from($this->table);
 
         $i = 0;
@@ -69,6 +70,9 @@ class M_sml_kertas_kerja extends CI_Model
     public function count_all()
     {
         $this->db->from($this->table);
+        if ($this->session->userdata('core') != "all") {
+            $this->db->where('user', $this->session->userdata('fullname'));
+        }
         return $this->db->count_all_results();
     }
 

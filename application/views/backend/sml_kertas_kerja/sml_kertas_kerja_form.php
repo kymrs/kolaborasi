@@ -19,24 +19,507 @@
                 </div>
                 <div class="card-body">
                     <form id="form">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group row">
-                                    <label class="col-sm-3">No. Dokumen</label>
-                                    <div class="col-sm-9">
-                                        <input type="text" class="form-control" id="no_dok" name="no_dok">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group row">
-                                    <label class="col-sm-3">No. Dokumen</label>
-                                    <div class="col-sm-9">
-                                        <input type="text" class="form-control" id="no_dok" name="no_dok">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+
+<div class="row" id="marketing">
+
+    <div class="col-md-6">
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">No. Dokumen</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="no_dok" name="no_dok" placeholder="Otomatis / Input Manual">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">Periode</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="periode" name="periode" placeholder="Contoh: Jan-2024">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">Tanggal Input</label>
+            <div class="col-sm-8">
+                <input type="date" class="form-control" id="tanggal" name="tanggal">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">Konsumen</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="konsumen" name="konsumen" placeholder="Nama Customer">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">Project</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="project" name="project" placeholder="Nama Project">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">No. SPK/DO</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="no_spk_do" name="no_spk_do" placeholder="Nomor Referensi">
+            </div>
+        </div>
+        
+        <hr class="my-4" style="border-top: 1px dashed #ccc;">
+
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">Origin (Asal)</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="origin" name="origin" placeholder="Kota Asal">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">Destinasi (Tujuan)</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="destinasi" name="destinasi" placeholder="Kota Tujuan">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">Wilayah</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="wilayah" name="wilayah">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">Jenis Unit</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="jenis_unit" name="jenis_unit" placeholder="CDE / CDD / Fuso">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">Service</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="service" name="service" placeholder="Charter / Reguler">
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">Tipe Kiriman</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="tipe_kiriman" name="tipe_kiriman">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">Tgl. Muat</label>
+            <div class="col-sm-8">
+                <input type="date" class="form-control" id="tgl_muat" name="tgl_muat">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">Qty</label>
+            <div class="col-sm-8">
+                <input type="number" class="form-control" id="qty" name="qty" placeholder="0">
+            </div>
+        </div>
+
+        <div class="p-2 mb-3 mt-3 rounded" style="background-color: #f8fbff; border: 1px solid #e9ecef;">
+            <div class="form-group row mb-2">
+                <label class="col-sm-4 col-form-label font-weight-bold text-primary">Selling Base</label>
+                <div class="col-sm-8">
+                    <div class="input-group">
+                        <div class="input-group-prepend"><span class="input-group-text bg-white">Rp</span></div>
+                        <input type="number" class="form-control" id="selling" name="selling">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row mb-2">
+                <label class="col-sm-4 col-form-label small text-muted">Multidrop Selling</label>
+                <div class="col-sm-8">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-prepend"><span class="input-group-text bg-white">Rp</span></div>
+                        <input type="number" class="form-control" id="multidrop_selling" name="multidrop_selling">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row mb-2">
+                <label class="col-sm-4 col-form-label small text-muted">TKBM Selling</label>
+                <div class="col-sm-8">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-prepend"><span class="input-group-text bg-white">Rp</span></div>
+                        <input type="number" class="form-control" id="tkbm_selling" name="tkbm_selling">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row mb-0">
+                <label class="col-sm-4 col-form-label small text-muted">Inap Selling</label>
+                <div class="col-sm-8">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-prepend"><span class="input-group-text bg-white">Rp</span></div>
+                        <input type="number" class="form-control" id="inap_selling" name="inap_selling">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-2 mb-2 rounded" style="background-color: #fffbfb; border: 1px solid #e9ecef;">
+            <div class="form-group row mb-2">
+                <label class="col-sm-4 col-form-label font-weight-bold text-danger">Buying / UJ</label>
+                <div class="col-sm-8">
+                    <div class="input-group">
+                        <div class="input-group-prepend"><span class="input-group-text bg-white">Rp</span></div>
+                        <input type="number" class="form-control" id="buying_uj" name="buying_uj">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row mb-2">
+                <label class="col-sm-4 col-form-label small text-muted">Multidrop Buying</label>
+                <div class="col-sm-8">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-prepend"><span class="input-group-text bg-white">Rp</span></div>
+                        <input type="number" class="form-control" id="multidrop_buying" name="multidrop_buying">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row mb-2">
+                <label class="col-sm-4 col-form-label small text-muted">TKBM Buying</label>
+                <div class="col-sm-8">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-prepend"><span class="input-group-text bg-white">Rp</span></div>
+                        <input type="number" class="form-control" id="tkbm_buying" name="tkbm_buying">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row mb-0">
+                <label class="col-sm-4 col-form-label small text-muted">Inap Buying</label>
+                <div class="col-sm-8">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-prepend"><span class="input-group-text bg-white">Rp</span></div>
+                        <input type="number" class="form-control" id="inap_buying" name="inap_buying">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 mt-4 mb-4">
+        <div class="form-group row p-3 rounded" style="background-color: #e9ecef;">
+            <label class="col-sm-2 col-form-label font-weight-bold text-dark">TOTAL MARGIN</label>
+            <div class="col-sm-10">
+                <div class="input-group input-group-lg">
+                    <div class="input-group-prepend"><span class="input-group-text font-weight-bold">Rp</span></div>
+                    <input type="number" class="form-control font-weight-bold text-success" id="margin" name="margin" readonly placeholder="Auto Calculated">
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row" id="plotting">
+
+    <div class="col-md-6">
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">ID Asset</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="id_asset" name="id_asset" placeholder="Kode Asset">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">No. Polisi (Nopol)</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="nopol" name="nopol" placeholder="B 1234 XYZ">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">Tipe Unit</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="tipe_unit" name="tipe_unit" placeholder="Contoh: Wingbox / CDE">
+            </div>
+        </div>
+
+        <hr class="my-3" style="border-top: 1px dashed #ccc;">
+
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">Tgl. STNK</label>
+            <div class="col-sm-8">
+                <input type="date" class="form-control" id="tgl_stnk" name="tgl_stnk">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">Tgl. KEUR</label>
+            <div class="col-sm-8">
+                <input type="date" class="form-control" id="tgl_keur" name="tgl_keur">
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">Nama Driver 1</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="driver1" name="driver1">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">No. HP Driver 1</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="no_hp1" name="no_hp1" placeholder="0812...">
+            </div>
+        </div>
+
+        <hr class="my-2">
+
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">Nama Driver 2</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="driver2" name="driver2" placeholder="(Opsional)">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">No. HP Driver 2</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="no_hp2" name="no_hp2" placeholder="0812...">
+            </div>
+        </div>
+
+        <hr class="my-3" style="border-top: 1px dashed #ccc;">
+
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">Tgl. Berangkat</label>
+            <div class="col-sm-8">
+                <input type="date" class="form-control" id="tgl_berangkat" name="tgl_berangkat">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">SLA (Hari)</label>
+            <div class="col-sm-8">
+                <input type="number" class="form-control" id="sla" name="sla" placeholder="Estimasi Lama Jalan">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">Est. Tgl. Tujuan</label>
+            <div class="col-sm-8">
+                <input type="date" class="form-control" id="est_tgl_tujuan" name="est_tgl_tujuan">
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row" id="monitoring">
+
+    <div class="col-md-6">
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">Tgl. Muat (Mon)</label>
+            <div class="col-sm-8">
+                <input type="date" class="form-control" id="tgl_muat_monitoring" name="tgl_muat_monitoring">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">Waktu Muat</label>
+            <div class="col-sm-8">
+                <input type="time" class="form-control" id="waktu_muat" name="waktu_muat">
+            </div>
+        </div>
+
+        <hr class="my-3" style="border-top: 1px dashed #ccc;">
+
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">Lokasi Bongkar</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="lokasi_bongkar" name="lokasi_bongkar" placeholder="Nama Gudang / Area">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">Tgl. Bongkar</label>
+            <div class="col-sm-8">
+                <input type="date" class="form-control" id="tgl_bongkar" name="tgl_bongkar">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">Waktu Bongkar</label>
+            <div class="col-sm-8">
+                <input type="time" class="form-control" id="waktu_bongkar" name="waktu_bongkar">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">Aktual Jam</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="aktual_jam" name="aktual_jam" placeholder="Durasi / Realisasi">
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        
+        <div class="p-2 mb-3 rounded" style="background-color: #f8fbff; border: 1px solid #e9ecef;">
+            <div class="form-group row mb-2">
+                <label class="col-sm-4 col-form-label font-weight-bold text-primary">Uang Jalan</label>
+                <div class="col-sm-8">
+                    <div class="input-group">
+                        <div class="input-group-prepend"><span class="input-group-text bg-white">Rp</span></div>
+                        <input type="number" class="form-control" id="uang_jalan" name="uang_jalan">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row mb-2">
+                <label class="col-sm-4 col-form-label font-weight-bold text-success">Uang Balikan</label>
+                <div class="col-sm-8">
+                    <div class="input-group">
+                        <div class="input-group-prepend"><span class="input-group-text bg-white">Rp</span></div>
+                        <input type="number" class="form-control" id="uang_balikan" name="uang_balikan">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row mb-0">
+                <label class="col-sm-4 col-form-label font-weight-bold text-dark">Tgl. Transfer</label>
+                <div class="col-sm-8">
+                    <input type="date" class="form-control" id="tgl_transfer" name="tgl_transfer">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">Tgl. Masuk Pool</label>
+            <div class="col-sm-8">
+                <input type="date" class="form-control" id="tgl_masuk_pool" name="tgl_masuk_pool">
+            </div>
+        </div>
+        
+        <hr class="my-2">
+
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">Tgl. Kirim SJ</label>
+            <div class="col-sm-8">
+                <input type="date" class="form-control" id="tgl_kirim_sj" name="tgl_kirim_sj">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">No. Resi Kirim</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="no_resi_kirim" name="no_resi_kirim" placeholder="Nomor Resi Ekspedisi">
+            </div>
+        </div>
+    </div>
+
+</div>
+
+                        <div class="row" id="finance">
+
+    <div class="col-md-6">
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">No. Invoice</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="no_invoice" name="no_invoice" placeholder="INV/2024/...">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">Tgl. Invoice</label>
+            <div class="col-sm-8">
+                <input type="date" class="form-control" id="tgl_invoice" name="tgl_invoice">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">Tgl. Kirim Inv</label>
+            <div class="col-sm-8">
+                <input type="date" class="form-control" id="tgl_kirim_inv" name="tgl_kirim_inv" title="Tanggal Invoice dikirim ke Customer">
+            </div>
+        </div>
+        
+        <hr class="my-3" style="border-top: 1px dashed #ccc;">
+
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">Customer</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="customer" name="customer">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">Jatuh Tempo</label>
+            <div class="col-sm-8">
+                <input type="date" class="form-control" id="jatuh_tempo" name="jatuh_tempo">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-4 col-form-label text-muted">Status Bayar</label>
+            <div class="col-sm-8">
+                <select class="form-control" id="status_pembayaran" name="status_pembayaran">
+                    <option value="">- Pilih Status -</option>
+                    <option value="Unpaid">Unpaid (Belum Bayar)</option>
+                    <option value="Partial">Partial (Cicil)</option>
+                    <option value="Paid">Paid (Lunas)</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        
+        <div class="p-3 mb-3 rounded" style="background-color: #f8fbff; border: 1px solid #e9ecef;">
+            <div class="form-group row mb-2">
+                <label class="col-sm-4 col-form-label text-muted">Nominal Dasar</label>
+                <div class="col-sm-8">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-prepend"><span class="input-group-text bg-white">Rp</span></div>
+                        <input type="number" class="form-control" id="nominal" name="nominal">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row mb-2">
+                <label class="col-sm-4 col-form-label text-muted small">PPh 2%</label>
+                <div class="col-sm-8">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-prepend"><span class="input-group-text bg-white">Rp</span></div>
+                        <input type="number" class="form-control" id="pph_2" name="pph_2">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row mb-2">
+                <label class="col-sm-4 col-form-label text-muted small">PPN 11%</label>
+                <div class="col-sm-8">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-prepend"><span class="input-group-text bg-white">Rp</span></div>
+                        <input type="number" class="form-control" id="ppn_11" name="ppn_11">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row mb-0">
+                <label class="col-sm-4 col-form-label font-weight-bold text-primary">Total Tagihan</label>
+                <div class="col-sm-8">
+                    <div class="input-group">
+                        <div class="input-group-prepend"><span class="input-group-text bg-primary text-white">Rp</span></div>
+                        <input type="number" class="form-control font-weight-bold" id="total_tagihan" name="total_tagihan">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-3 rounded" style="background-color: #fffbfb; border: 1px solid #e9ecef;">
+            <div class="form-group row mb-2">
+                <label class="col-sm-4 col-form-label text-muted">Tgl. Bayar</label>
+                <div class="col-sm-8">
+                    <input type="date" class="form-control" id="tgl_bayar" name="tgl_bayar">
+                </div>
+            </div>
+            <div class="form-group row mb-2">
+                <label class="col-sm-4 col-form-label font-weight-bold text-success">Nominal Bayar</label>
+                <div class="col-sm-8">
+                    <div class="input-group">
+                        <div class="input-group-prepend"><span class="input-group-text bg-white">Rp</span></div>
+                        <input type="number" class="form-control" id="nominal_pembayaran" name="nominal_pembayaran">
+                    </div>
+                </div>
+            </div>
+            
+            <hr class="my-2">
+            
+            <div class="form-group row mb-0">
+                <label class="col-sm-4 col-form-label font-weight-bold text-danger">Selisih (Sisa)</label>
+                <div class="col-sm-8">
+                    <div class="input-group">
+                        <div class="input-group-prepend"><span class="input-group-text bg-white">Rp</span></div>
+                        <input type="number" class="form-control font-weight-bold text-danger" id="selisih_pembayaran" name="selisih_pembayaran" readonly placeholder="Auto Calculated">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
                         <input type="hidden" name="id" id="id" value="<?= $id ?>">
                         <?php if (!empty($aksi)) { ?>
                             <input type="hidden" name="aksi" id="aksi" value="<?= $aksi ?>">
