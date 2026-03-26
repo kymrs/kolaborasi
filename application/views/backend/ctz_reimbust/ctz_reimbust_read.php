@@ -600,14 +600,31 @@
                     var captionText = $("#caption");
 
                     // Ketika button diklik, tampilkan modal dengan gambar
-                    $('.openModal').on('click', function() {
+                    $('.openModal').on('click', function(e) {
+                        e.preventDefault();
                         const kwitansi = $(this).data('kwitansi');
-                        if (kwitansi) {
-                            // Jika data kwitansi ada, lanjutkan dengan membuka modal
-                            modal.css("display", "block");
-                            modalImg.attr('src', `<?= base_url() ?>/assets/backend/document/reimbust/kwitansi_ctz/${kwitansi}`);
-                            // captionText.text('Deskripsi gambar Anda di sini'); // Ubah dengan deskripsi gambar
+                        if (!kwitansi) return;
+
+                        const ext = (kwitansi.split('.').pop() || '').toLowerCase();
+                        const baseUrl = '<?= base_url() ?>assets/backend/document/reimbust/kwitansi_ctz/';
+                        const fileUrl = baseUrl + kwitansi;
+
+                        // Jika PDF -> preview
+                        if (ext === 'pdf') {
+                            window.open(fileUrl, '_blank');
+                            return;
                         }
+
+                        // Jika gambar -> tampilkan di modal
+                        const imageExts = ['jpg','jpeg','png','gif','webp','bmp'];
+                        if (imageExts.indexOf(ext) !== -1) {
+                            modalImg.attr('src', fileUrl);
+                            modal.css("display", "block");
+                            return;
+                        }
+
+                        // Untuk tipe file lain buka di tab baru (user bisa unduh dari sana)
+                        window.open(fileUrl, '_blank');
                     });
 
                     $(document).ready(function() {

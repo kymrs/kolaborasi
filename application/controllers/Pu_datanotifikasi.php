@@ -76,6 +76,15 @@ class Pu_datanotifikasi extends CI_Controller
                 $action = $action_read . $action_edit . $action_delete . $action_print;
             }
 
+            //MENENSTUKAN SATTSU PROGRESS PENGAJUAN PERMINTAAN
+            if ($field->app_hc_status == 'approved' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
+                $status = $field->status . ' (' . $field->app2_name . ')';
+            } elseif ($field->app_hc_status == 'waiting' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
+                $status = $field->status . ' (' . $field->app_hc_name . ')';
+            } else {
+                $status = $field->status;
+            }
+
 
             $no++;
             $row = array();
@@ -88,7 +97,7 @@ class Pu_datanotifikasi extends CI_Controller
             $row[] = $field->pengajuan;
             $row[] = date("d M Y", strtotime($field->tgl_notifikasi));
             $row[] = $field->alasan;
-            $row[] = $field->status;
+            $row[] = $status;
             $data[] = $row;
         }
 
@@ -196,7 +205,21 @@ class Pu_datanotifikasi extends CI_Controller
         $kode_notifikasi = 'N' . $year . $month . $urutan;
 
         // MENCARI SIAPA YANG AKAN MELAKUKAN APPROVAL PERMINTAAN
-        $approval = $this->M_pu_datanotifikasi->approval($this->session->userdata('id_user'));
+        $id_menu = $this->db->select('id_menu')
+            ->where('link', $this->router->fetch_class())
+            ->get('tbl_submenu')
+            ->row();
+
+
+        $valid = true;
+        $confirm = $this->db->select('app2_id, app3_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
+        if (!empty($confirm) && isset($confirm->app2_id, $confirm->app3_id)) {
+            $app = $confirm;
+        } else {
+            echo json_encode(array("status" => FALSE, "error" => "Approval Belum Ditentukan, Mohon untuk menghubungi admin."));
+            exit();
+            $valid = false;
+        }
         $id = $this->session->userdata('id_user');
 
         $data = array(
@@ -218,24 +241,29 @@ class Pu_datanotifikasi extends CI_Controller
             'alasan' => $this->input->post('alasan'),
             'app_hc_name' => $this->db->select('name')
                 ->from('tbl_data_user')
-                ->where('id_user', $approval->app3_id)
+                ->where('id_user', $app->app3_id)
                 ->get()
                 ->row('name'),
             'app2_name' => $this->db->select('name')
                 ->from('tbl_data_user')
-                ->where('id_user', $approval->app2_id)
+                ->where('id_user', $app->app2_id)
                 ->get()
-                ->row('name')
+                ->row('name'),
+            'created_at' =>  date('Y-m-d H:i:s')
         );
 
         // BILA YANG MEMBUAT PREPAYMENT DAPAT MENGAPPROVE SENDIRI
-        if ($approval->app3_id == $this->session->userdata('id_user')) {
+        if ($app->app3_id == $this->session->userdata('id_user')) {
             $data['app_hc_status'] = 'approved';
             $data['app_hc_date'] = date('Y-m-d H:i:s');
         }
 
-        $this->M_pu_datanotifikasi->save($data);
-        echo json_encode(array("status" => TRUE));
+        if ($valid) {
+            $this->M_pu_datanotifikasi->save($data);
+            echo json_encode(array("status" => TRUE));
+        } else {
+            echo json_encode(array("status" => FALSE));
+        }
     }
 
     public function update()

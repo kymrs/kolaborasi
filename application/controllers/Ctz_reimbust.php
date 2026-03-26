@@ -730,14 +730,14 @@ class Ctz_reimbust extends CI_Controller
 
         // Flag untuk menandai apakah ada file yang lebih dari 3 MB
         $valid = true;
-        $allowed_types = ['image/jpeg', 'image/jpg', 'image/png']; // Tipe file yang diizinkan
+        $allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf']; // Tipe file yang diizinkan
 
         // PERULANGAN UNTUK CEK UKURAN FILE
         for ($i = 1; $i <= count($pemakaian); $i++) {
             if (!empty($_FILES['kwitansi']['name'][$i])) {
                 // Cek tipe file
                 if (!in_array($_FILES['kwitansi']['type'][$i], $allowed_types)) {
-                    echo json_encode(array("status" => FALSE, "error" => "Tipe file tidak diizinkan untuk file ke-$i. Hanya file JPG dan PNG yang diperbolehkan."));
+                    echo json_encode(array("status" => FALSE, "error" => "Tipe file tidak diizinkan untuk file ke-$i. Hanya file JPG, PNG dan PDF yang diperbolehkan."));
                     exit();
                     $valid = false;  // Tandai bahwa ada file yang tidak valid
                     break; // Keluar dari perulangan jika ada file yang tidak valid
@@ -810,7 +810,7 @@ class Ctz_reimbust extends CI_Controller
                 $_FILES['file']['size'] = $_FILES['kwitansi']['size'][$i];
 
                 $config['upload_path'] = './assets/backend/document/reimbust/kwitansi_ctz/';
-                $config['allowed_types'] = 'jpeg|jpg|png';
+                $config['allowed_types'] = 'jpeg|jpg|png|pdf';
                 $config['max_size'] = 3072; // Batasan ukuran file dalam kilobytes (3 MB)
                 $config['encrypt_name'] = TRUE;
 
@@ -838,9 +838,19 @@ class Ctz_reimbust extends CI_Controller
             $this->db->where('kode_deklarasi', $deklarasi[$i]);
             $this->db->update('ctz_deklarasi');
         }
-        $this->db->set('is_active', 0);
         $this->db->where('kode_prepayment', $this->input->post('kode_prepayment'));
+        $this->db->where('is_active', 1);
+        $this->db->set('is_active', 0);
         $this->db->update('ctz_prepayment');
+
+        if ($this->db->affected_rows() == 0) {
+            echo json_encode([
+                "status" => FALSE,
+                "error" => "Prepayment sudah digunakan."
+            ]);
+            exit();
+        }
+        
 
         $this->M_ctz_reimbust->save_detail($data2);
 
@@ -931,7 +941,7 @@ class Ctz_reimbust extends CI_Controller
                     }
 
                     $config['upload_path'] = './assets/backend/document/reimbust/kwitansi_ctz/';
-                    $config['allowed_types'] = 'jpeg|jpg|png';
+                    $config['allowed_types'] = 'jpeg|jpg|png|pdf';
                     $config['max_size'] = 3072;
                     $config['encrypt_name'] = TRUE;
 

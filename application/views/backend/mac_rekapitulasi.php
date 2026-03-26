@@ -116,7 +116,7 @@
                 </ul>
 
                 <div class="card-body">
-                    <table id="table" class="table table-bordered table-striped">
+                    <table id="table" class="table table-bordered table-striped" width="100%">
                         <thead id="table-header">
                             <!-- GENERATE THEAD -->
                         </thead>
@@ -228,6 +228,7 @@
                             "tab": $('.nav-tabs .nav-link.active').data('tab')
                         },
                         success: function(response) {
+                            
                             var total = JSON.parse(response);
                             // console.log('Success logging data to second URL' + response);
                             // console.log(response);

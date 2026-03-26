@@ -476,7 +476,7 @@
 
     document.getElementById('nomor_rekening').addEventListener('input', function(e) {
         let value = this.value.replace(/[^0-9]/g, '');
-        if (value.length > 14) {
+        if (value.length > 30) {
             value = value.slice(0, 10);
         }
         this.value = value;
@@ -829,7 +829,7 @@
                 $(this).find('input[name^="tgl_nota"]').attr('name', `tgl_nota[${newRowNumber}]`).attr('placeholder', `Tanggal Nota ${newRowNumber}`).val(tgl_notaValue);
                 $(this).find('input[name^="jml"]').attr('name', `jml[${newRowNumber}]`).attr('placeholder', `Jumlah ${newRowNumber}`).val(jmlValue);
                 $(this).find('input[name^="jumlah"]').attr('name', `jumlah[${newRowNumber}]`).attr('placeholder', `Jumlah ${newRowNumber}`).val(jumlahValue);
-                $(this).find('input[name^="kwitansi"]').attr('name', `kwitansi[${newRowNumber}]`).attr('placeholder', `Input ${newRowNumber}`).val(kwitansiValue);
+                $(this).find('input[name^="kwitansi"]').attr('name', `kwitansi[${newRowNumber}]`).attr('placeholder', `Input ${newRowNumber}`);
                 $(this).find('#kwitansi_image').attr('name', `kwitansi_image[${newRowNumber}]`).attr('placeholder', `Input ${newRowNumber}`).val(kwitansiImageValue);
                 $(this).find('input[name^="deklarasi"]').attr('name', `deklarasi[${newRowNumber}]`).attr('placeholder', `Input ${newRowNumber}`).val(deklarasiValue);
                 $(this).find('.deklarasi-old').attr('name', `deklarasi_old[${newRowNumber}]`).attr('placeholder', `Deklarasi Old${newRowNumber}`);

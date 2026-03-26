@@ -99,14 +99,11 @@ class Sml_prepayment extends CI_Controller
             //MENENSTUKAN SATTSU PROGRESS PENGAJUAN PERMINTAAN
             if ($field->app_status == 'approved' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
                 $status = $field->status . ' (' . $field->app2_name . ')';
-            } elseif ($field->app4_status == 'approved' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
+            } elseif ($field->app_status == 'waiting' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
                 $status = $field->status . ' (' . $field->app_name . ')';
-            } elseif ($field->app4_status == 'waiting' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
-                $status = $field->status . ' (' . $field->app4_name . ')';
             } else {
                 $status = $field->status;
             }
-
 
             $formatted_nominal = number_format($field->total_nominal, 0, ',', '.');
             $no++;
@@ -254,7 +251,7 @@ class Sml_prepayment extends CI_Controller
 
         $valid = true;
         $confirm = $this->db->select('app_id, app2_id, app4_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
-        if (!empty($confirm) && isset($confirm->app_id, $confirm->app2_id, $confirm->app4_id)) {
+        if (!empty($confirm) && isset($confirm->app_id, $confirm->app2_id)) {
             $app = $confirm;
         } else {
             echo json_encode(array("status" => FALSE, "error" => "Approval Belum Ditentukan, Mohon untuk menghubungi admin."));
@@ -619,46 +616,40 @@ class Sml_prepayment extends CI_Controller
         $pdf->SetFont('Poppins-Bold', '', 12);
 
         // Membuat header tabel
-        $pdf->Cell(47.3, 8.5, 'Yang Melakukan', 1, 0, 'C');
-        $pdf->Cell(47.3, 8.5, 'Memeriksa', 1, 0, 'C');
-        $pdf->Cell(47.3, 8.5, 'Mengetahui', 1, 0, 'C');
-        $pdf->Cell(47.3, 8.5, 'Menyetujui', 1, 1, 'C');
+        $pdf->Cell(63, 8.5, 'Yang Melakukan', 1, 0, 'C');
+        $pdf->Cell(63, 8.5, 'Mengetahui', 1, 0, 'C');
+        $pdf->Cell(63, 8.5, 'Menyetujui', 1, 1, 'C');
 
         // Set font normal untuk konten tabel
         $pdf->SetFont('Poppins-Regular', '', 10);
 
         // Baris pemisah
-        $pdf->Cell(47.3, 5, '', 'LR', 0, 'C');
-        $pdf->Cell(47.3, 5, '', 0, 0, 'C');
-        $pdf->Cell(47.3, 5, '', 'L', 0, 'C');
-        $pdf->Cell(47.3, 5, '', 'LR', 1, 'C');
+        $pdf->Cell(63, 5, '', 'LR', 0, 'C');
+        $pdf->Cell(63, 5, '', 0, 0, 'C');
+        $pdf->Cell(63, 5, '', 'LR', 1, 'C');
 
         // Baris pertama (Status)
-        $pdf->Cell(47.3, 5, 'CREATED', 'LR', 0, 'C');
-        $pdf->Cell(47.3, 5, strtoupper($data['master']->app4_status), 'R', 0, 'C');
-        $pdf->Cell(47.3, 5, strtoupper($data['master']->app_status), 0, 0, 'C');
-        $pdf->Cell(47.3, 5, strtoupper($data['master']->app2_status), 'LR', 1, 'C');
+        $pdf->Cell(63, 5, 'CREATED', 'LR', 0, 'C');
+        $pdf->Cell(63, 5, strtoupper($data['master']->app_status), 0, 0, 'C');
+        $pdf->Cell(63, 5, strtoupper($data['master']->app2_status), 'LR', 1, 'C');
 
         // Baris kedua (Tanggal)
-        $pdf->Cell(47.3, 5, $data['master']->created_at, 'LR', 0, 'C');
-        $pdf->Cell(47.3, 5, $data['master']->app4_date, 'R', 0, 'C');
-        $pdf->Cell(47.3, 5, $data['master']->app_date, 0, 0, 'C');
-        $pdf->Cell(47.3, 5, $data['master']->app2_date, 'LR', 1, 'C');
+        $pdf->Cell(63, 5, $data['master']->created_at, 'LR', 0, 'C');
+        $pdf->Cell(63, 5, $data['master']->app_date, 0, 0, 'C');
+        $pdf->Cell(63, 5, $data['master']->app2_date, 'LR', 1, 'C');
 
         // Baris pemisah
-        $pdf->Cell(47.3, 5, '', 'LR', 0, 'C');
-        $pdf->Cell(47.3, 5, '', 0, 0, 'C');
-        $pdf->Cell(47.3, 5, '', 'L', 0, 'C');
-        $pdf->Cell(47.3, 5, '', 'LR', 1, 'C');
+        $pdf->Cell(63, 5, '', 'LR', 0, 'C');
+        $pdf->Cell(63, 5, '', 0, 0, 'C');
+        $pdf->Cell(63, 5, '', 'LR', 1, 'C');
 
         // Jarak kosong untuk pemisah
         $pdf->Ln(0);
 
         // Baris ketiga (Nama pengguna)
-        $pdf->Cell(47.3, 8.5, $data['user'], 1, 0, 'C');
-        $pdf->Cell(47.3, 8.5, $data['master']->app4_name, 1, 0, 'C');
-        $pdf->Cell(47.3, 8.5, $data['master']->app_name, 1, 0, 'C');
-        $pdf->Cell(47.3, 8.5, $data['master']->app2_name, 1, 1, 'C');
+        $pdf->Cell(63, 8.5, $data['user'], 1, 0, 'C');
+        $pdf->Cell(63, 8.5, $data['master']->app_name, 1, 0, 'C');
+        $pdf->Cell(63, 8.5, $data['master']->app2_name, 1, 1, 'C');
 
 
         // Add keterangan
@@ -672,9 +663,9 @@ class Sml_prepayment extends CI_Controller
             $pdf->Cell(60, 10, '*' . '(' . $data['master']->app_name . ') ' . $data['master']->app_keterangan, 0, 1);
         }
         if ($data['master']->app2_keterangan != null && $data['master']->app2_keterangan != '') {
-            $pdf->Cell(60, 10, '*' . '(' . $data['master']->app2_name . ')' . $data['master']->app2_keterangan, 0, 1);
+            $pdf->Cell(60, 10, '*' . '(' . $data['master']->app2_name . ') ' . $data['master']->app2_keterangan, 0, 1);
         }
-
+        
         // Output the PDF
         $pdf->Output('I', 'Prepayment_SW.pdf');
     }

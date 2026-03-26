@@ -64,7 +64,7 @@
                         <label for="tgl_awal" class="mr-2 mb-0 tgl-awal-text">Tanggal Awal:</label>
                         <div class="input-group date">
                             <input type="text" class="form-control" name="tgl_awal" id="tgl_awal" style="width: 70px;" placeholder="DD-MM-YYYY" autocomplete="off" readonly />
-                            <div class="input-group-append">
+                            <div class="input-group-append">    
                                 <div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
                             </div>
                         </div>
@@ -116,7 +116,7 @@
                 </ul>
 
                 <div class="card-body">
-                    <table id="table" class="table table-bordered table-striped">
+                    <table id="table" class="table table-bordered table-striped" width="100%">
                         <thead id="table-header">
                             <!-- GENERATE THEAD -->
                         </thead>

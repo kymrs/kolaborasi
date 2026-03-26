@@ -43,6 +43,7 @@
                 else if (stripos($data['nama_menu'], 'sobatwisata') !== false) $prefix = 'swi';
                 else if (stripos($data['nama_menu'], 'quba') !== false) $prefix = 'qbg';
                 else if (stripos($data['nama_menu'], 'samlog') !== false) $prefix = 'sml';
+                else if (stripos($data['nama_menu'], 'knms') !== false) $prefix = 'knms';
 
                 // Cek jumlah data pending berdasarkan approval untuk user
                 $pending = 0;
@@ -56,6 +57,13 @@
 
                             if (in_array('app4_name', $fields) && in_array('app4_status', $fields)) {
                                 $where[] = "(LOWER(app4_name) = " . $this->db->escape(strtolower($name)) . " AND app4_status = 'waiting' AND app4_name IS NOT NULL)";
+                            }
+
+                            if (in_array('app_hc_name', $fields) && in_array('app_hc_status', $fields)) {
+                                $where[] = "(" .
+                                    "LOWER(app_hc_name) = " . $this->db->escape(strtolower($name)) . " AND " .
+                                    "app_hc_status = 'waiting'" .
+                                    ")";
                             }
 
                             if (in_array('app_name', $fields) && in_array('app_status', $fields)) {
@@ -76,6 +84,8 @@
                             if (in_array('app2_name', $fields) && in_array('app2_status', $fields)) {
                                 if (in_array('app_status', $fields)) {
                                     $where[] = "(LOWER(app2_name) = " . $this->db->escape(strtolower($name)) . " AND app2_status = 'waiting' AND app_status = 'approved')";
+                                } elseif (in_array('app_hc_status', $fields)) {
+                                    $where[] = "(LOWER(app2_name) = " . $this->db->escape(strtolower($name)) . " AND app2_status = 'waiting' AND app_hc_status = 'approved')";
                                 } else {
                                     $where[] = "(LOWER(app2_name) = " . $this->db->escape(strtolower($name)) . " AND app2_status = 'waiting')";
                                 }
@@ -217,6 +227,7 @@ $(document).ready(function() {
                 else if (nama_menu.toLowerCase().includes('sobatwisata')) prefix = 'swi';
                 else if (nama_menu.toLowerCase().includes('quba')) prefix = 'qbg';
                 else if (nama_menu.toLowerCase().includes('samlog')) prefix = 'sml';
+                else if (nama_menu.toLowerCase().includes('knms')) prefix = 'knms';
                 
                 var filteredData = data.filter(function(item) {
                     return item.form.startsWith(prefix + '_');
@@ -265,6 +276,8 @@ $(document).ready(function() {
                 else if (nama_menu.toLowerCase().includes('sobatwisata')) prefix = 'swi';
                 else if (nama_menu.toLowerCase().includes('quba')) prefix = 'qbg';
                 else if (nama_menu.toLowerCase().includes('samlog')) prefix = 'sml';
+                else if (nama_menu.toLowerCase().includes('samlog')) prefix = 'sml';
+                else if (nama_menu.toLowerCase().includes('knms')) prefix = 'knms';
                 
                 var filteredData = data.filter(function(item) {
                     return item.form.startsWith(prefix + '_');
@@ -276,15 +289,21 @@ $(document).ready(function() {
                         var now = new Date();
                         var pengajuanDate = new Date(item.tanggal_pengajuan);
                         var diffMs = now - pengajuanDate;
-                        var diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+                        if (isNaN(diffMs) || diffMs < 0) diffMs = 0;
+
+                        var diffMinutes = Math.floor(diffMs / (1000 * 60));
+                        var diffHours = Math.floor(diffMinutes / 60);
                         var diffDays = Math.floor(diffHours / 24);
+
                         var timeAgo = '';
-                        if (diffDays > 0) {
+                        if (diffMinutes <= 0) {
+                            timeAgo = 'Baru saja';
+                        } else if (diffDays > 0) {
                             timeAgo = diffDays + ' hari yang lalu';
                         } else if (diffHours > 0) {
                             timeAgo = diffHours + ' jam yang lalu';
                         } else {
-                            timeAgo = 'Baru saja';
+                            timeAgo = diffMinutes + ' menit yang lalu';
                         }
                         
                         var dateObj = new Date(item.tanggal_pengajuan);

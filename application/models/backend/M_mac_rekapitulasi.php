@@ -16,8 +16,10 @@ class M_mac_rekapitulasi extends CI_Model
         if (!empty($_POST['tab'])) {
             if ($_POST['tab'] == 'pelaporan') {
                 // Column order for "pelaporan" tab
-                $this->column_order = array(null, 'tgl_pengajuan', 'name', 'tujuan', 'kode_reimbust', 'kode_prepayment', 'total_nominal', 'total_jumlah_detail');
-                $this->column_search = array('mac_reimbust.tgl_pengajuan', 'tbl_data_user.name', 'mac_prepayment.tujuan', 'mac_reimbust.kode_reimbust', 'mac_prepayment.kode_prepayment', 'mac_prepayment.total_nominal');
+                // Urutan ini harus mengikuti kolom yang dikirim pada controller get_list():
+                // [0]no, [1]kode_prepayment, [2]kode_reimbust, [3]name, [4]tujuan, [5]tgl_pengajuan, [6]pengeluaran
+                $this->column_order = array(null, 'mac_prepayment.kode_prepayment', 'mac_reimbust.kode_reimbust', 'tbl_data_user.name', 'mac_prepayment.tujuan', 'tgl_pengajuan', 'pengeluaran');
+                $this->column_search = array('mac_prepayment.kode_prepayment', 'mac_reimbust.kode_reimbust', 'mac_reimbust.tgl_pengajuan', 'mac_prepayment.tgl_prepayment', 'tbl_data_user.name', 'mac_prepayment.tujuan');
 
                 // Query for "pelaporan" tab
                 $this->db->select('mac_reimbust.id, 
@@ -28,24 +30,24 @@ class M_mac_rekapitulasi extends CI_Model
                                IF(mac_reimbust.kode_prepayment IS NOT NULL, mac_reimbust.tgl_pengajuan, mac_prepayment.tgl_prepayment) AS tgl_pengajuan,  
                                mac_prepayment.kode_prepayment, 
                                mac_prepayment.total_nominal, 
-                               SUM(mac_reimbust_detail.jumlah) AS total_jumlah_detail');
+                               SUM(mac_reimbust_detail.jumlah) AS total_jumlah_detail,
+                               COALESCE(SUM(mac_reimbust_detail.jumlah), mac_prepayment.total_nominal) AS pengeluaran');
                 $this->db->from('mac_prepayment');
                 $this->db->join('mac_reimbust', 'mac_reimbust.kode_prepayment = mac_prepayment.kode_prepayment', 'left');
                 $this->db->join('mac_reimbust_detail', 'mac_reimbust.id = mac_reimbust_detail.reimbust_id', 'left');
                 $this->db->join('tbl_data_user', 'mac_prepayment.id_user = tbl_data_user.id_user', 'left');
 
-                $this->db->group_start();
-                $this->db->group_start();
+                // Rekapitulasi hanya untuk data yang sudah paid & approved
                 $this->db->where('mac_prepayment.payment_status', 'paid');
+                $this->db->where('mac_prepayment.status', 'approved');
+
+                // tampilkan prepayment yang belum ada reimbust, atau reimbust yang paid & approved
+                $this->db->group_start();
                 $this->db->where('mac_reimbust.kode_prepayment IS NULL');
-                $this->db->group_end();
                 $this->db->or_group_start();
-                $this->db->where('mac_prepayment.payment_status', 'paid');
                 $this->db->where('mac_reimbust.kode_prepayment IS NOT NULL');
-                $this->db->group_end();
-                $this->db->or_group_start();
                 $this->db->where('mac_reimbust.payment_status', 'paid');
-                $this->db->where('mac_reimbust.kode_prepayment IS NOT NULL');
+                $this->db->where('mac_reimbust.status', 'approved');
                 $this->db->group_end();
                 $this->db->group_end();
 
@@ -74,8 +76,10 @@ class M_mac_rekapitulasi extends CI_Model
                 $this->db->group_by(array('mac_prepayment.id', 'mac_prepayment.kode_prepayment'));
             } elseif ($_POST['tab'] == 'reimbust') {
                 // Column order for "reimbust" tab
-                $this->column_order = array(null, 'kode_prepayment', 'mac_reimbust.kode_reimbust', 'name', 'tujuan', 'mac_reimbust.tgl_pengajuan', 'total_jumlah_detail');
-                $this->column_search = array('mac_reimbust.tgl_pengajuan', 'tbl_data_user.name', 'mac_reimbust.tujuan', 'mac_reimbust.kode_reimbust', 'mac_reimbust.kode_prepayment');
+                // Urutan ini harus mengikuti kolom yang dikirim pada controller get_list():
+                // [0]no, [1]kode_prepayment, [2]kode_reimbust, [3]name, [4]tujuan, [5]tgl_pengajuan, [6]pengeluaran
+                $this->column_order = array(null, 'mac_reimbust.kode_prepayment', 'mac_reimbust.kode_reimbust', 'tbl_data_user.name', 'mac_reimbust.tujuan', 'mac_reimbust.tgl_pengajuan', 'total_jumlah_detail');
+                $this->column_search = array('mac_reimbust.kode_prepayment', 'mac_reimbust.kode_reimbust', 'mac_reimbust.tgl_pengajuan', 'tbl_data_user.name', 'mac_reimbust.tujuan');
 
                 // Query for "reimbust" tab
                 $this->db->select('mac_reimbust.id, mac_reimbust.tgl_pengajuan, tbl_data_user.name, mac_reimbust.tujuan, mac_reimbust.kode_reimbust, mac_reimbust.kode_prepayment, SUM(mac_reimbust_detail.jumlah) AS total_jumlah_detail');
@@ -83,6 +87,7 @@ class M_mac_rekapitulasi extends CI_Model
                 $this->db->join('mac_reimbust_detail', 'mac_reimbust.id = mac_reimbust_detail.reimbust_id', 'left');
                 $this->db->join('tbl_data_user', 'mac_reimbust.id_user = tbl_data_user.id_user', 'left');
                 $this->db->where('mac_reimbust.payment_status', 'paid');
+                $this->db->where('mac_reimbust.status', 'approved');
                 $this->db->where('mac_reimbust.kode_prepayment', '');
 
                 // Filter by date range
@@ -117,7 +122,11 @@ class M_mac_rekapitulasi extends CI_Model
 
         // Order functionality
         if (isset($_POST['order'])) {
-            $this->db->order_by($this->column_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+            $colIdx = (int)$_POST['order']['0']['column'];
+            $dir = $_POST['order']['0']['dir'];
+            if (isset($this->column_order[$colIdx]) && !empty($this->column_order[$colIdx])) {
+                $this->db->order_by($this->column_order[$colIdx], $dir);
+            }
         } else {
             if (isset($_POST['tab'])) {
                 if ($_POST['tab'] == 'pelaporan') {
@@ -154,8 +163,8 @@ class M_mac_rekapitulasi extends CI_Model
         if (!empty($_POST['tab'])) {
             if ($_POST['tab'] == 'pelaporan') {
                 // Column order for "pelaporan" tab
-                $this->column_order = array(null, 'tgl_pengajuan', 'name', 'tujuan', 'kode_reimbust', 'kode_prepayment', 'total_nominal', 'total_jumlah_detail');
-                $this->column_search = array('mac_reimbust.tgl_pengajuan', 'name', 'mac_prepayment.tujuan', 'kode_reimbust', 'mac_prepayment.kode_prepayment', 'mac_prepayment.total_nominal');
+                $this->column_order = array(null, 'mac_prepayment.kode_prepayment', 'mac_reimbust.kode_reimbust', 'tbl_data_user.name', 'mac_prepayment.tujuan', 'tgl_pengajuan', 'pengeluaran');
+                $this->column_search = array('mac_prepayment.kode_prepayment', 'mac_reimbust.kode_reimbust', 'mac_reimbust.tgl_pengajuan', 'mac_prepayment.tgl_prepayment', 'tbl_data_user.name', 'mac_prepayment.tujuan');
 
                 // Query for "pelaporan" tab
                 $this->db->select('mac_reimbust.id, 
@@ -166,24 +175,24 @@ class M_mac_rekapitulasi extends CI_Model
                                IF(mac_reimbust.kode_prepayment IS NOT NULL, mac_reimbust.tgl_pengajuan, mac_prepayment.tgl_prepayment) AS tgl_pengajuan,  
                                mac_prepayment.kode_prepayment, 
                                mac_prepayment.total_nominal, 
-                               SUM(mac_reimbust_detail.jumlah) AS total_jumlah_detail');
+                               SUM(mac_reimbust_detail.jumlah) AS total_jumlah_detail,
+                               COALESCE(SUM(mac_reimbust_detail.jumlah), mac_prepayment.total_nominal) AS pengeluaran');
                 $this->db->from('mac_prepayment');
                 $this->db->join('mac_reimbust', 'mac_reimbust.kode_prepayment = mac_prepayment.kode_prepayment', 'left');
                 $this->db->join('mac_reimbust_detail', 'mac_reimbust.id = mac_reimbust_detail.reimbust_id', 'left');
                 $this->db->join('tbl_data_user', 'mac_prepayment.id_user = tbl_data_user.id_user', 'left');
 
-                $this->db->group_start();
-                $this->db->group_start();
+                // Rekapitulasi hanya untuk data yang sudah paid & approved
                 $this->db->where('mac_prepayment.payment_status', 'paid');
+                $this->db->where('mac_prepayment.status', 'approved');
+
+                // tampilkan prepayment yang belum ada reimbust, atau reimbust yang paid & approved
+                $this->db->group_start();
                 $this->db->where('mac_reimbust.kode_prepayment IS NULL');
-                $this->db->group_end();
                 $this->db->or_group_start();
-                $this->db->where('mac_prepayment.payment_status', 'paid');
                 $this->db->where('mac_reimbust.kode_prepayment IS NOT NULL');
-                $this->db->group_end();
-                $this->db->or_group_start();
                 $this->db->where('mac_reimbust.payment_status', 'paid');
-                $this->db->where('mac_reimbust.kode_prepayment IS NOT NULL');
+                $this->db->where('mac_reimbust.status', 'approved');
                 $this->db->group_end();
                 $this->db->group_end();
 
@@ -210,8 +219,8 @@ class M_mac_rekapitulasi extends CI_Model
                 $this->db->group_by(array('mac_prepayment.id', 'mac_prepayment.kode_prepayment'));
             } elseif ($_POST['tab'] == 'reimbust') {
                 // Column order for "reimbust" tab
-                $this->column_order = array(null, 'mac_reimbust.tgl_pengajuan', 'name', 'tujuan', 'mac_reimbust.kode_reimbust', 'kode_prepayment', 'total_jumlah_detail');
-                $this->column_search = array('mac_reimbust.tgl_pengajuan', 'name', 'tujuan', 'mac_reimbust.kode_reimbust', 'kode_prepayment');
+                $this->column_order = array(null, 'mac_reimbust.kode_prepayment', 'mac_reimbust.kode_reimbust', 'tbl_data_user.name', 'mac_reimbust.tujuan', 'mac_reimbust.tgl_pengajuan', 'total_jumlah_detail');
+                $this->column_search = array('mac_reimbust.kode_prepayment', 'mac_reimbust.kode_reimbust', 'mac_reimbust.tgl_pengajuan', 'tbl_data_user.name', 'mac_reimbust.tujuan');
 
                 // Query for "reimbust" tab
                 $this->db->select('mac_reimbust.id, mac_reimbust.tgl_pengajuan, tbl_data_user.name, mac_reimbust.tujuan, mac_reimbust.kode_reimbust, mac_reimbust.kode_prepayment, SUM(mac_reimbust_detail.jumlah) AS total_jumlah_detail');
@@ -219,6 +228,7 @@ class M_mac_rekapitulasi extends CI_Model
                 $this->db->join('mac_reimbust_detail', 'mac_reimbust.id = mac_reimbust_detail.reimbust_id');
                 $this->db->join('tbl_data_user', 'mac_reimbust.id_user = tbl_data_user.id_user');
                 $this->db->where('mac_reimbust.payment_status', 'paid');
+                $this->db->where('mac_reimbust.status', 'approved');
                 $this->db->where('mac_reimbust.kode_prepayment', '');
 
                 // Filter by date range
@@ -253,7 +263,11 @@ class M_mac_rekapitulasi extends CI_Model
 
         // Order functionality
         if (isset($_POST['order'])) {
-            $this->db->order_by($this->column_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+            $colIdx = (int)$_POST['order']['0']['column'];
+            $dir = $_POST['order']['0']['dir'];
+            if (isset($this->column_order[$colIdx]) && !empty($this->column_order[$colIdx])) {
+                $this->db->order_by($this->column_order[$colIdx], $dir);
+            }
         } else if (isset($this->order)) {
             $order = $this->order;
             $this->db->order_by(key($order), $order[key($order)]);
@@ -280,6 +294,7 @@ class M_mac_rekapitulasi extends CI_Model
         $this->db->from('mac_prepayment AS a');
         $this->db->join('mac_reimbust AS b', 'a.kode_prepayment = b.kode_prepayment', 'left');
         $this->db->where('a.payment_status', 'paid');
+        $this->db->where('a.status', 'approved');
         $this->db->where('b.kode_prepayment IS NULL');
 
         // // Filter by date range if needed
@@ -306,12 +321,13 @@ class M_mac_rekapitulasi extends CI_Model
         $this->db->select('SUM(b.jumlah) AS total_nominal');
         $this->db->from('mac_reimbust AS a');
         $this->db->join('mac_reimbust_detail AS b', 'a.id = b.reimbust_id', 'left');
-        $this->db->join('mac_prepayment AS c', 'c.kode_prepayment = a.kode_prepayment', 'right');
-        $this->db->group_start();
-        $this->db->where('a.payment_status', 'paid');
-        $this->db->or_where('c.payment_status', 'paid');
+        $this->db->join('mac_prepayment AS c', 'c.kode_prepayment = a.kode_prepayment', 'inner');
+        // Rekap hanya untuk data yang memang sudah paid & approved (reimbust + prepayment terkait)
         $this->db->where('a.kode_prepayment !=', '');
-        $this->db->group_end();
+        $this->db->where('a.payment_status', 'paid');
+        $this->db->where('a.status', 'approved');
+        $this->db->where('c.payment_status', 'paid');
+        $this->db->where('c.status', 'approved');
 
         // Filter by date range if needed
         if (!empty($_POST['awal']) && !empty($_POST['akhir'])) {
@@ -338,6 +354,7 @@ class M_mac_rekapitulasi extends CI_Model
         $this->db->from('mac_reimbust AS a');
         $this->db->join('mac_reimbust_detail AS b', 'a.id = b.reimbust_id', 'left');
         $this->db->where('a.payment_status', 'paid');
+        $this->db->where('a.status', 'approved');
         $this->db->where('a.kode_prepayment', '');
 
         // // Filter by date range if needed
@@ -379,6 +396,7 @@ class M_mac_rekapitulasi extends CI_Model
         $this->db->from('mac_prepayment AS a');
         $this->db->join('mac_reimbust AS b', 'a.kode_prepayment = b.kode_prepayment', 'left');
         $this->db->where('a.payment_status', 'paid');
+        $this->db->where('a.status', 'approved');
         $this->db->where('b.kode_prepayment IS NULL');
 
         // Filter by date range if needed
@@ -408,8 +426,18 @@ class M_mac_rekapitulasi extends CI_Model
         $this->db->from('mac_reimbust AS a');
         $this->db->join('mac_reimbust_detail AS b', 'a.id = b.reimbust_id', 'inner');
         $this->db->join('mac_prepayment AS c', 'a.kode_prepayment = c.kode_prepayment', 'left');
+        // Rekap hanya untuk paid & approved (mac_reimbust selalu wajib)
         $this->db->where('a.payment_status', 'paid');
-        $this->db->or_where('c.payment_status', 'paid');
+        $this->db->where('a.status', 'approved');
+        // Jika reimbust terkait prepayment, maka prepayment juga wajib paid & approved
+        $this->db->group_start();
+        $this->db->where('a.kode_prepayment', '');
+        $this->db->or_group_start();
+        $this->db->where('a.kode_prepayment !=', '');
+        $this->db->where('c.payment_status', 'paid');
+        $this->db->where('c.status', 'approved');
+        $this->db->group_end();
+        $this->db->group_end();
         $this->db->group_by('a.id');
 
         // Filter by date range if needed

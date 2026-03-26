@@ -76,30 +76,28 @@ class M_sml_reimbust extends CI_Model
 
             if ($_POST['status'] == 'on-process') {
                 // Conditions for 'on-process' status
-                if ($alias != 'eko') {
-                    $this->db->where('sml_reimbust.id_user =' . $id_user_logged_in . ' AND status = "on-process"')
-                        ->or_where('app4_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app4_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE)
-                        ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "waiting" AND app4_status = "approved" AND status != "rejected" AND status != "revised")', NULL, FALSE)
+                if ($alias != "eko") {
+                    $this->db->where('app_status', 'waiting')
+                        ->where('app2_status', 'waiting')
+                        ->or_where('sml_reimbust.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
                         ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
                 } else {
                     $this->db->where('status = "on-process"');
                 }
             } elseif ($_POST['status'] == 'approved') {
                 // Conditions for 'approved' status
-                if ($alias != 'eko') {
-                    $this->db->where('app2_status', 'approved')
-                        ->or_where('app4_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app4_status = "approved" AND app2_status != "rejected")', NULL, FALSE)
-                        ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status != "rejected")', NULL, FALSE)
-                        ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "approved" AND app2_status != "rejected")', NULL, FALSE);
+                if ($alias != "eko") {
+                    $this->db->where('app_status', $_POST['status'])
+                        ->where('app2_status', 'approved')
+                        ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status != "rejected")', NULL, FALSE);
                 } else {
                     $this->db->where('status = "approved"');
                 }
             } elseif ($_POST['status'] == 'revised') {
-                if ($alias != 'eko') {
+                if ($alias != "eko") {
                     $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
                         ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "revised")', NULL, FALSE)
-                        ->or_where('app4_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app4_status = "revised")', NULL, FALSE)
-                        ->or_where('sml_reimbust.id_user =' . $id_user_logged_in . ' AND (app4_status = "revised" OR app_status = "revised" OR app2_status = "revised")');
+                        ->or_where('sml_reimbust.id_user =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
                 } else {
                     $this->db->where('status = "revised"');
                 }
@@ -120,8 +118,6 @@ class M_sml_reimbust extends CI_Model
                         ->where('sml_reimbust.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
                         ->where('sml_reimbust.id_user !=', $this->session->userdata('id_user'))
                         ->or_where('sml_reimbust.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && sml_reimbust.app_status = 'approved'", FALSE)
-                        ->where('sml_reimbust.id_user !=', $this->session->userdata('id_user'))
-                        ->or_where('sml_reimbust.app4_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
                         ->where('sml_reimbust.id_user !=', $this->session->userdata('id_user'))
                         ->group_end();
                 }
@@ -166,26 +162,28 @@ class M_sml_reimbust extends CI_Model
 
             if ($_POST['status'] == 'on-process') {
                 // Conditions for 'on-process' status
-                if ($alias != 'eko') {
-                    $this->db->where('sml_reimbust.id_user =' . $id_user_logged_in . ' AND status = "on-process"')
-                        ->or_where('app4_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app4_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE)
-                        ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "waiting" AND app4_status = "approved" AND status != "rejected" AND status != "revised")', NULL, FALSE)
+                if ($alias != "eko") {
+                    $this->db->where('app_status', 'waiting')
+                        ->where('app2_status', 'waiting')
+                        ->or_where('sml_reimbust.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
                         ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
                 } else {
                     $this->db->where('status = "on-process"');
                 }
             } elseif ($_POST['status'] == 'approved') {
                 // Conditions for 'approved' status
-                $this->db->where('app2_status', 'approved')
-                    ->or_where('app4_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app4_status = "approved" AND app2_status != "rejected")', NULL, FALSE)
-                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status != "rejected")', NULL, FALSE)
-                    ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "approved" AND app2_status != "rejected")', NULL, FALSE);
+                if ($alias != "eko") {
+                    $this->db->where('app_status', $_POST['status'])
+                        ->where('app2_status', 'approved')
+                        ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status != "rejected")', NULL, FALSE);
+                } else {
+                    $this->db->where('status = "approved"');
+                }
             } elseif ($_POST['status'] == 'revised') {
-                if ($alias != 'eko') {
+                if ($alias != "eko") {
                     $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
                         ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "revised")', NULL, FALSE)
-                        ->or_where('app4_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app4_status = "revised")', NULL, FALSE)
-                        ->or_where('sml_reimbust.id_user =' . $id_user_logged_in . ' AND (app4_status = "revised" OR app_status = "revised" OR app2_status = "revised")');
+                        ->or_where('sml_reimbust.id_user =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
                 } else {
                     $this->db->where('status = "revised"');
                 }
@@ -207,15 +205,12 @@ class M_sml_reimbust extends CI_Model
                         ->where('sml_reimbust.id_user !=', $this->session->userdata('id_user'))
                         ->or_where('sml_reimbust.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && sml_reimbust.app_status = 'approved'", FALSE)
                         ->where('sml_reimbust.id_user !=', $this->session->userdata('id_user'))
-                        ->or_where('sml_reimbust.app4_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-                        ->where('sml_reimbust.id_user !=', $this->session->userdata('id_user'))
                         ->group_end();
                 }
             }
         }
         return $this->db->count_all_results();
     }
-
     // Data Deklarasi
     private function _get_datatables_query2()
     {
@@ -379,7 +374,7 @@ class M_sml_reimbust extends CI_Model
     // GET BY ID TABLE DETAIL REIMBUST TRANSAKSI
     public function get_by_id_detail($id)
     {
-        $this->db->where('reimbust_id', $id);
+        $this->db->where('reimbust_id', $id);   
         return $this->db->get($this->table2)->result_array();
     }
 
@@ -435,14 +430,20 @@ class M_sml_reimbust extends CI_Model
             }
         }
 
-        // untuk mengembalikan is_active pada deklarasi menjadi 1 / aktif
-        if ($detail) {
-            foreach ($detail as $deklarasi) {
-                $deklarasi = $deklarasi['deklarasi'];
-
-                $this->db->update('sml_deklarasi', ['is_active' => 1], ['kode_deklarasi' => $deklarasi]);
-            }
-        }
+        // Hapus deklarasi yang di-input saat reimbust dihapus
+        // if ($detail) {
+        //     $kodeDeklarasiList = array_column($detail, 'deklarasi');
+            
+        //     $kodeDeklarasiList = array_filter($kodeDeklarasiList, function($kode) {
+        //         $kode = trim((string)$kode);
+        //         return !($kode === '' || $kode === '-' || strtolower($kode) === 'null');
+        //     });
+            
+        //     if (!empty($kodeDeklarasiList)) {
+        //         $this->db->where_in('kode_deklarasi', $kodeDeklarasiList);
+        //         $this->db->delete('sml_deklarasi');
+        //     }
+        // }
 
         // Ambil data sml_reimbust berdasarkan reimbust_id
         $reimbust = $this->db->get_where('sml_reimbust', ['id' => $id])->row_array();

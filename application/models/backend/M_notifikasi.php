@@ -24,7 +24,7 @@ class M_notifikasi extends CI_Model
             ->get()
             ->row('fullname');
   
-        $tbl = [];
+    $tbl = [];
 
         foreach ($tbl_notifikasi as $table) {
             $tabel_nama = $table->nama_tbl;
@@ -38,12 +38,19 @@ class M_notifikasi extends CI_Model
                 $kolom_nama = null;
 
                 $where = [];
-                $where = [];
 
 
                 if (in_array('app4_name', $fields) && in_array('app4_status', $fields)) {
                     // app4 hanya jika statusnya waiting dan app4_name tidak null
                     $where[] = "(LOWER(app4_name) = " . $this->db->escape(strtolower($name)) . " AND app4_status = 'waiting' AND app4_name IS NOT NULL)";
+                }
+
+                // PU Notifikasi / HC Approval
+                if (in_array('app_hc_name', $fields) && in_array('app_hc_status', $fields)) {
+                    $where[] = "(" .
+                        "LOWER(app_hc_name) = " . $this->db->escape(strtolower($name)) . " AND " .
+                        "app_hc_status = 'waiting'" .
+                        ")";
                 }
 
                 if (in_array('app_name', $fields) && in_array('app_status', $fields)) {
@@ -66,6 +73,9 @@ class M_notifikasi extends CI_Model
                     if (in_array('app_status', $fields)) {
                         // app2 hanya jika app sudah approved
                         $where[] = "(LOWER(app2_name) = " . $this->db->escape(strtolower($name)) . " AND app2_status = 'waiting' AND app_status = 'approved')";
+                    } elseif (in_array('app_hc_status', $fields)) {
+                        // app2 hanya jika HC sudah approved
+                        $where[] = "(LOWER(app2_name) = " . $this->db->escape(strtolower($name)) . " AND app2_status = 'waiting' AND app_hc_status = 'approved')";
                     } else {
                         $where[] = "(LOWER(app2_name) = " . $this->db->escape(strtolower($name)) . " AND app2_status = 'waiting')";
                     }
@@ -115,15 +125,20 @@ class M_notifikasi extends CI_Model
     }
 
     // untuk modal detail pending
-    function get_pending_details()
+    function get_pending_details($search = '', $jenis = '', $status = '', $menu_id = '')
     {
-        $tbl_notifikasi = $this->db
+        $query = $this->db
             ->select('tbl_submenu.id_submenu, tbl_submenu.id_menu, tbl_submenu.link, tbl_submenu.nama_tbl, tbl_menu.nama_menu')
             ->from('tbl_submenu')
             ->join('tbl_menu', 'tbl_menu.id_menu = tbl_submenu.id_menu', 'left')
             ->where('tbl_submenu.nama_tbl IS NOT NULL', null, false)
-            ->get()
-            ->result();
+            ->where('tbl_submenu.nama_tbl !=', '');
+
+        if (!empty($menu_id)) {
+            $query = $query->where('tbl_submenu.id_menu', $menu_id);
+        }
+
+        $tbl_notifikasi = $query->get()->result();
 
         $id = $this->session->userdata('id_user');
         $name = $this->db->select('fullname')
@@ -140,12 +155,23 @@ class M_notifikasi extends CI_Model
             $nama_menu = $table->nama_menu;
 
             if ($tabel_nama != '' && $tabel_nama != null) {
+                if (!empty($jenis) && stripos($tabel_nama, '_' . $jenis) === false) {
+                    continue;
+                }
+
                 $fields = $this->db->list_fields($tabel_nama);
 
                 $where = [];
 
                 if (in_array('app4_name', $fields) && in_array('app4_status', $fields)) {
                     $where[] = "(LOWER(app4_name) = " . $this->db->escape(strtolower($name)) . " AND app4_status = 'waiting' AND app4_name IS NOT NULL)";
+                }
+
+                if (in_array('app_hc_name', $fields) && in_array('app_hc_status', $fields)) {
+                    $where[] = "(" .
+                        "LOWER(app_hc_name) = " . $this->db->escape(strtolower($name)) . " AND " .
+                        "app_hc_status = 'waiting'" .
+                        ")";
                 }
 
                 if (in_array('app_name', $fields) && in_array('app_status', $fields)) {
@@ -166,6 +192,8 @@ class M_notifikasi extends CI_Model
                 if (in_array('app2_name', $fields) && in_array('app2_status', $fields)) {
                     if (in_array('app_status', $fields)) {
                         $where[] = "(LOWER(app2_name) = " . $this->db->escape(strtolower($name)) . " AND app2_status = 'waiting' AND app_status = 'approved')";
+                    } elseif (in_array('app_hc_status', $fields)) {
+                        $where[] = "(LOWER(app2_name) = " . $this->db->escape(strtolower($name)) . " AND app2_status = 'waiting' AND app_hc_status = 'approved')";
                     } else {
                         $where[] = "(LOWER(app2_name) = " . $this->db->escape(strtolower($name)) . " AND app2_status = 'waiting')";
                     }
@@ -178,41 +206,40 @@ class M_notifikasi extends CI_Model
                         $select_fields .= ', kode';
                     } elseif (in_array('kode_reimbust', $fields)) {
                         $select_fields .= ', kode_reimbust AS kode';
-                    } elseif (in_array('no_invoice', $fields)) {
-                        $select_fields .= ', no_invoice AS kode';
-                    } elseif (in_array('no_prepayment', $fields)) {
-                        $select_fields .= ', no_prepayment AS kode';
+                    } elseif (in_array('kode_notifikasi', $fields)) {
+                        $select_fields .= ', kode_notifikasi AS kode';
+                    } elseif (in_array('kode_prepayment', $fields)) {
+                        $select_fields .= ', kode_prepayment AS kode';
                     } elseif (in_array('kode_deklarasi', $fields)) {
                         $select_fields .= ', kode_deklarasi AS kode';
-                    } elseif (in_array('no_mom', $fields)) {
-                        $select_fields .= ', no_mom AS kode';
-                    } elseif (in_array('no_survey', $fields)) {
-                        $select_fields .= ', no_survey AS kode';
-                    } elseif (in_array('no_kwitansi', $fields)) {
-                        $select_fields .= ', no_kwitansi AS kode';
-                    } elseif (in_array('no_land_arrangement', $fields)) {
-                        $select_fields .= ', no_land_arrangement AS kode';
-                    } elseif (in_array('no_penawaran', $fields)) {
-                        $select_fields .= ', no_penawaran AS kode';
-                    } elseif (in_array('no_tanda_terima', $fields)) {
-                        $select_fields .= ', no_tanda_terima AS kode';
-                    } elseif (in_array('no_travel', $fields)) {
-                        $select_fields .= ', no_travel AS kode';
-                    } elseif (in_array('no_produk_agen', $fields)) {
-                        $select_fields .= ', no_produk_agen AS kode';
-                    } elseif (in_array('no_transaksi', $fields)) {
-                        $select_fields .= ', no_transaksi AS kode';
                     } else {
                         $select_fields .= ', id AS kode';
                     }
 
                     // Nama pengaju dari join tbl_data_user
-                    $join_field = (stripos($tabel_nama, 'deklarasi') !== false) ? 'id_pengaju' : 'id_user';
-                    $select_fields .= ', tbl_data_user.name AS nama_pengaju, ' . $tabel_nama . '.created_at AS tanggal_pengajuan';
+                    $join_field = null;
+                    if (in_array('id_pengaju', $fields)) {
+                        $join_field = 'id_pengaju';
+                    } elseif (in_array('id_user', $fields)) {
+                        $join_field = 'id_user';
+                    }
+
+                    $tanggal_field = null;
+                    foreach (['created_at', 'tanggal_pengajuan', 'tanggal', 'created_date', 'date_created', 'tgl_pengajuan', 'input_date', 'app_hc_date', 'app2_date'] as $candidate) {
+                        if (in_array($candidate, $fields)) {
+                            $tanggal_field = $candidate;
+                            break;
+                        }
+                    }
+                    if ($tanggal_field === null) {
+                        $tanggal_field = 'id';
+                    }
+
+                    $select_fields .= ', tbl_data_user.name AS nama_pengaju, ' . $tabel_nama . '.' . $tanggal_field . ' AS tanggal_pengajuan';
 
                     $this->db->select($select_fields)
                         ->from($tabel_nama)
-                        ->join('tbl_data_user', $tabel_nama . '.' . $join_field . ' = tbl_data_user.id_user', 'left')
+                        ->join('tbl_data_user', $join_field ? ($tabel_nama . '.' . $join_field . ' = tbl_data_user.id_user') : '1=0', 'left')
                         ->where(implode(' OR ', $where), null, false);
 
                     // Apply search filters

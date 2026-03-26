@@ -22,7 +22,10 @@ class M_qbg_invoice extends CI_Model
     // UNTUK QUERY DATA TABLE
     private function _get_datatables_query($status = 'unpaid')
     {
-        $this->db->where('payment_status', $status); // Pakai status dari parameter
+        // Jika status = 'all' (atau kosong), jangan filter payment_status
+        if ($status !== null && $status !== '' && $status !== 'all') {
+            $this->db->where('payment_status', $status);
+        }
         $this->db->select();
         $this->db->from($this->table);
 
@@ -51,7 +54,7 @@ class M_qbg_invoice extends CI_Model
     }
 
     // UNTUK MENAMPILKAN HASIL QUERY KE DATA TABLES
-    function get_datatables($status)
+    function get_datatables($status = 'unpaid')
     {
         $this->_get_datatables_query($status);
         if ($_POST['length'] != -1)
@@ -60,17 +63,31 @@ class M_qbg_invoice extends CI_Model
         return $query->result();
     }
 
-    function count_filtered()
+    function count_filtered($status = 'unpaid')
     {
-        $this->_get_datatables_query();
+        $this->_get_datatables_query($status);
         $query = $this->db->get();
         return $query->num_rows();
     }
 
-    public function count_all()
+    public function count_all($status = 'all')
     {
         $this->db->from($this->table);
+        if ($status !== null && $status !== '' && $status !== 'all') {
+            $this->db->where('payment_status', $status);
+        }
         return $this->db->count_all_results();
+    }
+
+    public function get_totals()
+    {
+        $this->db->select(
+            "COALESCE(SUM(CASE WHEN payment_status = 'paid' THEN grand_total ELSE 0 END), 0) AS total_paid,
+             COALESCE(SUM(CASE WHEN payment_status = 'unpaid' OR payment_status IS NULL OR payment_status = '' THEN grand_total ELSE 0 END), 0) AS total_unpaid",
+            false
+        );
+        $this->db->from($this->table);
+        return $this->db->get()->row_array();
     }
 
     // Data Deklarasi

@@ -7,9 +7,10 @@ class M_submenu extends CI_Model
 {
 
     var $table = 'tbl_submenu'; //nama tabel dari database
-    var $column_order = array(null, null, 'nama_submenu', 'link', 'icon', 'id_menu', 'is_active', 'urutan');
-    var $column_search = array('nama_submenu', 'link', 'icon', 'id_menu', 'is_active', 'urutan'); //field yang diizin untuk pencarian 
-    var $order = array('id_submenu' => 'asc'); // default order 
+    // Column order/search must match the DataTables columns in view (including aliases)
+    var $column_order = array(null, null, 'a.nama_submenu', 'a.link', 'a.icon', 'b.nama_menu', 'a.is_active', 'a.urutan');
+    var $column_search = array('a.nama_submenu', 'a.link', 'a.icon', 'b.nama_menu', 'a.is_active', 'a.urutan'); //field yang diizin untuk pencarian 
+    var $order = array('a.id_submenu' => 'asc'); // default order 
 
     public function __construct()
     {
@@ -18,8 +19,14 @@ class M_submenu extends CI_Model
 
     private function _get_datatables_query()
     {
+        $this->db->select('a.*, b.nama_menu');
+        $this->db->from($this->table . ' a');
+        $this->db->join('tbl_menu b', 'a.id_menu = b.id_menu', 'left');
 
-        $this->db->from($this->table);
+        // Optional filter from UI buttons (filter by menu id)
+        if (isset($_POST['filter_menu_id']) && $_POST['filter_menu_id'] !== '') {
+            $this->db->where('a.id_menu', $_POST['filter_menu_id']);
+        }
 
         $i = 0;
 

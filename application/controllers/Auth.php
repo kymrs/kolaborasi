@@ -25,7 +25,12 @@ class Auth extends CI_Controller
 		$user = $this->input->post('username');
 		$pass = md5($this->input->post('password'));
 		$auth = $this->M_login->cek_login($user, $pass)->row();
-		if ($pass == $auth->password) {
+
+		if ($auth->is_active == 'N') {
+			$this->session->set_flashdata('message', ' <p style="color :red; font-weight: 500"> Akun anda belum aktif, silakan hubungi admin !!!</p> ');
+			redirect('auth');
+		}
+		if ($auth) {
 			$userdata = array(
 				'log'			=> 'Masuk',
 				'id_user'		=> $auth->id_user,

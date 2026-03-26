@@ -41,6 +41,20 @@ class Bmn_rekapitulasi extends CI_Controller
         return $pecahkan[2] . ' ' . $bulan[(int)$pecahkan[1]] . ' ' . $pecahkan[0];
     }
 
+    private function _safe_tgl_indo($tanggal)
+    {
+        if (empty($tanggal)) {
+            return '-';
+        }
+
+        $normalized = date('Y-m-d', strtotime($tanggal));
+        if (empty($normalized) || $normalized === '1970-01-01') {
+            return '-';
+        }
+
+        return $this->tgl_indo($normalized);
+    }
+
     public function index()
     {
         $data['notif'] = $this->M_notifikasi->pending_notification();
@@ -77,7 +91,7 @@ class Bmn_rekapitulasi extends CI_Controller
             $row[] = $kode_reimbust; // Kode reimburse
             $row[] = $field->name; // Nama pengguna
             $row[] = $field->tujuan; // Tujuan dari pengajuan
-            $row[] = $field->tgl_pengajuan; // Format tanggal
+            $row[] = $this->_safe_tgl_indo($field->tgl_pengajuan); // Format tanggal
             $row[] = 'Rp. ' . $pengeluaran; // Format nominal
 
             // Tambahkan row ke array data
@@ -106,10 +120,10 @@ class Bmn_rekapitulasi extends CI_Controller
             $row[] = $no;
             $row[] = $field->kode_prepayment ? $field->kode_prepayment : '-';
             $row[] = !empty($field->kode_reimbust) ? ucfirst($field->kode_reimbust) : '-';
-            $row[] = $this->tgl_indo($field->tgl_pengajuan);
+            $row[] = $this->_safe_tgl_indo($field->tgl_pengajuan);
             $row[] = $field->name;
             $row[] = $field->tujuan;
-            $row[] = 'Rp. ' . number_format($field->total_nominal, 0, ',', '.');
+            $row[] = 'Rp. ' . number_format(!empty($field->total_pengeluaran) ? $field->total_pengeluaran : $field->total_nominal, 0, ',', '.');
             $data[] = $row;
         }
 
@@ -134,10 +148,10 @@ class Bmn_rekapitulasi extends CI_Controller
             $row[] = $no;
             $row[] = '-';
             $row[] = !empty($field->kode_reimbust) ? strtoupper($field->kode_reimbust) : '-';
-            $row[] = $this->tgl_indo($field->tgl_pengajuan);
+            $row[] = $this->_safe_tgl_indo($field->tgl_pengajuan);
             $row[] = $field->name;
             $row[] = $field->tujuan;
-            $row[] = 'Rp. ' . number_format($field->total_jumlah_detail, 0, ',', '.');
+            $row[] = 'Rp. ' . number_format(!empty($field->total_pengeluaran) ? $field->total_pengeluaran : $field->total_jumlah_detail, 0, ',', '.');
             $data[] = $row;
         }
 
@@ -161,7 +175,7 @@ class Bmn_rekapitulasi extends CI_Controller
             $row = array();
             $row[] = $no;
             $row[] = !empty($field->kode_invoice) ? $field->kode_invoice : '-';
-            $row[] = $this->tgl_indo($field->tgl_invoice);
+            $row[] = $this->_safe_tgl_indo($field->tgl_invoice);
             $row[] = $field->ctc2_nama;
             $row[] = 'Rp. ' . number_format($field->total, 0, ',', '.');
             $row[] = $field->payment_status == 1 ? 'Lunas' : 'Belum Lunas';

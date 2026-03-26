@@ -735,21 +735,20 @@
             reorderRekRows();
         });
 
-        $('#form').submit(function(event) {
-            // Tambahkan array deletedRows ke dalam form data sebelum submit
-            $('<input>').attr({
-                type: 'hidden',
-                name: 'deleted_rows',
-                value: JSON.stringify(deletedRows)
-            }).appendTo('#form');
+        $('#form').on('submit.prepareDeleted', function() {
+            // Pastikan hidden input tidak dobel saat submit berulang
+            const $form = $(this);
+            let $deletedRowsInput = $form.find('input[name="deleted_rows"]');
+            if (!$deletedRowsInput.length) {
+                $deletedRowsInput = $('<input>', { type: 'hidden', name: 'deleted_rows' }).appendTo($form);
+            }
+            $deletedRowsInput.val(JSON.stringify(deletedRows));
 
-            $('<input>').attr({
-                type: 'hidden',
-                name: 'deletedRekRows',
-                value: JSON.stringify(deletedRekRows)
-            }).appendTo('#form');
-
-            // Lanjutkan dengan submit form
+            let $deletedRekRowsInput = $form.find('input[name="deletedRekRows"]');
+            if (!$deletedRekRowsInput.length) {
+                $deletedRekRowsInput = $('<input>', { type: 'hidden', name: 'deletedRekRows' }).appendTo($form);
+            }
+            $deletedRekRowsInput.val(JSON.stringify(deletedRekRows));
         });
 
         function hitungTotalAkhir() {
@@ -878,6 +877,18 @@
         $("#form").submit(function(e) {
             e.preventDefault();
             var $form = $(this);
+
+            // rekening wajib diisi (minimal 1 baris pada tabel rekening)
+            const rekRowCount = $('#rek-table tbody tr').length;
+            if (rekRowCount === 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Rekening kosong.',
+                    text: 'Silakan tambahkan rekening terlebih dahulu.',
+                });
+                return false;
+            }
+
             if (!$form.valid()) return false;
             var url;
             if (id == 0) {
@@ -897,12 +908,11 @@
                 data: $('#form').serialize(),
                 dataType: "JSON",
                 success: function(data) {
-                    console.log(data);
+                    // console.log(data);
                     // Sembunyikan loading saat respons diterima
                     $('#loading').hide();
 
-                    if (data.status) //if success close modal and reload ajax table
-                    {
+                    if (data.status) {
                         Swal.fire({
                             position: 'center',
                             icon: 'success',
@@ -913,11 +923,20 @@
                             checkNotifications();
                             location.href = "<?= base_url('swi_invoice') ?>";
                         })
+                    } else {
+                        $('.aksi').prop('disabled', false);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Validasi',
+                            text: (data && data.message) ? data.message : 'Data belum lengkap.',
+                        });
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     // Sembunyikan loading saat respons diterima
                     $('#loading').hide();
+
+                    $('.aksi').prop('disabled', false);
 
                     Swal.fire({
                         icon: 'error',

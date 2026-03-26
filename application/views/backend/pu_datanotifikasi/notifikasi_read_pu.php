@@ -173,7 +173,7 @@
                         <?php } elseif ($user->app2_name == $app2_name && !in_array($user->app2_status, ['approved', 'rejected'])  && $user->app_hc_status == 'approved') { ?>
                             <a class="btn btn-warning btn-sm mr-2" id="appBtn2" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
                         <?php } ?>
-                        <a class="btn btn-secondary btn-sm" onclick="history.back()"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+                        <a class="btn btn-primary btn-sm" onclick="history.back()"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                     </div>
 
                     <div class="header">
@@ -206,8 +206,8 @@
                         <div class="status1">
                             <p>
                                 Mengajukan Izin :
-                                ( <i class="fas fa-check" id="izin" style="display: none;"></i> )Tidak Masuk
-                                ( <i class="fas fa-check" id="pulang" style="display: none;"></i> )Pulang Awal
+                                ( <i class="fas fa-check" id="izin" style="display: none;"></i> )Tidak Masuk<span style="margin-right: 12px;"></span>
+                                ( <i class="fas fa-check" id="pulang" style="display: none;"></i> )Pulang Awal<span style="margin-right: 12px;"></span>
                                 ( <i class="fas fa-check" id="terlambat" style="display: none;"></i> )Datang Terlambat
                             </p>
                         </div>
@@ -236,8 +236,8 @@
                             <h1>DIISI OLEH ATASAN KARYAWAN BERSANGKUTAN</h1>
                             <p>
                                 <span style="margin-right: 30px;">Notifikasi ini</span>
-                                Disetujui ( <i class="fas fa-check" id="boleh" style="display: none;"></i> )
-                                Tidak Disetujui ( <i class="fas fa-check" id="tidakBoleh" style="display: none;"></i> )
+                                ( <i class="fas fa-check" id="boleh" style="display: none;"></i> ) Disetujui<span style="margin-right: 12px;"></span>
+                                ( <i class="fas fa-check" id="tidakBoleh" style="display: none;"></i> ) Tidak Disetujui
                             </p>
                         </div>
 
@@ -312,8 +312,8 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="app_hc_keterangan" class="col-form-label">Keterangan:</label>
-                        <textarea class="form-control" name="app_hc_keterangan" id="app_hc_keterangan" placeholder="Add your comments here"></textarea>
+                        <!-- <label for="app_hc_keterangan" class="col-form-label">Keterangan:</label>
+                        <textarea class="form-control" name="app_hc_keterangan" id="app_hc_keterangan" placeholder="Add your comments here"></textarea> -->
                         <!-- HIDDEN INPUT -->
                         <input type="hidden" name="app_hc_name" id="app_hc_name" value="<?= $this->session->userdata('fullname'); ?>">
                         <input type="hidden" name="hidden_id" id="hidden_id" value="<?= $id ?>">

@@ -68,6 +68,9 @@ class Sml_rekapitulasi extends CI_Controller
             $kode_reimbust = !empty($field->kode_reimbust) ? strtoupper($field->kode_reimbust) : '-';
             // $tanggal = !empty($field->tgl_pengajuan) ? $field->tgl_pengajuan : $field->tgl_prepayment;
             $pengeluaran = !empty($field->total_jumlah_detail) ? number_format($field->total_jumlah_detail, 0, ',', '.') : number_format($field->total_nominal, 0, ',', '.');
+            $tgl_pengajuan = !empty($field->tgl_pengajuan)
+                ? $this->tgl_indo(date('Y-m-d', strtotime($field->tgl_pengajuan)))
+                : '-';
 
             // Inkrement nomor urut
             $no++;
@@ -77,7 +80,7 @@ class Sml_rekapitulasi extends CI_Controller
             $row[] = $kode_reimbust; // Kode reimburse
             $row[] = $field->name; // Nama pengguna
             $row[] = $field->tujuan; // Tujuan dari pengajuan
-            $row[] = $field->tgl_pengajuan; // Format tanggal
+            $row[] = $tgl_pengajuan; // Format tanggal (Indonesia)
             $row[] = 'Rp. ' . $pengeluaran; // Format nominal
 
             // Tambahkan row ke array data
@@ -106,9 +109,10 @@ class Sml_rekapitulasi extends CI_Controller
             $row[] = $no;
             $row[] = $field->kode_prepayment ? $field->kode_prepayment : '-';
             $row[] = !empty($field->kode_reimbust) ? ucfirst($field->kode_reimbust) : '-';
-            $row[] = $this->tgl_indo($field->tgl_pengajuan);
+            $row[] = $this->tgl_indo(date('Y-m-d', strtotime($field->tgl_pengajuan)));
             $row[] = $field->tujuan;
-            $row[] = 'Rp. ' . number_format($field->total_nominal, 0, ',', '.');
+            $pengeluaran = !empty($field->total_jumlah_detail) ? $field->total_jumlah_detail : $field->total_nominal;
+            $row[] = 'Rp. ' . number_format($pengeluaran, 0, ',', '.');
             $data[] = $row;
         }
 
@@ -133,7 +137,7 @@ class Sml_rekapitulasi extends CI_Controller
             $row[] = $no;
             $row[] = '-';
             $row[] = !empty($field->kode_reimbust) ? strtoupper($field->kode_reimbust) : '-';
-            $row[] = $this->tgl_indo($field->tgl_pengajuan);
+            $row[] = $this->tgl_indo(date('Y-m-d', strtotime($field->tgl_pengajuan)));
             $row[] = $field->tujuan;
             $row[] = 'Rp. ' . number_format($field->total_jumlah_detail, 0, ',', '.');
             $data[] = $row;

@@ -92,7 +92,15 @@ class Qbg_invoice extends CI_Controller
     function get_list()
     {
         // Ambil status dari request POST (default: unpaid)
-        $status = $this->input->post('status') ?? 'unpaid';
+        // support: unpaid | paid | all
+        $status = $this->input->post('status');
+        if ($status === null || $status === '') {
+            $status = 'unpaid';
+        }
+        $allowedStatus = ['unpaid', 'paid', 'all'];
+        if (!in_array($status, $allowedStatus, true)) {
+            $status = 'unpaid';
+        }
 
         // INISIAI VARIABLE YANG DIBUTUHKAN
         $fullname = $this->db->select('name')
@@ -145,8 +153,8 @@ class Qbg_invoice extends CI_Controller
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_qbg_invoice->count_all(),
-            "recordsFiltered" => $this->M_qbg_invoice->count_filtered(),
+            "recordsTotal" => $this->M_qbg_invoice->count_all($status),
+            "recordsFiltered" => $this->M_qbg_invoice->count_filtered($status),
             "data" => $data,
         );
         //output dalam format JSON
@@ -208,7 +216,7 @@ class Qbg_invoice extends CI_Controller
         // $data['notif'] = $this->M_notifikasi->pending_notification();
         $this->load->view('backend/home', $data);
     }
-
+    
     // MEREGENERATE KODE INVOICE
     public function generate_kode()
     {
@@ -219,8 +227,9 @@ class Qbg_invoice extends CI_Controller
         if (empty($kode->kode_invoice)) {
             $no_urut = 1;
         } else {
-            $bln = substr($kode->kode_invoice, 3, 2);
-            $no_urut = substr($kode->kode_invoice, 7) + 1;
+            $lastUrutanStr = substr((string) $kode->kode_invoice, -3);
+            $lastUrutan = ctype_digit($lastUrutanStr) ? (int) $lastUrutanStr : 0;
+            $no_urut = $lastUrutan + 1;
         }
         $urutan = str_pad($no_urut, 3, "0", STR_PAD_LEFT);
         $year = substr($date, 8, 2);
@@ -292,8 +301,10 @@ class Qbg_invoice extends CI_Controller
         if (empty($kode->kode_invoice)) {
             $no_urut = 1;
         } else {
-            $bln = substr($kode->kode_invoice, 3, 2);
-            $no_urut = substr($kode->kode_invoice, 7) + 1;
+            // Ambil 3 digit terakhir dari kode terakhir (format: Q + yymm + 3digit)
+            $lastUrutanStr = substr((string) $kode->kode_invoice, -3);
+            $lastUrutan = ctype_digit($lastUrutanStr) ? (int) $lastUrutanStr : 0;
+            $no_urut = $lastUrutan + 1;
         }
         $urutan = str_pad($no_urut, 3, "0", STR_PAD_LEFT);
         $year = substr($date, 8, 2);
@@ -813,5 +824,15 @@ EOD;
         $this->db->update('qbg_invoice', ['payment_status' => $this->input->post('payment_status')]);
 
         echo json_encode(array("status" => TRUE));
+    }
+
+    public function get_totals()
+    {
+        $totals = $this->M_qbg_invoice->get_totals();
+        $response = [
+            'total_paid' => (int) ($totals['total_paid'] ?? 0),
+            'total_unpaid' => (int) ($totals['total_unpaid'] ?? 0),
+        ];
+        echo json_encode($response);
     }
 }

@@ -12,6 +12,10 @@
                     </div>
                 <?php } ?>
                 <div class="card-body">
+                    <div class="mb-3">
+                        <div class="small text-muted mb-2">Filter Menu:</div>
+                        <div id="menu-filter" class="btn-group flex-wrap" role="group" aria-label="Filter menu"></div>
+                    </div>
                     <table id="table" class="table table-bordered table-striped">
                         <thead>
                             <tr>
@@ -123,6 +127,8 @@
 
 <script type="text/javascript">
     var table;
+    var selectedMenuFilterId = '';
+
     $(document).ready(function() {
         table = $('#table').DataTable({
             "responsive": true,
@@ -131,7 +137,10 @@
             "order": [],
             "ajax": {
                 "url": "<?php echo site_url('submenu/get_list') ?>",
-                "type": "POST"
+                "type": "POST",
+                "data": function(d) {
+                    d.filter_menu_id = selectedMenuFilterId;
+                }
             },
             "columnDefs": [{
                 "targets": [0, 1],
@@ -206,6 +215,50 @@
                     html += '<option value=' + data[i].id_menu + '>' + data[i].nama_menu + '</option>';
                 }
                 $('#menu').html(html);
+
+                // Build filter buttons for Menu column
+                var btnHtml = '';
+                btnHtml += '<button type="button" class="btn btn-sm btn-secondary menu-filter-btn active" data-menu-id="">All</button>';
+
+                var imgBase = "<?= base_url('assets/backend/img/') ?>";
+                for (i = 0; i < data.length; i++) {
+                    var nm = (data[i].nama_menu || '').toString();
+                    if (nm.trim().toLowerCase() === 'dashboard') {
+                        continue;
+                    }
+                    if (nm.trim().toLowerCase() === 'setting') {
+                        continue;
+                    }
+                    if (nm.trim().toLowerCase() === 'data') {
+                        continue;
+                    }
+                    var img = (data[i].sub_image || '').toString();
+                    var iconClass = (data[i].icon || '').toString();
+                    iconClass = iconClass.replace(/[^a-zA-Z0-9 _-]/g, '').trim();
+                    // Escape for attribute/text (simple replace; menu names are expected to be plain)
+                    var nmEsc = nm.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+                    var innerHtml = '';
+                    if (img) {
+                        innerHtml = '<img src="' + imgBase + img + '" alt="' + nmEsc + '" style="height:27px; width:auto;" />';
+                    } else {
+                        if (!iconClass) {
+                            iconClass = 'fas fa-folder';
+                        }
+                        innerHtml = '<i class="' + iconClass + '" style="font-size:18px;"></i>';
+                    }
+
+                    btnHtml += '<button type="button" class="btn btn-sm btn-outline-secondary menu-filter-btn" data-menu-id="' + data[i].id_menu + '" title="' + nmEsc + '">' +
+                        innerHtml +
+                        '</button>';
+                }
+                $('#menu-filter').html(btnHtml);
+
+                $('#menu-filter').off('click', '.menu-filter-btn').on('click', '.menu-filter-btn', function() {
+                    selectedMenuFilterId = $(this).data('menu-id') || '';
+                    $('#menu-filter .menu-filter-btn').removeClass('active btn-secondary').addClass('btn-outline-secondary');
+                    $(this).addClass('active btn-secondary').removeClass('btn-outline-secondary');
+                    table.ajax.reload();
+                });
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 alert('Error get data from ajax');

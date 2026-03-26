@@ -50,7 +50,7 @@ class Sw_rekapitulasi extends CI_Controller
         $data['total'] = $this->M_sw_rekapitulasi->get_total_pengeluaran();
 
         $data['title'] = "backend/sw_rekapitulasi";
-        $data['titleview'] = "Data Rekapitulasi MAC";
+        $data['titleview'] = "Data Rekapitulasi SW";
         $this->load->view('backend/home', $data);
     }
 
@@ -68,6 +68,7 @@ class Sw_rekapitulasi extends CI_Controller
             $kode_reimbust = !empty($field->kode_reimbust) ? strtoupper($field->kode_reimbust) : '-';
             // $tanggal = !empty($field->tgl_pengajuan) ? $field->tgl_pengajuan : $field->tgl_prepayment;
             $pengeluaran = !empty($field->total_jumlah_detail) ? number_format($field->total_jumlah_detail, 0, ',', '.') : number_format($field->total_nominal, 0, ',', '.');
+            $tanggal = !empty($field->tgl_pengajuan) ? $this->tgl_indo(date('Y-m-d', strtotime($field->tgl_pengajuan))) : '-';
 
             // Inkrement nomor urut
             $no++;
@@ -77,7 +78,7 @@ class Sw_rekapitulasi extends CI_Controller
             $row[] = $kode_reimbust; // Kode reimburse
             $row[] = $field->name; // Nama pengguna
             $row[] = $field->tujuan; // Tujuan dari pengajuan
-            $row[] = $field->tgl_pengajuan; // Format tanggal
+            $row[] = $tanggal; // Format tanggal (Indonesia)
             $row[] = 'Rp. ' . $pengeluaran; // Format nominal
 
             // Tambahkan row ke array data

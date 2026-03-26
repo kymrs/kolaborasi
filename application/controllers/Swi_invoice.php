@@ -196,6 +196,32 @@ class Swi_invoice extends CI_Controller
     // MENAMBAHKAN DATA
     public function add()
     {
+        // VALIDASI: rekening wajib diisi
+        $nama_rek_post = $this->input->post('nama_rek');
+        $nama_bank_post = $this->input->post('nama_bank');
+        $no_rek_post = $this->input->post('no_rek');
+        if ($nama_rek_post === null) {
+            // fallback untuk pola akses lama di beberapa modul
+            $nama_rek_post = $this->input->post('nama_rek[]');
+            $nama_bank_post = $this->input->post('nama_bank[]');
+            $no_rek_post = $this->input->post('no_rek[]');
+        }
+
+        $has_rekening = is_array($nama_rek_post) && is_array($nama_bank_post) && is_array($no_rek_post);
+        if ($has_rekening) {
+            $filteredNoRek = array_filter($no_rek_post, function($v) {
+                return trim((string)$v) !== '';
+            });
+            $has_rekening = count($filteredNoRek) > 0;
+        }
+        if (!$has_rekening) {
+            echo json_encode(array(
+                'status' => FALSE,
+                'message' => 'Rekening masih kosong. Silakan tambahkan minimal 1 rekening.'
+            ));
+            return;
+        }
+
         // INSERT KODE PREPAYMENT SAAT SUBMIT
         $date = $this->input->post('tgl_invoice');
 
@@ -226,20 +252,26 @@ class Swi_invoice extends CI_Controller
         $inserted = $this->M_swi_invoice->save($data);
 
         if ($inserted) {
-            // INISIASI VARIABEL INPUT DETAIL PREPAYMENT
-            $nama_rek = $this->input->post('nama_rek[]');
-            $nama_bank = $this->input->post('nama_bank[]');
-            $no_rek = $this->input->post('no_rek[]');
-            //PERULANGAN UNTUK INSER QUERY DETAIL PREPAYMENT
-            for ($i = 1; $i <= count($nama_rek); $i++) {
+            // INISIASI VARIABEL INPUT DETAIL REKENING
+            $nama_rek = is_array($nama_rek_post) ? $nama_rek_post : array();
+            $nama_bank = is_array($nama_bank_post) ? $nama_bank_post : array();
+            $no_rek = is_array($no_rek_post) ? $no_rek_post : array();
+
+            $data2 = array();
+            foreach ($no_rek as $key => $rekValue) {
+                if (trim((string)$rekValue) === '') {
+                    continue;
+                }
                 $data2[] = array(
                     'invoice_id' => $inserted,
-                    'nama_rek' => $nama_rek[$i],
-                    'nama_bank' => $nama_bank[$i],
-                    'no_rek' => $no_rek[$i]
+                    'nama_rek' => isset($nama_rek[$key]) ? $nama_rek[$key] : '',
+                    'nama_bank' => isset($nama_bank[$key]) ? $nama_bank[$key] : '',
+                    'no_rek' => $rekValue
                 );
             }
-            $this->M_swi_invoice->save_detail($data2);
+            if (!empty($data2)) {
+                $this->M_swi_invoice->save_detail($data2);
+            }
         }
 
         if ($inserted) {
@@ -271,6 +303,31 @@ class Swi_invoice extends CI_Controller
     // UPDATE DATA
     public function update()
     {
+        // VALIDASI: rekening wajib diisi
+        $nama_rek_post = $this->input->post('nama_rek');
+        $nama_bank_post = $this->input->post('nama_bank');
+        $no_rek_post = $this->input->post('no_rek');
+        if ($nama_rek_post === null) {
+            $nama_rek_post = $this->input->post('nama_rek[]');
+            $nama_bank_post = $this->input->post('nama_bank[]');
+            $no_rek_post = $this->input->post('no_rek[]');
+        }
+
+        $has_rekening = is_array($nama_rek_post) && is_array($nama_bank_post) && is_array($no_rek_post);
+        if ($has_rekening) {
+            $filteredNoRek = array_filter($no_rek_post, function($v) {
+                return trim((string)$v) !== '';
+            });
+            $has_rekening = count($filteredNoRek) > 0;
+        }
+        if (!$has_rekening) {
+            echo json_encode(array(
+                'status' => FALSE,
+                'message' => 'Rekening masih kosong. Silakan tambahkan minimal 1 rekening.'
+            ));
+            return;
+        }
+
         $data = array(
             'tgl_invoice' => date('Y-m-d', strtotime($this->input->post('tgl_invoice'))),
             'ctc_to' => $this->input->post('ctc_to'),
@@ -326,22 +383,29 @@ class Swi_invoice extends CI_Controller
             }
 
             // MELAKUKAN REPLACE DATA REKENING
-            $id_rek = $this->input->post('hidden_rekId[]');
-            $nama_rek = $this->input->post('nama_rek[]');
-            $nama_bank = $this->input->post('nama_bank[]');
-            $no_rek = $this->input->post('no_rek[]');
-            for ($i = 1; $i <= count($_POST['nama_bank']); $i++) {
-                // Set id menjadi NULL jika id_rek tidak ada atau kosong
-                $id_rekening = !empty($id_rek[$i]) ? $id_rek[$i] : NULL;
+            $id_rek = $this->input->post('hidden_rekId');
+            if ($id_rek === null) {
+                $id_rek = $this->input->post('hidden_rekId[]');
+            }
+
+            $nama_rek = is_array($nama_rek_post) ? $nama_rek_post : array();
+            $nama_bank = is_array($nama_bank_post) ? $nama_bank_post : array();
+            $no_rek = is_array($no_rek_post) ? $no_rek_post : array();
+
+            $data3 = array();
+            foreach ($no_rek as $key => $rekValue) {
+                if (trim((string)$rekValue) === '') {
+                    continue;
+                }
+                $id_rekening = (is_array($id_rek) && !empty($id_rek[$key])) ? $id_rek[$key] : NULL;
                 $data3[] = array(
                     'id' => $id_rekening,
                     'invoice_id' => $this->input->post('id'),
-                    'nama_rek' => $nama_rek[$i],
-                    'nama_bank' => $nama_bank[$i],
-                    'no_rek' => $no_rek[$i]
+                    'nama_rek' => isset($nama_rek[$key]) ? $nama_rek[$key] : '',
+                    'nama_bank' => isset($nama_bank[$key]) ? $nama_bank[$key] : '',
+                    'no_rek' => $rekValue
                 );
-                // Menggunakan db->replace untuk memasukkan atau menggantikan data
-                $this->db->replace('swi_rek_invoice', $data3[$i - 1]);
+                $this->db->replace('swi_rek_invoice', $data3[count($data3) - 1]);
             }
         }
         echo json_encode(array("status" => TRUE));

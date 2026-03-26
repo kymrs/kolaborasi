@@ -310,7 +310,7 @@ class Kps_karyawan extends CI_Controller
         echo json_encode(['status' => true, 'npk' => $nextNpk]);
     }
 
-    // helper: hitung total bulan inklusif antara dua tanggal (start..end) 
+    // hitung total bulan inklusif antara dua tanggal start end 
     private function months_inclusive($startDate, $endDate)
     {
         if (empty($startDate) || empty($endDate)) return 0;
@@ -331,7 +331,7 @@ class Kps_karyawan extends CI_Controller
         return $total;
     }
 
-    // helper: integer to Roman
+    // integer to Roman
     private function int_to_roman($num)
     {
         $num = (int)$num;
@@ -359,7 +359,7 @@ class Kps_karyawan extends CI_Controller
 
     /**
      * generate_no_perjanjian: hitung no perjanjian dengan benar
-     * format: 001/PKWT-KPS/I-XIII/III/2027  (contoh)
+     * format: 001/PKWT-KPS/I-XIII/III/2027
      */
     public function generate_no_perjanjian()
     {

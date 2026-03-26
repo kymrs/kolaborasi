@@ -16,8 +16,10 @@ class M_ctz_rekapitulasi extends CI_Model
         if (!empty($_POST['tab'])) {
             if ($_POST['tab'] == 'pelaporan') {
                 // Column order for "pelaporan" tab
-                $this->column_order = array(null, 'tgl_pengajuan', 'name', 'tujuan', 'kode_reimbust', 'kode_prepayment', 'total_nominal', 'total_jumlah_detail');
-                $this->column_search = array('ctz_reimbust.tgl_pengajuan', 'tbl_data_user.name', 'ctz_prepayment.tujuan', 'ctz_reimbust.kode_reimbust', 'ctz_prepayment.kode_prepayment', 'ctz_prepayment.total_nominal');
+                // Urutan ini harus mengikuti kolom yang dikirim pada controller get_list():
+                // [0]no, [1]kode_prepayment, [2]kode_reimbust, [3]name, [4]tujuan, [5]tgl_pengajuan, [6]pengeluaran
+                $this->column_order = array(null, 'ctz_prepayment.kode_prepayment', 'ctz_reimbust.kode_reimbust', 'tbl_data_user.name', 'ctz_prepayment.tujuan', 'tgl_pengajuan', 'pengeluaran');
+                $this->column_search = array('ctz_prepayment.kode_prepayment', 'ctz_reimbust.kode_reimbust', 'ctz_reimbust.tgl_pengajuan', 'ctz_prepayment.tgl_prepayment', 'tbl_data_user.name', 'ctz_prepayment.tujuan');
 
                 // Query for "pelaporan" tab
                 $this->db->select('ctz_reimbust.id, 
@@ -28,24 +30,24 @@ class M_ctz_rekapitulasi extends CI_Model
                                IF(ctz_reimbust.kode_prepayment IS NOT NULL, ctz_reimbust.tgl_pengajuan, ctz_prepayment.tgl_prepayment) AS tgl_pengajuan,  
                                ctz_prepayment.kode_prepayment, 
                                ctz_prepayment.total_nominal, 
-                               SUM(ctz_reimbust_detail.jumlah) AS total_jumlah_detail');
+                               SUM(ctz_reimbust_detail.jumlah) AS total_jumlah_detail,
+                               COALESCE(SUM(ctz_reimbust_detail.jumlah), ctz_prepayment.total_nominal) AS pengeluaran');
                 $this->db->from('ctz_prepayment');
                 $this->db->join('ctz_reimbust', 'ctz_reimbust.kode_prepayment = ctz_prepayment.kode_prepayment', 'left');
                 $this->db->join('ctz_reimbust_detail', 'ctz_reimbust.id = ctz_reimbust_detail.reimbust_id', 'left');
                 $this->db->join('tbl_data_user', 'ctz_prepayment.id_user = tbl_data_user.id_user', 'left');
 
-                $this->db->group_start();
-                $this->db->group_start();
+                // Rekapitulasi hanya untuk data yang sudah paid & approved
                 $this->db->where('ctz_prepayment.payment_status', 'paid');
+                $this->db->where('ctz_prepayment.status', 'approved');
+
+                // tampilkan prepayment yang belum ada reimbust, atau reimbust yang paid & approved
+                $this->db->group_start();
                 $this->db->where('ctz_reimbust.kode_prepayment IS NULL');
-                $this->db->group_end();
                 $this->db->or_group_start();
-                $this->db->where('ctz_prepayment.payment_status', 'paid');
                 $this->db->where('ctz_reimbust.kode_prepayment IS NOT NULL');
-                $this->db->group_end();
-                $this->db->or_group_start();
                 $this->db->where('ctz_reimbust.payment_status', 'paid');
-                $this->db->where('ctz_reimbust.kode_prepayment IS NOT NULL');
+                $this->db->where('ctz_reimbust.status', 'approved');
                 $this->db->group_end();
                 $this->db->group_end();
 
@@ -74,8 +76,10 @@ class M_ctz_rekapitulasi extends CI_Model
                 $this->db->group_by(array('ctz_prepayment.id', 'ctz_prepayment.kode_prepayment'));
             } elseif ($_POST['tab'] == 'reimbust') {
                 // Column order for "reimbust" tab
-                $this->column_order = array(null, 'kode_prepayment', 'ctz_reimbust.kode_reimbust', 'name', 'tujuan', 'ctz_reimbust.tgl_pengajuan', 'total_jumlah_detail');
-                $this->column_search = array('ctz_reimbust.tgl_pengajuan', 'tbl_data_user.name', 'ctz_reimbust.tujuan', 'ctz_reimbust.kode_reimbust', 'ctz_reimbust.kode_prepayment');
+                // Urutan ini harus mengikuti kolom yang dikirim pada controller get_list():
+                // [0]no, [1]kode_prepayment, [2]kode_reimbust, [3]name, [4]tujuan, [5]tgl_pengajuan, [6]pengeluaran
+                $this->column_order = array(null, 'ctz_reimbust.kode_prepayment', 'ctz_reimbust.kode_reimbust', 'tbl_data_user.name', 'ctz_reimbust.tujuan', 'ctz_reimbust.tgl_pengajuan', 'total_jumlah_detail');
+                $this->column_search = array('ctz_reimbust.kode_prepayment', 'ctz_reimbust.kode_reimbust', 'ctz_reimbust.tgl_pengajuan', 'tbl_data_user.name', 'ctz_reimbust.tujuan');
 
                 // Query for "reimbust" tab
                 $this->db->select('ctz_reimbust.id, ctz_reimbust.tgl_pengajuan, tbl_data_user.name, ctz_reimbust.tujuan, ctz_reimbust.kode_reimbust, ctz_reimbust.kode_prepayment, SUM(ctz_reimbust_detail.jumlah) AS total_jumlah_detail');
@@ -83,6 +87,7 @@ class M_ctz_rekapitulasi extends CI_Model
                 $this->db->join('ctz_reimbust_detail', 'ctz_reimbust.id = ctz_reimbust_detail.reimbust_id', 'left');
                 $this->db->join('tbl_data_user', 'ctz_reimbust.id_user = tbl_data_user.id_user', 'left');
                 $this->db->where('ctz_reimbust.payment_status', 'paid');
+                $this->db->where('ctz_reimbust.status', 'approved');
                 $this->db->where('ctz_reimbust.kode_prepayment', '');
 
                 // Filter by date range
@@ -117,7 +122,11 @@ class M_ctz_rekapitulasi extends CI_Model
 
         // Order functionality
         if (isset($_POST['order'])) {
-            $this->db->order_by($this->column_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+            $colIdx = (int)$_POST['order']['0']['column'];
+            $dir = $_POST['order']['0']['dir'];
+            if (isset($this->column_order[$colIdx]) && !empty($this->column_order[$colIdx])) {
+                $this->db->order_by($this->column_order[$colIdx], $dir);
+            }
         } else {
             if (isset($_POST['tab'])) {
                 if ($_POST['tab'] == 'pelaporan') {
@@ -154,8 +163,8 @@ class M_ctz_rekapitulasi extends CI_Model
         if (!empty($_POST['tab'])) {
             if ($_POST['tab'] == 'pelaporan') {
                 // Column order for "pelaporan" tab
-                $this->column_order = array(null, 'tgl_pengajuan', 'name', 'tujuan', 'kode_reimbust', 'kode_prepayment', 'total_nominal', 'total_jumlah_detail');
-                $this->column_search = array('ctz_reimbust.tgl_pengajuan', 'name', 'ctz_prepayment.tujuan', 'kode_reimbust', 'ctz_prepayment.kode_prepayment', 'ctz_prepayment.total_nominal');
+                $this->column_order = array(null, 'ctz_prepayment.kode_prepayment', 'ctz_reimbust.kode_reimbust', 'tbl_data_user.name', 'ctz_prepayment.tujuan', 'tgl_pengajuan', 'pengeluaran');
+                $this->column_search = array('ctz_prepayment.kode_prepayment', 'ctz_reimbust.kode_reimbust', 'ctz_reimbust.tgl_pengajuan', 'ctz_prepayment.tgl_prepayment', 'tbl_data_user.name', 'ctz_prepayment.tujuan');
 
                 // Query for "pelaporan" tab
                 $this->db->select('ctz_reimbust.id, 
@@ -166,24 +175,24 @@ class M_ctz_rekapitulasi extends CI_Model
                                IF(ctz_reimbust.kode_prepayment IS NOT NULL, ctz_reimbust.tgl_pengajuan, ctz_prepayment.tgl_prepayment) AS tgl_pengajuan,  
                                ctz_prepayment.kode_prepayment, 
                                ctz_prepayment.total_nominal, 
-                               SUM(ctz_reimbust_detail.jumlah) AS total_jumlah_detail');
+                               SUM(ctz_reimbust_detail.jumlah) AS total_jumlah_detail,
+                               COALESCE(SUM(ctz_reimbust_detail.jumlah), ctz_prepayment.total_nominal) AS pengeluaran');
                 $this->db->from('ctz_prepayment');
                 $this->db->join('ctz_reimbust', 'ctz_reimbust.kode_prepayment = ctz_prepayment.kode_prepayment', 'left');
                 $this->db->join('ctz_reimbust_detail', 'ctz_reimbust.id = ctz_reimbust_detail.reimbust_id', 'left');
                 $this->db->join('tbl_data_user', 'ctz_prepayment.id_user = tbl_data_user.id_user', 'left');
 
-                $this->db->group_start();
-                $this->db->group_start();
+                // Rekapitulasi hanya untuk data yang sudah paid & approved
                 $this->db->where('ctz_prepayment.payment_status', 'paid');
+                $this->db->where('ctz_prepayment.status', 'approved');
+
+                // tampilkan prepayment yang belum ada reimbust, atau reimbust yang paid & approved
+                $this->db->group_start();
                 $this->db->where('ctz_reimbust.kode_prepayment IS NULL');
-                $this->db->group_end();
                 $this->db->or_group_start();
-                $this->db->where('ctz_prepayment.payment_status', 'paid');
                 $this->db->where('ctz_reimbust.kode_prepayment IS NOT NULL');
-                $this->db->group_end();
-                $this->db->or_group_start();
                 $this->db->where('ctz_reimbust.payment_status', 'paid');
-                $this->db->where('ctz_reimbust.kode_prepayment IS NOT NULL');
+                $this->db->where('ctz_reimbust.status', 'approved');
                 $this->db->group_end();
                 $this->db->group_end();
 
@@ -210,8 +219,8 @@ class M_ctz_rekapitulasi extends CI_Model
                 $this->db->group_by(array('ctz_prepayment.id', 'ctz_prepayment.kode_prepayment'));
             } elseif ($_POST['tab'] == 'reimbust') {
                 // Column order for "reimbust" tab
-                $this->column_order = array(null, 'ctz_reimbust.tgl_pengajuan', 'name', 'tujuan', 'ctz_reimbust.kode_reimbust', 'kode_prepayment', 'total_jumlah_detail');
-                $this->column_search = array('ctz_reimbust.tgl_pengajuan', 'name', 'tujuan', 'ctz_reimbust.kode_reimbust', 'kode_prepayment');
+                $this->column_order = array(null, 'ctz_reimbust.kode_prepayment', 'ctz_reimbust.kode_reimbust', 'tbl_data_user.name', 'ctz_reimbust.tujuan', 'ctz_reimbust.tgl_pengajuan', 'total_jumlah_detail');
+                $this->column_search = array('ctz_reimbust.kode_prepayment', 'ctz_reimbust.kode_reimbust', 'ctz_reimbust.tgl_pengajuan', 'tbl_data_user.name', 'ctz_reimbust.tujuan');
 
                 // Query for "reimbust" tab
                 $this->db->select('ctz_reimbust.id, ctz_reimbust.tgl_pengajuan, tbl_data_user.name, ctz_reimbust.tujuan, ctz_reimbust.kode_reimbust, ctz_reimbust.kode_prepayment, SUM(ctz_reimbust_detail.jumlah) AS total_jumlah_detail');
@@ -219,6 +228,7 @@ class M_ctz_rekapitulasi extends CI_Model
                 $this->db->join('ctz_reimbust_detail', 'ctz_reimbust.id = ctz_reimbust_detail.reimbust_id');
                 $this->db->join('tbl_data_user', 'ctz_reimbust.id_user = tbl_data_user.id_user');
                 $this->db->where('ctz_reimbust.payment_status', 'paid');
+                $this->db->where('ctz_reimbust.status', 'approved');
                 $this->db->where('ctz_reimbust.kode_prepayment', '');
 
                 // Filter by date range
@@ -253,7 +263,11 @@ class M_ctz_rekapitulasi extends CI_Model
 
         // Order functionality
         if (isset($_POST['order'])) {
-            $this->db->order_by($this->column_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+            $colIdx = (int)$_POST['order']['0']['column'];
+            $dir = $_POST['order']['0']['dir'];
+            if (isset($this->column_order[$colIdx]) && !empty($this->column_order[$colIdx])) {
+                $this->db->order_by($this->column_order[$colIdx], $dir);
+            }
         } else if (isset($this->order)) {
             $order = $this->order;
             $this->db->order_by(key($order), $order[key($order)]);
@@ -280,6 +294,7 @@ class M_ctz_rekapitulasi extends CI_Model
         $this->db->from('ctz_prepayment AS a');
         $this->db->join('ctz_reimbust AS b', 'a.kode_prepayment = b.kode_prepayment', 'left');
         $this->db->where('a.payment_status', 'paid');
+        $this->db->where('a.status', 'approved');
         $this->db->where('b.kode_prepayment IS NULL');
 
         // // Filter by date range if needed
@@ -307,11 +322,11 @@ class M_ctz_rekapitulasi extends CI_Model
         $this->db->from('ctz_reimbust AS a');
         $this->db->join('ctz_reimbust_detail AS b', 'a.id = b.reimbust_id', 'left');
         $this->db->join('ctz_prepayment AS c', 'c.kode_prepayment = a.kode_prepayment', 'right');
-        $this->db->group_start();
         $this->db->where('a.payment_status', 'paid');
-        $this->db->or_where('c.payment_status', 'paid');
+        $this->db->where('a.status', 'approved');
+        $this->db->where('c.payment_status', 'paid');
+        $this->db->where('c.status', 'approved');
         $this->db->where('a.kode_prepayment !=', '');
-        $this->db->group_end();
 
         // Filter by date range if needed
         if (!empty($_POST['awal']) && !empty($_POST['akhir'])) {
@@ -338,6 +353,7 @@ class M_ctz_rekapitulasi extends CI_Model
         $this->db->from('ctz_reimbust AS a');
         $this->db->join('ctz_reimbust_detail AS b', 'a.id = b.reimbust_id', 'left');
         $this->db->where('a.payment_status', 'paid');
+        $this->db->where('a.status', 'approved');
         $this->db->where('a.kode_prepayment', '');
 
         // // Filter by date range if needed
@@ -379,6 +395,7 @@ class M_ctz_rekapitulasi extends CI_Model
         $this->db->from('ctz_prepayment AS a');
         $this->db->join('ctz_reimbust AS b', 'a.kode_prepayment = b.kode_prepayment', 'left');
         $this->db->where('a.payment_status', 'paid');
+        $this->db->where('a.status', 'approved');
         $this->db->where('b.kode_prepayment IS NULL');
 
         // Filter by date range if needed
@@ -408,8 +425,25 @@ class M_ctz_rekapitulasi extends CI_Model
         $this->db->from('ctz_reimbust AS a');
         $this->db->join('ctz_reimbust_detail AS b', 'a.id = b.reimbust_id', 'inner');
         $this->db->join('ctz_prepayment AS c', 'a.kode_prepayment = c.kode_prepayment', 'left');
+
+        // hanya ambil data reimbust/prepayment yang sudah paid & approved
+        $this->db->group_start();
+        // reimbust tanpa prepayment
+        $this->db->group_start();
+        $this->db->where('a.kode_prepayment', '');
         $this->db->where('a.payment_status', 'paid');
-        $this->db->or_where('c.payment_status', 'paid');
+        $this->db->where('a.status', 'approved');
+        $this->db->group_end();
+        // reimbust yang terkait prepayment
+        $this->db->or_group_start();
+        $this->db->where('a.kode_prepayment !=', '');
+        $this->db->where('a.payment_status', 'paid');
+        $this->db->where('a.status', 'approved');
+        $this->db->where('c.payment_status', 'paid');
+        $this->db->where('c.status', 'approved');
+        $this->db->group_end();
+        $this->db->group_end();
+
         $this->db->group_by('a.id');
 
         // Filter by date range if needed

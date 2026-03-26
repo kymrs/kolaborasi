@@ -62,14 +62,16 @@ class Swi_rekapitulasi extends CI_Controller
 
         foreach ($list as $field) {
             $no++;
+            $tanggal = !empty($field->tgl_pengajuan) ? $this->tgl_indo(date('Y-m-d', strtotime($field->tgl_pengajuan))) : '-';
+            $pengeluaran = isset($field->total_pengeluaran) ? $field->total_pengeluaran : (isset($field->total_nominal) ? $field->total_nominal : 0);
             $row = array();
             $row[] = $no;
             $row[] = $field->kode_prepayment ? $field->kode_prepayment : '-';
             $row[] = !empty($field->kode_reimbust) ? ucfirst($field->kode_reimbust) : '-';
-            $row[] = $this->tgl_indo($field->tgl_pengajuan);
+            $row[] = $tanggal;
             $row[] = $field->name;
             $row[] = $field->tujuan;
-            $row[] = 'Rp. ' . number_format($field->total_nominal, 0, ',', '.');
+            $row[] = 'Rp. ' . number_format($pengeluaran, 0, ',', '.');
             $data[] = $row;
         }
 
@@ -90,14 +92,16 @@ class Swi_rekapitulasi extends CI_Controller
 
         foreach ($list as $field) {
             $no++;
+            $tanggal = !empty($field->tgl_pengajuan) ? $this->tgl_indo(date('Y-m-d', strtotime($field->tgl_pengajuan))) : '-';
+            $pengeluaran = isset($field->total_pengeluaran) ? $field->total_pengeluaran : (isset($field->total_jumlah_detail) ? $field->total_jumlah_detail : 0);
             $row = array();
             $row[] = $no;
             $row[] = '-';
             $row[] = !empty($field->kode_reimbust) ? strtoupper($field->kode_reimbust) : '-';
-            $row[] = $this->tgl_indo($field->tgl_pengajuan);
+            $row[] = $tanggal;
             $row[] = $field->name;
             $row[] = $field->tujuan;
-            $row[] = 'Rp. ' . number_format($field->total_jumlah_detail, 0, ',', '.');
+            $row[] = 'Rp. ' . number_format($pengeluaran, 0, ',', '.');
             $data[] = $row;
         }
 
@@ -118,10 +122,11 @@ class Swi_rekapitulasi extends CI_Controller
 
         foreach ($list as $field) {
             $no++;
+            $tanggalInvoice = !empty($field->tgl_invoice) ? $this->tgl_indo(date('Y-m-d', strtotime($field->tgl_invoice))) : '-';
             $row = array();
             $row[] = $no;
             $row[] = !empty($field->kode_invoice) ? $field->kode_invoice : '-';
-            $row[] = $this->tgl_indo($field->tgl_invoice);
+            $row[] = $tanggalInvoice;
             $row[] = $field->ctc_to;
             $row[] = 'Rp. ' . number_format($field->total, 0, ',', '.');
             $row[] = $field->payment_status == 1 ? 'Lunas' : 'Belum Lunas';

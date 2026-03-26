@@ -13,12 +13,28 @@
                         </a>
                     <?php } ?>
 
-                    <ul class="nav nav-tabs">
+                    <ul class="nav nav-tabs" style="border-bottom: none;">
                         <li class="nav-item">
                             <select id="filter_status" class="form-control" style="cursor: pointer;">
+                                <option value="all">All</option>
                                 <option value="unpaid" selected>Unpaid</option>
                                 <option value="paid">Paid</option>
                             </select>
+                        </li>   
+                        <li class="nav-item ml-2">
+                            <div id="invoice_totals" class="text-muted" style="font-size: 0.9rem; line-height: 1.25; display: grid; grid-template-columns: 64px 10px minmax(110px, 1fr) 14px 44px 10px minmax(110px, 1fr); grid-template-rows: auto auto; column-gap: 4px; row-gap: 2px; align-items: center;">
+                                <div class="invoice_row_paid" sty   le="grid-column: 1; grid-row: 1;">Paid</div>
+                                <div class="invoice_row_paid" style="grid-column: 2; grid-row: 1;">:</div>
+                                <div id="invoice_total_paid" class="invoice_row_paid" style="grid-column: 3; grid-row: 1; text-align: right; white-space: nowrap;">-</div>
+
+                                <div class="invoice_row_unpaid" style="grid-column: 1; grid-row: 2;">Unpaid</div>
+                                <div class="invoice_row_unpaid" style="grid-column: 2; grid-row: 2;">:</div>
+                                <div id="invoice_total_unpaid" class="invoice_row_unpaid" style="grid-column: 3; grid-row: 2; text-align: right; white-space: nowrap;">-</div>
+
+                                <div class="invoice_row_total" style="grid-column: 5; grid-row: 1 / span 2;">Total</div>
+                                <div class="invoice_row_total" style="grid-column: 6; grid-row: 1 / span 2;">:</div>
+                                <div id="invoice_total_all" class="invoice_row_total" style="grid-column: 7; grid-row: 1 / span 2; text-align: right; white-space: nowrap;">-</div>
+                            </div>
                         </li>
                     </ul>
                 </div>
@@ -65,8 +81,60 @@
 <script type="text/javascript">
     var table;
 
+    function formatRupiah(value) {
+        var number = Number(value || 0);
+        return 'Rp. ' + number.toLocaleString('id-ID');
+    }
+
+    function applyInvoiceTotalsVisibility(status) {
+        var filter = status || 'all';
+        if (filter === 'paid') {
+            $('.invoice_row_paid').show();
+            $('.invoice_row_unpaid').hide();
+            $('.invoice_row_total').hide();
+            $('.invoice_row_unpaid').css('grid-row', 2);
+        } else if (filter === 'unpaid') {
+            $('.invoice_row_paid').hide();
+            $('.invoice_row_unpaid').show();
+            $('.invoice_row_total').hide();
+            $('.invoice_row_unpaid').css('grid-row', 1);
+        } else {
+            $('.invoice_row_paid').show();
+            $('.invoice_row_unpaid').show();
+            $('.invoice_row_total').show();
+            $('.invoice_row_unpaid').css('grid-row', 2);
+        }
+    }
+
+    function loadInvoiceTotals() {
+        $.ajax({
+            url: "<?php echo site_url('qbg_invoice/get_totals') ?>",
+            type: "POST",
+            dataType: "JSON",
+            success: function(res) {
+                var paid = Number((res && res.total_paid) ? res.total_paid : 0);
+                var unpaid = Number((res && res.total_unpaid) ? res.total_unpaid : 0);
+                var total = paid + unpaid;
+                $('#invoice_total_paid').text(formatRupiah(paid));
+                $('#invoice_total_unpaid').text(formatRupiah(unpaid));
+                $('#invoice_total_all').text(formatRupiah(total));
+            },
+            error: function() {
+                $('#invoice_total_paid').text('-');
+                $('#invoice_total_unpaid').text('-');
+                $('#invoice_total_all').text('-');
+            }
+        });
+    }
+
     // METHOD POST MENAMPILKAN DATA KE DATA TABLE
     $(document).ready(function() {
+
+        // Restore filter dari localStorage (kalau ada) sebelum DataTables pertama kali load
+        var savedFilter = localStorage.getItem('filterStatus');
+        if (savedFilter) {
+            $('#filter_status').val(savedFilter);
+        }
 
         table = $('#table').DataTable({
             "responsive": false,
@@ -97,18 +165,21 @@
                 },
             ]
         });
-    });
 
-    // Cek apakah ada nilai filter yang tersimpan di localStorage
-    var savedFilter = localStorage.getItem('filterStatus');
-    if (savedFilter) {
-        $('#filter_status').val(savedFilter).change(); // Set filter dengan nilai yang tersimpan
-    }
+        // Simpan nilai filter ke localStorage setiap kali berubah
+        $('#filter_status').on('change', function() {
+            var status = $(this).val();
+            localStorage.setItem('filterStatus', status);
+            applyInvoiceTotalsVisibility(status);
+            table.ajax.reload();
+            loadInvoiceTotals();
+        });
 
-    // Simpan nilai filter ke localStorage setiap kali berubah
-    $('#filter_status').on('change', function() {
-        localStorage.setItem('filterStatus', $(this).val());
-        table.ajax.reload(); // Muat ulang DataTables dengan filter baru
+        // Tampilkan total Paid/Unpaid saat halaman dibuka
+        loadInvoiceTotals();
+
+        // Tampilkan/sembunyikan bagian totals sesuai filter awal
+        applyInvoiceTotalsVisibility($('#filter_status').val());
     });
 
     // MENGHAPUS DATA MENGGUNAKAN METHODE POST JQUERY

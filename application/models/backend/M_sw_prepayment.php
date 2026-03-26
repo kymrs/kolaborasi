@@ -11,7 +11,7 @@ class M_sw_prepayment extends CI_Model
     var $table2 = 'sw_prepayment_detail';
     var $column_order = array(null, null, 'payment_status', 'kode_prepayment', 'event_name', 'name', 'divisi', 'jabatan', 'tgl_prepayment', 'total_nominal', 'status');
     var $column_order2 = array(null, null, 'id', 'event_name', 'is_active', 'created_at', 'updated_at');
-    var $column_search = array('payment_status', 'kode_prepayment', 'event_name', 'name', 'divisi', 'jabatan', 'tgl_prepayment', 'total_nominal', 'status'); //field yang diizin untuk pencarian
+    var $column_search = array('payment_status', 'kode_prepayment', 'event', 'name', 'divisi', 'jabatan', 'tgl_prepayment', 'total_nominal', 'status'); //field yang diizin untuk pencarian
     var $column_search2 = array('id', 'event_name', 'is_active', 'created_at', 'updated_at');
     var $order = array('id' => 'desc');
 

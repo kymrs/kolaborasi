@@ -6,7 +6,7 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header text-right">
-                    <a class="btn btn-secondary btn-sm" href="<?= base_url('pu_datanotifikasi') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+                    <a class="btn btn-primary btn-sm" href="<?= base_url('pu_datanotifikasi') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
                     <form id="form">
@@ -116,7 +116,7 @@
     $('#tgl_notifikasi').datepicker({
         dateFormat: 'dd-mm-yy',
         minDate: new Date(),
-        maxDate: new Date(),
+        maxDate: '+1m',
 
         // MENGENERATE KODE NOTIFIKASI SETELAH PILIH TANGGAL
         onSelect: function(dateText) {
@@ -147,6 +147,16 @@
     });
 
     $(document).ready(function() {
+        const waktuEl = document.getElementById('waktu');
+        if (waktuEl && typeof waktuEl.showPicker === 'function') {
+            waktuEl.addEventListener('focus', function() {
+                this.showPicker();
+            });
+            waktuEl.addEventListener('click', function() {
+                this.showPicker();
+            });
+        }
+
         var id = $('#id').val();
         var aksi = $('#aksi').val();
         var kode = $('#kode').val();

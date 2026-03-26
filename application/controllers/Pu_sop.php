@@ -209,7 +209,7 @@ class Pu_sop extends CI_Controller
         // Config upload
         $config['upload_path'] = './assets/backend/document/pu_sop';
         $config['allowed_types'] = 'jpg|jpeg|png|pdf';
-        $config['max_size'] = 3072; // 3MB in KB
+        $config['max_size'] = 10240; // 10MB in KB
         $config['encrypt_name'] = TRUE; // To avoid file name conflicts
 
         $this->upload->initialize($config);
@@ -280,7 +280,7 @@ class Pu_sop extends CI_Controller
         // Config upload
         $config['upload_path'] = './assets/backend/document/pu_sop';
         $config['allowed_types'] = 'jpg|jpeg|png|pdf';
-        $config['max_size'] = 3072; // 3MB in KB
+        $config['max_size'] = 10240; // 10MB in KB
         $config['encrypt_name'] = TRUE; // To avoid file name conflicts
 
         $this->upload->initialize($config);
@@ -327,6 +327,33 @@ class Pu_sop extends CI_Controller
         );
 
         $this->M_pu_sop->update($id, $data);
+        echo json_encode(array("status" => TRUE));
+    }
+
+    public function delete($id)
+    {
+        $row = $this->M_pu_sop->get_by_id($id);
+
+        if (!$row) {
+            echo json_encode(array("status" => FALSE, "message" => "Data tidak ditemukan"));
+            return;
+        }
+
+        // Simpan nama file sebelum delete data
+        $file = isset($row->file) ? $row->file : '';
+
+        // Delete data di DB
+        $this->M_pu_sop->delete($id);
+
+        // Delete file (best-effort)
+        if (!empty($file)) {
+            $safeFile = basename($file); // prevent path traversal
+            $fullPath = rtrim(FCPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'backend' . DIRECTORY_SEPARATOR . 'document' . DIRECTORY_SEPARATOR . 'pu_sop' . DIRECTORY_SEPARATOR . $safeFile;
+            if (is_file($fullPath)) {
+                @unlink($fullPath);
+            }
+        }
+
         echo json_encode(array("status" => TRUE));
     }
 

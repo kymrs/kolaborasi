@@ -49,7 +49,7 @@ class Kps_rekapitulasi extends CI_Controller
         $data['add'] = $akses->add_level;
         $data['total'] = $this->M_kps_rekapitulasi->get_total_pengeluaran();
 
-        $data['title'] = "backend/rekapitulasi_kps";
+        $data['title'] = "backend/kps_rekapitulasi";
         $data['titleview'] = "Data Rekapitulasi KPS";
         $this->load->view('backend/home', $data);
     }
@@ -66,7 +66,9 @@ class Kps_rekapitulasi extends CI_Controller
             // Cek apakah kode tersedia, jika tidak berikan tanda "-"
             $kode_prepayment = !empty($field->kode_prepayment) ? $field->kode_prepayment : '-';
             $kode_reimbust = !empty($field->kode_reimbust) ? strtoupper($field->kode_reimbust) : '-';
-            // $tanggal = !empty($field->tgl_pengajuan) ? $field->tgl_pengajuan : $field->tgl_prepayment;
+            $tanggal = !empty($field->tgl_pengajuan)
+                ? $this->tgl_indo(date('Y-m-d', strtotime($field->tgl_pengajuan)))
+                : '-';
             $pengeluaran = !empty($field->total_jumlah_detail) ? number_format($field->total_jumlah_detail, 0, ',', '.') : number_format($field->total_nominal, 0, ',', '.');
 
             // Inkrement nomor urut
@@ -77,7 +79,7 @@ class Kps_rekapitulasi extends CI_Controller
             $row[] = $kode_reimbust; // Kode reimburse
             $row[] = $field->name; // Nama pengguna
             $row[] = $field->tujuan; // Tujuan dari pengajuan
-            $row[] = $field->tgl_pengajuan; // Format tanggal
+            $row[] = $tanggal; // Format tanggal (Indonesia)
             $row[] = 'Rp. ' . $pengeluaran; // Format nominal
 
             // Tambahkan row ke array data

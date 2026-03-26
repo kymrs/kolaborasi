@@ -116,7 +116,7 @@
                 </ul>
 
                 <div class="card-body">
-                    <table id="table" class="table table-bordered table-striped">
+                    <table id="table" class="table table-bordered table-striped" width="100%" cellspacing="0">
                         <thead id="table-header">
                             <!-- GENERATE THEAD -->
                         </thead>

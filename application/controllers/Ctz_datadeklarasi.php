@@ -243,7 +243,7 @@ class Ctz_datadeklarasi extends CI_Controller
                 ->get()
                 ->row('jabatan'),
             'nama_dibayar' => $this->input->post('nama_dibayar'),
-            'tujuan' => $this->input->post('tujuan'),
+            'tujuan' => $this->input->post('tujuan_deklarasi') ?? $this->input->post('tujuan'),
             'sebesar' => $this->input->post('hidden_sebesar'),
             'app_name' => $this->db->select('name')
                 ->from('tbl_data_user')
@@ -271,7 +271,7 @@ class Ctz_datadeklarasi extends CI_Controller
         $data = array(
             'tgl_deklarasi' => date('Y-m-d', strtotime($this->input->post('tgl_deklarasi'))),
             'nama_dibayar' => $this->input->post('nama_dibayar'),
-            'tujuan' => $this->input->post('tujuan'),
+            'tujuan' => $this->input->post('tujuan_deklarasi') ?? $this->input->post('tujuan'),
             'sebesar' => $this->input->post('hidden_sebesar'),
             'app_status' => 'waiting',
             'app_date' => null,

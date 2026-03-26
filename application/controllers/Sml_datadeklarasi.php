@@ -59,7 +59,7 @@ class Sml_datadeklarasi extends CI_Controller
         foreach ($list as $field) {
 
             $action_read = ($read == 'Y') ? '<a href="sml_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
-            $action_edit = ($edit == 'Y') ? '<a href="sml_datadeklarasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
+            $action_edit = ($edit == 'Y') ? '<a href="sml_datadeklarasi/edit_form/' . $field->id . '    " class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
             $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="sml_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
@@ -74,15 +74,13 @@ class Sml_datadeklarasi extends CI_Controller
                 $action = $action_read . $action_print;
             }
 
-            //MENENSTUKAN SATTSU PROGRESS PENGAJUAN PERMINTAAN
+            //MENENTUKAN STATUS PROGRESS PENGAJUAN PERMINTAAN
             if ($field->app_status == 'approved' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
                 $status = $field->status . ' (' . $field->app2_name . ')';
-            } elseif ($field->app4_status == 'approved' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
+            } elseif ($field->app_status == 'waiting' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
                 $status = $field->status . ' (' . $field->app_name . ')';
-            } elseif ($field->app4_status == 'waiting' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
-                $status = $field->status . ' (' . $field->app4_name . ')';
             } else {
-                $status = $field->status;
+                $status = $field->status;   
             }
 
             $no++;
@@ -211,7 +209,7 @@ class Sml_datadeklarasi extends CI_Controller
 
         $valid = true;
         $confirm = $this->db->select('app_id, app2_id, app4_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
-        if (!empty($confirm) && isset($confirm->app_id, $confirm->app2_id, $confirm->app4_id)) {
+        if (!empty($confirm) && isset($confirm->app_id, $confirm->app2_id)) {
             $app = $confirm;
         } else {
             echo json_encode(array("status" => FALSE, "error" => "Approval Belum Ditentukan, Mohon untuk menghubungi admin."));
@@ -230,7 +228,8 @@ class Sml_datadeklarasi extends CI_Controller
                 ->get()
                 ->row('jabatan'),
             'nama_dibayar' => $this->input->post('nama_dibayar'),
-            'tujuan' => $this->input->post('tujuan'),
+            // nama field changed; keep backward compatibility
+            'tujuan' => $this->input->post('tujuan_deklarasi') ?? $this->input->post('tujuan'),
             'sebesar' => $this->input->post('hidden_sebesar'),
             'app_name' => $this->db->select('name')
                 ->from('tbl_data_user')
@@ -252,7 +251,10 @@ class Sml_datadeklarasi extends CI_Controller
 
         if ($valid) {
             $this->M_sml_datadeklarasi->save($data);
-            echo json_encode(array("status" => TRUE));
+            echo json_encode(array(
+                "status" => TRUE,
+                "kode_deklarasi" => $kode_deklarasi
+            ));
         } else {
             echo json_encode(array("status" => FALSE));
         }
@@ -260,12 +262,78 @@ class Sml_datadeklarasi extends CI_Controller
         // echo json_encode(array("status" => TRUE));
     }
 
+    public function get_by_kode()
+    {
+        if (!$this->input->is_ajax_request()) {
+            show_error('No direct access allowed', 403);
+        }
+
+        $kode = trim((string)$this->input->post('kode_deklarasi'));
+        if ($kode === '') {
+            echo json_encode(array('status' => FALSE, 'error' => 'Kode deklarasi wajib diisi.'));
+            return;
+        }
+
+        $row = $this->db->get_where('sml_deklarasi', array('kode_deklarasi' => $kode))->row_array();
+        if (!$row) {
+            echo json_encode(array('status' => FALSE, 'error' => 'Data deklarasi tidak ditemukan.'));
+            return;
+        }
+
+        echo json_encode(array(
+            'status' => TRUE,
+            'data' => array(
+                'kode_deklarasi' => $row['kode_deklarasi'],
+                'tgl_deklarasi' => $row['tgl_deklarasi'],
+                'nama_dibayar' => $row['nama_dibayar'],
+                'tujuan' => $row['tujuan'],
+                'sebesar' => $row['sebesar'],
+            )
+        ));
+    }
+
+    public function update_by_kode()
+    {
+        if (!$this->input->is_ajax_request()) {
+            show_error('No direct access allowed', 403);
+        }
+
+        $kode = trim((string)$this->input->post('kode_deklarasi'));
+        if ($kode === '') {
+            echo json_encode(array('status' => FALSE, 'error' => 'Kode deklarasi wajib diisi.'));
+            return;
+        }
+
+        $exists = $this->db->select('id')
+            ->from('sml_deklarasi')
+            ->where('kode_deklarasi', $kode)
+            ->get()
+            ->row();
+
+        if (!$exists) {
+            echo json_encode(array('status' => FALSE, 'error' => 'Data deklarasi tidak ditemukan.'));
+            return;
+        }
+
+        // Penting: jangan ubah kode_deklarasi dan tgl_deklarasi saat edit via reimbust
+        $update = array(
+            'nama_dibayar' => $this->input->post('nama_dibayar'),
+            'tujuan' => $this->input->post('tujuan_deklarasi') ?? $this->input->post('tujuan'),
+            'sebesar' => $this->input->post('hidden_sebesar'),
+        );
+
+        $this->db->where('kode_deklarasi', $kode);
+        $this->db->update('sml_deklarasi', $update);
+
+        echo json_encode(array('status' => TRUE, 'kode_deklarasi' => $kode));
+    }
+
     public function update()
     {
         $data = array(
             'tgl_deklarasi' => date('Y-m-d', strtotime($this->input->post('tgl_deklarasi'))),
             'nama_dibayar' => $this->input->post('nama_dibayar'),
-            'tujuan' => $this->input->post('tujuan'),
+            'tujuan' => $this->input->post('tujuan_deklarasi') ?? $this->input->post('tujuan'),
             'sebesar' => $this->input->post('hidden_sebesar'),
             'app_status' => 'waiting',
             'app_date' => null,
@@ -446,46 +514,40 @@ class Sml_datadeklarasi extends CI_Controller
         $pdf->SetFont('Poppins-Bold', '', 12);
 
         // Membuat header tabel
-        $pdf->Cell(47.3, 8.5, 'Yang Melakukan', 1, 0, 'C');
-        $pdf->Cell(47.3, 8.5, 'Memeriksa', 1, 0, 'C');
-        $pdf->Cell(47.3, 8.5, 'Mengetahui', 1, 0, 'C');
-        $pdf->Cell(47.3, 8.5, 'Menyetujui', 1, 1, 'C');
+        $pdf->Cell(63, 8.5, 'Yang Melakukan', 1, 0, 'C');
+        $pdf->Cell(63, 8.5, 'Mengetahui', 1, 0, 'C');
+        $pdf->Cell(63, 8.5, 'Menyetujui', 1, 1, 'C');
 
         // Set font normal untuk konten tabel
         $pdf->SetFont('Poppins-Regular', '', 10);
 
         // Baris pemisah
-        $pdf->Cell(47.3, 5, '', 'LR', 0, 'C');
-        $pdf->Cell(47.3, 5, '', 0, 0, 'C');
-        $pdf->Cell(47.3, 5, '', 'L', 0, 'C');
-        $pdf->Cell(47.3, 5, '', 'LR', 1, 'C');
+        $pdf->Cell(63, 5, '', 'LR', 0, 'C');
+        $pdf->Cell(63, 5, '', 0, 0, 'C');
+        $pdf->Cell(63, 5, '', 'LR', 1, 'C');
 
         // Baris pertama (Status)
-        $pdf->Cell(47.3, 5, 'CREATED', 'LR', 0, 'C');
-        $pdf->Cell(47.3, 5, strtoupper($data['master']->app4_status), 'R', 0, 'C');
-        $pdf->Cell(47.3, 5, strtoupper($data['master']->app_status), 0, 0, 'C');
-        $pdf->Cell(47.3, 5, strtoupper($data['master']->app2_status), 'LR', 1, 'C');
+        $pdf->Cell(63, 5, 'CREATED', 'LR', 0, 'C');
+        $pdf->Cell(63, 5, strtoupper($data['master']->app_status), 0, 0, 'C');
+        $pdf->Cell(63, 5, strtoupper($data['master']->app2_status), 'LR', 1, 'C');
 
         // Baris kedua (Tanggal)
-        $pdf->Cell(47.3, 5, $data['master']->created_at, 'LR', 0, 'C');
-        $pdf->Cell(47.3, 5, $data['master']->app4_date, 'R', 0, 'C');
-        $pdf->Cell(47.3, 5, $data['master']->app_date, 0, 0, 'C');
-        $pdf->Cell(47.3, 5, $data['master']->app2_date, 'LR', 1, 'C');
+        $pdf->Cell(63, 5, $data['master']->created_at, 'LR', 0, 'C');
+        $pdf->Cell(63, 5, $data['master']->app_date, 0, 0, 'C');
+        $pdf->Cell(63, 5, $data['master']->app2_date, 'LR', 1, 'C');
 
         // Baris pemisah
-        $pdf->Cell(47.3, 5, '', 'LR', 0, 'C');
-        $pdf->Cell(47.3, 5, '', 0, 0, 'C');
-        $pdf->Cell(47.3, 5, '', 'L', 0, 'C');
-        $pdf->Cell(47.3, 5, '', 'LR', 1, 'C');
+        $pdf->Cell(63, 5, '', 'LR', 0, 'C');
+        $pdf->Cell(63, 5, '', 0, 0, 'C');
+        $pdf->Cell(63, 5, '', 'LR', 1, 'C');
 
         // Jarak kosong untuk pemisah
         $pdf->Ln(0);
 
         // Baris ketiga (Nama pengguna)
-        $pdf->Cell(47.3, 8.5, $data['user'], 1, 0, 'C');
-        $pdf->Cell(47.3, 8.5, $data['master']->app4_name, 1, 0, 'C');
-        $pdf->Cell(47.3, 8.5, $data['master']->app_name, 1, 0, 'C');
-        $pdf->Cell(47.3, 8.5, $data['master']->app2_name, 1, 1, 'C');
+        $pdf->Cell(63, 8.5, $data['user'], 1, 0, 'C');
+        $pdf->Cell(63, 8.5, $data['master']->app_name, 1, 0, 'C');
+        $pdf->Cell(63, 8.5, $data['master']->app2_name, 1, 1, 'C');
 
 
         // Add keterangan

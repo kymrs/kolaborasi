@@ -24,6 +24,36 @@
     .rating label:hover~label {
         color: #f5b301;
     }
+
+    /* Rapihkan Select2 agar mirip Bootstrap form-control */
+    .select2-container {
+        width: 100% !important;
+    }
+
+    .select2-container--default .select2-selection--single {
+        height: 38px;
+        border: 1px solid #d1d3e2;
+        border-radius: .35rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 36px;
+        padding-left: .75rem;
+        padding-right: 2rem;
+        color: #6e707e;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 36px;
+        right: .5rem;
+    }
+
+    /* Pastikan dropdown Select2 tampil di atas modal */
+    .select2-container--open {
+        z-index: 2050;
+    }
 </style>
 <div class="container-fluid">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
@@ -69,8 +99,8 @@
                                     <th>Action</th>
                                     <th>Order</th>
                                     <th>Jenis</th>
-                                    <th>No SOP</th>
-                                    <th>Nama</th>
+                                    <th>No Dokumen</th>
+                                    <th>Nama File</th>
                                     <th>File</th>
                                     <th>Dibuat pada</th>
                                 </tr>
@@ -84,8 +114,8 @@
                                     <th>Action</th>
                                     <th>Order</th>
                                     <th>Jenis</th>
-                                    <th>No SOP</th>
-                                    <th>Nama</th>
+                                    <th>No Dokumen</th>
+                                    <th>Nama File</th>
                                     <th>File</th>
                                     <th>Dibuat pada</th>
                                 </tr>
@@ -112,8 +142,8 @@
                     <div class="modal-body">
                         <input type="hidden" name="id" />
                         <div class="form-group row">
-                            <label for="" class="col-sm-3 col-form-label">Jenis</label>
-                            <div class="col-sm-9">
+                            <label for="" class="col-sm-4 col-form-label">Jenis <span class="text-danger">*</span></label>
+                            <div class="col-sm-8">
                                 <select class="form-control" name="jenis" id="jenis">
                                     <option value="" hidden>Pilih Jenis</option>
                                     <option value="SOP">SOP</option>
@@ -125,8 +155,8 @@
 
                         <!-- Parent Field (Conditional) -->
                         <div class="form-group row" id="parent_group" style="display: none;">
-                            <label for="" class="col-sm-3 col-form-label">Parent <span class="text-danger">*</span></label>
-                            <div class="col-sm-9">
+                            <label for="" class="col-sm-4 col-form-label"><span id="parent_label_text">Parent</span> <span class="text-danger">*</span></label>
+                            <div class="col-sm-8">
                                 <select class="form-control select2" name="parent_no" id="parent_no" style="width: 100%;">
                                     <option value="">-- Pilih Parent --</option>
                                 </select>
@@ -136,32 +166,33 @@
 
                         <!-- Kode (Manual Input) -->
                         <div class="form-group row">
-                            <label for="" class="col-sm-3 col-form-label">Kode</label>
-                            <div class="col-sm-9">
-                                <input type="text" class="form-control" id="kode" name="kode" placeholder="Masukkan kode" required>
+                            <label for="" class="col-sm-4 col-form-label">No Dokumen <span class="text-danger">*</span></label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="kode" name="kode" placeholder="Masukkan nomor dokumen" required>
                                 <!-- <small class="form-text text-muted">Masukkan kode secara manual</small> -->
                             </div>
                         </div>
 
                         <!-- No Hierarki (Readonly) -->
                         <div class="form-group row" id="no_container">
-                            <label for="" class="col-sm-3 col-form-label">Order</label>
-                            <div class="col-sm-9">
+                            <label for="" class="col-sm-4 col-form-label">Order <span class="text-danger">*</span></label>
+                            <div class="col-sm-8">
                                 <input type="text" class="form-control" id="no" name="no" readonly>
                                 <!-- <small class="form-text text-muted">Contoh: 1, 1-1, 1-1-1</small> -->
                             </div>
                         </div>
 
                         <div class="form-group row">
-                            <label for="" class="col-sm-3 col-form-label">Nama</label>
-                            <div class="col-sm-9">
-                                <input type="text" class="form-control" id="nama" name="nama" placeholder="nama" required>
+                            <label for="" class="col-sm-4 col-form-label">Nama File <span class="text-danger">*</span></label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="nama" name="nama" placeholder="Nama File" required>
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="" class="col-sm-3 col-form-label">File</label>
-                            <div class="col-sm-9">
-                                <input type="file" class="form-control" id="file" name="file">
+                            <label for="" class="col-sm-4 col-form-label">Upload File</label>
+                            <div class="col-sm-8">
+                                <input type="file" class="form-control" id="file" name="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png">
+                                <small class="form-text text-muted">Max 10MB. Format yang diizinkan: PDF, JPG, JPEG, PNG.</small>
                                 <small class="form-text text-muted" id="current_file"></small>
                             </div>
                         </div>
@@ -198,18 +229,57 @@
 
 <script type="text/javascript">
     var table;
+    function getParentLabelText(jenis) {
+        if (jenis === 'Juklak') return 'Pilih SOP';
+        if (jenis === 'Juknis') return 'Pilih Juklak';
+        return 'Parent';
+    }
+
+    function getParentOptionPlaceholder(jenis) {
+        if (jenis === 'Juklak') return '-- Pilih SOP --';
+        if (jenis === 'Juknis') return '-- Pilih Juklak --';
+        return '-- Pilih Parent --';
+    }
+
+    function getParentSelect2Placeholder(jenis) {
+        if (jenis === 'Juklak') return '-- Cari atau Pilih SOP --';
+        if (jenis === 'Juknis') return '-- Cari atau Pilih Juklak --';
+        return '-- Cari atau Pilih Parent --';
+    }
+
+    function updateParentLabel(jenis) {
+        $('#parent_label_text').text(getParentLabelText(jenis));
+    }
+
+    function getModalMode() {
+        if (typeof method !== 'undefined' && method === 'update') return 'update';
+        return 'add';
+    }
+
+    function updateModalTitle(jenis) {
+        var mode = getModalMode();
+        var prefix = (mode === 'update') ? 'Edit Data ' : 'Tambah Data ';
+        $('.card-title').text(prefix + (jenis || 'SOP'));
+    }
+
     $(document).ready(function() {
+
         // Initialize Select2 for parent_no field
         $('#parent_no').select2({
-            placeholder: '-- Cari atau Pilih Parent --',
+            placeholder: getParentSelect2Placeholder($('#jenis').val()),
             allowClear: true,
             width: '100%',
+            dropdownParent: $('#modal-default'),
             language: {
                 searching: function() {
                     return 'Mencari...';
                 }
             }
         });
+
+        // Set label awal
+        updateParentLabel($('#jenis').val());
+        updateModalTitle($('#jenis').val());
 
         table = $('#hotel-table').DataTable({
             "responsive": true,
@@ -265,6 +335,9 @@
         // HANDLER JENIS CHANGE - LOAD PARENT OPTIONS
         $('#jenis').on('change', function() {
             var jenis = $(this).val();
+
+            updateParentLabel(jenis);
+            updateModalTitle(jenis);
             
             if (jenis == 'SOP') {
                 // SOP tidak punya parent
@@ -299,7 +372,7 @@
             },
             success: function(data) {
                 if (data.status && data.data.length > 0) {
-                    var options = '<option value="">-- Pilih Parent --</option>';
+                    var options = '<option value="">' + getParentOptionPlaceholder(jenis) + '</option>';
                     
                     $.each(data.data, function(index, item) {
                         var label = '[' + item.kode + '] ' + item.no + ' - ' + item.nama;
@@ -311,17 +384,19 @@
                     
                     // Reinitialize Select2
                     $('#parent_no').select2({
-                        placeholder: '-- Cari atau Pilih Parent --',
+                        placeholder: (jenis == 'Juklak' ? '-- Cari atau Pilih SOP --' : (jenis == 'Juknis' ? '-- Cari atau Pilih Juklak --' : '-- Cari atau Pilih Parent --')),
                         allowClear: true,
-                        width: '100%'
+                        width: '100%',
+                        dropdownParent: $('#modal-default')
                     });
                     
                 } else if (data.status && data.data.length == 0) {
                     $('#parent_no').html('<option value="">Tidak ada parent tersedia</option>');
                     $('#parent_no').select2({
-                        placeholder: '-- Cari atau Pilih Parent --',
+                        placeholder: (jenis == 'Juklak' ? '-- Cari atau Pilih SOP --' : (jenis == 'Juknis' ? '-- Cari atau Pilih Juklak --' : '-- Cari atau Pilih Parent --')),
                         allowClear: true,
-                        width: '100%'
+                        width: '100%',
+                        dropdownParent: $('#modal-default')
                     });
                     $('#no').val('');
                     showAlert('warning', 'Tidak ada ' + (jenis == 'Juklak' ? 'SOP' : 'Juklak') + ' untuk dipilih sebagai parent');
@@ -329,9 +404,10 @@
                     showAlert('error', data.message || 'Gagal load parent options');
                     $('#parent_no').html('<option value="">Error loading</option>');
                     $('#parent_no').select2({
-                        placeholder: '-- Cari atau Pilih Parent --',
+                        placeholder: (jenis == 'Juklak' ? '-- Cari atau Pilih SOP --' : (jenis == 'Juknis' ? '-- Cari atau Pilih Juklak --' : '-- Cari atau Pilih Parent --')),
                         allowClear: true,
-                        width: '100%'
+                        width: '100%',
+                        dropdownParent: $('#modal-default')
                     });
                 }
             },
@@ -339,9 +415,10 @@
                 showAlert('error', 'Terjadi kesalahan saat load parent options');
                 $('#parent_no').html('<option value="">Error loading</option>');
                 $('#parent_no').select2({
-                    placeholder: '-- Cari atau Pilih Parent --',
+                    placeholder: (jenis == 'Juklak' ? '-- Cari atau Pilih SOP --' : (jenis == 'Juknis' ? '-- Cari atau Pilih Juklak --' : '-- Cari atau Pilih Parent --')),
                     allowClear: true,
-                    width: '100%'
+                    width: '100%',
+                    dropdownParent: $('#modal-default')
                 });
             }
         });
@@ -409,6 +486,47 @@
         });
     }
 
+    // Upload validation
+    var MAX_UPLOAD_BYTES = 10 * 1024 * 1024; // 4MB
+    var ALLOWED_EXTENSIONS = ['pdf', 'jpg', 'jpeg', 'png'];
+    var ALLOWED_MIME_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];
+
+    function validateUploadFile(file) {
+        if (!file) return { ok: true };
+
+        if (file.size && file.size > MAX_UPLOAD_BYTES) {
+            return { ok: false, message: 'Ukuran file maksimal 10MB. Silahkan hubungi admin jika perlu file lebih besar.' };
+        }
+
+        var name = (file.name || '').toLowerCase();
+        var ext = name.indexOf('.') > -1 ? name.split('.').pop() : '';
+        var mime = (file.type || '').toLowerCase();
+
+        var extOk = ext ? (ALLOWED_EXTENSIONS.indexOf(ext) !== -1) : false;
+        var mimeOk = mime ? (ALLOWED_MIME_TYPES.indexOf(mime) !== -1) : false;
+
+        // Be tolerant: allow if either extension OR mime matches
+        if (!extOk && !mimeOk) {
+            return { ok: false, message: 'Format file tidak valid. Yang diizinkan: PDF, JPG, PNG.' };
+        }
+
+        return { ok: true };
+    }
+
+    // Validate immediately on file selection
+    $(document).on('change', '#file', function() {
+        var file = this.files && this.files.length ? this.files[0] : null;
+        var result = validateUploadFile(file);
+        if (!result.ok) {
+            $(this).val('');
+            Swal.fire({
+                icon: 'error',
+                title: 'Upload gagal',
+                text: result.message
+            });
+        }
+    });
+
     function reload_table() {
         table.ajax.reload(null, false);
     }
@@ -437,6 +555,22 @@
         var $form = $(this);
         if (!$form.valid()) return false;
 
+        var $submitBtn = $form.find('button[type="submit"], .aksi').first();
+
+        // Validasi file upload (size & type)
+        var fileInput = document.getElementById('file');
+        var selectedFile = (fileInput && fileInput.files && fileInput.files.length) ? fileInput.files[0] : null;
+        var fileValidation = validateUploadFile(selectedFile);
+        if (!fileValidation.ok) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Upload gagal',
+                text: fileValidation.message
+            });
+            if (fileInput) fileInput.value = '';
+            return false;
+        }
+
         // Validasi parent untuk Juklak dan Juknis
         var jenis = $('#jenis').val();
         var parent_no = $('#parent_no').val();
@@ -452,6 +586,22 @@
             url = "<?php echo site_url('pu_sop/update') ?>";
         }
 
+        // Loading state before submit to DB
+        if ($submitBtn.length) {
+            $submitBtn.prop('disabled', true);
+        }
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: 'Menyimpan... ',
+                text: 'Mohon tunggu sebentar',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+        }
+
         $.ajax({
             url: url,
             type: "post",
@@ -459,9 +609,17 @@
             processData: false,
             contentType: false,
             cache: false,
-            async: false,
+            async: true,
+            complete: function() {
+                if ($submitBtn.length) {
+                    $submitBtn.prop('disabled', false);
+                }
+            },
             success: function(data) {
                 $('#modal-default').modal('hide');
+                if (typeof Swal !== 'undefined') {
+                    Swal.close();
+                }
                 Swal.fire({
                     position: 'center',
                     icon: 'success',
@@ -472,6 +630,9 @@
                 reload_table();
             },
             error: function(jqXHR, textStatus, errorThrown) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.close();
+                }
                 alert('Error adding / update data');
             }
         });
@@ -497,11 +658,12 @@
         $('#modalform')[0].reset();
         var validator = $("#modalform").validate();
         validator.resetForm();
-        $('.card-title').text('Tambah Data SOP');
+        updateModalTitle($('#jenis').val());
         $('.aksi').text('Save');
         $('#current_file').text('');
         $('#parent_group').hide();
         $('#no_container').hide();
+        updateParentLabel($('#jenis').val());
     };
 
     // Mengambil URL saat ini
@@ -521,7 +683,7 @@
         validator.resetForm();
         $('.form-control').removeClass('error');
         $('#modal-default').modal('show');
-        $('.card-title').text('Edit Data SOP');
+        updateModalTitle($('#jenis').val());
         $('.aksi').text('Update');
         $.ajax({
             url: "<?php echo site_url('pu_sop/get_id/') ?>/" + id,
@@ -530,6 +692,8 @@
             success: function(data) {
                 $('[name="id"]').val(data.id);
                 $('[name="jenis"]').val(data.jenis);
+                updateParentLabel(data.jenis);
+                updateModalTitle(data.jenis);
                 $('[name="nama"]').val(data.nama);
                 $('[name="kode"]').val(data.kode || '');
                 $('[name="no"]').val(data.no || '');

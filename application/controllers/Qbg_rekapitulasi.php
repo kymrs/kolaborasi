@@ -49,8 +49,8 @@ class Qbg_rekapitulasi extends CI_Controller
         $data['add'] = $akses->add_level;
         $data['total'] = $this->M_qbg_rekapitulasi->get_total_pengeluaran();
 
-        $data['title'] = "backend/rekapitulasi_qbg";
-        $data['titleview'] = "Data Rekapitulasi Qubah Gift";
+        $data['title'] = "backend/qbg_rekapitulasi";
+        $data['titleview'] = "Data Rekapitulasi qubagift";
         $this->load->view('backend/home', $data);
     }
 
@@ -67,7 +67,9 @@ class Qbg_rekapitulasi extends CI_Controller
             $kode_prepayment = !empty($field->kode_prepayment) ? $field->kode_prepayment : '-';
             $kode_reimbust = !empty($field->kode_reimbust) ? strtoupper($field->kode_reimbust) : '-';
             // $tanggal = !empty($field->tgl_pengajuan) ? $field->tgl_pengajuan : $field->tgl_prepayment;
-            $pengeluaran = !empty($field->total_jumlah_detail) ? number_format($field->total_jumlah_detail, 0, ',', '.') : number_format($field->total_nominal, 0, ',', '.');
+            $tanggal = !empty($field->tgl_pengajuan) ? $this->tgl_indo(date('Y-m-d', strtotime($field->tgl_pengajuan))) : '-';
+            $pengeluaranNumeric = isset($field->total_pengeluaran) ? $field->total_pengeluaran : (!empty($field->total_jumlah_detail) ? $field->total_jumlah_detail : $field->total_nominal);
+            $pengeluaran = number_format($pengeluaranNumeric, 0, ',', '.');
 
             // Inkrement nomor urut
             $no++;
@@ -77,7 +79,7 @@ class Qbg_rekapitulasi extends CI_Controller
             $row[] = $kode_reimbust; // Kode reimburse
             $row[] = $field->name; // Nama pengguna
             $row[] = $field->tujuan; // Tujuan dari pengajuan
-            $row[] = $field->tgl_pengajuan; // Format tanggal
+            $row[] = $tanggal; // Format tanggal (Indonesia)
             $row[] = 'Rp. ' . $pengeluaran; // Format nominal
 
             // Tambahkan row ke array data

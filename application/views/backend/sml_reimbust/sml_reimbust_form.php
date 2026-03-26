@@ -110,6 +110,10 @@
             margin-bottom: 20px;
         }
     }
+
+    .ui-datepicker {
+        z-index: 99999 !important;
+    }
 </style>
 
 <div class="container-fluid">
@@ -298,48 +302,65 @@
                             </div>
                         </div>
 
-                        <!-- Modal Data Table Deklarasi add & update -->
+                        <!-- Modal Input Form Deklarasi -->
                         <div class="modal fade" id="deklarasiModal" tabindex="-1" aria-labelledby="deklarasiModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                            <div class="modal-dialog modal-lg modal-dialog-scrollable">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="deklarasiModalLabel">Data Deklarasi</h5>
-                                        <!-- <a style="position: relative; right: 75px" class="btn btn-primary btn-sm" href="<?= base_url('sml_datadeklarasi/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a> -->
+                                        <h5 class="modal-title" id="deklarasiModalLabel">Tambah Deklarasi</h5>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span style="position: relative; bottom: 5px" aria-hidden="true">&times;</span>
+                                            <span aria-hidden="true">&times;</span>
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                        <table id="deklarasi-table" class="table table-bordered table-striped">
-                                            <thead>
-                                                <tr>
-                                                    <th>No</th>
-                                                    <th style="display: none">Action</th>
-                                                    <th>Kode Deklarasi</th>
-                                                    <th>Tanggal</th>
-                                                    <th>Pengaju</th>
-                                                    <th>Jabatan</th>
-                                                    <th>Penerima</th>
-                                                    <th>Tujuan</th>
-                                                    <th>Sebesar</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                            </tbody>
-                                            <tfoot>
-                                                <tr>
-                                                    <th>No</th>
-                                                    <th style="display: none">Action</th>
-                                                    <th>Kode Deklarasi</th>
-                                                    <th>Tanggal</th>
-                                                    <th>Pengaju</th>
-                                                    <th>Jabatan</th>
-                                                    <th>Penerima</th>
-                                                    <th>Tujuan</th>
-                                                    <th>Sebesar</th>
-                                                </tr>
-                                            </tfoot>
-                                        </table>
+                                        <form id="modalDeklarasiForm">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group row">
+                                                        <label class="col-sm-5" for="tgl_deklarasi_modal">Tanggal</label>
+                                                        <div class="col-sm-7">
+                                                            <div class="input-group date">
+                                                                <input type="text" class="form-control" name="tgl_deklarasi_modal" id="tgl_deklarasi_modal" placeholder="DD-MM-YYYY" autocomplete="off" readonly />
+                                                                <div class="input-group-append">
+                                                                    <div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label class="col-sm-5" for="kode_deklarasi_modal">Kode Deklarasi</label>
+                                                        <div class="col-sm-7">
+                                                            <input type="text" class="form-control" id="kode_deklarasi_modal" name="kode_deklarasi_modal" readonly>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group row">
+                                                        <label class="col-sm-5" for="nama_penerima_modal">Nama Penerima </label>
+                                                        <div class="col-sm-7">
+                                                            <input type="text" class="form-control" id="nama_penerima_modal" name="nama_penerima_modal" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label class="col-sm-5" for="tujuan_modal">Tujuan</label>
+                                                        <div class="col-sm-7">
+                                                            <input type="text" class="form-control" id="tujuan_modal" name="tujuan_modal" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label class="col-sm-5" for="sebesar_modal">Sebesar</label>
+                                                        <div class="col-sm-7">
+                                                            <input type="text" class="form-control" name="sebesar_modal" id="sebesar_modal" required>
+                                                            <input type="hidden" class="form-control" id="hidden_sebesar_modal" name="hidden_sebesar_modal">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                                        <button type="button" class="btn btn-primary" id="saveDeklarasiModal">Simpan</button>
                                     </div>
                                 </div>
                             </div>
@@ -528,97 +549,221 @@
         });
     });
 
-    // Data table deklarasi
+    // Modal deklarasi simple input & buffer
 
-    // METHOD POST MENAMPILKAN DATA KE DATA TABLE
-    $(document).ready(function() {
-        var table = $('#deklarasi-table').DataTable({
-            "responsive": true,
-            "autoWidth": false,
-            "processing": true,
-            "serverSide": true,
-            "order": [],
-            "ajax": {
-                "url": "<?php echo site_url('sml_reimbust/get_list2') ?>",
-                "type": "POST"
-            },
-            "columnDefs": [{
-                    "targets": [2],
-                    "className": 'dt-head-nowrap'
+    // buffer container (keyed by kode deklarasi instead of row number)
+    let deklarasiBuffer = {};
+    let currentDeklarasiRow = null;
+    let lastDeklarasiKode = null;
+    let deklarasiCounter = 0;
+    let deklarasiPrefix = '';
+    let isNewKodeGenerated = false; // Track if new kode was generated from generateNextKode()
+
+    // Function to generate next kode based on counter
+    function generateNextKode() {
+        deklarasiCounter++;
+        return deklarasiPrefix + deklarasiCounter.toString().padStart(3, '0');
+    }
+
+    // show modal and prefill if already buffered
+    function openDeklarasiModal(rowId) {
+        currentDeklarasiRow = rowId;
+        const currentKode = $(`#deklarasi${rowId}`).val();
+        const existing = currentKode ? deklarasiBuffer[currentKode] : null;
+        if (existing) {
+            // use buffer data keyed by kode
+            $('#tgl_deklarasi_modal').val(existing.tgl);
+            $('#kode_deklarasi_modal').val(existing.kode);
+            $('#nama_penerima_modal').val(existing.nama);
+            $('#tujuan_modal').val(existing.tujuan);
+            $('#sebesar_modal').val(existing.sebesar);
+            $('#hidden_sebesar_modal').val(existing.hidden);
+            $('#deklarasiModal').modal('show');
+        } else if (currentKode) {
+            // fetch from server if kode already set (existing declaration)
+            $.ajax({
+                url: "<?php echo site_url('sml_datadeklarasi/get_by_kode') ?>",
+                type: 'POST',
+                data: { kode_deklarasi: currentKode },
+                dataType: 'JSON',
+                success: function(res) {
+                    if (res.status) {
+                        const d = res.data;
+                        $('#tgl_deklarasi_modal').val(moment(d.tgl_deklarasi).format('DD-MM-YYYY'));
+                        $('#kode_deklarasi_modal').val(d.kode_deklarasi);
+                        $('#nama_penerima_modal').val(d.nama_dibayar);
+                        $('#tujuan_modal').val(d.tujuan);
+                        $('#sebesar_modal').val(d.sebesar.replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
+                        $('#hidden_sebesar_modal').val(d.sebesar);
+                    }
+                    $('#deklarasiModal').modal('show');
                 },
-                {
-                    "targets": [3, 4, 5, 7],
-                    "className": 'dt-body-nowrap'
-                },
-                {
-                    "targets": [0, 1],
-                    "orderable": false,
-                },
-            ]
-        });
-
-        // Variabel untuk menyimpan rowCount
-        var currentRowCount;
-
-        // Event listener untuk tombol modal deklarasi
-        $(document).on('click', '[id^=deklarasi-modal]', function() {
-            currentRowCount = $(this).data('id');
-        });
-
-        // Event listener untuk baris tabel dalam modal
-        $('#deklarasi-table tbody').on('click', 'tr', function() {
-            let data = table.row(this).data();
-            // console.log(data);
-            $('#deklarasi' + currentRowCount).val(data[2]);
-            $('#deklarasi-modal' + currentRowCount).text(data[2]);
-
-            if ($('#deklarasi' + currentRowCount).val().trim() !== '') {
-                // Disable semua input di baris yang sama
-                $('#deklarasi' + currentRowCount).closest('tr').find('input').prop('readonly', true);
-                $('#kwitansi-upload' + currentRowCount).css('pointer-events', 'none');
-                $('#upload' + currentRowCount).css('background-color', '#EAECF4').text('Deklarasi').val('');
-                $('.kwitansi_image' + currentRowCount).val('');
-                $('#pemakaian' + currentRowCount).css('cursor', 'not-allowed').attr('placeholder', 'Deklarasi').val(data[7]);
-
-                // Menghapus atribut required dari input file
-                $('#inputGroupFile01' + currentRowCount).removeAttr('required').val('');
-
-                $('#tgl_nota_' + currentRowCount).css({
-                    'cursor': 'not-allowed',
-                    'pointer-events': 'none'
-                }).attr('placeholder', 'Deklarasi').val(data[3]);
-
-                function formatRupiah(angka) {
-                    return angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                error: function() {
+                    // fallback: just show empty
+                    $('#tgl_deklarasi_modal').val('');
+                    $('#kode_deklarasi_modal').val(currentKode);
+                    $('#nama_penerima_modal').val('');
+                    $('#tujuan_modal').val('');
+                    $('#sebesar_modal').val('');
+                    $('#hidden_sebesar_modal').val('');
+                    $('#deklarasiModal').modal('show');
                 }
-                $('#jumlah-' + currentRowCount)
-                    .css('cursor', 'not-allowed')
-                    .attr('placeholder', 'Deklarasi')
-                    .val(formatRupiah(data[8]));
-                $('#hidden_jumlah' + currentRowCount).attr('placeholder', 'Deklarasi').val(data[8]);
-                $('.jumlah-' + currentRowCount)
-                    .css('cursor', 'not-allowed')
-                    .attr('placeholder', 'Deklarasi')
-                    .val(formatRupiah(data[8]));
-                $('.hidden_jumlah' + currentRowCount).attr('placeholder', 'Deklarasi').val(data[8]);
-
-                $("#form").validate().settings.rules[`pemakaian[${currentRowCount}]`] = {
-                    required: false
-                };
-                $("#form").validate().settings.rules[`tgl_nota[${currentRowCount}]`] = {
-                    required: false
-                };
-                $("#form").validate().settings.rules[`jml[${currentRowCount}]`] = {
-                    required: false
-                };
+            });
+        } else {
+            $('#tgl_deklarasi_modal').val('');
+            $('#kode_deklarasi_modal').val('');
+            $('#nama_penerima_modal').val('');
+            $('#tujuan_modal').val('');
+            $('#sebesar_modal').val('');
+            $('#hidden_sebesar_modal').val('');
+            // If not first row, generate next kode sequentially
+            if (rowId > 1) {
+                $('#kode_deklarasi_modal').val(generateNextKode());
+                isNewKodeGenerated = true; // Mark that generateNextKode was called
             }
+            $('#deklarasiModal').modal('show');
+        }
+    }
 
-            // Sembunyikan baris yang diklik setelah data dipilih
-            $(this).hide();
+    // attach to dynamic buttons
+    $(document).on('click', '[id^=deklarasi-modal]', function() {
+        const row = $(this).data('id');
+        openDeklarasiModal(row);
+    });
 
-            // Tutup modal setelah data dipilih
-            $('#deklarasiModal').modal('hide');
+    // generate kode ketika tanggal dipilih
+    $(document).on('focus', '#tgl_deklarasi_modal', function() {
+        $(this).datepicker({
+            dateFormat: 'dd-mm-yy',
+            changeMonth: true,
+            changeYear: true,
+            zIndex: 99999,
+            appendTo: 'body',
+            beforeShow: function() {
+                $('#deklarasiModal').on('hide.bs.modal.datepicker', function(e) {
+                    if ($('.ui-datepicker').is(':visible')) {
+                        e.preventDefault();
+                    }
+                });
+            },
+            onClose: function() {
+                $('#deklarasiModal').off('hide.bs.modal.datepicker');
+            },
+            onSelect: function(dateText) {
+                // Only generate kode if not already set (for sequential rows)
+                if (!$('#kode_deklarasi_modal').val()) {
+                    $.ajax({
+                        url: "<?php echo site_url('sml_datadeklarasi/generate_kode') ?>",
+                        type: "POST",
+                        data: { date: dateText },
+                        dataType: "JSON",
+                        success: function(data) {
+                            const kode = data.toUpperCase();
+                            $('#kode_deklarasi_modal').val(kode);
+                            // Set prefix and counter for sequential generation
+                            deklarasiPrefix = kode.substring(0, kode.length - 3);
+                            deklarasiCounter = parseInt(kode.substring(kode.length - 3));
+                        },
+                        error: function(error) {
+                            alert("error" + error);
+                        }
+                    });
+                }
+            }
+        }).datepicker('show');
+    });
+
+    // formatting besar in modal
+    $('#sebesar_modal').on('input', function() {
+        let value = $(this).val().replace(/[^,\d]/g, '');
+        let parts = value.split(',');
+        let integerPart = parts[0];
+        integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        $(this).val(parts[1] !== undefined ? integerPart + ',' + parts[1] : integerPart);
+        $('#hidden_sebesar_modal').val(value.replace(/\./g, ''));
+    });
+
+    // save button in modal
+    $('#saveDeklarasiModal').on('click', function() {
+        // basic validation
+        if (!$('#tgl_deklarasi_modal').val() || !$('#kode_deklarasi_modal').val() || !$('#nama_penerima_modal').val() || !$('#tujuan_modal').val() || !$('#sebesar_modal').val()) {
+            swal.fire('Error', 'Semua field wajib diisi', 'error');
+            return;
+        }
+        const data = {
+            tgl: $('#tgl_deklarasi_modal').val(),
+            kode: $('#kode_deklarasi_modal').val(),
+            nama: $('#nama_penerima_modal').val(),
+            tujuan: $('#tujuan_modal').val(),
+            sebesar: $('#sebesar_modal').val(),
+            hidden: $('#hidden_sebesar_modal').val()
+        };
+        // remove old kode from buffer if changed
+        const oldKode = $(`#deklarasi${currentDeklarasiRow}`).val();
+        if (oldKode && oldKode !== data.kode && deklarasiBuffer[oldKode]) {
+            delete deklarasiBuffer[oldKode];
+        }
+        // store by kode - replaces existing entry if same kode reused
+        deklarasiBuffer[data.kode] = data;
+        // update hidden field in row so controller still receives kode
+        $(`#deklarasi${currentDeklarasiRow}`).val(data.kode);
+
+        // Fill the row inputs
+        $(`#pemakaian${currentDeklarasiRow}`).val(data.tujuan); // pemakaian = tujuan
+        $(`#tgl_nota_${currentDeklarasiRow}`).val(data.tgl); // tgl_nota = tanggal_deklarasi
+        $(`#jumlah-${currentDeklarasiRow}`).val(data.sebesar); // jumlah_nominal = Sebesar
+        $(`#hidden_jumlah${currentDeklarasiRow}`).val(data.hidden); // hidden jumlah
+
+        // Disable kwitansi input and change label to "Deklarasi"
+        $(`#inputGroupFile01${currentDeklarasiRow}`).prop('disabled', true);
+        $(`#upload${currentDeklarasiRow}`).text('Deklarasi');
+
+        // Change button text to kode deklarasi
+        $(`#deklarasi-modal${currentDeklarasiRow}`).text(data.kode);
+
+        // Disable other inputs in row
+        $(`#pemakaian${currentDeklarasiRow}`).prop('readonly', true);
+        $(`#tgl_nota_${currentDeklarasiRow}`).prop('readonly', true);
+        $(`#jumlah-${currentDeklarasiRow}`).prop('readonly', true);
+
+        // Reset flags and modal form after save
+        isNewKodeGenerated = false; // Reset flag after save
+        $('#tgl_deklarasi_modal').val('');
+        $('#kode_deklarasi_modal').val('');
+        $('#nama_penerima_modal').val('');
+        $('#tujuan_modal').val('');
+        $('#sebesar_modal').val('');
+        $('#hidden_sebesar_modal').val('');
+
+        $('#deklarasiModal').modal('hide');
+    });
+
+    // Handle modal close without save - decrement counter if generateNextKode was used for non-first row
+    $('#deklarasiModal').on('hidden.bs.modal', function() {
+        if (isNewKodeGenerated && currentDeklarasiRow > 1) {
+            deklarasiCounter--; // Decrement counter if generateNextKode was called but user closed modal
+            isNewKodeGenerated = false; // Reset flag
+        }
+    });
+
+    // when main form is submitted, append deklarasi buffer as hidden input
+    $('#form').on('submit', function(ev) {
+        // add buffer data only for codes that still exist in form
+        const filtered = {};
+        Object.entries(deklarasiBuffer).forEach(([kode, data]) => {
+            // check any input for deklarasi contains this kode
+            if ($(`input[name^=\"deklarasi\"][value=\"${kode}\"]`).length) {
+                filtered[kode] = data;
+            }
         });
+        const json = JSON.stringify(filtered);
+        if (json && json !== '{}' && json !== '{}') {
+            $('<input>').attr({
+                type: 'hidden',
+                name: 'deklarasi_data',
+                value: json
+            }).appendTo('#form');
+        }
     });
 
 
@@ -787,6 +932,15 @@
         }
 
         function deleteRow(id) {
+            // Cek jika row memiliki deklarasi, jangan hapus
+            if ($(`#deklarasi${id}`).val()) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Tidak Dapat Dihapus',
+                    text: 'Baris dengan deklarasi tidak bisa dihapus.'
+                });
+                return;
+            }
             // Simpan ID dari row yang dihapus
             const rowId = $(`#row-${id}`).find('input:hidden[id^="hidden_detail_id"]').val();
             if (rowId) {
@@ -905,7 +1059,7 @@
                     }).css('cursor', 'pointer');
                     $('#tgl_pengajuan').css('pointer-events', 'auto');
                     $('#tujuan').prop({
-                        'disabled': false,
+                        'disabled': false, 
                         'readonly': false
                     }).css('cursor', 'auto');
                     $('#status').prop({
