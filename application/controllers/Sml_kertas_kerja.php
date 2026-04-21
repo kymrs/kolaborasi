@@ -1796,7 +1796,7 @@ class Sml_kertas_kerja extends CI_Controller
 
         $writer = new Xlsx($spreadsheet);
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment="Kertas_Kerja.xlsx"');
+        header('Content-Disposition: attachment; filename="Kertas Kerja.xlsx"');
         header('Cache-Control: max-age=0');
         $writer->save('php://output');
         exit;   
@@ -2044,7 +2044,7 @@ class Sml_kertas_kerja extends CI_Controller
         $writer = new Xlsx($spreadsheet);
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="Kertas_Kerja.xlsx"');
+        header('Content-Disposition: attachment;filename="Kertas Kerja.xlsx"');
         header('Cache-Control: max-age=0');
 
         $writer->save('php://output');

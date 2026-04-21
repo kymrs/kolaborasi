@@ -207,7 +207,7 @@ class Sw_sop extends CI_Controller
         $this->load->library('upload');
 
         // Config upload
-        $config['upload_path'] = './assets/backend/document/sw_sop';
+        $config['upload_path'] = './assets/backend/document/sop/sw_sop';
         $config['allowed_types'] = 'jpg|jpeg|png|pdf';
         $config['max_size'] = 10240; // 10MB in KB
         $config['encrypt_name'] = TRUE; // To avoid file name conflicts
@@ -278,7 +278,7 @@ class Sw_sop extends CI_Controller
         $this->load->library('upload');
 
         // Config upload
-        $config['upload_path'] = './assets/backend/document/sw_sop';
+        $config['upload_path'] = './assets/backend/document/sop/sw_sop';
         $config['allowed_types'] = 'jpg|jpeg|png|pdf';
         $config['max_size'] = 10240; // 10MB in KB
         $config['encrypt_name'] = TRUE; // To avoid file name conflicts
@@ -292,8 +292,8 @@ class Sw_sop extends CI_Controller
                 $file_name = $upload_data['file_name'];
 
                 // Delete old file if exists
-                if (!empty($old_file) && file_exists('assets/backend/document/sw_sop/' . $old_file)) {
-                    unlink('assets/backend/document/sw_sop/' . $old_file);
+                if (!empty($old_file) && file_exists('assets/backend/document/sop/sw_sop/' . $old_file)) {
+                    unlink('assets/backend/document/sop/sw_sop/' . $old_file);
                 }
             } else {
                 // Upload failed
@@ -348,7 +348,7 @@ class Sw_sop extends CI_Controller
         // Delete file (best-effort)
         if (!empty($file)) {
             $safeFile = basename($file); // prevent path traversal
-            $fullPath = rtrim(FCPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'backend' . DIRECTORY_SEPARATOR . 'document' . DIRECTORY_SEPARATOR . 'sw_sop' . DIRECTORY_SEPARATOR . $safeFile;
+            $fullPath = rtrim(FCPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'backend' . DIRECTORY_SEPARATOR . 'document' . DIRECTORY_SEPARATOR . 'sop' . DIRECTORY_SEPARATOR . 'sw_sop' . DIRECTORY_SEPARATOR . $safeFile;
             if (is_file($fullPath)) {
                 @unlink($fullPath);
             }

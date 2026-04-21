@@ -640,7 +640,7 @@
 
     function previewFile(filename) {
         var baseUrl = "<?php echo base_url(); ?>";
-        var fileUrl = baseUrl + "assets/backend/document/mac_sop/" + filename;
+        var fileUrl = baseUrl + "assets/backend/document/sop/mac_sop/" + filename;
         var ext = filename.split('.').pop().toLowerCase();
         if (ext === 'pdf') {
             window.open(fileUrl, '_blank');

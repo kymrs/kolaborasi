@@ -1,30 +1,10 @@
 <head>
     <?php $this->load->view('template/header'); ?>
+    <!-- Style read prepayment -->
+    <link rel="stylesheet" href="<?= base_url('assets/backend/css/view-read-prepayment.css') ?>">
+
     <style>
-        body .container {
-            font-family: Arial, Helvetica, sans-serif;
-            padding: 0;
-            color: #333;
-        }
-
-        .form-container {
-            max-width: 800px;
-            margin: 15px auto;
-            padding: 25px;
-            border: 1px solid #e0e0e0;
-            border-radius: 10px;
-            background-color: #ffffff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-        }
-
-        /* Header */
-
-        .header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
+        /* Style logo position */
         .header .logo {
             width: 260px;
             position: relative;
@@ -32,112 +12,7 @@
             bottom: 80px;
             margin-bottom: -70px;
         }
-
-        .header h1 {
-            font-size: 1.4rem;
-            font-weight: bold;
-        }
-
-        .header-field {
-            margin-top: 25px;
-        }
-
-        .header-field tr td:nth-child(2) {
-            padding-left: 20px;
-            padding-right: 5px;
-        }
-
-        .title {
-            text-align: center;
-            margin-top: 10px;
-        }
-
-        .title h1 {
-            font-weight: bold;
-            font-size: 1.4rem;
-        }
-
-        /* Main field */
-        .main-field tr td:nth-child(2) {
-            padding-left: 25px;
-            padding-right: 5px;
-        }
-
-        .main-field tr td:nth-child(3) {
-            width: 100%;
-            border-bottom: 1.5px solid #444;
-        }
-
-        /* Transaction Field */
-        .transaction-field table {
-            width: 100%;
-        }
-
-        .transaction-field table tr,
-        .transaction-field table tr th,
-        .transaction-field table tr td {
-            border: 1.5px solid #444;
-            padding: 5px;
-        }
-
-        .transaction-field table tr th:nth-child(1) {
-            width: 30%;
-        }
-
-        .transaction-field table tr th:nth-child(2) {
-            width: 30%;
-        }
-
-        .transaction-field table tr th:nth-child(3) {
-            width: 42%;
-        }
-
-        .transaction-field table tr th {
-            text-align: center;
-        }
-
-        .transaction-field table {
-            margin-top: 30px;
-        }
-
-        /* Table Approve */
-        .table-approve {
-            margin-top: 35px;
-        }
-
-        .table-approve table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .table-approve table tr td {
-            text-align: center;
-            width: 25%;
-            padding: 10px;
-            font-size: 14px;
-            border: 1.4px solid black;
-        }
-
-        /* Keterangan */
-        .keterangan-field {
-            margin-top: 35px;
-        }
-
-
-        @media (max-width: 546px) {
-            .main-field table tr td {
-                padding: 5px 0;
-            }
-
-            .transaction-field {
-                overflow-x: scroll;
-            }
-
-            .table-approve {
-                overflow-x: scroll;
-            }
-        }
-    </style>
+    </style>     
 </head>
 
 <div class="container-fluid">
@@ -150,10 +25,12 @@
                         <?php if ($user->app_name == $app_name && $user->status == 'approved') { ?>
                             <a class="btn btn-success btn-sm mr-2" id="paymentBtn" data-toggle="modal" data-target="#paymentModal"><i class="fas fa-money-bill"></i>&nbsp;Payment</a>
                         <?php } ?>
-                        <?php if ($user->app_name == $app_name && !in_array($user->app2_status, ['revised', 'rejected']) && !in_array($user->status, ['approved'])) { ?>
+                        <?php if ($user->app_name == $app_name && $user->app4_status = 'approved' && !in_array($user->app2_status, ['rejected', 'revised']) && $user->status != 'approved') { ?>
                             <a class="btn btn-warning btn-sm mr-2" id="appBtn" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
                         <?php } elseif ($user->app2_name == $app2_name && !in_array($user->status, ['rejected', 'approved'])  && $user->app_status == 'approved') { ?>
                             <a class="btn btn-warning btn-sm mr-2" id="appBtn2" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
+                        <?php } elseif ($user->app4_name == $app_name && !in_array($user->app_status, ['rejected', 'revised']) && !in_array($user->app2_status, ['rejected', 'revised']) && $user->status != 'approved') { ?>
+                            <a class="btn btn-warning btn-sm mr-2" id="appBtn3" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
                         <?php } ?>
                         <a class="btn btn-secondary btn-sm" onclick="history.back()"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                     </div>
@@ -163,11 +40,6 @@
                         <div class="header-field">
                             <img src="<?= base_url('assets/backend/img/carstensz.png') ?>" alt="" class="logo">
                             <table>
-                                <!-- <tr>
-                                    <td style="font-weight: bold;">Divisi</td>
-                                    <td>:</td>
-                                    <td id="divisiTxt">tess</td>
-                                </tr> -->
                                 <tr>
                                     <td style="font-weight: bold;">Prepayment</td>
                                     <td>:</td>
@@ -191,11 +63,6 @@
                                 <td>:</td>
                                 <td class="line" id="namaTxt">tess</td>
                             </tr>
-                            <!-- <tr>
-                                <td>Jabatan</td>
-                                <td>:</td>
-                                <td class="line" id="jabatanTxt">tess</td>
-                            </tr> -->
                             <tr>
                                 <td colspan="3">Dengan ini bermaksud mengajukan prepayment untuk :</td>
                             </tr>
@@ -225,27 +92,10 @@
                     </div>
 
                     <div class="table-approve">
-                        <table>
-                            <tr>
-                                <td>Yang melakukan</td>
-                                <td>Mengetahui</td>
-                                <td>Menyetujui</td>
-                            </tr>
-                            <tr style="height: 75px">
-                                <td id="statusMelakukan"></td>
-                                <td id="statusMengetahui"></td>
-                                <td id="statusMenyetujui"></td>
-                            </tr>
-                            <tr>
-                                <td id="melakukan"></td>
-                                <td id="mengetahui"></td>
-                                <td id="menyetujui"></td>
-                            </tr>
-                        </table>
+
                     </div>
 
                     <div class="keterangan-field">
-                        <!-- <span>Keterangan :</span> -->
                         <div id="keterangan">
                             <!-- GENERATE KETERANGAN -->
                         </div>
@@ -318,17 +168,32 @@
             <div class="modal-body">
                 <form id="paymentForm" action="">
                     <div class="form-group">
-                        <label style="font-size: 107%;"><span style="font-weight: bold">No Rekening</span> <span style="margin-left: 20px;">:</span> <span id="no_rek"></span></label> <br>
-                        <!-- <label style="font-size: 107%;"><span style="font-weight: bold">Jenis Rekening</span> <span style="margin-left: 5px;">:</span> <span id="jenis_rek"></span></label> -->
+                        <label style="font-size: 107%;"><span style="font-weight: bold">Nama Bank</span> <span style="margin-left: 54px;">:</span> <span id="nama_bank"></span></label> <br>
+                        <label style="font-size: 107%;"><span style="font-weight: bold">No Rekening</span> <span style="margin-left: 44px;">:</span> <span id="no_rek"></span></label> <br>
+                        <label style="font-size: 107%;"><span style="font-weight: bold">Atas Nama</span> <span style="margin-left: 58px;">:</span> <span id="nama_rek"></span></label> <br>
                     </div>
                     <div class="form-group">
-                        <label for="payment_status">Status <span class="text-danger">*</span></label>
+                        <div style="display: flex; justify-content: space-between">
+                            <label for="payment_status">Status <span class="text-danger">*</span></label>
+                        </div>
                         <select id="payment_status" name="payment_status" class="form-control" style="cursor: pointer;" required>
                             <option selected disabled>Choose status...</option>
                             <option value="paid">Paid</option>
                             <option value="unpaid">Unpaid</option>
                         </select>
                         <input type="hidden" id="hidden_id" value="<?php echo $id ?>" name="id">
+                    </div>
+                    <div class="form-group">
+                        <div style="display: flex; justify-content: space-between">
+                            <label for="payment_status">Tanggal Pembayaran <span class="text-danger">*</span></label>
+                        </div>
+                        <input type="text" class="form-control" name="tgl_pembayaran" id="tgl_pembayaran" placeholder="DD-MM-YYYY" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <div style="display: flex; justify-content: space-between">
+                            <label for="attachment">Attachment</label>
+                        </div>
+                        <input type="file" class="form-control" id="attachment" name="attachment">
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">
@@ -348,9 +213,6 @@
 <!-- Include jQuery and Bootstrap JS -->
 <?php $this->load->view('template/footer'); ?>
 <?php $this->load->view('template/script'); ?>
-<!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> -->
 
 <script>
     $(document).ready(function() {
@@ -383,7 +245,6 @@
                         keterangan = data['master']['app_keterangan'];
                         $('#app_status').val(status);
                         $('#app_keterangan').val(keterangan);
-                        // $('#note_id').append(`<p>* ${keterangan}</p>`);
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
@@ -412,7 +273,6 @@
                         keterangan2 = data['master']['app2_keterangan'];
                         $('#app2_status').val(status2);
                         $('#app2_keterangan').val(keterangan2);
-                        // $('#note_id').append(`<p>* ${keterangan2}</p>`);
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
@@ -421,24 +281,148 @@
             });
         });
 
-        $('#paymentBtn').click(function() {
-            $('#paymentForm').attr('action', '<?= site_url('ctz_prepayment/payment') ?>');
+        $('#appBtn3').click(function() {
+            $('#app_keterangan').attr('name', 'app4_keterangan').attr('id', 'app4_keterangan');
+            $('#app_status').attr('name', 'app4_status').attr('id', 'app4_status');
+            $('#approvalForm').attr('action', '<?= site_url('ctz_prepayment/approve3') ?>');
 
             $.ajax({
                 url: "<?php echo site_url('ctz_prepayment/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
-                    console.log(data);
-                    // $('#jenis_rek').html(data['master']['jenis_rek'] ? data['master']['jenis_rek'] : '-');
-                    $('#no_rek').html(data['master']['no_rek'] ? data['master']['no_rek'] : '-');
-                    $('#payment_status').val(data['master']['payment_status']);
+                    var nama2, date2, status2, keterangan2;
+                    if (data['master']['app4_status'] == 'waiting') {
+                        $('#app4_status').val();
+                        $('#app4_keterangan').val();
+                    } else {
+                        nama2 = data['master']['app4_name'];
+                        status2 = data['master']['app4_status'];
+                        keterangan2 = data['master']['app4_keterangan'];
+                        $('#app4_status').val(status2);
+                        $('#app2_keterangan').val(keterangan2);
+                    }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     alert('Error get data from ajax');
                 }
             });
         });
+
+        // Inisialisasi: sembunyikan field payment date dan attachment saat awal
+        $('#tgl_pembayaran').closest('.form-group').hide();
+        $('#attachment').closest('.form-group').hide();
+
+         $('#paymentBtn').click(function() {
+            $('#paymentForm').attr('action', '<?= site_url('ctz_prepayment/payment') ?>');
+                $.ajax({
+                    url: "<?php echo site_url('ctz_prepayment/edit_data') ?>/" + id,
+                    type: "GET",
+                    dataType: "JSON",
+                    success: function(data) {
+                        $('#payment_status').val(data['master']['payment_status']);
+
+                        // Show/hide payment fields berdasarkan status
+                        if (data['master']['payment_status'] === 'paid') {
+                            $('#tgl_pembayaran').closest('.form-group').show();
+                            $('#attachment').closest('.form-group').show();
+                        } else {
+                            $('#tgl_pembayaran').closest('.form-group').hide();
+                            $('#attachment').closest('.form-group').hide();
+                        }
+
+                        // Trigger change event untuk update submit button state
+                        $('#payment_status').trigger('change');
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert('Error get data from ajax');
+                    }
+            });
+        });
+
+        $('#tgl_pembayaran').datepicker({
+            dateFormat: 'dd-mm-yy',
+        });
+
+        $(document).ready(function() {
+            // Inisialisasi tombol submit dalam keadaan disabled
+            $('#paymentForm button[type="submit"]').prop('disabled', true).css('cursor', 'not-allowed');
+            // Event listener untuk elemen select
+            $('#payment_status').change(function() {
+                var status = $(this).val();
+                
+                if (status === null || status === 'Choose status...') {
+                    // Nonaktifkan tombol submit jika tidak ada status yang dipilih
+                    $('#paymentForm button[type="submit"]').prop('disabled', true);
+                    // Sembunyikan payment fields
+                    $('#tgl_pembayaran').closest('.form-group').hide();
+                    $('#attachment').closest('.form-group').hide();
+                } else {
+                    // Aktifkan tombol submit jika status telah dipilih
+                    $('#paymentForm button[type="submit"]').prop('disabled', false).css('cursor', 'pointer');
+                    
+                    // Show/hide payment fields berdasarkan status
+                    if (status === 'paid') {
+                        $('#tgl_pembayaran').closest('.form-group').show();
+                        $('#attachment').closest('.form-group').show();
+                    } else if (status === 'unpaid') {
+                        $('#tgl_pembayaran').closest('.form-group').hide();
+                        $('#attachment').closest('.form-group').hide();
+                    }
+                }
+            });
+        });
+
+        function getFormattedDate(dateString) {
+            // Memisahkan string berdasarkan spasi
+            var parts = dateString.split(" ");
+            // Mengambil bagian hari, bulan, dan tahun
+            var day = parts[0];
+            var month = parts[1];
+            var year = parts[2];
+            // Mengubah bulan menjadi nama bulan dalam bahasa Indonesia
+            switch (month) {
+                case '01':
+                    month = 'Januari';
+                    break;
+                case '02':
+                    month = 'Februari';
+                    break;
+                case '03':
+                    month = 'Maret';
+                    break;
+                case '04':
+                    month = 'April';
+                    break;
+                case '05':
+                    month = 'Mei';
+                    break;
+                case '06':
+                    month = 'Juni';
+                    break;
+                case '07':
+                    month = 'Juli';
+                    break;
+                case '08':
+                    month = 'Agustus';
+                    break;
+                case '09':
+                    month = 'September';
+                    break;
+                case '10':
+                    month = 'Oktober';
+                    break;
+                case '11':
+                    month = 'November';
+                    break;
+                case '12':
+                    month = 'Desember';
+                    break;
+            }
+            // Menggabungkan hari, bulan, dan tahun menjadi satu string
+            return day + " " + month + " " + year;
+        }
+
         // Handle the approval button click event
         $('#confirmApproval').click(function() {
             const id = $('#hidden_id').val();
@@ -462,6 +446,13 @@
                 $('#namaTxt').text(data['nama']);
                 $('#jabatanTxt').text(data['master']['jabatan']);
                 $('#tujuanTxt').text(data['master']['tujuan']);
+
+                const [nama_rek, nama_bank, no_rek] = data.master.no_rek.split("-");
+                $('#nama_rek').html(nama_rek);
+                $('#nama_bank').html(nama_bank);
+                $('#no_rek').html(no_rek);
+                $('#tgl_pembayaran').val(data['master']['tgl_pembayaran'] ? getFormattedDate(moment(data['master']['tgl_pembayaran']).format('DD MM YYYY')) : '-');
+
                 if ((data['master']['app_keterangan'] !== null && data['master']['app_keterangan'] !== '') ||
                     (data['master']['app2_keterangan'] !== null && data['master']['app2_keterangan'] !== '')) {
                     $('#keterangan').append(`<span>Keterangan :</span>`);
@@ -473,6 +464,12 @@
                     $('#keterangan').append(`<span class="form-control-plaintext">*(${data['master']['app_name']}) ${data['master']['app2_keterangan']}</span>`);
                 }
                 // DATA APPROVAL PREPAYMENT
+                if (data['master']['app4_date'] == null) {
+                    date4 = '';
+                }
+                if (data['master']['app4_date'] != null) {
+                    date4 = data['master']['app4_date'];
+                }
 
                 if (data['master']['app_date'] == null) {
                     date = '';
@@ -489,15 +486,38 @@
                     date2 = data['master']['app2_date'];
                 }
 
-                $('#melakukan').html(`<div class="signature-text text-center">${data['nama']}</div>`);
-                $('#mengetahui').html(`<div class="signature-text text-center">${data['master']['app_name']}</div>`);
-                $('#menyetujui').html(`<div class="signature-text text-center">${data['master']['app2_name']}</div>`);
-                $('#statusMelakukan').html(`<div class="signature-text text-center">CREATED<br><span>${data['master']['created_at']}</span></div>`);
-                $('#statusMengetahui').html(`<div class="signature-text text-center">${data['master']['app_status'].toUpperCase()}<br><span>${date}</span></div>`);
-                $('#statusMenyetujui').html(`<div class="signature-text text-center">${data['master']['app2_status'].toUpperCase()}<br><span>${date2}</span></div>`);
+                // Only show Memeriksa column if app4_name is not null
+                let app4Name = data['master']['app4_name'];
+                let showMemeriksa = app4Name && app4Name.trim() !== '' && app4Name.toLowerCase() !== 'null';
 
-                $('#divisiCol').html(data['master']['divisi']);
-                $('#prepaymentCol').html(data['master']['prepayment']);
+                let tableHeader = `<tr>
+                                <td>Yang melakukan</td>`;
+                if (showMemeriksa) tableHeader += `<td>Memeriksa</td>`;
+                tableHeader += `<td>Mengetahui</td>
+                                <td>Menyetujui</td>
+                            </tr>`;
+
+                let tableStatus = `<tr style="height: 75px">
+                                <td id="statusMelakukan"><div class="signature-text text-center">CREATED<br><span>${data['master']['created_at']}</span></div></td>`;
+                if (showMemeriksa) tableStatus += `<td id="statusKapten"><div class="signature-text text-center">${data['master']['app4_status'] ? data['master']['app4_status'].toUpperCase() : ''}<br><span>${date4}</span></div></td>`;
+                tableStatus += `<td id="statusMengetahui"><div class="signature-text text-center">${data['master']['app_status'] ? data['master']['app_status'].toUpperCase() : ''}<br><span>${date}</span></div></td>
+                                <td id="statusMenyetujui"><div class="signature-text text-center">${data['master']['app2_status'] ? data['master']['app2_status'].toUpperCase() : ''}<br><span>${date2}</span></div></td>
+                            </tr>`;
+
+                let tableName = `<tr>
+                                <td id="melakukan"><div class="signature-text text-center">${data['nama']}</div></td>`;
+                if (showMemeriksa) tableName += `<td id="kapten"><div class="signature-text text-center">${data['master']['app4_name']}</div></td>`;
+                tableName += `<td id="mengetahui"><div class="signature-text text-center">${data['master']['app_name']}</div></td>
+                                <td id="menyetujui"><div class="signature-text text-center">${data['master']['app2_name']}</div></td>
+                            </tr>`;
+
+                $('.table-approve').append(`
+                    <table>
+                        ${tableHeader}
+                        ${tableStatus}
+                        ${tableName}
+                    </table>
+                `);
 
 
                 //DATA PREPAYMENT DETAIL
@@ -522,7 +542,6 @@
             }
         });
 
-        // APPROVE
         // APPROVE
         $("#approvalForm").validate({
             rules: {
@@ -590,16 +609,21 @@
         $('#paymentForm').submit(function(e) {
             e.preventDefault();
             var url = $(this).attr('action');
+            
+            // Gunakan FormData untuk support file upload
+            var formData = new FormData(this);
+            
             // MENGINPUT PAYMENT
             $.ajax({
-                url: url, // Mengambil action dari form
+                url: url,
                 type: "POST",
-                data: $(this).serialize(), // Mengambil semua data dari form
+                data: formData,
+                contentType: false,
+                processData: false,
                 dataType: "JSON",
                 success: function(data) {
                     console.log(data);
-                    if (data.status) //if success close modal and reload ajax table
-                    {
+                    if (data.status) {
                         Swal.fire({
                             position: 'center',
                             icon: 'success',
@@ -607,37 +631,28 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then((result) => {
-                            window.history.back(); // Kembali ke halaman sebelumnya
+                            window.history.back();
                         })
+                    } else {
+                        Swal.fire({
+                            position: 'center',
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.message || 'Error saving data',
+                            showConfirmButton: true
+                        });
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
-                    alert('Error adding / update data');
+                    Swal.fire({
+                        position: 'center',
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Error adding / update data',
+                        showConfirmButton: true
+                    });
                 }
             });
         });
-
-        // Example: Load data into the form fields and tables
-        // $('#divisiCol').text('Finance');
-        // $('#prepaymentCol').text('001234');
-        // $('#tanggal').text('29 August 2024');
-        // $('#nama').text('Rakha Rizki');
-        // $('#jabatan').text('Software Developer');
-        // $('#tujuan').text('Project Development');
-
-        // Example: Append rows to the rincian table
-        // $('#input-container').append(`
-        //     <tr>
-        //         <td>Consultation Fees</td>
-        //         <td>Rp. 5,000,000</td>
-        //         <td>Consulting on project scope</td>
-        //     </tr>
-        //     <tr>
-        //         <td>Development Tools</td>
-        //         <td>Rp. 3,000,000</td>
-        //         <td>Purchase of software licenses</td>
-        //     </tr>
-        // `);
-
     });
 </script>

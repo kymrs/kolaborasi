@@ -1,0 +1,127 @@
+body .container {
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 0;
+    color: #333;
+}
+
+.form-container {
+    max-width: 1080px;
+    margin: 15px auto;
+    padding: 25px;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.header {
+    text-align: center;
+    display: flex;
+    align-items: center;
+}
+
+.header .logo img {
+    width: 100%;
+}
+
+.header h1,
+.header h2 {
+    font-size: 24px;
+    margin-right: 150px;
+    font-weight: bold;
+}
+
+.header .title {
+    width: 100%;
+}
+
+/* Field Data */
+.field-data table tr td:nth-child(1) {
+    padding-right: 42px;
+}
+
+.field-data table tr td:nth-child(2) {
+    position: relative;
+    bottom: 1.5px;
+    padding-right: 10px;
+}
+
+/* Table Main */
+.no-prepayment {
+    margin-top: 30px;
+    float: right;
+    margin-right: 200px;
+}
+
+.table-main {
+    border: 1px solid #444;
+}
+
+.table-main table {
+    width: 100%;
+}
+
+.table-main table tr td,
+.table-main table tr th {
+    border: 1.5px solid #444;
+    padding: 2.5px;
+}
+
+/* Table Approve */
+.table-approve {
+    margin-top: 35px;
+    /* border: 1px solid #444; */
+}
+
+.table-approve table {
+    width: 60%;
+}
+
+.table-approve table tr td {
+    border: 1.5px solid #444;
+    padding: 2.5px;
+    width: 100px;
+    text-align: center;
+}
+
+/* Transaction Field */
+.kwitansi {
+    background-color: #4268D6;
+    padding: 5px;
+    color: #fff;
+    display: inline-block;
+    font-size: 0.8rem;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: 300ms;
+}
+
+.kwitansi:hover {
+    scale: 0.95;
+}
+
+.clear {
+    clear: both;
+}
+
+/* Keterangan Field */
+.keterangan-field {
+    margin-top: 20px;
+}
+
+@media (max-width: 546px) {
+    .table-main {
+        overflow-x: scroll;
+        font-size: 75%;
+    }
+
+    .table-approve table {
+        width: 100%;
+    }
+    
+    .header h1,
+    .header h2 {
+        font-size: 90%;
+        margin-right: 0;
+    }
+}

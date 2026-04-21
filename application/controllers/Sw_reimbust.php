@@ -90,9 +90,9 @@ class Sw_reimbust extends CI_Controller
             $row[] = $no;
             $row[] = $action;
             if ($field->payment_status == 'paid') {
-                $row[] = '<div class="text-center"><i class="fas fa-check" style="color: green;"></i></div>'; // Ikon checklist hijau di tengah
+                $row[] = '<div class="text-center"><button class="btn btn-primary btn-circle btn-sm" data-toggle="modal" data-target="#paymentDetailModal" data-id="' . $field->id . '" title="Detail Pembayaran"><i class="fas fa-check" style="color: #1cc88a;"></i></button></div>';
             } else if ($field->payment_status == 'unpaid') {
-                $row[] = '<div class="text-center"><i class="fas fa-times" style="color: red;"></i></div>'; // Ikon unchecklist merah di tengah
+                $row[] = '<div class="text-center"><i class="fas fa-times" style="color: red;"></i></div>';
             }
             $row[] = strtoupper($field->kode_reimbust);
             $row[] = $field->name;
@@ -761,7 +761,7 @@ class Sw_reimbust extends CI_Controller
                 $_FILES['file']['error'] = $_FILES['kwitansi']['error'][$i];
                 $_FILES['file']['size'] = $_FILES['kwitansi']['size'][$i];
 
-                $config['upload_path'] = './assets/backend/document/reimbust/kwitansi_sw/';
+                $config['upload_path'] = './assets/backend/document/reimbust/kwitansi/kwitansi_sw/';
                 $config['allowed_types'] = 'jpeg|jpg|png';
                 $config['max_size'] = 3072; // Batasan ukuran file dalam kilobytes (3 MB)
                 $config['encrypt_name'] = TRUE;
@@ -854,7 +854,7 @@ class Sw_reimbust extends CI_Controller
                     if ($reimbust_detail) {
                         $old_image = $reimbust_detail['kwitansi'];
                         if ($old_image != 'default.jpg') {
-                            @unlink(FCPATH . './assets/backend/document/reimbust/kwitansi_sw/' . $old_image);
+                            @unlink(FCPATH . './assets/backend/document/reimbust/kwitansi/kwitansi_sw/' . $old_image);
                         }
 
                         $this->db->where('id', $id2);
@@ -883,7 +883,7 @@ class Sw_reimbust extends CI_Controller
                         return;
                     }
 
-                    $config['upload_path'] = './assets/backend/document/reimbust/kwitansi_sw/';
+                    $config['upload_path'] = './assets/backend/document/reimbust/kwitansi/kwitansi_sw/';
                     $config['allowed_types'] = 'jpeg|jpg|png';
                     $config['max_size'] = 3072;
                     $config['encrypt_name'] = TRUE;
@@ -899,7 +899,7 @@ class Sw_reimbust extends CI_Controller
                             $old_image = $reimbust_detail['kwitansi'];
 
                             if ($old_image && $old_image != 'default.jpg') {
-                                @unlink(FCPATH . './assets/backend/document/reimbust/kwitansi_sw/' . $old_image);
+                                @unlink(FCPATH . './assets/backend/document/reimbust/kwitansi/kwitansi_sw/' . $old_image);
                             }
                         }
                         $kwitansi = $this->upload->data('file_name');
@@ -1033,12 +1033,91 @@ class Sw_reimbust extends CI_Controller
         echo json_encode(array("status" => TRUE));
     }
 
-    function payment()
+    public function payment()
     {
-        // UPDATE APPROVAL 2
-        $this->db->where('id', $this->input->post('id'));
-        $this->db->update('sw_reimbust', ['payment_status' => $this->input->post('payment_status')]);
+        $id = $this->input->post('id');
+        $payment_status = $this->input->post('payment_status');
+        $tgl_pembayaran = $this->input->post('tgl_pembayaran');
+        // Validasi dasar
+        if (empty($id)) {
+            echo json_encode([
+                "status" => FALSE,
+                "message" => "ID tidak ditemukan"
+            ]);
+            return;
+        }
+        // Data awal
+        $data = [
+            'payment_status' => $payment_status
+        ];
+        // Jika status paid → set tanggal (tanpa jam)
+        if ($payment_status === 'paid' && !empty($tgl_pembayaran)) {
+            $date_parts = explode('-', $tgl_pembayaran);
+            if (count($date_parts) === 3) {
+                // DD-MM-YYYY → YYYY-MM-DD H:i:s
+                $data['tgl_pembayaran'] = $date_parts[2] . '-' . $date_parts[1] . '-' . $date_parts[0] . ' ' . date('H:i:s');
+            } else {
+                echo json_encode([
+                    "status" => FALSE,
+                    "message" => "Format tanggal tidak valid"
+                ]);
+                return;
+            }
+        } else {
+            // Hapus file attachment jika status bukan paid
+            $reimbust = $this->db->get_where('sw_reimbust', ['id' => $id])->row_array();
 
-        echo json_encode(array("status" => TRUE));
+            if ($reimbust && $reimbust['attachment'] && $reimbust['attachment'] != 'default.pdf') {
+                @unlink(FCPATH . './assets/backend/document/reimbust/attachment/sw_attachment/' . $reimbust['attachment']);
+                }
+                $data['tgl_pembayaran'] = null;
+                $data['attachment'] = null;
+        }
+
+        // Ambil data lama
+        $reimbust = $this->db->get_where('sw_reimbust', ['id' => $id])->row_array();
+
+        // Jika ada file lama, hapus dulu (replace)
+        if (!empty($_FILES['attachment']['name'])) {
+            if ($reimbust && !empty($reimbust['attachment']) && $reimbust['attachment'] != 'default.pdf') {
+                $oldFile = FCPATH . 'assets/backend/document/reimbust/attachment/sw_attachment/' . $reimbust['attachment'];
+                
+                if (file_exists($oldFile)) {
+                    unlink($oldFile);
+                }
+            }
+        }
+
+        // Handle upload file
+        if (!empty($_FILES['attachment']['name'])) {
+            $config['upload_path'] = 'assets/backend/document/reimbust/attachment/sw_attachment/';
+            $config['allowed_types'] = 'pdf|jpg|jpeg|png';
+            $config['max_size'] = 3072; // 3MB
+            $config['file_name'] = 'attachment_' . $id . '_' . date('YmdHis');
+            $this->load->library('upload', $config);
+            if ($this->upload->do_upload('attachment')) {
+                $upload_data = $this->upload->data();
+                $data['attachment'] = $upload_data['file_name'];
+            } else {
+                echo json_encode([
+                    "status" => FALSE,
+                    "message" => strip_tags($this->upload->display_errors())
+                ]);
+                return;
+            }
+        }
+        // Update database
+        $this->db->where('id', $id);
+        $result = $this->db->update('sw_reimbust', $data);
+        if ($result) {
+            echo json_encode([
+                "status" => TRUE
+            ]);
+        } else {
+            echo json_encode([
+                "status" => FALSE,
+                "message" => "Gagal update data"
+            ]);
+        }
     }
 }

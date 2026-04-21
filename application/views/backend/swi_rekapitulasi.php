@@ -342,7 +342,20 @@
             let headerHtml = '';
             let footerHtml = '';
 
-            if (tab === 'pelaporan' || tab === 'reimbust') {
+            if (tab === 'pelaporan') {
+                headerHtml = `
+            <tr>
+                <th>No</th>
+                <th>Kode Prepayment</th>
+                <th>Kode Pelaporan</th>
+                <th>Tanggal Prepayment</th>
+                <th>Tanggal Pelaporan</th>
+                <th>Nama</th>
+                <th>Keterangan</th>
+                <th>Pengeluaran</th>
+            </tr>`;
+                footerHtml = headerHtml;
+            } else if (tab === 'reimbust') {
                 headerHtml = `
             <tr>
                 <th>No</th>
@@ -353,8 +366,8 @@
                 <th>Keterangan</th>
                 <th>Pengeluaran</th>
             </tr>`;
-                footerHtml = headerHtml;
-            } else if (tab === 'invoice') {
+                }
+            else if (tab === 'invoice') {
                 headerHtml = `
             <tr>
                 <th>No</th>

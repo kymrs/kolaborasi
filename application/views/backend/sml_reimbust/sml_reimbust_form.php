@@ -1,120 +1,5 @@
-<style>
-    #rekening {
-        width: 100%;
-    }
-
-    .rekening-text {
-        margin-bottom: -2px;
-    }
-
-    /* Mengubah gaya dropdown */
-    .select2-container--default .select2-selection--single {
-        background-color: #fff;
-        border: 1px solid #D1D3E2;
-        border-radius: 4px;
-        font-size: 14px;
-        padding: 5px;
-        height: 38px;
-        line-height: 38px;
-    }
-
-    /* Mengubah warna teks dalam opsi dropdown */
-    .select2-container--default .select2-results__option {
-        color: #777;
-    }
-
-    /* Mengubah posisi ikon panah */
-    .select2-selection__arrow {
-        position: absolute;
-        right: 10px;
-        top: 50%;
-        transform: translateY(20%);
-    }
-
-    .table-transaksi {
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-    }
-
-    .table-transaksi td {
-        border: 1px solid rgba(26, 32, 53, 0.1);
-    }
-
-    .table-transaksi tbody tr {
-        transition: 200ms;
-    }
-
-    .table-transaksi tbody tr:hover {
-        background-color: rgba(234, 236, 244, 0.5);
-    }
-
-    .header-table-transaksi {
-        background-color: rgb(36, 44, 73);
-        color: white;
-    }
-
-    .header-table-transaksi th {
-        border: 1px solid rgb(255, 255, 255, 0.2);
-        font-weight: 400;
-        text-align: center;
-    }
-
-    .btn-style {
-        background-color: rgb(36, 44, 73);
-        color: white;
-        border: none;
-        padding: 7px 23px;
-        font-size: 12px;
-        border-radius: 5px;
-        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.15), -4px 4px 6px rgba(0, 0, 0, 0.15), 4px 4px 6px rgba(0, 0, 0, 0.15);
-        /* Bayangan bawah dan kiri-kanan */
-        cursor: pointer;
-        transition: all 0.055s ease;
-        margin-bottom: 5px;
-        position: relative;
-        bottom: 2px;
-    }
-
-    .btn-style:hover {
-        scale: 1.020;
-    }
-
-    .btn-style:active {
-        transform: translateY(2px);
-        box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1), -2px 2px 6px rgba(0, 0, 0, 0.1), 2px 2px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .btn-delete {
-        background-color: #DC0808;
-        position: relative;
-        top: 1px;
-    }
-
-    .btn-search-prepayment {
-        position: relative;
-        top: 2px;
-    }
-
-    @media (min-width: 768px) {
-
-        .tujuan-field,
-        .jml-pre-field,
-        .kode-pre-field {
-            margin-left: 15px;
-        }
-    }
-
-    @media (max-width: 768px) {
-
-        .table-transaksi {
-            overflow-x: scroll;
-            margin-bottom: 20px;
-        }
-    }
-
-    .ui-datepicker {
-        z-index: 99999 !important;
-    }
-</style>
+<!-- Style table transaksi -->
+<link rel="stylesheet" href="<?= base_url("assets/backend/css/table-transaksi-reimbust.css") ?>">
 
 <div class="container-fluid">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
@@ -366,60 +251,11 @@
                             </div>
                         </div>
 
-                        <!-- Modal Data Table Deklarasi read -->
-                        <div class="modal fade" id="deklarasiModalRead" tabindex="-1" aria-labelledby="deklarasiModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-xl modal-dialog-scrollable">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="deklarasiModalLabel">Data Deklarasi</h5>
-                                        <a style="position: relative; right: 75px" class="btn btn-primary btn-sm" href="<?= base_url('sml_datadeklarasi/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span style="position: relative; bottom: 5px" aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <table id="deklarasi-table-read" class="table table-bordered table-striped">
-                                            <thead>
-                                                <tr>
-                                                    <th>No</th>
-                                                    <th style="display: none">Action</th>
-                                                    <th>Kode Deklarasi</th>
-                                                    <th>Tanggal</th>
-                                                    <th>Pengaju</th>
-                                                    <th>Jabatan</th>
-                                                    <th>Penerima</th>
-                                                    <th>Tujuan</th>
-                                                    <th>Sebesar</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                            </tbody>
-                                            <tfoot>
-                                                <tr>
-                                                    <th>No</th>
-                                                    <th style="display: none">Action</th>
-                                                    <th>Kode Deklarasi</th>
-                                                    <th>Tanggal</th>
-                                                    <th>Pengaju</th>
-                                                    <th>Jabatan</th>
-                                                    <th>Penerima</th>
-                                                    <th>Tujuan</th>
-                                                    <th>Sebesar</th>
-                                                </tr>
-                                            </tfoot>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
                         <!-- Modal -->
                         <div id="myModal" class="kwitansi-modal">
                             <span class="close">&times;</span>
                             <img class="modal-content" id="img01">
-                            <!-- <div id="caption"></div> -->
                         </div>
-
                     </form>
                 </div>
             </div>
@@ -453,7 +289,6 @@
                 },
                 dataType: "JSON",
                 success: function(data) {
-                    // console.log(data);
                     $('#kode_reimbust').val(data.toUpperCase());
                     $('#kode').val(data);
                 },
@@ -474,7 +309,7 @@
         if (isExistChecked) {
             $('#rekening').prop('disabled', false).show();
             $('#rekening').next('.select2-container').show();
-            $('.input-group.rekening-text input[type="text"]').prop('disabled', true).parent().hide();
+            $('.input-group.rekening-text input[type="text"]').prop('disable', true).parent().hide();
         } else {
             $('#rekening').prop('disabled', true).hide();
             $('#rekening').next('.select2-container').hide();
@@ -535,10 +370,7 @@
 
             // Masukkan data ke dalam input form di tampilan utama
             $('#kode_prepayment_input').val(data[2]);
-            // $('#nama').val(data[3]);
             $('#departemenPrepayment').val(data[4]);
-            // $('#jabatan').val(data[5]);
-            // $('#tgl_pengajuan').val(data[6]);
             $('#jumlah_prepayment').val(data[8]);
             var cleanedValue = data[8].replace(/\./g, '');
             $('#hidden_jumlah_prepayment').val(cleanedValue);
@@ -766,35 +598,6 @@
         }
     });
 
-
-    // Deklarasi Modal Read
-    $(document).ready(function() {
-        var table = $('#deklarasi-table-read').DataTable({
-            "responsive": false,
-            "scrollX": true,
-            "processing": true,
-            "serverSide": true,
-            "order": [],
-            "ajax": {
-                "url": "<?php echo site_url('sml_datadeklarasi/get_list') ?>",
-                "type": "POST"
-            },
-            "columnDefs": [{
-                    "targets": [2, 3, 4, 6],
-                    "className": 'dt-head-nowrap'
-                },
-                {
-                    "targets": [1, 3],
-                    "className": 'dt-body-nowrap'
-                },
-                {
-                    "targets": [0, 1],
-                    "orderable": false,
-                },
-            ]
-        });
-    });
-
     $(document).ready(function() {
         var id = $('#id').val();
         var aksi = $('#aksi').val();
@@ -932,27 +735,25 @@
         }
 
         function deleteRow(id) {
-            // Cek jika row memiliki deklarasi, jangan hapus
-            if ($(`#deklarasi${id}`).val()) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Tidak Dapat Dihapus',
-                    text: 'Baris dengan deklarasi tidak bisa dihapus.'
-                });
-                return;
-            }
-            // Simpan ID dari row yang dihapus
             const rowId = $(`#row-${id}`).find('input:hidden[id^="hidden_detail_id"]').val();
             if (rowId) {
                 deletedRows.push(rowId);
             }
-            console.log(rowId);
 
             $(`#row-${id}`).remove();
-            // Reorder rows and update row numbers
+
+            // 🔥 WAJIB: hapus juga dari buffer dulu
+            const kode = $(`#deklarasi${id}`).val();
+            if (kode && deklarasiBuffer[kode]) {
+                delete deklarasiBuffer[kode];
+            }
+
+            // 🔥 Reorder setelah delete
+            reorderDeklarasiBufferAfterDelete();
+
             reorderRows();
-            checkDeleteButtonState(); // Cek tombol delete setelah baris dihapus
-            updateSubmitButtonState(); // Perbarui status tombol
+            checkDeleteButtonState();
+            updateSubmitButtonState();
         }
 
         function reorderRows() {
@@ -974,13 +775,56 @@
                 $(this).find('input[name^="tgl_nota"]').attr('name', `tgl_nota[${newRowNumber}]`).attr('placeholder', `Tanggal Nota ${newRowNumber}`).val(tgl_notaValue);
                 $(this).find('input[name^="jml"]').attr('name', `jml[${newRowNumber}]`).attr('placeholder', `Jumlah ${newRowNumber}`).val(jmlValue);
                 $(this).find('input[name^="jumlah"]').attr('name', `jumlah[${newRowNumber}]`).attr('placeholder', `Jumlah ${newRowNumber}`).val(jumlahValue);
-                $(this).find('input[name^="kwitansi"]').attr('name', `kwitansi[${newRowNumber}]`).attr('placeholder', `Input ${newRowNumber}`).val(kwitansiValue);
+                $(this).find('input[name^="kwitansi"]').attr('name', `kwitansi[${newRowNumber}]`).attr('placeholder', `Input ${newRowNumber}`);
                 $(this).find('#kwitansi_image').attr('name', `kwitansi_image[${newRowNumber}]`).attr('placeholder', `Input ${newRowNumber}`).val(kwitansiImageValue);
                 $(this).find('input[name^="deklarasi"]').attr('name', `deklarasi[${newRowNumber}]`).attr('placeholder', `Deklarasi ${newRowNumber}`).val(deklarasiValue);
                 $(this).find('.deklarasi-old').attr('name', `deklarasi_old[${newRowNumber}]`).attr('placeholder', `Deklarasi Old${newRowNumber}`);
                 $(this).find('.delete-btn').attr('data-id', newRowNumber).text('Delete');
             });
             rowCount = $('#input-container tr').length; // Update rowCount to the current number of rows
+        }
+
+        function reorderDeklarasiBufferAfterDelete() {
+            const entries = Object.entries(deklarasiBuffer);
+
+            if (!entries.length) return;
+
+            // Ambil prefix dari key pertama
+            const firstKey = entries[0][0];
+            const prefix = firstKey.slice(0, 5);
+
+            // Urutin berdasarkan angka
+            const sorted = entries
+                .map(([key, value]) => ({
+                    oldKey: key,
+                    value: value,
+                    number: parseInt(key.slice(5))
+                }))
+                .sort((a, b) => a.number - b.number);
+
+            // Ambil angka awal
+            let start = sorted[0].number;
+
+            const newBuffer = {};
+            const mapping = {};
+
+            sorted.forEach((item, index) => {
+                const newNumber = start + index;
+                const newKey = prefix + String(newNumber).padStart(3, '0');
+
+                // 🔥 update isi object juga
+                item.value.kode = newKey;
+
+                newBuffer[newKey] = item.value;
+                mapping[item.oldKey] = newKey;
+            });
+
+            deklarasiBuffer = newBuffer;
+
+            // 🔥 update input di DOM (penting!)
+            Object.entries(mapping).forEach(([oldKey, newKey]) => {
+                $(`input[name^="deklarasi"][value="${oldKey}"]`).val(newKey);
+            });
         }
 
         $('#add-row').click(function() {
@@ -1160,26 +1004,6 @@
                     $('#status').prop('readonly', true).css('cursor', 'not-allowed');
                     $('#jumlah_prepayment').prop('readonly', true).css('cursor', 'not-allowed');
                 }
-            } else if (aksi == 'read') {
-                if (sifatPelaporan == 'Reimbust') {
-                    $('#pelaporan_button').css('display', 'none');
-                    $('input').prop('disabled', true).css('cursor', 'not-allowed');
-                    $('select').prop('disabled', true).css('cursor', 'not-allowed');
-                    $('textarea').prop('disabled', true).css('cursor', 'not-allowed');
-                    $('#pelaporan_button').prop('disabled', true).css('display', 'none');
-                } else if (sifatPelaporan == 'pelaporan') {
-                    $('#pelaporan_button').css('display', 'none');
-                    $('input').prop('disabled', true).css('cursor', 'not-allowed');
-                    $('select').prop('disabled', true).css('cursor', 'not-allowed');
-                    $('textarea').prop('disabled', true).css('cursor', 'not-allowed');
-                    $('#pelaporan_button').prop('disabled', true).css('display', 'none');
-                } else {
-                    $('#pelaporan_button').css('display', 'none');
-                    // $('#departemen').prop('disabled', true).css('display', 'none');
-                    $('input').prop('disabled', true).css('cursor', 'not-allowed');
-                    $('select').prop('disabled', true).css('cursor', 'not-allowed');
-                    $('textarea').prop('disabled', true).css('cursor', 'not-allowed');
-                }
             }
         }
 
@@ -1203,7 +1027,6 @@
                 dataType: "JSON",
                 success: function(data) {
                     moment.locale('id')
-                    // console.log(data);
                     // Set nilai untuk setiap field dari data master    
                     $('#sifat_pelaporan').val(data['master']['sifat_pelaporan']);
                     $('#id').val(data['master']['id']);
@@ -1353,101 +1176,6 @@
                             });
                         });
                     }
-
-                    if (aksi == 'read') {
-                        //APPEND DATA TRANSAKSI DETAIL REIMBUST
-                        $(data['transaksi']).each(function(index) {
-                            //Nilai jumlah diformat menggunakan pemisah ribuan sebelum dimasukkan ke dalam elemen input.
-                            $('.aksi').hide();
-                            $('#add-row').hide();
-                            $('#action').hide();
-                            const jumlahFormatted = data['transaksi'][index]['jumlah'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-                            const tglNotaFormatted = moment(data['transaksi'][index]['tgl_nota']).format('DD-MM-YYYY');
-                            // Append Dari Form UPDATE
-                            const row = `
-                                <tr id="row-${index + 1}">
-                                    <td class="row-number">${index + 1}</td>
-                                    <td>
-                                        <input type="text" class="form-control" name="pemakaian[${index + 1}]" value="${data['transaksi'][index]['pemakaian']}" autocomplete="off" disabled style="cursor: not-allowed" placeholder="${data['transaksi'][index]['pemakaian'] ? data['transaksi'][index]['pemakaian'] : 'Deklarasi'}">
-
-                                        <input type="hidden" id="hidden_reimbust_id${index}" name="reimbust_id" value="${data['master']['id']}">
-                                        <input type="hidden" id="hidden_detail_id${index}" name="detail_id[${index + 1}]" value="${data['transaksi'][index]['id']}">
-                                    </td>
-                                    <td>
-                                        <input type="text" class="form-control tgl_nota" name="tgl_nota[${index + 1}]" style="cursor: pointer" autocomplete="off" value="${tglNotaFormatted}" disabled style="cursor: not-allowed">
-                                    </td>
-                                    <td>
-                                        <input type="text" class="form-control" id="jumlah-${index}" value="${jumlahFormatted}" name="jml[${index + 1}]" autocomplete="off" disabled style="cursor: not-allowed">
-                                        <input type="hidden" id="hidden_jumlah${index}" name="jumlah[${index + 1}]" value="${data['transaksi'][index]['jumlah']}">
-                                    </td>
-                                    <td width="150" style="padding: 15px 10px">
-                                        <div class="btn btn-primary btn-lg btn-block btn-sm openModal" data-kwitansi="${data['transaksi'][index]['kwitansi']}">Lihat Foto</div>
-                                    </td>
-                                    <td width="150" style="padding: 15px 10px">
-                                        <a href="<?= base_url() ?>sml_datadeklarasi/read_form/25" class="btn btn-primary btn-lg btn-block btn-sm" 
-                                            data-id="${index + 1}"
-                                            data-deklarasi="${data['transaksi'][index]['deklarasi']}"
-                                            id="deklarasi-modal${index + 1}">
-                                            ${data['transaksi'][index]['deklarasi'] ? data['transaksi'][index]['deklarasi'] : 'Deklarasi'}
-                                        </a>
-                                        <input type="hidden" class="form-control" id="deklarasi${index + 1}" placeholder="Deklarasi ${index + 1}" name="deklarasi[${index + 1}]" autocomplete="off" value="${data['transaksi'][index]['deklarasi']}">
-                                    </td>
-                                    <td><span class="btn delete-btn btn-danger" data-id="${index + 1}" style="display: none">Delete</span></td>
-                                </tr>
-                                `;
-                            $('#input-container').append(row);
-                            // Tambahkan format ke input jumlah yang baru
-                            formatJumlahInput(`#jumlah-${index}`);
-                            rowCount = index + 1;
-                        });
-
-                        $(document).ready(function() {
-                            // Mendapatkan modal
-                            var modal = $('#myModal');
-
-                            // Mendapatkan gambar modal dan caption
-                            var modalImg = $("#img01");
-                            var captionText = $("#caption");
-
-                            // Ketika button diklik, tampilkan modal dengan gambar
-                            $('.openModal').on('click', function() {
-                                const kwitansi = $(this).data('kwitansi');
-
-                                if (!kwitansi) {
-                                    $(this).text('Deklarasi');
-                                    $(this).css({
-                                        'background-color': '#EAECF4',
-                                        'color': '#888',
-                                        'border-color': '#EAECF4',
-                                        'cursor': 'not-allowed'
-                                    });
-                                } else {
-                                    // Jika data kwitansi ada, lanjutkan dengan membuka modal
-                                    modal.css("display", "block");
-                                    modalImg.attr('src', `<?= base_url() ?>/assets/backend/img/reimbust/kwitansi_sml/${kwitansi}`);
-                                    // captionText.text('Deskripsi gambar Anda di sini'); // Ubah dengan deskripsi gambar
-                                }
-                            });
-
-                            // Ketika tombol close diklik, sembunyikan modal
-                            $('.close').on('click', function() {
-                                modal.css("display", "none");
-                            });
-                        });
-
-                        $(document).ready(function() {
-                            // Cek nilai input dan hapus value serta tambahkan placeholder jika perlu
-                            $('input[id^="jumlah-"]').each(function() {
-                                var $input = $(this);
-                                var value = $input.val();
-
-                                if (value == '0') {
-                                    $input.val(''); // Hapus nilai input
-                                    $input.attr('placeholder', 'Deklarasi'); // Tambahkan placeholder
-                                }
-                            });
-                        });
-                    }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     alert('Error get data from ajax');
@@ -1471,8 +1199,6 @@
 
             // Tampilkan loading
             $('#loading').show();
-
-            // $('.aksi').prop('disabled', true);
 
             $.ajax({
                 url: url,

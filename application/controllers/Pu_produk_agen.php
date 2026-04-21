@@ -9,21 +9,6 @@ class Pu_produk_agen extends CI_Controller
         parent::__construct();
         $this->load->model('backend/M_pu_produk_agen');
         date_default_timezone_set('Asia/Jakarta');
-
-        $allowed_origin = 'https://agen.pengenumroh.com';
-        $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
-
-        if ($origin === $allowed_origin) {
-            header("Access-Control-Allow-Origin: $origin");
-            header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-            header("Access-Control-Allow-Headers: Content-Type, Authorization");
-        }
-
-        // Tangani preflight OPTIONS
-        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-            header("HTTP/1.1 200 OK");
-            exit;
-        }
     }
 
     public function index()
@@ -36,7 +21,7 @@ class Pu_produk_agen extends CI_Controller
 
     function get_list()
     {
-        $status = $this->input->post('statuzs'); // Ambil status dari permintaan POST
+        $status = $this->input->post('status'); // Ambil status dari permintaan POST
         $list = $this->M_pu_produk_agen->get_datatables($status);
         $data = array();
         $no = $_POST['start'];
@@ -252,7 +237,7 @@ class Pu_produk_agen extends CI_Controller
         echo json_encode(array("status" => TRUE));
     }
 
-    public function update_status()
+    public function update_status_agen()
     {
         $id = $this->input->post('id');
         $is_active = $this->input->post('is_active');
@@ -261,20 +246,8 @@ class Pu_produk_agen extends CI_Controller
         echo json_encode(['status' => true, 'message' => 'Status produk berhasil diupdate']);
     }
 
-    public function api_produk_agen()
+    public function api_get_produk()
     {
-        // CORS
-        header("Access-Control-Allow-Origin: *");
-        header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-        header("Access-Control-Allow-Headers: Content-Type, Authorization");
-        header("Content-Type: application/json; charset=UTF-8");
-
-        // Handle preflight
-        if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-            http_response_code(200);
-            exit();
-        }
-
         // Ambil data dari tabel pu_produk_agen
         $this->db->order_by('id', 'desc');
         $produk = $this->db->get('pu_produk_agen')->result();

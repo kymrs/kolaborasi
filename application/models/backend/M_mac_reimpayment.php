@@ -356,7 +356,7 @@ class M_mac_reimpayment extends CI_Model
         if ($detail) {
             foreach ($detail as $rd) {
                 $old_image = $rd['kwitansi'];
-                $file_path = FCPATH . './assets/backend/document/reimbust/kwitansi_mac/' . $old_image;
+                $file_path = FCPATH . './assets/backend/document/reimbust/kwitansi/kwitansi_mac/' . $old_image;
 
                 if (file_exists($file_path)) {
                     unlink($file_path);

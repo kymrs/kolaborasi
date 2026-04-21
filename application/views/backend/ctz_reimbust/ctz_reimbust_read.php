@@ -3,31 +3,10 @@
 
 <head>
     <?php $this->load->view('template/header'); ?>
-    <!-- Include Bootstrap CSS -->
-    <!-- <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"> -->
+    <!-- Style Read Reimbust -->
+    <link href="<?= base_url('assets/backend/css/view-read-reimbust.css') ?>" rel="stylesheet">
     <style>
-        body .container {
-            font-family: Arial, Helvetica, sans-serif;
-            padding: 0;
-            color: #333;
-        }
-
-        .form-container {
-            max-width: 1080px;
-            margin: 15px auto;
-            padding: 25px;
-            border: 1px solid #e0e0e0;
-            border-radius: 10px;
-            background-color: #ffffff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-        }
-
-        .header {
-            text-align: center;
-            display: flex;
-            align-items: center;
-        }
-
+        /* Style logo position */
         .header .logo {
             height: 150px;
             display: flex;
@@ -35,130 +14,6 @@
             width: 260px;
             position: relative;
             left: 20px;
-        }
-
-        .header .logo img {
-            width: 100%;
-        }
-
-        .header h1,
-        .header h2 {
-            font-size: 24px;
-            margin-right: 150px;
-            font-weight: bold;
-        }
-
-        .header .title {
-            width: 100%;
-        }
-
-        /* Field Data */
-        .field-data table tr td:nth-child(1) {
-            padding-right: 42px;
-        }
-
-        .field-data table tr td:nth-child(2) {
-            position: relative;
-            bottom: 1.5px;
-            padding-right: 10px;
-        }
-
-        /* Table Main */
-        .no-prepayment {
-            margin-top: 30px;
-            float: right;
-            margin-right: 200px;
-        }
-
-        .table-main {
-            border: 1px solid #444;
-        }
-
-        .table-main table {
-            width: 100%;
-        }
-
-        .table-main table tr td,
-        .table-main table tr th {
-            border: 1.5px solid #444;
-            padding: 2.5px;
-        }
-
-        /* Table Approve */
-        .table-approve {
-            margin-top: 35px;
-            /* border: 1px solid #444; */
-        }
-
-        .table-approve table {
-            width: 60%;
-        }
-
-        .table-approve table tr td {
-            border: 1.5px solid #444;
-            padding: 2.5px;
-            width: 100px;
-            text-align: center;
-        }
-
-        /* Transaction Field */
-        .kwitansi {
-            background-color: #4268D6;
-            padding: 5px;
-            color: #fff;
-            display: inline-block;
-            font-size: 0.8rem;
-            border-radius: 7px;
-            cursor: pointer;
-            transition: 300ms;
-        }
-
-        .rekening-info {
-            position: relative;
-            bottom: 20px;
-            right: 30px;
-        }
-
-        .kwitansi:hover {
-            scale: 0.95;
-        }
-
-        .clear {
-            clear: both;
-        }
-
-        /* Keterangan Field */
-        .keterangan-field {
-            margin-top: 20px;
-        }
-
-        @media (max-width: 546px) {
-
-            td,
-            th,
-            button,
-            .btn,
-            span {
-                font-size: 75%;
-            }
-
-            .table-main {
-                overflow-x: scroll;
-            }
-
-            .table-approve table {
-                width: 100%;
-            }
-
-            .header h1,
-            .header h2 {
-                font-size: 90%;
-                margin-right: 0;
-            }
-
-            .no-prepayment {
-                margin-right: 80px;
-            }
         }
     </style>
 </head>
@@ -173,6 +28,8 @@
                 <a class="btn btn-warning btn-sm mr-2" id="appBtn" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
             <?php } elseif ($user->app2_name == $app2_name && !in_array($user->app2_status, ['approved', 'rejected']) && $user->app_status == 'approved') { ?>
                 <a class="btn btn-warning btn-sm mr-2" id="appBtn2" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
+            <?php } elseif ($user->app4_name == $app_name && !in_array($user->app_status, ['rejected', 'revised']) && !in_array($user->app2_status, ['rejected', 'revised']) && $user->status != 'approved') { ?>
+                <a class="btn btn-warning btn-sm mr-2" id="appBtn3" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
             <?php } ?>
             <a class="btn btn-secondary btn-sm" onclick="history.back()"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
         </div>
@@ -196,16 +53,6 @@
                         <td>:</td>
                         <td id="nama"></td>
                     </tr>
-                    <!-- <tr>
-                        <td>JABATAN</td>
-                        <td>:</td>
-                        <td id="jabatan"></td>
-                    </tr>
-                    <tr>
-                        <td>DEPARTEMEN</td>
-                        <td>:</td>
-                        <td id="departemen"></td>
-                    </tr> -->
                     <tr>
                         <td>SIFAT PELAPORAN</td>
                         <td>:</td>
@@ -243,43 +90,14 @@
                     </thead>
 
                     <tbody id="input-container">
-                        <!-- <tr>
-                            <td colspan="2">1. Makan</td>
-                            <td style="text-align: center">23-08-2024</td>
-                            <td>Rp. 50.000</td>
-                            <td style="text-align: center">Tes</td>
-                            <td style="text-align: center">Tes</td>
-                        </tr> -->
+                        <!-- Generated Rows -->
                     </tbody>
-                    <!-- <tr>
-                        <td colspan="6" style="font-weight: bold">TOTAL PEMAKAIAN <span style="float: right; margin-right: 10px">Rp. </span></td>
-                    </tr>
-                    <tr>
-                        <td colspan="6" style="font-weight: bold">SISA PREPAYMENT <span style="float: right; margin-right: 10px">Rp. </span></td>
-                    </tr> -->
                 </table>
             </div>
             <div class="table-approve">
-                <table>
-                    <tr>
-                        <td>Yang melakukan</td>
-                        <td>Mengetahui</td>
-                        <td>Menyetujui</td>
-                    </tr>
-                    <tr style="height: 75px">
-                        <td id="statusMelakukan"></td>
-                        <td id="statusMengetahui"></td>
-                        <td id="statusMenyetujui"></td>
-                    </tr>
-                    <tr>
-                        <td id="melakukan"></td>
-                        <td id="mengetahui"></td>
-                        <td id="menyetujui"></td>
-                    </tr>
-                </table>
+                <!-- Generated Approval -->
             </div>
             <div class="keterangan-field" id="keterangan-field">
-                <!-- <span>Keterangan :</span> -->
                 <div id="keterangan">
                     <!-- GENERATE KETERANGAN -->
                 </div>
@@ -347,7 +165,9 @@
                 <div class="modal-body">
                     <form id="paymentForm" action="">
                         <div class="form-group">
-                            <label style="font-size: 107%;"><span style="font-weight: bold">No Rekening</span> <span style="margin-left: 5px;">:</span> <span id="no_rek"></span></label>
+                            <label style="font-size: 107%;"><span style="font-weight: bold">Nama Bank</span> <span style="margin-left: 54px;">:</span> <span id="nama_bank"></span></label> <br>
+                            <label style="font-size: 107%;"><span style="font-weight: bold">No Rekening</span> <span style="margin-left: 44px;">:</span> <span id="no_rek"></span></label> <br>
+                            <label style="font-size: 107%;"><span style="font-weight: bold">Atas Nama</span> <span style="margin-left: 58px;">:</span> <span id="nama_rek"></span></label> <br>
                         </div>
                         <div class="form-group">
                             <div style="display: flex; justify-content: space-between">
@@ -359,6 +179,19 @@
                                 <option value="unpaid">Unpaid</option>
                             </select>
                             <input type="hidden" id="hidden_id" value="<?php echo $id ?>" name="id">
+                        </div>
+                        <div class="form-group">
+                            <div style="display: flex; justify-content: space-between">
+                                <label for="payment_status">Tanggal Pembayaran <span class="text-danger">*</span></label>
+                            </div>
+                            <input type="text" class="form-control" name="tgl_pembayaran" id="tgl_pembayaran" placeholder="DD-MM-YYYY" autocomplete="off" required>
+                        </div>
+                        <div class="form-group">
+                            <div style="display: flex; justify-content: space-between">
+                                <label for="attachment">Attachment</label>
+                            </div>
+                            <input type="file" class="form-control" id="attachment" name="attachment">
+                            <span style="font-size: 12px; margin-left: 5px;">Max Size : 3 MB | Format : JPG, PDF, PNG, JPEG</span>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">
@@ -379,15 +212,11 @@
     <div id="myModal" class="kwitansi-modal">
         <span class="close">&times;</span>
         <img class="modal-content-kwitansi" id="img01">
-        <!-- <div id="caption"></div> -->
     </div>
 
     <!-- Include jQuery and Bootstrap JS -->
     <?php $this->load->view('template/footer'); ?>
     <?php $this->load->view('template/script'); ?>
-    <!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> -->
 
     <script>
         $(document).ready(function() {
@@ -421,7 +250,6 @@
                             keterangan = data['master']['app_keterangan'];
                             $('#app_status').val(status);
                             $('#app_keterangan').val(keterangan);
-                            // $('#note_id').append(`<p>* ${keterangan}</p>`);
                         }
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
@@ -450,13 +278,63 @@
                             keterangan2 = data['master']['app2_keterangan'];
                             $('#app2_status').val(status2);
                             $('#app2_keterangan').val(keterangan2);
-                            // $('#note_id').append(`<p>* ${keterangan2}</p>`);
                         }
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
                         alert('Error get data from ajax');
                     }
                 });
+            });
+
+            $('#appBtn3').click(function() {
+                $('#app_keterangan').attr('name', 'app4_keterangan').attr('id', 'app4_keterangan');
+                $('#app_status').attr('name', 'app4_status').attr('id', 'app4_status');
+                $('#approvalForm').attr('action', '<?= site_url('ctz_reimbust/approve3') ?>');
+
+                $.ajax({
+                    url: "<?php echo site_url('ctz_reimbust/edit_data') ?>/" + id,
+                    type: "GET",
+                    dataType: "JSON",
+                    success: function(data) {
+                        var nama4, date2, status2, keterangan2;
+                        if (data['master']['app4_status'] == 'waiting') {
+                            $('#app4_status').val();
+                            $('#app4_keterangan').val();
+                        } else {
+                            nama4 = data['master']['app4_name'];
+                            status2 = data['master']['app4_status'];
+                            keterangan2 = data['master']['app4_keterangan'];
+                            $('#app4_status').val(status2);
+                            $('#app2_keterangan').val(keterangan2);
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert('Error get data from ajax');
+                    }
+                });
+            });
+
+            // Inisialisasi: sembunyikan field payment date dan attachment saat awal
+            $('#tgl_pembayaran').closest('.form-group').hide();
+            $('#attachment').closest('.form-group').hide();
+
+            $('#attachment').on('change', function () {
+                const file = this.files[0];
+
+                if (file) {
+                    const maxSize = 3 * 1024 * 1024; // 3MB dalam byte
+
+                    if (file.size > maxSize) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'File Terlalu Besar',
+                            text: 'Ukuran file maksimal 3 MB!'
+                        });
+
+                        // reset input file
+                        $(this).val('');
+                    }
+                }
             });
 
             $('#paymentBtn').click(function() {
@@ -468,11 +346,27 @@
                     dataType: "JSON",
                     success: function(data) {
                         $('#payment_status').val(data['master']['payment_status']);
+                        
+                        // Show/hide payment fields berdasarkan status
+                        if (data['master']['payment_status'] === 'paid') {
+                            $('#tgl_pembayaran').closest('.form-group').show();
+                            $('#attachment').closest('.form-group').show();
+                        } else {
+                            $('#tgl_pembayaran').closest('.form-group').hide();
+                            $('#attachment').closest('.form-group').hide();
+                        }
+                        
+                        // Trigger change event untuk update submit button state
+                        $('#payment_status').trigger('change');
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
                         alert('Error get data from ajax');
                     }
                 });
+            });
+
+            $('#tgl_pembayaran').datepicker({
+                dateFormat: 'dd-mm-yy',
             });
 
             // Handle the approval button click event
@@ -501,7 +395,19 @@
                     $('#tujuan').html(data['master']['tujuan']);
                     $('#kode_reimbust').html(data['master']['kode_prepayment'] ? data['master']['kode_prepayment'] : '-');
                     $('#jumlah_prepayment').html(data['master']['jumlah_prepayment'].replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
-                    $('#no_rek').html(data['master']['no_rek'] ? data['master']['no_rek'] : '-');
+                    const [nama_rek, nama_bank, no_rek] = data.master.no_rek.split("-");
+                    $('#nama_rek').html(nama_rek);
+                    $('#nama_bank').html(nama_bank);
+                    $('#no_rek').html(no_rek);
+
+                    $tgl_pembayaran = data['master']['tgl_pembayaran'];
+
+                    if ($tgl_pembayaran !== null && $tgl_pembayaran !== '' && $tgl_pembayaran !== '0000-00-00 00:00:00') {
+                        $('#tgl_pembayaran').val(data['master']['tgl_pembayaran']);
+                    } else {
+                        $('#tgl_pembayaran').val('');
+                    }
+
                     if ((data['master']['app_keterangan'] !== null && data['master']['app_keterangan'] !== '') ||
                         (data['master']['app2_keterangan'] !== null && data['master']['app2_keterangan'] !== '')) {
                         $('#keterangan').append(`<span>Keterangan :</span>`);
@@ -511,6 +417,9 @@
                     }
                     if (data['master']['app2_keterangan'] != null && data['master']['app2_keterangan'] != '') {
                         $('#keterangan').append(`<span class="form-control-plaintext">*(${data['master']['app2_name']}) ${data['master']['app2_keterangan']}</span>`);
+                    }
+                    if (data['master']['app4_keterangan'] != null && data['master']['app4_keterangan'] != '') {
+                        $('#keterangan').append(`<span class="form-control-plaintext">*(${data['master']['app4_name']}) ${data['master']['app4_keterangan']}</span>`);
                     }
 
                     // DATA APPROVAL REIMBUST
@@ -562,6 +471,54 @@
                         date2 = moment(data['master']['app2_date']).format('D-MM-YYYY HH:mm:ss');
                     }
 
+                    // Memeriksa apakah data yang memeriksa ada
+                    if (data['master']['app4_status'] != null) {
+                        nama = data['master']['app4_name'];
+                        status = data['master']['app4_status'];
+                        keterangan = data['master']['app4_keterangan'];
+                        url = "<?php echo site_url('ctz_reimbust/approve') ?>";
+                        $('#note_id').append(`<p>* ${keterangan}</p>`);
+                    }
+                    if (data['master']['app4_date'] == null) {
+                        date4 = '';
+                    }
+                    if (data['master']['app4_date'] != null) {
+                        date4 = moment(data['master']['app4_date']).format('D-MM-YYYY HH:mm:ss');
+                    }
+
+                    // Only show Memeriksa column if app4_name is not null
+                    let app4Name = data['master']['app4_name'];
+                    let showMemeriksa = app4Name && app4Name.trim() !== '' && app4Name.toLowerCase() !== 'null';
+
+                    let tableHeader = `<tr>
+                                <td>Yang melakukan</td>`;
+                    if (showMemeriksa) tableHeader += `<td>Memeriksa</td>`;
+                    tableHeader += `<td>Mengetahui</td>
+                                <td>Menyetujui</td>
+                            </tr>`;
+
+                    let tableStatus = `<tr style="height: 75px">
+                                <td id="statusMelakukan"><div class="signature-text text-center">CREATED<br><span>${data['master']['created_at']}</span></div></td>`;
+                    if (showMemeriksa) tableStatus += `<td id="statusMemeriksa"><div class="signature-text text-center">${data['master']['app4_status'] ? data['master']['app4_status'].toUpperCase() : ''}<br><span>${date4}</span></div></td>`;
+                    tableStatus += `<td id="statusMengetahui"><div class="signature-text text-center">${data['master']['app_status'] ? data['master']['app_status'].toUpperCase() : ''}<br><span>${date}</span></div></td>
+                                <td id="statusMenyetujui"><div class="signature-text text-center">${data['master']['app2_status'] ? data['master']['app2_status'].toUpperCase() : ''}<br><span>${date2}</span></div></td>
+                            </tr>`;
+
+                    let tableName = `<tr>
+                                <td id="melakukan"><div class="signature-text text-center">${data['nama']}</div></td>`;
+                    if (showMemeriksa) tableName += `<td id="memeriksa"><div class="signature-text text-center">${data['master']['app4_name']}</div></td>`;
+                    tableName += `<td id="mengetahui"><div class="signature-text text-center">${data['master']['app_name']}</div></td>
+                                <td id="menyetujui"><div class="signature-text text-center">${data['master']['app2_name']}</div></td>
+                            </tr>`;
+
+                    $('.table-approve').append(`
+                        <table>
+                            ${tableHeader}
+                            ${tableStatus}
+                            ${tableName}
+                        </table>
+                    `);
+
                     // Keterangan
                     if (data['master']['app_keterangan'] || data['master']['app2_keterangan'] != null) {
                         $('#keterangan-field').css('display', 'inline-block');
@@ -606,7 +563,7 @@
                         if (!kwitansi) return;
 
                         const ext = (kwitansi.split('.').pop() || '').toLowerCase();
-                        const baseUrl = '<?= base_url() ?>assets/backend/document/reimbust/kwitansi_ctz/';
+                        const baseUrl = '<?= base_url() ?>assets/backend/document/reimbust/kwitansi/kwitansi_ctz/';
                         const fileUrl = baseUrl + kwitansi;
 
                         // Jika PDF -> preview
@@ -649,12 +606,26 @@
 
                         // Event listener untuk elemen select
                         $('#payment_status').change(function() {
-                            if ($(this).val() === null || $(this).val() === 'Choose status...') {
+                            var status = $(this).val();
+                            
+                            if (status === null || status === 'Choose status...') {
                                 // Nonaktifkan tombol submit jika tidak ada status yang dipilih
                                 $('#paymentForm button[type="submit"]').prop('disabled', true);
+                                // Sembunyikan payment fields
+                                $('#tgl_pembayaran').closest('.form-group').hide();
+                                $('#attachment').closest('.form-group').hide();
                             } else {
                                 // Aktifkan tombol submit jika status telah dipilih
                                 $('#paymentForm button[type="submit"]').prop('disabled', false).css('cursor', 'pointer');
+                                
+                                // Show/hide payment fields berdasarkan status
+                                if (status === 'paid') {
+                                    $('#tgl_pembayaran').closest('.form-group').show();
+                                    $('#attachment').closest('.form-group').show();
+                                } else if (status === 'unpaid') {
+                                    $('#tgl_pembayaran').closest('.form-group').hide();
+                                    $('#attachment').closest('.form-group').hide();
+                                }
                             }
                         });
                     });
@@ -707,18 +678,12 @@
 
                         // Ubah teks menjadi "detail"
                         $(this).text('Detail');
-
-                        // Ubah background menjadi merah (opsional)
-                        // $(this).css('background-color', 'red');
                     });
 
                     $(document).on('mouseleave', '[data-deklarasi]', function() {
                         // Kembalikan teks ke nilai aslinya
                         var originalText = $(this).data('original-text');
                         $(this).text(originalText);
-
-                        // Kembalikan background ke default (opsional)
-                        // $(this).css('background-color', '');
                     });
 
 
@@ -734,10 +699,11 @@
                                     `;
                     $('#input-container').append(ttl_row);
 
-                    $('#melakukan').text(`${data['nama']}`);
+                    $('#memeriksa').text(`${data['master']['app4_name']}`);
                     $('#mengetahui').text(`${data['master']['app_name']}`);
                     $('#menyetujui').text(`${data['master']['app2_name']}`);
                     $('#statusMelakukan').html('CREATED<br>' + `${moment(data['master']['created_at']).format('D-MM-YYYY HH:mm:ss')}`);
+                    $('#statusMemeriksa').html(`<div>${data['master']['app4_status'].toUpperCase()}<br><span>${date4}</span></div></div>`);
                     $('#statusMengetahui').html(`<div>${data['master']['app_status'].toUpperCase()}<br><span>${date}</span></div></div>`);
                     $('#statusMenyetujui').html(`<div>${data['master']['app2_status'].toUpperCase()}<br><span>${date2}</span></div></div>`);
                 },
@@ -834,16 +800,21 @@
             $('#paymentForm').submit(function(e) {
                 e.preventDefault();
                 var url = $(this).attr('action');
+                
+                // Gunakan FormData untuk support file upload
+                var formData = new FormData(this);
+                
                 // MENGINPUT PAYMENT
                 $.ajax({
-                    url: url, // Mengambil action dari form
+                    url: url,
                     type: "POST",
-                    data: $(this).serialize(), // Mengambil semua data dari form
+                    data: formData,
+                    contentType: false,
+                    processData: false,
                     dataType: "JSON",
                     success: function(data) {
                         console.log(data);
-                        if (data.status) //if success close modal and reload ajax table
-                        {
+                        if (data.status) {
                             Swal.fire({
                                 position: 'center',
                                 icon: 'success',
@@ -851,12 +822,26 @@
                                 showConfirmButton: false,
                                 timer: 1500
                             }).then((result) => {
-                                window.history.back(); // Kembali ke halaman sebelumnya
+                                window.history.back();
                             })
+                        } else {
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'error',
+                                title: 'Error',
+                                text: data.message || 'Error saving data',
+                                showConfirmButton: true
+                            });
                         }
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
-                        alert('Error adding / update data');
+                        Swal.fire({
+                            position: 'center',
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Error adding / update data',
+                            showConfirmButton: true
+                        });
                     }
                 });
             });

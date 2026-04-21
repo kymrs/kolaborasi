@@ -61,27 +61,72 @@ class M_ctz_prepayment extends CI_Model
             if ($_POST['status'] == 'on-process') {
                 // Conditions for 'on-process' status
                 if ($alias != "eko") {
-                    $this->db->where('app_status', 'waiting')
-                        ->where('app2_status', 'waiting')
-                        ->or_where('ctz_prepayment.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
-                        ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
+                    $this->db->group_start();
+
+                    $this->db->where('ctz_prepayment.id_user', $id_user_logged_in);
+                    $this->db->where('status', 'on-process');
+
+                    // kondisi app4_name = current user
+                    $this->db->or_where('app4_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ') AND app4_status = "waiting" AND status != "rejected" AND status != "revised"', NULL, FALSE);
+
+                    // kondisi app_name = current user, dan app_status = waiting, serta (app4_status = approved OR app4_name IS NULL)
+                    $this->db->or_group_start();
+                    $this->db->where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ')', NULL, FALSE);
+                    $this->db->where('app_status', 'waiting');
+                    $this->db->where('status !=', 'rejected');
+                    $this->db->where('status !=', 'revised');
+                    $this->db->group_start();
+                    $this->db->where('app4_status', 'approved');
+                    $this->db->or_where('app4_name IS NULL', NULL, FALSE);
+                    $this->db->group_end();
+                    $this->db->group_end();
+
+                    // kondisi app2_name = current user, dan app_status approved, app2_status waiting
+                    $this->db->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ') AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised"', NULL, FALSE);
+
+                    $this->db->group_end();
                 } else {
                     $this->db->where('status = "on-process"');
                 }
             } elseif ($_POST['status'] == 'approved') {
                 // Conditions for 'approved' status
-                if ($alias != "eko") {
-                    $this->db->where('app_status', $_POST['status'])
-                        ->where('app2_status', 'approved')
-                        ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status != "rejected")', NULL, FALSE);
+                if ($alias != "approved") {
+                    $this->db->where('app2_status', 'approved')
+                        ->or_where('app4_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app4_status = "approved" AND app2_status != "rejected")', NULL, FALSE)
+                        ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status != "rejected")', NULL, FALSE)
+                        ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "approved" AND app2_status != "rejected")', NULL, FALSE);
                 } else {
                     $this->db->where('status = "approved"');
                 }
             } elseif ($_POST['status'] == 'revised') {
                 if ($alias != "eko") {
-                    $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
-                        ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "revised")', NULL, FALSE)
-                        ->or_where('ctz_prepayment.id_user =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
+                    $this->db->group_start();
+
+                    $this->db->or_where(
+                        'app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ') AND app2_status = "revised"',
+                        NULL,
+                        FALSE
+                    );
+
+                    $this->db->or_where(
+                        'app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ') AND app_status = "revised"',
+                        NULL,
+                        FALSE
+                    );
+
+                    $this->db->or_where(
+                        'app4_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ') AND app4_status = "revised"',
+                        NULL,
+                        FALSE
+                    );
+
+                    $this->db->or_where(
+                        'ctz_prepayment.id_user = ' . $id_user_logged_in . ' AND (app4_status = "revised" OR app_status = "revised" OR app2_status = "revised")',
+                        NULL,
+                        FALSE
+                    );
+
+                    $this->db->group_end();
                 } else {
                     $this->db->where('status = "revised"');
                 }
@@ -97,12 +142,16 @@ class M_ctz_prepayment extends CI_Model
             if ($_POST['tab'] == 'personal') {
                 $this->db->where('ctz_prepayment.id_user', $this->session->userdata('id_user'));
             } elseif ($_POST['tab'] == 'employee') {
-                $this->db->group_start()
-                    ->where('ctz_prepayment.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
-                    ->where('ctz_prepayment.id_user !=', $this->session->userdata('id_user'))
-                    ->or_where('ctz_prepayment.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && ctz_prepayment.app_status = 'approved'", FALSE)
-                    ->where('ctz_prepayment.id_user !=', $this->session->userdata('id_user'))
-                    ->group_end();
+                if ($alias != "eko") {
+                    $this->db->group_start()
+                        ->where('ctz_prepayment.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                        ->where('ctz_prepayment.id_user !=', $this->session->userdata('id_user'))
+                        ->or_where('ctz_prepayment.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && ctz_prepayment.app_status = 'approved'", FALSE)
+                        ->where('ctz_prepayment.id_user !=', $this->session->userdata('id_user'))
+                        ->or_where('ctz_prepayment.app4_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                        ->where('ctz_prepayment.id_user !=', $this->session->userdata('id_user'))
+                        ->group_end();
+                }
             }
         }
 
@@ -136,29 +185,87 @@ class M_ctz_prepayment extends CI_Model
         $this->db->select('ctz_prepayment.*, tbl_data_user.name'); // Memilih kolom dari kedua tabel
         $this->db->from($this->table);
         $this->db->join('tbl_data_user', 'tbl_data_user.id_user = ctz_prepayment.id_user', 'left'); // JOIN dengan tabel tbl_user
-        // Tambahkan pemfilteran berdasarkan status
+
         // Tambahkan pemfilteran berdasarkan status
         // Tambahkan kondisi jika id_user login sesuai dengan app2_name
         $id_user_logged_in = $this->session->userdata('id_user'); // Mengambil id_user dari sesi pengguna yang login
+        $alias = $this->session->userdata('username');
 
         if (!empty($_POST['status'])) {
             $this->db->group_start(); // Start grouping conditions
 
             if ($_POST['status'] == 'on-process') {
                 // Conditions for 'on-process' status
-                $this->db->where('app_status', 'waiting')
-                    ->where('app2_status', 'waiting')
-                    ->or_where('ctz_prepayment.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
-                    ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
+                if ($alias != "eko") {
+                    $this->db->group_start();
+
+                    $this->db->where('ctz_prepayment.id_user', $id_user_logged_in);
+                    $this->db->where('status', 'on-process');
+
+                    // kondisi app4_name = current user
+                    $this->db->or_where('app4_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ') AND app4_status = "waiting" AND status != "rejected" AND status != "revised"', NULL, FALSE);
+
+                    // kondisi app_name = current user, dan app_status = waiting, serta (app4_status = approved OR app4_name IS NULL)
+                    $this->db->or_group_start();
+                    $this->db->where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ')', NULL, FALSE);
+                    $this->db->where('app_status', 'waiting');
+                    $this->db->where('status !=', 'rejected');
+                    $this->db->where('status !=', 'revised');
+                    $this->db->group_start();
+                    $this->db->where('app4_status', 'approved');
+                    $this->db->or_where('app4_name IS NULL', NULL, FALSE);
+                    $this->db->group_end();
+                    $this->db->group_end();
+
+                    // kondisi app2_name = current user, dan app_status approved, app2_status waiting
+                    $this->db->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ') AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised"', NULL, FALSE);
+
+                    $this->db->group_end();
+                } else {
+                    $this->db->where('status = "on-process"');
+                }
             } elseif ($_POST['status'] == 'approved') {
                 // Conditions for 'approved' status
-                $this->db->where('app_status', $_POST['status'])
-                    ->where('app2_status', 'approved')
-                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status != "rejected")', NULL, FALSE);
+                if ($alias != "approved") {
+                    $this->db->where('app2_status', 'approved')
+                        ->or_where('app4_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app4_status = "approved" AND app2_status != "rejected")', NULL, FALSE)
+                        ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status != "rejected")', NULL, FALSE)
+                        ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "approved" AND app2_status != "rejected")', NULL, FALSE);
+                } else {
+                    $this->db->where('status = "approved"');
+                }
             } elseif ($_POST['status'] == 'revised') {
-                $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
-                    ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "revised")', NULL, FALSE)
-                    ->or_where('ctz_prepayment.id_user =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
+                if ($alias != "eko") {
+                    $this->db->group_start();
+
+                    $this->db->or_where(
+                        'app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ') AND app2_status = "revised"',
+                        NULL,
+                        FALSE
+                    );
+
+                    $this->db->or_where(
+                        'app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ') AND app_status = "revised"',
+                        NULL,
+                        FALSE
+                    );
+
+                    $this->db->or_where(
+                        'app4_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ') AND app4_status = "revised"',
+                        NULL,
+                        FALSE
+                    );
+
+                    $this->db->or_where(
+                        'ctz_prepayment.id_user = ' . $id_user_logged_in . ' AND (app4_status = "revised" OR app_status = "revised" OR app2_status = "revised")',
+                        NULL,
+                        FALSE
+                    );
+
+                    $this->db->group_end();
+                } else {
+                    $this->db->where('status = "revised"');
+                }
             } elseif ($_POST['status'] == 'rejected') {
                 $this->db->where('status', $_POST['status']);
             }
@@ -175,6 +282,8 @@ class M_ctz_prepayment extends CI_Model
                     ->where('ctz_prepayment.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
                     ->where('ctz_prepayment.id_user !=', $this->session->userdata('id_user'))
                     ->or_where('ctz_prepayment.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && ctz_prepayment.app_status = 'approved'", FALSE)
+                    ->where('ctz_prepayment.id_user !=', $this->session->userdata('id_user'))
+                    ->or_where('ctz_prepayment.app4_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
                     ->where('ctz_prepayment.id_user !=', $this->session->userdata('id_user'))
                     ->group_end();
             }
@@ -210,7 +319,7 @@ class M_ctz_prepayment extends CI_Model
     // UNTUK QUERY MENENTUKAN SIAPA YANG MELAKUKAN APPROVAL
     public function approval($id)
     {
-        $this->db->select('app_id, app2_id');
+        $this->db->select('app_id, app2_id, app4_id');
         $this->db->from('tbl_data_user');
         $this->db->where('id_user', $id);
         $query = $this->db->get();

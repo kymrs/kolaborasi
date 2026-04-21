@@ -23,7 +23,6 @@
                     <div class="d-flex align-items-center">
                         <label for="appFilter" class="mr-2 mb-0">Filter:</label>
                         <select id="appFilter" name="appFilter" class="form-control form-control-sm">
-                            <!-- <option value="" selected>Show all....</option> -->
                             <option value="on-process" selected>On-Process</option>
                             <option value="approved">Approved</option>
                             <option value="revised">Revised</option>
@@ -57,8 +56,6 @@
                                 <th>Status Pembayaran</th>
                                 <th>Kode Prepayment</th>
                                 <th>Nama</th>
-                                <!-- <th>Divisi</th>
-                                <th>Jabatan</th> -->
                                 <th>Tanggal Pengajuan</th>
                                 <th>Prepayment</th>
                                 <th>Total Nominal</th>
@@ -74,8 +71,6 @@
                                 <th>Status Pembayaran</th>
                                 <th>Kode Prepayment</th>
                                 <th>Nama</th>
-                                <!-- <th>Divisi</th>
-                                <th>Jabatan</th> -->
                                 <th>Tanggal Pengajuan</th>
                                 <th>Prepayment</th>
                                 <th>Total Nominal</th>
@@ -89,6 +84,39 @@
     </div>
 </div>
 
+<!-- Modal Payment Detail -->
+<div class="modal fade" id="paymentDetailModal" tabindex="-1" aria-labelledby="paymentDetailLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="paymentDetailLabel">
+                     Detail Pembayaran
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label><strong>Tanggal :</strong></label>
+                    <p id="modalTanggal">-</p>
+                </div>
+                <div class="form-group">
+                    <label><strong>Attachment :</strong></label>
+                    <div id="modalAttachment">
+                        <p>-</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    <i class="fas fa-times"></i> Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <?php $this->load->view('template/footer'); ?>
 <?php $this->load->view('template/script'); ?>
 
@@ -97,7 +125,7 @@
 
     // METHOD POST MENAMPILKAN DATA KE DATA TABLE
     $(document).ready(function() {
-
+        moment.locale('id');
 
         // Set active tab on page load
         const activeTab = sessionStorage.getItem('activeTab');
@@ -105,12 +133,9 @@
         // Cek apakah tab approval ada
         const approvalTabExists = $('#employeeTab').length > 0;
 
-        // console.log(activeTab)
-
         if (activeTab && (activeTab == 'employee' || approvalTabExists)) {
             $('.nav-tabs .nav-link').removeClass('active');
             $(`.nav-tabs .nav-link[data-tab="${activeTab}"]`).addClass('active');
-            // console.log('labubu');
             // You can load content for the active tab here if needed
         } else if (activeTab == "admin") {
             $('.nav-tabs .nav-link').removeClass('active');
@@ -119,7 +144,6 @@
             // Default to the "User" tab if session storage is empty or approval tab doesn't exist
             $('.nav-tabs .nav-link').removeClass('active');
             $('#personalTab').addClass('active');
-            // console.log('ladada');
         }
 
         $('.collapse-item').on('click', function(e) {
@@ -156,9 +180,6 @@
                     d.tab = $('.nav-tabs .nav-link.active').data('tab'); // Tambahkan parameter tab ke permintaan server
                 }
             },
-            // "language": {
-            //     "infoFiltered": ""
-            // },
             "columnDefs": [{
                     "targets": [2, 3, 5, 7],
                     "className": 'dt-head-nowrap'
@@ -178,16 +199,6 @@
             localStorage.setItem('appFilterStatus', $(this).val());
             table.ajax.reload(); // Muat ulang DataTables dengan filter baru
         });
-
-        // Event listener untuk nav tabs
-        // $('.nav-tabs a').on('click', function(e) {
-        //     e.preventDefault();
-        //     $('.nav-tabs a').removeClass('active'); // Hapus kelas aktif dari semua tab
-        //     $(this).addClass('active'); // Tambahkan kelas aktif ke tab yang diklik
-
-        //     table.ajax.reload(); // Muat ulang data di DataTable saat tab berubah
-        // });
-
     });
 
     // MENGHAPUS DATA MENGGUNAKAN METHODE POST JQUERY
@@ -224,4 +235,66 @@
             }
         })
     };
+
+    // Handle Payment Detail Modal
+    $('#paymentDetailModal').on('show.bs.modal', function(e) {
+        var paymentBtn = $(e.relatedTarget);
+        var id = paymentBtn.data('id');
+        var baseUrl = "<?= base_url() ?>";
+        var attachmentPath = baseUrl + "assets/backend/document/prepayment/attachment/mac_attachment/";
+        
+        $.ajax({
+            url: "<?= site_url('mac_prepayment/edit_data') ?>/" + id,
+            type: "GET",
+            dataType: "JSON",
+            success: function(data) {
+                var tglPembayaran = data.master.tgl_pembayaran;
+                var attachment = data.master.attachment;
+                
+                // Format tanggal pembayaran terpisah
+                if (tglPembayaran) {
+                    var momentDate = moment(tglPembayaran);
+                    var tanggalFormatted = momentDate.format('D MMMM YYYY');
+                    
+                    $('#modalTanggal').html(tanggalFormatted);
+                } else {
+                    $('#modalTanggal').html('-');
+                    $('#modalWaktu').html('-');
+                }
+                
+                // Handle attachment
+                if (attachment) {
+                    var fileExtension = attachment.split('.').pop().toLowerCase();
+                    var attachmentHtml = '';
+                    var fullPath = attachmentPath + attachment;
+                    
+                    if (fileExtension === 'png' || fileExtension === 'jpg' || fileExtension === 'jpeg') {
+                        // Tampilkan image preview
+                        attachmentHtml = '<a href="' + fullPath + '" download title="Download Image"><img src="' + fullPath + '" alt="Attachment" class="img-fluid" style="max-width: 400px; border: 1px solid #ddd; padding: 5px; border-radius: 5px;"></a>';
+                    } else if (fileExtension === 'pdf') {
+                        // Tampilkan tombol preview untuk PDF
+                        attachmentHtml = '<button class="btn btn-primary btn-sm" onclick="window.open(\'' + fullPath + '\', \'_blank\')">';
+                        attachmentHtml += '<i class="fas fa-file-pdf"></i> Preview PDF';
+                        attachmentHtml += '</button>';
+                    } else {
+                        // Untuk tipe file lain
+                        attachmentHtml = '<button class="btn btn-primary btn-sm" onclick="window.open(\'' + fullPath + '\', \'_blank\')">';
+                        attachmentHtml += '<i class="fas fa-download"></i> Download File';
+                        attachmentHtml += '</button>';
+                    }
+                    
+                    $('#modalAttachment').html(attachmentHtml);
+                } else {
+                    $('#modalAttachment').html('<p>-</p>');
+                }
+            },
+            error: function() {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Gagal mengambil data pembayaran'
+                });
+            }
+        });
+    });
 </script>

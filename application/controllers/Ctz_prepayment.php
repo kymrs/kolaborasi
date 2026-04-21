@@ -30,10 +30,6 @@ class Ctz_prepayment extends CI_Controller
         );
         $pecahkan = explode('-', $tanggal);
 
-        // variabel pecahkan 0 = tanggal
-        // variabel pecahkan 1 = bulan
-        // variabel pecahkan 2 = tahun
-
         return $pecahkan[2] . ' ' . $bulan[(int)$pecahkan[1]] . ' ' . $pecahkan[0];
     }
 
@@ -54,6 +50,7 @@ class Ctz_prepayment extends CI_Controller
             ->from('ctz_prepayment')
             ->where('app_name', $name)
             ->or_where('app2_name', $name)
+            ->or_where('app4_name', $name)
             ->get()
             ->row('total_approval');
         $this->load->view('backend/home', $data);
@@ -105,12 +102,13 @@ class Ctz_prepayment extends CI_Controller
             //MENENSTUKAN SATTSU PROGRESS PENGAJUAN PERMINTAAN
             if ($field->app_status == 'approved' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
                 $status = $field->status . ' (' . $field->app2_name . ')';
-            } elseif ($field->app_status == 'waiting' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
+            } elseif ($field->app4_status == 'approved' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
                 $status = $field->status . ' (' . $field->app_name . ')';
+            } elseif ($field->app4_status == 'waiting' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
+                $status = $field->status . ' (' . $field->app4_name . ')';
             } else {
                 $status = $field->status;
             }
-
 
             $formatted_nominal = number_format($field->total_nominal, 0, ',', '.');
             $no++;
@@ -118,18 +116,15 @@ class Ctz_prepayment extends CI_Controller
             $row[] = $no;
             $row[] = $action;
             if ($field->payment_status == 'paid') {
-                $row[] = '<div class="text-center"><i class="fas fa-check" style="color: green;"></i></div>'; // Ikon checklist hijau di tengah
+                $row[] = '<div class="text-center"><button class="btn btn-primary btn-circle btn-sm" data-toggle="modal" data-target="#paymentDetailModal" data-id="' . $field->id . '" title="Detail Pembayaran"><i class="fas fa-check" style="color: #1cc88a;"></i></button></div>';
             } else if ($field->payment_status == 'unpaid') {
-                $row[] = '<div class="text-center"><i class="fas fa-times" style="color: red;"></i></div>'; // Ikon unchecklist merah di tengah
+                $row[] = '<div class="text-center"><i class="fas fa-times" style="color: red;"></i></div>';
             }
             $row[] = strtoupper($field->kode_prepayment);
             $row[] = $field->name;
-            // $row[] = strtoupper($field->divisi);
-            // $row[] = strtoupper($field->jabatan);
             $row[] = $this->tgl_indo(date("Y-m-j", strtotime($field->tgl_prepayment)));
             $row[] = $field->prepayment;
             $row[] = $formatted_nominal;
-            // $row[] = $field->tujuan;
             $row[] = $status;
 
             $data[] = $row;
@@ -254,8 +249,8 @@ class Ctz_prepayment extends CI_Controller
             ->row();
 
         $valid = true;
-        $confirm = $this->db->select('app_id, app2_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
-        if (!empty($confirm) && $confirm->app_id != null) {
+        $confirm = $this->db->select('app_id, app2_id, app4_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
+        if (!empty($confirm) && isset($confirm->app_id, $confirm->app2_id, $confirm->app4_id)) {
             $app = $confirm;
         } else {
             echo json_encode(array("status" => FALSE, "error" => "Approval Belum Ditentukan, Mohon untuk menghubungi admin."));
@@ -301,6 +296,14 @@ class Ctz_prepayment extends CI_Controller
                 ->row('name'),
             'created_at' => date('Y-m-d H:i:s')
         );
+
+        if ($app->app4_id != null) {
+            $data['app4_name'] = $this->db->select('name')
+                ->from('tbl_data_user')
+                ->where('id_user', $app->app4_id)
+                ->get()
+                ->row('name');
+        }
 
         if ($valid) {
             $inserted = $this->M_ctz_prepayment->save($data);
@@ -348,6 +351,9 @@ class Ctz_prepayment extends CI_Controller
             'app2_status' => 'waiting',
             'app2_date' => null,
             'app2_keterangan' => null,
+            'app4_status' => 'waiting',
+            'app4_date' => null,
+            'app4_keterangan' => null,
             'status' => 'on-process'
         );
         $this->db->where('id', $this->input->post('id'));
@@ -444,6 +450,31 @@ class Ctz_prepayment extends CI_Controller
         echo json_encode(array("status" => TRUE));
     }
 
+    //APPROVE DATA
+    public function approve3()
+    {
+        $data = array(
+            'app4_keterangan' => $this->input->post('app4_keterangan'),
+            'app4_status' => $this->input->post('app4_status'),
+            'app4_date' => date('Y-m-d H:i:s'),
+        );
+
+        // UPDATE STATUS DEKLARASI
+        if ($this->input->post('app4_status') === 'revised') {
+            $data['status'] = 'revised';
+        } elseif ($this->input->post('app4_status') === 'approved') {
+            $data['status'] = 'on-process';
+        } elseif ($this->input->post('app4_status') === 'rejected') {
+            $data['status'] = 'rejected';
+        }
+
+        //UPDATE APPROVAL PERTAMA
+        $this->db->where('id', $this->input->post('hidden_id'));
+        $this->db->update('ctz_prepayment', $data);
+
+        echo json_encode(array("status" => TRUE));
+    }
+
     public function generate_pdf($id)
     {
         // Load FPDF library
@@ -494,11 +525,7 @@ class Ctz_prepayment extends CI_Controller
 
         $pdf->Ln(17);
         $pdf->SetFont('Poppins-Regular', '', 12);
-        // $pdf->Cell(30, 10, 'Divisi', 0, 0);
-        // $pdf->Cell(5, 10, ':', 0, 0);
-        // $pdf->Cell(50, 10, $data['master']->divisi, 0, 1);
 
-        // $pdf->SetX(46); // Tetap di posisi yang sama untuk elemen lainnya
         $pdf->Cell(30, 10, 'Prepayment', 0, 0);
         $pdf->Cell(5, 10, ':', 0, 0);
         $pdf->Cell(50, 10, $data['master']->prepayment, 0, 1);
@@ -518,10 +545,6 @@ class Ctz_prepayment extends CI_Controller
         $pdf->Cell(30, 10, 'Nama', 0, 0);
         $pdf->Cell(5, 10, ':', 0, 0);
         $pdf->Cell(50, 10, $data['user'], 0, 1);
-
-        // $pdf->Cell(30, 10, 'Jabatan', 0, 0);
-        // $pdf->Cell(5, 10, ':', 0, 0);
-        // $pdf->Cell(50, 10, $data['master']->jabatan, 0, 1);
 
         $pdf->Cell(60, 10, 'Dengan ini bermaksud mengajukan prepayment untuk :', 0, 1);
 
@@ -592,40 +615,46 @@ class Ctz_prepayment extends CI_Controller
         $pdf->SetFont('Poppins-Bold', '', 12);
 
         // Membuat header tabel
-        $pdf->Cell(63, 8.5, 'Yang Melakukan', 1, 0, 'C');
-        $pdf->Cell(63, 8.5, 'Mengetahui', 1, 0, 'C');
-        $pdf->Cell(63, 8.5, 'Menyetujui', 1, 1, 'C');
+        $pdf->Cell(47.3, 8.5, 'Yang Melakukan', 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, 'Memeriksa', 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, 'Mengetahui', 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, 'Menyetujui', 1, 1, 'C');
 
         // Set font normal untuk konten tabel
         $pdf->SetFont('Poppins-Regular', '', 10);
 
         // Baris pemisah
-        $pdf->Cell(63, 5, '', 'LR', 0, 'C');
-        $pdf->Cell(63, 5, '', 0, 0, 'C');
-        $pdf->Cell(63, 5, '', 'LR', 1, 'C');
+        $pdf->Cell(47.3, 5, '', 'LR', 0, 'C');
+        $pdf->Cell(47.3, 5, '', 0, 0, 'C');
+        $pdf->Cell(47.3, 5, '', 'L', 0, 'C');
+        $pdf->Cell(47.3, 5, '', 'LR', 1, 'C');
 
         // Baris pertama (Status)
-        $pdf->Cell(63, 5, 'CREATED', 'LR', 0, 'C');
-        $pdf->Cell(63, 5, strtoupper($data['master']->app_status), 0, 0, 'C');
-        $pdf->Cell(63, 5, strtoupper($data['master']->app2_status), 'LR', 1, 'C');
+        $pdf->Cell(47.3, 5, 'CREATED', 'LR', 0, 'C');
+        $pdf->Cell(47.3, 5, strtoupper($data['master']->app4_status), 'R', 0, 'C');
+        $pdf->Cell(47.3, 5, strtoupper($data['master']->app_status), 0, 0, 'C');
+        $pdf->Cell(47.3, 5, strtoupper($data['master']->app2_status), 'LR', 1, 'C');
 
         // Baris kedua (Tanggal)
-        $pdf->Cell(63, 5, $data['master']->created_at, 'LR', 0, 'C');
-        $pdf->Cell(63, 5, $data['master']->app_date, 0, 0, 'C');
-        $pdf->Cell(63, 5, $data['master']->app2_date, 'LR', 1, 'C');
+        $pdf->Cell(47.3, 5, $data['master']->created_at, 'LR', 0, 'C');
+        $pdf->Cell(47.3, 5, $data['master']->app4_date, 'R', 0, 'C');
+        $pdf->Cell(47.3, 5, $data['master']->app_date, 0, 0, 'C');
+        $pdf->Cell(47.3, 5, $data['master']->app2_date, 'LR', 1, 'C');
 
         // Baris pemisah
-        $pdf->Cell(63, 5, '', 'LR', 0, 'C');
-        $pdf->Cell(63, 5, '', 0, 0, 'C');
-        $pdf->Cell(63, 5, '', 'LR', 1, 'C');
+        $pdf->Cell(47.3, 5, '', 'LR', 0, 'C');
+        $pdf->Cell(47.3, 5, '', 0, 0, 'C');
+        $pdf->Cell(47.3, 5, '', 'L', 0, 'C');
+        $pdf->Cell(47.3, 5, '', 'LR', 1, 'C');
 
         // Jarak kosong untuk pemisah
         $pdf->Ln(0);
 
         // Baris ketiga (Nama pengguna)
-        $pdf->Cell(63, 8.5, $data['user'], 1, 0, 'C');
-        $pdf->Cell(63, 8.5, $data['master']->app_name, 1, 0, 'C');
-        $pdf->Cell(63, 8.5, $data['master']->app2_name, 1, 1, 'C');
+        $pdf->Cell(47.3, 8.5, $data['user'], 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, $data['master']->app4_name, 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, $data['master']->app_name, 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, $data['master']->app2_name, 1, 1, 'C');
 
 
         // Add keterangan
@@ -639,7 +668,7 @@ class Ctz_prepayment extends CI_Controller
             $pdf->Cell(60, 10, '*' . '(' . $data['master']->app_name . ') ' . $data['master']->app_keterangan, 0, 1);
         }
         if ($data['master']->app2_keterangan != null && $data['master']->app2_keterangan != '') {
-            $pdf->Cell(60, 10, '*' . '(' . $data['master']->app2_name . ') ' . $data['master']->app2_keterangan, 0, 1);
+            $pdf->Cell(60, 10, '*' . '(' . $data['master']->app2_name . ')' . $data['master']->app2_keterangan, 0, 1);
         }
 
         // Output the PDF
@@ -669,11 +698,91 @@ class Ctz_prepayment extends CI_Controller
         }
     }
 
-    function payment()
+    public function payment()
     {
-        $this->db->where('id', $this->input->post('id'));
-        $this->db->update('ctz_prepayment', ['payment_status' => $this->input->post('payment_status')]);
+        $id = $this->input->post('id');
+        $payment_status = $this->input->post('payment_status');
+        $tgl_pembayaran = $this->input->post('tgl_pembayaran');
+        // Validasi dasar
+        if (empty($id)) {
+            echo json_encode([
+                "status" => FALSE,
+                "message" => "ID tidak ditemukan"
+            ]);
+            return;
+        }
+        // Data awal
+        $data = [
+            'payment_status' => $payment_status
+        ];
+        // Jika status paid → set tanggal (tanpa jam)
+        if ($payment_status === 'paid' && !empty($tgl_pembayaran)) {
+            $date_parts = explode('-', $tgl_pembayaran);
+            if (count($date_parts) === 3) {
+                // DD-MM-YYYY → YYYY-MM-DD H:i:s
+                $data['tgl_pembayaran'] = $date_parts[2] . '-' . $date_parts[1] . '-' . $date_parts[0] . ' ' . date('H:i:s');
+            } else {
+                echo json_encode([
+                    "status" => FALSE,
+                    "message" => "Format tanggal tidak valid"
+                ]);
+                return;
+            }
+        } else {
+            // Hapus file attachment jika status bukan paid
+            $reimbust = $this->db->get_where('ctz_prepayment', ['id' => $id])->row_array();
 
-        echo json_encode(array("status" => TRUE));
+            if ($reimbust && $reimbust['attachment'] && $reimbust['attachment'] != 'default.pdf') {
+                @unlink(FCPATH . './assets/backend/document/prepayment/attachment/ctz_attachment/' . $reimbust['attachment']);
+                }
+                $data['tgl_pembayaran'] = null;
+                $data['attachment'] = null;
+        }
+
+        // Ambil data lama
+        $reimbust = $this->db->get_where('ctz_prepayment', ['id' => $id])->row_array();
+
+        // Jika ada file lama, hapus dulu (replace)
+        if (!empty($_FILES['attachment']['name'])) {
+            if ($reimbust && !empty($reimbust['attachment']) && $reimbust['attachment'] != 'default.pdf') {
+                $oldFile = FCPATH . 'assets/backend/document/prepayment/attachment/ctz_attachment/' . $reimbust['attachment'];
+                
+                if (file_exists($oldFile)) {
+                    unlink($oldFile);
+                }
+            }
+        }
+
+        // Handle upload file
+        if (!empty($_FILES['attachment']['name'])) {
+            $config['upload_path'] = 'assets/backend/document/prepayment/attachment/ctz_attachment/';
+            $config['allowed_types'] = 'pdf|jpg|jpeg|png';
+            $config['max_size'] = 3072; // 3MB
+            $config['file_name'] = 'attachment_' . $id . '_' . date('YmdHis');
+            $this->load->library('upload', $config);
+            if ($this->upload->do_upload('attachment')) {
+                $upload_data = $this->upload->data();
+                $data['attachment'] = $upload_data['file_name'];
+            } else {
+                echo json_encode([
+                    "status" => FALSE,
+                    "message" => strip_tags($this->upload->display_errors())
+                ]);
+                return;
+            }
+        }
+        // Update database
+        $this->db->where('id', $id);
+        $result = $this->db->update('ctz_prepayment', $data);
+        if ($result) {
+            echo json_encode([
+                "status" => TRUE
+            ]);
+        } else {
+            echo json_encode([
+                "status" => FALSE,
+                "message" => "Gagal update data"
+            ]);
+        }
     }
 }

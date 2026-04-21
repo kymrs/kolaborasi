@@ -75,38 +75,45 @@ class M_sml_reimbust extends CI_Model
             $this->db->group_start(); // Start grouping conditions
 
             if ($_POST['status'] == 'on-process') {
-                // Conditions for 'on-process' status
                 if ($alias != "eko") {
-                    $this->db->where('app_status', 'waiting')
-                        ->where('app2_status', 'waiting')
-                        ->or_where('sml_reimbust.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
+                    $this->db
+                        ->group_start()
+                        ->where('sml_reimbust.id_user', $id_user_logged_in)
+                        ->where('status', 'on-process')
+                        ->group_end()
+                        ->or_where('app4_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app4_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE)
+                        ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "waiting" AND (app4_status = "approved" OR app4_name IS NULL) AND status != "rejected" AND status != "revised")', NULL, FALSE)
                         ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
                 } else {
-                    $this->db->where('status = "on-process"');
+                    $this->db->where('status', 'on-process');
                 }
             } elseif ($_POST['status'] == 'approved') {
-                // Conditions for 'approved' status
                 if ($alias != "eko") {
-                    $this->db->where('app_status', $_POST['status'])
+                    $this->db
                         ->where('app2_status', 'approved')
-                        ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status != "rejected")', NULL, FALSE);
+                        ->or_where('app4_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app4_status = "approved" AND app2_status != "rejected")', NULL, FALSE)
+                        ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status != "rejected")', NULL, FALSE)
+                        ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "approved" AND app2_status != "rejected")', NULL, FALSE);
                 } else {
-                    $this->db->where('status = "approved"');
+                    $this->db->where('status', 'approved');
                 }
             } elseif ($_POST['status'] == 'revised') {
                 if ($alias != "eko") {
-                    $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
+                    $this->db
+                        ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
                         ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "revised")', NULL, FALSE)
-                        ->or_where('sml_reimbust.id_user =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
+                        ->or_where('app4_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app4_status = "revised")', NULL, FALSE)
+                        ->or_where('sml_reimbust.id_user =' . $id_user_logged_in . ' AND (app4_status = "revised" OR app_status = "revised" OR app2_status = "revised")');
                 } else {
-                    $this->db->where('status = "revised"');
+                    $this->db->where('status', 'revised');
                 }
             } elseif ($_POST['status'] == 'rejected') {
                 $this->db->where('status', $_POST['status']);
             }
 
-            $this->db->group_end(); // End grouping conditions
+            $this->db->group_end(); // End grouping
         }
+
 
         // Tambahkan kondisi berdasarkan tab yang dipilih
         if (!empty($_POST['tab'])) {
@@ -118,6 +125,8 @@ class M_sml_reimbust extends CI_Model
                         ->where('sml_reimbust.app_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
                         ->where('sml_reimbust.id_user !=', $this->session->userdata('id_user'))
                         ->or_where('sml_reimbust.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && sml_reimbust.app_status = 'approved'", FALSE)
+                        ->where('sml_reimbust.id_user !=', $this->session->userdata('id_user'))
+                        ->or_where('sml_reimbust.app4_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
                         ->where('sml_reimbust.id_user !=', $this->session->userdata('id_user'))
                         ->group_end();
                 }
@@ -131,6 +140,7 @@ class M_sml_reimbust extends CI_Model
             $this->db->order_by(key($order), $order[key($order)]);
         }
     }
+
 
     function get_datatables()
     {
@@ -161,38 +171,45 @@ class M_sml_reimbust extends CI_Model
             $this->db->group_start(); // Start grouping conditions
 
             if ($_POST['status'] == 'on-process') {
-                // Conditions for 'on-process' status
                 if ($alias != "eko") {
-                    $this->db->where('app_status', 'waiting')
-                        ->where('app2_status', 'waiting')
-                        ->or_where('sml_reimbust.id_user =' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting"')
+                    $this->db
+                        ->group_start()
+                        ->where('sml_reimbust.id_user', $id_user_logged_in)
+                        ->where('status', 'on-process')
+                        ->group_end()
+                        ->or_where('app4_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app4_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE)
+                        ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "waiting" AND (app4_status = "approved" OR app4_name IS NULL) AND status != "rejected" AND status != "revised")', NULL, FALSE)
                         ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status = "waiting" AND status != "rejected" AND status != "revised")', NULL, FALSE);
                 } else {
-                    $this->db->where('status = "on-process"');
+                    $this->db->where('status', 'on-process');
                 }
             } elseif ($_POST['status'] == 'approved') {
-                // Conditions for 'approved' status
                 if ($alias != "eko") {
-                    $this->db->where('app_status', $_POST['status'])
+                    $this->db
                         ->where('app2_status', 'approved')
-                        ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status != "rejected")', NULL, FALSE);
+                        ->or_where('app4_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app4_status = "approved" AND app2_status != "rejected")', NULL, FALSE)
+                        ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "approved" AND app2_status != "rejected")', NULL, FALSE)
+                        ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "approved" AND app2_status != "rejected")', NULL, FALSE);
                 } else {
-                    $this->db->where('status = "approved"');
+                    $this->db->where('status', 'approved');
                 }
             } elseif ($_POST['status'] == 'revised') {
                 if ($alias != "eko") {
-                    $this->db->where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
+                    $this->db
+                        ->or_where('app2_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app2_status = "revised")', NULL, FALSE)
                         ->or_where('app_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app_status = "revised")', NULL, FALSE)
-                        ->or_where('sml_reimbust.id_user =' . $id_user_logged_in . ' AND (app_status = "revised" OR app2_status = "revised")');
+                        ->or_where('app4_name = (SELECT name FROM tbl_data_user WHERE id_user = ' . $id_user_logged_in . ' AND app4_status = "revised")', NULL, FALSE)
+                        ->or_where('sml_reimbust.id_user =' . $id_user_logged_in . ' AND (app4_status = "revised" OR app_status = "revised" OR app2_status = "revised")');
                 } else {
-                    $this->db->where('status = "revised"');
+                    $this->db->where('status', 'revised');
                 }
             } elseif ($_POST['status'] == 'rejected') {
                 $this->db->where('status', $_POST['status']);
             }
 
-            $this->db->group_end(); // End grouping conditions
+            $this->db->group_end(); // End grouping
         }
+
 
         // Tambahkan kondisi be'rdasarkan tab yang dipilih
         if (!empty($_POST['tab'])) {
@@ -205,12 +222,15 @@ class M_sml_reimbust extends CI_Model
                         ->where('sml_reimbust.id_user !=', $this->session->userdata('id_user'))
                         ->or_where('sml_reimbust.app2_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ") && sml_reimbust.app_status = 'approved'", FALSE)
                         ->where('sml_reimbust.id_user !=', $this->session->userdata('id_user'))
+                        ->or_where('sml_reimbust.app4_name =', "(SELECT name FROM tbl_data_user WHERE id_user = " . $this->session->userdata('id_user') . ")", FALSE)
+                        ->where('sml_reimbust.id_user !=', $this->session->userdata('id_user'))
                         ->group_end();
                 }
             }
         }
         return $this->db->count_all_results();
     }
+
     // Data Deklarasi
     private function _get_datatables_query2()
     {
@@ -419,7 +439,7 @@ class M_sml_reimbust extends CI_Model
         if ($detail) {
             foreach ($detail as $rd) {
                 $old_image = $rd['kwitansi'];
-                $file_path = FCPATH . './assets/backend/document/reimbust/kwitansi_sml/' . $old_image;
+                $file_path = FCPATH . './assets/backend/document/reimbust/kwitansi/kwitansi_sml/' . $old_image;
 
                 if (file_exists($file_path)) {
                     unlink($file_path);

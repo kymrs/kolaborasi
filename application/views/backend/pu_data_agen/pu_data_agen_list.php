@@ -37,7 +37,7 @@
                     <a class="btn btn-primary btn-sm" id="add_btn" data-toggle="modal" data-target="#modal-default" onclick="add_data()">
                         <i class="fa fa-plus"></i>&nbsp;Add Data
                     </a>
-                    <a class="btn btn-primary btn-sm" href="<?= base_url('pu_data_agen/data_member') ?>">
+                    <a class="btn btn-primary btn-sm" href="<?= base_url('pu_data_member') ?>">
                         <i class="fa fa-list"></i>&nbsp;&nbsp;Data Member
                     </a>
                 </div>
@@ -584,7 +584,7 @@
     // Tambahkan script untuk mengubah status agen
     $("#formStatusAgen").submit(function(e) {
         e.preventDefault();
-        var url = "<?php echo site_url('pu_data_agen/update_status') ?>";
+        var url = "<?php echo site_url('pu_data_agen/update_status_agen') ?>";
         $.ajax({
             url: url,
             type: "post",
@@ -630,7 +630,7 @@
     $('#formStatusAgen').on('submit', function(e) {
         e.preventDefault();
         $.ajax({
-            url: '<?php echo base_url("pu_data_agen/update_status"); ?>',
+            url: '<?php echo base_url("pu_data_agen/update_status_agen"); ?>',
             type: 'POST',
             data: $(this).serialize(),
             dataType: 'json',
@@ -668,7 +668,7 @@
     $('#formEditSaldo').on('submit', function(e) {
         e.preventDefault();
         $.ajax({
-            url: '<?php echo base_url("pu_data_agen/update_saldo"); ?>',
+            url: '<?php echo base_url("pu_data_agen/update_saldo_agen"); ?>',
             type: 'POST',
             data: $(this).serialize(),
             dataType: 'json',

@@ -29,6 +29,7 @@ class Ctz_reimbust extends CI_Controller
             ->from('ctz_reimbust')
             ->where('app_name', $name)
             ->or_where('app2_name', $name)
+            ->or_where('app4_name', $name)
             ->get()
             ->row('total_approval');
         $this->load->view('backend/home', $data);
@@ -75,20 +76,21 @@ class Ctz_reimbust extends CI_Controller
             //MENENSTUKAN SATTSU PROGRESS PENGAJUAN PERMINTAAN
             if ($field->app_status == 'approved' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
                 $status = $field->status . ' (' . $field->app2_name . ')';
-            } elseif ($field->app_status == 'waiting' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
+            } elseif ($field->app4_status == 'approved' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
                 $status = $field->status . ' (' . $field->app_name . ')';
+            } elseif ($field->app4_status == 'waiting' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
+                $status = $field->status . ' (' . $field->app4_name . ')';
             } else {
                 $status = $field->status;
             }
-
             $no++;
             $row = array();
             $row[] = $no;
             $row[] = $action;
             if ($field->payment_status == 'paid') {
-                $row[] = '<div class="text-center"><i class="fas fa-check" style="color: green;"></i></div>'; // Ikon checklist hijau di tengah
+                $row[] = '<div class="text-center"><button class="btn btn-primary btn-circle btn-sm" data-toggle="modal" data-target="#paymentDetailModal" data-id="' . $field->id . '" title="Detail Pembayaran"><i class="fas fa-check" style="color: #1cc88a;"></i></button></div>';
             } else if ($field->payment_status == 'unpaid') {
-                $row[] = '<div class="text-center"><i class="fas fa-times" style="color: red;"></i></div>'; // Ikon unchecklist merah di tengah
+                $row[] = '<div class="text-center"><i class="fas fa-times" style="color: red;"></i></div>';
             }
             $row[] = strtoupper($field->kode_reimbust);
             $row[] = $field->name;
@@ -500,102 +502,47 @@ class Ctz_reimbust extends CI_Controller
         $pdf->Ln(10);
 
         $pdf->SetFont('Poppins-Regular', '', 10);
-        $pdf->Cell(50, 8.5, 'YANG MELAKUKAN', 1, 0, 'C');
-        $pdf->Cell(50, 8.5, 'MENGETAHUI', 1, 0, 'C');
-        $pdf->Cell(50, 8.5, 'MENYETUJUI', 1, 1, 'C');
+        // Membuat header tabel
+        $pdf->Cell(47.3, 8.5, 'Yang Melakukan', 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, 'Memeriksa', 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, 'Mengetahui', 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, 'Menyetujui', 1, 1, 'C');
 
-        $pdf->Cell(50, 13.5, 'CREATED', 0, 0, 'C');
+        // Set font normal untuk konten tabel
+        $pdf->SetFont('Poppins-Regular', '', 10);
 
-        $x = $pdf->GetX();
-        $y = $pdf->GetY();
+        // Baris pemisah
+        $pdf->Cell(47.3, 5, '', 'LR', 0, 'C');
+        $pdf->Cell(47.3, 5, '', 0, 0, 'C');
+        $pdf->Cell(47.3, 5, '', 'L', 0, 'C');
+        $pdf->Cell(47.3, 5, '', 'LR', 1, 'C');
 
-        $pdf->SetXY($x + -50, $y + 0); // Menambahkan margin horizontal dan vertikal
-        $pdf->Cell(50, 18, '', 1, 0, 'C');
+        // Baris pertama (Status)
+        $pdf->Cell(47.3, 5, 'CREATED', 'LR', 0, 'C');
+        $pdf->Cell(47.3, 5, strtoupper($data['master']->app4_status), 'R', 0, 'C');
+        $pdf->Cell(47.3, 5, strtoupper($data['master']->app_status), 0, 0, 'C');
+        $pdf->Cell(47.3, 5, strtoupper($data['master']->app2_status), 'LR', 1, 'C');
 
-        // Kembali ke posisi sebelumnya untuk elemen berikutnya
-        $pdf->SetXY($x + 0, $y); // Mengatur posisi untuk elemen berikutnya jika diperlukan
+        // Baris kedua (Tanggal)
+        $pdf->Cell(47.3, 5, $data['master']->created_at, 'LR', 0, 'C');
+        $pdf->Cell(47.3, 5, $data['master']->app4_date, 'R', 0, 'C');
+        $pdf->Cell(47.3, 5, $data['master']->app_date, 0, 0, 'C');
+        $pdf->Cell(47.3, 5, $data['master']->app2_date, 'LR', 1, 'C');
 
-        // Menyimpan posisi saat ini
-        $x = $pdf->GetX();
-        $y = $pdf->GetY();
+        // Baris pemisah
+        $pdf->Cell(47.3, 5, '', 'LR', 0, 'C');
+        $pdf->Cell(47.3, 5, '', 0, 0, 'C');
+        $pdf->Cell(47.3, 5, '', 'L', 0, 'C');
+        $pdf->Cell(47.3, 5, '', 'LR', 1, 'C');
 
-        // Mengatur posisi X dan Y dengan margin tambahan untuk teks tanggal
-        $pdf->SetXY($x + -50, $y + 4.5); // Menambahkan margin horizontal dan vertikal
+        // Jarak kosong untuk pemisah
+        $pdf->Ln(0);
 
-        // Menggunakan Cell() untuk mencetak teks tanggal dengan margin
-        $pdf->Cell(50, 15, date('d-m-Y H:i:s', strtotime($data['master']->created_at)), 0, 0, 'C');
-
-        // Kembali ke posisi sebelumnya untuk elemen berikutnya
-        $pdf->SetXY($x + 0, $y); // Mengatur posisi untuk elemen berikutnya jika diperlukan
-
-        // Approval 1
-        $pdf->Cell(50, 13.5, strtoupper($data['master']->app_status), 0, 0, 'C');
-
-        $x = $pdf->GetX();
-        $y = $pdf->GetY();
-
-        $pdf->SetXY($x + -50, $y + 0); // Menambahkan margin horizontal dan vertikal
-        $pdf->Cell(50, 18, '', 1, 0, 'C');
-
-        // Kembali ke posisi sebelumnya untuk elemen berikutnya
-        $pdf->SetXY($x + 0, $y); // Mengatur posisi untuk elemen berikutnya jika diperlukan
-
-        // Menyimpan posisi saat ini
-        $x = $pdf->GetX();
-        $y = $pdf->GetY();
-
-        // Mengatur posisi X dan Y dengan margin tambahan untuk teks tanggal
-        $pdf->SetXY($x + -50, $y + 4.5); // Menambahkan margin horizontal dan vertikal
-
-        if ($data['master']->app_date == null) {
-            $date = '';
-        }
-        if ($data['master']->app_date != null) {
-            $date = date('d-m-Y H:i:s', strtotime($data['master']->app_date));
-        }
-
-        // Menggunakan Cell() untuk mencetak teks tanggal dengan margin
-        $pdf->Cell(50, 15, $date, 0, 0, 'C');
-
-        // Kembali ke posisi sebelumnya untuk elemen berikutnya
-        $pdf->SetXY($x + 0, $y); // Mengatur posisi untuk elemen berikutnya jika diperlukan
-
-        // Approval 2
-        $pdf->Cell(50, 13.5, strtoupper($data['master']->app2_status), 0, 0, 'C');
-
-        $x = $pdf->GetX();
-        $y = $pdf->GetY();
-
-        $pdf->SetXY($x + -50, $y + 0); // Menambahkan margin horizontal dan vertikal
-        $pdf->Cell(50, 18, '', 1, 0, 'C');
-
-        // Kembali ke posisi sebelumnya untuk elemen berikutnya
-        $pdf->SetXY($x + 0, $y); // Mengatur posisi untuk elemen berikutnya jika diperlukan
-
-        // Menyimpan posisi saat ini
-        $x = $pdf->GetX();
-        $y = $pdf->GetY();
-
-        // Mengatur posisi X dan Y dengan margin tambahan untuk teks tanggal
-        $pdf->SetXY($x + -50, $y + 4.5); // Menambahkan margin horizontal dan vertikal
-
-        if ($data['master']->app2_date == null) {
-            $date2 = '';
-        }
-        if ($data['master']->app2_date != null) {
-            $date2 = date('d-m-Y H:i:s', strtotime($data['master']->app2_date));
-        }
-
-        // Menggunakan Cell() untuk mencetak teks tanggal dengan margin
-        $pdf->Cell(50, 15, $date2, 0, 0, 'C');
-
-        // Kembali ke posisi sebelumnya untuk elemen berikutnya 
-        $pdf->SetXY($x + -150, $y + 18); // Mengatur posisi untuk elemen berikutnya jika diperlukan
-
-        // Menulis elemen selanjutnya dengan ukuran baris yang lebih kecil
-        $pdf->Cell(50, 8.5, $data['user'], 1, 0, 'C');
-        $pdf->Cell(50, 8.5, $data['master']->app_name, 1, 0, 'C');
-        $pdf->Cell(50, 8.5, $data['master']->app2_name, 1, 1, 'C');
+        // Baris ketiga (Nama pengguna)
+        $pdf->Cell(47.3, 8.5, $data['user'], 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, $data['master']->app4_name, 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, $data['master']->app_name, 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, $data['master']->app2_name, 1, 1, 'C');
 
 
         // Output the PDF
@@ -759,8 +706,8 @@ class Ctz_reimbust extends CI_Controller
             ->get('tbl_submenu')
             ->row();
 
-        $confirm = $this->db->select('app_id, app2_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
-        if (!empty($confirm) && isset($confirm->app_id, $confirm->app2_id)) {
+        $confirm = $this->db->select('app_id, app2_id, app4_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
+        if (!empty($confirm) && isset($confirm->app_id, $confirm->app2_id, $confirm->app4_id)) {
             $app = $confirm;
         } else {
             echo json_encode(array("status" => FALSE, "error" => "Approval Belum Ditentukan, Mohon untuk menghubungi admin."));
@@ -790,6 +737,11 @@ class Ctz_reimbust extends CI_Controller
                 ->where('id_user', $app->app2_id)
                 ->get()
                 ->row('name'),
+            'app4_name' => $this->db->select('name')
+                ->from('tbl_data_user')
+                ->where('id_user', $app->app4_id)
+                ->get()
+                ->row('name'),
             'created_at' =>  date('Y-m-d H:i:s')
         );
         // Hanya simpan ke database jika tidak ada file yang melebihi 3 MB
@@ -809,7 +761,7 @@ class Ctz_reimbust extends CI_Controller
                 $_FILES['file']['error'] = $_FILES['kwitansi']['error'][$i];
                 $_FILES['file']['size'] = $_FILES['kwitansi']['size'][$i];
 
-                $config['upload_path'] = './assets/backend/document/reimbust/kwitansi_ctz/';
+                $config['upload_path'] = './assets/backend/document/reimbust/kwitansi/kwitansi_ctz/';
                 $config['allowed_types'] = 'jpeg|jpg|png|pdf';
                 $config['max_size'] = 3072; // Batasan ukuran file dalam kilobytes (3 MB)
                 $config['encrypt_name'] = TRUE;
@@ -843,15 +795,6 @@ class Ctz_reimbust extends CI_Controller
         $this->db->set('is_active', 0);
         $this->db->update('ctz_prepayment');
 
-        if ($this->db->affected_rows() == 0) {
-            echo json_encode([
-                "status" => FALSE,
-                "error" => "Prepayment sudah digunakan."
-            ]);
-            exit();
-        }
-        
-
         $this->M_ctz_reimbust->save_detail($data2);
 
 
@@ -884,6 +827,9 @@ class Ctz_reimbust extends CI_Controller
             'app2_status' => 'waiting',
             'app2_date' => null,
             'app2_keterangan' => null,
+            'app4_status' => 'waiting',
+            'app4_date' => null,
+            'app4_keterangan' => null,
             'status' => 'on-process'
         );
 
@@ -911,7 +857,7 @@ class Ctz_reimbust extends CI_Controller
                     if ($reimbust_detail) {
                         $old_image = $reimbust_detail['kwitansi'];
                         if ($old_image != 'default.jpg') {
-                            @unlink(FCPATH . './assets/backend/document/reimbust/kwitansi_ctz/' . $old_image);
+                            @unlink(FCPATH . './assets/backend/document/reimbust/kwitansi/kwitansi_ctz/' . $old_image);
                         }
 
                         $this->db->where('id', $id2);
@@ -940,7 +886,7 @@ class Ctz_reimbust extends CI_Controller
                         return;
                     }
 
-                    $config['upload_path'] = './assets/backend/document/reimbust/kwitansi_ctz/';
+                    $config['upload_path'] = './assets/backend/document/reimbust/kwitansi/kwitansi_ctz/';
                     $config['allowed_types'] = 'jpeg|jpg|png|pdf';
                     $config['max_size'] = 3072;
                     $config['encrypt_name'] = TRUE;
@@ -956,7 +902,7 @@ class Ctz_reimbust extends CI_Controller
                             $old_image = $reimbust_detail['kwitansi'];
 
                             if ($old_image && $old_image != 'default.jpg') {
-                                @unlink(FCPATH . './assets/backend/document/reimbust/kwitansi_ctz/' . $old_image);
+                                @unlink(FCPATH . './assets/backend/document/reimbust/kwitansi/kwitansi_ctz/' . $old_image);
                             }
                         }
                         $kwitansi = $this->upload->data('file_name');
@@ -1066,11 +1012,116 @@ class Ctz_reimbust extends CI_Controller
         echo json_encode(array("status" => TRUE));
     }
 
-    function payment()
+    //APPROVE DATA
+    public function approve3()
     {
-        $this->db->where('id', $this->input->post('id'));
-        $this->db->update('ctz_reimbust', ['payment_status' => $this->input->post('payment_status')]);
+        $data = array(
+            'app4_keterangan' => $this->input->post('app4_keterangan'),
+            'app4_status' => $this->input->post('app4_status'),
+            'app4_date' => date('Y-m-d H:i:s'),
+        );
+
+        // UPDATE STATUS DEKLARASI
+        if ($this->input->post('app4_status') === 'revised') {
+            $data['status'] = 'revised';
+        } elseif ($this->input->post('app4_status') === 'approved') {
+            $data['status'] = 'on-process';
+        } elseif ($this->input->post('app4_status') === 'rejected') {
+            $data['status'] = 'rejected';
+        }
+
+        //UPDATE APPROVAL PERTAMA
+        $this->db->where('id', $this->input->post('hidden_id'));
+        $this->db->update('ctz_reimbust', $data);
 
         echo json_encode(array("status" => TRUE));
+    }
+
+    public function payment()
+    {
+        $id = $this->input->post('id');
+        $payment_status = $this->input->post('payment_status');
+        $tgl_pembayaran = $this->input->post('tgl_pembayaran');
+        // Validasi dasar
+        if (empty($id)) {
+            echo json_encode([
+                "status" => FALSE,
+                "message" => "ID tidak ditemukan"
+            ]);
+            return;
+        }
+        // Data awal
+        $data = [
+            'payment_status' => $payment_status
+        ];
+        // Jika status paid → set tanggal (tanpa jam)
+        if ($payment_status === 'paid' && !empty($tgl_pembayaran)) {
+            $date_parts = explode('-', $tgl_pembayaran);
+            if (count($date_parts) === 3) {
+                // DD-MM-YYYY → YYYY-MM-DD H:i:s
+                $data['tgl_pembayaran'] = $date_parts[2] . '-' . $date_parts[1] . '-' . $date_parts[0] . ' ' . date('H:i:s');
+            } else {
+                echo json_encode([
+                    "status" => FALSE,
+                    "message" => "Format tanggal tidak valid"
+                ]);
+                return;
+            }
+        } else {
+            // Hapus file attachment jika status bukan paid
+            $reimbust = $this->db->get_where('ctz_reimbust', ['id' => $id])->row_array();
+
+            if ($reimbust && $reimbust['attachment'] && $reimbust['attachment'] != 'default.pdf') {
+                @unlink(FCPATH . './assets/backend/document/reimbust/attachment/ctz_attachment/' . $reimbust['attachment']);
+                }
+                $data['tgl_pembayaran'] = null;
+                $data['attachment'] = null;
+        }
+
+        // Ambil data lama
+        $reimbust = $this->db->get_where('ctz_reimbust', ['id' => $id])->row_array();
+
+        // Jika ada file lama, hapus dulu (replace)
+        if (!empty($_FILES['attachment']['name'])) {
+            if ($reimbust && !empty($reimbust['attachment']) && $reimbust['attachment'] != 'default.pdf') {
+                $oldFile = FCPATH . 'assets/backend/document/reimbust/attachment/ctz_attachment/' . $reimbust['attachment'];
+                
+                if (file_exists($oldFile)) {
+                    unlink($oldFile);
+                }
+            }
+        }
+
+        // Handle upload file
+        if (!empty($_FILES['attachment']['name'])) {
+            $config['upload_path'] = 'assets/backend/document/reimbust/attachment/ctz_attachment/';
+            $config['allowed_types'] = 'pdf|jpg|jpeg|png';
+            $config['max_size'] = 3072; // 3MB
+            $config['file_name'] = 'attachment_' . $id . '_' . date('YmdHis');
+            $this->load->library('upload', $config);
+            if ($this->upload->do_upload('attachment')) {
+                $upload_data = $this->upload->data();
+                $data['attachment'] = $upload_data['file_name'];
+            } else {
+                echo json_encode([
+                    "status" => FALSE,
+                    "message" => strip_tags($this->upload->display_errors())
+                ]);
+                return;
+            }
+        }
+        // Update database
+        $this->db->where('id', $id);
+        $result = $this->db->update('ctz_reimbust', $data);
+        if ($result) {
+            echo json_encode([
+                "status" => TRUE
+            ]);
+        } else {
+            echo json_encode([
+                "status" => FALSE,
+                "message" => "Gagal update data"
+            ]);
+        }
     }
 }

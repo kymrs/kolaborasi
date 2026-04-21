@@ -85,7 +85,7 @@
                         </div>
                     </div>
                     <div class="d-flex align-item-center">
-                        <button class="btn btn-primary" id="tgl_btn" type="button"></button>
+                        <button class="btn btn-primary" id="tgl_btn" type="button">FILTER</button>
                     </div>
                     <div class="d-flex align-item-center export-excel">
                         <a class="btn btn-success" id="btn-export-excel">

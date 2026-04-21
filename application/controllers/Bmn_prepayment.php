@@ -30,10 +30,6 @@ class Bmn_prepayment extends CI_Controller
         );
         $pecahkan = explode('-', $tanggal);
 
-        // variabel pecahkan 0 = tanggal
-        // variabel pecahkan 1 = bulan
-        // variabel pecahkan 2 = tahun
-
         return $pecahkan[2] . ' ' . $bulan[(int)$pecahkan[1]] . ' ' . $pecahkan[0];
     }
 
@@ -119,18 +115,15 @@ class Bmn_prepayment extends CI_Controller
             $row[] = $no;
             $row[] = $action;
             if ($field->payment_status == 'paid') {
-                $row[] = '<div class="text-center"><i class="fas fa-check" style="color: green;"></i></div>'; // Ikon checklist hijau di tengah
+                $row[] = '<div class="text-center"><button class="btn btn-primary btn-circle btn-sm" data-toggle="modal" data-target="#paymentDetailModal" data-id="' . $field->id . '" title="Detail Pembayaran"><i class="fas fa-check" style="color: #1cc88a;"></i></button></div>';
             } else if ($field->payment_status == 'unpaid') {
-                $row[] = '<div class="text-center"><i class="fas fa-times" style="color: red;"></i></div>'; // Ikon unchecklist merah di tengah
+                $row[] = '<div class="text-center"><i class="fas fa-times" style="color: red;"></i></div>';
             }
             $row[] = strtoupper($field->kode_prepayment);
             $row[] = $field->name;
-            // $row[] = strtoupper($field->divisi);
-            // $row[] = strtoupper($field->jabatan);
             $row[] = $this->tgl_indo(date("Y-m-j", strtotime($field->tgl_prepayment)));
             $row[] = $field->prepayment;
             $row[] = $formatted_nominal;
-            // $row[] = $field->tujuan;
             $row[] = $status;
 
             $data[] = $row;
@@ -497,9 +490,6 @@ class Bmn_prepayment extends CI_Controller
 
         $pdf->Ln(17);
         $pdf->SetFont('Poppins-Regular', '', 12);
-        // $pdf->Cell(30, 10, 'Divisi', 0, 0);
-        // $pdf->Cell(5, 10, ':', 0, 0);
-        // $pdf->Cell(50, 10, $data['master']->divisi, 0, 1);
 
         // $pdf->SetX(46); // Tetap di posisi yang sama untuk elemen lainnya
         $pdf->Cell(30, 10, 'Prepayment', 0, 0);
@@ -521,10 +511,6 @@ class Bmn_prepayment extends CI_Controller
         $pdf->Cell(30, 10, 'Nama', 0, 0);
         $pdf->Cell(5, 10, ':', 0, 0);
         $pdf->Cell(50, 10, $data['user'], 0, 1);
-
-        // $pdf->Cell(30, 10, 'Jabatan', 0, 0);
-        // $pdf->Cell(5, 10, ':', 0, 0);
-        // $pdf->Cell(50, 10, $data['master']->jabatan, 0, 1);
 
         $pdf->Cell(60, 10, 'Dengan ini bermaksud mengajukan prepayment untuk :', 0, 1);
 
@@ -649,34 +635,91 @@ class Bmn_prepayment extends CI_Controller
         $pdf->Output('I', 'Prepayment_by_moment.pdf');
     }
 
-    // QUERY UNTUK INPUT TANDA TANGAN
-    // function signature()
-    // {
-    //     // Ambil data dari request
-    //     $img = $this->input->post('imgBase64');
-
-    //     // Decode base64
-    //     $img = str_replace('data:image/png;base64,', '', $img);
-    //     $img = str_replace(' ', '+', $img);
-    //     $data = base64_decode($img);
-
-    //     // Tentukan lokasi dan nama file
-    //     $fileName = uniqid() . '.png';
-    //     $filePath = './assets/backend/img/signatures/' . $fileName;
-
-    //     // Simpan file ke server
-    //     if (file_bmnt_contents($filePath, $data)) {
-    //         echo json_encode(['status' => 'success', 'fileName' => $fileName]);
-    //     } else {
-    //         echo json_encode(['status' => 'error']);
-    //     }
-    // }
-
-    function payment()
+    public function payment()
     {
-        $this->db->where('id', $this->input->post('id'));
-        $this->db->update('bmn_prepayment', ['payment_status' => $this->input->post('payment_status')]);
+        $id = $this->input->post('id');
+        $payment_status = $this->input->post('payment_status');
+        $tgl_pembayaran = $this->input->post('tgl_pembayaran');
+        // Validasi dasar
+        if (empty($id)) {
+            echo json_encode([
+                "status" => FALSE,
+                "message" => "ID tidak ditemukan"
+            ]);
+            return;
+        }
+        // Data awal
+        $data = [
+            'payment_status' => $payment_status
+        ];
+        // Jika status paid → set tanggal (tanpa jam)
+        if ($payment_status === 'paid' && !empty($tgl_pembayaran)) {
+            $date_parts = explode('-', $tgl_pembayaran);
+            if (count($date_parts) === 3) {
+                // DD-MM-YYYY → YYYY-MM-DD H:i:s
+                $data['tgl_pembayaran'] = $date_parts[2] . '-' . $date_parts[1] . '-' . $date_parts[0] . ' ' . date('H:i:s');
+            } else {
+                echo json_encode([
+                    "status" => FALSE,
+                    "message" => "Format tanggal tidak valid"
+                ]);
+                return;
+            }
+        } else {
+            // Hapus file attachment jika status bukan paid
+            $reimbust = $this->db->get_where('bmn_prepayment', ['id' => $id])->row_array();
 
-        echo json_encode(array("status" => TRUE));
+            if ($reimbust && $reimbust['attachment'] && $reimbust['attachment'] != 'default.pdf') {
+                @unlink(FCPATH . './assets/backend/document/prepayment/attachment/bmn_attachment/' . $reimbust['attachment']);
+                }
+                $data['tgl_pembayaran'] = null;
+                $data['attachment'] = null;
+        }
+
+        // Ambil data lama
+        $reimbust = $this->db->get_where('bmn_prepayment', ['id' => $id])->row_array();
+
+        // Jika ada file lama, hapus dulu (replace)
+        if (!empty($_FILES['attachment']['name'])) {
+            if ($reimbust && !empty($reimbust['attachment']) && $reimbust['attachment'] != 'default.pdf') {
+                $oldFile = FCPATH . 'assets/backend/document/prepayment/attachment/bmn_attachment/' . $reimbust['attachment'];
+                
+                if (file_exists($oldFile)) {
+                    unlink($oldFile);
+                }
+            }
+        }
+
+        // Handle upload file
+        if (!empty($_FILES['attachment']['name'])) {
+            $config['upload_path'] = 'assets/backend/document/prepayment/attachment/bmn_attachment/';
+            $config['allowed_types'] = 'pdf|jpg|jpeg|png';
+            $config['max_size'] = 3072; // 3MB
+            $config['file_name'] = 'attachment_' . $id . '_' . date('YmdHis');
+            $this->load->library('upload', $config);
+            if ($this->upload->do_upload('attachment')) {
+                $upload_data = $this->upload->data();
+                $data['attachment'] = $upload_data['file_name'];
+            } else {
+                echo json_encode([
+                    "status" => FALSE,
+                    "message" => strip_tags($this->upload->display_errors())
+                ]);
+                return;
+            }
+        }
+        // Update database
+        $this->db->where('id', $id);
+        $result = $this->db->update('bmn_prepayment', $data);
+        if ($result) {
+            echo json_encode([
+                "status" => TRUE
+            ]);
+        } else {
+            echo json_encode([
+                "status" => FALSE,
+                "message" => "Gagal update data"
+            ]);
+        }
     }
 }

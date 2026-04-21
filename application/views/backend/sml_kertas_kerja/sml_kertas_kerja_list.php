@@ -39,9 +39,11 @@ $btn_modes = array(
                             </a>
                             <!-- <div class="small text-muted mt-2">Plotting/Monitoring/Finance melengkapi data via tombol Action per baris.</div> -->
                         <?php } ?>
-                        <a class="btn btn-success" id="btn-export-excel" style="font-size: 12.5px">
-                            <i class="fa fa-file-excel" style="margin-right: 6px"></i>Export to Excel
-                        </a>
+                        <?php if ($is_authorized && in_array('marketing', $roles_for_user, true) || in_array('plotting', $roles_for_user, true) || in_array('monitoring', $roles_for_user, true) || in_array('finance', $roles_for_user, true)) { ?>
+                            <a class="btn btn-success" id="btn-export-excel" style="font-size: 12.5px">
+                                <i class="fa fa-file-excel" style="margin-right: 6px"></i>Export to Excel
+                            </a>
+                        <?php } ?>
                         <div class="float-right">
                             <label for="statusFilter">Status Filter:</label>
                             <select id="statusFilter" class="form-control form-control-sm d-inline-block" style="width: auto;">
