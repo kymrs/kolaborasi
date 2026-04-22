@@ -90,11 +90,6 @@
         <h1 class="h3 mb-0 text-gray-800"><?= $title_view ?></h1>
     </div>
 
-    <!-- Form Loading indicator -->
-    <div id="form_loading" style="display: none;">
-        <p>Loading...</p>
-    </div>
-
     <div class="row">
         <div class="col-lg-12">
             <div class="card shadow mb-4">
@@ -126,16 +121,13 @@
                                     <label class="col-sm-4 col-form-label">No Rekening</label>
                                     <div class="col-sm-8">
                                         <div class="input-group mb-3">
+                                            <!-- RADIO BUTTON UNTUK PEMILIHAN INPUTAN REKENING -->
                                             <div class="form-check form-check-inline" style="margin-bottom: 5px;">
-                                                <?php if ($id_pembuat != $id_user && !empty($aksi)) { ?>
-                                                    <input class="form-check-input" type="radio" name="radioNoLabel" id="new" value="" aria-label="..." checked><label for="new" style="margin-top: 8px; cursor: pointer">Rekening</label>
-                                                <?php } else { ?>
-                                                    <input class="form-check-input" type="radio" name="radioNoLabel" id="exist" value="" aria-label="..." checked><label for="exist" style="margin-right: 14px; margin-top: 8px; cursor: pointer">Rekening terdaftar</label>
-                                                    <input class="form-check-input" type="radio" name="radioNoLabel" id="new" value="" aria-label="..."><label for="new" style="margin-top: 8px; cursor: pointer">Rekening baru</label>
-                                                <?php } ?>
+                                                <input class="form-check-input" type="radio" name="radioNoLabel" id="exist" value="" aria-label="..." checked><label for="exist" style="margin-right: 14px; margin-top: 8px; cursor: pointer">Rekening terdaftar</label>
+                                                <input class="form-check-input" type="radio" name="radioNoLabel" id="new" value="" aria-label="..."><label for="new" style="margin-top: 8px; cursor: pointer">Rekening baru</label>
                                             </div>
-                                            <select class="js-example-basic-single" id="rekening" name="rekening" required>
-                                                <option value="Pilih rekening tujuan" selected disabled>Pilih rekening tujuan</option>
+                                            <select class="js-example-basic-single" id="rekening" name="rekening">
+                                                <option value="" selected disabled>Pilih rekening tujuan</option>
                                                 <?php foreach ($rek_options as $option) { ?>
                                                     <option value="<?= $option['no_rek'] ?>"><?= $option['no_rek'] ?></option>
                                                 <?php } ?>
@@ -145,7 +137,7 @@
                                                 <span class="py-2">-</span>&nbsp;
                                                 <input type="text" class="form-control col-sm-3" style="font-size: 13px;" id="nama_bank" name="nama_bank" placeholder="Nama Bank">&nbsp;
                                                 <span class="py-2">-</span>&nbsp;
-                                                <input type="text" class="form-control col-sm-7" style="font-size: 13px;" id="nomor_rekening" name="nomor_rekening" placeholder="Nomor Rekening">
+                                                <input type="text" class="form-control col-sm-7" style="font-size: 13px;" id="nomor_rekening" name="nomor_rekening" placeholder="No Rekening">
                                             </div>
                                         </div>
                                     </div>
@@ -218,7 +210,6 @@
     </div>
 </div>
 
-
 <?php $this->load->view('template/footer'); ?>
 <?php $this->load->view('template/script'); ?>
 
@@ -258,6 +249,13 @@
 
     $(document).ready(function() {
 
+        // INISIASI VARIABEL JAVASCRIPT/JQUERY
+        var id = $('#id').val();
+        var aksi = $('#aksi').val();
+        var kode = $('#kode').val();
+        let inputCount = 0;
+        let deletedRows = [];
+
         $('.js-example-basic-single').select2();
 
         // Fungsi untuk mengatur enabled/disabled elemen berdasarkan radio button yang dipilih
@@ -282,6 +280,7 @@
         // Panggil fungsi saat radio button berubah
         $('input[name="radioNoLabel"]').change(toggleInputs);
 
+        // AGAR INPUT FIELD HANYA BISA NOMOR
         document.getElementById('nomor_rekening').addEventListener('input', function(e) {
             let value = this.value.replace(/[^0-9]/g, '');
             if (value.length > 14) {
@@ -289,19 +288,6 @@
             }
             this.value = value;
         });
-
-        // INISIASI VARIABEL JAVASCRIPT/JQUERY
-        var id = $('#id').val();
-        var aksi = $('#aksi').val();
-        var kode = $('#kode').val();
-        let inputCount = 0;
-        let deletedRows = [];
-
-        if (id != 0) {
-            // Tampilkan loading
-            $('#form_loading').show();
-            $('.aksi').prop('disabled', true);
-        }
 
         // Tambahkan fungsi untuk memformat input nominal memiliki titik
         function formatJumlahInput(selector) {
@@ -391,7 +377,7 @@
                 deletedRows.push(rowId);
             }
 
-            console.log(rowId);
+            // console.log(rowId);
 
             $(`#row-${id}`).remove();
             // Reorder rows and update row numbers
@@ -444,6 +430,17 @@
             deleteRow(id);
         });
 
+        $('#form').submit(function(event) {
+            // Tambahkan array deletedRows ke dalam form data sebelum submit
+            $('<input>').attr({
+                type: 'hidden',
+                name: 'deleted_rows',
+                value: JSON.stringify(deletedRows)
+            }).appendTo('#form');
+
+            // Lanjutkan dengan submit form
+        });
+
         // MENGISI FORM UPDATE
         if (id == 0) {
             $('.aksi').append('<span class="front front-aksi">Save</span>');
@@ -457,13 +454,6 @@
                 success: function(data) {
                     // moment.locale('id')
                     let total_nominal = 0;
-
-                    // PENGECEKAN APAKAH DATA TRANSAKSI ADA ATAU TIDAK
-                    if (data.transaksi.length > 0) {
-                        $('#form_loading').hide();
-                        $('.aksi').prop('disabled', false);
-                    }
-
                     // console.log(data);
                     for (let index = 0; index < data['transaksi'].length; index++) {
                         total_nominal += parseInt(data['transaksi'][index]['nominal'], 10);
@@ -473,13 +463,10 @@
                     $('#kode_prepayment').val(data['master']['kode_prepayment'].toUpperCase()).attr('readonly', true);
                     $('#tgl_prepayment').val(moment(data['master']['tgl_prepayment']).format('DD-MM-YYYY'));
                     $('#nama').val(data['master']['nama']);
-                    $('#rekening').val(data['master']['no_rek']).trigger('change');
-                    var parts = data['master']['no_rek'].split("-"); // Pisahkan berdasarkan "-"
-
-                    if (parts.length === 3) {
-                        $("#nama_rek").val(parts[0]);
-                        $("#nama_bank").val(parts[1]);
-                        $("#nomor_rekening").val(parts[2]);
+                    if (data['master']['no_rek'] == '') {
+                        $('#rekening').val().trigger('change');
+                    } else {
+                        $('#rekening').val(data['master']['no_rek']).trigger('change');
                     }
                     $('#prepayment').val(data['master']['prepayment']);
                     $('#tujuan').val(data['master']['tujuan']);
@@ -600,7 +587,7 @@
                 data: $('#form').serialize(),
                 dataType: "JSON",
                 success: function(data) {
-                    // console.log(data);
+                    console.log(data);
                     // Sembunyikan loading saat respons diterima
                     $('#loading').hide();
 
@@ -613,6 +600,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then((result) => {
+                            checkNotifications();
                             location.href = "<?= base_url('sml_prepayment') ?>";
                         })
                     } else {
@@ -664,9 +652,6 @@
                 nomor_rekening: {
                     required: true,
                 },
-                rekening: {
-                    required: true,
-                }
             },
             messages: {
                 tgl_prepayment: {
@@ -675,7 +660,6 @@
                 nama: {
                     required: "Nama is required",
                 },
-
                 prepayment: {
                     required: "Prepayment is required",
                 },
@@ -692,9 +676,6 @@
                 nomor_rekening: {
                     required: "*Nomor rekening perlu diisi",
                 },
-                rekening: {
-                    required: "Rekening is required",
-                }
             },
             errorPlacement: function(error, element) {
                 if (element.parent().hasClass('input-group')) {
@@ -712,41 +693,6 @@
             focusInvalid: false, // Disable auto-focus on the first invalid field
         });
 
-    })
 
-    // // MENGHAPUS DATA MENGGUNAKAN METHODE POST JQUERY
-    // function delete_data(id) {
-    //     // console.log($id);
-    //     Swal.fire({
-    //         title: 'Are you sure?',
-    //         text: "You won't be able to revert this!",
-    //         icon: 'warning',
-    //         showCancelButton: true,
-    //         confirmButtonColor: '#3085d6',
-    //         cancelButtonColor: '#d33',
-    //         confirmButtonText: 'Yes, delete it!'
-    //     }).then((result) => {
-    //         if (result.isConfirmed) {
-    //             $.ajax({
-    //                 url: "<?php echo site_url('sml_prepayment/delete_event/') ?>" + id,
-    //                 type: "POST",
-    //                 dataType: "JSON",
-    //                 success: function(data) {
-    //                     Swal.fire({
-    //                         position: 'center',
-    //                         icon: 'success',
-    //                         title: 'Your data has been deleted',
-    //                         showConfirmButton: false,
-    //                         timer: 1500
-    //                     }).then((result) => {
-    //                         location.href = "<?= base_url('sml_prepayment/add_form') ?>";
-    //                     })
-    //                 },
-    //                 error: function(jqXHR, textStatus, errorThrown) {
-    //                     alert('Error deleting data');
-    //                 }
-    //             });
-    //         }
-    //     })
-    // };
+    })
 </script>

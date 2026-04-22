@@ -75,13 +75,11 @@ class Sml_reimbust extends CI_Controller
                 $action = $action_read . $action_print;
             }
 
-            //MENENSTUKAN SATTSU PROGRESS PENGAJUAN PERMINTAAN
+            //MENENSTUKAN STATUS PROGRESS PENGAJUAN PERMINTAAN
             if ($field->app_status == 'approved' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
                 $status = $field->status . ' (' . $field->app2_name . ')';
-            } elseif ($field->app4_status == 'approved' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
+            } elseif ($field->app_status == 'waiting' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
                 $status = $field->status . ' (' . $field->app_name . ')';
-            } elseif ($field->app4_status == 'waiting' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
-                $status = $field->status . ' (' . $field->app4_name . ')';
             } else {
                 $status = $field->status;
             }
@@ -653,9 +651,6 @@ class Sml_reimbust extends CI_Controller
         $year = substr($date, 8, 2);
         $kode_reimbust = 'r' . $year . $month . $urutan;
 
-        // Mulai transaksi agar operasi insert/update atomic
-        $this->db->trans_begin();
-
         // Load library upload
         $this->load->library('upload');
 
@@ -674,104 +669,6 @@ class Sml_reimbust extends CI_Controller
         // Bersihkan input untuk hanya mengambil angka
         $jumlahClean = preg_replace('/\D/', '', $jumlah);
         $deklarasi = $this->input->post('deklarasi');
-        // jika ada deklarasi baru dari modal, buatkan entry sebelum detail loop
-        $deklarasi_map = [];
-        $used_deklarasi_codes = [];
-
-        $deklarasiDataJson = $this->input->post('deklarasi_data');
-        $lastOrdinalInBatch = null;
-
-        if ($deklarasiDataJson) {
-            $deklarasiData = json_decode($deklarasiDataJson, true);
-
-            if (is_array($deklarasiData)) {
-                foreach ($deklarasiData as $d) {
-                    if (empty($d['kode'])) {
-                        continue;
-                    }
-
-                    $requestedCode = strtoupper(trim($d['kode']));
-
-                    $existingDeklarasi = $this->db->get_where('sml_deklarasi', ['kode_deklarasi' => $requestedCode])->row();
-                    $alreadyUsedInBatch = in_array($requestedCode, $used_deklarasi_codes);
-
-                    // Ambil angka urutan dari kode (misal D2603060 -> 060)
-                    $currentOrdinal = (int) substr($requestedCode, 5);
-
-                    // Cek apakah urutan valid
-                    $isNotSequential = false;
-
-                    if ($lastOrdinalInBatch !== null) {
-                        if ($currentOrdinal !== $lastOrdinalInBatch + 1) {
-                            $isNotSequential = true;
-                        }
-                    }
-
-                    if ($existingDeklarasi || $alreadyUsedInBatch || $isNotSequential) {
-                        $finalCode = $this->generate_new_sml_deklarasi_code($d['tgl'], $used_deklarasi_codes);
-                        $deklarasi_map[$requestedCode] = $finalCode;
-                    } else {
-                        $finalCode = $requestedCode;
-                        $used_deklarasi_codes[] = $finalCode;
-                    }
-
-                    // update last ordinal
-                    $lastOrdinalInBatch = (int) substr($finalCode, 5);
-
-                    // Data approval sebagaimana pada deklarasi controller
-                    $id_menu2 = $this->db->select('id_menu')
-                        ->where('link', 'sml_datadeklarasi')
-                        ->get('tbl_submenu')
-                        ->row();
-                    $confirm2 = $this->db->select('app_id, app2_id, app4_id')
-                        ->from('tbl_approval')
-                        ->where('id_menu', $id_menu2->id_menu)
-                        ->get()->row();
-                    $appName2 = '';
-                    $app2Name2 = '';
-                    $app4Name2 = '';
-                    if (!empty($confirm2)) {
-                        $appName2 = $this->db->select('name')->from('tbl_data_user')->where('id_user', $confirm2->app_id)->get()->row('name');
-                        $app2Name2 = $this->db->select('name')->from('tbl_data_user')->where('id_user', $confirm2->app2_id)->get()->row('name');
-                        $app4Name2 = $this->db->select('name')->from('tbl_data_user')->where('id_user', $confirm2->app4_id)->get()->row('name');
-                    }
-                    $userId2 = $this->session->userdata('id_user');
-                    $jabatan2 = $this->db->select('jabatan')->from('tbl_data_user')->where('id_user', $userId2)->get()->row('jabatan');
-
-                    // Jika code sudah ada di DB, kita tidak menimpanya untuk menjamin data pertama tidak hilang.
-                    if ($existingDeklarasi && $finalCode === $requestedCode) {
-                        // tetap update jika kode persis ada dan tidak konflik (untuk memastikan detail terkini)
-                        $this->db->update('sml_deklarasi', [
-                            'tgl_deklarasi' => date('Y-m-d', strtotime($d['tgl'])),
-                            'nama_dibayar' => $d['nama'],
-                            'tujuan' => $d['tujuan'],
-                            'sebesar' => preg_replace('/\D/', '', $d['sebesar'])
-                        ], ['kode_deklarasi' => $requestedCode]);
-                    } else {
-                        // entri baru
-                        $this->db->insert('sml_deklarasi', [
-                            'kode_deklarasi' => $finalCode,
-                            'tgl_deklarasi' => date('Y-m-d', strtotime($d['tgl'])),
-                            'id_pengaju' => $userId2,
-                            'jabatan' => $jabatan2,
-                            'nama_dibayar' => $d['nama'],
-                            'tujuan' => $d['tujuan'],
-                            'sebesar' => preg_replace('/\D/', '', $d['sebesar']),
-                            'app_name' => $appName2,
-                            'app2_name' => $app2Name2,
-                            'app4_name' => $app4Name2,
-                            'is_active' => 1,
-                            'created_at' => date('Y-m-d H:i:s')
-                        ]);
-                    }
-
-                    // Simpan mapping untuk digunakan ketika menginsert detail
-                    if ($finalCode !== $requestedCode) {
-                        $deklarasi_map[$requestedCode] = $finalCode;
-                    }
-                }
-            }
-        }
         $id_user = $this->session->userdata('id_user');
 
         $data_user = $this->db->get_where('tbl_data_user', ['id_user' => $id_user])->row_array();
@@ -788,16 +685,18 @@ class Sml_reimbust extends CI_Controller
             if (!empty($_FILES['kwitansi']['name'][$i])) {
                 // Cek tipe file
                 if (!in_array($_FILES['kwitansi']['type'][$i], $allowed_types)) {
-                    $this->db->trans_rollback();
                     echo json_encode(array("status" => FALSE, "error" => "Tipe file tidak diizinkan untuk file ke-$i. Hanya file JPG dan PNG yang diperbolehkan."));
                     exit();
+                    $valid = false;  // Tandai bahwa ada file yang tidak valid
+                    break; // Keluar dari perulangan jika ada file yang tidak valid
                 }
 
                 // Cek ukuran file
                 if ($_FILES['kwitansi']['size'][$i] > 3072 * 1024) { // 3 MB in KB
-                    $this->db->trans_rollback();
                     echo json_encode(array("status" => FALSE, "error" => "Ukuran file tidak boleh melebihi dari 3 MB untuk file ke-$i."));
                     exit();
+                    $valid = false;  // Tandai bahwa ada file yang tidak valid
+                    break; // Keluar dari perulangan jika ada file yang terlalu besar
                 }
             }
         }
@@ -812,9 +711,9 @@ class Sml_reimbust extends CI_Controller
         if (!empty($confirm) && isset($confirm->app_id, $confirm->app2_id)) {
             $app = $confirm;
         } else {
-            $this->db->trans_rollback();
             echo json_encode(array("status" => FALSE, "error" => "Approval Belum Ditentukan, Mohon untuk menghubungi admin."));
             exit();
+            $valid = false;
         }
 
         // Inisialisasi data untuk tabel reimbust
@@ -873,15 +772,9 @@ class Sml_reimbust extends CI_Controller
                 if ($this->upload->do_upload('file')) {
                     $kwitansi = $this->upload->data('file_name');
                 } else {
-                    $this->db->trans_rollback();
                     echo json_encode(array("status" => FALSE, "error" => $this->upload->display_errors()));
                     return;
                 }
-            }
-
-            $kodeDeklarasiDipakai = strtoupper(trim($deklarasi[$i] ?? ''));
-            if (isset($deklarasi_map[$kodeDeklarasiDipakai])) {
-                $kodeDeklarasiDipakai = $deklarasi_map[$kodeDeklarasiDipakai];
             }
 
             $data2[] = [
@@ -890,15 +783,13 @@ class Sml_reimbust extends CI_Controller
                 'tgl_nota' => !empty($tgl_nota[$i]) ? date('Y-m-d', strtotime($tgl_nota[$i])) : date('Y-m-d'),
                 'jumlah' => $jumlahClean[$i],
                 'kwitansi' => $kwitansi,
-                'deklarasi' => $kodeDeklarasiDipakai
+                'deklarasi' => $deklarasi[$i]
             ];
 
-            // Update data deklarasi yang di tampilkan di modal, jika gambar di submit maka is active menjadi 0
-            if ($kodeDeklarasiDipakai) {
-                $this->db->set('is_active', 0);
-                $this->db->where('kode_deklarasi', $kodeDeklarasiDipakai);
-                $this->db->update('sml_deklarasi');
-            }
+            // Update data deklarasi yang di tampilkan di modal, jika gambar di submit maka is active akan menjadi 0
+            $this->db->set('is_active', 0);
+            $this->db->where('kode_deklarasi', $deklarasi[$i]);
+            $this->db->update('sml_deklarasi');
         }
         $this->db->set('is_active', 0);
         $this->db->where('kode_prepayment', $this->input->post('kode_prepayment'));
@@ -906,61 +797,8 @@ class Sml_reimbust extends CI_Controller
 
         $this->M_sml_reimbust->save_detail($data2);
 
-        if ($this->db->trans_status() === FALSE) {
-            $this->db->trans_rollback();
-            echo json_encode(array("status" => FALSE, "error" => "Gagal menyimpan data. Silakan coba lagi."));
-        } else {
-            $this->db->trans_commit();
-            echo json_encode(array("status" => TRUE));
-        }
-    }
 
-    /**
-     * Generate kode deklarasi baru untuk workflow SML dengan penanganan konflik.
-     */
-    private function generate_new_sml_deklarasi_code($date, &$used_codes = [])
-    {
-        $tanggal = date('Y-m-d', strtotime($date));
-        if (!$tanggal) {
-            $tanggal = date('Y-m-d');
-        }
-
-        $year = date('y', strtotime($tanggal));
-        $month = date('m', strtotime($tanggal));
-        $prefix = 'D' . $year . $month;
-
-        // Dapatkan kode terakhir di DB untuk periode tersebut
-        $maxKodeRow = $this->db->select('MAX(kode_deklarasi) AS maxKode')
-            ->from('sml_deklarasi')
-            ->like('kode_deklarasi', $prefix, 'after')
-            ->get()
-            ->row();
-
-        $maxKode = $maxKodeRow->maxKode ?? null;
-        $lastOrdinal = 0;
-        if ($maxKode && strlen($maxKode) >= 8) {
-            $lastOrdinal = (int) substr($maxKode, 5);
-        }
-
-        $nextOrdinal = $lastOrdinal + 1;
-
-        while (true) {
-            $candidate = $prefix . str_pad($nextOrdinal, 3, '0', STR_PAD_LEFT);
-
-            if (in_array($candidate, $used_codes)) {
-                $nextOrdinal++;
-                continue;
-            }
-
-            $exists = $this->db->get_where('sml_deklarasi', ['kode_deklarasi' => $candidate])->row();
-            if ($exists) {
-                $nextOrdinal++;
-                continue;
-            }
-
-            $used_codes[] = $candidate;
-            return $candidate;
-        }
+        echo json_encode(array("status" => TRUE));
     }
 
 
@@ -1008,54 +846,6 @@ class Sml_reimbust extends CI_Controller
         $kwitansi_image = $this->input->post('kwitansi_image');
         $deklarasi = $this->input->post('deklarasi');
         $deklarasi_old = $this->input->post('deklarasi_old');
-        // in case update also received deklarasi_data (new declarations)
-        $deklarasiDataJson = $this->input->post('deklarasi_data');
-        if ($deklarasiDataJson) {
-            $deklarasiData = json_decode($deklarasiDataJson, true);
-            if (is_array($deklarasiData)) {
-                foreach ($deklarasiData as $d) {
-                    if (!empty($d['kode'])) {
-                        $exists = $this->db->get_where('sml_deklarasi', ['kode_deklarasi' => $d['kode']])->row();
-                        if (!$exists) {
-                            // gather approval names same as before
-                            $id_menu2 = $this->db->select('id_menu')
-                                ->where('link', 'sml_datadeklarasi')
-                                ->get('tbl_submenu')
-                                ->row();
-                            $confirm2 = $this->db->select('app_id, app2_id, app4_id')
-                                ->from('tbl_approval')
-                                ->where('id_menu', $id_menu2->id_menu)
-                                ->get()->row();
-                            $appName2 = '';
-                            $app2Name2 = '';
-                            $app4Name2 = '';
-                            if (!empty($confirm2)) {
-                                $appName2 = $this->db->select('name')->from('tbl_data_user')->where('id_user', $confirm2->app_id)->get()->row('name');
-                                $app2Name2 = $this->db->select('name')->from('tbl_data_user')->where('id_user', $confirm2->app2_id)->get()->row('name');
-                                $app4Name2 = $this->db->select('name')->from('tbl_data_user')->where('id_user', $confirm2->app4_id)->get()->row('name');
-                            }
-                            $userId2 = $this->session->userdata('id_user');
-                            $jabatan2 = $this->db->select('jabatan')->from('tbl_data_user')->where('id_user', $userId2)->get()->row('jabatan');
-
-                            $this->db->insert('sml_deklarasi', [
-                                'kode_deklarasi' => $d['kode'],
-                                'tgl_deklarasi' => date('Y-m-d', strtotime($d['tgl'])),
-                                'id_pengaju' => $userId2,
-                                'jabatan' => $jabatan2,
-                                'nama_dibayar' => $d['nama'],
-                                'tujuan' => $d['tujuan'],
-                                'sebesar' => preg_replace('/\D/', '', $d['sebesar']),
-                                'app_name' => $appName2,
-                                'app2_name' => $app2Name2,
-                                'app4_name' => $app4Name2,
-                                'is_active' => 1,
-                                'created_at' => date('Y-m-d H:i:s')
-                            ]);
-                        }
-                    }
-                }
-            }
-        }
 
         if ($this->db->update('sml_reimbust', $data)) {
             // 1. Hapus Baris yang Telah Dihapus
@@ -1344,6 +1134,7 @@ class Sml_reimbust extends CI_Controller
 
         echo json_encode(array("status" => TRUE));
     }
+
 
     public function payment()
     {

@@ -20,7 +20,7 @@
                             <i class="fa fa-plus"></i>&nbsp;Add Data
                         </a>
                     <?php } ?>
-                    <div class="d-flex align-items-right">
+                    <div class="d-flex align-items-center">
                         <label for="appFilter" class="mr-2 mb-0">Filter:</label>
                         <select id="appFilter" name="appFilter" class="form-control form-control-sm">
                             <option value="on-process" selected>On-Process</option>
@@ -40,7 +40,7 @@
                             <a class="nav-link" id="employeeTab" href="#" data-tab="employee">Approval</a>
                         </li>
                     <?php } ?>
-                    <?php if ($alias == 'eko') { ?>
+                    <?php if ($alias == "eko") { ?>
                         <li class="nav-item">
                             <a class="nav-link" id="adminTab" href="#" data-tab="admin">Admin</a>
                         </li>
@@ -53,10 +53,11 @@
                             <tr>
                                 <th>No</th>
                                 <th>Action</th>
-                                <th>Status Payment</th>
+                                <th>Status Pembayaran</th>
                                 <th>Kode Prepayment</th>
                                 <th>Nama</th>
                                 <th>Tanggal Pengajuan</th>
+                                <th>Prepayment</th>
                                 <th>Total Nominal</th>
                                 <th>Status</th>
                             </tr>
@@ -67,10 +68,11 @@
                             <tr>
                                 <th>No</th>
                                 <th>Action</th>
-                                <th>Status Payment</th>
+                                <th>Status Pembayaran</th>
                                 <th>Kode Prepayment</th>
                                 <th>Nama</th>
                                 <th>Tanggal Pengajuan</th>
+                                <th>Prepayment</th>
                                 <th>Total Nominal</th>
                                 <th>Status</th>
                             </tr>
@@ -135,7 +137,7 @@
             $('.nav-tabs .nav-link').removeClass('active');
             $(`.nav-tabs .nav-link[data-tab="${activeTab}"]`).addClass('active');
             // You can load content for the active tab here if needed
-        } else if (activeTab == 'admin') {
+        } else if (activeTab == 'employee') {
             $('.nav-tabs .nav-link').removeClass('active');
             $(`.nav-tabs .nav-link[data-tab="${activeTab}"]`).addClass('active');
         } else {
@@ -146,6 +148,7 @@
 
         $('.collapse-item').on('click', function(e) {
             localStorage.removeItem('appFilterStatus'); // Hapus filter yang tersimpan
+            localStorage.removeItem('activeTab'); // Hapus filter yang tersimpan
         })
 
         // Tab click event
@@ -178,11 +181,11 @@
                 }
             },
             "columnDefs": [{
-                    "targets": [2, 3, 5, 6],
+                    "targets": [2, 3, 5, 7],
                     "className": 'dt-head-nowrap'
                 },
                 {
-                    "targets": [1, 4, 7],
+                    "targets": [1, 5, 8],
                     "className": 'dt-body-nowrap'
                 }, {
                     "targets": [0, 1],

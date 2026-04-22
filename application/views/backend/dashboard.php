@@ -44,6 +44,7 @@
                 else if (stripos($data['nama_menu'], 'quba') !== false) $prefix = 'qbg';
                 else if (stripos($data['nama_menu'], 'samlog') !== false) $prefix = 'sml';
                 else if (stripos($data['nama_menu'], 'knms') !== false) $prefix = 'knms';
+                else if (stripos($data['nama_menu'], 'safar') !== false) $prefix = 'sam';
 
                 // Cek jumlah data pending berdasarkan approval untuk user
                 $pending = 0;
@@ -228,6 +229,7 @@ $(document).ready(function() {
                 else if (nama_menu.toLowerCase().includes('quba')) prefix = 'qbg';
                 else if (nama_menu.toLowerCase().includes('samlog')) prefix = 'sml';
                 else if (nama_menu.toLowerCase().includes('knms')) prefix = 'knms';
+                else if (nama_menu.toLowerCase().includes('safar')) prefix = 'sam';
                 
                 var filteredData = data.filter(function(item) {
                     return item.form.startsWith(prefix + '_');
@@ -278,6 +280,7 @@ $(document).ready(function() {
                 else if (nama_menu.toLowerCase().includes('samlog')) prefix = 'sml';
                 else if (nama_menu.toLowerCase().includes('samlog')) prefix = 'sml';
                 else if (nama_menu.toLowerCase().includes('knms')) prefix = 'knms';
+                else if (nama_menu.toLowerCase().includes('safar')) prefix = 'sam';
                 
                 var filteredData = data.filter(function(item) {
                     return item.form.startsWith(prefix + '_');

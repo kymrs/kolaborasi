@@ -50,7 +50,7 @@ class Sam_rekapitulasi extends CI_Controller
         $data['total'] = $this->M_sam_rekapitulasi->get_total_pengeluaran();
 
         $data['title'] = "backend/sam_rekapitulasi";
-        $data['titleview'] = "Data Rekapitulasi Sam Travel";
+        $data['titleview'] = "Data Rekapitulasi SAM TRAVEL";
         $this->load->view('backend/home', $data);
     }
 
@@ -67,10 +67,9 @@ class Sam_rekapitulasi extends CI_Controller
             $kode_prepayment = !empty($field->kode_prepayment) ? $field->kode_prepayment : '-';
             $kode_reimbust = !empty($field->kode_reimbust) ? strtoupper($field->kode_reimbust) : '-';
             // $tanggal = !empty($field->tgl_pengajuan) ? $field->tgl_pengajuan : $field->tgl_prepayment;
-            $pengeluaran = !empty($field->total_jumlah_detail) ? number_format($field->total_jumlah_detail, 0, ',', '.') : number_format($field->total_nominal, 0, ',', '.');
-            $tgl_pengajuan = !empty($field->tgl_pengajuan)
-                ? $this->tgl_indo(date('Y-m-d', strtotime($field->tgl_pengajuan)))
-                : '-';
+            $tanggal = !empty($field->tgl_pengajuan) ? $this->tgl_indo(date('Y-m-d', strtotime($field->tgl_pengajuan))) : '-';
+            $pengeluaranNumeric = isset($field->total_pengeluaran) ? $field->total_pengeluaran : (!empty($field->total_jumlah_detail) ? $field->total_jumlah_detail : $field->total_nominal);
+            $pengeluaran = number_format($pengeluaranNumeric, 0, ',', '.');
 
             // Inkrement nomor urut
             $no++;
@@ -80,7 +79,7 @@ class Sam_rekapitulasi extends CI_Controller
             $row[] = $kode_reimbust; // Kode reimburse
             $row[] = $field->name; // Nama pengguna
             $row[] = $field->tujuan; // Tujuan dari pengajuan
-            $row[] = $tgl_pengajuan; // Format tanggal (Indonesia)
+            $row[] = $tanggal; // Format tanggal (Indonesia)
             $row[] = 'Rp. ' . $pengeluaran; // Format nominal
 
             // Tambahkan row ke array data
@@ -97,94 +96,9 @@ class Sam_rekapitulasi extends CI_Controller
         echo json_encode($output);
     }
 
-    public function get_list_pelaporan()
-    {
-        $list = $this->M_sam_rekapitulasi->get_datatables_pelaporan();
-        $data = array();
-        $no = $_POST['start'];
-
-        foreach ($list as $field) {
-            $no++;
-            $row = array();
-            $row[] = $no;
-            $row[] = $field->kode_prepayment ? $field->kode_prepayment : '-';
-            $row[] = !empty($field->kode_reimbust) ? ucfirst($field->kode_reimbust) : '-';
-            $row[] = $this->tgl_indo(date('Y-m-d', strtotime($field->tgl_pengajuan)));
-            $row[] = $field->tujuan;
-            $pengeluaran = !empty($field->total_jumlah_detail) ? $field->total_jumlah_detail : $field->total_nominal;
-            $row[] = 'Rp. ' . number_format($pengeluaran, 0, ',', '.');
-            $data[] = $row;
-        }
-
-        $output = array(
-            "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_sam_rekapitulasi->count_all_pelaporan(),
-            "recordsFiltered" => $this->M_sam_rekapitulasi->count_filtered_pelaporan(),
-            "data" => $data,
-        );
-        echo json_encode($output);
-    }
-
-    public function get_list_reimbust()
-    {
-        $list = $this->M_sam_rekapitulasi->get_datatables_reimbust();
-        $data = array();
-        $no = $_POST['start'];
-
-        foreach ($list as $field) {
-            $no++;
-            $row = array();
-            $row[] = $no;
-            $row[] = '-';
-            $row[] = !empty($field->kode_reimbust) ? strtoupper($field->kode_reimbust) : '-';
-            $row[] = $this->tgl_indo(date('Y-m-d', strtotime($field->tgl_pengajuan)));
-            $row[] = $field->tujuan;
-            $row[] = 'Rp. ' . number_format($field->total_jumlah_detail, 0, ',', '.');
-            $data[] = $row;
-        }
-
-        $output = array(
-            "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_sam_rekapitulasi->count_all_reimbust(),
-            "recordsFiltered" => $this->M_sam_rekapitulasi->count_filtered_reimbust(),
-            "data" => $data,
-        );
-        echo json_encode($output);
-    }
-
-    public function get_list_invoice()
-    {
-        $list = $this->M_sam_rekapitulasi->get_datatables_invoice();
-        $data = array();
-        $no = $_POST['start'];
-
-        foreach ($list as $field) {
-            $no++;
-            $row = array();
-            $row[] = $no;
-            $row[] = !empty($field->kode_invoice) ? $field->kode_invoice : '-';
-            $row[] = $this->tgl_indo($field->tgl_invoice);
-            $row[] = $field->ctc_to;
-            $row[] = 'Rp. ' . number_format($field->total, 0, ',', '.');
-            $row[] = $field->payment_status == 1 ? 'Lunas' : 'Belum Lunas';
-            $data[] = $row;
-        }
-
-        $output = array(
-            "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_sam_rekapitulasi->count_all_invoice(),
-            "recordsFiltered" => $this->M_sam_rekapitulasi->count_filtered_invoice(),
-            "data" => $data,
-        );
-        echo json_encode($output);
-    }
-
     function get_total()
     {
-        $output = array(
-            'pengeluaran' => $this->M_sam_rekapitulasi->get_total_pengeluaran(),
-            'pemasukan' => $this->M_sam_rekapitulasi->get_total_pemasukan()
-        );
+        $output = $this->M_sam_rekapitulasi->get_total_pengeluaran();
 
         //output dalam format JSON
         echo json_encode($output);
@@ -199,7 +113,6 @@ class Sam_rekapitulasi extends CI_Controller
         // Ambil data dari model
         $prepayment = $this->M_sam_rekapitulasi->get_data_prepayment($tgl_awal, $tgl_akhir);
         $reimbust = $this->M_sam_rekapitulasi->get_data_reimbust($tgl_awal, $tgl_akhir);
-        $invoice = $this->M_sam_rekapitulasi->get_data_invoice($tgl_awal, $tgl_akhir);
 
         // Inisialisasi Spreadsheet
         $spreadsheet = new Spreadsheet();
@@ -208,51 +121,38 @@ class Sam_rekapitulasi extends CI_Controller
         // Set judul kolom
         $sheet->setCellValue('A1', 'Kode Transaksi');
         $sheet->setCellValue('B1', 'Jenis Transaksi');
-        $sheet->setCellValue('C1', 'Tujuan');
-        $sheet->setCellValue('D1', 'Tanggal Transaksi');
-        $sheet->setCellValue('E1', 'Nominal');
+        $sheet->setCellValue('C1', 'Tanggal Transaksi');
+        $sheet->setCellValue('D1', 'Nominal');
 
         // Atur Auto Size untuk setiap kolom
         $sheet->getColumnDimension('A')->setAutoSize(true);
         $sheet->getColumnDimension('B')->setAutoSize(true);
         $sheet->getColumnDimension('C')->setAutoSize(true);
         $sheet->getColumnDimension('D')->setAutoSize(true);
-        $sheet->getColumnDimension('E')->setAutoSize(true);
 
         // Tambahkan filter ke header (baris pertama)
-        $sheet->setAutoFilter('A1:E1');
+        $sheet->setAutoFilter('A1:D1');
 
         // Isi data dari database mulai dari baris ke-2
         $row = 2;
         foreach ($prepayment as $data) {
             $sheet->setCellValue('A' . $row, $data->kode_prepayment);
             $sheet->setCellValue('B' . $row, 'Prepayment');
-            $sheet->setCellValue('C' . $row, $data->tujuan);
-            $sheet->setCellValue('D' . $row, $this->tgl_indo(date("Y-m-j", strtotime($data->tgl_prepayment))));
-            $sheet->setCellValue('E' . $row, $data->total_nominal);
+            $sheet->setCellValue('C' . $row, $this->tgl_indo(date("Y-m-j", strtotime($data->tgl_prepayment))));
+            $sheet->setCellValue('D' . $row, $data->total_nominal);
             $row++;
         }
 
         foreach ($reimbust as $data) {
             $sheet->setCellValue('A' . $row, strtoupper($data->kode_reimbust));
             $sheet->setCellValue('B' . $row, $data->sifat_pelaporan);
-            $sheet->setCellValue('C' . $row, $data->tujuan);
-            $sheet->setCellValue('D' . $row, $this->tgl_indo(date("Y-m-j", strtotime($data->tgl_pengajuan))));
-            $sheet->setCellValue('E' . $row, $data->total_nominal);
-            $row++;
-        }
-
-        foreach ($invoice as $data) {
-            $sheet->setCellValue('A' . $row, strtoupper($data->kode_invoice));
-            $sheet->setCellValue('B' . $row, 'Invoice');
-            $sheet->setCellValue('C' . $row, $data->tujuan);
-            $sheet->setCellValue('D' . $row, $this->tgl_indo(date("Y-m-j", strtotime($data->tgl_invoice))));
-            $sheet->setCellValue('E' . $row, $data->total);
+            $sheet->setCellValue('C' . $row, $this->tgl_indo(date("Y-m-j", strtotime($data->tgl_pengajuan))));
+            $sheet->setCellValue('D' . $row, $data->total_nominal);
             $row++;
         }
 
         // Terapkan format angka untuk kolom Nominal
-        $sheet->getStyle('E2:E' . ($row - 1))
+        $sheet->getStyle('D2:D' . ($row - 1))
             ->getNumberFormat()
             ->setFormatCode('#,##0');
 
@@ -261,7 +161,7 @@ class Sam_rekapitulasi extends CI_Controller
 
         // Set header untuk download file Excel
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="Data Rekapitulasi Samlog.xlsx"');
+        header('Content-Disposition: attachment;filename="Data Rekapitulasi SAM TRAVEL.xlsx"');
         header('Cache-Control: max-age=0');
 
         // Simpan file ke output

@@ -7,7 +7,9 @@ class Sml_prepayment extends CI_Controller
     {
         parent::__construct();
         $this->load->model('backend/M_sml_prepayment');
+        $this->load->model('backend/M_notifikasi');
         $this->M_login->getsecurity();
+        date_default_timezone_set('Asia/Jakarta');
     }
 
     function tgl_indo($tanggal)
@@ -54,6 +56,11 @@ class Sml_prepayment extends CI_Controller
         $this->load->view('backend/home', $data);
     }
 
+    public function get_pdf()
+    {
+        $this->load->view('backend/sml_prepayment/prepayment_pdf');
+    }
+
     function get_list()
     {
         // INISIAI VARIABLE YANG DIBUTUHKAN
@@ -75,6 +82,7 @@ class Sml_prepayment extends CI_Controller
         //LOOPING DATATABLES
         foreach ($list as $field) {
 
+            // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             $action_read = ($read == 'Y') ? '<a href="sml_prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
             $action_edit = ($edit == 'Y') ? '<a href="sml_prepayment/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
@@ -94,8 +102,10 @@ class Sml_prepayment extends CI_Controller
             //MENENSTUKAN SATTSU PROGRESS PENGAJUAN PERMINTAAN
             if ($field->app_status == 'approved' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
                 $status = $field->status . ' (' . $field->app2_name . ')';
-            } elseif ($field->app_status == 'waiting' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
+            } elseif ($field->app4_status == 'approved' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
                 $status = $field->status . ' (' . $field->app_name . ')';
+            } elseif ($field->app4_status == 'waiting' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
+                $status = $field->status . ' (' . $field->app4_name . ')';
             } else {
                 $status = $field->status;
             }
@@ -105,16 +115,15 @@ class Sml_prepayment extends CI_Controller
             $row = array();
             $row[] = $no;
             $row[] = $action;
-
             if ($field->payment_status == 'paid') {
                 $row[] = '<div class="text-center"><button class="btn btn-primary btn-circle btn-sm" data-toggle="modal" data-target="#paymentDetailModal" data-id="' . $field->id . '" title="Detail Pembayaran"><i class="fas fa-check" style="color: #1cc88a;"></i></button></div>';
             } else if ($field->payment_status == 'unpaid') {
                 $row[] = '<div class="text-center"><i class="fas fa-times" style="color: red;"></i></div>';
             }
-
             $row[] = strtoupper($field->kode_prepayment);
             $row[] = $field->name;
             $row[] = $this->tgl_indo(date("Y-m-j", strtotime($field->tgl_prepayment)));
+            $row[] = $field->prepayment;
             $row[] = $formatted_nominal;
             $row[] = $status;
 
@@ -134,7 +143,6 @@ class Sml_prepayment extends CI_Controller
     // UNTUK MENAMPILKAN FORM READ
     public function read_form($id)
     {
-
         $data['id'] = $id;
         $data['user'] = $this->M_sml_prepayment->get_by_id($id);
         $data['app_name'] = $this->db->select('name')
@@ -159,12 +167,11 @@ class Sml_prepayment extends CI_Controller
         $id = $this->session->userdata('id_user');
         $data['id_user'] = $id;
         $data['id_pembuat'] = 0;
-
-        $data['hak_akses'] = $this->session->userdata('id_level');
-        $data['rek_options'] = $this->M_sml_prepayment->options($id)->result_array();
         $data['id'] = 0;
         $data['title'] = 'backend/sml_prepayment/sml_prepayment_form';
         $data['title_view'] = 'Prepayment Form';
+        $data['rek_options'] = $this->M_sml_prepayment->options($data['id_user'])->result_array();
+
         $this->load->view('backend/home', $data);
     }
 
@@ -194,10 +201,9 @@ class Sml_prepayment extends CI_Controller
         $data['id_pembuat'] = $this->M_sml_prepayment->get_by_id($id)->id_user;
 
         $data['id'] = $id;
-        $data['hak_akses'] = $this->session->userdata('id_level');
         $data['aksi'] = 'update';
-        $data['rek_options'] = $this->M_sml_prepayment->options($data['id_user'])->result_array();
         $data['title_view'] = "Edit Data Prepayment";
+        $data['rek_options'] = $this->M_sml_prepayment->options($data['id_user'])->result_array();
         $data['title'] = 'backend/sml_prepayment/sml_prepayment_form';
         $this->load->view('backend/home', $data);
     }
@@ -244,7 +250,7 @@ class Sml_prepayment extends CI_Controller
 
         $valid = true;
         $confirm = $this->db->select('app_id, app2_id, app4_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
-        if (!empty($confirm) && isset($confirm->app_id, $confirm->app2_id)) {
+        if (!empty($confirm) && isset($confirm->app_id, $confirm->app2_id, $confirm->app4_id)) {
             $app = $confirm;
         } else {
             echo json_encode(array("status" => FALSE, "error" => "Approval Belum Ditentukan, Mohon untuk menghubungi admin."));
@@ -263,8 +269,8 @@ class Sml_prepayment extends CI_Controller
         $data = array(
             'kode_prepayment' => $kode_prepayment,
             'id_user' => $id,
-            'tujuan' => $this->input->post('tujuan'),
             'prepayment' => $this->input->post('prepayment'),
+            'tujuan' => $this->input->post('tujuan'),
             'tgl_prepayment' => date('Y-m-d', strtotime($this->input->post('tgl_prepayment'))),
             'total_nominal' => $this->input->post('total_nominal'),
             'no_rek' => $no_rek,
@@ -288,13 +294,16 @@ class Sml_prepayment extends CI_Controller
                 ->where('id_user', $app->app2_id)
                 ->get()
                 ->row('name'),
-            'app4_name' => $this->db->select('name')
+            'created_at' => date('Y-m-d H:i:s')
+        );
+
+        if ($app->app4_id != null) {
+            $data['app4_name'] = $this->db->select('name')
                 ->from('tbl_data_user')
                 ->where('id_user', $app->app4_id)
                 ->get()
-                ->row('name'),
-            'created_at' => date('Y-m-d H:i:s')
-        );
+                ->row('name');
+        }
 
         if ($valid) {
             $inserted = $this->M_sml_prepayment->save($data);
@@ -331,8 +340,8 @@ class Sml_prepayment extends CI_Controller
 
         $data = array(
             'kode_prepayment' => $this->input->post('kode_prepayment'),
-            'tujuan' => $this->input->post('tujuan'),
             'prepayment' => $this->input->post('prepayment'),
+            'tujuan' => $this->input->post('tujuan'),
             'tgl_prepayment' => date('Y-m-d', strtotime($this->input->post('tgl_prepayment'))),
             'total_nominal' => $this->input->post('total_nominal'),
             'no_rek' => $no_rek,
@@ -357,8 +366,7 @@ class Sml_prepayment extends CI_Controller
         $keterangan = $this->input->post('keterangan[]');
         if ($this->db->update('sml_prepayment', $data)) {
             // UNTUK MENGHAPUS ROW YANG TELAH DIDELETE
-            $deletedRowsJson = $this->input->post('deleted_rows') ?? '[]';
-            $deletedRows = json_decode($deletedRowsJson, true);
+            $deletedRows = json_decode($this->input->post('deleted_rows'), true);
             if (!empty($deletedRows)) {
                 foreach ($deletedRows as $id2) {
                     // Hapus row dari database berdasarkan ID
@@ -394,30 +402,6 @@ class Sml_prepayment extends CI_Controller
     }
 
     //APPROVE DATA
-    public function approve3()
-    {
-        $data = array(
-            'app4_keterangan' => $this->input->post('app4_keterangan'),
-            'app4_status' => $this->input->post('app4_status'),
-            'app4_date' => date('Y-m-d H:i:s'),
-        );
-
-        // UPDATE STATUS DEKLARASI
-        if ($this->input->post('app4_status') === 'revised') {
-            $data['status'] = 'revised';
-        } elseif ($this->input->post('app4_status') === 'approved') {
-            $data['status'] = 'on-process';
-        } elseif ($this->input->post('app4_status') === 'rejected') {
-            $data['status'] = 'rejected';
-        }
-
-        //UPDATE APPROVAL PERTAMA
-        $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('sml_prepayment', $data);
-
-        echo json_encode(array("status" => TRUE));
-    }
-
     public function approve()
     {
         $data = array(
@@ -466,6 +450,31 @@ class Sml_prepayment extends CI_Controller
         echo json_encode(array("status" => TRUE));
     }
 
+    //APPROVE DATA
+    public function approve3()
+    {
+        $data = array(
+            'app4_keterangan' => $this->input->post('app4_keterangan'),
+            'app4_status' => $this->input->post('app4_status'),
+            'app4_date' => date('Y-m-d H:i:s'),
+        );
+
+        // UPDATE STATUS DEKLARASI
+        if ($this->input->post('app4_status') === 'revised') {
+            $data['status'] = 'revised';
+        } elseif ($this->input->post('app4_status') === 'approved') {
+            $data['status'] = 'on-process';
+        } elseif ($this->input->post('app4_status') === 'rejected') {
+            $data['status'] = 'rejected';
+        }
+
+        //UPDATE APPROVAL PERTAMA
+        $this->db->where('id', $this->input->post('hidden_id'));
+        $this->db->update('sml_prepayment', $data);
+
+        echo json_encode(array("status" => TRUE));
+    }
+
     public function generate_pdf($id)
     {
         // Load FPDF library
@@ -504,22 +513,23 @@ class Sml_prepayment extends CI_Controller
         $formatted_date = str_replace($month, $translated_month, $formatted_date);
 
         // Start FPDF
-        $pdf = new FPDF('P', 'mm', 'A4');
+        $pdf = new Fpdf_generate('P', 'mm', 'A4');
         $pdf->SetTitle('Form Pengajuan Prepayment');
         $pdf->AddPage('P', 'Letter');
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/sml.png', 11, 12, 49, 16);
+        $pdf->Image(base_url('') . '/assets/backend/img/carstensz.png', 12, 7, 60, 15);
 
         $pdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php');
         $pdf->AddFont('Poppins-Bold', '', 'Poppins-Bold.php');
 
-        // Pindahkan posisi sedikit ke bawah dan tetap sejajar
-        $pdf->Ln(27);
+        $pdf->Ln(17);
         $pdf->SetFont('Poppins-Regular', '', 12);
+
         $pdf->Cell(30, 10, 'Prepayment', 0, 0);
         $pdf->Cell(5, 10, ':', 0, 0);
         $pdf->Cell(50, 10, $data['master']->prepayment, 0, 1);
+        $pdf->Ln(8);
 
         // Form Title
         $pdf->SetFont('Poppins-Bold', '', 14);
@@ -605,40 +615,46 @@ class Sml_prepayment extends CI_Controller
         $pdf->SetFont('Poppins-Bold', '', 12);
 
         // Membuat header tabel
-        $pdf->Cell(63, 8.5, 'Yang Melakukan', 1, 0, 'C');
-        $pdf->Cell(63, 8.5, 'Mengetahui', 1, 0, 'C');
-        $pdf->Cell(63, 8.5, 'Menyetujui', 1, 1, 'C');
+        $pdf->Cell(47.3, 8.5, 'Yang Melakukan', 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, 'Memeriksa', 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, 'Mengetahui', 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, 'Menyetujui', 1, 1, 'C');
 
         // Set font normal untuk konten tabel
         $pdf->SetFont('Poppins-Regular', '', 10);
 
         // Baris pemisah
-        $pdf->Cell(63, 5, '', 'LR', 0, 'C');
-        $pdf->Cell(63, 5, '', 0, 0, 'C');
-        $pdf->Cell(63, 5, '', 'LR', 1, 'C');
+        $pdf->Cell(47.3, 5, '', 'LR', 0, 'C');
+        $pdf->Cell(47.3, 5, '', 0, 0, 'C');
+        $pdf->Cell(47.3, 5, '', 'L', 0, 'C');
+        $pdf->Cell(47.3, 5, '', 'LR', 1, 'C');
 
         // Baris pertama (Status)
-        $pdf->Cell(63, 5, 'CREATED', 'LR', 0, 'C');
-        $pdf->Cell(63, 5, strtoupper($data['master']->app_status), 0, 0, 'C');
-        $pdf->Cell(63, 5, strtoupper($data['master']->app2_status), 'LR', 1, 'C');
+        $pdf->Cell(47.3, 5, 'CREATED', 'LR', 0, 'C');
+        $pdf->Cell(47.3, 5, strtoupper($data['master']->app4_status), 'R', 0, 'C');
+        $pdf->Cell(47.3, 5, strtoupper($data['master']->app_status), 0, 0, 'C');
+        $pdf->Cell(47.3, 5, strtoupper($data['master']->app2_status), 'LR', 1, 'C');
 
         // Baris kedua (Tanggal)
-        $pdf->Cell(63, 5, $data['master']->created_at, 'LR', 0, 'C');
-        $pdf->Cell(63, 5, $data['master']->app_date, 0, 0, 'C');
-        $pdf->Cell(63, 5, $data['master']->app2_date, 'LR', 1, 'C');
+        $pdf->Cell(47.3, 5, $data['master']->created_at, 'LR', 0, 'C');
+        $pdf->Cell(47.3, 5, $data['master']->app4_date, 'R', 0, 'C');
+        $pdf->Cell(47.3, 5, $data['master']->app_date, 0, 0, 'C');
+        $pdf->Cell(47.3, 5, $data['master']->app2_date, 'LR', 1, 'C');
 
         // Baris pemisah
-        $pdf->Cell(63, 5, '', 'LR', 0, 'C');
-        $pdf->Cell(63, 5, '', 0, 0, 'C');
-        $pdf->Cell(63, 5, '', 'LR', 1, 'C');
+        $pdf->Cell(47.3, 5, '', 'LR', 0, 'C');
+        $pdf->Cell(47.3, 5, '', 0, 0, 'C');
+        $pdf->Cell(47.3, 5, '', 'L', 0, 'C');
+        $pdf->Cell(47.3, 5, '', 'LR', 1, 'C');
 
         // Jarak kosong untuk pemisah
         $pdf->Ln(0);
 
         // Baris ketiga (Nama pengguna)
-        $pdf->Cell(63, 8.5, $data['user'], 1, 0, 'C');
-        $pdf->Cell(63, 8.5, $data['master']->app_name, 1, 0, 'C');
-        $pdf->Cell(63, 8.5, $data['master']->app2_name, 1, 1, 'C');
+        $pdf->Cell(47.3, 8.5, $data['user'], 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, $data['master']->app4_name, 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, $data['master']->app_name, 1, 0, 'C');
+        $pdf->Cell(47.3, 8.5, $data['master']->app2_name, 1, 1, 'C');
 
 
         // Add keterangan
@@ -652,13 +668,12 @@ class Sml_prepayment extends CI_Controller
             $pdf->Cell(60, 10, '*' . '(' . $data['master']->app_name . ') ' . $data['master']->app_keterangan, 0, 1);
         }
         if ($data['master']->app2_keterangan != null && $data['master']->app2_keterangan != '') {
-            $pdf->Cell(60, 10, '*' . '(' . $data['master']->app2_name . ') ' . $data['master']->app2_keterangan, 0, 1);
+            $pdf->Cell(60, 10, '*' . '(' . $data['master']->app2_name . ')' . $data['master']->app2_keterangan, 0, 1);
         }
-        
-        // Output the PDF
-        $pdf->Output('I', 'Prepayment_SW.pdf');
-    }
 
+        // Output the PDF
+        $pdf->Output('I', 'sml_prepayment.pdf');
+    }
 
     // QUERY UNTUK INPUT TANDA TANGAN
     function signature()

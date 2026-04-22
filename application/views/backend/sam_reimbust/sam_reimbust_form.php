@@ -23,8 +23,16 @@
                                             <option value="">-- Pilih --</option>
                                             <option value="Reimbust">Reimbust</option>
                                             <option value="Pelaporan">Pelaporan</option>
+                                            <option value="Transport">Transport</option>
                                         </select>
-                                        <div class="btn btn-primary btn-small btn-style btn-search-prepayment" data-toggle="modal" data-target="#pelaporanModal" id="pelaporan_button" style="margin-left: 7px;"><i class="fas fa-solid fa-search"></i></div>
+                                        <div class="btn btn-primary btn-small btn-style btn-search-prepayment" data-toggle="modal" data-target="#pelaporanModal" id="pelaporan_button" style="margin-left: 7px; display: none"><i class="fas fa-solid fa-search"></i></div>
+                                        <!-- Info Sisa Budget Transport -->
+                                        <div id="sisa_budget_transport" style="display: none; margin-top: 10px; padding: 10px; background-color: #e7f3ff; border-left: 4px solid #242c49; border-radius: 4px; text-align: right; width: 275px;">
+                                            <p style="margin: 0; font-size: 12px; color: #242c49;">
+                                                <strong>Sisa Budget (Bulan Ini):</strong>
+                                                <span id="sisa_budget_nominal" style="color: #2e7d32; font-weight: bold;">Rp. 0</span>
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -874,21 +882,19 @@
         $('#sifat_pelaporan').on('change', function() {
             var sifatPelaporan = $(this).val();
 
+            // Handle field reset
             if (sifatPelaporan == 'Reimbust') {
                 $('#tujuan').val('');
                 $('#jumlah_prepayment').val('');
                 $('#kode_prepayment_input').val('');
-            } else if (sifatPelaporan != 'Reimbust' && sifatPelaporan != 'Pelaporan') {
+            } else if (sifatPelaporan != 'Reimbust' && sifatPelaporan != 'Pelaporan' && sifatPelaporan != 'Transport') {
                 $('#tgl_pengajuan').val('');
                 $('#kode_reimbust').val('');
                 $('#tujuan').val('');
                 $('#jumlah_prepayment').val('');
             }
 
-        });
-
-        $('#sifat_pelaporan').on('input', function() {
-            var sifatPelaporan = $(this).val();
+            // Handle UI changes and budget loading
             handleSifatPelaporanChange(sifatPelaporan);
         });
 
@@ -897,6 +903,7 @@
             if (aksi == 'add') {
                 if (sifatPelaporan == 'Reimbust') {
                     $('#pelaporan_button').css('display', 'none');
+                    $('#sisa_budget_transport').css('display', 'none');
                     $('#tgl_pengajuan').prop({
                         'disabled': false,
                         'readonly': false
@@ -921,6 +928,7 @@
                 } else if (sifatPelaporan == 'Pelaporan') {
                     $('#pelaporan_button').css('display', 'inline-block');
                     $('#parent_sifat_pelaporan').css('display', 'flex');
+                    $('#sisa_budget_transport').css('display', 'none');
                     $('#tgl_pengajuan').prop({
                         'disabled': false,
                         'readonly': false
@@ -937,9 +945,37 @@
                         'disabled': false,
                         'readonly': true
                     }).css('cursor', 'not-allowed');
+                } else if (sifatPelaporan == 'Transport') {
+                    $('#pelaporan_button').css('display', 'none');
+                    $('#parent_sifat_pelaporan').css('display', 'inline-block');
+                    $('#sisa_budget_transport').css('display', 'block');
+                    $('#tgl_pengajuan').prop({
+                        'disabled': false,
+                        'readonly': false
+                    }).css('cursor', 'pointer');
+                    $('#tgl_pengajuan').css('pointer-events', 'auto');
+                    $('#tujuan').prop({
+                        'disabled': false,
+                        'readonly': false
+                    }).css('cursor', 'auto');
+                    $('#status').prop({
+                        'disabled': false,
+                        'readonly': false
+                    }).css('cursor', 'pointer');
+                    $('#jumlah_prepayment').prop({
+                        'disabled': false,
+                        'readonly': true
+                    }).css('cursor', 'not-allowed').val('0');
+                    $('#hidden_jumlah_prepayment').val('0');
+                    $('#kode_prepayment').css({
+                        'display': 'none'
+                    });
+                    // Load budget info ketika Transport dipilih
+                    loadBudgetTransport();
                 } else {
                     $('#pelaporan_button').css('display', 'none');
                     $('#parent_sifat_pelaporan').css('display', 'inline-block');
+                    $('#sisa_budget_transport').css('display', 'none');
                     $('#tgl_pengajuan').prop('disabled', true).css('cursor', 'not-allowed');
                     $('#tujuan').prop('disabled', true).css('cursor', 'not-allowed');
                     $('#status').prop('disabled', true).css('cursor', 'not-allowed');
@@ -956,6 +992,7 @@
                         'cursor': 'not-allowed'
                     });
                     $('#pelaporan_button').css('display', 'none');
+                    $('#sisa_budget_transport').css('display', 'none');
                     $('#tgl_pengajuan').prop({
                         'disabled': false,
                         'readonly': false
@@ -982,6 +1019,7 @@
                     });
                     $('#parent_sifat_pelaporan').css('display', 'flex');
                     $('#pelaporan_button').css('display', 'inline-block');
+                    $('#sisa_budget_transport').css('display', 'none');
                     $('#tgl_pengajuan').prop({
                         'disabled': false,
                         'readonly': true
@@ -998,20 +1036,82 @@
                     $('#kode_prepayment').css({
                         'display': 'flex'
                     });
+                } else if (sifatPelaporan == 'Transport') {
+                    $('#sifat_pelaporan').prop('readonly', true).css({
+                        'background-color': '#EAECF4',
+                        'pointer-events': 'none',
+                        'cursor': 'not-allowed'
+                    });
+                    $('#sisa_budget_transport').css('display', 'block');
+                    $('#tgl_pengajuan').prop('readonly', true).css('cursor', 'not-allowed');
+                    $('#tujuan').prop('readonly', false).css('cursor', 'auto');
+                    $('#status').prop('readonly', true).css('cursor', 'not-allowed');
+                    $('#jumlah_prepayment').prop('readonly', true).css('cursor', 'not-allowed');
+                    $('#kode_prepayment').css({
+                        'display': 'none'
+                    });
+                    loadBudgetTransport();
                 } else {
                     $('#tgl_pengajuan').prop('readonly', true).css('cursor', 'not-allowed');
                     $('#tujuan').prop('readonly', true).css('cursor', 'not-allowed');
                     $('#status').prop('readonly', true).css('cursor', 'not-allowed');
                     $('#jumlah_prepayment').prop('readonly', true).css('cursor', 'not-allowed');
+                    $('#sisa_budget_transport').css('display', 'none');
                 }
             }
         }
 
-        setInterval(function() {
-            var sifatPelaporan = $('#sifat_pelaporan').val();
-            handleSifatPelaporanChange(sifatPelaporan);
-        }, 01); // Memeriksa setiap detik
+        /**
+         * Flag untuk prevent multiple budget loading calls
+         */
+        let budgetLoadingInProgress = false;
 
+        /**
+         * Function untuk load budget transport dari server
+         */
+        function loadBudgetTransport() {
+            // Prevent multiple simultaneous calls
+            if (budgetLoadingInProgress) {
+                return;
+            }
+
+            budgetLoadingInProgress = true;
+
+            $.ajax({
+                url: "<?= site_url('sam_reimbust/get_budget_transport') ?>",
+                type: "GET",
+                dataType: "JSON",
+                success: function(data) {
+                    if (data.status === 'success') {
+                        const sisaBudget = data.sisa_budget;
+                        const formattedBudget = new Intl.NumberFormat('id-ID', {
+                            style: 'currency',
+                            currency: 'IDR',
+                            minimumFractionDigits: 0
+                        }).format(sisaBudget);
+                        
+                        $('#sisa_budget_nominal').text(formattedBudget);
+                        
+                        // Jika budget habis, disable submit button
+                        if (!data.can_submit) {
+                            $('#add-row').prop('disabled', true).css({
+                                'cursor': 'not-allowed',
+                                'background-color': '#6a6e7b'
+                            });
+                            Swal.fire('Warning', 'Budget transport untuk bulan ini sudah habis!', 'warning');
+                        } else {
+                            $('.aksi').prop('disabled', false).css('cursor', 'pointer');
+                        }
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error loading budget:', error);
+                },
+                complete: function() {
+                    budgetLoadingInProgress = false;
+                }
+            });
+        }
         if (id == 0) {
             $('.aksi').text('Save');
             $('#sifat_pelaporan').prop('disabled', false).css('cursor', 'pointer');
@@ -1029,6 +1129,11 @@
                     moment.locale('id')
                     // Set nilai untuk setiap field dari data master    
                     $('#sifat_pelaporan').val(data['master']['sifat_pelaporan']);
+                    
+                    // Load budget jika sifat pelaporan adalah Transport
+                    if (data['master']['sifat_pelaporan'] === 'Transport') {
+                        loadBudgetTransport();
+                    }
                     $('#id').val(data['master']['id']);
                     $('#kode_reimbust').val(data['master']['kode_reimbust']).attr('readonly', true);
                     $('#tgl_pengajuan').val(moment(data['master']['tgl_pengajuan']).format('DD-MM-YYYY'));
@@ -1187,6 +1292,33 @@
             e.preventDefault();
             var $form = $(this);
             if (!$form.valid()) return false;
+
+            // Validasi untuk sifat pelaporan Transport
+            const sifatPelaporan = $('#sifat_pelaporan').val();
+            if (sifatPelaporan === 'Transport') {
+                // Hitung total jumlah dari tabel detail
+                let totalJumlah = 0;
+                $('#input-container tr').each(function() {
+                    const jumlahValue = $(this).find('input[name^="jumlah"]').val();
+                    if (jumlahValue) {
+                        const cleanValue = parseInt(jumlahValue.replace(/[.]/g, '')) || 0;
+                        totalJumlah += cleanValue;
+                    }
+                });
+
+                // Get sisa budget yang sudah ditampilkan
+                const sisaBudgetText = $('#sisa_budget_nominal').text();
+                const sisaBudgetNum = parseInt(sisaBudgetText.replace(/[^\d]/g, ''));
+
+                if (totalJumlah > sisaBudgetNum) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Melebihi Budget!',
+                        text: 'Sisa budget bulan ini = Rp ' + sisaBudgetNum.toLocaleString('id-ID')
+                    });
+                    return false;
+                }
+            }
 
             var url;
             if (id == 0) {

@@ -20,13 +20,13 @@
 
         /* header */
         .header {
-            height: 60px;
+            height: 80px;
         }
 
         .header .logo {
             width: 230px;
             position: relative;
-            bottom: 50px;
+            bottom: 10px;
             right: -4px;
         }
 
@@ -430,27 +430,27 @@
                     date4 = data['master']['app4_date'];
                 }
 
- // Only show Captain column if app4_name is not null
+                // Only show Memeriksa column if app4_name is not null
                 let app4Name = data['master']['app4_name'];
-                let showCaptain = app4Name && app4Name.trim() !== '' && app4Name.toLowerCase() !== 'null';
+                let showMemeriksa = app4Name && app4Name.trim() !== '' && app4Name.toLowerCase() !== 'null';
 
                 let tableHeader = `<tr>
                                 <td>Yang melakukan</td>`;
-                if (showCaptain) tableHeader += `<td>Captain</td>`;
+                if (showMemeriksa) tableHeader += `<td>Memeriksa</td>`;
                 tableHeader += `<td>Mengetahui</td>
                                 <td>Menyetujui</td>
                             </tr>`;
 
                 let tableStatus = `<tr style="height: 75px">
                                 <td id="statusMelakukan"><div class="signature-text text-center">CREATED<br><span>${data['master']['created_at']}</span></div></td>`;
-                if (showCaptain) tableStatus += `<td id="statusKapten"><div class="signature-text text-center">${data['master']['app4_status'] ? data['master']['app4_status'].toUpperCase() : ''}<br><span>${date4}</span></div></td>`;
+                if (showMemeriksa) tableStatus += `<td id="statusKapten"><div class="signature-text text-center">${data['master']['app4_status'] ? data['master']['app4_status'].toUpperCase() : ''}<br><span>${date4}</span></div></td>`;
                 tableStatus += `<td id="statusMengetahui"><div class="signature-text text-center">${data['master']['app_status'] ? data['master']['app_status'].toUpperCase() : ''}<br><span>${date}</span></div></td>
                                 <td id="statusMenyetujui"><div class="signature-text text-center">${data['master']['app2_status'] ? data['master']['app2_status'].toUpperCase() : ''}<br><span>${date2}</span></div></td>
                             </tr>`;
 
                 let tableName = `<tr>
                                 <td id="melakukan"><div class="signature-text text-center">${data['nama']}</div></td>`;
-                if (showCaptain) tableName += `<td id="kapten"><div class="signature-text text-center">${data['master']['app4_name']}</div></td>`;
+                if (showMemeriksa) tableName += `<td id="kapten"><div class="signature-text text-center">${data['master']['app4_name']}</div></td>`;
                 tableName += `<td id="mengetahui"><div class="signature-text text-center">${data['master']['app_name']}</div></td>
                                 <td id="menyetujui"><div class="signature-text text-center">${data['master']['app2_name']}</div></td>
                             </tr>`;
