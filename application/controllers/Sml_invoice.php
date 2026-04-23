@@ -101,7 +101,7 @@ class Sml_invoice extends CI_Controller
         $delete = $akses->delete_level;
         $print = $akses->print_level;
 
-        //LOOPING DATATABLES
+        // LOOPING DATATABLES
         foreach ($list as $field) {
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
