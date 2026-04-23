@@ -93,7 +93,7 @@ class Ctz_datadeklarasi extends CI_Controller
                 $action = $action_read . $action_print;
             }
 
-            //MENENSTUKAN SATTSU PROGRESS PENGAJUAN PERMINTAAN
+            // MENENTUKAN STATUS PROGRESS PENGAJUAN PERMINTAAN
             if ($field->app_status == 'approved' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
                 $status = $field->status . ' (' . $field->app2_name . ')';
             } elseif ($field->app_status == 'waiting' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
