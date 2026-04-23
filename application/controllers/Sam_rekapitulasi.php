@@ -50,7 +50,7 @@ class Sam_rekapitulasi extends CI_Controller
         $data['total'] = $this->M_sam_rekapitulasi->get_total_pengeluaran();
 
         $data['title'] = "backend/sam_rekapitulasi";
-        $data['titleview'] = "Data Rekapitulasi SAM TRAVEL";
+        $data['titleview'] = "Rekapitulasi Safar Amanah Madani";
         $this->load->view('backend/home', $data);
     }
 
@@ -161,7 +161,7 @@ class Sam_rekapitulasi extends CI_Controller
 
         // Set header untuk download file Excel
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="Data Rekapitulasi SAM TRAVEL.xlsx"');
+        header('Content-Disposition: attachment;filename="Data Rekapitulasi Safar Amanah Madani.xlsx"');
         header('Cache-Control: max-age=0');
 
         // Simpan file ke output

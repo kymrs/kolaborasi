@@ -908,6 +908,10 @@
                         'disabled': false,
                         'readonly': false
                     }).css('cursor', 'pointer');
+                    $('#add-row').prop('disabled', false).css({
+                        'cursor': 'pointer',
+                        'background-color': '#242c49'
+                    });
                     $('#tgl_pengajuan').css('pointer-events', 'auto');
                     $('#tujuan').prop({
                         'disabled': false, 
@@ -927,6 +931,10 @@
                     });
                 } else if (sifatPelaporan == 'Pelaporan') {
                     $('#pelaporan_button').css('display', 'inline-block');
+                    $('#add-row').prop('disabled', false).css({
+                        'cursor': 'pointer',
+                        'background-color': '#242c49'
+                    });
                     $('#parent_sifat_pelaporan').css('display', 'flex');
                     $('#sisa_budget_transport').css('display', 'none');
                     $('#tgl_pengajuan').prop({
@@ -974,6 +982,10 @@
                     loadBudgetTransport();
                 } else {
                     $('#pelaporan_button').css('display', 'none');
+                    $('#add-row').prop('disabled', false).css({
+                        'cursor': 'pointer',
+                        'background-color': '#242c49'
+                    });
                     $('#parent_sifat_pelaporan').css('display', 'inline-block');
                     $('#sisa_budget_transport').css('display', 'none');
                     $('#tgl_pengajuan').prop('disabled', true).css('cursor', 'not-allowed');
@@ -990,6 +1002,10 @@
                         'background-color': '#EAECF4',
                         'pointer-events': 'none',
                         'cursor': 'not-allowed'
+                    });
+                    $('#add-row').prop('disabled', false).css({
+                        'cursor': 'pointer',
+                        'background-color': '#242c49'
                     });
                     $('#pelaporan_button').css('display', 'none');
                     $('#sisa_budget_transport').css('display', 'none');
@@ -1094,6 +1110,8 @@
                         
                         // Jika budget habis, disable submit button
                         if (!data.can_submit) {
+                            $('#input-container').html('');
+                            reorderRows();
                             $('#add-row').prop('disabled', true).css({
                                 'cursor': 'not-allowed',
                                 'background-color': '#6a6e7b'

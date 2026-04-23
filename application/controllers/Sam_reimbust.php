@@ -335,7 +335,7 @@ class Sam_reimbust extends CI_Controller
         $pdf->SetAutoPageBreak(true, 5); // Margin bawah 15mm
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/sml.png', 10, 12, 49, 16);
+        $pdf->Image(base_url('') . '/assets/backend/img/sam.png', 10, 12, 49, 16);
 
         // Set font
         $pdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php');
@@ -345,7 +345,7 @@ class Sam_reimbust extends CI_Controller
 
         // Teks yang ingin ditampilkan
         $text1 = 'FORM PELAPORAN / REIMBUST';
-        $text2 = 'SAHABAT MULTI LOGISTIK';
+        $text2 = 'SAFAR AMANAH MADANI';
 
         // Menghitung lebar teks
         $textWidth1 = $pdf->GetStringWidth($text1);
@@ -508,7 +508,9 @@ class Sam_reimbust extends CI_Controller
         $pdf->SetFont('Poppins-Regular', '', 10);
         // Membuat header tabel
         $pdf->Cell(47.3, 8.5, 'Yang Melakukan', 1, 0, 'C');
-        $pdf->Cell(47.3, 8.5, 'Memeriksa', 1, 0, 'C');
+        if ($data['master']->app4_name) {
+            $pdf->Cell(47.3, 8.5, 'Memeriksa', 1, 0, 'C');
+        }
         $pdf->Cell(47.3, 8.5, 'Mengetahui', 1, 0, 'C');
         $pdf->Cell(47.3, 8.5, 'Menyetujui', 1, 1, 'C');
 
@@ -517,25 +519,33 @@ class Sam_reimbust extends CI_Controller
 
         // Baris pemisah
         $pdf->Cell(47.3, 5, '', 'LR', 0, 'C');
-        $pdf->Cell(47.3, 5, '', 0, 0, 'C');
+        if ($data['master']->app4_name) {
+            $pdf->Cell(47.3, 5, '', 0, 0, 'C');
+        }
         $pdf->Cell(47.3, 5, '', 'L', 0, 'C');
         $pdf->Cell(47.3, 5, '', 'LR', 1, 'C');
 
         // Baris pertama (Status)
         $pdf->Cell(47.3, 5, 'CREATED', 'LR', 0, 'C');
-        $pdf->Cell(47.3, 5, strtoupper($data['master']->app4_status), 'R', 0, 'C');
+        if ($data['master']->app4_name) {
+            $pdf->Cell(47.3, 5, strtoupper($data['master']->app4_status), 'R', 0, 'C');
+        }
         $pdf->Cell(47.3, 5, strtoupper($data['master']->app_status), 0, 0, 'C');
         $pdf->Cell(47.3, 5, strtoupper($data['master']->app2_status), 'LR', 1, 'C');
 
         // Baris kedua (Tanggal)
         $pdf->Cell(47.3, 5, $data['master']->created_at, 'LR', 0, 'C');
-        $pdf->Cell(47.3, 5, $data['master']->app4_date, 'R', 0, 'C');
+        if ($data['master']->app4_name) {
+            $pdf->Cell(47.3, 5, $data['master']->app4_date, 'R', 0, 'C');
+        }
         $pdf->Cell(47.3, 5, $data['master']->app_date, 0, 0, 'C');
         $pdf->Cell(47.3, 5, $data['master']->app2_date, 'LR', 1, 'C');
 
         // Baris pemisah
         $pdf->Cell(47.3, 5, '', 'LR', 0, 'C');
-        $pdf->Cell(47.3, 5, '', 0, 0, 'C');
+        if ($data['master']->app4_name) {
+            $pdf->Cell(47.3, 5, '', 0, 0, 'C');
+        }
         $pdf->Cell(47.3, 5, '', 'L', 0, 'C');
         $pdf->Cell(47.3, 5, '', 'LR', 1, 'C');
 
@@ -544,7 +554,9 @@ class Sam_reimbust extends CI_Controller
 
         // Baris ketiga (Nama pengguna)
         $pdf->Cell(47.3, 8.5, $data['user'], 1, 0, 'C');
-        $pdf->Cell(47.3, 8.5, $data['master']->app4_name, 1, 0, 'C');
+        if ($data['master']->app4_name) {
+            $pdf->Cell(47.3, 8.5, $data['master']->app4_name, 1, 0, 'C');
+        }
         $pdf->Cell(47.3, 8.5, $data['master']->app_name, 1, 0, 'C');
         $pdf->Cell(47.3, 8.5, $data['master']->app2_name, 1, 1, 'C');
 

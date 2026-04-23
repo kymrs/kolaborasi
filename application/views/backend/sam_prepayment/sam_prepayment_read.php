@@ -6,7 +6,7 @@
     <style>
         /* Style logo position */
         .header .logo {
-            width: 70px;
+            width: 125px;
             position: relative;
             right: -3px;
             bottom: 80px;
