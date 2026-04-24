@@ -113,6 +113,9 @@
                     <li class="nav-item">
                         <a class="nav-link" id="reimbustTab" href="#" data-tab="reimbust">Reimbust</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="transportTab" href="#" data-tab="transport">Transport</a>
+                    </li>
                 </ul>
 
                 <div class="card-body">
@@ -277,6 +280,29 @@
                 </tr>
             `);
             } else if (tab === 'reimbust') {
+                tableHeader.append(`
+                <tr>
+                    <th>No</th>
+                    <th>Kode Prepayment</th>
+                    <th>Kode Reimbust</th>
+                    <th>Nama</th>
+                    <th>Keterangan</th>
+                    <th>Tanggal</th>
+                    <th>Pengeluaran</th>
+                </tr>
+            `);
+                tableFooter.append(`
+                <tr>
+                    <th>No</th>
+                    <th>Kode Prepayment</th>
+                    <th>Kode Reimbust</th>
+                    <th>Nama</th>
+                    <th>Keterangan</th>
+                    <th>Tanggal</th>
+                    <th>Pengeluaran</th>
+                </tr>
+            `);
+            } else if (tab === 'transport') {
                 tableHeader.append(`
                 <tr>
                     <th>No</th>

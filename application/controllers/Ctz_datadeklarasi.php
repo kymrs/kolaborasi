@@ -68,7 +68,7 @@ class Ctz_datadeklarasi extends CI_Controller
         $data = array();
         $no = $_POST['start'];
 
-        $akses = $this->M_app->hak_akses($this->session->userdata('id_level'), $this->router->fetch_class());
+        $akses = $this->M_app->hak_akses($this->session->userdata('id_level'), $this->router->fetch_class());   
         $read = $akses->view_level;
         $edit = $akses->edit_level;
         $delete = $akses->delete_level;
@@ -88,7 +88,7 @@ class Ctz_datadeklarasi extends CI_Controller
             } elseif ($field->id_pengaju == $this->session->userdata('id_user') && !in_array($field->status, ['rejected', 'approved', 'revised']) && $field->app_status == "waiting") {
                 $action = $action_read . $action_edit . $action_delete . $action_print;
             } elseif (($field->id_pengaju == $this->session->userdata('id_user') || $this->session->userdata('username') == 'eko') && $field->status == 'revised') {
-                $action = $action_read . $action_edit . $action_print;
+                $action = $action_read . $action_edit . $action_print; 
             } else {
                 $action = $action_read . $action_print;
             }

@@ -55,6 +55,18 @@ class M_sam_rekapitulasi extends CI_Model
         $this->db->where('sam_reimbust.tgl_pengajuan <=', $tgl_akhir);
     }
 
+    private function _apply_date_filter_transport()
+    {
+        if (empty($_POST['awal']) || empty($_POST['akhir'])) {
+            return;
+        }
+
+        $tgl_awal = date('Y-m-d', strtotime($_POST['awal']));
+        $tgl_akhir = date('Y-m-d', strtotime($_POST['akhir']));
+        $this->db->where('sam_reimbust.tgl_pengajuan >=', $tgl_awal);
+        $this->db->where('sam_reimbust.tgl_pengajuan <=', $tgl_akhir);
+    }
+
     private function _build_base_query()
     {
         $tab = $this->_get_tab();
@@ -116,6 +128,45 @@ class M_sam_rekapitulasi extends CI_Model
             return;
         }
 
+        if ($tab === 'transport') {
+            // Transport tab - filters by sifat_pelaporan = 'Transport'
+            $this->column_order = array(
+                null,
+                null,
+                'sam_reimbust.kode_reimbust',
+                'tbl_data_user.name',
+                'sam_reimbust.tujuan',
+                'sam_reimbust.tgl_pengajuan',
+                'total_pengeluaran'
+            );
+            $this->column_search = array(
+                'sam_reimbust.kode_reimbust',
+                'tbl_data_user.name',
+                'sam_reimbust.tujuan'
+            );
+
+            $this->db->select(
+                'sam_reimbust.id,
+                 sam_reimbust.tgl_pengajuan,
+                 tbl_data_user.name,
+                 sam_reimbust.tujuan,
+                 sam_reimbust.kode_reimbust,
+                 sam_reimbust.kode_prepayment,
+                 SUM(sam_reimbust_detail.jumlah) AS total_jumlah_detail,
+                 COALESCE(SUM(sam_reimbust_detail.jumlah), 0) AS total_pengeluaran'
+            );
+            $this->db->from('sam_reimbust');
+            $this->db->join('sam_reimbust_detail', 'sam_reimbust.id = sam_reimbust_detail.reimbust_id', 'left');
+            $this->db->join('tbl_data_user', 'sam_reimbust.id_user = tbl_data_user.id_user', 'left');
+            $this->db->where('sam_reimbust.payment_status', 'paid');
+            $this->db->where('sam_reimbust.sifat_pelaporan', 'Transport');
+
+            $this->_apply_date_filter_transport();
+
+            $this->db->group_by('sam_reimbust.id');
+            return;
+        }
+
         // reimbust tab
         $this->column_order = array(
             null,
@@ -147,6 +198,7 @@ class M_sam_rekapitulasi extends CI_Model
         $this->db->join('tbl_data_user', 'sam_reimbust.id_user = tbl_data_user.id_user', 'left');
         $this->db->where('sam_reimbust.payment_status', 'paid');
         $this->db->where('sam_reimbust.kode_prepayment', '');
+        $this->db->where('sam_reimbust.sifat_pelaporan', 'Reimbust');
 
         $this->_apply_date_filter_reimbust();
 
@@ -184,7 +236,7 @@ class M_sam_rekapitulasi extends CI_Model
 
         // Default order
         $tab = $this->_get_tab();
-        if ($tab === 'reimbust') {
+        if ($tab === 'reimbust' || $tab === 'transport') {
             $this->db->order_by('sam_reimbust.tgl_pengajuan', 'DESC');
         } else {
             $this->db->order_by('tgl_pengajuan', 'DESC');
@@ -300,6 +352,7 @@ class M_sam_rekapitulasi extends CI_Model
         $this->db->join('sam_reimbust_detail AS b', 'a.id = b.reimbust_id', 'left');
         $this->db->where('a.payment_status', 'paid');
         $this->db->where('a.kode_prepayment', '');
+        $this->db->where('a.sifat_pelaporan', 'Reimbust');
 
         // // Filter by date range if needed
         if (!empty($_POST['awal']) && !empty($_POST['akhir'])) {
@@ -321,13 +374,41 @@ class M_sam_rekapitulasi extends CI_Model
         $query_reimbust = $this->db->get()->row()->total_nominal;
         $total_reimbust = $query_reimbust != NULL ? $query_reimbust : 0;
 
-        // Total keseluruhan dari pelaporan dan reimbust
-        $total_keseluruhan = $total_prepayment + $total_pelaporan + $total_reimbust;
+        // Total untuk transport
+        $this->db->select('SUM(b.jumlah) AS total_nominal');
+        $this->db->from('sam_reimbust AS a');
+        $this->db->join('sam_reimbust_detail AS b', 'a.id = b.reimbust_id', 'left');
+        $this->db->where('a.payment_status', 'paid');
+        $this->db->where('a.sifat_pelaporan', 'Transport');
+
+        // Filter by date range if needed
+        if (!empty($_POST['awal']) && !empty($_POST['akhir'])) {
+            $tgl_awal = date('Y-m-d', strtotime($_POST['awal']));
+            $tgl_akhir = date('Y-m-d', strtotime($_POST['akhir']));
+
+            $this->db->group_start();
+
+            if ($tgl_awal == $tgl_akhir) {
+                $this->db->where('a.tgl_pengajuan =', $tgl_awal);
+            } else {
+                $this->db->where('a.tgl_pengajuan >=', $tgl_awal);
+                $this->db->where('a.tgl_pengajuan <=', $tgl_akhir);
+            }
+
+            $this->db->group_end();
+        }
+
+        $query_transport = $this->db->get()->row()->total_nominal;
+        $total_transport = $query_transport != NULL ? $query_transport : 0;
+
+        // Total keseluruhan dari pelaporan, reimbust, dan transport
+        $total_keseluruhan = $total_prepayment + $total_pelaporan + $total_reimbust + $total_transport;
 
         $data = array(
             'total_prepayment' => $total_prepayment,
             'total_pelaporan' => $total_pelaporan,
             'total_reimbust' => $total_reimbust,
+            'total_transport' => $total_transport,
             'total_pengeluaran' => $total_keseluruhan
         );
 
