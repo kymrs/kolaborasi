@@ -27,7 +27,6 @@ class M_sam_rekapitulasi extends CI_Model
         $tgl_awal = date('Y-m-d', strtotime($_POST['awal']));
         $tgl_akhir = date('Y-m-d', strtotime($_POST['akhir']));
 
-        // Date column depends on whether it's reimbust-linked or prepayment-only
         $this->db->group_start();
         $this->db->group_start();
         $this->db->where('sam_reimbust.kode_prepayment IS NOT NULL', null, false);
