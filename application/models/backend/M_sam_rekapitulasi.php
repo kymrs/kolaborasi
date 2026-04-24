@@ -129,7 +129,6 @@ class M_sam_rekapitulasi extends CI_Model
         }
 
         if ($tab === 'transport') {
-            // Transport tab - filters by sifat_pelaporan = 'Transport'
             $this->column_order = array(
                 null,
                 null,
