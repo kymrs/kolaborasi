@@ -72,7 +72,6 @@ class M_sam_rekapitulasi extends CI_Model
         $tab = $this->_get_tab();
 
         if ($tab === 'pelaporan') {
-            // View columns: [0 No], [1 Kode Prepayment], [2 Kode Reimbust], [3 Nama], [4 Keterangan], [5 Tanggal], [6 Pengeluaran]
             $this->column_order = array(
                 null,
                 'sam_prepayment.kode_prepayment',
