@@ -106,7 +106,6 @@ class M_sam_rekapitulasi extends CI_Model
             $this->db->join('sam_reimbust_detail', 'sam_reimbust.id = sam_reimbust_detail.reimbust_id', 'left');
             $this->db->join('tbl_data_user', 'sam_prepayment.id_user = tbl_data_user.id_user', 'left');
 
-            // Preserve existing visibility rules
             $this->db->group_start();
             $this->db->group_start();
             $this->db->where('sam_prepayment.payment_status', 'paid');
