@@ -8,7 +8,7 @@
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex justify-content-between align-items-center">
                     <!-- <?php if ($add == 'Y') { ?>
-                        <a class="btn btn-primary btn-sm" href="<?= base_url('mac_reimbust/add_form') ?>">
+                        <a class="btn btn-primary btn-sm" href="<?= base_url('sml_reimbust/add_form') ?>">
                             <i class="fa fa-plus"></i>&nbsp;Add Data
                         </a>
                     <?php } ?> -->
@@ -42,10 +42,12 @@
                                 <th>Status Pembayaran</th>
                                 <th>Kode Reimbust</th>
                                 <th>Nama</th>
+                                <!-- <th>Jabatan</th>
+                                <th>Departemen</th> -->
                                 <th>Sifat Pelaporan</th>
                                 <th>Tanggal Pengajuan</th>
                                 <th>Tujuan</th>
-                                <th>Jumlah Pelaporan</th>
+                                <th>Jumlah Prepayment</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -58,10 +60,12 @@
                                 <th>Status Pembayaran</th>
                                 <th>Kode Reimbust</th>
                                 <th>Nama</th>
+                                <!-- <th>Jabatan</th>
+                                <th>Departemen</th> -->
                                 <th>Sifat Pelaporan</th>
                                 <th>Tanggal Pengajuan</th>
                                 <th>Tujuan</th>
-                                <th>Jumlah Pelaporan</th>
+                                <th>Jumlah Prepayment</th>
                                 <th>Status</th>
                             </tr>
                         </tfoot>
@@ -74,8 +78,11 @@
                                 <th>No</th>
                                 <th>Action</th>
                                 <th>Status Pembayaran</th>
-                                <th>Kode Prepayment</th>
+                                <th>Kode Reimbust</th>
                                 <th>Nama</th>
+                                <!-- <th>Jabatan</th>
+                                <th>Departemen</th> -->
+                                <th>Sifat Pelaporan</th>
                                 <th>Tanggal Pengajuan</th>
                                 <th>Tujuan</th>
                                 <th>Jumlah Prepayment</th>
@@ -89,8 +96,11 @@
                                 <th>No</th>
                                 <th>Action</th>
                                 <th>Status Pembayaran</th>
-                                <th>Kode Prepayment</th>
+                                <th>Kode Reimbust</th>
                                 <th>Nama</th>
+                                <!-- <th>Jabatan</th>
+                                <th>Departemen</th> -->
+                                <th>Sifat Pelaporan</th>
                                 <th>Tanggal Pengajuan</th>
                                 <th>Tujuan</th>
                                 <th>Jumlah Prepayment</th>
@@ -104,72 +114,6 @@
     </div>
 </div>
 
-<!-- Modal Payment Detail -->
-<div class="modal fade" id="paymentDetailModal" tabindex="-1" aria-labelledby="paymentDetailLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="paymentDetailLabel">
-                     Detail Pembayaran
-                </h5>
-                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label><strong>Tanggal :</strong></label>
-                    <p id="modalTanggal">-</p>
-                </div>
-                <div class="form-group">
-                    <label><strong>Attachment :</strong></label>
-                    <div id="modalAttachment">
-                        <p>-</p>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                    <i class="fas fa-times"></i> Close
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Payment Detail Prepayment -->
-<div class="modal fade" id="paymentDetailModalPrepayment" tabindex="-1" aria-labelledby="paymentDetailLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="paymentDetailLabel">
-                     Detail Pembayaran
-                </h5>
-                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label><strong>Tanggal :</strong></label>
-                    <p id="modalTanggalPrepayment">-</p>
-                </div>
-                <div class="form-group">
-                    <label><strong>Attachment :</strong></label>
-                    <div id="modalAttachmentPrepayment">
-                        <p>-</p>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                    <i class="fas fa-times"></i> Close
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
 <?php $this->load->view('template/footer'); ?>
 <?php $this->load->view('template/script'); ?>
 
@@ -177,8 +121,6 @@
     var table, table2;
 
     $(document).ready(function() {
-        // Set locale moment ke Indonesia sejak awal
-        moment.locale('id');
 
         // --- NORMALISASI NAV TAB (hapus kelas active ganda) ---
         $('.nav-tabs .nav-link').removeClass('active');
@@ -226,7 +168,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('mac_reimpayment/get_list') ?>",
+                "url": "<?php echo site_url('sml_reimpayment/get_list') ?>",
                 "type": "POST",
                 "data": function(d) {
                     d.status = $('#appFilter').val();
@@ -248,7 +190,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('mac_reimpayment/get_list3') ?>",
+                "url": "<?php echo site_url('sml_reimpayment/get_list3') ?>",
                 "type": "POST",
                 "data": function(d) {
                     d.status = $('#appFilter').val();
@@ -279,130 +221,6 @@
         showTab(activeTab);
     });
 
-    // Handle Payment Detail Modal
-    $('#paymentDetailModal').on('show.bs.modal', function(e) {
-        var paymentBtn = $(e.relatedTarget);
-        var id = paymentBtn.data('id');
-        var baseUrl = "<?= base_url() ?>";
-        var attachmentPath = baseUrl + "assets/backend/document/reimbust/attachment/mac_attachment/";
-        
-        $.ajax({
-            url: "<?= site_url('mac_reimbust/edit_data') ?>/" + id,
-            type: "GET",
-            dataType: "JSON",
-            success: function(data) {
-                var tglPembayaran = data.master.tgl_pembayaran;
-                var attachment = data.master.attachment;
-                
-                // Format tanggal pembayaran terpisah
-                if (tglPembayaran) {
-                    var momentDate = moment(tglPembayaran);
-                    // var tanggalFormatted = momentDate.format('D MMMM YYYY - HH:mm:ss');
-                    var tanggalFormatted = momentDate.format('D MMMM YYYY');
-                    
-                    $('#modalTanggal').html(tanggalFormatted);
-                } else {
-                    $('#modalTanggal').html('-');
-                }
-                
-                // Hande attachment
-                if (attachment) {
-                    var fileExtension = attachment.split('.').pop().toLowerCase();
-                    var attachmentHtml = '';
-                    var fullPath = attachmentPath + attachment;
-                    
-                    if (fileExtension === 'png' || fileExtension === 'jpg' || fileExtension === 'jpeg') {
-                        // Tampilkan image preview
-                        attachmentHtml = '<a href="' + fullPath + '" download title="Download Image"><img src="' + fullPath + '" alt="Attachment" class="img-fluid" style="max-width: 400px; border: 1px solid #ddd; padding: 5px; border-radius: 5px;"></a>';
-                    } else if (fileExtension === 'pdf') {
-                        // Tampilkan tombol preview untuk PDF
-                        attachmentHtml = '<button class="btn btn-primary btn-sm" onclick="window.open(\'' + fullPath + '\', \'_blank\')">';
-                        attachmentHtml += '<i class="fas fa-file-pdf"></i> Preview PDF';
-                        attachmentHtml += '</button>';
-                    } else {
-                        // Untuk tipe file lain
-                        attachmentHtml = '<button class="btn btn-primary btn-sm" onclick="window.open(\'' + fullPath + '\', \'_blank\')">';
-                        attachmentHtml += '<i class="fas fa-download"></i> Download File';
-                        attachmentHtml += '</button>';
-                    }
-                    
-                    $('#modalAttachment').html(attachmentHtml);
-                } else {
-                    $('#modalAttachment').html('<p>-</p>');
-                }
-            },
-            error: function() {
-                Swal.fire({
-                    icon: 'error',  
-                    title: 'Error',
-                    text: 'Gagal mengambil data pembayaran'
-                });
-            }
-        });
-    });
-
-    // Handle Payment Detail Modal
-    $('#paymentDetailModalPrepayment').on('show.bs.modal', function(e) {
-        var paymentBtn = $(e.relatedTarget);
-        var id = paymentBtn.data('id');
-        var baseUrl = "<?= base_url() ?>";
-        var attachmentPath = baseUrl + "assets/backend/document/prepayment/attachment/mac_attachment/";
-        
-        $.ajax({
-            url: "<?= site_url('mac_prepayment/edit_data') ?>/" + id,
-            type: "GET",
-            dataType: "JSON",
-            success: function(data) {
-                var tglPembayaran = data.master.tgl_pembayaran;
-                var attachment = data.master.attachment;
-                
-                // Format tanggal pembayaran terpisah
-                if (tglPembayaran) {
-                    var momentDate = moment(tglPembayaran);
-                    // var tanggalFormatted = momentDate.format('D MMMM YYYY - HH:mm:ss');
-                    var tanggalFormatted = momentDate.format('D MMMM YYYY');
-                    
-                    $('#modalTanggalPrepayment').html(tanggalFormatted);
-                } else {
-                    $('#modalTanggalPrepayment').html('-');
-                }
-                
-                // Hande attachment
-                if (attachment) {
-                    var fileExtension = attachment.split('.').pop().toLowerCase();
-                    var attachmentHtml = '';
-                    var fullPath = attachmentPath + attachment;
-                    
-                    if (fileExtension === 'png' || fileExtension === 'jpg' || fileExtension === 'jpeg') {
-                        // Tampilkan image preview
-                        attachmentHtml = '<a href="' + fullPath + '" download title="Download Image"><img src="' + fullPath + '" alt="Attachment" class="img-fluid" style="max-width: 400px; border: 1px solid #ddd; padding: 5px; border-radius: 5px;"></a>';
-                    } else if (fileExtension === 'pdf') {
-                        // Tampilkan tombol preview untuk PDF
-                        attachmentHtml = '<button class="btn btn-primary btn-sm" onclick="window.open(\'' + fullPath + '\', \'_blank\')">';
-                        attachmentHtml += '<i class="fas fa-file-pdf"></i> Preview PDF';
-                        attachmentHtml += '</button>';
-                    } else {
-                        // Untuk tipe file lain
-                        attachmentHtml = '<button class="btn btn-primary btn-sm" onclick="window.open(\'' + fullPath + '\', \'_blank\')">';
-                        attachmentHtml += '<i class="fas fa-download"></i> Download File';
-                        attachmentHtml += '</button>';
-                    }
-                    
-                    $('#modalAttachmentPrepayment').html(attachmentHtml);
-                } else {
-                    $('#modalAttachmentPrepayment').html('<p>-</p>');
-                }
-            },
-            error: function() {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Gagal mengambil data pembayaran'
-                });
-            }
-        });
-    });
-
     function delete_data(id) {
         Swal.fire({
             title: 'Are you sure?',
@@ -415,7 +233,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: "<?php echo site_url('mac_reimpayment/delete/') ?>" + id,
+                    url: "<?php echo site_url('sml_reimpayment/delete/') ?>" + id,
                     type: "POST",
                     dataType: "JSON",
                     success: function(data) {
@@ -427,7 +245,7 @@
                                 showConfirmButton: false,
                                 timer: 1500
                             }).then(() => {
-                                location.href = "<?= base_url('mac_reimpayment') ?>";
+                                location.href = "<?= base_url('sml_reimpayment') ?>";
                             });
                         } else {
                             Swal.fire({
@@ -445,7 +263,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then(() => {
-                            location.href = "<?= base_url('mac_reimpayment') ?>";
+                            location.href = "<?= base_url('sml_reimpayment') ?>";
                         });
                     }
                 });

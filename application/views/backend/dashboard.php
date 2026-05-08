@@ -113,7 +113,7 @@
                             <?php endif; ?>
                             <div class="d-flex justify-content-center">
                                 <!-- Image inside card, properly scaled and responsive -->
-                                <img src="<?= base_url('assets/backend/img/' . $data['sub_image']); ?>" class="img-fluid" alt="Logo" style="max-width: 100%; height: auto; border-radius: 10px;">
+                                <img src="<?= base_url('assets/backend/img/' . $data['sub_image']); ?>" class="img-fluid" alt="Logo" style="width: 500px; height: auto; border-radius: 10px;">
                             </div>
                         </div>
                     </a>
@@ -151,33 +151,6 @@
 
 <?php $this->load->view('template/footer'); ?>
 <?php $this->load->view('template/script'); ?>
-
-<!-- <script>
-$(document).ready(function() {
-    $('.modal').on('shown.bs.modal', function () {
-        var table = $(this).find('table');
-        console.log('Table URL:', table.data('url')); // Debug log
-            if (!table.hasClass('dataTable')) {
-                table.DataTable({
-                "responsive": true,
-                "scrollX": true,
-                "processing": true,
-                "serverSide": true,
-                "order": [],
-                "ajax": {
-                    "url": table.data('url'),
-                    "type": "POST",
-                },
-                "columns": [
-                    { "data": "no" },
-                    { "data": "data1" },
-                    { "data": "data2" }
-                ],
-            });
-        }
-    });
-});
-</script> -->
 
 <script>
 $(document).ready(function() {

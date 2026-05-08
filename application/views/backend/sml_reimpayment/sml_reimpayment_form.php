@@ -6,11 +6,16 @@
         <h1 class="h3 mb-0 text-gray-800"><?= $title_view ?></h1>
     </div>
 
+    <!-- Form Loading indicator -->
+    <div id="form_loading" style="display: none;">
+        <p>Loading...</p>
+    </div>
+
     <div class="row">
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header text-right">
-                    <a class="btn btn-primary btn-sm btn-style" href="<?= base_url('sw_reimbust') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+                    <a class="btn btn-primary btn-sm btn-style" href="<?= base_url('sml_reimbust') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
                     <form id="form" enctype="multipart/form-data">
@@ -193,7 +198,6 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="deklarasiModalLabel">Data Deklarasi</h5>
-                                        <!-- <a style="position: relative; right: 75px" class="btn btn-primary btn-sm" href="<?= base_url('sw_datadeklarasi/add_form') ?>"><i class="fa fa-plus"></i>&nbsp;Add Data</a> -->
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span style="position: relative; bottom: 5px" aria-hidden="true">&times;</span>
                                         </button>
@@ -239,7 +243,6 @@
                             <span class="close">&times;</span>
                             <img class="modal-content" id="img01">
                         </div>
-
                     </form>
                 </div>
             </div>
@@ -253,8 +256,8 @@
 <script>
     $('#tgl_pengajuan').datepicker({
         dateFormat: 'dd-mm-yy',
-        minDate: new Date(),
-        maxDate: new Date(),
+        // minDate: new Date(),
+        // maxDate: new Date(),
 
         // MENGENERATE KODE PREPAYMENT SETELAH PILIH TANGGAL
         onSelect: function(dateText) {
@@ -266,7 +269,7 @@
                 $("#tgl_pengajuan-error").remove(); // Menghapus label error
             }
             $.ajax({
-                url: "<?php echo site_url('sw_reimbust/generate_kode') ?>",
+                url: "<?php echo site_url('sml_reimbust/generate_kode') ?>",
                 type: "POST",
                 data: {
                     "date": dateText
@@ -321,6 +324,7 @@
 
     // METHOD POST MENAMPILKAN DATA KE DATA TABLE
     $(document).ready(function() {
+
         var table = $('#prepayment-table').DataTable({
             "responsive": true,
             "autoWidth": false,
@@ -328,7 +332,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('sw_reimbust/get_list3') ?>",
+                "url": "<?php echo site_url('sml_reimbust/get_list3') ?>",
                 "type": "POST",
                 "data": function(d) {
                     d.status = 'approved';
@@ -356,6 +360,7 @@
             // Masukkan data ke dalam input form di tampilan utama
             $('#kode_prepayment_input').val(data[2]);
             $('#departemenPrepayment').val(data[4]);
+            $('#jabatan').val(data[5]);
             $('#jumlah_prepayment').val(data[8]);
             var cleanedValue = data[8].replace(/\./g, '');
             $('#hidden_jumlah_prepayment').val(cleanedValue);
@@ -377,7 +382,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('sw_reimbust/get_list2') ?>",
+                "url": "<?php echo site_url('sml_reimbust/get_list2') ?>",
                 "type": "POST"
             },
             "columnDefs": [{
@@ -417,6 +422,7 @@
                 $('#upload' + currentRowCount).css('background-color', '#EAECF4').text('Deklarasi').val('');
                 $('.kwitansi_image' + currentRowCount).val('');
                 $('#pemakaian' + currentRowCount).css('cursor', 'not-allowed').attr('placeholder', 'Deklarasi').val(data[7]);
+                $('#inputGroupFile01' + currentRowCount).val('').attr('name', '');
 
                 // Menghapus atribut required dari input file
                 $('#inputGroupFile01' + currentRowCount).removeAttr('required').val('');
@@ -466,6 +472,12 @@
         var sifat_pelaporan = $('#sifat_pelaporan').val();
         let inputCount = 0;
         let deletedRows = [];
+
+        if (id != 0) {
+            // Tampilkan loading
+            $('#form_loading').show();
+            $('.aksi').prop('disabled', true);
+        }
 
         //MEMBUAT TAMPILAN HARGA MENJADI ADA TITIK
         $('#jumlah_prepayment').on('input', function() {
@@ -615,7 +627,7 @@
                 const newRowNumber = index + 1;
                 const detailIdValue = $(this).find('input[name^="detail_id"]').val();
                 const pemakaianValue = $(this).find('input[name^="pemakaian"]').val();
-                const tgl_notaValue = $(this).find('input[name^="tgl_nota"]').val();
+                const tgl_notaValue = $(this).find('input[name^="tgl_notb"]').val();
                 const jmlValue = $(this).find('input[name^="jml"]').val();
                 const jumlahValue = $(this).find('input[name^="jumlah"]').val();
                 const kwitansiValue = $(this).find('input[name^="kwitansi"]').val();
@@ -629,9 +641,9 @@
                 $(this).find('input[name^="tgl_nota"]').attr('name', `tgl_nota[${newRowNumber}]`).attr('placeholder', `Tanggal Nota ${newRowNumber}`).val(tgl_notaValue);
                 $(this).find('input[name^="jml"]').attr('name', `jml[${newRowNumber}]`).attr('placeholder', `Jumlah ${newRowNumber}`).val(jmlValue);
                 $(this).find('input[name^="jumlah"]').attr('name', `jumlah[${newRowNumber}]`).attr('placeholder', `Jumlah ${newRowNumber}`).val(jumlahValue);
-                $(this).find('input[name^="kwitansi"]').attr('name', `kwitansi[${newRowNumber}]`).att   ('placeholder', `Input ${newRowNumber}`);
+                $(this).find('input[name^="kwitansi"]').attr('name', `kwitansi[${newRowNumber}]`).attr('placeholder', `Input ${newRowNumber}`);
                 $(this).find('#kwitansi_image').attr('name', `kwitansi_image[${newRowNumber}]`).attr('placeholder', `Input ${newRowNumber}`).val(kwitansiImageValue);
-                $(this).find('input[name^="deklarasi"]').attr('name', `deklarasi[${newRowNumber}]`).attr('placeholder', `Deklarasi ${newRowNumber}`).val(deklarasiValue);
+                $(this).find('input[name^="deklarasi"]').attr('name', `deklarasi[${newRowNumber}]`).attr('placeholder', `Input ${newRowNumber}`).val(deklarasiValue);
                 $(this).find('.deklarasi-old').attr('name', `deklarasi_old[${newRowNumber}]`).attr('placeholder', `Deklarasi Old${newRowNumber}`);
                 $(this).find('.delete-btn').attr('data-id', newRowNumber).text('Delete');
             });
@@ -695,6 +707,7 @@
                 $('#tujuan').val('');
                 $('#jumlah_prepayment').val('');
             }
+
         });
 
         $('#sifat_pelaporan').on('input', function() {
@@ -801,6 +814,10 @@
                         'disabled': false,
                         'readonly': true
                     }).css('cursor', 'not-allowed');
+                    // $('#status').prop({
+                    //     'disabled': false,
+                    //     'readonly': true
+                    // }).css('cursor', 'pointer');
                     $('#jumlah_prepayment').prop({
                         'disabled': false,
                         'readonly': true
@@ -814,7 +831,7 @@
                     $('#status').prop('readonly', true).css('cursor', 'not-allowed');
                     $('#jumlah_prepayment').prop('readonly', true).css('cursor', 'not-allowed');
                 }
-            } 
+            }
         }
 
         setInterval(function() {
@@ -834,11 +851,18 @@
             $('#kode_reimbust').val(kode).prop('readonly', true).css('cursor', 'not-allowed');
             $("select option[value='']").hide();
             $.ajax({
-                url: "<?= site_url('sw_reimbust/edit_data') ?>/" + id,
+                url: "<?= site_url('sml_reimbust/edit_data') ?>/" + id,
                 type: "GET",
                 dataType: "JSON",
                 success: function(data) {
                     moment.locale('id')
+
+                    // PENGECEKAN APAKAH DATA TRANSAKSI ADA ATAU TIDAK
+                    if (data.transaksi.length > 0) {
+                        $('#form_loading').hide();
+                        $('.aksi').prop('disabled', false);
+                    }
+
                     // Set nilai untuk setiap field dari data master    
                     $('#sifat_pelaporan').val(data['master']['sifat_pelaporan']);
                     $('#id').val(data['master']['id']);
@@ -1001,15 +1025,17 @@
 
             var url;
             if (id == 0) {
-                url = "<?php echo site_url('sw_reimbust/add') ?>";
+                url = "<?php echo site_url('sml_reimbust/add') ?>";
             } else {
-                url = "<?php echo site_url('sw_reimbust/update') ?>";
+                url = "<?php echo site_url('sml_reimbust/update') ?>";
             }
 
             var formData = new FormData(this);
 
             // Tampilkan loading
             $('#loading').show();
+
+            
 
             $.ajax({
                 url: url,
@@ -1031,7 +1057,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then((result) => {
-                            location.href = "<?= base_url('sw_reimbust') ?>";
+                            location.href = "<?= base_url('sml_reimbust') ?>";
                         });
                     } else {
                         // Sembunyikan loading saat respons diterima
@@ -1046,7 +1072,6 @@
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
-
                     // Sembunyikan loading saat respons diterima
                     $('#loading').hide();
 
@@ -1062,6 +1087,15 @@
 
         $("#form").validate({
             rules: {
+                // nama: {
+                //     required: true,
+                // },
+                // departemen: {
+                //     required: true,
+                // },
+                // jabatan: {
+                //     required: true,
+                // },
                 sifat_pelaporan: {
                     required: true,
                 },
@@ -1092,6 +1126,15 @@
                 },
             },
             messages: {
+                // nama: {
+                //     required: "Nama is required",
+                // },
+                // departemen: {
+                //     required: "Departemen is required",
+                // },
+                // jabatan: {
+                //     required: "Jabatan is required",
+                // },
                 sifat_pelaporan: {
                     required: "Pilih Sifat Pelaporan!",
                 },

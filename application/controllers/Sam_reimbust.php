@@ -99,8 +99,6 @@ class Sam_reimbust extends CI_Controller
             }
             $row[] = strtoupper($field->kode_reimbust);
             $row[] = $field->name;
-            // $row[] = $field->jabatan;
-            // $row[] = $field->departemen;
             $row[] = $field->sifat_pelaporan;
             // Array bulan bahasa Indonesia
             $bulanIndo = array(

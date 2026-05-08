@@ -3,26 +3,26 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-class M_mac_reimpayment extends CI_Model
+class M_sml_reimpayment extends CI_Model
 {
     // Reimbust
     var $id = 'id';
-    var $table = 'mac_reimbust'; //nama tabel dari database
-    var $table2 = 'mac_reimbust_detail';
-    var $column_order = array(null, null, 'payment_status', 'kode_reimbust', 'name', 'sifat_pelaporan', 'tgl_pengajuan', 'tujuan', 'jumlah_prepayment', 'status');
-    var $column_search = array('payment_status', 'kode_reimbust', 'name', 'sifat_pelaporan', 'tgl_pengajuan', 'tujuan', 'jumlah_prepayment', 'status'); //field yang diizin untuk pencarian 
+    var $table = 'sml_reimbust'; //nama tabel dari database
+    var $table2 = 'sml_reimbust_detail';
+    var $column_order = array(null, null, 'payment_status', 'kode_reimbust', 'name', 'jabatan', 'departemen', 'sifat_pelaporan', 'tgl_pengajuan', 'tujuan', 'jumlah_prepayment', 'status');
+    var $column_search = array('payment_status', 'kode_reimbust', 'name', 'jabatan', 'departemen', 'sifat_pelaporan', 'tgl_pengajuan', 'tujuan', 'jumlah_prepayment', 'status'); //field yang diizin untuk pencarian 
     var $order = array('id' => 'desc'); // default order 
 
     // Deklarasi
-    var $table3 = 'mac_deklarasi'; //nama tabel dari database
+    var $table3 = 'sml_deklarasi'; //nama tabel dari database
     var $column_order2 = array(null, null, 'kode_deklarasi', 'tgl_deklarasi', 'name', 'jabatan', 'nama_dibayar', 'tujuan', 'sebesar', 'status');
     var $column_search2 = array('kode_deklarasi', 'tgl_deklarasi', 'name', 'jabatan', 'nama_dibayar', 'tujuan', 'sebesar', 'status'); //field yang diizin untuk pencarian 
     var $order2 = array('id' => 'desc'); // default order 
 
     // Prepayment
-    var $table4 = 'mac_prepayment';
-    var $column_order3 = array(null, null, 'payment_status', 'kode_prepayment', 'name', 'tgl_prepayment', 'prepayment', 'total_nominal', 'status');
-    var $column_search3 = array('payment_status', 'kode_prepayment', 'name', 'tgl_prepayment', 'prepayment', 'total_nominal', 'status'); //field yang diizin untuk pencarian
+    var $table4 = 'sml_prepayment';
+    var $column_order3 = array(null, null, 'kode_prepayment', 'name', 'divisi', 'jabatan', 'tgl_prepayment', 'prepayment', 'total_nominal', 'status');
+    var $column_search3 = array('kode_prepayment', 'name', 'divisi', 'jabatan', 'tgl_prepayment', 'prepayment', 'total_nominal', 'status'); //field yang diizin untuk pencarian
     var $order3 = array('id' => 'desc');
 
     public function __construct()
@@ -32,9 +32,7 @@ class M_mac_reimpayment extends CI_Model
 
     private function _get_datatables_query()
     {
-        $this->db->select('mac_reimbust.*, tbl_data_user.name');
         $this->db->from($this->table);
-        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = mac_reimbust.id_user', 'left');
 
         $i = 0;
 
@@ -134,9 +132,9 @@ class M_mac_reimpayment extends CI_Model
 
         // $this->db->from($this->table);
         $this->db->where('is_active', 1);
-        $this->db->select('mac_deklarasi.*, tbl_data_user.name');
+        $this->db->select('sml_deklarasi.*, tbl_data_user.name');
         $this->db->from($this->table3);
-        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = mac_deklarasi.id_pengaju', 'left');
+        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = sml_deklarasi.id_pengaju', 'left');
         $id_user_logged_in = $this->session->userdata('id_user'); // Mengambil id_user dari sesi pengguna yang login
         $this->db->where('id_pengaju', $id_user_logged_in);
 
@@ -153,13 +151,13 @@ class M_mac_reimpayment extends CI_Model
                     if ($item == 'name') {
                         $this->db->like('tbl_data_user.' . $item, $_POST['search']['value']);
                     } else {
-                        $this->db->like('mac_deklarasi.' . $item, $_POST['search']['value']);
+                        $this->db->like('sml_deklarasi.' . $item, $_POST['search']['value']);
                     }
                 } else {
                     if ($item == 'name') {
                         $this->db->or_like('tbl_data_user.' . $item, $_POST['search']['value']);
                     } else {
-                        $this->db->or_like('mac_deklarasi.' . $item, $_POST['search']['value']);
+                        $this->db->or_like('sml_deklarasi.' . $item, $_POST['search']['value']);
                     }
                 }
 
@@ -195,9 +193,9 @@ class M_mac_reimpayment extends CI_Model
 
     public function count_all2()
     {
-        $this->db->select('mac_deklarasi.*, tbl_data_user.name');
+        $this->db->select('sml_deklarasi.*, tbl_data_user.name');
         $this->db->from($this->table3);
-        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = mac_deklarasi.id_pengaju', 'left');
+        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = sml_deklarasi.id_pengaju', 'left');
         $id_user_logged_in = $this->session->userdata('id_user'); // Mengambil id_user dari sesi pengguna yang login
         $this->db->where('id_pengaju', $id_user_logged_in);
 
@@ -207,54 +205,59 @@ class M_mac_reimpayment extends CI_Model
     // Prepayment
     function _get_datatables_query3()
     {
-        $this->db->select('mac_prepayment.*, tbl_data_user.name');
+        $this->db->select('*'); // Memilih kolom dari kedua tabel
         $this->db->from($this->table4);
-        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = mac_prepayment.id_user', 'left');
 
         $i = 0;
 
-        if ($_POST['search']['value']) // jika datatable mengirimkan pencarian dengan metode POST
+        foreach ($this->column_search as $item) // looping awal
         {
-            $this->db->group_start();
-            foreach ($this->column_search3 as $item) // looping search fields
+            if ($_POST['search']['value']) // jika datatable mengirimkan pencarian dengan metode POST
             {
-                if ($i === 0) // looping awal
+
+                foreach ($this->column_search as $item) // looping awal
                 {
-                    if ($item == 'name') {
-                        $this->db->like('tbl_data_user.' . $item, $_POST['search']['value']);
-                    } else {
-                        $this->db->like('mac_prepayment.' . $item, $_POST['search']['value']);
+                    if ($_POST['search']['value']) // jika datatable mengirimkan pencarian dengan metode POST
+                    {
+
+                        if ($i === 0) // looping awal
+                        {
+                            $this->db->group_start();
+                            $this->db->like($item, $_POST['search']['value']);
+                        } else {
+                            $this->db->or_like($item, $_POST['search']['value']);
+                        }
+
+                        if (count($this->column_search) - 1 == $i)
+                            $this->db->group_end();
                     }
-                } else {
-                    if ($item == 'name') {
-                        $this->db->or_like('tbl_data_user.' . $item, $_POST['search']['value']);
-                    } else {
-                        $this->db->or_like('mac_prepayment.' . $item, $_POST['search']['value']);
-                    }
+                    $i++;
                 }
-                $i++;
+
+                if (count($this->column_search) - 1 == $i)
+                    $this->db->group_end();
             }
-            $this->db->group_end();
+            $i++;
         }
 
         if (!empty($_POST['status'])) {
             $this->db->group_start();
             if ($_POST['status'] == 'on-process') {
-                $this->db->where('mac_prepayment.status', 'on-process');
+                    $this->db->where('status', 'on-process');
             } elseif ($_POST['status'] == 'approved') {
-                $this->db->where('mac_prepayment.status', 'approved');
+                    $this->db->where('status', 'approved');
             } elseif ($_POST['status'] == 'revised') {
-                $this->db->where('mac_prepayment.status', 'revised');
+                    $this->db->where('status', 'revised');
             } elseif ($_POST['status'] == 'rejected') {
-                $this->db->where('mac_prepayment.status', $_POST['status']);
+                $this->db->where('status', $_POST['status']);
             }
             $this->db->group_end(); // End grouping
         }
 
         if (isset($_POST['order'])) {
-            $this->db->order_by($this->column_order3[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
-        } else if (isset($this->order3)) {
-            $order = $this->order3;
+            $this->db->order_by($this->column_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+        } else if (isset($this->order)) {
+            $order = $this->order;
             $this->db->order_by(key($order), $order[key($order)]);
         }
     }
@@ -279,21 +282,21 @@ class M_mac_reimpayment extends CI_Model
     public function count_all3()
     {
         $this->db->from($this->table4);
-        $this->db->join('tbl_data_user', 'tbl_data_user.id_user = mac_prepayment.id_user', 'left');
 
         if (!empty($_POST['status'])) {
             $this->db->group_start();
             if ($_POST['status'] == 'on-process') {
-                $this->db->where('mac_prepayment.status', 'on-process');
+                    $this->db->where('status', 'on-process');
             } elseif ($_POST['status'] == 'approved') {
-                $this->db->where('mac_prepayment.status', 'approved');
+                    $this->db->where('status', 'approved');
             } elseif ($_POST['status'] == 'revised') {
-                $this->db->where('mac_prepayment.status', 'revised');
+                    $this->db->where('status', 'revised');
             } elseif ($_POST['status'] == 'rejected') {
-                $this->db->where('mac_prepayment.status', $_POST['status']);
+                $this->db->where('status', $_POST['status']);
             }
             $this->db->group_end(); // End grouping
         }
+
 
         return $this->db->count_all_results();
     }
@@ -317,9 +320,9 @@ class M_mac_reimpayment extends CI_Model
     {
         $formatted_date = date('ym', strtotime($date));
         $this->db->select('kode_reimbust');
-        $where = 'id=(SELECT max(id) FROM mac_reimbust where SUBSTRING(kode_reimbust, 2, 4) = ' . $formatted_date . ')';
+        $where = 'id=(SELECT max(id) FROM sml_reimbust where SUBSTRING(kode_reimbust, 2, 4) = ' . $formatted_date . ')';
         $this->db->where($where);
-        $query = $this->db->get('mac_reimbust');
+        $query = $this->db->get('sml_reimbust');
         return $query;
     }
 
@@ -346,8 +349,8 @@ class M_mac_reimpayment extends CI_Model
 
     public function delete($id)
     {
-        // Ambil data mac_reimbust_detail berdasarkan reimbust_id
-        $detail = $this->db->get_where('mac_reimbust_detail', ['reimbust_id' => $id])->result_array();
+        // Ambil data sml_reimbust_detail berdasarkan reimbust_id
+        $detail = $this->db->get_where('sml_reimbust_detail', ['reimbust_id' => $id])->result_array();
 
         // untuk menghapus file gambar
         if ($detail) {
@@ -369,18 +372,18 @@ class M_mac_reimpayment extends CI_Model
             foreach ($detail as $deklarasi) {
                 $deklarasi = $deklarasi['deklarasi'];
 
-                $this->db->update('mac_deklarasi', ['is_active' => 1], ['kode_deklarasi' => $deklarasi]);
+                $this->db->update('sml_deklarasi', ['is_active' => 1], ['kode_deklarasi' => $deklarasi]);
             }
         }
 
-        // Ambil data mac_reimbust berdasarkan reimbust_id
-        $reimbust = $this->db->get_where('mac_reimbust', ['id' => $id])->row_array();
+        // Ambil data sml_reimbust berdasarkan reimbust_id
+        $reimbust = $this->db->get_where('sml_reimbust', ['id' => $id])->row_array();
 
         // ambil data prepayment pada table reimbust
         $prepayment = $reimbust['kode_prepayment'];
 
         // update data pada kolom is active menjadi 1 di table prepayment
-        $this->db->update('mac_prepayment', ['is_active' => 1], ['kode_prepayment' => $prepayment]);
+        $this->db->update('sml_prepayment', ['is_active' => 1], ['kode_prepayment' => $prepayment]);
 
         // delete data master reimbust
         $this->db->where($this->id, $id);
@@ -388,7 +391,7 @@ class M_mac_reimpayment extends CI_Model
 
         // delete data detail teimbust
         $this->db->where('reimbust_id', $id);
-        $this->db->delete('mac_reimbust_detail');
+        $this->db->delete('sml_reimbust_detail');
 
         echo json_encode(array("status" => TRUE));
     }
@@ -396,6 +399,6 @@ class M_mac_reimpayment extends CI_Model
     // OPSI REKENING
     public function options($id)
     {
-        return $this->db->distinct()->select('no_rek')->where('id_user', $id)->from('mac_reimbust')->get();
+        return $this->db->distinct()->select('no_rek')->where('id_user', $id)->from('sml_reimbust')->get();
     }
 }

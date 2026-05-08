@@ -1,36 +1,15 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Mac_reimpayment extends CI_Controller
+class Sml_reimpayment extends CI_Controller
 {
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('backend/M_mac_reimpayment');
+        $this->load->model('backend/M_sml_reimpayment');
         $this->load->model('backend/M_notifikasi');
         $this->M_login->getsecurity();
         date_default_timezone_set('Asia/Jakarta');
-    }
-
-    function tgl_indo($tanggal)
-    {
-        $bulan = array(
-            1 =>   'Januari',
-            'Februari',
-            'Maret',
-            'April',
-            'Mei',
-            'Juni',
-            'Juli',
-            'Agustus',
-            'September',
-            'Oktober',
-            'November',
-            'Desember'
-        );
-        $pecahkan = explode('-', $tanggal);
-
-        return $pecahkan[2] . ' ' . $bulan[(int)$pecahkan[1]] . ' ' . $pecahkan[0];
     }
 
     public function index()
@@ -39,7 +18,7 @@ class Mac_reimpayment extends CI_Controller
         ($akses->view_level == 'N' ? redirect('auth') : '');
         $data['add'] = $akses->add_level;
         $data['alias'] = $this->session->userdata('username');
-        $data['title'] = "backend/mac_reimpayment/mac_reimpayment_list";
+        $data['title'] = "backend/sml_reimpayment/sml_reimpayment_list";
         $data['titleview'] = "Data Reimbust & Prepayment";
         $name = $this->db->select('name')
             ->from('tbl_data_user')
@@ -47,7 +26,7 @@ class Mac_reimpayment extends CI_Controller
             ->get()
             ->row('name');
         $data['approval'] = $this->db->select('COUNT(*) as total_approval')
-            ->from('mac_reimbust')
+            ->from('sml_reimbust')
             ->where('app_name', $name)
             ->or_where('app2_name', $name)
             ->or_where('app4_name', $name)
@@ -65,7 +44,7 @@ class Mac_reimpayment extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $list = $this->M_mac_reimpayment->get_datatables();
+        $list = $this->M_sml_reimpayment->get_datatables();
         $data = array();
         $no = $_POST['start'];
 
@@ -78,15 +57,21 @@ class Mac_reimpayment extends CI_Controller
         foreach ($list as $field) {
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
-            $action_read = ($read == 'Y') ? '<a href="mac_reimbust/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
-            $action_edit = ($edit == 'Y') ? '<a href="mac_reimbust/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
+            $action_read = ($read == 'Y') ? '<a href="sml_reimpayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
+            $action_edit = ($edit == 'Y') ? '<a href="sml_reimpayment/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
-            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="mac_reimbust/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
+            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="sml_reimpayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>' : '';
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
-
-            $action = $action_read . $action_print;
-            
+            if ($this->session->userdata('username') == 'eko') {
+                $action = $action_read .  $action_edit . $action_delete . $action_print;
+            } elseif ($field->id_user == $this->session->userdata('id_user') && !in_array($field->status, ['rejected', 'approved', 'revised']) && $field->app_status == "waiting") {
+                $action = $action_read . $action_edit . $action_delete . $action_print;
+            } elseif (($field->id_user == $this->session->userdata('id_user') || $this->session->userdata('username') == 'eko') && $field->status == 'revised') {
+                $action = $action_read . $action_edit . $action_print;
+            } else {
+                $action = $action_read . $action_edit . $action_print;
+            }
 
             //MENENSTUKAN SATTSU PROGRESS PENGAJUAN PERMINTAAN
             if ($field->app_status == 'approved' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
@@ -104,9 +89,9 @@ class Mac_reimpayment extends CI_Controller
             $row[] = $no;
             $row[] = $action;
             if ($field->payment_status == 'paid') {
-                $row[] = '<div class="text-center"><button class="btn btn-primary btn-circle btn-sm" data-toggle="modal" data-target="#paymentDetailModal" data-id="' . $field->id . '" title="Detail Pembayaran"><i class="fas fa-check" style="color: #1cc88a;"></i></button></div>';
+                $row[] = '<div class="text-center"><i class="fas fa-check" style="color: green;"></i></div>'; // Ikon checklist hijau di tengah
             } else if ($field->payment_status == 'unpaid') {
-                $row[] = '<div class="text-center"><i class="fas fa-times" style="color: red;"></i></div>';
+                $row[] = '<div class="text-center"><i class="fas fa-times" style="color: red;"></i></div>'; // Ikon unchecklist merah di tengah
             }
             $row[] = strtoupper($field->kode_reimbust);
             $name = $this->db->select('name')
@@ -115,6 +100,8 @@ class Mac_reimpayment extends CI_Controller
                 ->get()
                 ->row('name');
             $row[] = $name;
+            // $row[] = $field->jabatan;
+            // $row[] = $field->departemen;
             $row[] = $field->sifat_pelaporan;
             // Array bulan bahasa Indonesia
             $bulanIndo = array(
@@ -131,7 +118,7 @@ class Mac_reimpayment extends CI_Controller
                 11 => 'November',
                 12 => 'Desember'
             );
-            $row[] = $this->tgl_indo(date("Y-m-j", strtotime($field->tgl_pengajuan)));
+            $row[] = date("d", strtotime($field->tgl_pengajuan)) . " " . $bulanIndo[date("n", strtotime($field->tgl_pengajuan))] . " " . date("Y", strtotime($field->tgl_pengajuan));
             $row[] = $field->tujuan;
             $row[] = 'Rp. ' . number_format($field->jumlah_prepayment, 0, ',', '.');;
             $row[] = ucwords($status);
@@ -141,8 +128,8 @@ class Mac_reimpayment extends CI_Controller
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_mac_reimpayment->count_all(),
-            "recordsFiltered" => $this->M_mac_reimpayment->count_filtered(),
+            "recordsTotal" => $this->M_sml_reimpayment->count_all(),
+            "recordsFiltered" => $this->M_sml_reimpayment->count_filtered(),
             "data" => $data,
         );
         //output dalam format JSON
@@ -158,7 +145,7 @@ class Mac_reimpayment extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $list = $this->M_mac_reimpayment->get_datatables2();
+        $list = $this->M_sml_reimpayment->get_datatables2();
         $data = array();
         $no = $_POST['start'];
 
@@ -167,26 +154,26 @@ class Mac_reimpayment extends CI_Controller
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             if ($field->app_name == $fullname) {
-                $action = '<a href="mac_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                                <a class="btn btn-success btn-circle btn-sm" href="mac_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="sml_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                                <a class="btn btn-success btn-circle btn-sm" href="sml_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app2_name == $fullname) {
-                $action = '<a href="mac_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
-                                <a class="btn btn-success btn-circle btn-sm" href="mac_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="sml_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
+                                <a class="btn btn-success btn-circle btn-sm" href="sml_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif (in_array($field->status, ['rejected', 'approved'])) {@
-                $action = '<a href="mac_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                <a class="btn btn-success btn-circle btn-sm" href="mac_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="sml_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                <a class="btn btn-success btn-circle btn-sm" href="sml_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app_status == 'revised' || $field->app2_status == 'revised') {
-                $action = '<a href="mac_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                    <a href="mac_datadeklarasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
-                    <a class="btn btn-success btn-circle btn-sm" href="mac_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="sml_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                    <a href="sml_datadeklarasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
+                    <a class="btn btn-success btn-circle btn-sm" href="sml_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app_status == 'approved') {
-                $action = '<a href="mac_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                            <a class="btn btn-success btn-circle btn-sm" href="mac_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="sml_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                            <a class="btn btn-success btn-circle btn-sm" href="sml_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } else {
-                $action = '<a href="mac_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                        <a href="mac_datadeklarasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
+                $action = '<a href="sml_datadeklarasi/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                        <a href="sml_datadeklarasi/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
 			            <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
-                        <a class="btn btn-success btn-circle btn-sm" href="mac_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                        <a class="btn btn-success btn-circle btn-sm" href="sml_datadeklarasi/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             }
 
             $no++;
@@ -207,15 +194,15 @@ class Mac_reimpayment extends CI_Controller
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_mac_reimpayment->count_all2(),
-            "recordsFiltered" => $this->M_mac_reimpayment->count_filtered2(),
+            "recordsTotal" => $this->M_sml_reimpayment->count_all2(),
+            "recordsFiltered" => $this->M_sml_reimpayment->count_filtered2(),
             "data" => $data,
         );
         //output dalam format JSON
         echo json_encode($output);
     }
 
-    // get list mac_prepayment
+    // get list sml_prepayment
     function get_list3()
     {
         // INISIAI VARIABLE YANG DIBUTUHKAN
@@ -224,7 +211,7 @@ class Mac_reimpayment extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
-        $list = $this->M_mac_reimpayment->get_datatables3();
+        $list = $this->M_sml_reimpayment->get_datatables3();
         $data = array();
         $no = $_POST['start'];
 
@@ -233,50 +220,34 @@ class Mac_reimpayment extends CI_Controller
 
             // MENENTUKAN ACTION APA YANG AKAN DITAMPILKAN DI LIST DATA TABLES
             if ($field->app_name == $fullname) {
-                $action = '<a href="mac_prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                                <a class="btn btn-success btn-circle btn-sm" href="mac_prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="sml_prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                                <a class="btn btn-success btn-circle btn-sm" href="sml_prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app2_name == $fullname) {
-                $action = '<a href="mac_prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
-                                <a class="btn btn-success btn-circle btn-sm" href="mac_prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="sml_prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>     
+                                <a class="btn btn-success btn-circle btn-sm" href="sml_prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif (in_array($field->status, ['rejected', 'approved'])) {
-                $action = '<a href="mac_prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                <a class="btn btn-success btn-circle btn-sm" href="mac_prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="sml_prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                <a class="btn btn-success btn-circle btn-sm" href="sml_prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app_status == 'revised' || $field->app2_status == 'revised') {
-                $action = '<a href="mac_prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                    <a href="mac_prepayment/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
-                    <a class="btn btn-success btn-circle btn-sm" href="mac_prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="sml_prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                    <a href="sml_prepayment/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
+                    <a class="btn btn-success btn-circle btn-sm" href="sml_prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } elseif ($field->app_status == 'approved') {
-                $action = '<a href="mac_prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                            <a class="btn btn-success btn-circle btn-sm" href="mac_prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="sml_prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                            <a class="btn btn-success btn-circle btn-sm" href="sml_prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             } else {
-                $action = '<a href="mac_prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
-                        <a class="btn btn-success btn-circle btn-sm" href="mac_prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
+                $action = '<a href="sml_prepayment/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>
+                        <a href="sml_prepayment/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>
+                        <a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>
+                        <a class="btn btn-success btn-circle btn-sm" href="sml_prepayment/generate_pdf/' . $field->id . '"><i class="fas fa-file-pdf"></i></a>';
             }
 
-
-            //MENENSTUKAN SATTSU PROGRESS PENGAJUAN PERMINTAAN
-            if ($field->app_status == 'approved' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
-                $status = $field->status . ' (' . $field->app2_name . ')';
-            } elseif ($field->app4_status == 'approved' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
-                $status = $field->status . ' (' . $field->app_name . ')';
-            } elseif ($field->app4_name == null && $field->app2_status == 'waiting' && $field->status == 'on-process') {
-                $status = $field->status . ' (' . $field->app_name . ')';
-            } elseif ($field->app4_status == 'waiting' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
-                $status = $field->status . ' (' . $field->app4_name . ')';
-            } else {
-                $status = $field->status;
-            }
 
             $formatted_nominal = number_format($field->total_nominal, 0, ',', '.');
             $no++;
             $row = array();
             $row[] = $no;
             $row[] = $action;
-            if ($field->payment_status == 'paid') {
-                $row[] = '<div class="text-center"><button class="btn btn-primary btn-circle btn-sm" data-toggle="modal" data-target="#paymentDetailModalPrepayment" data-id="' . $field->id . '" title="Detail Pembayaran"><i class="fas fa-check" style="color: #1cc88a;"></i></button></div>';
-            } else if ($field->payment_status == 'unpaid') {
-                $row[] = '<div class="text-center"><i class="fas fa-times" style="color: red;"></i></div>';
-            }
             $row[] = strtoupper($field->kode_prepayment);
             $name = $this->db->select('name')
                 ->from('tbl_data_user')
@@ -284,19 +255,21 @@ class Mac_reimpayment extends CI_Controller
                 ->get()
                 ->row('name');
             $row[] = $name;
-            $row[] = $this->tgl_indo(date("Y-m-j", strtotime($field->tgl_prepayment)));
+            $row[] = strtoupper($field->divisi);
+            $row[] = strtoupper($field->jabatan);
+            $row[] = date("d M Y", strtotime($field->tgl_prepayment));
             $row[] = $field->prepayment;
             $row[] = $formatted_nominal;
             // $row[] = $field->tujuan;
-            $row[] = ucwords($status);
+            $row[] = $field->status;
 
             $data[] = $row;
         }
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_mac_reimpayment->count_all3(),
-            "recordsFiltered" => $this->M_mac_reimpayment->count_filtered3(),
+            "recordsTotal" => $this->M_sml_reimpayment->count_all3(),
+            "recordsFiltered" => $this->M_sml_reimpayment->count_filtered3(),
             "data" => $data,
         );
         //output dalam format JSON
@@ -306,7 +279,7 @@ class Mac_reimpayment extends CI_Controller
     function read_form($id)
     {
         $data['aksi'] = 'read';
-        $data['user'] = $this->M_mac_reimpayment->get_by_id($id);
+        $data['user'] = $this->M_sml_reimpayment->get_by_id($id);
         $data['app_name'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $this->session->userdata('id_user'))
@@ -319,10 +292,10 @@ class Mac_reimpayment extends CI_Controller
             ->row('name');
         $data['id'] = $id;
         $data['title_view'] = "Data Reimbust";
-        $data['title'] = 'backend/mac_reimpayment/mac_reimpayment_read';
+        $data['title'] = 'backend/sml_reimpayment/sml_reimpayment_read';
         $this->db->select('kwitansi');
         $this->db->where('reimbust_id', $id);
-        $data['kwitansi'] = $this->db->get('mac_reimbust_detail')->result_array();
+        $data['kwitansi'] = $this->db->get('sml_reimbust_detail')->result_array();
         $this->load->view('backend/home', $data);
     }
 
@@ -332,8 +305,8 @@ class Mac_reimpayment extends CI_Controller
         $this->load->library('Fpdf_generate');
 
         // Load data from database based on $id
-        $data['master'] = $this->M_mac_reimpayment->get_by_id($id);
-        $data['transaksi'] = $this->M_mac_reimpayment->get_by_id_detail($id);
+        $data['master'] = $this->M_sml_reimpayment->get_by_id($id);
+        $data['transaksi'] = $this->M_sml_reimpayment->get_by_id_detail($id);
         $data['user'] = $this->db->select('name')
             ->from('tbl_data_user')
             ->where('id_user', $data['master']->id_user)
@@ -354,7 +327,7 @@ class Mac_reimpayment extends CI_Controller
         $pdf->SetAutoPageBreak(true, 5); // Margin bawah 15mm
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/mobileautocare.png', 11, 5, 45, 25);
+        $pdf->Image(base_url('') . '/assets/backend/img/sml.png', 11, 10, 53, 18);
 
         // Set font
         $pdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php');
@@ -364,7 +337,7 @@ class Mac_reimpayment extends CI_Controller
 
         // Teks yang ingin ditampilkan
         $text1 = 'FORM PELAPORAN / REIMBUST';
-        $text2 = 'MAC';
+        $text2 = 'Sahabat Multi Logistik';
 
         // Menghitung lebar teks
         $textWidth1 = $pdf->GetStringWidth($text1);
@@ -515,7 +488,7 @@ class Mac_reimpayment extends CI_Controller
             $pdf->Cell(33, 8.5, $row['deklarasi'] ? 'Ada' : '-', 1, 1, 'C');
         }
 
-        // Add total and remaining mac_prepayment
+        // Add total and remaining sml_prepayment
         $pdf->SetFont('Poppins-Bold', '', 10);
         $pdf->Cell(259, 8.5, 'TOTAL PEMAKAIAN', 1, 0, 'L');
         $pdf->Cell(-1, 8.5, 'Rp. ' . number_format($totalJumlah, 0, ',', '.'), 0, 1, 'R');
@@ -625,12 +598,12 @@ class Mac_reimpayment extends CI_Controller
 
 
         // Output the PDF
-        $pdf->Output('I', 'mac_reimbust - ' . $data['master']->kode_reimbust . '.pdf');
+        $pdf->Output('I', 'sml_reimbust - ' . $data['master']->kode_reimbust . '.pdf');
     }
 
     function read_detail($id)
     {
-        $data = $this->M_mac_reimpayment->get_by_id_detail($id);
+        $data = $this->M_sml_reimpayment->get_by_id_detail($id);
         echo json_encode($data);
     }
 
@@ -640,7 +613,7 @@ class Mac_reimpayment extends CI_Controller
             $deklarasi = $this->input->post('deklarasi');
 
             // Mengambil data deklarasi dari database
-            $deklarasiRecord = $this->db->get_where('mac_deklarasi', ['kode_deklarasi' => $deklarasi])->row_array();
+            $deklarasiRecord = $this->db->get_where('sml_deklarasi', ['kode_deklarasi' => $deklarasi])->row_array();
 
             // Debug log
             log_message('debug', 'Deklarasi: ' . print_r($deklarasi, true));
@@ -649,7 +622,7 @@ class Mac_reimpayment extends CI_Controller
             if ($deklarasiRecord) {
                 // Mengambil ID dari record yang ditemukan
                 $deklarasiId = $deklarasiRecord['id']; // Pastikan 'id' adalah nama kolom yang sesuai
-                $redirect_url = site_url('mac_datadeklarasi/read_form/' . $deklarasiId);
+                $redirect_url = site_url('sml_datadeklarasi/read_form/' . $deklarasiId);
 
                 $response = array(
                     'status' => 'success',

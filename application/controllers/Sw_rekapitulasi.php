@@ -50,54 +50,106 @@ class Sw_rekapitulasi extends CI_Controller
         $data['total'] = $this->M_sw_rekapitulasi->get_total_pengeluaran();
 
         $data['title'] = "backend/sw_rekapitulasi";
-        $data['titleview'] = "Data Rekapitulasi SW";
+        $data['titleview'] = "Data Rekapitulasi sebelaswarna";
         $this->load->view('backend/home', $data);
     }
 
-    function get_list()
+    public function get_list_pelaporan()
     {
-        // INISIAI VARIABLE YANG DIBUTUHKAN
-        $list = $this->M_sw_rekapitulasi->get_datatables();
+        $list = $this->M_sw_rekapitulasi->get_datatables_pelaporan();
         $data = array();
         $no = $_POST['start'];
 
-        //LOOPING DATATABLES
         foreach ($list as $field) {
-            // Cek apakah kode tersedia, jika tidak berikan tanda "-"
-            $kode_prepayment = !empty($field->kode_prepayment) ? $field->kode_prepayment : '-';
-            $kode_reimbust = !empty($field->kode_reimbust) ? strtoupper($field->kode_reimbust) : '-';
-            // $tanggal = !empty($field->tgl_pengajuan) ? $field->tgl_pengajuan : $field->tgl_prepayment;
-            $pengeluaran = !empty($field->total_jumlah_detail) ? number_format($field->total_jumlah_detail, 0, ',', '.') : number_format($field->total_nominal, 0, ',', '.');
-            $tanggal = !empty($field->tgl_pengajuan) ? $this->tgl_indo(date('Y-m-d', strtotime($field->tgl_pengajuan))) : '-';
-
-            // Inkrement nomor urut
             $no++;
+            $tanggal = !empty($field->tgl_pengajuan) ? $this->tgl_indo(date('Y-m-d', strtotime($field->tgl_pengajuan))) : '-';
+            $pengeluaran = isset($field->total_pengeluaran) ? $field->total_pengeluaran : (isset($field->total_nominal) ? $field->total_nominal : 0);
             $row = array();
-            $row[] = $no; // Nomor urut
-            $row[] = $kode_prepayment; // Kode prepayment, atau tanda "-"
-            $row[] = $kode_reimbust; // Kode reimburse
-            $row[] = $field->name; // Nama pengguna
-            $row[] = $field->tujuan; // Tujuan dari pengajuan
-            $row[] = $tanggal; // Format tanggal (Indonesia)
-            $row[] = 'Rp. ' . $pengeluaran; // Format nominal
-
-            // Tambahkan row ke array data
+            $row[] = $no;
+            $row[] = $field->kode_prepayment ? $field->kode_prepayment : '-';
+            $row[] = !empty($field->kode_reimbust) ? ucfirst($field->kode_reimbust) : '-';
+            $tglPrepayment = $this->db->get_where('sw_prepayment', ['kode_prepayment' => $field->kode_prepayment])->row_array();
+            $row[] = !empty($tglPrepayment) ? $this->tgl_indo($tglPrepayment['tgl_prepayment']) : '-';
+            $row[] = $field->pelaporan ? $this->tgl_indo(date('Y-m-d', strtotime($field->tgl_pengajuan))) : '-';
+            $row[] = $field->name;
+            $row[] = $field->tujuan;
+            $row[] = 'Rp. ' . number_format($pengeluaran, 0, ',', '.');
             $data[] = $row;
         }
 
         $output = array(
             "draw" => $_POST['draw'],
-            "recordsTotal" => $this->M_sw_rekapitulasi->count_all(),
-            "recordsFiltered" => $this->M_sw_rekapitulasi->count_filtered(),
+            "recordsTotal" => $this->M_sw_rekapitulasi->count_all_pelaporan(),
+            "recordsFiltered" => $this->M_sw_rekapitulasi->count_filtered_pelaporan(),
             "data" => $data,
         );
-        //output dalam format JSON
         echo json_encode($output);
     }
 
+    public function get_list_reimbust()
+    {
+        $list = $this->M_sw_rekapitulasi->get_datatables_reimbust();
+        $data = array();
+        $no = $_POST['start'];
+
+        foreach ($list as $field) {
+            $no++;
+            $tanggal = !empty($field->tgl_pengajuan) ? $this->tgl_indo(date('Y-m-d', strtotime($field->tgl_pengajuan))) : '-';
+            $pengeluaran = isset($field->total_pengeluaran) ? $field->total_pengeluaran : (isset($field->total_jumlah_detail) ? $field->total_jumlah_detail : 0);
+            $row = array();
+            $row[] = $no;
+            $row[] = '-';
+            $row[] = !empty($field->kode_reimbust) ? strtoupper($field->kode_reimbust) : '-';
+            $row[] = $tanggal;
+            $row[] = $field->name;
+            $row[] = $field->tujuan;
+            $row[] = 'Rp. ' . number_format($pengeluaran, 0, ',', '.');
+            $data[] = $row;
+        }
+
+        $output = array(
+            "draw" => $_POST['draw'],
+            "recordsTotal" => $this->M_sw_rekapitulasi->count_all_reimbust(),
+            "recordsFiltered" => $this->M_sw_rekapitulasi->count_filtered_reimbust(),
+            "data" => $data,
+        );
+        echo json_encode($output);
+    }
+
+    // public function get_list_invoice()
+    // {
+    //     $list = $this->M_sw_rekapitulasi->get_datatables_invoice();
+    //     $data = array();
+    //     $no = $_POST['start'];
+
+    //     foreach ($list as $field) {
+    //         $no++;
+    //         $tanggalInvoice = !empty($field->tgl_invoice) ? $this->tgl_indo(date('Y-m-d', strtotime($field->tgl_invoice))) : '-';
+    //         $row = array();
+    //         $row[] = $no;
+    //         $row[] = !empty($field->kode_invoice) ? $field->kode_invoice : '-';
+    //         $row[] = $tanggalInvoice;
+    //         $row[] = $field->ctc_to;
+    //         $row[] = 'Rp. ' . number_format($field->total, 0, ',', '.');
+    //         $row[] = $field->payment_status == 1 ? 'Lunas' : 'Belum Lunas';
+    //         $data[] = $row;
+    //     }
+
+    //     $output = array(
+    //         "draw" => $_POST['draw'],
+    //         "recordsTotal" => $this->M_sw_rekapitulasi->count_all_invoice(),
+    //         "recordsFiltered" => $this->M_sw_rekapitulasi->count_filtered_invoice(),
+    //         "data" => $data,
+    //     );
+    //     echo json_encode($output);
+    // }
+
     function get_total()
     {
-        $output = $this->M_sw_rekapitulasi->get_total_pengeluaran();
+        $output = array(
+            'pengeluaran' => $this->M_sw_rekapitulasi->get_total_pengeluaran(),
+            // 'pemasukan' => $this->M_sw_rekapitulasi->get_total_pemasukan()
+        );
 
         //output dalam format JSON
         echo json_encode($output);
@@ -112,6 +164,8 @@ class Sw_rekapitulasi extends CI_Controller
         // Ambil data dari model
         $prepayment = $this->M_sw_rekapitulasi->get_data_prepayment($tgl_awal, $tgl_akhir);
         $reimbust = $this->M_sw_rekapitulasi->get_data_reimbust($tgl_awal, $tgl_akhir);
+        // $invoice = $this->M_sw_rekapitulasi->get_data_invoice($tgl_awal, $tgl_akhir);
+
 
         // Inisialisasi Spreadsheet
         $spreadsheet = new Spreadsheet();
@@ -120,40 +174,58 @@ class Sw_rekapitulasi extends CI_Controller
         // Set judul kolom
         $sheet->setCellValue('A1', 'Kode Transaksi');
         $sheet->setCellValue('B1', 'Jenis Transaksi');
-        $sheet->setCellValue('C1', 'Tanggal Transaksi');
-        $sheet->setCellValue('D1', 'Nominal');
+        $sheet->setCellValue('C1', 'Tujuan');
+        $sheet->setCellValue('D1', 'Tanggal Prepayment');
+        $sheet->setCellValue('E1', 'Tanggal Transaksi');
+        $sheet->setCellValue('F1', 'Nominal');
 
         // Atur Auto Size untuk setiap kolom
         $sheet->getColumnDimension('A')->setAutoSize(true);
         $sheet->getColumnDimension('B')->setAutoSize(true);
         $sheet->getColumnDimension('C')->setAutoSize(true);
         $sheet->getColumnDimension('D')->setAutoSize(true);
+        $sheet->getColumnDimension('E')->setAutoSize(true);
+        $sheet->getColumnDimension('F')->setAutoSize(true);
 
         // Tambahkan filter ke header (baris pertama)
-        $sheet->setAutoFilter('A1:D1');
+        $sheet->setAutoFilter('A1:F1');
 
         // Isi data dari database mulai dari baris ke-2
         $row = 2;
         foreach ($prepayment as $data) {
             $sheet->setCellValue('A' . $row, $data->kode_prepayment);
             $sheet->setCellValue('B' . $row, 'Prepayment');
-            $sheet->setCellValue('C' . $row, $this->tgl_indo(date("Y-m-j", strtotime($data->tgl_prepayment))));
-            $sheet->setCellValue('D' . $row, $data->total_nominal);
+            $sheet->setCellValue('C' . $row, $data->tujuan);
+            $sheet->setCellValue('D' . $row, '-');
+            $sheet->setCellValue('E' . $row, $this->tgl_indo(date("Y-m-j", strtotime($data->tgl_prepayment))));
+            $sheet->setCellValue('F' . $row, $data->total_nominal);
             $row++;
         }
 
         foreach ($reimbust as $data) {
             $sheet->setCellValue('A' . $row, strtoupper($data->kode_reimbust));
             $sheet->setCellValue('B' . $row, $data->sifat_pelaporan);
-            $sheet->setCellValue('C' . $row, $this->tgl_indo(date("Y-m-j", strtotime($data->tgl_pengajuan))));
-            $sheet->setCellValue('D' . $row, $data->total_nominal);
+            $sheet->setCellValue('C' . $row, $data->tujuan);
+            $sheet->setCellValue('D' . $row, $data->tgl_prepayment ? $this->tgl_indo(date("Y-m-j", strtotime($data->tgl_prepayment))) : '-');
+            $sheet->setCellValue('E' . $row, $this->tgl_indo(date("Y-m-j", strtotime($data->tgl_pengajuan))));
+            $sheet->setCellValue('F' . $row, $data->total_nominal);
             $row++;
         }
 
+        // foreach ($invoice as $data) {
+        //     $sheet->setCellValue('A' . $row, strtoupper($data->kode_invoice));
+        //     $sheet->setCellValue('B' . $row, 'Invoice');
+        //     $sheet->setCellValue('C' . $row, $data->ctc_to);
+        //     $sheet->setCellValue('D' . $row, '-');
+        //     $sheet->setCellValue('E' . $row, $this->tgl_indo(date("Y-m-j", strtotime($data->tgl_invoice))));
+        //     $sheet->setCellValue('F' . $row, $data->total);
+        //     $row++;
+        // }
+
         // Terapkan format angka untuk kolom Nominal
-        $sheet->getStyle('D2:D' . ($row - 1))
+        $sheet->getStyle('F2:F' . ($row - 1))
             ->getNumberFormat()
-            ->setFormatCode('#,##0');
+        ->setFormatCode('#,##0');
 
         // Buat writer untuk export ke Excel
         $writer = new Xlsx($spreadsheet);

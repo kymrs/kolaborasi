@@ -113,9 +113,6 @@
                     <li class="nav-item">
                         <a class="nav-link" id="reimbustTab" href="#" data-tab="reimbust">Reimbust</a>
                     </li>
-                    <!-- <li class="nav-item">
-                        <a class="nav-link" id="transportTab" href="#" data-tab="transport">Transport</a>
-                    </li> -->
                 </ul>
 
                 <div class="card-body">
@@ -192,7 +189,7 @@
                 "serverSide": true,
                 "order": [],
                 "ajax": {
-                    "url": "<?php echo site_url('sam_rekapitulasi/get_list') ?>",
+                    "url": "<?php echo site_url('sw_rekapitulasi/get_list') ?>",
                     "type": "POST",
                     "data": function(d) {
                         let tgl_awal = $('#tgl_awal').val();
@@ -223,7 +220,7 @@
                 ],
                 "drawCallback": function(settings) {
                     $.ajax({
-                        "url": "<?php echo site_url('sam_rekapitulasi/get_total') ?>",
+                        "url": "<?php echo site_url('sw_rekapitulasi/get_total') ?>",
                         "type": "POST",
                         "data": {
                             "awal": $('#tgl_awal').val(),
@@ -302,31 +299,7 @@
                     <th>Pengeluaran</th>
                 </tr>
             `);
-            } 
-            // else if (tab === 'transport') {
-            //     tableHeader.append(`
-            //     <tr>
-            //         <th>No</th>
-            //         <th>Kode Prepayment</th>
-            //         <th>Kode Reimbust</th>
-            //         <th>Nama</th>
-            //         <th>Keterangan</th>
-            //         <th>Tanggal</th>
-            //         <th>Pengeluaran</th>
-            //     </tr>
-            // `);
-            //     tableFooter.append(`
-            //     <tr>
-            //         <th>No</th>
-            //         <th>Kode Prepayment</th>
-            //         <th>Kode Reimbust</th>
-            //         <th>Nama</th>
-            //         <th>Keterangan</th>
-            //         <th>Tanggal</th>
-            //         <th>Pengeluaran</th>
-            //     </tr>
-            // `);
-            // }
+            }
             initializeDataTable();
         }
 
@@ -371,7 +344,7 @@
         var tgl_awal = $('#tgl_awal').val();
         var tgl_akhir = $('#tgl_akhir').val();
 
-// // Arahkan ke URL controller untuk export Excel dengan parameter
-        window.location.href = "<?= site_url('sam_rekapitulasi/export_excel'); ?>?tgl_awal=" + tgl_awal + "&tgl_akhir=" + tgl_akhir;
+        // // Arahkan ke URL controller untuk export Excel dengan parameter
+        window.location.href = "<?= site_url('sw_rekapitulasi/export_excel'); ?>?tgl_awal=" + tgl_awal + "&tgl_akhir=" + tgl_akhir;
     });
 </script>
