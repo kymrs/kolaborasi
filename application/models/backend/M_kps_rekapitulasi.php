@@ -25,6 +25,7 @@ class M_kps_rekapitulasi extends CI_Model
                 $this->db->select('kps_reimbust.id, 
                                kps_prepayment.id as prepayment_id, 
                                kps_reimbust.kode_reimbust, 
+                               kps_reimbust.sifat_pelaporan,
                                tbl_data_user.name, 
                                kps_prepayment.tujuan, 
                                IF(kps_reimbust.kode_prepayment IS NOT NULL, kps_reimbust.tgl_pengajuan, kps_prepayment.tgl_prepayment) AS tgl_pengajuan,  
@@ -82,7 +83,7 @@ class M_kps_rekapitulasi extends CI_Model
                 $this->column_search = array('kps_reimbust.kode_prepayment', 'kps_reimbust.kode_reimbust', 'kps_reimbust.tgl_pengajuan', 'tbl_data_user.name', 'kps_reimbust.tujuan');
 
                 // Query for "reimbust" tab
-                $this->db->select('kps_reimbust.id, kps_reimbust.tgl_pengajuan, tbl_data_user.name, kps_reimbust.tujuan, kps_reimbust.kode_reimbust, kps_reimbust.kode_prepayment, SUM(kps_reimbust_detail.jumlah) AS total_jumlah_detail');
+                $this->db->select('kps_reimbust.id, kps_reimbust.tgl_pengajuan, tbl_data_user.name, kps_reimbust.tujuan, kps_reimbust.kode_reimbust, kps_reimbust.kode_prepayment, kps_reimbust.sifat_pelaporan, SUM(kps_reimbust_detail.jumlah) AS total_jumlah_detail');
                 $this->db->from('kps_reimbust');
                 $this->db->join('kps_reimbust_detail', 'kps_reimbust.id = kps_reimbust_detail.reimbust_id', 'left');
                 $this->db->join('tbl_data_user', 'kps_reimbust.id_user = tbl_data_user.id_user', 'left');
@@ -383,7 +384,7 @@ class M_kps_rekapitulasi extends CI_Model
 
     function get_data_prepayment($tgl_awal, $tgl_akhir)
     {
-        $this->db->select('a.id, a.kode_prepayment, a.tgl_prepayment, a.prepayment, a.total_nominal');
+        $this->db->select('a.id, a.kode_prepayment, a.tgl_prepayment, a.prepayment, a.total_nominal, a.tujuan');
         $this->db->from('kps_prepayment AS a');
         $this->db->join('kps_reimbust AS b', 'a.kode_prepayment = b.kode_prepayment', 'left');
         $this->db->where('a.payment_status', 'paid');
@@ -413,7 +414,7 @@ class M_kps_rekapitulasi extends CI_Model
 
     function get_data_reimbust($tgl_awal, $tgl_akhir)
     {
-        $this->db->select('a.id, a.kode_reimbust, a.tgl_pengajuan, a.sifat_pelaporan, SUM(b.jumlah) AS total_nominal');
+        $this->db->select('a.id, a.kode_reimbust, a.tgl_pengajuan, a.sifat_pelaporan, SUM(b.jumlah) AS total_nominal, a.tujuan, c.tgl_prepayment');
         $this->db->from('kps_reimbust AS a');
         $this->db->join('kps_reimbust_detail AS b', 'a.id = b.reimbust_id', 'inner');
         $this->db->join('kps_prepayment AS c', 'a.kode_prepayment = c.kode_prepayment', 'left');

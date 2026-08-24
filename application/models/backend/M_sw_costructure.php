@@ -5,12 +5,11 @@ if (!defined('BASEPATH'))
 
 class M_sw_costructure extends CI_Model
 {
-    // ========== PROPERTIES ==========
     private $table_master = 'sw_costructure';
     private $table_category = 'sw_categories_costructure';
     private $table_detail = 'sw_costructure_detail';
     private $column_search = array('company_name', 'event_type');
-    private $column_order = array(null, null, 'company_name', 'event_type', 'number_of_participants', 'created_at');
+    private $column_order = array(null, null, 'company_name', 'event_type', 'number_of_participants', 'grand_total', 'received_by_eo', 'created_at');
     private $order = array('id' => 'desc');
 
     public function __construct()
@@ -18,11 +17,6 @@ class M_sw_costructure extends CI_Model
         parent::__construct();
     }
 
-    // ========== DATATABLES QUERY BUILDER ==========
-    /**
-     * Build query untuk datatables
-     * Mencari berdasarkan company_name dan event_type
-     */
     private function _get_datatables_query()
     {
         $this->db->from($this->table_master);
@@ -166,11 +160,11 @@ class M_sw_costructure extends CI_Model
             // 2. Insert categories dengan items
             if (!empty($categories)) {
                 $sort_order = 0;
-                foreach ($categories as $category_data) {
+                foreach ($categories as $index => $category_data) {
                     // Insert category
                     $category_insert = array(
                         'costructure_id' => $costructure_id,
-                        'name' => $category_data['name'],
+                        'name' => $index + 1 . '. ' . $category_data['name'],
                         'sort_order' => $sort_order,
                         'created_at' => date('Y-m-d H:i:s')
                     );

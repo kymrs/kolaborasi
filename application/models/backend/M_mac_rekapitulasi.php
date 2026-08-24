@@ -17,14 +17,15 @@ class M_mac_rekapitulasi extends CI_Model
             if ($_POST['tab'] == 'pelaporan') {
                 // Column order for "pelaporan" tab
                 // Urutan ini harus mengikuti kolom yang dikirim pada controller get_list():
-                // [0]no, [1]kode_prepayment, [2]kode_reimbust, [3]name, [4]tujuan, [5]tgl_pengajuan, [6]pengeluaran
-                $this->column_order = array(null, 'mac_prepayment.kode_prepayment', 'mac_reimbust.kode_reimbust', 'tbl_data_user.name', 'mac_prepayment.tujuan', 'tgl_pengajuan', 'pengeluaran');
-                $this->column_search = array('mac_prepayment.kode_prepayment', 'mac_reimbust.kode_reimbust', 'mac_reimbust.tgl_pengajuan', 'mac_prepayment.tgl_prepayment', 'tbl_data_user.name', 'mac_prepayment.tujuan');
+                // [0]no, [1]kode_prepayment, [2]kode_reimbust, [3]sifat_pelaporan, [4]name, [5]tujuan, [6]tgl_pengajuan, [7]pengeluaran
+                $this->column_order = array(null, 'mac_prepayment.kode_prepayment', 'mac_reimbust.kode_reimbust', 'mac_reimbust.sifat_pelaporan', 'tbl_data_user.name', 'mac_prepayment.tujuan', 'tgl_pengajuan', 'pengeluaran');
+                $this->column_search = array('mac_prepayment.kode_prepayment', 'mac_reimbust.kode_reimbust', 'mac_reimbust.sifat_pelaporan', 'mac_reimbust.tgl_pengajuan', 'mac_prepayment.tgl_prepayment', 'tbl_data_user.name', 'mac_prepayment.tujuan');
 
                 // Query for "pelaporan" tab
                 $this->db->select('mac_reimbust.id, 
                                mac_prepayment.id as prepayment_id, 
-                               mac_reimbust.kode_reimbust, 
+                               mac_reimbust.kode_reimbust,
+                               mac_reimbust.sifat_pelaporan,
                                tbl_data_user.name, 
                                mac_prepayment.tujuan, 
                                IF(mac_reimbust.kode_prepayment IS NOT NULL, mac_reimbust.tgl_pengajuan, mac_prepayment.tgl_prepayment) AS tgl_pengajuan,  
@@ -77,12 +78,12 @@ class M_mac_rekapitulasi extends CI_Model
             } elseif ($_POST['tab'] == 'reimbust') {
                 // Column order for "reimbust" tab
                 // Urutan ini harus mengikuti kolom yang dikirim pada controller get_list():
-                // [0]no, [1]kode_prepayment, [2]kode_reimbust, [3]name, [4]tujuan, [5]tgl_pengajuan, [6]pengeluaran
-                $this->column_order = array(null, 'mac_reimbust.kode_prepayment', 'mac_reimbust.kode_reimbust', 'tbl_data_user.name', 'mac_reimbust.tujuan', 'mac_reimbust.tgl_pengajuan', 'total_jumlah_detail');
-                $this->column_search = array('mac_reimbust.kode_prepayment', 'mac_reimbust.kode_reimbust', 'mac_reimbust.tgl_pengajuan', 'tbl_data_user.name', 'mac_reimbust.tujuan');
+                // [0]no, [1]kode_prepayment, [2]kode_reimbust, [3]sifat_pelaporan, [4]name, [5]tujuan, [6]tgl_pengajuan, [7]pengeluaran
+                $this->column_order = array(null, 'mac_reimbust.kode_prepayment', 'mac_reimbust.kode_reimbust', 'mac_reimbust.sifat_pelaporan', 'tbl_data_user.name', 'mac_reimbust.tujuan', 'mac_reimbust.tgl_pengajuan', 'total_jumlah_detail');
+                $this->column_search = array('mac_reimbust.kode_prepayment', 'mac_reimbust.kode_reimbust', 'mac_reimbust.sifat_pelaporan', 'mac_reimbust.tgl_pengajuan', 'tbl_data_user.name', 'mac_reimbust.tujuan');
 
                 // Query for "reimbust" tab
-                $this->db->select('mac_reimbust.id, mac_reimbust.tgl_pengajuan, tbl_data_user.name, mac_reimbust.tujuan, mac_reimbust.kode_reimbust, mac_reimbust.kode_prepayment, SUM(mac_reimbust_detail.jumlah) AS total_jumlah_detail');
+                $this->db->select('mac_reimbust.id, mac_reimbust.tgl_pengajuan, tbl_data_user.name, mac_reimbust.tujuan, mac_reimbust.kode_reimbust, mac_reimbust.kode_prepayment, mac_reimbust.sifat_pelaporan, SUM(mac_reimbust_detail.jumlah) AS total_jumlah_detail');
                 $this->db->from('mac_reimbust');
                 $this->db->join('mac_reimbust_detail', 'mac_reimbust.id = mac_reimbust_detail.reimbust_id', 'left');
                 $this->db->join('tbl_data_user', 'mac_reimbust.id_user = tbl_data_user.id_user', 'left');
@@ -392,7 +393,7 @@ class M_mac_rekapitulasi extends CI_Model
 
     function get_data_prepayment($tgl_awal, $tgl_akhir)
     {
-        $this->db->select('a.id, a.kode_prepayment, a.tgl_prepayment, a.prepayment, a.total_nominal');
+        $this->db->select('a.id, a.kode_prepayment, a.tgl_prepayment, a.prepayment, a.total_nominal, a.tujuan');
         $this->db->from('mac_prepayment AS a');
         $this->db->join('mac_reimbust AS b', 'a.kode_prepayment = b.kode_prepayment', 'left');
         $this->db->where('a.payment_status', 'paid');
@@ -422,7 +423,7 @@ class M_mac_rekapitulasi extends CI_Model
 
     function get_data_reimbust($tgl_awal, $tgl_akhir)
     {
-        $this->db->select('a.id, a.kode_reimbust, a.tgl_pengajuan, a.sifat_pelaporan, SUM(b.jumlah) AS total_nominal');
+        $this->db->select('a.id, a.kode_reimbust, a.tgl_pengajuan, a.sifat_pelaporan, SUM(b.jumlah) AS total_nominal, a.tujuan, c.tgl_prepayment');
         $this->db->from('mac_reimbust AS a');
         $this->db->join('mac_reimbust_detail AS b', 'a.id = b.reimbust_id', 'inner');
         $this->db->join('mac_prepayment AS c', 'a.kode_prepayment = c.kode_prepayment', 'left');

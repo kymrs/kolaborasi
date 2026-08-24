@@ -78,7 +78,7 @@
                             <!-- SEBELAH KANAN -->
                             <div class="col-md-6">
                                 <input type="hidden" class="form-control" id="jabatan" name="jabatan" autocomplete="off" placeholder="Jabatan">
-                                <div class="form-group row tujuan-field">
+                                <div class="form-group row tujuan-field">   
                                     <label class="col-sm-4">Tujuan</label>
                                     <div class="col-sm-8">
                                         <div class="form-floating">
@@ -98,7 +98,7 @@
                                     <div class="col-sm-8">
                                         <input type="text" class="form-control" readonly placeholder="Kode Prepayment" name="kode_prepayment" id="kode_prepayment_input" style="cursor: not-allowed;">
                                         <input type="hidden" class="form-control" id="kode_prepayment_old" name="kode_prepayment_old">
-                                    </div>
+                                    </div>x
                                 </div>
                             </div>
                         </div>
@@ -310,7 +310,7 @@
 
     document.getElementById('nomor_rekening').addEventListener('input', function(e) {
         let value = this.value.replace(/[^0-9]/g, '');
-        if (value.length > 30) {
+        if (value.length > 60) {
             value = value.slice(0, 10);
         }
         this.value = value;

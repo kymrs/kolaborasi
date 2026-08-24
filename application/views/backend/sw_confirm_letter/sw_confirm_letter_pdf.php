@@ -113,18 +113,29 @@
     <br>
     <p>
         <b>
-        The Down Payment is to be paid on :
-        <?= ($dp_date == "0000-00-00 00:00:00" || empty($dp_date)) 
-            ? '-' 
-            : date('l, d F Y', strtotime($dp_date)) . ' Rp. ' . number_format($total_amount / 2, 0, ',', '.') . ',-' ?>
+            The Down Payment is to be paid on :
+            <?=
+            ($dp_date == "0000-00-00 00:00:00" || empty($dp_date))
+                ? '-'
+                : date('l, d F Y', strtotime($dp_date)) .
+                    ' Rp. ' .
+                    number_format(($total_amount * $dp_percent) / 100, 0, ',', '.') .
+                    ',-'
+            ?>
         </b>
     </p>
+
     <p>
         <b>
-        The Final Payment is to be paid on : 
-        <?= ($final_date == "0000-00-00 00:00:00" || empty($final_date)) 
-            ? '-' 
-            : date('l, d F Y', strtotime($final_date)) . ' Rp. ' . number_format($total_amount / 2, 0, ',', '.') . ',-' ?>
+            The Final Payment is to be paid on :
+            <?=
+            ($final_date == "0000-00-00 00:00:00" || empty($final_date))
+                ? '-'
+                : date('l, d F Y', strtotime($final_date)) .
+                    ' Rp. ' .
+                    number_format(($total_amount * $final_percent) / 100, 0, ',', '.') .
+                    ',-'
+            ?>
         </b>
     </p>
 </div>
@@ -203,18 +214,19 @@ Payment to be settle by Cash, TT, Credit Card or Company Cheque to be made payab
 <p style="text-indent: 20px;">The EO is not responsible for any loss or damage to any goods, property or equipment brought in the hotel. Please note that this quotation does not confirm your booking. We will reserve your booking after receiving 50% of deposit. Please do not hesitate to contact us at +62 21 84311622 or 081282229700 for any information you may need.</p>
 <p style="text-indent: 20px;">We would like to thank you and look forward to the opportunity to organize your event and assure you the best service and attention at all times.</p>
 <br>
+
 <table>
     <tr>
-        <td><b>With warmest regards</b></td>
+        <td>With warmest regards,</td>
     </tr>
     <tr>
-        <td><img src="assets/backend/img/sw-signature-letter.png" alt="Signature" width="150"></td>
+        <td><img src="assets/backend/img/sw-signature-letter.png" alt="Signature" width="190" style="margin-left: -20px; margin-top: 8px"></td>
     </tr>
     <tr>
-        <td style="text-align: center;">Pristiani</td>
+        <td style="text-align: left; padding-left: 43px"><b>Pristiani</b></td>
     </tr>
     <tr>
-        <td><b>Sebelas Warna Head Unit</b></td>
+        <td>SebelasWarna Head Unit</td>
     </tr>
 </table>
 </div>

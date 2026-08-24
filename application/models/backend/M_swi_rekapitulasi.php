@@ -68,6 +68,7 @@ class M_swi_rekapitulasi extends CI_Model
             'swi_reimbust.id,
              swi_prepayment.id as prepayment_id,
              swi_reimbust.kode_reimbust,
+             swi_reimbust.sifat_pelaporan,
              tbl_data_user.name,
              swi_prepayment.tujuan,
              IF(swi_reimbust.kode_prepayment IS NOT NULL, swi_reimbust.tgl_pengajuan, swi_prepayment.tgl_prepayment) AS tgl_pengajuan,

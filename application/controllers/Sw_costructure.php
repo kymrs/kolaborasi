@@ -39,7 +39,7 @@ class Sw_costructure extends CI_Controller
 
         foreach ($list as $field) {
             // Build action buttons
-            $action_read = ($read == 'Y') ? '<a href="sw_costructure/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Preview/Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
+            $action_read = ($read == 'Y') ? '<a href="sw_costructure/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Preview/Read"><i class="fa fa-file-pdf"></i></a>&nbsp;' : '';
             $action_edit = ($edit == 'Y') ? '<a href="sw_costructure/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . $field->id . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
 
@@ -53,7 +53,7 @@ class Sw_costructure extends CI_Controller
             $row[] = $field->event_type;
             $row[] = $field->number_of_participants;
             $row[] = 'Rp ' . number_format($field->grand_total ?? 0, 0, ',', '.');
-            $row[] = 'Rp ' . number_format($field->selling_price ?? 0, 0, ',', '.');
+            $row[] = 'Rp ' . number_format($field->received_by_eo ?? 0, 0, ',', '.');
             $row[] = date('d-m-Y H:i:s', strtotime($field->created_at));
             $data[] = $row;
         }
@@ -107,8 +107,12 @@ class Sw_costructure extends CI_Controller
             'event_type' => $master->event_type,
             'number_of_participants' => $master->number_of_participants,
             'margin' => $master->margin ?? 0,
+            'fee_mediator' => $master->fee_mediator ?? 0,
+            'cashback' => $master->cashback ?? 0,
             'grand_total' => $master->grand_total ?? 0,
-            'selling_price' => $master->selling_price ?? 0,
+            'received_by_eo' => $master->received_by_eo ?? 0,
+            'adjustment' => $master->adjustment ?? 0,
+            'rounding' => $master->rounding ?? 50000,
             'categories' => array()
         );
 
@@ -160,8 +164,11 @@ class Sw_costructure extends CI_Controller
                 'event_type' => $this->input->post('event_type'),
                 'number_of_participants' => intval($this->input->post('number_of_participants')) ?: 0,
                 'margin' => floatval(str_replace('.', '', $this->input->post('margin'))) ?: 0,
+                'fee_mediator' => floatval(str_replace('.', '', $this->input->post('fee_mediator'))) ?: 0,
+                'cashback' => floatval(str_replace('.', '', $this->input->post('cashback'))) ?: 0,
                 'grand_total' => floatval(str_replace('.', '', $this->input->post('grand_total'))) ?: 0,
-                'selling_price' => floatval(str_replace('.', '', $this->input->post('selling_price'))) ?: 0,
+                'received_by_eo' => floatval(str_replace('.', '', $this->input->post('received_by_eo'))) ?: 0,
+                'rounding' => intval($this->input->post('rounding')),
                 'created_at' => date('Y-m-d H:i:s')
             );
 
@@ -241,8 +248,12 @@ class Sw_costructure extends CI_Controller
                 'event_type' => $this->input->post('event_type'),
                 'number_of_participants' => intval($this->input->post('number_of_participants')) ?: 0,
                 'margin' => floatval(str_replace('.', '', $this->input->post('margin'))) ?: 0,
+                'fee_mediator' => floatval(str_replace('.', '', $this->input->post('fee_mediator'))) ?: 0,
+                'cashback' => floatval(str_replace('.', '', $this->input->post('cashback'))) ?: 0,
                 'grand_total' => floatval(str_replace('.', '', $this->input->post('grand_total'))) ?: 0,
-                'selling_price' => floatval(str_replace('.', '', $this->input->post('selling_price'))) ?: 0
+                'received_by_eo' => floatval(str_replace('.', '', $this->input->post('received_by_eo'))) ?: 0,
+                'adjustment' => floatval(str_replace('.', '', $this->input->post('adjustment'))) ?: 0,
+                'rounding' => intval($this->input->post('rounding'))
             );
 
             // Prepare categories dengan items
@@ -250,11 +261,11 @@ class Sw_costructure extends CI_Controller
             $categories = array();
 
             if (!empty($categories_input)) {
-                foreach ($categories_input as $category_data) {
+                foreach ($categories_input as $index => $category_data) {
                     if (empty($category_data['name'])) continue;
 
                     $category = array(
-                        'name' => $category_data['name'],
+                        'name' => $index + 1 . '. ' . $category_data['name'],
                         'items' => array()
                     );
 
@@ -286,7 +297,7 @@ class Sw_costructure extends CI_Controller
 
             echo json_encode(array(
                 'status' => TRUE,
-                'message' => 'Cost structure updated successfully'
+                'message' => 'Updated successfully'
             ));
         } catch (Exception $e) {
             echo json_encode(array('status' => FALSE, 'message' => $e->getMessage()));
@@ -355,8 +366,7 @@ class Sw_costructure extends CI_Controller
             // Initialize mPDF
             $mpdf = new \Mpdf\Mpdf([
                 'format' => 'A4',
-                'margin_top' => 50,
-                'margin_bottom' => 20,
+                'margin_top' => 32,
                 'margin_left' => 15,
                 'margin_right' => 15,
                 'default_font' => 'helvetica'
@@ -367,36 +377,40 @@ class Sw_costructure extends CI_Controller
             $mpdf->SetCreator('System Sebelaswarna');
             $mpdf->SetTitle('Cost Structure - ' . $data->company_name);
 
-            // Set header
-            $mpdf->SetHTMLHeader('
-                <div style="border-bottom: 3px solid #ff6b35; padding-bottom: 10px; margin-bottom: 10px;">
-                    <table width="100%">
-                        <tr>
-                            <td width="20%"><img src="assets/backend/img/sebelaswarna.png" width="80"></td>
-                            <td width="80%" style="text-align: right;">
-                                <h2 style="margin: 0; color: #242d4a;">PT SOBAT WISATA DUNIA</h2>
-                                <p style="margin: 2px 0; font-size: 11px; color: #666;">Kp. Tunggilis RT 001 RW 007, Situsari, Bogor</p>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-            ');
+            $path = FCPATH . 'assets/backend/img/kop_surat_sw.png';
 
-            // Set footer
-            $mpdf->SetHTMLFooter('
-                <div style="text-align: center; font-size: 10px; color: #666;">
-                    <p style="margin: 0;">Generated on ' . date('d-m-Y H:i:s') . ' | Page {PAGENO} of {nb}</p>
-                </div>
-            ');
+            // Watermark image
+            $mpdf->SetWatermarkImage(
+                $path,
+                1,
+                [210, 297],
+                [0, 0]
+            );
 
-            // Load view dan convert ke HTML
-            $html = $this->load->view('backend/sw_costructure/sw_costructure_pdf', ['data' => $data], TRUE);
+            $mpdf->showWatermarkImage = true;
+            $mpdf->watermarkImgBehind = true;
+
+            // Load HTML
+            $html = $this->load->view(
+                'backend/sw_costructure/sw_costructure_pdf',
+                ['data' => $data],
+                TRUE
+            );
 
             $mpdf->WriteHTML($html);
-            $mpdf->Output('Cost-Structure-' . $data->company_name . '.pdf', 'I');
+
+            $mpdf->Output(
+                'Cost-Structure-' . $data->company_name . '.pdf',
+                'I'
+            );
+
         } catch (Exception $e) {
             log_message('error', 'Sw_costructure::generate_pdf - ' . $e->getMessage());
-            show_error('Error generating PDF: ' . $e->getMessage(), 500);
+
+            show_error(
+                'Error generating PDF: ' . $e->getMessage(),
+                500
+            );
         }
     }
 

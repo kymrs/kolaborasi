@@ -7,6 +7,7 @@ class Mac_prepayment extends CI_Controller
     {
         parent::__construct();
         $this->load->model('backend/M_mac_prepayment');
+        $this->load->model('backend/M_mac_peminjaman');
         $this->load->model('backend/M_notifikasi');
         $this->M_login->getsecurity();
         date_default_timezone_set('Asia/Jakarta');
@@ -37,6 +38,16 @@ class Mac_prepayment extends CI_Controller
     {
         $akses = $this->M_app->hak_akses($this->session->userdata('id_level'), $this->router->fetch_class());
         ($akses->view_level == 'N' ? redirect('auth') : '');
+
+        if (empty($this->session->userdata('cabang_id'))) {
+            echo "
+            <script>
+                alert('Cabang belum diatur. Silakan hubungi Admin untuk melanjutkan.');
+                window.location.href = '" . site_url('dashboard') . "';
+            </script>";
+            exit;
+        }
+
         $data['add'] = $akses->add_level;
         $data['alias'] = $this->session->userdata('username');
         $data['title'] = "backend/mac_prepayment/mac_prepayment_list";
@@ -102,10 +113,8 @@ class Mac_prepayment extends CI_Controller
             //MENENSTUKAN SATTSU PROGRESS PENGAJUAN PERMINTAAN
             if ($field->app_status == 'approved' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
                 $status = $field->status . ' (' . $field->app2_name . ')';
-            } elseif ($field->app4_status == 'approved' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
-                $status = $field->status . ' (' . $field->app_name . ')';
-            } elseif ($field->app4_status == 'waiting' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
-                $status = $field->status . ' (' . $field->app4_name . ')';
+            } elseif ($field->app_status == 'waiting' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
+                $status = $field->status . ' (' . $field->app_name . ')';   
             } else {
                 $status = $field->status;
             }
@@ -170,6 +179,7 @@ class Mac_prepayment extends CI_Controller
         $data['id_pembuat'] = 0;
         $data['id'] = 0;
         $data['title'] = 'backend/mac_prepayment/mac_prepayment_form';
+        $data['is_nasional'] = $this->session->userdata('is_nasional') ? true : false;
         $data['title_view'] = 'Prepayment Form';
         $data['rek_options'] = $this->M_mac_prepayment->options($data['id_user'])->result_array();
 
@@ -194,6 +204,74 @@ class Mac_prepayment extends CI_Controller
         echo json_encode($data);
     }
 
+    // GET INVENTORY UNTUK SELECT2 DI FORM PREPAYMENT DETAIL
+    // Mengembalikan stok fisik, stok efektif, dan rata-rata pemakaian per bulan
+    public function get_inventory_prepayment()
+    {
+        $is_nasional = $this->session->userdata('is_nasional') ? true : false;
+
+        // User nasional tidak boleh memilih barang
+        if ($is_nasional) {
+            echo json_encode([]);
+            return;
+        }
+
+        $search         = $this->input->post('search');
+        $session_cabang = (int)$this->session->userdata('cabang_id');
+
+        $this->db->select("
+            i.id,
+            i.kode_produk,
+            i.nama_produk,
+            i.satuan,
+            COALESCE(s.stok_saat_ini, 0) AS stok_fisik,
+            COALESCE(ic.stok_minimal, 0) AS stok_minimal
+        ", FALSE);
+
+        $this->db->from('mac_inventory i');
+
+        $this->db->join(
+            'mac_inventory_stok s',
+            's.inventory_id = i.id
+            AND s.cabang_id = '.$session_cabang,
+            'left'
+        );
+
+        $this->db->join(
+            'mac_inventory_cabang ic',
+            'ic.inventory_id = i.id
+            AND ic.cabang_id = '.$session_cabang,
+            'left'
+        );
+
+        $this->db->where('i.is_active', 1);
+        $this->db->where('i.kategori !=', 'Jasa');
+
+        if (!empty($search)) {
+            $this->db->group_start()
+                ->like('i.nama_produk', $search)
+                ->or_like('i.kode_produk', $search)
+                ->group_end();
+        }
+
+        $this->db->order_by('i.nama_produk', 'ASC');
+
+        $items = $this->db->get()->result();
+
+        // Hitung stok efektif
+        $this->load->model('backend/M_mac_inventory_stok');
+
+        foreach ($items as &$item) {
+            $item->stok_efektif = $this->M_mac_inventory_stok->get_stok_efektif(
+                $item->id,
+                false,
+                $session_cabang
+            );
+        }
+
+        echo json_encode($items);
+    }
+
     // UNTUK MENAMPILKAN FORM EDIT
     function edit_form($id)
     {
@@ -204,6 +282,7 @@ class Mac_prepayment extends CI_Controller
         $data['id'] = $id;
         $data['aksi'] = 'update';
         $data['title_view'] = "Edit Data Prepayment";
+        $data['is_nasional'] = $this->session->userdata('is_nasional') ? true : false;
         $data['rek_options'] = $this->M_mac_prepayment->options($data['id_user'])->result_array();
         $data['title'] = 'backend/mac_prepayment/mac_prepayment_form';
         $this->load->view('backend/home', $data);
@@ -267,14 +346,22 @@ class Mac_prepayment extends CI_Controller
             $no_rek = $this->input->post('rekening');
         }
 
+        // VALIDASI NO_REK TIDAK BOLEH KOSONG
+        if (empty($no_rek)) {
+            echo json_encode(array("status" => FALSE, "error" => "Nomor Rekening tidak boleh kosong"));
+            exit();
+        }
+
         $data = array(
             'kode_prepayment' => $kode_prepayment,
             'id_user' => $id,
-            'prepayment' => $this->input->post('prepayment'),
-            'tujuan' => $this->input->post('tujuan'),
+            'cabang_id' => $this->session->userdata('cabang_id'),
+            'prepayment' => ucwords(strtolower(trim($this->input->post('prepayment')))),
+            'tujuan' => ucwords(strtolower(trim($this->input->post('tujuan')))),
             'tgl_prepayment' => date('Y-m-d', strtotime($this->input->post('tgl_prepayment'))),
             'total_nominal' => $this->input->post('total_nominal'),
             'no_rek' => $no_rek,
+            'is_kas' => intval($this->input->post('is_kas')),
             'divisi' => $this->db->select('divisi')
                 ->from('tbl_data_user')
                 ->where('id_user', $id)
@@ -317,12 +404,19 @@ class Mac_prepayment extends CI_Controller
             $nominal = $this->input->post('hidden_nominal[]');
             $keterangan = $this->input->post('keterangan[]');
             //PERULANGAN UNTUK INSER QUERY DETAIL PREPAYMENT
+            $inventory_id_list = $this->input->post('inventory_id_detail') ?: [];
+
+            $qty_list = $this->input->post('qty') ?: [];
+
+            // Di dalam loop, tambahkan qty ke array data2
             for ($i = 1; $i <= count($_POST['rincian']); $i++) {
                 $data2[] = array(
                     'prepayment_id' => $inserted,
-                    'rincian' => $rincian[$i],
-                    'nominal' => $nominal[$i],
-                    'keterangan' => $keterangan[$i]
+                    'rincian'       => $rincian[$i],
+                    'nominal'       => $nominal[$i],
+                    'keterangan'    => $keterangan[$i],
+                    'inventory_id'  => !empty($inventory_id_list[$i]) ? (int)$inventory_id_list[$i] : null,
+                    'qty'           => isset($qty_list[$i]) ? intval($qty_list[$i]) : 1, // TAMBAHAN
                 );
             }
             $this->M_mac_prepayment->save_detail($data2);
@@ -340,12 +434,19 @@ class Mac_prepayment extends CI_Controller
             $no_rek = $this->input->post('rekening');
         }
 
+        // VALIDASI NO_REK TIDAK BOLEH KOSONG
+        if (empty($no_rek)) {
+            echo json_encode(array("status" => FALSE, "error" => "Nomor Rekening tidak boleh kosong"));
+            exit();
+        }
+
         $data = array(
             'kode_prepayment' => $this->input->post('kode_prepayment'),
-            'prepayment' => $this->input->post('prepayment'),
-            'tujuan' => $this->input->post('tujuan'),
+            'prepayment' => ucwords(strtolower(trim($this->input->post('prepayment')))),
+            'tujuan' => ucwords(strtolower(trim($this->input->post('tujuan')))),
             'tgl_prepayment' => date('Y-m-d', strtotime($this->input->post('tgl_prepayment'))),
             'total_nominal' => $this->input->post('total_nominal'),
+            'is_kas' => intval($this->input->post('is_kas')),
             'no_rek' => $no_rek,
             'app_status' => 'waiting',
             'app_date' => null,
@@ -378,17 +479,21 @@ class Mac_prepayment extends CI_Controller
             }
 
             //MELAKUKAN REPLACE DATA LAMA DENGAN YANG BARU
+            $inventory_id_list = $this->input->post('inventory_id_detail') ?: [];
+            $qty_list = $this->input->post('qty') ?: [];
+
+            // Di dalam loop replace, tambahkan qty
             for ($i = 1; $i <= count($_POST['rincian']); $i++) {
-                // Set id menjadi NULL jika id_detail tidak ada atau kosong
                 $id = !empty($id_detail[$i]) ? $id_detail[$i] : NULL;
                 $data2[] = array(
-                    'id' => $id,
+                    'id'            => $id,
                     'prepayment_id' => $prepayment_id,
-                    'rincian' => $rincian[$i],
-                    'nominal' => $nominal[$i],
-                    'keterangan' => $keterangan[$i]
+                    'rincian'       => $rincian[$i],
+                    'nominal'       => $nominal[$i],
+                    'keterangan'    => $keterangan[$i],
+                    'inventory_id'  => !empty($inventory_id_list[$i]) ? (int)$inventory_id_list[$i] : null,
+                    'qty'           => isset($qty_list[$i]) ? intval($qty_list[$i]) : 1, // TAMBAHAN
                 );
-                // Menggunakan db->replace untuk memasukkan atau menggantikan data
                 $this->db->replace('mac_prepayment_detail', $data2[$i - 1]);
             }
         }
@@ -428,26 +533,91 @@ class Mac_prepayment extends CI_Controller
         echo json_encode(array("status" => TRUE));
     }
 
+    // function approve2()
+    // {
+    //     $data = array(
+    //         'app2_keterangan' => $this->input->post('app2_keterangan'),
+    //         'app2_status' => $this->input->post('app2_status'),
+    //         'app2_date' => date('Y-m-d H:i:s'),
+    //     );
+
+    //     // UPDATE STATUS DEKLARASI
+    //     if ($this->input->post('app2_status') === 'revised') {
+    //         $data['status'] = 'revised';
+    //     } elseif ($this->input->post('app2_status') === 'approved') {
+    //         $data['status'] = 'approved';
+    //     } elseif ($this->input->post('app2_status') === 'rejected') {
+    //         $data['status'] = 'rejected';
+    //     }
+
+    //     // UPDATE APPROVAL 2
+    //     $this->db->where('id', $this->input->post('hidden_id'));
+    //     $this->db->update('mac_prepayment', $data);
+
+    //     echo json_encode(array("status" => TRUE));
+    // }
+
     function approve2()
     {
+        $prepayment_id = $this->input->post('hidden_id');
+        $app2_status   = $this->input->post('app2_status');
+
         $data = array(
             'app2_keterangan' => $this->input->post('app2_keterangan'),
-            'app2_status' => $this->input->post('app2_status'),
-            'app2_date' => date('Y-m-d H:i:s'),
+            'app2_status'     => $app2_status,
+            'app2_date'       => date('Y-m-d H:i:s'),
         );
 
-        // UPDATE STATUS DEKLARASI
-        if ($this->input->post('app2_status') === 'revised') {
+        if ($app2_status === 'revised') {
             $data['status'] = 'revised';
-        } elseif ($this->input->post('app2_status') === 'approved') {
+        } elseif ($app2_status === 'approved') {
             $data['status'] = 'approved';
-        } elseif ($this->input->post('app2_status') === 'rejected') {
+        } elseif ($app2_status === 'rejected') {
             $data['status'] = 'rejected';
         }
 
-        // UPDATE APPROVAL 2
-        $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('mac_prepayment', $data);
+        $this->db->where('id', $prepayment_id)->update('mac_prepayment', $data);
+
+        // ── TAMBAHAN: buat mac_kas jika is_kas = 1 dan approved ───────
+        if ($app2_status === 'approved') {
+            $prepayment = $this->db->where('id', $prepayment_id)
+                ->get('mac_prepayment')->row();
+
+            if ($prepayment && intval($prepayment->is_kas) === 1) {
+                $cabang_id     = intval($prepayment->cabang_id);
+                $nominal_baru  = floatval(preg_replace('/\D/', '', $prepayment->total_nominal));
+
+                // Cek apakah ada sisa kas lama dari prepayment sebelumnya
+                $kas_lama = $this->db
+                    ->where('cabang_id', $cabang_id)
+                    ->where('status', 'aktif')
+                    ->order_by('created_at', 'DESC')
+                    ->limit(1)
+                    ->get('mac_kas')->row();
+
+                $sisa_lama = 0;
+                if ($kas_lama) {
+                    $sisa_lama = floatval($kas_lama->sisa_kas);
+
+                    // Tutup kas lama
+                    $this->db->where('id', $kas_lama->id)
+                        ->update('mac_kas', ['status' => 'selesai']);
+                }
+
+                // Buat kas baru: nominal = nominal prepayment + sisa kas lama
+                $nominal_awal = $nominal_baru + $sisa_lama;
+
+                $this->db->insert('mac_kas', [
+                    'cabang_id'        => $cabang_id,
+                    'prepayment_id'    => intval($prepayment_id),
+                    'nominal_awal'     => $nominal_awal,
+                    'total_dilaporkan' => 0,
+                    'sisa_kas'         => $nominal_awal,
+                    'status'           => 'aktif',
+                    'created_at'       => date('Y-m-d H:i:s'),
+                ]);
+            }
+        }
 
         echo json_encode(array("status" => TRUE));
     }

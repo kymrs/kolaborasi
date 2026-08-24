@@ -283,7 +283,7 @@
         // AGAR INPUT FIELD HANYA BISA NOMOR
         document.getElementById('nomor_rekening').addEventListener('input', function(e) {
             let value = this.value.replace(/[^0-9]/g, '');
-            if (value.length > 14) {
+            if (value.length > 60) {
                 value = value.slice(0, 10);
             }
             this.value = value;
@@ -606,6 +606,9 @@
                     } else {
                         // Sembunyikan loading saat respons diterima
                         $('#loading').hide();
+                        
+                        // Enable button kembali saat ada error
+                        $('.aksi').prop('disabled', false);
 
                         // Tampilkan pesan kesalahan
                         Swal.fire({
@@ -618,6 +621,9 @@
                 error: function(jqXHR, textStatus, errorThrown) {
                     // Sembunyikan loading saat respons diterima
                     $('#loading').hide();
+                    
+                    // Enable button kembali saat ada error
+                    $('.aksi').prop('disabled', false);
 
                     Swal.fire({
                         icon: 'error',

@@ -8,6 +8,7 @@ class Mac_reimbust extends CI_Controller
         parent::__construct();
         $this->load->model('backend/M_mac_reimbust');
         $this->load->model('backend/M_notifikasi');
+        $this->load->model('backend/M_mac_inventory_stok');
         $this->M_login->getsecurity();
         date_default_timezone_set('Asia/Jakarta');
     }
@@ -16,6 +17,16 @@ class Mac_reimbust extends CI_Controller
     {
         $akses = $this->M_app->hak_akses($this->session->userdata('id_level'), $this->router->fetch_class());
         ($akses->view_level == 'N' ? redirect('auth') : '');
+
+        if (empty($this->session->userdata('cabang_id'))) {
+            echo "
+            <script>
+                alert('Cabang belum diatur. Silakan hubungi Admin untuk melanjutkan.');
+                window.location.href = '" . site_url('dashboard') . "';
+            </script>";
+            exit;
+        }
+
         $data['add'] = $akses->add_level;
         $data['alias'] = $this->session->userdata('username');
         $data['title'] = "backend/mac_reimbust/mac_reimbust_list";
@@ -78,8 +89,6 @@ class Mac_reimbust extends CI_Controller
                 $status = $field->status . ' (' . $field->app2_name . ')';
             } elseif ($field->app_status == 'waiting' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
                 $status = $field->status . ' (' . $field->app_name . ')';
-            } elseif ($field->app4_status == 'waiting' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
-                $status = $field->status . ' (' . $field->app4_name . ')';
             } else {
                 $status = $field->status;
             }
@@ -280,6 +289,11 @@ class Mac_reimbust extends CI_Controller
             ->where('id_user', $this->session->userdata('id_user'))
             ->get()
             ->row('name');
+        $data['app4_name'] = $this->db->select('name')
+            ->from('tbl_data_user')
+            ->where('id_user', $this->session->userdata('id_user'))
+            ->get()
+            ->row('name');
         $data['id'] = $id;
         $data['title_view'] = "Data Reimbust";
         $data['title'] = 'backend/mac_reimbust/mac_reimbust_read';
@@ -291,17 +305,906 @@ class Mac_reimbust extends CI_Controller
 
     public function add_form()
     {
-        // INISIASI
         $id_user = $this->session->userdata('id_user');
         $data['id_user'] = $id_user;
         $data['id_pembuat'] = 0;
-
         $data['id'] = 0;
         $data['aksi'] = 'add';
         $data['rek_options'] = $this->M_mac_reimbust->options($id_user)->result_array();
+        $data['inventory_options'] = $this->M_mac_reimbust->get_inventory_options()->result_array(); // BARU
         $data['title_view'] = "Reimbust Form";
         $data['title'] = 'backend/mac_reimbust/mac_reimbust_form';
         $this->load->view('backend/home', $data);
+    }
+
+    // MEREGENERATE KODE REIMBUST
+    public function generate_kode()
+    {
+        $date = $this->input->post('date');
+        $kode = $this->M_mac_reimbust->max_kode($date)->row();
+        if (empty($kode->kode_reimbust)) {
+            $no_urut = 1;
+        } else {
+            $bln = substr($kode->kode_reimbust, 3, 2);
+            $no_urut = substr($kode->kode_reimbust, 5) + 1;
+        }
+        $urutan = str_pad($no_urut, 4, "0", STR_PAD_LEFT);
+        $month = substr($date, 3, 2);
+        $year = substr($date, 8, 2);
+        $data = 'R' . $year . $month . $urutan;
+        echo json_encode($data);
+    }
+
+    function edit_form($id)
+    {
+        $data['id_user'] = $this->session->userdata('id_user');
+        $data['id_pembuat'] = $this->M_mac_reimbust->get_by_id($id)->id_user;
+        $data['reimbust'] = $this->M_mac_reimbust->get_by_id($id);
+        $data['id'] = $id;
+        $data['aksi'] = 'update';
+        $data['title_view'] = "Edit Reimbust";
+        $data['rek_options'] = $this->M_mac_reimbust->options($data['id_user'])->result_array();
+        $data['inventory_options'] = $this->M_mac_reimbust->get_inventory_options()->result_array(); // BARU
+        $data['title'] = 'backend/mac_reimbust/mac_reimbust_form';
+        $this->load->view('backend/home', $data);
+    }
+    
+    function edit_data($id)
+    {
+        $data['master'] = $this->M_mac_reimbust->get_by_id($id);
+
+        $data['transaksi'] = $this->db
+            ->select('a.*, b.satuan')
+            ->from('mac_reimbust_detail as a')
+            ->join('mac_inventory as b', 'b.id = a.inventory_id', 'left')
+            ->where('a.reimbust_id', $id)
+            ->get()
+            ->result();
+
+        $data['nama'] = $this->db->select('name')
+            ->from('tbl_data_user')
+            ->where('id_user', $data['master']->id_user)
+            ->get()
+            ->row('name');
+
+        echo json_encode($data);
+    }
+
+    function read_detail($id)
+    {
+        $data = $this->M_mac_reimbust->get_by_id_detail($id);
+        echo json_encode($data);
+    }
+
+    public function detail_deklarasi()
+    {
+        if ($this->input->is_ajax_request()) {
+            $deklarasi = $this->input->post('deklarasi');
+
+            // Mengambil data deklarasi dari database
+            $deklarasiRecord = $this->db->get_where('mac_deklarasi', ['kode_deklarasi' => $deklarasi])->row_array();
+
+            // Debug log
+            log_message('debug', 'Deklarasi: ' . print_r($deklarasi, true));
+            log_message('debug', 'Deklarasi Record: ' . print_r($deklarasiRecord, true));
+
+            if ($deklarasiRecord) {
+                // Mengambil ID dari record yang ditemukan
+                $deklarasiId = $deklarasiRecord['id']; // Pastikan 'id' adalah nama kolom yang sesuai
+                $redirect_url = site_url('mac_datadeklarasi/read_form/' . $deklarasiId);
+
+                $response = array(
+                    'status' => 'success',
+                    'message' => 'Data berhasil diproses',
+                    'redirect_url' => $redirect_url
+                );
+            } else {
+                $response = array(
+                    'status' => 'error',
+                    'message' => 'Data deklarasi tidak ditemukan'
+                );
+            }
+
+            // Mengirimkan response JSON
+            echo json_encode($response);
+        } else {
+            show_error('No direct access allowed', 403);
+        }
+    }
+
+    public function add()
+    {
+        $this->load->library('upload');
+ 
+        $sifat_pelaporan = $this->input->post('sifat_pelaporan');
+        $pemakaian       = $this->input->post('pemakaian');
+        $tgl_nota        = $this->input->post('tgl_nota');
+        $jumlah          = $this->input->post('jumlah');
+        $inventory_id    = $this->input->post('inventory_id') ?: [];
+        $qty             = $this->input->post('qty') ?: [];
+        $deklarasi       = $this->input->post('deklarasi');  
+        $jumlahClean     = preg_replace('/\D/', '', $jumlah);
+        $id_user         = $this->session->userdata('id_user');
+
+        $cabang_id = $this->session->userdata('cabang_id');
+ 
+        // Validasi barang & qty wajib untuk Pelaporan
+        if ($sifat_pelaporan == 'Pelaporan') {
+            for ($i = 1; $i <= count($pemakaian); $i++) {
+                if (empty($qty[$i]) || !is_numeric($qty[$i]) || floatval($qty[$i]) <= 0) {
+                    echo json_encode(["status"=>FALSE,"error"=>"Qty pada baris ke-{$i} harus diisi dan lebih dari 0."]);
+                    return;
+                }
+            }
+        }
+ 
+        // Validasi file
+        $allowed_types = ['image/jpeg','image/jpg','image/png','application/pdf'];
+        for ($i = 1; $i <= count($pemakaian); $i++) {
+            if (!empty($_FILES['kwitansi']['name'][$i])) {
+                if (!in_array($_FILES['kwitansi']['type'][$i], $allowed_types)) {
+                    echo json_encode(["status"=>FALSE,"error"=>"Tipe file tidak diizinkan untuk file ke-{$i}."]);
+                    return;
+                }
+                if ($_FILES['kwitansi']['size'][$i] > 3072 * 1024) {
+                    echo json_encode(["status"=>FALSE,"error"=>"Ukuran file ke-{$i} melebihi 3 MB."]);
+                    return;
+                }
+            }
+        }
+ 
+        // Cari approver
+        $id_menu = $this->db->select('id_menu')->where('link', $this->router->fetch_class())->get('tbl_submenu')->row();
+        $app     = $this->db->select('app_id, app2_id, app4_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
+        if (empty($app->app_id)) {
+            echo json_encode(["status"=>FALSE,"error"=>"Approval belum ditentukan, hubungi admin."]);
+            return;
+        }
+ 
+        // Rekening
+        $no_rek = !empty($_POST['nama_rek'])
+            ? $this->input->post('nama_rek')."-".$this->input->post('nama_bank')."-".$this->input->post('nomor_rekening')
+            : $this->input->post('rekening');
+ 
+        // Data user
+        $data_user = $this->db->get_where('tbl_data_user', ['id_user'=>$id_user])->row_array();
+ 
+        // Generate kode reimbust
+        $date    = $this->input->post('tgl_pengajuan');
+        $kode    = $this->M_mac_reimbust->max_kode($date)->row();
+        $no_urut = empty($kode->kode_reimbust) ? 1 : (int)substr($kode->kode_reimbust, 5) + 1;
+        $urutan  = str_pad($no_urut, 4, "0", STR_PAD_LEFT);
+        $kode_reimbust = 'R'.substr($date, 8, 2).substr($date, 3, 2).$urutan;
+
+        // ── TAMBAHAN: baca flag kas dari form ──────────────────────────
+        $is_pelaporan_kas = intval($this->input->post('is_pelaporan_kas'));
+        $kas_id           = intval($this->input->post('kas_id'));
+
+        // Validasi saldo kas jika pelaporan dari kas
+        if ($is_pelaporan_kas && $kas_id) {
+            $kas = $this->db
+                ->where('id', $kas_id)
+                ->where('cabang_id', $cabang_id)
+                ->where('status', 'aktif')
+                ->get('mac_kas')->row();
+
+            if (!$kas) {
+                echo json_encode(["status" => FALSE,
+                    "error" => "Kas tidak ditemukan atau sudah tidak aktif."]);
+                return;
+            }
+
+            $total_nominal_clean = intval(preg_replace('/\D/', '',
+                $this->input->post('total_nominal')));
+
+            if ($total_nominal_clean > floatval($kas->sisa_kas)) {
+                echo json_encode(["status" => FALSE,
+                    "error" => "Total pelaporan (Rp " .
+                        number_format($total_nominal_clean, 0, ',', '.') .
+                        ") melebihi sisa kas (Rp " .
+                        number_format($kas->sisa_kas, 0, ',', '.') . ")."]);
+                return;
+            }
+
+            // Cek apakah ini pelaporan kas pertama atau lanjutan
+            $jumlah_laporan_sebelumnya = $this->db
+                ->where('kas_id', $kas_id)
+                ->where('status', 'approved')
+                ->count_all_results('mac_reimbust');
+
+            $is_kas_lanjutan = $jumlah_laporan_sebelumnya > 0 ? 1 : 0;
+        } else {
+            $is_kas_lanjutan = 0;
+        }
+ 
+        // Insert header
+        $reimbust_id = $this->M_mac_reimbust->save([
+            'is_pelaporan_kas'  => $is_pelaporan_kas,
+            'kas_id'            => ($is_pelaporan_kas && $kas_id) ? $kas_id : null,
+            'is_kas_lanjutan'   => $is_kas_lanjutan,
+            'cabang_id'         => $cabang_id,
+            'kode_reimbust'     => $kode_reimbust,
+            'kode_prepayment'   => $this->input->post('kode_prepayment'),
+            'id_user'           => $id_user,
+            'jabatan'           => $data_user['jabatan'],
+            'departemen'        => $data_user['divisi'],
+            'sifat_pelaporan'   => $sifat_pelaporan,
+            'tgl_pengajuan'     => date('Y-m-d', strtotime($this->input->post('tgl_pengajuan'))),
+            'tujuan'            => ucwords(strtolower(trim($this->input->post('tujuan')))),
+            'jumlah_prepayment' => $this->input->post('jumlah_prepayment'),
+            'total_nominal'     => preg_replace('/\D/', '', $this->input->post('total_nominal')),
+            'no_rek'            => $no_rek,
+            'app_name'          => $this->db->select('name')->from('tbl_data_user')->where('id_user', $app->app_id)->get()->row('name'),
+            'app2_name'         => $this->db->select('name')->from('tbl_data_user')->where('id_user', $app->app2_id)->get()->row('name'),
+            'app4_name'         => $this->db->select('name')->from('tbl_data_user')->where('id_user', $app->app4_id)->get()->row('name'),
+            'created_at'        => date('Y-m-d H:i:s'),
+        ]);
+ 
+        // Insert detail
+        $data2 = [];
+        for ($i = 1; $i <= count($pemakaian); $i++) {
+            $kwitansi = null;
+            if (!empty($_FILES['kwitansi']['name'][$i])) {
+                $_FILES['file'] = [
+                    'name'     => $_FILES['kwitansi']['name'][$i],
+                    'type'     => $_FILES['kwitansi']['type'][$i],
+                    'tmp_name' => $_FILES['kwitansi']['tmp_name'][$i],
+                    'error'    => $_FILES['kwitansi']['error'][$i],
+                    'size'     => $_FILES['kwitansi']['size'][$i],
+                ];
+                $this->upload->initialize([
+                    'upload_path'   => './assets/backend/document/reimbust/kwitansi/kwitansi_mac/',
+                    'allowed_types' => 'jpeg|jpg|png|pdf',
+                    'max_size'      => 3072,
+                    'encrypt_name'  => TRUE,
+                ]);
+                if ($this->upload->do_upload('file')) {
+                    $kwitansi = $this->upload->data('file_name');
+                } else {
+                    echo json_encode(["status"=>FALSE,"error"=>$this->upload->display_errors()]);
+                    return;
+                }
+            }
+ 
+            $data2[] = [
+                'reimbust_id'  => $reimbust_id,
+                'inventory_id' => !empty($inventory_id[$i]) ? (int)$inventory_id[$i] : null,
+                'qty'          => !empty($qty[$i]) ? floatval($qty[$i]) : null,
+                'pemakaian'    => $pemakaian[$i],
+                'tgl_nota'     => !empty($tgl_nota[$i]) ? date('Y-m-d', strtotime($tgl_nota[$i])) : date('Y-m-d'),
+                'jumlah'       => !empty($jumlahClean[$i]) ? $jumlahClean[$i] : 0,
+                'kwitansi'     => $kwitansi,
+                'deklarasi'    => $deklarasi[$i] ?? null,
+            ];
+ 
+            if (!empty($deklarasi[$i])) {
+                $this->db->update('mac_deklarasi', ['is_active'=>0], ['kode_deklarasi'=>$deklarasi[$i]]);
+            }
+        }
+ 
+        $this->db->update('mac_prepayment', ['is_active'=>0], ['kode_prepayment'=>$this->input->post('kode_prepayment')]);
+        $this->M_mac_reimbust->save_detail($data2);
+ 
+        echo json_encode(["status"=>TRUE]);
+    }
+ 
+    // =========================================================
+    // UPDATE — tolak jika sudah approved
+    // =========================================================
+ 
+    public function update()
+    {
+        $this->load->library('upload');
+ 
+        $reimbust_id = $this->input->post('id');
+ 
+        // Guard: tolak edit jika sudah final approved (batch sudah terbentuk)
+        $existing = $this->db->select('status')->where('id', $reimbust_id)->get('mac_reimbust')->row();
+        if ($existing && $existing->status === 'approved') {
+            echo json_encode(["status"=>FALSE,"error"=>"Data yang sudah approved tidak dapat diubah."]);
+            return;
+        }
+ 
+        $sifat_pelaporan = $this->input->post('sifat_pelaporan');
+        $pemakaian       = $this->input->post('pemakaian');
+        $jumlah          = $this->input->post('jumlah');
+        $inventory_id    = $this->input->post('inventory_id') ?: [];
+        $qty             = $this->input->post('qty') ?: [];
+        $jumlahClean     = preg_replace('/\D/', '', $jumlah);
+        $tgl_nota        = $this->input->post('tgl_nota');
+        $detail_id       = $this->input->post('detail_id');
+        $kwitansi_image  = $this->input->post('kwitansi_image');
+        $deklarasi       = $this->input->post('deklarasi');
+        $deklarasi_old   = $this->input->post('deklarasi_old');
+        $cabang_id       = $this->session->userdata('cabang_id');
+
+        // ── TAMBAHAN: baca flag kas ─────────────────────────────────────
+        $is_pelaporan_kas = intval($this->input->post('is_pelaporan_kas'));
+        $kas_id           = intval($this->input->post('kas_id'));
+
+        // Validasi saldo kas jika pelaporan dari kas
+        if ($is_pelaporan_kas && $kas_id) {
+            $kas = $this->db
+                ->where('id', $kas_id)
+                ->where('cabang_id', $cabang_id)
+                ->where('status', 'aktif')
+                ->get('mac_kas')->row();
+
+            if (!$kas) {
+                echo json_encode(["status" => FALSE,
+                    "error" => "Kas tidak ditemukan atau sudah tidak aktif."]);
+                return;
+            }
+
+            $total_nominal_clean = intval(preg_replace('/\D/', '',
+                $this->input->post('total_nominal')));
+
+            // Ambil total_nominal lama agar sisa kas tidak dihitung ganda
+            $existing_nominal = $this->db->select('total_nominal, kas_id')
+                ->where('id', $reimbust_id)
+                ->get('mac_reimbust')->row();
+
+            // Sisa kas = sisa saat ini + nominal lama (karena ini edit, bukan baru)
+            $sisa_efektif = floatval($kas->sisa_kas);
+            if ($existing_nominal && intval($existing_nominal->kas_id) === $kas_id) {
+                $sisa_efektif += floatval($existing_nominal->total_nominal);
+            }
+
+            if ($total_nominal_clean > $sisa_efektif) {
+                echo json_encode(["status" => FALSE,
+                    "error" => "Total pelaporan (Rp " .
+                        number_format($total_nominal_clean, 0, ',', '.') .
+                        ") melebihi sisa kas (Rp " .
+                        number_format($sisa_efektif, 0, ',', '.') . ")."]);
+                return;
+            }
+
+            $jumlah_laporan_sebelumnya = $this->db
+                ->where('kas_id', $kas_id)
+                ->where('status', 'approved')
+                ->where('id !=', $reimbust_id)
+                ->count_all_results('mac_reimbust');
+
+            $is_kas_lanjutan = $jumlah_laporan_sebelumnya > 0 ? 1 : 0;
+        } else {
+            $is_kas_lanjutan = 0;
+        }
+ 
+        // Validasi barang & qty untuk Pelaporan
+        if ($sifat_pelaporan == 'Pelaporan') {
+            foreach ($pemakaian as $i => $p) {
+                if (empty($inventory_id[$i])) {
+                    echo json_encode(["status"=>FALSE,"error"=>"Barang pada baris ke-{$i} belum dipilih."]);
+                    return;
+                }
+                if (empty($qty[$i]) || !is_numeric($qty[$i]) || floatval($qty[$i]) <= 0) {
+                    echo json_encode(["status"=>FALSE,"error"=>"Qty pada baris ke-{$i} harus diisi dan lebih dari 0."]);
+                    return;
+                }
+            }
+        }
+ 
+        // Rekening
+        $no_rek = !empty($_POST['nama_rek'])
+            ? $this->input->post('nama_rek')."-".$this->input->post('nama_bank')."-".$this->input->post('nomor_rekening')
+            : $this->input->post('rekening');
+ 
+        $this->db->where('id', $reimbust_id)->update('mac_reimbust', [
+            'cabang_id'         => $cabang_id,
+            'is_pelaporan_kas' => $is_pelaporan_kas,
+            'kas_id'           => ($is_pelaporan_kas && $kas_id) ? $kas_id : null,
+            'is_kas_lanjutan'  => $is_kas_lanjutan,
+            'sifat_pelaporan'  => $sifat_pelaporan,
+            'tgl_pengajuan'    => date('Y-m-d', strtotime($this->input->post('tgl_pengajuan'))),
+            'kode_reimbust'    => $this->input->post('kode_reimbust'),
+            'tujuan'           => ucwords(strtolower(trim($this->input->post('tujuan')))),
+            'jumlah_prepayment'=> $this->input->post('jumlah_prepayment'),
+            'total_nominal' => preg_replace('/\D/', '', $this->input->post('total_nominal')),
+            'no_rek'           => $no_rek,
+            'kode_prepayment'  => $this->input->post('kode_prepayment'),
+            'app_status'       => 'waiting',
+            'app_date'         => null,
+            'app_keterangan'   => null,
+            'app2_status'      => 'waiting',
+            'app2_date'        => null,
+            'app2_keterangan'  => null,
+            'status'           => 'on-process',
+        ]);
+ 
+        // Hapus baris yang dihapus user
+        $deletedRows = json_decode($this->input->post('deleted_rows'), true);
+        if (!empty($deletedRows)) {
+            foreach ($deletedRows as $id2) {
+                $rd = $this->db->get_where('mac_reimbust_detail', ['id'=>$id2])->row_array();
+                if ($rd) {
+                    if ($rd['kwitansi'] && $rd['kwitansi'] != 'default.jpg') {
+                        @unlink(FCPATH.'./assets/backend/document/reimbust/kwitansi/kwitansi_mac/'.$rd['kwitansi']);
+                    }
+                    $this->db->where('id', $id2)->delete('mac_reimbust_detail');
+                    if (!empty($rd['deklarasi'])) {
+                        $this->db->update('mac_deklarasi', ['is_active'=>1], ['kode_deklarasi'=>$rd['deklarasi']]);
+                    }
+                }
+            }
+        }
+ 
+        // Update/insert detail baris
+        foreach ($pemakaian as $i => $p) {
+            $kwitansi = '';
+ 
+            if (!empty($_FILES['kwitansi']['name'][$i])) {
+                $_FILES['file'] = [
+                    'name'     => $_FILES['kwitansi']['name'][$i],
+                    'type'     => $_FILES['kwitansi']['type'][$i],
+                    'tmp_name' => $_FILES['kwitansi']['tmp_name'][$i],
+                    'error'    => $_FILES['kwitansi']['error'][$i],
+                    'size'     => $_FILES['kwitansi']['size'][$i],
+                ];
+ 
+                if ($_FILES['file']['size'] > 3072 * 1024) {
+                    echo json_encode(["status"=>FALSE,"error"=>"Ukuran file melebihi 3 MB."]);
+                    return;
+                }
+ 
+                $this->upload->initialize([
+                    'upload_path'   => './assets/backend/document/reimbust/kwitansi/kwitansi_mac/',
+                    'allowed_types' => 'jpeg|jpg|png|pdf',
+                    'max_size'      => 3072,
+                    'encrypt_name'  => TRUE,
+                ]);
+ 
+                if ($this->upload->do_upload('file')) {
+                    $det_id = !empty($detail_id[$i]) ? $detail_id[$i] : null;
+                    if ($det_id) {
+                        $rd = $this->db->get_where('mac_reimbust_detail', ['id'=>$det_id])->row_array();
+                        if ($rd && !empty($rd['kwitansi']) && $rd['kwitansi'] != 'default.jpg') {
+                            @unlink(FCPATH.'./assets/backend/document/reimbust/kwitansi/kwitansi_mac/'.$rd['kwitansi']);
+                        }
+                    }
+                    $kwitansi = $this->upload->data('file_name');
+                } else {
+                    echo json_encode(["status"=>FALSE,"error"=>$this->upload->display_errors()]);
+                    return;
+                }
+            }
+ 
+            $det_id = !empty($detail_id[$i]) ? $detail_id[$i] : null;
+ 
+            $data2 = [
+                'id'           => $det_id,
+                'reimbust_id'  => $reimbust_id,
+                'inventory_id' => !empty($inventory_id[$i]) ? (int)$inventory_id[$i] : null,
+                'qty'          => !empty($qty[$i]) ? floatval($qty[$i]) : null,
+                'tgl_nota'     => !empty($tgl_nota[$i]) ? date('Y-m-d', strtotime($tgl_nota[$i])) : date('Y-m-d'),
+                'pemakaian'    => $pemakaian[$i],
+                'jumlah'       => !empty($jumlahClean[$i]) ? $jumlahClean[$i] : 0,
+                'kwitansi'     => !empty($kwitansi) ? $kwitansi : ($kwitansi_image[$i] ?? ''),
+            ];
+ 
+            if (isset($deklarasi[$i])) {
+                $data2['deklarasi'] = $deklarasi[$i];
+            }
+ 
+            $kode_prepayment = $this->input->post('kode_prepayment');
+            if (!empty($kode_prepayment)) {
+                $this->db->update('mac_prepayment', ['is_active'=>0], ['kode_prepayment'=>$kode_prepayment]);
+            }
+            $kode_prepayment_old = $this->input->post('kode_prepayment_old');
+            if ($kode_prepayment != $kode_prepayment_old && !empty($kode_prepayment_old)) {
+                $this->db->update('mac_prepayment', ['is_active'=>1], ['kode_prepayment'=>$kode_prepayment_old]);
+            }
+ 
+            $this->db->replace('mac_reimbust_detail', $data2);
+ 
+            if (isset($deklarasi_old[$i]) && $deklarasi_old[$i]) {
+                $this->db->update('mac_deklarasi', ['is_active'=>1], ['kode_deklarasi'=>$deklarasi_old[$i]]);
+                if (!empty($deklarasi[$i])) {
+                    $this->db->update('mac_deklarasi', ['is_active'=>0], ['kode_deklarasi'=>$deklarasi[$i]]);
+                }
+            } elseif (!empty($deklarasi[$i])) {
+                $this->db->update('mac_deklarasi', ['is_active'=>0], ['kode_deklarasi'=>$deklarasi[$i]]);
+            }
+        }
+ 
+        echo json_encode(["status"=>TRUE]);
+    }
+
+    function delete($id)
+    {
+        $this->M_mac_reimbust->delete($id);
+        echo json_encode(array("status" => TRUE));
+    }
+
+    //APPROVE DATA
+    // public function approve()
+    // {
+    //     $data = array(
+    //         'app_keterangan' => $this->input->post('app_keterangan'),
+    //         'app_status' => $this->input->post('app_status'),
+    //         'app_date' => date('Y-m-d H:i:s'),
+    //     );
+
+    //     // UPDATE STATUS DEKLARASI
+    //     if ($this->input->post('app_status') === 'revised') {
+    //         $data['status'] = 'revised';
+    //     } elseif ($this->input->post('app_status') === 'approved') {
+    //         $data['status'] = 'on-process';
+    //     } elseif ($this->input->post('app_status') === 'rejected') {
+    //         $data['status'] = 'rejected';
+    //     }
+
+    //     //UPDATE APPROVAL PERTAMA
+    //     $this->db->where('id', $this->input->post('hidden_id'));
+    //     $this->db->update('mac_reimbust', $data);
+
+    //     echo json_encode(array("status" => TRUE));
+    // }
+
+    public function approve()
+    {
+        $reimbust_id = $this->input->post('hidden_id');
+
+        // Guard: jika pelaporan kas lanjutan, skip approval pertama
+        $reimbust = $this->db->select('is_kas_lanjutan, is_pelaporan_kas')
+            ->where('id', $reimbust_id)
+            ->get('mac_reimbust')->row();
+
+        if ($reimbust && $reimbust->is_pelaporan_kas && $reimbust->is_kas_lanjutan) {
+            echo json_encode([
+                "status"  => FALSE,
+                "error"   => "Pelaporan kas lanjutan tidak memerlukan approval pertama. Langsung ke approval kedua."
+            ]);
+            return;
+        }
+
+        $data = array(
+            'app_keterangan' => $this->input->post('app_keterangan'),
+            'app_status'     => $this->input->post('app_status'),
+            'app_date'       => date('Y-m-d H:i:s'),
+        );
+
+        if ($this->input->post('app_status') === 'revised') {
+            $data['status'] = 'revised';
+        } elseif ($this->input->post('app_status') === 'approved') {
+            $data['status'] = 'on-process';
+        } elseif ($this->input->post('app_status') === 'rejected') {
+            $data['status'] = 'rejected';
+        }
+
+        $this->db->where('id', $reimbust_id)->update('mac_reimbust', $data);
+
+        echo json_encode(array("status" => TRUE));
+    }
+
+    //APPROVE DATA
+    // public function approve2()
+    // {
+    //     $reimbust_id = $this->input->post('hidden_id');
+    //     $app2_status = $this->input->post('app2_status');
+ 
+    //     $this->db->where('id', $reimbust_id)->update('mac_reimbust', [
+    //         'app2_status'    => $app2_status,
+    //         'app2_date'      => date('Y-m-d H:i:s'),
+    //         'app2_keterangan'=> $this->input->post('app2_keterangan'),
+    //         'status'         => $app2_status === 'approved' ? 'approved'
+    //                           : ($app2_status === 'rejected' ? 'rejected' : 'revised'),
+    //     ]);
+ 
+    //     // ==================================================
+    //     // TITIK KONEKSI KE STOK
+    //     // Hanya berjalan saat approval final disetujui dan
+    //     // sifat_pelaporan adalah "Pelaporan" (barang masuk).
+    //     // ==================================================
+    //     if ($app2_status === 'approved') {
+    //         $hasil = $this->_proses_stok_masuk($reimbust_id);
+ 
+    //         if ($hasil !== true) {
+    //             // Stok berhasil disimpan sebagian / ada error — tetap return
+    //             // sukses ke UI (approval sudah tersimpan) tapi log errornya
+    //             log_message('error', 'proses_stok_masuk error: '.print_r($hasil, true));
+    //         }
+    //     }
+ 
+    //     echo json_encode(["status"=>TRUE]);
+    // }
+
+    public function approve2()
+    {
+        $reimbust_id = $this->input->post('hidden_id');
+        $app2_status = $this->input->post('app2_status');
+
+        // Ambil data reimbust untuk cek flag kas
+        $reimbust = $this->db
+            ->where('id', $reimbust_id)
+            ->get('mac_reimbust')->row();
+
+        if (!$reimbust) {
+            echo json_encode(["status" => FALSE, "error" => "Data tidak ditemukan."]);
+            return;
+        }
+
+        // Guard: jika kas lanjutan, hanya bhakti/dwi yang bisa approve2
+        if ($reimbust->is_pelaporan_kas && $reimbust->is_kas_lanjutan) {
+            $username = $this->session->userdata('username');
+            if (!in_array($username, ['bhakti', 'dwi'])) {
+                echo json_encode([
+                    "status" => FALSE,
+                    "error"  => "Pelaporan kas lanjutan hanya bisa disetujui oleh Bhakti atau Dwi."
+                ]);
+                return;
+            }
+        }
+
+        // Update approval 2
+        $this->db->where('id', $reimbust_id)->update('mac_reimbust', [
+            'app2_status'     => $app2_status,
+            'app2_date'       => date('Y-m-d H:i:s'),
+            'app2_keterangan' => $this->input->post('app2_keterangan'),
+            'status'          => $app2_status === 'approved' ? 'approved'
+                            : ($app2_status === 'rejected' ? 'rejected' : 'revised'),
+        ]);
+
+        if ($app2_status === 'approved') {
+
+            // ── TITIK KONEKSI KE STOK ─────────────────────────────────
+            $hasil = $this->_proses_stok_masuk($reimbust_id);
+            if ($hasil !== true) {
+                log_message('error', 'proses_stok_masuk error: ' . print_r($hasil, true));
+            }
+
+            // ── UPDATE SALDO KAS ───────────────────────────────────────
+            // Hanya jika pelaporan ini dari kas
+            if ($reimbust->is_pelaporan_kas && $reimbust->kas_id) {
+                $kas = $this->db->where('id', $reimbust->kas_id)
+                    ->get('mac_kas')->row();
+
+                if ($kas && $kas->status === 'aktif') {
+                    $nominal_lapor    = floatval(preg_replace('/\D/', '',
+                        $reimbust->total_nominal));
+                    $total_dilaporkan = floatval($kas->total_dilaporkan) + $nominal_lapor;
+                    $sisa_kas         = floatval($kas->nominal_awal) - $total_dilaporkan;
+
+                    $this->db->where('id', $reimbust->kas_id)->update('mac_kas', [
+                        'total_dilaporkan' => $total_dilaporkan,
+                        'sisa_kas'         => max(0, $sisa_kas),
+                        // Otomatis selesai jika sisa kas = 0
+                        'status'           => $sisa_kas <= 0 ? 'selesai' : 'aktif',
+                    ]);
+                }
+            }
+        }
+
+        echo json_encode(["status" => TRUE]);
+    }
+
+    // approved biasa sebelum di ubah
+    // function approve2()
+    // {
+    //     $data = array(
+    //         'app2_keterangan' => $this->input->post('app2_keterangan'),
+    //         'app2_status' => $this->input->post('app2_status'),
+    //         'app2_date' => date('Y-m-d H:i:s'),
+    //     );
+
+    //     // UPDATE STATUS DEKLARASI
+    //     if ($this->input->post('app2_status') === 'revised') {
+    //         $data['status'] = 'revised';
+    //     } elseif ($this->input->post('app2_status') === 'approved') {
+    //         $data['status'] = 'approved';
+    //     } elseif ($this->input->post('app2_status') === 'rejected') {
+    //         $data['status'] = 'rejected';
+    //     }
+
+    //     // UPDATE APPROVAL 2
+    //     $this->db->where('id', $this->input->post('hidden_id'));
+    //     $this->db->update('mac_reimbust', $data);
+
+    //     echo json_encode(array("status" => TRUE));
+    // }
+
+    private function _proses_stok_masuk($reimbust_id)
+    {
+        $master = $this->M_mac_reimbust->get_by_id($reimbust_id);
+
+        if (!$master) {
+            return ['Data reimbust tidak ditemukan'];
+        }
+
+        if (empty($master->cabang_id)) {
+            return ['Cabang pada reimbust belum ditentukan.'];
+        }
+
+        $cabang_id = (int) $master->cabang_id;
+
+        // UBAH 1: izinkan Pelaporan DAN Reimbust
+        if (!in_array($master->sifat_pelaporan, ['Pelaporan', 'Reimbust'])) {
+            return true;
+        }
+
+        $details    = $this->M_mac_reimbust->get_by_id_detail($reimbust_id);
+        $created_by = $this->session->userdata('username');
+        $tanggal    = !empty($master->tgl_pengajuan)
+                        ? $master->tgl_pengajuan
+                        : date('Y-m-d');
+
+        $errors = [];
+
+        foreach ($details as $row) {
+            if (
+                empty($row['inventory_id']) ||
+                empty($row['qty']) ||
+                floatval($row['qty']) <= 0
+            ) {
+                continue;
+            }
+
+            // UBAH 2: referensi_tipe ikut sifat_pelaporan (bukan hardcode 'Pelaporan')
+            if ($this->M_mac_inventory_stok->sudah_diproses(
+                $master->sifat_pelaporan,
+                $row['id'],
+                $cabang_id
+            )) {
+                continue;
+            }
+
+            $qty_row    = (float) $row['qty'];
+            $harga_beli = (float) $row['jumlah'];
+
+            $batch_id = $this->M_mac_inventory_stok->tambah_stok_masuk(
+                (int) $row['inventory_id'],
+                $cabang_id,
+                $qty_row,
+                $harga_beli,
+                $tanggal,
+                $master->sifat_pelaporan, // UBAH 3: ikut sifat, bukan hardcode
+                (int) $row['id'],
+                $created_by
+            );
+
+            if (!$batch_id) {
+                $errors[] = "Gagal proses stok untuk detail ID {$row['id']}";
+            }
+        }
+
+        return empty($errors) ? true : $errors;
+    }
+
+    // GET INVENTORY UNTUK SELECT2 DI FORM REIMBUST
+    public function get_inventory_options_ajax()
+    {
+        $search = $this->input->post('search');
+        $session_cabang = (int)$this->session->userdata('cabang_id');
+
+        $this->db->select("
+            i.id,
+            i.kode_produk,
+            i.nama_produk,
+            i.satuan,
+            COALESCE(s.stok_saat_ini,0) as stok_fisik
+        ", FALSE);
+
+        $this->db->from('mac_inventory i');
+
+        $this->db->join(
+            'mac_inventory_stok s',
+            's.inventory_id = i.id
+            AND s.cabang_id = '.$session_cabang,
+            'left'
+        );
+
+        $this->db->where('i.is_active', 1);
+        $this->db->where('i.kategori !=', 'Jasa');
+
+        if (!empty($search)) {
+            $this->db->group_start()
+                ->like('i.nama_produk', $search)
+                ->or_like('i.kode_produk', $search)
+                ->group_end();
+        }
+
+        $this->db->order_by('i.nama_produk', 'ASC');
+
+        $items = $this->db->get()->result();
+
+        $this->load->model('backend/M_mac_inventory_stok');
+
+        foreach ($items as &$item) {
+            $item->stok_aktual = $this->M_mac_inventory_stok->get_stok(
+                $item->id,
+                false,
+                $session_cabang
+            );
+        }
+
+        echo json_encode($items);
+    }
+
+    public function payment()
+    {
+        $id = $this->input->post('id');
+        $payment_status = $this->input->post('payment_status');
+        $tgl_pembayaran = $this->input->post('tgl_pembayaran');
+        // Validasi dasar
+        if (empty($id)) {
+            echo json_encode([
+                "status" => FALSE,
+                "message" => "ID tidak ditemukan"
+            ]);
+            return;
+        }
+        // Data awal
+        $data = [
+            'payment_status' => $payment_status
+        ];
+        // Jika status paid → set tanggal (tanpa jam)
+        if ($payment_status === 'paid' && !empty($tgl_pembayaran)) {
+            $date_parts = explode('-', $tgl_pembayaran);
+            if (count($date_parts) === 3) {
+                // DD-MM-YYYY → YYYY-MM-DD H:i:s
+                $data['tgl_pembayaran'] = $date_parts[2] . '-' . $date_parts[1] . '-' . $date_parts[0] . ' ' . date('H:i:s');
+            } else {
+                echo json_encode([
+                    "status" => FALSE,
+                    "message" => "Format tanggal tidak valid"
+                ]);
+                return;
+            }
+        } else {
+            // Hapus file attachment jika status bukan paid
+            $reimbust = $this->db->get_where('mac_reimbust', ['id' => $id])->row_array();
+
+            if ($reimbust && $reimbust['attachment'] && $reimbust['attachment'] != 'default.pdf') {
+                @unlink(FCPATH . './assets/backend/document/reimbust/attachment/mac_attachment/' . $reimbust['attachment']);
+                }
+                $data['tgl_pembayaran'] = null;
+                $data['attachment'] = null;
+        }
+
+        // Ambil data lama
+        $reimbust = $this->db->get_where('mac_reimbust', ['id' => $id])->row_array();
+
+        // Jika ada file lama, hapus dulu (replace)
+        if (!empty($_FILES['attachment']['name'])) {
+            if ($reimbust && !empty($reimbust['attachment']) && $reimbust['attachment'] != 'default.pdf') {
+                $oldFile = FCPATH . 'assets/backend/document/reimbust/attachment/mac_attachment/' . $reimbust['attachment'];
+                
+                if (file_exists($oldFile)) {
+                    unlink($oldFile);
+                }
+            }
+        }
+
+        // Handle upload file
+        if (!empty($_FILES['attachment']['name'])) {
+            $config['upload_path'] = 'assets/backend/document/reimbust/attachment/mac_attachment/';
+            $config['allowed_types'] = 'pdf|jpg|jpeg|png';
+            $config['max_size'] = 3072; // 3MB
+            $config['file_name'] = 'attachment_' . $id . '_' . date('YmdHis');
+            $this->load->library('upload', $config);
+            if ($this->upload->do_upload('attachment')) {
+                $upload_data = $this->upload->data();
+                $data['attachment'] = $upload_data['file_name'];
+            } else {
+                echo json_encode([
+                    "status" => FALSE,
+                    "message" => strip_tags($this->upload->display_errors())
+                ]);
+                return;
+            }
+        }
+        // Update database
+        $this->db->where('id', $id);
+        $result = $this->db->update('mac_reimbust', $data);
+        if ($result) {
+            echo json_encode([
+                "status" => TRUE
+            ]);
+        } else {
+            echo json_encode([
+                "status" => FALSE,
+                "message" => "Gagal update data"
+            ]);
+        }
     }
 
     public function generate_pdf($id)
@@ -604,577 +1507,5 @@ class Mac_reimbust extends CI_Controller
 
         // Output the PDF
         $pdf->Output('I', 'mac_reimbust - ' . $data['master']->kode_reimbust . '.pdf');
-    }
-
-    // MEREGENERATE KODE REIMBUST
-    public function generate_kode()
-    {
-        $date = $this->input->post('date');
-        $kode = $this->M_mac_reimbust->max_kode($date)->row();
-        if (empty($kode->kode_reimbust)) {
-            $no_urut = 1;
-        } else {
-            $bln = substr($kode->kode_reimbust, 3, 2);
-            $no_urut = substr($kode->kode_reimbust, 5) + 1;
-        }
-        $urutan = str_pad($no_urut, 4, "0", STR_PAD_LEFT);
-        $month = substr($date, 3, 2);
-        $year = substr($date, 8, 2);
-        $data = 'r' . $year . $month . $urutan;
-        echo json_encode($data);
-    }
-
-    function edit_form($id)
-    {
-        // INISIASI
-        $data['id_user'] = $this->session->userdata('id_user');
-        $data['id_pembuat'] = $this->M_mac_reimbust->get_by_id($id)->id_user;
-
-        $data['id'] = $id;
-        $data['aksi'] = 'update';
-        $data['title_view'] = "Edit Reimbust";
-        $data['rek_options'] = $this->M_mac_reimbust->options($data['id_user'])->result_array();
-        $data['title'] = 'backend/mac_reimbust/mac_reimbust_form';
-        $this->load->view('backend/home', $data);
-    }
-
-    function edit_data($id)
-    {
-        $data['master'] = $this->M_mac_reimbust->get_by_id($id);
-        $data['transaksi'] = $this->M_mac_reimbust->get_by_id_detail($id);
-        $data['nama'] = $this->db->select('name')
-            ->from('tbl_data_user')
-            ->where('id_user', $data['master']->id_user)
-            ->get()->row('name');
-        echo json_encode($data);
-    }
-
-    function read_detail($id)
-    {
-        $data = $this->M_mac_reimbust->get_by_id_detail($id);
-        echo json_encode($data);
-    }
-
-    public function detail_deklarasi()
-    {
-        if ($this->input->is_ajax_request()) {
-            $deklarasi = $this->input->post('deklarasi');
-
-            // Mengambil data deklarasi dari database
-            $deklarasiRecord = $this->db->get_where('mac_deklarasi', ['kode_deklarasi' => $deklarasi])->row_array();
-
-            // Debug log
-            log_message('debug', 'Deklarasi: ' . print_r($deklarasi, true));
-            log_message('debug', 'Deklarasi Record: ' . print_r($deklarasiRecord, true));
-
-            if ($deklarasiRecord) {
-                // Mengambil ID dari record yang ditemukan
-                $deklarasiId = $deklarasiRecord['id']; // Pastikan 'id' adalah nama kolom yang sesuai
-                $redirect_url = site_url('mac_datadeklarasi/read_form/' . $deklarasiId);
-
-                $response = array(
-                    'status' => 'success',
-                    'message' => 'Data berhasil diproses',
-                    'redirect_url' => $redirect_url
-                );
-            } else {
-                $response = array(
-                    'status' => 'error',
-                    'message' => 'Data deklarasi tidak ditemukan'
-                );
-            }
-
-            // Mengirimkan response JSON
-            echo json_encode($response);
-        } else {
-            show_error('No direct access allowed', 403);
-        }
-    }
-
-    public function add()
-    {
-        // INSERT KODE REIMBUST SAAT SUBMIT
-        $date = $this->input->post('tgl_pengajuan');
-        $kode = $this->M_mac_reimbust->max_kode($date)->row();
-        if (empty($kode->kode_reimbust)) {
-            $no_urut = 1;
-        } else {
-            $bln = substr($kode->kode_reimbust, 3, 2);
-            $no_urut = substr($kode->kode_reimbust, 5) + 1;
-        }
-        $urutan = str_pad($no_urut, 4, "0", STR_PAD_LEFT);
-        $month = substr($date, 3, 2);
-        $year = substr($date, 8, 2);
-        $kode_reimbust = 'r' . $year . $month . $urutan;
-
-        // Load library upload
-        $this->load->library('upload');
-
-        // CHECK APAKAH MENGINPUT YANG SUDAH ADA ATAU YANG BARU (REKENING)
-        if (!empty($_POST['nama_rek'])) {
-            $no_rek = $this->input->post('nama_rek') . "-" . $this->input->post('nama_bank') . "-" . $this->input->post('nomor_rekening');
-        } else {
-            $no_rek = $this->input->post('rekening');
-        }
-
-        // INISIASI VARIABEL INPUT DETAIL REIMBUST
-        $pemakaian = $this->input->post('pemakaian');
-        $tgl_nota = $this->input->post('tgl_nota');
-        $jumlah = $this->input->post('jumlah');
-
-        // Bersihkan input untuk hanya mengambil angka
-        $jumlahClean = preg_replace('/\D/', '', $jumlah);
-        $deklarasi = $this->input->post('deklarasi');
-        $id_user = $this->session->userdata('id_user');
-
-        $data_user = $this->db->get_where('tbl_data_user', ['id_user' => $id_user])->row_array();
-
-        $departemen = $data_user['divisi'];
-        $jabatan = $data_user['jabatan'];
-
-        // Flag untuk menandai apakah ada file yang lebih dari 3 MB
-        $valid = true;
-        $allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf']; // Tipe file yang diizinkan
-
-        // PERULANGAN UNTUK CEK UKURAN FILE
-        for ($i = 1; $i <= count($pemakaian); $i++) {
-            if (!empty($_FILES['kwitansi']['name'][$i])) {
-                // Cek tipe file
-                if (!in_array($_FILES['kwitansi']['type'][$i], $allowed_types)) {
-                    echo json_encode(array("status" => FALSE, "error" => "Tipe file tidak diizinkan untuk file ke-$i. Hanya file JPG dan PNG yang diperbolehkan."));
-                    exit();
-                    $valid = false;  // Tandai bahwa ada file yang tidak valid
-                    break; // Keluar dari perulangan jika ada file yang tidak valid
-                }
-
-                // Cek ukuran file
-                if ($_FILES['kwitansi']['size'][$i] > 3072 * 1024) { // 3 MB in KB
-                    echo json_encode(array("status" => FALSE, "error" => "Ukuran file tidak boleh melebihi dari 3 MB untuk file ke-$i."));
-                    exit();
-                    $valid = false;  // Tandai bahwa ada file yang tidak valid
-                    break; // Keluar dari perulangan jika ada file yang terlalu besar
-                }
-            }
-        }
-
-        // MENCARI SIAPA YANG AKAN MELAKUKAN APPROVAL PERMINTAAN
-        $id_menu = $this->db->select('id_menu')
-            ->where('link', $this->router->fetch_class())
-            ->get('tbl_submenu')
-            ->row();
-
-        $confirm = $this->db->select('app_id, app2_id, app4_id')->from('tbl_approval')->where('id_menu', $id_menu->id_menu)->get()->row();
-        if (!empty($confirm->app_id) && isset($confirm->app_id, $confirm->app2_id)) {
-            $app = $confirm;
-        } else {
-            echo json_encode(array("status" => FALSE, "error" => "Approval Belum Ditentukan, Mohon untuk menghubungi admin."));
-            exit();
-            $valid = false;
-        }
-
-        // Inisialisasi data untuk tabel reimbust
-        $data1 = array(
-            'kode_reimbust' => $kode_reimbust,
-            'kode_prepayment' => $this->input->post('kode_prepayment'),
-            'id_user' => $id_user,
-            'jabatan' => $jabatan,
-            'departemen' => $departemen,
-            'sifat_pelaporan' => $this->input->post('sifat_pelaporan'),
-            'tgl_pengajuan' => date('Y-m-d', strtotime($this->input->post('tgl_pengajuan'))),
-            'tujuan' => $this->input->post('tujuan'),
-            'jumlah_prepayment' => $this->input->post('jumlah_prepayment'),
-            'no_rek' => $no_rek,
-            'app_name' => $this->db->select('name')
-                ->from('tbl_data_user')
-                ->where('id_user', $app->app_id)
-                ->get()
-                ->row('name'),
-            'app2_name' => $this->db->select('name')
-                ->from('tbl_data_user')
-                ->where('id_user', $app->app2_id)
-                ->get()
-                ->row('name'),
-            'app4_name' => $this->db->select('name')
-                ->from('tbl_data_user')
-                ->where('id_user', $app->app4_id)
-                ->get()
-                ->row('name'),
-            'created_at' =>  date('Y-m-d H:i:s')
-        );
-        // Hanya simpan ke database jika tidak ada file yang melebihi 3 MB
-        if ($valid) {
-            $reimbust_id = $this->M_mac_reimbust->save($data1);
-        }
-
-        $data2 = [];
-        for ($i = 1; $i <= count($pemakaian); $i++) {
-            $kwitansi = null;
-
-            // Handle upload file untuk 'kwitansi'
-            if (!empty($_FILES['kwitansi']['name'][$i])) {
-                $_FILES['file']['name'] = $_FILES['kwitansi']['name'][$i];
-                $_FILES['file']['type'] = $_FILES['kwitansi']['type'][$i];
-                $_FILES['file']['tmp_name'] = $_FILES['kwitansi']['tmp_name'][$i];
-                $_FILES['file']['error'] = $_FILES['kwitansi']['error'][$i];
-                $_FILES['file']['size'] = $_FILES['kwitansi']['size'][$i];
-
-                $config['upload_path'] = './assets/backend/document/reimbust/kwitansi/kwitansi_mac/';
-                $config['allowed_types'] = 'jpeg|jpg|png|pdf';
-                $config['max_size'] = 3072; // Batasan ukuran file dalam kilobytes (3 MB)
-                $config['encrypt_name'] = TRUE;
-
-                $this->upload->initialize($config);
-
-                if ($this->upload->do_upload('file')) {
-                    $kwitansi = $this->upload->data('file_name');
-                } else {
-                    echo json_encode(array("status" => FALSE, "error" => $this->upload->display_errors()));
-                    return;
-                }
-            }
-
-            $data2[] = [
-                'reimbust_id' => $reimbust_id,
-                'pemakaian' => $pemakaian[$i],
-                'tgl_nota' => !empty($tgl_nota[$i]) ? date('Y-m-d', strtotime($tgl_nota[$i])) : date('Y-m-d'),
-                'jumlah' => $jumlahClean[$i],
-                'kwitansi' => $kwitansi,
-                'deklarasi' => $deklarasi[$i]
-            ];
-
-            // Update data deklarasi yang di tampilkan di modal, jika gambar di submit maka is active akan menjadi 0
-            $this->db->set('is_active', 0);
-            $this->db->where('kode_deklarasi', $deklarasi[$i]);
-            $this->db->update('mac_deklarasi');
-        }
-        $this->db->set('is_active', 0);
-        $this->db->where('kode_prepayment', $this->input->post('kode_prepayment'));
-        $this->db->update('mac_prepayment');
-
-        $this->M_mac_reimbust->save_detail($data2);
-
-
-        echo json_encode(array("status" => TRUE));
-    }
-
-
-    public function update()
-    {
-        $this->load->library('upload');
-
-        // CHECK APAKAH MENGINPUT YANG SUDAH ADA ATAU YANG BARU (REKENING)
-        if (!empty($_POST['nama_rek'])) {
-            $no_rek = $this->input->post('nama_rek') . "-" . $this->input->post('nama_bank') . "-" . $this->input->post('nomor_rekening');
-        } else {
-            $no_rek = $this->input->post('rekening');
-        }
-
-        $data = array(
-            'sifat_pelaporan' => $this->input->post('sifat_pelaporan'),
-            'tgl_pengajuan' => date('Y-m-d', strtotime($this->input->post('tgl_pengajuan'))),
-            'kode_reimbust' => $this->input->post('kode_reimbust'),
-            'tujuan' => $this->input->post('tujuan'),
-            'jumlah_prepayment' => $this->input->post('jumlah_prepayment'),
-            'no_rek' => $no_rek,
-            'kode_prepayment' => $this->input->post('kode_prepayment'),
-            'app_status' => 'waiting',
-            'app_date' => null,
-            'app_keterangan' => null,
-            'app2_status' => 'waiting',
-            'app2_date' => null,
-            'app2_keterangan' => null,
-            'status' => 'on-process'
-        );
-
-        $this->db->where('id', $this->input->post('id'));
-
-        $detail_id = $this->input->post('detail_id');
-        $reimbust_id = $this->input->post('id');
-        $pemakaian = $this->input->post('pemakaian');
-        $jumlah = $this->input->post('jumlah');
-
-        // Bersihkan input untuk hanya mengambil angka
-        $jumlahClean = preg_replace('/\D/', '', $jumlah);
-        $tgl_nota = $this->input->post('tgl_nota');
-        $kwitansi_image = $this->input->post('kwitansi_image');
-        $deklarasi = $this->input->post('deklarasi');
-        $deklarasi_old = $this->input->post('deklarasi_old');
-
-        if ($this->db->update('mac_reimbust', $data)) {
-            // 1. Hapus Baris yang Telah Dihapus
-            $deletedRows = json_decode($this->input->post('deleted_rows'), true);
-            if (!empty($deletedRows)) {
-                foreach ($deletedRows as $id2) {
-                    $reimbust_detail = $this->db->get_where('mac_reimbust_detail', ['id' => $id2])->row_array();
-
-                    if ($reimbust_detail) {
-                        $old_image = $reimbust_detail['kwitansi'];
-                        if ($old_image != 'default.jpg') {
-                            @unlink(FCPATH . './assets/backend/document/reimbust/kwitansi/kwitansi_mac/' . $old_image);
-                        }
-
-                        $this->db->where('id', $id2);
-                        $this->db->delete('mac_reimbust_detail');
-
-                        $kode_deklarasi = $reimbust_detail['deklarasi'];
-                        $this->db->update('mac_deklarasi', ['is_active' => 1], ['kode_deklarasi' => $kode_deklarasi]);
-                    }
-                }
-            }
-
-            // 2. Replace Data Lama dengan yang Baru
-            foreach ($pemakaian as $i => $p) {
-                $kwitansi = ''; // Inisialisasi variabel kwitansi
-
-                // Cek apakah file kwitansi untuk indeks $i ada
-                if (isset($_FILES['kwitansi']['name'][$i]) && !empty($_FILES['kwitansi']['name'][$i])) {
-                    $_FILES['file']['name'] = $_FILES['kwitansi']['name'][$i];
-                    $_FILES['file']['type'] = $_FILES['kwitansi']['type'][$i];
-                    $_FILES['file']['tmp_name'] = $_FILES['kwitansi']['tmp_name'][$i];
-                    $_FILES['file']['error'] = $_FILES['kwitansi']['error'][$i];
-                    $_FILES['file']['size'] = $_FILES['kwitansi']['size'][$i];
-
-                    if ($_FILES['file']['error'] == UPLOAD_ERR_INI_SIZE || $_FILES['file']['size'] > 3072 * 1024) {
-                        echo json_encode(array("status" => FALSE, "error" => "Ukuran file tidak boleh melebihi dari 3 MB."));
-                        return;
-                    }
-
-                    $config['upload_path'] = './assets/backend/document/reimbust/kwitansi/kwitansi_mac/';
-                    $config['allowed_types'] = 'jpeg|jpg|png';
-                    $config['max_size'] = 3072;
-                    $config['encrypt_name'] = TRUE;
-
-                    $this->upload->initialize($config);
-
-                    if ($this->upload->do_upload('file')) {
-                        $id = !empty($detail_id[$i]) ? $detail_id[$i] : NULL;
-
-                        $reimbust_detail = $this->db->get_where('mac_reimbust_detail', ['id' => $id])->row_array();
-
-                        if ($reimbust_detail) {
-                            $old_image = $reimbust_detail['kwitansi'];
-
-                            if ($old_image && $old_image != 'default.jpg') {
-                                @unlink(FCPATH . './assets/backend/document/reimbust/kwitansi/kwitansi_mac/' . $old_image);
-                            }
-                        }
-                        $kwitansi = $this->upload->data('file_name');
-                    } else {
-                        echo json_encode(array("status" => FALSE, "error" => $this->upload->display_errors()));
-                        return;
-                    }
-                }
-
-                $id = !empty($detail_id[$i]) ? $detail_id[$i] : NULL;
-
-                $data2 = array(
-                    'id' => $id,
-                    'reimbust_id' => $reimbust_id,
-                    'tgl_nota' => !empty($tgl_nota[$i]) ? date('Y-m-d', strtotime($tgl_nota[$i])) : date('Y-m-d'),
-                    'pemakaian' => $pemakaian[$i],
-                    'jumlah' => $jumlahClean[$i],
-                    'kwitansi' => !empty($kwitansi) ? $kwitansi : (isset($kwitansi_image[$i]) ? $kwitansi_image[$i] : ''),
-                    // 'deklarasi' => $deklarasi[$i]
-                );
-
-                if (isset($deklarasi[$i])) {
-                    $data2['deklarasi'] = $deklarasi[$i];
-                }
-
-                // Mengubah data mac_prepayment is_active menjadi 0 pada data mac_prepayment terbaru, jika kode_prepayment ada
-                $kode_prepayment = $this->input->post('kode_prepayment');
-                if (!empty($kode_prepayment)) {
-                    $this->db->update('mac_prepayment', ['is_active' => 0], ['kode_prepayment' => $kode_prepayment]);
-                }
-
-                // Mengubah data mac_prepayment is_active menjadi 1 pada data mac_prepayment terlama, jika kode_prepayment_old ada
-                $kode_prepayment_old = $this->input->post('kode_prepayment_old');
-                if ($kode_prepayment != $kode_prepayment_old && !empty($kode_prepayment_old)) {
-                    $this->db->update('mac_prepayment', ['is_active' => 1], ['kode_prepayment' => $kode_prepayment_old]);
-                }
-
-                // Replace data di
-                $this->db->replace('mac_reimbust_detail', $data2);
-
-                // mengubah is_active deklarasi awal menjadi 1, dan deklarasi baru menjadi 0
-                if (isset($deklarasi_old[$i])) {
-                    if ($deklarasi_old[$i]) {
-                        $this->db->update('mac_deklarasi', ['is_active' => 1], ['kode_deklarasi' => $deklarasi_old[$i]]);
-                        $this->db->update('mac_deklarasi', ['is_active' => 0], ['kode_deklarasi' => $deklarasi[$i]]);
-                    } else {
-                        $this->db->update('mac_deklarasi', ['is_active' => 0], ['kode_deklarasi' => $deklarasi[$i]]);
-                    }
-                }
-            }
-        }
-        echo json_encode(array("status" => TRUE));
-    }
-
-    function delete($id)
-    {
-        $this->M_mac_reimbust->delete($id);
-        echo json_encode(array("status" => TRUE));
-    }
-
-    //APPROVE DATA
-    public function approve()
-    {
-        $data = array(
-            'app_keterangan' => $this->input->post('app_keterangan'),
-            'app_status' => $this->input->post('app_status'),
-            'app_date' => date('Y-m-d H:i:s'),
-        );
-
-        // UPDATE STATUS DEKLARASI
-        if ($this->input->post('app_status') === 'revised') {
-            $data['status'] = 'revised';
-        } elseif ($this->input->post('app_status') === 'approved') {
-            $data['status'] = 'on-process';
-        } elseif ($this->input->post('app_status') === 'rejected') {
-            $data['status'] = 'rejected';
-        }
-
-        //UPDATE APPROVAL PERTAMA
-        $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('mac_reimbust', $data);
-
-        echo json_encode(array("status" => TRUE));
-    }
-
-    function approve2()
-    {
-        $data = array(
-            'app2_keterangan' => $this->input->post('app2_keterangan'),
-            'app2_status' => $this->input->post('app2_status'),
-            'app2_date' => date('Y-m-d H:i:s'),
-        );
-
-        // UPDATE STATUS DEKLARASI
-        if ($this->input->post('app2_status') === 'revised') {
-            $data['status'] = 'revised';
-        } elseif ($this->input->post('app2_status') === 'approved') {
-            $data['status'] = 'approved';
-        } elseif ($this->input->post('app2_status') === 'rejected') {
-            $data['status'] = 'rejected';
-        }
-
-        // UPDATE APPROVAL 2
-        $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('mac_reimbust', $data);
-
-        echo json_encode(array("status" => TRUE));
-    }
-
-    //APPROVE DATA
-    public function approve3()
-    {
-        $data = array(
-            'app4_keterangan' => $this->input->post('app4_keterangan'),
-            'app4_status' => $this->input->post('app4_status'),
-            'app4_date' => date('Y-m-d H:i:s'),
-        );
-
-        // UPDATE STATUS DEKLARASI
-        if ($this->input->post('app4_status') === 'revised') {
-            $data['status'] = 'revised';
-        } elseif ($this->input->post('app4_status') === 'approved') {
-            $data['status'] = 'on-process';
-        } elseif ($this->input->post('app4_status') === 'rejected') {
-            $data['status'] = 'rejected';
-        }
-
-        //UPDATE APPROVAL PERTAMA
-        $this->db->where('id', $this->input->post('hidden_id'));
-        $this->db->update('mac_reimbust', $data);
-
-        echo json_encode(array("status" => TRUE));
-    }
-
-    public function payment()
-    {
-        $id = $this->input->post('id');
-        $payment_status = $this->input->post('payment_status');
-        $tgl_pembayaran = $this->input->post('tgl_pembayaran');
-        // Validasi dasar
-        if (empty($id)) {
-            echo json_encode([
-                "status" => FALSE,
-                "message" => "ID tidak ditemukan"
-            ]);
-            return;
-        }
-        // Data awal
-        $data = [
-            'payment_status' => $payment_status
-        ];
-        // Jika status paid → set tanggal (tanpa jam)
-        if ($payment_status === 'paid' && !empty($tgl_pembayaran)) {
-            $date_parts = explode('-', $tgl_pembayaran);
-            if (count($date_parts) === 3) {
-                // DD-MM-YYYY → YYYY-MM-DD H:i:s
-                $data['tgl_pembayaran'] = $date_parts[2] . '-' . $date_parts[1] . '-' . $date_parts[0] . ' ' . date('H:i:s');
-            } else {
-                echo json_encode([
-                    "status" => FALSE,
-                    "message" => "Format tanggal tidak valid"
-                ]);
-                return;
-            }
-        } else {
-            // Hapus file attachment jika status bukan paid
-            $reimbust = $this->db->get_where('mac_reimbust', ['id' => $id])->row_array();
-
-            if ($reimbust && $reimbust['attachment'] && $reimbust['attachment'] != 'default.pdf') {
-                @unlink(FCPATH . './assets/backend/document/reimbust/attachment/mac_attachment/' . $reimbust['attachment']);
-                }
-                $data['tgl_pembayaran'] = null;
-                $data['attachment'] = null;
-        }
-
-        // Ambil data lama
-        $reimbust = $this->db->get_where('mac_reimbust', ['id' => $id])->row_array();
-
-        // Jika ada file lama, hapus dulu (replace)
-        if (!empty($_FILES['attachment']['name'])) {
-            if ($reimbust && !empty($reimbust['attachment']) && $reimbust['attachment'] != 'default.pdf') {
-                $oldFile = FCPATH . 'assets/backend/document/reimbust/attachment/mac_attachment/' . $reimbust['attachment'];
-                
-                if (file_exists($oldFile)) {
-                    unlink($oldFile);
-                }
-            }
-        }
-
-        // Handle upload file
-        if (!empty($_FILES['attachment']['name'])) {
-            $config['upload_path'] = 'assets/backend/document/reimbust/attachment/mac_attachment/';
-            $config['allowed_types'] = 'pdf|jpg|jpeg|png';
-            $config['max_size'] = 3072; // 3MB
-            $config['file_name'] = 'attachment_' . $id . '_' . date('YmdHis');
-            $this->load->library('upload', $config);
-            if ($this->upload->do_upload('attachment')) {
-                $upload_data = $this->upload->data();
-                $data['attachment'] = $upload_data['file_name'];
-            } else {
-                echo json_encode([
-                    "status" => FALSE,
-                    "message" => strip_tags($this->upload->display_errors())
-                ]);
-                return;
-            }
-        }
-        // Update database
-        $this->db->where('id', $id);
-        $result = $this->db->update('mac_reimbust', $data);
-        if ($result) {
-            echo json_encode([
-                "status" => TRUE
-            ]);
-        } else {
-            echo json_encode([
-                "status" => FALSE,
-                "message" => "Gagal update data"
-            ]);
-        }
     }
 }

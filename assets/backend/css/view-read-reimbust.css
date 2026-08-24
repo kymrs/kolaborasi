@@ -48,7 +48,8 @@ body .container {
 
 /* Table Main */
 .no-prepayment {
-    margin-top: 30px;
+    margin-top: 20px;
+    margin-bottom: 4px;
     float: right;
     margin-right: 200px;
 }

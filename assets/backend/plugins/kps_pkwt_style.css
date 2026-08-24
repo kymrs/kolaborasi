@@ -77,8 +77,11 @@ table {
 .header p:nth-child(3){
     margin-top: 8px;
     font-weight: bold;
-    text-decoration: underline;
     margin-bottom: 10px;
+}
+ 
+.header p:nth-child(3) span{
+    text-decoration: underline;
 }
 
 .content-header p {

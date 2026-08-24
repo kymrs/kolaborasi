@@ -32,7 +32,7 @@
                         <?php } elseif ($user->app4_name == $app_name && !in_array($user->app_status, ['rejected', 'revised']) && !in_array($user->app2_status, ['rejected', 'revised']) && $user->status != 'approved') { ?>
                             <a class="btn btn-warning btn-sm mr-2" id="appBtn3" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
                         <?php } ?>
-                        <a class="btn btn-secondary btn-sm" onclick="history.back()"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+                        <a class="btn btn-primary btn-sm" onclick="history.back()"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                     </div>
 
                     <!-- Header Section -->
@@ -80,9 +80,11 @@
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Rincian</th>
-                                    <th>Nominal</th>
-                                    <th>Keterangan</th>
+                                    <th style="width: 20%">Rincian</th>
+                                    <th style="width: 12%">Nominal</th>
+                                    <th style="width: 8%">Qty</th>
+                                    <th style="width: 12%">Total</th>
+                                    <th style="width: 13%">Keterangan</th>
                                 </tr>
                             </thead>
                             <tbody id="input-container">
@@ -441,11 +443,10 @@
                 moment.locale('id')
                 // DATA PREPAYMENT
                 $('#divisiTxt').text(data['master']['divisi']);
-                $('#prepaymentTxt').text(data['master']['prepayment']);
                 $('#tanggalTxt').text(moment(data['master']['tgl_prepayment']).format('D MMMM YYYY'));
                 $('#namaTxt').text(data['nama']);
                 $('#jabatanTxt').text(data['master']['jabatan']);
-                $('#tujuanTxt').text(data['master']['tujuan']);
+                $('#tujuanTxt').text(data['master']['prepayment']);
 
                 const [nama_rek, nama_bank, no_rek] = data.master.no_rek.split("-");
                 $('#nama_rek').html(nama_rek);
@@ -522,21 +523,28 @@
                     </table>
                 `);
 
+                
+
                 //DATA PREPAYMENT DETAIL
-                let total = 0;
                 for (let index = 0; index < data['transaksi'].length; index++) {
+                    const nominal = Number(data['transaksi'][index]['nominal']);
+                    const qty = Number(data['transaksi'][index]['qty']);
+                    const subtotal = nominal * qty;
+
                     const row = `<tr>
                                     <td>${data['transaksi'][index]['rincian']}</td>
-                                    <td>Rp. <span style="float: right">${data['transaksi'][index]['nominal'].replace(/\B(?=(\d{3})+(?!\d))/g, '.')}</span></td>
-                                    <td>${data['transaksi'][index]['keterangan']}</td>
+                                    <td>Rp. <span style="float: right">${nominal.toLocaleString('id-ID')}</span></td>
+                                    <td class="text-center">${qty} ${data['transaksi'][index]['satuan'] || ''}</td>
+                                    <td>Rp. <span style="float: right">${subtotal.toLocaleString('id-ID')}</span></td>
+                                    <td>${data['transaksi'][index]['keterangan'] || '-'}</td>
                                 </tr>`;
+
                     $('#input-container').append(row);
-                    total += Number(data['transaksi'][index]['nominal']);
                 }
-                const totalFormatted = total.toLocaleString('de-DE');
+                const totalFormatted = Number(data['master']['total_nominal']).toLocaleString('de-DE');
                 const ttl_row = `<tr>
-                                        <td colspan="3"><span style="font-weight: bold">Total : </span><span style="float: right">Rp. <span id="total">${totalFormatted}</span></span></td>
-                                    </tr>`;
+                                        <td colspan="5"><span style="font-weight: bold">Grand Total : </span><span style="float: right">Rp. <span id="total">${totalFormatted}</span></span></td>
+                                    </tr>`
                 $('#input-container').append(ttl_row);
             },
             error: function(jqXHR, textStatus, errorThrown) {

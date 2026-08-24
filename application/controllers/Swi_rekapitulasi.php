@@ -68,6 +68,7 @@ class Swi_rekapitulasi extends CI_Controller
             $row[] = $no;
             $row[] = $field->kode_prepayment ? $field->kode_prepayment : '-';
             $row[] = !empty($field->kode_reimbust) ? ucfirst($field->kode_reimbust) : '-';
+            $row[] = $field->sifat_pelaporan ?? 'Prepayment';
             $tglPrepayment = $this->db->get_where('swi_prepayment', ['kode_prepayment' => $field->kode_prepayment])->row_array();
             $row[] = !empty($tglPrepayment) ? $this->tgl_indo($tglPrepayment['tgl_prepayment']) : '-';
             $row[] = $field->pelaporan ? $this->tgl_indo(date('Y-m-d', strtotime($field->tgl_pengajuan))) : '-';

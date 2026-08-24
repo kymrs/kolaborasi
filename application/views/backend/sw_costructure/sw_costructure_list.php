@@ -22,12 +22,24 @@
                                     <th>Event Type</th>
                                     <th>Participants</th>
                                     <th>Grand Total</th>
-                                    <th>Selling Price</th>
+                                    <th>Received By EO</th>
                                     <th>Date Created</th>
                                 </tr>
                             </thead>
                             <tbody>
                             </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>No</th>
+                                    <th style="width: 100px;">Action</th>
+                                    <th>Company Name</th>
+                                    <th>Event Type</th>
+                                    <th>Participants</th>
+                                    <th>Grand Total</th>
+                                    <th>Received By EO</th>
+                                    <th>Date Created</th>
+                                </tr>
+                            </tfoot>
                         </table>
                     </div>
                 </div>
@@ -71,26 +83,55 @@
 
         // Delete function
         window.delete_data = function(id) {
-            if (confirm('Are you sure you want to delete this cost structure?')) {
-                $.ajax({
-                    url: '<?= site_url('sw_costructure/delete') ?>',
-                    type: 'POST',
-                    data: { id: id },
-                    dataType: 'JSON',
-                    success: function(response) {
-                        if (response.status) {
-                            alert(response.message);
-                            table.ajax.reload();
-                        } else {
-                            alert('Error: ' + response.message);
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You want to delete this cost structure?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '<?= site_url('sw_costructure/delete') ?>',
+                        type: 'POST',
+                        data: { id: id },
+                        dataType: 'JSON',
+                        success: function(response) {
+                            if (response.status) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Deleted!',
+                                    text: response.message,
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+                                table.ajax.reload();
+                            } else {
+
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: response.message
+                                });
+
+                            }
+                        },
+                        error: function(error) {
+
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'An error occurred while deleting data'
+                            });
+
+                            console.error(error);
                         }
-                    },
-                    error: function(error) {
-                        alert('An error occurred while deleting data');
-                        console.error(error);
-                    }
-                });
-            }
+                    });
+                }
+            });
         };
     });
 </script>

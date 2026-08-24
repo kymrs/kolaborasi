@@ -348,6 +348,7 @@
                 <th>No</th>
                 <th>Kode Prepayment</th>
                 <th>Kode Pelaporan</th>
+                <th>Jenis Pelaporan</th>
                 <th>Tanggal Prepayment</th>
                 <th>Tanggal Pelaporan</th>
                 <th>Nama</th>

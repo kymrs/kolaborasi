@@ -24,7 +24,8 @@ class M_ctz_rekapitulasi extends CI_Model
                 // Query for "pelaporan" tab
                 $this->db->select('ctz_reimbust.id, 
                                ctz_prepayment.id as prepayment_id, 
-                               ctz_reimbust.kode_reimbust, 
+                               ctz_reimbust.kode_reimbust,
+                               ctz_reimbust.sifat_pelaporan,
                                tbl_data_user.name, 
                                ctz_prepayment.tujuan, 
                                IF(ctz_reimbust.kode_prepayment IS NOT NULL, ctz_reimbust.tgl_pengajuan, ctz_prepayment.tgl_prepayment) AS tgl_pengajuan,  
@@ -82,7 +83,7 @@ class M_ctz_rekapitulasi extends CI_Model
                 $this->column_search = array('ctz_reimbust.kode_prepayment', 'ctz_reimbust.kode_reimbust', 'ctz_reimbust.tgl_pengajuan', 'tbl_data_user.name', 'ctz_reimbust.tujuan');
 
                 // Query for "reimbust" tab
-                $this->db->select('ctz_reimbust.id, ctz_reimbust.tgl_pengajuan, tbl_data_user.name, ctz_reimbust.tujuan, ctz_reimbust.kode_reimbust, ctz_reimbust.kode_prepayment, SUM(ctz_reimbust_detail.jumlah) AS total_jumlah_detail');
+                $this->db->select('ctz_reimbust.id, ctz_reimbust.tgl_pengajuan, tbl_data_user.name, ctz_reimbust.tujuan, ctz_reimbust.kode_reimbust, ctz_reimbust.kode_prepayment, ctz_reimbust.sifat_pelaporan, SUM(ctz_reimbust_detail.jumlah) AS total_jumlah_detail');
                 $this->db->from('ctz_reimbust');
                 $this->db->join('ctz_reimbust_detail', 'ctz_reimbust.id = ctz_reimbust_detail.reimbust_id', 'left');
                 $this->db->join('tbl_data_user', 'ctz_reimbust.id_user = tbl_data_user.id_user', 'left');
@@ -391,7 +392,7 @@ class M_ctz_rekapitulasi extends CI_Model
 
     function get_data_prepayment($tgl_awal, $tgl_akhir)
     {
-        $this->db->select('a.id, a.kode_prepayment, a.tgl_prepayment, a.prepayment, a.total_nominal');
+        $this->db->select('a.id, a.kode_prepayment, a.tgl_prepayment, a.prepayment, a.total_nominal, a.tujuan');
         $this->db->from('ctz_prepayment AS a');
         $this->db->join('ctz_reimbust AS b', 'a.kode_prepayment = b.kode_prepayment', 'left');
         $this->db->where('a.payment_status', 'paid');
@@ -421,7 +422,7 @@ class M_ctz_rekapitulasi extends CI_Model
 
     function get_data_reimbust($tgl_awal, $tgl_akhir)
     {
-        $this->db->select('a.id, a.kode_reimbust, a.tgl_pengajuan, a.sifat_pelaporan, SUM(b.jumlah) AS total_nominal');
+        $this->db->select('a.id, a.kode_reimbust, a.tgl_pengajuan, a.sifat_pelaporan, SUM(b.jumlah) AS total_nominal, a.tujuan, c.tgl_prepayment');
         $this->db->from('ctz_reimbust AS a');
         $this->db->join('ctz_reimbust_detail AS b', 'a.id = b.reimbust_id', 'inner');
         $this->db->join('ctz_prepayment AS c', 'a.kode_prepayment = c.kode_prepayment', 'left');

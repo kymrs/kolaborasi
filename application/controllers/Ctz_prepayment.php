@@ -266,6 +266,12 @@ class Ctz_prepayment extends CI_Controller
             $no_rek = $this->input->post('rekening');
         }
 
+        // VALIDASI NO_REK TIDAK BOLEH KOSONG
+        if (empty($no_rek)) {
+            echo json_encode(array("status" => FALSE, "error" => "Nomor Rekening tidak boleh kosong"));
+            exit();
+        }
+
         $data = array(
             'kode_prepayment' => $kode_prepayment,
             'id_user' => $id,
@@ -296,6 +302,26 @@ class Ctz_prepayment extends CI_Controller
                 ->row('name'),
             'created_at' => date('Y-m-d H:i:s')
         );
+
+        if (!empty($_FILES['lampiran']['name'])) {
+            $uploadPath = FCPATH . 'assets/backend/document/prepayment/ctz_lampiran/';
+            if (!is_dir($uploadPath)) {
+                mkdir($uploadPath, 0755, true);
+            }
+            $config['upload_path'] = $uploadPath;
+            $config['allowed_types'] = 'jpg|jpeg|png|pdf';
+            $config['max_size'] = 5120; // 5MB
+            $config['file_name'] = 'lampiran_' . $kode_prepayment . '_' . date('YmdHis');
+            $config['overwrite'] = false;
+            $this->load->library('upload', $config);
+            if ($this->upload->do_upload('lampiran')) {
+                $upload_data = $this->upload->data();
+                $data['lampiran'] = $upload_data['file_name'];
+            } else {
+                echo json_encode(array("status" => FALSE, "error" => strip_tags($this->upload->display_errors())));
+                return;
+            }
+        }
 
         if ($app->app4_id != null) {
             $data['app4_name'] = $this->db->select('name')
@@ -338,6 +364,12 @@ class Ctz_prepayment extends CI_Controller
             $no_rek = $this->input->post('rekening');
         }
 
+        // VALIDASI NO_REK TIDAK BOLEH KOSONG
+        if (empty($no_rek)) {
+            echo json_encode(array("status" => FALSE, "error" => "Nomor Rekening tidak boleh kosong"));
+            exit();
+        }
+
         $data = array(
             'kode_prepayment' => $this->input->post('kode_prepayment'),
             'prepayment' => $this->input->post('prepayment'),
@@ -356,6 +388,38 @@ class Ctz_prepayment extends CI_Controller
             'app4_keterangan' => null,
             'status' => 'on-process'
         );
+
+        $prepayment_id = $this->input->post('id');
+        $reimbust = $this->db->get_where('ctz_prepayment', ['id' => $prepayment_id])->row_array();
+
+        if (!empty($_FILES['lampiran']['name'])) {
+            $uploadPath = FCPATH . 'assets/backend/document/prepayment/ctz_lampiran/';
+            if (!is_dir($uploadPath)) {
+                mkdir($uploadPath, 0755, true);
+            }
+
+            if ($reimbust && !empty($reimbust['lampiran'])) {
+                $oldFile = $uploadPath . $reimbust['lampiran'];
+                if (file_exists($oldFile)) {
+                    @unlink($oldFile);
+                }
+            }
+
+            $config['upload_path'] = $uploadPath;
+            $config['allowed_types'] = 'jpg|jpeg|png|pdf';
+            $config['max_size'] = 5120; // 5MB
+            $config['file_name'] = 'lampiran_' . $this->input->post('kode_prepayment') . '_' . date('YmdHis');
+            $config['overwrite'] = false;
+            $this->load->library('upload', $config);
+            if ($this->upload->do_upload('lampiran')) {
+                $upload_data = $this->upload->data();
+                $data['lampiran'] = $upload_data['file_name'];
+            } else {
+                echo json_encode(array("status" => FALSE, "error" => strip_tags($this->upload->display_errors())));
+                return;
+            }
+        }
+
         $this->db->where('id', $this->input->post('id'));
 
         //UPDATE DETAIL PREPAYMENT

@@ -745,7 +745,7 @@ class M_sml_rekapitulasi extends CI_Model
 
     function get_data_reimbust($tgl_awal, $tgl_akhir)
     {
-        $this->db->select('a.id, a.kode_reimbust, a.tgl_pengajuan, a.sifat_pelaporan, SUM(b.jumlah) AS total_nominal, a.tujuan');
+        $this->db->select('a.id, a.kode_reimbust, a.tgl_pengajuan, a.sifat_pelaporan, SUM(b.jumlah) AS total_nominal, a.tujuan, c.tgl_prepayment');
         $this->db->from('sml_reimbust AS a');
         $this->db->join('sml_reimbust_detail AS b', 'a.id = b.reimbust_id', 'inner');
         $this->db->join('sml_prepayment AS c', 'a.kode_prepayment = c.kode_prepayment', 'left');

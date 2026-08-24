@@ -65,6 +65,7 @@ class M_bmn_rekapitulasi extends CI_Model
             'bmn_reimbust.id,
              bmn_prepayment.id as prepayment_id,
              bmn_reimbust.kode_reimbust,
+             bmn_reimbust.sifat_pelaporan,
              tbl_data_user.name,
              bmn_prepayment.tujuan,
              IF(bmn_reimbust.kode_prepayment IS NOT NULL, bmn_reimbust.tgl_pengajuan, bmn_prepayment.tgl_prepayment) AS tgl_pengajuan,
@@ -138,6 +139,7 @@ class M_bmn_rekapitulasi extends CI_Model
              bmn_reimbust.tujuan,
              bmn_reimbust.kode_reimbust,
              bmn_reimbust.kode_prepayment,
+             bmn_reimbust.sifat_pelaporan,
              SUM(bmn_reimbust_detail.jumlah) AS total_jumlah_detail,
              COALESCE(SUM(bmn_reimbust_detail.jumlah), 0) AS total_pengeluaran'
         );
@@ -626,7 +628,7 @@ class M_bmn_rekapitulasi extends CI_Model
 
     function get_data_prepayment($tgl_awal, $tgl_akhir)
     {
-        $this->db->select('a.id, a.kode_prepayment, a.tgl_prepayment, a.prepayment, a.total_nominal');
+        $this->db->select('a.id, a.kode_prepayment, a.tgl_prepayment, a.prepayment, a.total_nominal, a.tujuan');
         $this->db->from('bmn_prepayment AS a');
         $this->db->join('bmn_reimbust AS b', 'a.kode_prepayment = b.kode_prepayment', 'left');
         $this->db->where('a.payment_status', 'paid');
@@ -656,7 +658,7 @@ class M_bmn_rekapitulasi extends CI_Model
 
     function get_data_reimbust($tgl_awal, $tgl_akhir)
     {
-        $this->db->select('a.id, a.kode_reimbust, a.tgl_pengajuan, a.sifat_pelaporan, SUM(b.jumlah) AS total_nominal');
+        $this->db->select('a.id, a.kode_reimbust, a.tgl_pengajuan, a.sifat_pelaporan, SUM(b.jumlah) AS total_nominal, a.tujuan, c.tgl_prepayment');
         $this->db->from('bmn_reimbust AS a');
         $this->db->join('bmn_reimbust_detail AS b', 'a.id = b.reimbust_id', 'inner');
         $this->db->join('bmn_prepayment AS c', 'a.kode_prepayment = c.kode_prepayment', 'left');

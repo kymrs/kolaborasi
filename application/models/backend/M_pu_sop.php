@@ -138,7 +138,8 @@ class M_pu_sop extends CI_Model
         $prefix_map = array(
             'SOP' => 'SOP',
             'Juklak' => 'JKL',
-            'Juknis' => 'JKN'
+            'Juknis' => 'JKN',
+            'SK Penunjang' => 'SKP'
         );
 
         $prefix = isset($prefix_map[$jenis]) ? $prefix_map[$jenis] : 'SOP';
@@ -174,6 +175,7 @@ class M_pu_sop extends CI_Model
      * SOP: "1", "2", "3", dst
      * Juklak (child of SOP 1): "1-1", "1-2", dst
      * Juknis (child of Juklak 1-1): "1-1-1", "1-1-2", dst
+     * SK Penunjang (child of Juknis 1-1-1): "1-1-1-1", "1-1-1-2", dst
      */
     public function generate_no_hierarki($jenis, $parent_id = null)
     {
@@ -262,6 +264,32 @@ class M_pu_sop extends CI_Model
                 }
 
                 return $parent_no . '-' . $last_child_number;
+            } else if ($jenis == 'SK Penunjang') {
+                // Parent harus Juknis
+                if ($parent->jenis != 'Juknis') {
+                    return null;
+                }
+
+                // Cari SK Penunjang terbanyak di bawah Juknis ini
+                $this->db->select('no')
+                    ->from($this->table)
+                    ->where('jenis', 'SK Penunjang')
+                    ->where('parent_id', $parent_id)
+                    ->order_by('id', 'DESC')
+                    ->limit(1);
+
+                $query = $this->db->get();
+
+                if ($query->num_rows() > 0) {
+                    $last_no = $query->row()->no;
+                    // Extract last number (contoh: "1-1-1-1" -> ambil "1")
+                    $parts = explode('-', $last_no);
+                    $last_child_number = intval(end($parts)) + 1;
+                } else {
+                    $last_child_number = 1;
+                }
+
+                return $parent_no . '-' . $last_child_number;
             }
         }
 
@@ -290,6 +318,15 @@ class M_pu_sop extends CI_Model
             $this->db->select('id, no, kode, nama')
                 ->from($this->table)
                 ->where('jenis', 'Juklak')
+                ->order_by('no', 'ASC');
+
+            $query = $this->db->get();
+            $result = $query->result();
+        } else if ($jenis == 'SK Penunjang') {
+            // Parent harus Juknis
+            $this->db->select('id, no, kode, nama')
+                ->from($this->table)
+                ->where('jenis', 'Juknis')
                 ->order_by('no', 'ASC');
 
             $query = $this->db->get();

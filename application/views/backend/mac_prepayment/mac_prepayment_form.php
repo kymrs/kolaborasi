@@ -17,15 +17,15 @@
         font-size: 12px;
         /* background-color: green; */
         color: white;
-        transform: translateY(-4px);
+        transform: translateY(-2px);
     }
 
     .front-add {
-        background-color: #10b53c;
+        background-color: #242d4a;
     }
 
     .front-aksi {
-        background-color: #0075FF;
+        background-color: #242d4a;
     }
 
 
@@ -34,7 +34,7 @@
     }
 
     .btn-special:active .front {
-        transform: translateY(-2px);
+        transform: translateY(-1px);
     }
 
     #rekening {
@@ -69,6 +69,20 @@
         transform: translateY(20%);
     }
 
+    /* Info stok di bawah select2 rincian */
+    .stok-info-box {
+        font-size: 11px;
+        margin-top: 4px;
+        padding: 4px 8px;
+        border-radius: 4px;
+        background: #f8f9fc;
+        border: 1px solid #e3e6f0;
+        display: none; /* tampil hanya saat item dipilih */
+    }
+    .stok-info-box .stok-ok    { color: #1cc88a; font-weight: 600; }
+    .stok-info-box .stok-warn  { color: #f6c23e; font-weight: 600; }
+    .stok-info-box .stok-empty { color: #e74a3b; font-weight: 600; }
+
     @media (min-width: 768px) {
 
         .tujuan-field,
@@ -89,12 +103,18 @@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"><?= $title_view ?></h1>
     </div>
+    <!-- <div id="info-kas-kecil" class="alert alert-info py-2 mt-2"
+        style="display:none;">
+        <i class="fa fa-info-circle"></i>
+        Dana kas yang disetujui akan otomatis ditambahkan ke saldo kas cabang ini.
+        Jika ada sisa kas sebelumnya, akan otomatis digabungkan.
+    </div> -->
 
     <div class="row">
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header text-right">
-                    <a class="btn btn-secondary btn-sm" href="<?= base_url('mac_prepayment') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+                    <a class="btn btn-primary btn-sm" href="<?= base_url('mac_prepayment') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
                     <form id="form">
@@ -104,7 +124,7 @@
                                     <label class="col-sm-4 col-form-label">Tanggal Prepayment</label>
                                     <div class="col-sm-8">
                                         <div class="input-group date">
-                                            <input type="text" class="form-control" name="tgl_prepayment" id="tgl_prepayment" placeholder="DD-MM-YYYY" autocomplete="off" readonly />
+                                            <input type="text" class="form-control" name="tgl_prepayment" id="tgl_prepayment" placeholder="DD-MM-YYYY" autocomplete="off" style="cursor: pointer;">
                                             <div class="input-group-append">
                                                 <div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
                                             </div>
@@ -114,7 +134,7 @@
                                 <div class="form-group row">
                                     <label class="col-sm-4 col-form-label">Kode Prepayment</label>
                                     <div class="col-sm-8">
-                                        <input type="text" class="form-control" id="kode_prepayment" name="kode_prepayment" readonly>
+                                        <input type="text" class="form-control" id="kode_prepayment" name="kode_prepayment" placeholder="Kode Prepayment" readonly>
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -150,40 +170,90 @@
                             <!-- SEBELAH KANAN -->
                             <div class="col-md-6">
                                 <div class="form-group row">
-                                    <label class="col-sm-4 col-form-label prepayment-field">Prepayment</label>
-                                    <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="prepayment" name="prepayment" placeholder="Prepayment for....">
+                                    <label class="col-sm-4 col-form-label prepayment-field">Jenis Pengajuan</label>
+                                    <div class="col-sm-7 mt-2">
+                                        <div class="custom-control custom-switch">
+                                            <input type="checkbox" class="custom-control-input"
+                                                id="toggle-is-kas" name="is_kas" value="1"
+                                                <?= (isset($prepayment) && $prepayment->is_kas) ? 'checked' : '' ?>>
+                                            <label class="custom-control-label" for="toggle-is-kas">
+                                                <strong>Pengajuan Kas</strong>
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label prepayment-field">Tujuan Prepayment</label>
+                                    <div class="col-sm-7">
+                                        <textarea class="form-control" id="prepayment" name="prepayment" rows="2" placeholder="Tujuan Prepayment"></textarea>
+                                    </div>
+                                </div>
+                                <!-- <div class="form-group row">
                                     <label class="col-sm-4 col-form-label tujuan-field">Tujuan</label>
                                     <div class="col-sm-7">
                                         <textarea class="form-control" id="tujuan" name="tujuan" rows="2"></textarea>
                                     </div>
-                                </div>
+                                </div> -->
+                                <?php if(!$is_nasional) : ?>
+                                    <div class="form-group row">
+                                        <label class="col-sm-4 col-form-label tujuan-field">Mode Inputan</label>
+                                        <div class="col-sm-7">
+                                            <div class="btn-group btn-group" role="group">
+                                                <button type="button" class="btn btn-primary active"
+                                                        id="btn-mode-bebas" data-mode="bebas">
+                                                    <i class="fa fa-pencil-alt"></i> Teks Bebas
+                                                </button>
+                                                    <button type="button" class="btn btn-outline-success"
+                                                            id="btn-mode-barang" data-mode="barang">
+                                                        <i class="fa fa-box"></i> Pilih Barang
+                                                    </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endif ?>
                             </div>
                         </div>
+                        <!-- Tambahkan setelah field tujuan / sebelum tabel rincian -->
+                        <!-- <div class="form-group row align-items-center">
+                            <label class="col-sm-3 col-form-label font-weight-bold">
+                                Jenis Pengajuan
+                            </label>
+                            <div class="col-sm-9">
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input"
+                                        id="toggle-is-kas" name="is_kas" value="1"
+                                        <?= (isset($prepayment) && $prepayment->is_kas) ? 'checked' : '' ?>>
+                                    <label class="custom-control-label" for="toggle-is-kas">
+                                        <strong>Pengajuan Kas Kecil</strong>
+                                        <small class="text-muted ml-2">
+                                            Centang jika ini pengajuan dana kas yang bisa dilaporkan beberapa kali
+                                        </small>
+                                    </label>
+                                </div>
+                            </div>
+                        </div> -->
                         <!-- BUTTON TAMBAH FORM -->
                         <div class="mt-3">
-                            <button type="button" class="btn-special btn-success btn-sm" id="add-row" style="background-color: green;"><span class="front front-add"><i class="fa fa-plus" aria-hidden="true"></i> Add</span></button>
+                            <button type="button" class="btn-special btn-primary btn-sm" id="add-row"><span class="front front-add"><i class="fa fa-plus" aria-hidden="true"></i> Add</span></button>
                         </div>
                         <!-- TABLE INPUT -->
                         <div class="mt-4 mb-3" style="overflow-x: scroll;">
                             <table class="table table-bordered table-hover">
-                                <thead class="thead-dark">
+                                <thead style="background-color: #242d4a; color: white;">
                                     <tr>
-                                        <th scope="col" class="text-center">No</th>
-                                        <th scope="col">Rincian</th>
-                                        <th scope="col">Nominal</th>
-                                        <th scope="col">Keterangan</th>
-                                        <th scope="col" class="text-center">Action</th>
+                                        <th scope="col" class="text-center" width="5%">No</th>
+                                        <th scope="col" class="text-center" width="30%">Rincian / Barang</th>
+                                        <th scope="col" class="text-center" width="15%">Harga Satuan</th>
+                                        <th scope="col" class="text-center" width="10%">Qty</th>
+                                        <th scope="col" class="text-center" width="15%">Keterangan</th>
+                                        <th scope="col" class="text-center" width="10%">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody id="input-container">
                                     <!-- CONTAINER INPUTAN -->
                                 </tbody>
                                 <tr class="font-weight-bold">
-                                    <td colspan="4" id="total_nominal_row" class="text-right">Total</td>
+                                    <td colspan="5" id="total_nominal_row" class="text-right">Total</td>
                                     <td id="total_nominal_view"></td>
                                     <input type="hidden" id="total_nominal" name="total_nominal" value="">
                                 </tr>
@@ -251,6 +321,38 @@
     });
 
     $(document).ready(function() {
+        // Toggle info kas kecil
+        $('#toggle-is-kas').on('change', function() {
+            if ($(this).is(':checked')) {
+                $('#prepayment').val('Pengisian Kas');
+                $('#btn-mode-barang').hide();
+            } else {
+                $('#prepayment').val('');
+                $('#btn-mode-barang').show();
+            }
+        });
+
+        // Inisiasi saat edit — jika is_kas sudah 1
+        <?php if (isset($prepayment) && $prepayment->is_kas): ?>
+        $('#toggle-is-kas').prop('checked', true);
+        $('#info-kas-kecil').show();
+        <?php endif; ?>
+
+        // PIC kas per cabang — dari list yang sudah ditentukan
+        var picKas = {
+            2: 'indah', 3: 'titik', 4: 'sri',   5: 'pitri',
+            6: 'andro', 7: 'agung', 8: 'fatkhur', 9: 'anton',
+            10: 'hermawanta', 11: 'eko', 12: 'saryanto'
+        };
+
+        var sessionCabang   = <?= intval($this->session->userdata('cabang_id')) ?>;
+        var sessionUsername = "<?= $this->session->userdata('username') ?>";
+        var isPic           = picKas[sessionCabang] === sessionUsername;
+
+        // Jika bukan PIC kas, sembunyikan toggle
+        if (!isPic) {
+            $('#toggle-is-kas').closest('.form-group').hide();
+        }
 
         // INISIASI VARIABEL JAVASCRIPT/JQUERY
         var id = $('#id').val();
@@ -258,6 +360,57 @@
         var kode = $('#kode').val();
         let inputCount = 0;
         let deletedRows = [];
+
+        // ===== STATE MODE INPUTAN =====
+        var currentMode = 'bebas';
+
+        // Handler toggle mode
+        $(document).on('click', '#btn-mode-bebas-pp, #btn-mode-barang-pp', function() {
+            var newMode = $(this).data('mode');
+            if (newMode === currentMode) return;
+
+            // Cek apakah ada baris terisi
+            var adaTerisi = false;
+            $('#input-container tr').each(function() {
+                var rincian = $(this).find('input[name^="rincian"]').val();
+                var invId   = $(this).find('input[id^="inv-id-"]').val();
+                if (rincian || invId) { adaTerisi = true; return false; }
+            });
+
+            if (adaTerisi) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Ubah Mode?',
+                    text: 'Semua baris detail akan direset.',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, ubah',
+                    cancelButtonText: 'Batal'
+                }).then(function(result) {
+                    if (result.isConfirmed) applyModePP(newMode);
+                });
+            } else {
+                applyModePP(newMode);
+            }
+        });
+
+        function applyModePP(newMode) {
+            currentMode = newMode;
+            $('#input_mode_pp').val(newMode);
+
+            if (newMode === 'barang') {
+                $('#btn-mode-bebas-pp').removeClass('btn-primary active').addClass('btn-outline-primary');
+                $('#btn-mode-barang-pp').removeClass('btn-outline-success').addClass('btn-success active');
+            } else {
+                $('#btn-mode-barang-pp').removeClass('btn-success active').addClass('btn-outline-success');
+                $('#btn-mode-bebas-pp').removeClass('btn-outline-primary').addClass('btn-primary active');
+            }
+
+            // Reset semua baris
+            $('#input-container').empty();
+            rowCount = 0;
+            updateSubmitButtonState();
+            calculateTotalNominal();
+        }
 
         $('.js-example-basic-single').select2();
 
@@ -308,55 +461,307 @@
             });
         }
 
+        $(document).on('input', 'input[name^="qty"]', function() {
+            calculateTotalNominal();
+        });
+
+        // function calculateTotalNominal() {
+        //     let total = 0;
+        //     $('input[name^="hidden_nominal"]').each(function() {
+        //         var nominalHidden = parseInt($(this).val()) || 0;
+
+        //         // Ambil qty dari baris yang sama
+        //         var rowId = $(this).attr('id').replace('hidden_nominal', '');
+        //         var qty   = parseInt($('#qty-' + rowId).val()) || 1;
+
+        //         total += nominalHidden * qty;
+        //     });
+        //     $('#total_nominal_view').text(total.toLocaleString());
+        //     $('#total_nominal').val(total);
+        // }
+
         function calculateTotalNominal() {
+            var $rows = $('input[name^="hidden_nominal"]');
+            if ($rows.length === 0) {
+                return;
+            }
             let total = 0;
-            $('input[name^="hidden_nominal"]').each(function() {
-                let value = parseInt($(this).val()) || 0; // Parse as integer, default to 0 if invalid
-                total += value;
+            $rows.each(function() {
+                var nominalHidden = parseInt($(this).val()) || 0;
+                var rowId = $(this).attr('id').replace('hidden_nominal', '');
+                var qty = parseInt($('#qty-' + rowId).val()) || 1;
+                total += nominalHidden * qty;
             });
-            $('#total_nominal_view').text(total.toLocaleString()); // Format total dengan pemisah ribuan
+            $('#total_nominal_view').text(total.toLocaleString());
             $('#total_nominal').val(total);
         }
+
+        // ===== HANDLER TOGGLE MODE =====
+        var currentMode = 'bebas';
+
+        $(document).on('click', '#btn-mode-bebas, #btn-mode-barang', function() {
+            var newMode = $(this).data('mode');
+
+            // Jika mode sama, tidak perlu proses
+            if (newMode === currentMode) return;
+
+            // Cek apakah ada baris yang sudah terisi
+            var inputTerisi = false;
+            if (newMode === 'bebas') {
+                // Cek apakah ada baris dengan inventory_id terisi
+                $('#input-container tr').each(function() {
+                    if ($(this).find('[id^="inventory_id"]').val()) {
+                        inputTerisi = true;
+                        return false; // break
+                    }
+                });
+            }
+
+            if (inputTerisi) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Ubah Mode?',
+                    text: 'Semua baris detail yang sudah terisi akan dihapus.',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, ubah',
+                    cancelButtonText: 'Batal'
+                }).then(function(result) {
+                    if (result.isConfirmed) {
+                        applyModeChange(newMode);
+                    }
+                });
+            } else {
+                applyModeChange(newMode);
+            }
+        });
+
+        function applyModeChange(newMode) {
+            currentMode = newMode;
+            $('#input_mode').val(newMode);
+
+            // Update tampilan tombol
+            if (newMode === 'barang') {
+                $('#btn-mode-bebas').removeClass('btn-primary active').addClass('btn-outline-primary');
+                $('#btn-mode-barang').removeClass('btn-outline-success').addClass('btn-success active');
+                $('#th-harga').text('Harga Satuan');
+            } else {
+                $('#btn-mode-barang').removeClass('btn-success active').addClass('btn-outline-success');
+                $('#btn-mode-bebas').removeClass('btn-outline-primary').addClass('btn-primary active');
+                $('#th-harga').text('Harga');
+            }
+
+            // Hapus semua baris detail yang ada
+            $('#input-container').empty();
+            rowCount = 0;
+            deletedRows = []; // reset deleted rows juga
+            updateSubmitButtonState();
+            reorderRows();
+        }
+
+        // Kumpulkan semua inventory_id yang sudah dipilih di baris lain
+        // id barang di prepayment menggunakan hidden input id="inv-id-{num}"
+        function getSelectedInventoryIdsPrepayment(excludeNum) {
+            var used = [];
+            $('input[id^="inv-id-"]').each(function() {
+                var rowNum = $(this).attr('id').replace('inv-id-', '');
+                if (rowNum != excludeNum) {
+                    var val = $(this).val();
+                    if (val) used.push(String(val));
+                }
+            });
+            return used;
+        }
+
+        // ===== SELECT2 BARANG UNTUK PREPAYMENT =====
+        function initBarangSelect2Prepayment(num) {
+            var $sel = $('#barang-select-' + num);
+
+            $sel.select2({
+                width: '100%',
+                placeholder: '-- Pilih Barang --',
+                allowClear: true,
+                minimumInputLength: 0,
+                ajax: {
+                    url: "<?= site_url('mac_prepayment/get_inventory_prepayment') ?>",
+                    type: 'POST',
+                    dataType: 'JSON',
+                    delay: 300,
+                    cache: false,
+                    data: function(params) {
+                        return {
+                            search: params.term !== undefined ? params.term : '',
+                            filter_cabang: $('#filter_cabang').val(),
+                            _ts: new Date().getTime()
+                        };
+                    },
+                    processResults: function(data) {
+                        var used = getSelectedInventoryIdsPrepayment(num);
+
+                        return {
+                            results: (data || [])
+                                .filter(function(d) {
+                                    return !used.includes(String(d.id));
+                                })
+                                .map(function(d) {
+                                    return {
+                                        id: d.id,
+                                        text: d.kode_produk + ' - ' + d.nama_produk,
+                                        nama_produk: d.nama_produk,
+                                        satuan: d.satuan,
+                                        stok_fisik: d.stok_fisik,
+                                        stok_efektif: d.stok_efektif,
+                                        stok_minimal: d.stok_minimal
+                                    };
+                                })
+                        };
+                    }
+                },
+                matcher: function() { return true; }
+            });
+
+            $sel.off('select2:select select2:clear')
+                .on('select2:select', function(e) {
+
+                    if (!e.params || !e.params.data) {
+                        return;
+                    }
+
+                    var d = e.params.data;
+
+                    $('#inv-id-' + num).val(d.id);
+                    $('#rincian-' + num).val(d.nama_produk);
+
+                    var stokAktual  = parseFloat(d.stok_fisik || 0);
+                    var stokEfektif = parseFloat(d.stok_efektif || stokAktual);
+                    var stokMinimal = parseFloat(d.stok_minimal || 0);
+
+                    var stokClass = stokEfektif <= 0
+                        ? 'stok-empty'
+                        : (stokEfektif <= stokMinimal ? 'stok-warn' : 'stok-ok');
+
+                    $('#stok-info-' + num)
+                        .html(
+                            '<span class="' + stokClass + '">' +
+                            'Stok Aktual: <b>' + stokAktual + ' ' + d.satuan + '</b>' +
+                            ' | ' +
+                            'Stok Efektif: <b>' + stokEfektif + ' ' + d.satuan + '</b>' +
+                            '</span>'
+                        )
+                        .show();
+                })
+                .on('select2:clear', function() {
+                    $('#inv-id-' + num).val('');
+                    $('#rincian-' + num).val('');
+                    $('#stok-info-' + num).hide().html('');
+                });
+        }
+
+        // ===== TOGGLE MODE TEKS BEBAS / PILIH BARANG =====
+        $(document).on('click', '.btn-toggle-mode', function() {
+            var num  = $(this).data('row');
+            var mode = $(this).data('mode');
+
+            // Update tampilan tombol
+            $(this).closest('.btn-group').find('.btn-toggle-mode').removeClass('active');
+            $(this).addClass('active');
+
+            if (mode === 'barang') {
+                $('#mode-bebas-' + num).hide();
+                $('#mode-barang-' + num).show();
+                // Kosongkan rincian teks bebas supaya tidak ikut tersubmit
+                $('#rincian-' + num).val('');
+            } else {
+                $('#mode-barang-' + num).hide();
+                $('#mode-bebas-' + num).show();
+                // Reset pilihan barang
+                $('#barang-select-' + num).val(null).trigger('change');
+                $('#inv-id-' + num).val('');
+                $('#stok-info-' + num).hide().html('');
+            }
+        });
 
         //MENAMBAH FORM INPUTAN DI ADD FORM
         let rowCount = 0;
 
         function addRow() {
             rowCount++;
-            const row = `
-                <tr id="row-${rowCount}">
-                    <td class="row-number">${rowCount}</td>
-                    <td><input type="text" class="form-control" name="rincian[${rowCount}]" value="" placeholder="Input here..." /></td>
-                    <td><input type="text" class="form-control" id="nominal-${rowCount}" name="nominal[${rowCount}]" value="" placeholder="Input here..." />
-                        <input type="hidden" id="hidden_nominal${rowCount}" name="hidden_nominal[${rowCount}]" value="">
-                    </td>
-                    <td><input type="text" class="form-control" name="keterangan[${rowCount}]" value="" placeholder="Input here..." /></td>
-                    
-                    <td><span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span></td>
-                </tr>
-                `;
-            $('#input-container').append(row);
-            // Tambahkan format ke input nominal yang baru
-            formatJumlahInput(`#nominal-${rowCount}`);
-            updateSubmitButtonState(); // Perbarui status tombol submit
-            //checkDeleteButtonState(); // Cek tombol delete setelah baris ditambahkan
+            var mode = currentMode;
+            var row  = '';
 
-            // Hitung total nominal setelah baris baru ditambahkan
+            if (mode === 'barang') {
+                row = `
+                    <tr id="row-${rowCount}">
+                        <td class="row-number">${rowCount}</td>
+                        <td>
+                            <select class="form-control select2-barang-prepayment"
+                                    id="barang-select-${rowCount}" style="width:100%;">
+                                <option value="">-- Pilih Barang --</option>
+                            </select>
+                            <input type="hidden" name="rincian[${rowCount}]"
+                                id="rincian-${rowCount}" value="">
+                            <input type="hidden" name="inventory_id_detail[${rowCount}]"
+                                id="inv-id-${rowCount}" value="">
+                            <div class="stok-info-box" id="stok-info-${rowCount}"></div>
+                        </td>
+                        <td>
+                            <input type="text" class="form-control" id="nominal-${rowCount}"
+                                name="nominal[${rowCount}]" placeholder="Harga">
+                            <input type="hidden" id="hidden_nominal${rowCount}"
+                                name="hidden_nominal[${rowCount}]" value="">
+                        </td>
+                        <td>
+                            <input type="number" class="form-control" name="qty[${rowCount}]"
+                                id="qty-${rowCount}" min="1" value="1" placeholder="0" autocomplete="off">
+                        </td>
+                        <td>
+                            <input type="text" class="form-control" name="keterangan[${rowCount}]"
+                                placeholder="Keterangan">
+                        </td>
+                        <td class="text-center">
+                            <span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span>
+                        </td>
+                    </tr>`;
+            } else {
+                row = `
+                    <tr id="row-${rowCount}">
+                        <td class="row-number">${rowCount}</td>
+                        <td>
+                            <input type="text" class="form-control" name="rincian[${rowCount}]"
+                                id="rincian-${rowCount}" placeholder="Rincian">
+                            <input type="hidden" name="inventory_id_detail[${rowCount}]"
+                                id="inv-id-${rowCount}" value="">
+                        </td>
+                        <td>
+                            <input type="text" class="form-control" id="nominal-${rowCount}"
+                                name="nominal[${rowCount}]" placeholder="Nominal">
+                            <input type="hidden" id="hidden_nominal${rowCount}"
+                                name="hidden_nominal[${rowCount}]" value="">
+                        </td>
+                        <td>
+                            <input type="number" class="form-control" name="qty[${rowCount}]"
+                                id="qty-${rowCount}" min="1" value="1" placeholder="0" autocomplete="off">
+                        </td>
+                        <td>
+                            <input type="text" class="form-control" name="keterangan[${rowCount}]"
+                                placeholder="Keterangan">
+                        </td>
+                        <td class="text-center">
+                            <span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span>
+                        </td>
+                    </tr>`;
+            }
+
+            $('#input-container').append(row);
+            formatJumlahInput(`#nominal-${rowCount}`);
+
+            if (mode === 'barang') {
+                initBarangSelect2Prepayment(rowCount);
+            }
+
+            updateSubmitButtonState();
             calculateTotalNominal();
 
-            //VALIDASI ROW YANG TELAH DI APPEND
-            $("#form").validate().settings.rules[`rincian[${rowCount}]`] = {
-                required: true
-            };
-            $("#form").validate().settings.rules[`nominal[${rowCount}]`] = {
-                required: true
-            };
-            $("#form").validate().settings.messages[`rincian[${rowCount}]`] = {
-                required: "Rincian is required"
-            };
-            $("#form").validate().settings.messages[`nominal[${rowCount}]`] = {
-                required: "Nominal is required"
-            };
+            $("#form").validate().settings.rules[`nominal[${rowCount}]`] = { required: true };
         }
 
         // MENGHAPUS ROW
@@ -382,24 +787,30 @@
         // MENHATUR ULANG URUTAN ROW SAAT DIHAPUS
         function reorderRows() {
             $('#input-container tr').each(function(index) {
-                //INISIASI VARIABLE UNTUK reorderRows
-                const newRowNumber = index + 1;
-                const rincianValue = $(this).find('input[name^="rincian"]').val();
-                const nominalValue = $(this).find('input[name^="nominal"]').val();
-                const hiddenIdValue = $(this).find('input[name^="hidden_id_detail"]').val();
+                const newRowNumber       = index + 1;
+                const rincianValue       = $(this).find('input[name^="rincian"]').val();
+                const nominalValue       = $(this).find('input[name^="nominal"]').val();
+                const hiddenIdValue      = $(this).find('input[name^="hidden_id_detail"]').val();
                 const hiddenNominalValue = $(this).find('input[name^="hidden_nominal"]').val();
-                const keteranganValue = $(this).find('input[name^="keterangan"]').val();
+                const keteranganValue    = $(this).find('input[name^="keterangan"]').val();
 
                 $(this).attr('id', `row-${newRowNumber}`);
                 $(this).find('.row-number').text(newRowNumber);
-                $(this).find('input[name^="rincian"]').attr('name', `rincian[${newRowNumber}]`).attr('placeholder', `Input here...`).val(rincianValue);
-                $(this).find('input[name^="nominal"]').attr('name', `nominal[${newRowNumber}]`).attr('id', `nominal-${newRowNumber}`).attr('placeholder', `Input here...`).val(nominalValue);
+
+                // FIX: pakai newRowNumber, bukan num
+                $(this).find('select[id^="barang-select-"]').attr('id', 'barang-select-' + newRowNumber);
+                $(this).find('input[id^="inv-id-"]').attr('id', 'inv-id-' + newRowNumber).attr('name', 'inventory_id_detail[' + newRowNumber + ']');
+                $(this).find('input[id^="rincian-"]').attr('id', 'rincian-' + newRowNumber).attr('name', 'rincian[' + newRowNumber + ']');
+                $(this).find('[id^="stok-info-"]').attr('id', 'stok-info-' + newRowNumber);
+                $(this).find('input[name^="rincian"]').attr('name', `rincian[${newRowNumber}]`).val(rincianValue);
+                $(this).find('input[name^="nominal"]').attr('name', `nominal[${newRowNumber}]`).attr('id', `nominal-${newRowNumber}`).val(nominalValue);
+                $(this).find('input[id^="qty-"]').attr('id', 'qty-' + newRowNumber).attr('name', 'qty[' + newRowNumber + ']');
                 $(this).find('input[name^="hidden_id_detail"]').attr('name', `hidden_id_detail[${newRowNumber}]`).val(hiddenIdValue);
                 $(this).find('input[name^="hidden_nominal"]').attr('name', `hidden_nominal[${newRowNumber}]`).attr('id', `hidden_nominal${newRowNumber}`).val(hiddenNominalValue);
-                $(this).find('input[name^="keterangan"]').attr('name', `keterangan[${newRowNumber}]`).attr('placeholder', `Input here...`).val(keteranganValue);
-                $(this).find('.delete-btn').attr('data-id', newRowNumber).text('Delete');
+                $(this).find('input[name^="keterangan"]').attr('name', `keterangan[${newRowNumber}]`).val(keteranganValue);
+                $(this).find('.delete-btn').attr('data-id', newRowNumber);
             });
-            rowCount = $('#input-container tr').length; // Update rowCount to the current number of rows
+            rowCount = $('#input-container tr').length;
         }
 
         $('#add-row').click(function() {
@@ -448,6 +859,23 @@
                     for (let index = 0; index < data['transaksi'].length; index++) {
                         total_nominal += parseInt(data['transaksi'][index]['nominal'], 10);
                     }
+
+                    var detectedMode = 'bebas';
+                    if (data.transaksi.length > 0 && data.transaksi[0].inventory_id) {
+                        detectedMode = 'barang';
+                    }
+    
+                    // Terapkan mode tanpa konfirmasi (karena ini load data, bukan user mengubah)
+                    currentMode = detectedMode;
+                    $('#input_mode').val(detectedMode);
+                    if (detectedMode === 'barang') {
+                        $('#btn-mode-bebas').removeClass('btn-primary active').addClass('btn-outline-primary');
+                        $('#btn-mode-barang').removeClass('btn-outline-success').addClass('btn-success active');
+                    } else {
+                        $('#btn-mode-barang').removeClass('btn-success active').addClass('btn-outline-success');
+                        $('#btn-mode-bebas').removeClass('btn-outline-primary').addClass('btn-primary active');
+                    }
+
                     //SET VALUE DATA MASTER PREPAYMENT
                     $('#id').val(data['master']['id']);
                     $('#kode_prepayment').val(data['master']['kode_prepayment'].toUpperCase()).attr('readonly', true);
@@ -488,43 +916,101 @@
 
                     //APPEND DATA TRANSAKSI DETAIL PREPAYMENT
                     if (aksi == 'update') {
-                        $(data['transaksi']).each(function(index) {
-                            //Nilai nominal diformat menggunakan pemisah ribuan sebelum dimasukkan ke dalam elemen input.
-                            const nominalFormatted = data['transaksi'][index]['nominal'].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-                            const row = `
-                        <tr id="row-${index + 1}">
-                            <td class="row-number">${index + 1}</td>
-                            <td><input type="text" class="form-control" name="rincian[${index + 1}]" value="${data['transaksi'][index]['rincian']}" />
-                                <input type="hidden" id="hidden_id${index + 1}" name="hidden_id" value="${data['master']['id']}">
-                                <input type="hidden" id="hidden_id_detail${index + 1}" name="hidden_id_detail[${index + 1}]" value="${data['transaksi'][index]['id']}">
-                            </td>
-                            <td><input type="text" class="form-control" id="nominal-${index + 1}" name="nominal[${index + 1}]" value="${nominalFormatted}" />
-                                <input type="hidden" id="hidden_nominal${index + 1}" name="hidden_nominal[${index + 1}]" value="${data['transaksi'][index]['nominal']}">
-                            </td>
-                            <td><input type="text" class="form-control" name="keterangan[${index + 1}]" value="${data['transaksi'][index]['keterangan']}" placeholder="input here...."/></td>
-                            <td><span class="btn delete-btn btn-danger" data-id="${index + 1}">Delete</span></td>
-                        </tr>
-                        `;
-                            $('#input-container').append(row);
-                            // Tambahkan format ke input nominal yang baru
-                            formatJumlahInput(`#nominal-${index+1}`);
-
-                            //VALIDASI ROW YANG TELAH DI APPEND
-                            $("#form").validate().settings.rules[`rincian[${index + 1}]`] = {
-                                required: true
-                            };
-                            $("#form").validate().settings.rules[`nominal[${index + 1}]`] = {
-                                required: true
-                            };
-                            $("#form").validate().settings.messages[`rincian[${index + 1}]`] = {
-                                required: "Rincian is required"
-                            };
-                            $("#form").validate().settings.messages[`nominal[${index + 1}]`] = {
-                                required: "Nominal is required"
-                            };
-                            rowCount = index + 1;
-                        });
+                    // Deteksi mode dari baris pertama
+                    if (data['transaksi'].length > 0 && data['transaksi'][0].inventory_id) {
+                        applyModePP('barang');
+                    } else {
+                        applyModePP('bebas');
                     }
+
+                    $(data['transaksi']).each(function(index) {
+                        rowCount++;
+                        var d    = data['transaksi'][index];
+                        var mode = currentMode;
+                        var nominalFormatted = d.nominal.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                        var row  = '';
+
+                        if (mode === 'barang') {
+                            row = `
+                                <tr id="row-${rowCount}">
+                                    <td class="row-number">${rowCount}</td>
+                                    <td>
+                                        <select class="form-control select2-barang-prepayment"
+                                                id="barang-select-${rowCount}" style="width:100%;">
+                                            <option value="${d.inventory_id}" selected>${d.rincian}</option>
+                                        </select>
+                                        <input type="hidden" name="rincian[${rowCount}]"
+                                            id="rincian-${rowCount}" value="${d.rincian}">
+                                        <input type="hidden" name="inventory_id_detail[${rowCount}]"
+                                            id="inv-id-${rowCount}" value="${d.inventory_id || ''}">
+                                        <input type="hidden" id="hidden_id_detail${rowCount}"
+                                            name="hidden_id_detail[${rowCount}]" value="${d.id}">
+                                        <div class="stok-info-box" id="stok-info-${rowCount}"></div>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" id="nominal-${rowCount}"
+                                            name="nominal[${rowCount}]" value="${nominalFormatted}">
+                                        <input type="hidden" id="hidden_nominal${rowCount}"
+                                            name="hidden_nominal[${rowCount}]" value="${d.nominal}">
+                                    </td>
+                                    <td>
+                                        <input type="number" class="form-control" name="qty[${rowCount}]"
+                                            id="qty-${rowCount}" min="1" value="${d.qty}" placeholder="0" autocomplete="off">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" name="keterangan[${rowCount}]"
+                                            value="${d.keterangan}" placeholder="Keterangan">
+                                    </td>
+                                    <td>
+                                        <span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span>
+                                    </td>
+                                </tr>`;
+                        } else {
+                            row = `
+                                <tr id="row-${rowCount}">
+                                    <td class="row-number">${rowCount}</td>
+                                    <td>
+                                        <input type="text" class="form-control" name="rincian[${rowCount}]"
+                                            id="rincian-${rowCount}" value="${d.rincian}">
+                                        <input type="hidden" name="inventory_id_detail[${rowCount}]"
+                                            id="inv-id-${rowCount}" value="">
+                                        <input type="hidden" id="hidden_id_detail${rowCount}"
+                                            name="hidden_id_detail[${rowCount}]" value="${d.id}">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" id="nominal-${rowCount}"
+                                            name="nominal[${rowCount}]" value="${nominalFormatted}">
+                                        <input type="hidden" id="hidden_nominal${rowCount}"
+                                            name="hidden_nominal[${rowCount}]" value="${d.nominal}">
+                                    </td>
+                                    <td>
+                                        <input type="number" class="form-control" name="qty[${rowCount}]"
+                                            id="qty-${rowCount}" min="1"  value="${d.qty}" placeholder="0" autocomplete="off">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" name="keterangan[${rowCount}]"
+                                            value="${d.keterangan}" placeholder="Keterangan">
+                                    </td>
+                                    <td>
+                                        <span class="btn delete-btn btn-danger" data-id="${rowCount}">Delete</span>
+                                    </td>
+                                </tr>`;
+                        }
+
+                        $('#input-container').append(row);
+                        formatJumlahInput(`#nominal-${rowCount}`);
+
+                        if (mode === 'barang' && d.inventory_id) {
+                            initBarangSelect2Prepayment(rowCount);
+                            var opt = new Option(d.rincian, d.inventory_id, true, true);
+                            $('#barang-select-' + rowCount).append(opt).trigger('change.select2');
+                        }
+
+                        $("#form").validate().settings.rules[`nominal[${rowCount}]`] = { required: true };
+                    });
+                    }
+                    // Enable submit button after data is loaded
+                    updateSubmitButtonState();
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     alert('Error get data from ajax');
@@ -608,6 +1094,9 @@
                     } else {
                         // Sembunyikan loading saat respons diterima
                         $('#loading').hide();
+                        
+                        // Enable button kembali saat ada error
+                        $('.aksi').prop('disabled', false);
 
                         // Tampilkan pesan kesalahan
                         Swal.fire({
@@ -620,6 +1109,9 @@
                 error: function(jqXHR, textStatus, errorThrown) {
                     // Sembunyikan loading saat respons diterima
                     $('#loading').hide();
+                    
+                    // Enable button kembali saat ada error
+                    $('.aksi').prop('disabled', false);
 
                     Swal.fire({
                         icon: 'error',
@@ -641,9 +1133,9 @@
                 prepayment: {
                     required: true,
                 },
-                tujuan: {
-                    required: true,
-                },
+                // tujuan: {
+                //     required: true,
+                // },
                 nama_rek: {
                     required: true,
                     maxlength: 22,
@@ -666,9 +1158,9 @@
                 prepayment: {
                     required: "Prepayment is required",
                 },
-                tujuan: {
-                    required: "Tujuan is required",
-                },
+                // tujuan: {
+                //     required: "Tujuan is required",
+                // },
                 nama_rek: {
                     required: "*Nama rekening perlu diisi",
                     maxlength: "*Nama rekening tidak boleh lebih dari 22 digit",

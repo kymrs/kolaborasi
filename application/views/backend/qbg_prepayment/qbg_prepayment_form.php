@@ -619,6 +619,9 @@
                     } else {
                         // Sembunyikan loading saat respons diterima
                         $('#loading').hide();
+                        
+                        // Enable button kembali saat ada error
+                        $('.aksi').prop('disabled', false);
 
                         // Tampilkan pesan kesalahan
                         Swal.fire({
@@ -631,6 +634,9 @@
                 error: function(jqXHR, textStatus, errorThrown) {
                     // Sembunyikan loading saat respons diterima
                     $('#loading').hide();
+                    
+                    // Enable button kembali saat ada error
+                    $('.aksi').prop('disabled', false);
 
                     Swal.fire({
                         icon: 'error',

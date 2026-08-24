@@ -310,7 +310,7 @@
 
     document.getElementById('nomor_rekening').addEventListener('input', function(e) {
         let value = this.value.replace(/[^0-9]/g, '');
-        if (value.length > 14) {
+        if (value.length > 60) {
             value = value.slice(0, 10);
         }
         this.value = value;

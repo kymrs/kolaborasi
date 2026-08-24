@@ -149,8 +149,16 @@ service and attention at all times.
 
 <div class="footer">
     <p>With warmest regards,</p>
-    <img src="assets/backend/img/sw-signature-letter.png" alt="Signature" width="150">
-    <br><br>
-    <b>Pristiani</b><br>
-    SebelasWarna
+
+    <img src="assets/backend/img/sw-signature-letter.png" 
+         alt="Signature" 
+         width="190" 
+         style="margin-left: -20px">
+
+    <div style="margin-left: 31px;">
+        <b>Pristiani</b>
+    </div>
+    <div style="margin-left: 17px;">
+        SebelasWarna
+    </div>
 </div>

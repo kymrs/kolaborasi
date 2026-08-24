@@ -349,6 +349,7 @@
                 <th>No</th>
                 <th>Kode Prepayment</th>
                 <th>Kode Reimbust</th>
+                <th>Jenis Pelaporan</th>
                 <th>Tanggal</th>
                 <th>Nama</th>
                 <th>Keterangan</th>

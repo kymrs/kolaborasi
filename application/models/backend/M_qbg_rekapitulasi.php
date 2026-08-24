@@ -81,6 +81,7 @@ class M_qbg_rekapitulasi extends CI_Model
                 'qbg_reimbust.id,
                  qbg_prepayment.id as prepayment_id,
                  qbg_reimbust.kode_reimbust,
+                 qbg_reimbust.sifat_pelaporan,
                  tbl_data_user.name,
                  qbg_prepayment.tujuan,
                  IF(qbg_reimbust.kode_prepayment IS NOT NULL, qbg_reimbust.tgl_pengajuan, qbg_prepayment.tgl_prepayment) AS tgl_pengajuan,
@@ -138,6 +139,7 @@ class M_qbg_rekapitulasi extends CI_Model
              tbl_data_user.name,
              qbg_reimbust.tujuan,
              qbg_reimbust.kode_reimbust,
+             qbg_reimbust.sifat_pelaporan,
              qbg_reimbust.kode_prepayment,
              SUM(qbg_reimbust_detail.jumlah) AS total_jumlah_detail,
              COALESCE(SUM(qbg_reimbust_detail.jumlah), 0) AS total_pengeluaran'
@@ -336,7 +338,7 @@ class M_qbg_rekapitulasi extends CI_Model
 
     function get_data_prepayment($tgl_awal, $tgl_akhir)
     {
-        $this->db->select('a.id, a.kode_prepayment, a.tgl_prepayment, a.prepayment, a.total_nominal');
+        $this->db->select('a.id, a.kode_prepayment, a.tgl_prepayment, a.prepayment, a.total_nominal, a.tujuan');
         $this->db->from('qbg_prepayment AS a');
         $this->db->join('qbg_reimbust AS b', 'a.kode_prepayment = b.kode_prepayment', 'left');
         $this->db->where('a.payment_status', 'paid');
@@ -365,7 +367,7 @@ class M_qbg_rekapitulasi extends CI_Model
 
     function get_data_reimbust($tgl_awal, $tgl_akhir)
     {
-        $this->db->select('a.id, a.kode_reimbust, a.tgl_pengajuan, a.sifat_pelaporan, SUM(b.jumlah) AS total_nominal');
+        $this->db->select('a.id, a.kode_reimbust, a.tgl_pengajuan, a.sifat_pelaporan, SUM(b.jumlah) AS total_nominal, a.tujuan, c.tgl_prepayment');
         $this->db->from('qbg_reimbust AS a');
         $this->db->join('qbg_reimbust_detail AS b', 'a.id = b.reimbust_id', 'inner');
         $this->db->join('qbg_prepayment AS c', 'a.kode_prepayment = c.kode_prepayment', 'left');

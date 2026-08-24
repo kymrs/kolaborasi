@@ -97,7 +97,7 @@
                     <a class="btn btn-secondary btn-sm" href="<?= base_url('ctz_prepayment') ?>"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
                 </div>
                 <div class="card-body">
-                    <form id="form">
+                    <form id="form" enctype="multipart/form-data">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group row">
@@ -155,7 +155,15 @@
                                 <div class="form-group row">
                                     <label class="col-sm-4 col-form-label tujuan-field">Tujuan</label>
                                     <div class="col-sm-7">
-                                        <textarea class="form-control" id="tujuan" name="tujuan" rows="2"></textarea>
+                                        <textarea class="form-control" id="tujuan" name="tujuan" rows="2" placeholder="Tujuan"></textarea>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label tujuan-field">Lampiran</label>
+                                    <div class="col-sm-7">
+                                        <input type="file" class="form-control" id="lampiran" name="lampiran" accept=".jpg,.jpeg,.png,.pdf">
+                                        <small class="form-text text-muted">JPG, PNG, PDF maks 5MB.</small>
+                                        <div id="lampiran-existing" class="mt-1"></div>
                                     </div>
                                 </div>
                             </div>
@@ -283,7 +291,7 @@
         // AGAR INPUT FIELD HANYA BISA NOMOR
         document.getElementById('nomor_rekening').addEventListener('input', function(e) {
             let value = this.value.replace(/[^0-9]/g, '');
-            if (value.length > 14) {
+            if (value.length > 60) {
                 value = value.slice(0, 10);
             }
             this.value = value;
@@ -441,6 +449,35 @@
             // Lanjutkan dengan submit form
         });
 
+        function validateLampiranFile() {
+            const lampiranInput = document.getElementById('lampiran');
+            if (lampiranInput && lampiranInput.files.length > 0) {
+                const file = lampiranInput.files[0];
+                const maxSize = 5 * 1024 * 1024; // 5MB
+                const allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf'];
+                const extension = file.name.split('.').pop().toLowerCase();
+
+                if (file.size > maxSize) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'File terlalu besar',
+                        text: 'Ukuran file maksimal 5MB.'
+                    });
+                    return false;
+                }
+
+                if (!allowedExtensions.includes(extension)) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Format file tidak valid',
+                        text: 'Hanya JPG, PNG, dan PDF yang diizinkan.'
+                    });
+                    return false;
+                }
+            }
+            return true;
+        }
+
         // MENGISI FORM UPDATE
         if (id == 0) {
             $('.aksi').append('<span class="front front-aksi">Save</span>');
@@ -470,6 +507,11 @@
                     }
                     $('#prepayment').val(data['master']['prepayment']);
                     $('#tujuan').val(data['master']['tujuan']);
+                    if (data['master']['lampiran']) {
+                        $('#lampiran-existing').html('<small>File saat ini: <a href="<?= base_url('assets/backend/document/prepayment/ctz_lampiran/') ?>' + data['master']['lampiran'] + '" target="_blank">' + data['master']['lampiran'] + '</a></small>');
+                    } else {
+                        $('#lampiran-existing').html('');
+                    }
                     if (data['master']['total_nominal'] == null) {
                         $('#total_nominal_view').text(total_nominal.toLocaleString());
                         $('#total_nominal').val(total_nominal);
@@ -538,6 +580,8 @@
             // $('#divisi').prop('disabled', true);
             $('#prepayment').prop('readonly', true);
             $('#tujuan').prop('readonly', true);
+            $('#lampiran').prop('disabled', true);
+            $('#lampiran-existing').hide();
             $('#total_nominal_row').attr('colspan', 3);
             $('#add-row').toggle();
             $('th:last-child').remove();
@@ -576,16 +620,28 @@
                 url = "<?php echo site_url('ctz_prepayment/update') ?>";
             }
 
+            if (!validateLampiranFile()) {
+                $('#loading').hide();
+                $('.aksi').prop('disabled', false);
+                return false;
+            }
+
             // Tampilkan loading
             $('#loading').show();
 
             $('.aksi').prop('disabled', true);
 
+            var formData = new FormData($form[0]);
+            formData.append('deleted_rows', JSON.stringify(deletedRows));
+
             $.ajax({
                 url: url,
                 type: "POST",
-                data: $('#form').serialize(),
+                data: formData,
                 dataType: "JSON",
+                cache: false,
+                contentType: false,
+                processData: false,
                 success: function(data) {
                     console.log(data);
                     // Sembunyikan loading saat respons diterima
@@ -606,6 +662,9 @@
                     } else {
                         // Sembunyikan loading saat respons diterima
                         $('#loading').hide();
+                        
+                        // Enable button kembali saat ada error
+                        $('.aksi').prop('disabled', false);
 
                         // Tampilkan pesan kesalahan
                         Swal.fire({
@@ -618,6 +677,9 @@
                 error: function(jqXHR, textStatus, errorThrown) {
                     // Sembunyikan loading saat respons diterima
                     $('#loading').hide();
+                    
+                    // Enable button kembali saat ada error
+                    $('.aksi').prop('disabled', false);
 
                     Swal.fire({
                         icon: 'error',

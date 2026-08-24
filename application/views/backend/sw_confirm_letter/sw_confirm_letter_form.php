@@ -74,6 +74,19 @@
                                 </div>
 
                                 <div class="row align-items-center mb-3">
+                                    <label class="col-lg-4" for="dp_percent">DP%</label>
+                                    <div class="col-lg-8">
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="dp_percent" name="dp_percent" 
+                                                placeholder="0" min="0" step="0.01" required>
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row align-items-center mb-3">
                                     <label class="col-lg-4" for="dp_date">DP Date</label>
                                     <div class="col-lg-8">
                                         <input type="text" class="form-control" id="dp_date" name="dp_date" placeholder="dd-mm-yyyy" autocomplete="off" style="cursor: pointer;">
@@ -124,9 +137,42 @@
                                 </div>
 
                                 <div class="row align-items-center mb-3">
+                                    <label class="col-lg-4" for="final_percent">Final%</label>
+                                    <div class="col-lg-8">
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="final_percent" name="final_percent" 
+                                                placeholder="0" min="0" step="0.01" required>
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row align-items-center mb-3">
                                     <label class="col-lg-4" for="final_date">Final Date</label>
                                     <div class="col-lg-8">
                                         <input type="text" class="form-control" id="final_date" name="final_date" placeholder="dd-mm-yyyy" autocomplete="off" style="cursor: pointer;">
+                                    </div>
+                                </div>
+
+                                <div class="row align-items-center mb-3">
+                                    <label class="col-lg-4" for="quotation">Upload Quotation</label>
+                                    <div class="col-lg-8">
+                                        <input type="file" class="form-control" id="quotation" name="quotation" 
+                                            accept=".pdf,.jpg,.jpeg,.png" autocomplete="off">
+                                        <span style="font-size: 12px">Max Size : 10MB | PDF, JPG, PNG</span>
+
+                                        <!-- Preview untuk edit (jika sudah ada file) -->
+                                        <div id="quotation-preview" style="display:none; margin-top: 8px;">
+                                            <span style="font-size: 12px; color: #555;">
+                                                <a href="#" id="quotation-current-link" target="_blank" style="color: #4e73df;">
+                                                    <span id="quotation-current-name">-</span>
+                                                </a>
+                                            </span>
+                                        </div>
+
+                                        <input type="hidden" id="quotation_existing" name="quotation_existing" value="">
                                     </div>
                                 </div>
                             </div>
@@ -278,12 +324,24 @@
                     $('#end_date').val(moment(data.end_date).format('DD-MM-YYYY'));
                     $('#start_time').val(data.start_time);
                     $('#end_time').val(data.end_time);
-                    
+                    $('#dp_percent').val(data.dp_percent);
+                    $('#final_percent').val(data.final_percent);
+
                     // Set currency fields
                     $('#total_amount').val(formatCurrency(data.total_amount)).trigger('input');
                     
                     $('#dp_date').val(moment(data.dp_date).format('DD-MM-YYYY'));
                     $('#final_date').val(moment(data.final_date).format('DD-MM-YYYY'));
+
+                    if (data.quotation) {
+                        $('#quotation_existing').val(data.quotation);
+                        $('#quotation-current-name').text('Lihat File Saat Ini');
+                        $('#quotation-current-link').attr(
+                            'href',
+                            '<?= base_url('assets/backend/document/sw_quotation/') ?>' + data.quotation
+                        );
+                        $('#quotation-preview').show();
+                    }
 
                     // Load Item Details
                     if (data.items && data.items.length > 0) {
@@ -440,6 +498,40 @@
             calculateRowTotal($(this).closest('tr'));
         });
 
+        $('#quotation').on('change', function() {
+            const file = this.files[0];
+            const maxSize = 10 * 1024 * 1024; // 10MB
+            const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+            const allowedExt = ['pdf', 'jpg', 'jpeg', 'png'];
+
+            if (!file) return;
+
+            const ext = file.name.split('.').pop().toLowerCase();
+            const isTypeValid = allowedTypes.includes(file.type) && allowedExt.includes(ext);
+
+            if (!isTypeValid) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Format File Tidak Diizinkan',
+                    text: 'Hanya file PDF, JPG, dan PNG yang diperbolehkan.',
+                    confirmButtonColor: '#4e73df'
+                });
+                $(this).val(''); // reset input
+                return;
+            }
+
+            if (file.size > maxSize) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Ukuran File Terlalu Besar',
+                    text: 'Ukuran file maksimal adalah 10MB.',
+                    confirmButtonColor: '#4e73df'
+                });
+                $(this).val(''); // reset input
+                return;
+            }
+        });
+
         // Helper function to calculate row total
         function calculateRowTotal(row) {
             const unitPriceInput = row.find('.unit-price');
@@ -556,6 +648,48 @@
             // Recalculate total amount after reordering
             calculateTotalAmount();
         }
+
+        // readonly final percent
+        $('#final_percent').prop('readonly', true);
+
+        // default value
+        $('#dp_percent').val(50);
+        $('#final_percent').val(50);
+
+        function calculateFinalPercent() {
+
+            let dp = $('#dp_percent').val();
+
+            // jika kosong
+            if (dp === '') {
+                $('#final_percent').val(100);
+                return;
+            }
+
+            dp = parseFloat(dp);
+
+            // tidak boleh lebih dari 100
+            if (dp > 100) {
+                dp = 100;
+                $('#dp_percent').val(100);
+            }
+
+            // tidak boleh kurang dari 0
+            if (dp < 0) {
+                dp = 0;
+                $('#dp_percent').val(0);
+            }
+
+            // hitung final
+            let final = 100 - dp;
+
+            $('#final_percent').val(final);
+        }
+
+        // trigger saat input
+        $('#dp_percent').on('input', function () {
+            calculateFinalPercent();
+        });
 
         // ========== FORM SUBMIT ==========
         $("#form").submit(function(e) {

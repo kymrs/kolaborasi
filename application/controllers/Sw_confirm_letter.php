@@ -44,9 +44,11 @@ class Sw_confirm_letter extends CI_Controller
             $action_read = ($read == 'Y') ? '<a href="sw_confirm_letter/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-file-pdf"></i></a>&nbsp;' : '';
             $action_edit = ($edit == 'Y') ? '<a href="sw_confirm_letter/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
-            // $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" title="Print" onclick="print_data(' . "'" . $field->id . "'" . ')"><i class="fa fa-file-pdf"></i></a>&nbsp;' : '';
+            $action_print = ($print == 'Y' && !empty($field->quotation)) 
+                ? '<a class="btn btn-success btn-circle btn-sm" title="Quotation View" href="' . base_url('assets/backend/document/sw_quotation/' . $field->quotation) . '" target="_blank"><i class="fa fa-file"></i></a>&nbsp;' 
+                : '';
 
-            $action = $action_read . $action_edit . $action_delete;
+            $action = $action_read . $action_edit . $action_delete . $action_print;
 
             $no++;
             $row = array();
@@ -91,18 +93,24 @@ class Sw_confirm_letter extends CI_Controller
         $mpdf->SetSubject('Event Confirmation');
         $mpdf->SetCreator('System Sebelaswarna');
 
-        // HEADER LOGO
-        $mpdf->SetHTMLHeader('
-            <div style="text-align: left;">
-                <img src="assets/backend/img/sebelaswarna.png" width="175">
-            </div>
-        ');
+        $path = FCPATH . 'assets/backend/img/kop_surat_sw.png';
+
+        // Watermark image
+        $mpdf->SetWatermarkImage(
+            $path,
+            1,
+            [210, 297],
+            [0, 0]
+        );
+
+        $mpdf->showWatermarkImage = true;
+        $mpdf->watermarkImgBehind = true;
 
         $mpdf->SetHTMLFooter('
             <div style="text-align: center; font-size: 12px;">
                 PT SOBAT WISATA DUNIA<br>
-                Kp. Tunggilis RT 001 RW 007,<br>
-                Kelurahan Situsari, Kec. Cileungsi, Kota Bogor.<br>
+                Kp. Empu No.1, RT.001/RW.007,<br>
+                Kelurahan Setu Sari, Kec. Cileungsi, Kab. Bogor.<br>
                 0812-8222-9700 | <a href="http://www.sebelaswarna.com" target="_blank">www.sebelaswarna.com</a>
             </div>
         ');
@@ -200,8 +208,11 @@ class Sw_confirm_letter extends CI_Controller
             'start_time' => $master->start_time,
             'end_time' => $master->end_time,
             'total_amount' => $master->total_amount,
+            'dp_percent' => $master->dp_percent,
             'dp_date' => $master->dp_date,
+            'final_percent' => $master->final_percent,
             'final_date' => $master->final_date,
+            'quotation' => $master->quotation,
             'items' => $items
         );
         echo json_encode($data);
@@ -211,6 +222,71 @@ class Sw_confirm_letter extends CI_Controller
     {
         $data = $this->M_sw_confirm_letter->get_by_id($id);
         echo json_encode($data);
+    }
+
+    private function upload_quotation($existing_file = null)
+    {
+        // Jika tidak ada file baru diupload, kembalikan file lama
+        if (empty($_FILES['quotation']['name'])) {
+            return array(
+                'status'   => TRUE,
+                'filename' => $existing_file ?? null,
+                'message'  => 'No new file uploaded'
+            );
+        }
+
+        $upload_path = './assets/backend/document/sw_quotation/';
+
+        // Buat direktori jika belum ada
+        if (!is_dir($upload_path)) {
+            mkdir($upload_path, 0755, TRUE);
+        }
+
+        // Validasi ukuran file (max 10MB)
+        if ($_FILES['quotation']['size'] > 10 * 1024 * 1024) {
+            return array(
+                'status'  => FALSE,
+                'message' => 'Ukuran file melebihi batas maksimal 10MB'
+            );
+        }
+
+        // Ambil ekstensi file asli
+        $original_name = $_FILES['quotation']['name'];
+        $ext           = strtolower(pathinfo($original_name, PATHINFO_EXTENSION));
+
+        // Validasi ekstensi
+        $allowed_ext = array('pdf', 'jpg', 'jpeg', 'png');
+        if (!in_array($ext, $allowed_ext)) {
+            return array(
+                'status'  => FALSE,
+                'message' => 'Format file tidak diizinkan. Gunakan PDF, JPG, atau PNG'
+            );
+        }
+
+        // Generate nama file terenkripsi: hash(waktu + nama asli + random) + ekstensi
+        $encrypted_name = hash('sha256', time() . $original_name . bin2hex(random_bytes(8))) . '.' . $ext;
+
+        // Pindahkan file ke direktori tujuan
+        if (!move_uploaded_file($_FILES['quotation']['tmp_name'], $upload_path . $encrypted_name)) {
+            return array(
+                'status'  => FALSE,
+                'message' => 'Gagal menyimpan file. Periksa permission direktori'
+            );
+        }
+
+        // Hapus file lama jika ada dan berbeda
+        if (!empty($existing_file) && $existing_file !== $encrypted_name) {
+            $old_path = $upload_path . $existing_file;
+            if (file_exists($old_path)) {
+                unlink($old_path);
+            }
+        }
+
+        return array(
+            'status'   => TRUE,
+            'filename' => $encrypted_name,
+            'message'  => 'File berhasil diupload'
+        );
     }
 
     public function add()
@@ -225,6 +301,18 @@ class Sw_confirm_letter extends CI_Controller
         // Clean currency values - remove dots for database storage
         $total_amount = str_replace('.', '', $this->input->post('total_amount')) ?: 0;
 
+        // ===== HANDLE UPLOAD QUOTATION =====
+        $quotation_filename = null;
+        if (!empty($_FILES['quotation']['name'])) {
+            $upload_result = $this->upload_quotation();
+            if (!$upload_result['status']) {
+                echo json_encode(array('status' => FALSE, 'error' => $upload_result['message']));
+                return;
+            }
+            $quotation_filename = $upload_result['filename'];
+        }
+        // ===== END UPLOAD QUOTATION =====
+
         $data = array(
             'letter_number' => $this->input->post('letter_number'),
             'letter_date' => $letter_date,
@@ -237,19 +325,22 @@ class Sw_confirm_letter extends CI_Controller
             'start_time' => $this->input->post('start_time'),
             'end_time' => $this->input->post('end_time'),
             'total_amount' => $total_amount,
+            'dp_percent' => $this->input->post('dp_percent'),
             'dp_date' => $dp_date,
+            'final_percent' => $this->input->post('final_percent'),
             'final_date' => $final_date,
+            'quotation' => $quotation_filename,
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s')
         );
 
         try {
             $letter_id = $this->M_sw_confirm_letter->save($data);
-            
+
             if (!$letter_id) {
                 throw new Exception('Failed to save letter data');
             }
-            
+
             // Save item details
             $item_types = $this->input->post('item_type');
             $item_names = $this->input->post('item_name');
@@ -257,7 +348,7 @@ class Sw_confirm_letter extends CI_Controller
             $unit_prices_clean = $this->input->post('unit_price_clean');
             $quantities = $this->input->post('qty');
             $total_prices_clean = $this->input->post('total_price_clean');
-            
+
             if (!empty($item_types)) {
                 foreach ($item_types as $i => $val) {
                     if (empty($val)) continue;
@@ -277,7 +368,7 @@ class Sw_confirm_letter extends CI_Controller
                     $this->db->insert('sw_confirm_letter_detail', $item_detail);
                 }
             }
-            
+
             echo json_encode(array("status" => TRUE, "message" => "Data saved successfully"));
         } catch (Exception $e) {
             // Rollback master if items failed
@@ -303,6 +394,20 @@ class Sw_confirm_letter extends CI_Controller
         // Clean currency values - remove dots for database storage
         $total_amount = str_replace('.', '', $this->input->post('total_amount')) ?: 0;
 
+        // ===== HANDLE UPLOAD QUOTATION =====
+        $existing_file = $this->input->post('quotation_existing') ?: null;
+        $quotation_filename = $existing_file; // default: pakai file lama
+
+        if (!empty($_FILES['quotation']['name'])) {
+            $upload_result = $this->upload_quotation($existing_file); // file lama otomatis dihapus di dalam method ini
+            if (!$upload_result['status']) {
+                echo json_encode(array('status' => FALSE, 'error' => $upload_result['message']));
+                return;
+            }
+            $quotation_filename = $upload_result['filename'];
+        }
+        // ===== END UPLOAD QUOTATION =====
+
         $data = array(
             'letter_number' => $this->input->post('letter_number'),
             'letter_date' => $letter_date,
@@ -316,7 +421,10 @@ class Sw_confirm_letter extends CI_Controller
             'end_time' => $this->input->post('end_time'),
             'total_amount' => $total_amount,
             'dp_date' => $dp_date,
+            'dp_percent' => $this->input->post('dp_percent'),
+            'final_percent' => $this->input->post('final_percent'),
             'final_date' => $final_date,
+            'quotation' => $quotation_filename,         // <-- tambahan kolom quotation
             'updated_at' => date('Y-m-d H:i:s')
         );
 

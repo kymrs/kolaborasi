@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Sml_sop extends CI_Controller
+class sml_sop extends CI_Controller
 {
 
     function __construct()
@@ -174,7 +174,7 @@ class Sml_sop extends CI_Controller
     {
         $data['master'] = $this->M_sml_sop->get_by_id($id);
         $data['title_view'] = "Data SOP";
-        $data['title'] = 'backend/sml_sop/sop_read_sml';
+        $data['title'] = 'backend/sml_sop/sop_read_kps';
         $this->load->view('backend/home', $data);
     }
 
@@ -183,7 +183,7 @@ class Sml_sop extends CI_Controller
         $data['id'] = 0;
         $data['parent_options'] = array(); // Default kosong, akan diisi via AJAX
         $data['title_view'] = "SOP Form";
-        $data['title'] = 'backend/sml_sop/sop_form_sml';
+        $data['title'] = 'backend/sml_sop/sop_form_kps';
         $this->load->view('backend/home', $data);
     }
 
@@ -191,7 +191,7 @@ class Sml_sop extends CI_Controller
     {
         $data['master'] = $this->M_sml_sop->get_by_id($id);
         $data['title_view'] = "Edit Data SOP";
-        $data['title'] = 'backend/sml_sop/sop_form_sml';
+        $data['title'] = 'backend/sml_sop/sop_form_kps';
         $this->load->view('backend/home', $data);
     }
 
@@ -207,7 +207,7 @@ class Sml_sop extends CI_Controller
         $this->load->library('upload');
 
         // Config upload
-        $config['upload_path'] = './assets/backend/document/sop/sml_sop';
+        $config['upload_path'] = './assets/backend/document/sml_sop';
         $config['allowed_types'] = 'jpg|jpeg|png|pdf';
         $config['max_size'] = 10240; // 10MB in KB
         $config['encrypt_name'] = TRUE; // To avoid file name conflicts
@@ -244,12 +244,17 @@ class Sml_sop extends CI_Controller
         $kode = $this->input->post('kode');
 
         // Generate nomor hierarki
-        $no = $this->M_sml_sop->generate_no_hierarki($jenis, $parent_id);
+        // SK Penunjang tidak punya order number
+        if ($jenis == 'SK Penunjang') {
+            $no = '';
+        } else {
+            $no = $this->M_sml_sop->generate_no_hierarki($jenis, $parent_id);
 
-        if ($no === null && $jenis != 'SOP') {
-            // Validasi parent untuk Juklak dan Juknis
-            echo json_encode(array("status" => FALSE, "message" => "Parent tidak valid untuk jenis " . $jenis));
-            return;
+            if ($no === null && $jenis != 'SOP') {
+                // Validasi parent untuk Juklak dan Juknis
+                echo json_encode(array("status" => FALSE, "message" => "Parent tidak valid untuk jenis " . $jenis));
+                return;
+            }
         }
 
         $data = array(
@@ -278,7 +283,7 @@ class Sml_sop extends CI_Controller
         $this->load->library('upload');
 
         // Config upload
-        $config['upload_path'] = './assets/backend/document/sop/sml_sop';
+        $config['upload_path'] = './assets/backend/document/sml_sop';
         $config['allowed_types'] = 'jpg|jpeg|png|pdf';
         $config['max_size'] = 10240; // 10MB in KB
         $config['encrypt_name'] = TRUE; // To avoid file name conflicts
@@ -292,8 +297,8 @@ class Sml_sop extends CI_Controller
                 $file_name = $upload_data['file_name'];
 
                 // Delete old file if exists
-                if (!empty($old_file) && file_exists('assets/backend/document/sop/sml_sop/' . $old_file)) {
-                    unlink('assets/backend/document/sop/sml_sop/' . $old_file);
+                if (!empty($old_file) && file_exists('assets/backend/document/sml_sop/' . $old_file)) {
+                    unlink('assets/backend/document/sml_sop/' . $old_file);
                 }
             } else {
                 // Upload failed
@@ -308,19 +313,46 @@ class Sml_sop extends CI_Controller
         $parent_id = null;
         $no = $old_data->no; // Default ke nomor lama
 
-        // Jika ada parent_no, cari parent dan generate nomor baru
-        if (!empty($parent_no)) {
-            $parent_data = $this->M_sml_sop->get_by_no($parent_no);
-            if ($parent_data) {
-                $parent_id = $parent_data->id;
-                // Generate nomor hierarki baru berdasarkan parent baru
-                $no = $this->M_sml_sop->generate_no_hierarki($jenis, $parent_id);
+        // SK Penunjang tidak punya order number
+        if ($jenis == 'SK Penunjang') {
+            $no = '';
+            $parent_id = null;
+        } else {
+            // Tentukan parent_id jika parent_no diberikan
+            if (!empty($parent_no)) {
+                $parent_data = $this->M_sml_sop->get_by_no($parent_no);
+                if ($parent_data) {
+                    $parent_id = $parent_data->id;
+                }
+            } else {
+                $parent_id = null;
+            }
+
+            // Hanya generate nomor baru jika parent atau jenis berubah, atau jika nomor lama kosong
+            $parent_changed = ($old_data->parent_id != $parent_id);
+            $jenis_changed = ($old_data->jenis != $jenis);
+
+            if ($parent_changed || $jenis_changed || empty($old_data->no)) {
+                // Untuk kasus selain SOP, pastikan parent valid sebelum generate
+                if ($jenis != 'SOP' && empty($parent_id)) {
+                    // Jika parent tidak valid/missing, biarkan nomor lama agar tidak berubah otomatis
+                    $no = $old_data->no;
+                } else {
+                    $generated = $this->M_sml_sop->generate_no_hierarki($jenis, $parent_id);
+                    if ($generated !== null) {
+                        $no = $generated;
+                    } else {
+                        // Jika gagal generate, pertahankan nomor lama
+                        $no = $old_data->no;
+                    }
+                }
             }
         }
 
         $data = array(
             'jenis' => $jenis,
             'nama' => $this->input->post('nama'),
+            'kode' => $this->input->post('kode'),
             'no' => $no,
             'parent_id' => ($parent_id && $parent_id != '') ? $parent_id : NULL,
             'file' => $file_name
@@ -348,7 +380,7 @@ class Sml_sop extends CI_Controller
         // Delete file (best-effort)
         if (!empty($file)) {
             $safeFile = basename($file); // prevent path traversal
-            $fullPath = rtrim(FCPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'backend' . DIRECTORY_SEPARATOR . 'document' . DIRECTORY_SEPARATOR . 'sop' . DIRECTORY_SEPARATOR . 'sml_sop' . DIRECTORY_SEPARATOR . $safeFile;
+            $fullPath = rtrim(FCPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'backend' . DIRECTORY_SEPARATOR . 'document' . DIRECTORY_SEPARATOR . 'sml_sop' . DIRECTORY_SEPARATOR . $safeFile;
             if (is_file($fullPath)) {
                 @unlink($fullPath);
             }

@@ -30,6 +30,13 @@ class Auth extends CI_Controller
 			$this->session->set_flashdata('message', ' <p style="color :red; font-weight: 500"> Akun anda belum aktif, silakan hubungi admin !!!</p> ');
 			redirect('auth');
 		}
+
+		$cabang = $this->db->select('c.id, c.kode, c.nama_cabang')
+			->from('mac_cabang c')
+			->join('tbl_user u', 'u.cabang_id = c.id', 'left')
+			->where('u.id_user', $auth->id_user)
+			->get()->row();
+
 		if ($auth) {
 			$userdata = array(
 				'log'			=> 'Masuk',
@@ -40,6 +47,8 @@ class Auth extends CI_Controller
 				'core'			=> $auth->core,
 				'no_rek'		=> $auth->no_rek,
 				'image'			=> $auth->image,
+				'cabang_id'		=> $auth->cabang_id,
+    			'is_nasional'   => $cabang && $cabang->kode === '1000',
 				'active'		=> $auth->is_active
 			);
 			$this->session->set_userdata($userdata);
@@ -104,7 +113,7 @@ class Auth extends CI_Controller
 				return;
 			}
 
-			// Validasi password minimal 6 karakter
+			// Validasi password minimal 3 karakter
 			if (strlen($new_password) < 3) {
 				echo json_encode(array('success' => false, 'message' => 'Password baru minimal 3 karakter!'));
 				return;

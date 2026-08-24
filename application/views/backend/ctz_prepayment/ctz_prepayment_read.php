@@ -12,6 +12,22 @@
             bottom: 80px;
             margin-bottom: -70px;
         }
+
+        #btn-lampiran {
+            background-color: #242d4a;
+            color: #fff;
+            padding: 6px;
+            border-radius: 4px;
+            font-size: 13px;
+            transition: 300ms;
+            box-shadow: 3px 5px 7px rgba(0,0,0,0.4);
+        }
+
+        #btn-lampiran:hover {
+            border-radius: 7px;
+            text-decoration: none;
+            background-color: #35416a;
+        }
     </style>     
 </head>
 
@@ -73,6 +89,11 @@
                                 <!-- HIDDEN INPUT -->
                                 <input type="hidden" name="hidden_id" id="hidden_id" value="<?= $id ?>">
                             </tr>
+                            <tr>
+                                <td style="padding-top: 8px;">Lampiran</td>
+                                <td style="padding-top: 8px;">:</td>
+                                <td style="border: none; padding-top: 8px" id="lampiranTxt">-</td>
+                            </tr>
                         </table>
                     </div>
 
@@ -108,6 +129,23 @@
 </div>
 
 
+
+<!-- Lampiran Preview Modal -->
+<div class="modal fade" id="lampiranPreviewModal" tabindex="-1" aria-labelledby="lampiranPreviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="lampiranPreviewModalLabel">Preview Lampiran</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="lampiranPreview" src="" alt="Lampiran Preview" class="img-fluid" />
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Modal -->
 <div class="modal fade" id="appModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -344,33 +382,49 @@
             dateFormat: 'dd-mm-yy',
         });
 
-        $(document).ready(function() {
-            // Inisialisasi tombol submit dalam keadaan disabled
-            $('#paymentForm button[type="submit"]').prop('disabled', true).css('cursor', 'not-allowed');
-            // Event listener untuk elemen select
-            $('#payment_status').change(function() {
-                var status = $(this).val();
+        const lampiranBaseUrl = "<?= base_url('assets/backend/document/prepayment/ctz_lampiran/') ?>";
+        const imageExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+        const pdfExtensions = ['pdf'];
+
+        // Event listener untuk preview lampiran gambar
+        $(document).on('click', '.view-lampiran', function(e) {
+            e.preventDefault();
+            const src = $(this).data('src');
+            const filename = $(this).data('filename') || 'Lampiran';
+            $('#lampiranPreview').attr('src', src);
+            $('#lampiranPreviewModalLabel').text(filename);
+            $('#lampiranPreviewModal').modal('show');
+        });
+
+        $('#lampiranPreviewModal').on('hidden.bs.modal', function() {
+            $('#lampiranPreview').attr('src', '');
+        });
+
+        // Inisialisasi tombol submit dalam keadaan disabled
+        $('#paymentForm button[type="submit"]').prop('disabled', true).css('cursor', 'not-allowed');
+        // Event listener untuk elemen select
+        $('#payment_status').change(function() {
+            var status = $(this).val();
+            
+            if (status === null || status === 'Choose status...') {
+                // Nonaktifkan tombol submit jika tidak ada status yang dipilih
+                $('#paymentForm button[type="submit"]').prop('disabled', true);
+                // Sembunyikan payment fields
+                $('#tgl_pembayaran').closest('.form-group').hide();
+                $('#attachment').closest('.form-group').hide();
+            } else {
+                // Aktifkan tombol submit jika status telah dipilih
+                $('#paymentForm button[type="submit"]').prop('disabled', false).css('cursor', 'pointer');
                 
-                if (status === null || status === 'Choose status...') {
-                    // Nonaktifkan tombol submit jika tidak ada status yang dipilih
-                    $('#paymentForm button[type="submit"]').prop('disabled', true);
-                    // Sembunyikan payment fields
+                // Show/hide payment fields berdasarkan status
+                if (status === 'paid') {
+                    $('#tgl_pembayaran').closest('.form-group').show();
+                    $('#attachment').closest('.form-group').show();
+                } else if (status === 'unpaid') {
                     $('#tgl_pembayaran').closest('.form-group').hide();
                     $('#attachment').closest('.form-group').hide();
-                } else {
-                    // Aktifkan tombol submit jika status telah dipilih
-                    $('#paymentForm button[type="submit"]').prop('disabled', false).css('cursor', 'pointer');
-                    
-                    // Show/hide payment fields berdasarkan status
-                    if (status === 'paid') {
-                        $('#tgl_pembayaran').closest('.form-group').show();
-                        $('#attachment').closest('.form-group').show();
-                    } else if (status === 'unpaid') {
-                        $('#tgl_pembayaran').closest('.form-group').hide();
-                        $('#attachment').closest('.form-group').hide();
-                    }
                 }
-            });
+            }
         });
 
         function getFormattedDate(dateString) {
@@ -447,6 +501,22 @@
                 $('#jabatanTxt').text(data['master']['jabatan']);
                 $('#tujuanTxt').text(data['master']['tujuan']);
 
+                let lampiranHtml = '-';
+                if (data['master']['lampiran']) {
+                    const lampiranFile = data['master']['lampiran'];
+                    const extension = lampiranFile.split('.').pop().toLowerCase();
+                    const lampiranUrl = lampiranBaseUrl + lampiranFile;
+
+                    if (imageExtensions.includes(extension)) {
+                        lampiranHtml = `<a id="btn-lampiran" href="#" class="view-lampiran" data-src="${lampiranUrl}" data-filename="${lampiranFile}">Lihat Lampiran</a>`;
+                    } else if (pdfExtensions.includes(extension)) {
+                        lampiranHtml = `<a id="btn-lampiran" href="${lampiranUrl}" target="_blank" rel="noopener noreferrer">Lihat Lampiran</a>`;
+                    } else {
+                        lampiranHtml = `<a id="btn-lampiran" href="${lampiranUrl}" target="_blank" rel="noopener noreferrer">Lihat Lampiran</a>`;
+                    }
+                }
+                $('#lampiranTxt').html(lampiranHtml);
+
                 const [nama_rek, nama_bank, no_rek] = data.master.no_rek.split("-");
                 $('#nama_rek').html(nama_rek);
                 $('#nama_bank').html(nama_bank);
@@ -461,7 +531,7 @@
                     $('#keterangan').append(`<span class="form-control-plaintext">*(${data['master']['app_name']}) ${data['master']['app_keterangan']}</span>`);
                 }
                 if (data['master']['app2_keterangan'] !== null && data['master']['app2_keterangan'] !== '') {
-                    $('#keterangan').append(`<span class="form-control-plaintext">*(${data['master']['app_name']}) ${data['master']['app2_keterangan']}</span>`);
+                    $('#keterangan').append(`<span class="form-control-plaintext">*(${data['master']['app2_name']}) ${data['master']['app2_keterangan']}</span>`);
                 }
                 // DATA APPROVAL PREPAYMENT
                 if (data['master']['app4_date'] == null) {

@@ -25,14 +25,14 @@
             <?php if ($user->app_name == $app_name && $user->status == 'approved') { ?>
                 <a class="btn btn-success btn-sm mr-2" id="paymentBtn" data-toggle="modal" data-target="#paymentModal"><i class="fas fa-money-bill"></i>&nbsp;Payment</a>
             <?php } ?>
-            <?php if ($user->app_name == $app_name && $user->app4_status = 'approved' && !in_array($user->app2_status, ['rejected', 'revised']) && $user->status != 'approved') { ?>
+            <?php if ($user->app_name == $app_name && !in_array($user->app2_status, ['rejected', 'revised']) && $user->status != 'approved') { ?>
                 <a class="btn btn-warning btn-sm mr-2" id="appBtn" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
             <?php } elseif ($user->app2_name == $app2_name && !in_array($user->status, ['rejected', 'approved'])  && $user->app_status == 'approved') { ?>
                 <a class="btn btn-warning btn-sm mr-2" id="appBtn2" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
             <?php } elseif ($user->app4_name == $app_name && !in_array($user->app_status, ['rejected', 'revised']) && !in_array($user->app2_status, ['rejected', 'revised']) && $user->status != 'approved') { ?>
                 <a class="btn btn-warning btn-sm mr-2" id="appBtn3" data-toggle="modal" data-target="#appModal"><i class="fas fa-check-circle"></i>&nbsp;Approval</a>
             <?php } ?>
-            <a class="btn btn-secondary btn-sm" onclick="history.back()"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+            <a class="btn btn-primary btn-sm" onclick="history.back()"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
         </div>
         <div class="form-container">
             <!-- Header -->
@@ -78,13 +78,15 @@
                 <table>
                     <thead>
                         <tr>
-                            <td colspan="4" style="font-weight: bold">JUMLAH PREPAYMENT <span style="float: right; margin-right: 10px">Rp. <span id="jumlah_prepayment"></span></span></td>
-                            <td colspan="2" style="text-align: center; font-weight: bold">BUKTI PENGELUARAN</td>
+                            <td colspan="6" style="font-weight: bold">JUMLAH PREPAYMENT <span style="float: right; margin-right: 10px">Rp. <span id="jumlah_prepayment"></span></span></td>
+                            <td colspan="3" style="text-align: center; font-weight: bold">BUKTI PENGELUARAN</td>
                         </tr>
                         <tr>
                             <th colspan="2" style="width: 150px;">PEMAKAIAN</th>
                             <th style="text-align: center">TGL NOTA</th>
-                            <th style="text-align: center">JUMLAH</th>
+                            <th style="text-align: center">HARGA</th>
+                            <th style="text-align: center">QTY</th>
+                            <th style="text-align: center">TOTAL</th>
                             <th style="text-align: center">KWITANSI</th>
                             <th style="text-align: center">DEKLARASI</th>
                         </tr>
@@ -525,6 +527,8 @@
                         $('#keterangan-field').css('display', 'inline-block');
                     }
 
+                    // let satuan = ${data['transaksi'][index]['inventory_id']};
+
                     //DATA REIMBUST DETAIL
                     let total = 0;
                     let sisa = data['master']['jumlah_prepayment'];
@@ -534,11 +538,13 @@
                                         <td colspan="2">${index + 1}. ${data['transaksi'][index]['pemakaian']}</td>
                                         <td style="text-align: center">${getFormattedDate(moment(data['transaksi'][index]['tgl_nota']).format('DD MM YYYY'))}</td>
                                         <td style="text-align: center">
-                                            ${(data['transaksi'][index]['jumlah'] ?? '-')
-                                                .toString()
-                                                .replace(/\B(?=(\d{3})+(?!\d))/g, '.')
-                                            }
+                                        ${(data['transaksi'][index]['jumlah'] ?? '-')
+                                        .toString()
+                                        .replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+                                        }
                                         </td>
+                                        <td><div style="text-align: center">${data['transaksi'][index]['qty']} ${data['transaksi'][index]['satuan'] ?? ''}</div></td>
+                                        <td><div style="text-align: center">${(data['transaksi'][index]['jumlah'] * data['transaksi'][index]['qty']).toLocaleString('id-ID')}</div></td>
                                         <td>
                                             <div style="scale: 0.8; text-align: center" class="openModal" data-kwitansi="${data['transaksi'][index]['kwitansi']}">${data['transaksi'][index]['kwitansi'] ? '<div class="btn btn-primary btn-block btn-sm ">Lihat Foto</div>' : '-'}</div>
                                         </td>
@@ -693,14 +699,18 @@
                     });
 
 
-                    const totalFormatted = total.toLocaleString('de-DE');
-                    const sisaFormatted = sisa.toLocaleString('de-DE');
+                    const totalFormatted = Number(data['master']['total_nominal']).toLocaleString('de-DE');
+
+                    const sisaFormatted = (
+                        Number(data['master']['jumlah_prepayment']) -
+                        Number(data['master']['total_nominal'])
+                    ).toLocaleString('de-DE');
                     const ttl_row = `
                                     <tr>
-                                        <td colspan="6" style="font-weight: bold">TOTAL PEMAKAIAN <span style="float: right; margin-right: 10px">Rp. ${totalFormatted}</span></td>
+                                        <td colspan="8" style="font-weight: bold">TOTAL PEMAKAIAN <span style="float: right; margin-right: 10px">Rp. ${totalFormatted}</span></td>
                                     </tr>
                                     <tr>
-                                        <td colspan="6" style="font-weight: bold">SISA PREPAYMENT <span style="float: right; margin-right: 10px">Rp. ${sisaFormatted}</span></td>
+                                        <td colspan="8" style="font-weight: bold">SISA PREPAYMENT <span style="float: right; margin-right: 10px">Rp. ${sisaFormatted}</span></td>
                                     </tr>
                                     `;
                     $('#input-container').append(ttl_row);

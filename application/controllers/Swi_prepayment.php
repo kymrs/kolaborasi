@@ -242,6 +242,12 @@ class Swi_prepayment extends CI_Controller
             $no_rek = $this->input->post('rekening');
         }
 
+        // VALIDASI NO_REK TIDAK BOLEH KOSONG
+        if (empty($no_rek)) {
+            echo json_encode(array("status" => FALSE, "error" => "Nomor Rekening tidak boleh kosong"));
+            exit();
+        }
+
         $data = array(
             'kode_prepayment' => $kode_prepayment,
             'id_user' => $id,
@@ -304,6 +310,12 @@ class Swi_prepayment extends CI_Controller
             $no_rek = $this->input->post('nama_rek') . "-" . $this->input->post('nama_bank') . "-" . $this->input->post('nomor_rekening');
         } else {
             $no_rek = $this->input->post('rekening');
+        }
+
+        // VALIDASI NO_REK TIDAK BOLEH KOSONG
+        if (empty($no_rek)) {
+            echo json_encode(array("status" => FALSE, "error" => "Nomor Rekening tidak boleh kosong"));
+            exit();
         }
 
         $data = array(

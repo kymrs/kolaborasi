@@ -48,7 +48,7 @@
                 </ul>
 
                 <div class="card-body">
-                    <table id="table" class="table table-bordered table-striped">
+                    <table id="table" class="table table-bordered table-striped" width="100%">
                         <thead>
                             <tr>
                                 <th>No</th>
@@ -57,7 +57,7 @@
                                 <th>Kode Prepayment</th>
                                 <th>Nama</th>
                                 <th>Tanggal Pengajuan</th>
-                                <th>Prepayment</th>
+                                <th>Tujuan</th>
                                 <th>Total Nominal</th>
                                 <th>Status</th>
                             </tr>
@@ -72,7 +72,7 @@
                                 <th>Kode Prepayment</th>
                                 <th>Nama</th>
                                 <th>Tanggal Pengajuan</th>
-                                <th>Prepayment</th>
+                                <th>Tujuan</th>
                                 <th>Total Nominal</th>
                                 <th>Status</th>
                             </tr>
@@ -185,7 +185,7 @@
                     "className": 'dt-head-nowrap'
                 },
                 {
-                    "targets": [1, 4, 5, 8],
+                    "targets": [1, 4, 5, 6, 8],
                     "className": 'dt-body-nowrap'
                 }, {
                     "targets": [0, 1],

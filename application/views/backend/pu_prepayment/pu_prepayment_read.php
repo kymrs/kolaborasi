@@ -433,11 +433,19 @@
                 $('#jabatanTxt').text(data['master']['jabatan']);
                 $('#tujuanTxt').text(data['master']['tujuan']);
 
-                const [nama_rek, nama_bank, no_rek] = data.master.no_rek.split("-");
+                const noRek = data.master.no_rek || "";
+
+                const [nama_rek = '-', nama_bank = '-', no_rek = '-'] = noRek.split("-");
+
                 $('#nama_rek').html(nama_rek);
                 $('#nama_bank').html(nama_bank);
                 $('#no_rek').html(no_rek);
-                $('#tgl_pembayaran').val(data['master']['tgl_pembayaran'] ? getFormattedDate(moment(data['master']['tgl_pembayaran']).format('DD MM YYYY')) : '-');
+
+                $('#tgl_pembayaran').val(
+                    data['master']['tgl_pembayaran']
+                        ? getFormattedDate(moment(data['master']['tgl_pembayaran']).format('DD MM YYYY'))
+                        : '-'
+                );
 
                 if ((data['master']['app_keterangan'] !== null && data['master']['app_keterangan'] !== '') ||
                     (data['master']['app2_keterangan'] !== null && data['master']['app2_keterangan'] !== '')) {

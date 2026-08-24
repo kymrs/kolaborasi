@@ -103,7 +103,7 @@ class Pu_prepayment extends CI_Controller
             if ($field->app_status == 'approved' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
                 $status = $field->status . ' (' . $field->app2_name . ')';
             } elseif ($field->app_status == 'waiting' && $field->app2_status == 'waiting' && $field->status == 'on-process') {
-                $status = $field->status . ' (' . $field->app_name . ')';
+                $status = $field->status . ' (' . $field->app_name . ')';   
             } else {
                 $status = $field->status;
             }
@@ -112,7 +112,7 @@ class Pu_prepayment extends CI_Controller
             $no++;
             $row = array();
             $row[] = $no;
-            $row[] = $action;
+            $row[] = $action;   
             if ($field->payment_status == 'paid') {
                 $row[] = '<div class="text-center"><button class="btn btn-primary btn-circle btn-sm" data-toggle="modal" data-target="#paymentDetailModal" data-id="' . $field->id . '" title="Detail Pembayaran"><i class="fas fa-check" style="color: #1cc88a;"></i></button></div>';
             } else if ($field->payment_status == 'unpaid') {
@@ -266,6 +266,12 @@ class Pu_prepayment extends CI_Controller
             $no_rek = $this->input->post('rekening');
         }
 
+        // VALIDASI NO_REK TIDAK BOLEH KOSONG
+        if (empty($no_rek)) {
+            echo json_encode(array("status" => FALSE, "error" => "Nomor Rekening tidak boleh kosong"));
+            exit();
+        }
+
         $data = array(
             'kode_prepayment' => $kode_prepayment,
             'id_user' => $id,
@@ -326,6 +332,12 @@ class Pu_prepayment extends CI_Controller
             $no_rek = $this->input->post('nama_rek') . "-" . $this->input->post('nama_bank') . "-" . $this->input->post('nomor_rekening');
         } else {
             $no_rek = $this->input->post('rekening');
+        }
+
+        // VALIDASI NO_REK TIDAK BOLEH KOSONG
+        if (empty($no_rek)) {
+            echo json_encode(array("status" => FALSE, "error" => "Nomor Rekening tidak boleh kosong"));
+            exit();
         }
 
         $data = array(

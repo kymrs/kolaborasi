@@ -1,12 +1,12 @@
 <style>
     .category-card {
         background-color: #f8f9fa;
-        border-left: 4px solid #28a745;
         margin-bottom: 20px;
+        border: 1px solid #242d4a79;
     }
 
     .category-header {
-        background-color: #28a745;
+        background-color: #242d4a;
         color: white;
         padding: 15px;
         border-radius: 4px 4px 0 0;
@@ -17,7 +17,6 @@
 
     .category-body {
         padding: 15px;
-        border: 1px solid #dee2e6;
         border-top: 0;
     }
 
@@ -41,8 +40,9 @@
     }
 
     .subtotal-section {
-        background-color: #fff3cd;
-        border: 1px solid #ffc107;
+        /* background-color: #198754; */
+        /* color: white; */
+        border: 1px solid #19875478;
         padding: 10px;
         margin-top: 10px;
         border-radius: 4px;
@@ -50,8 +50,8 @@
     }
 
     .calculation-section {
-        background-color: #f0f7ff;
-        border: 1px solid #0d6efd;
+        background-color: #1987540f;
+        border: 1px solid #198754;
         padding: 15px;
         margin-top: 20px;
         border-radius: 4px;
@@ -65,12 +65,13 @@
     }
 
     .calculation-row.total-row {
-        background-color: #ff6b35;
+        background-color: #198754;
         color: white;
         padding: 12px;
         border-radius: 4px;
         font-weight: bold;
         font-size: 18px;
+        margin-bottom: 0;
     }
 
     .btn-action {
@@ -106,14 +107,14 @@
                             <div class="col-md-6">
                                 <!-- Company Name -->
                                 <div class="form-group">
-                                    <label for="company_name">Company Name <span class="text-danger">*</span></label>
+                                    <label for="company_name">Company Name</label>
                                     <input type="text" class="form-control" id="company_name" name="company_name" 
-                                           placeholder="Company Name" required>
+                                           placeholder="Company Name" required autofocus>
                                 </div>
 
                                 <!-- Event Type -->
                                 <div class="form-group">
-                                    <label for="event_type">Event Type <span class="text-danger">*</span></label>
+                                    <label for="event_type">Event Type</label>
                                     <input type="text" class="form-control" id="event_type" name="event_type" 
                                            placeholder="Event Type" required>
                                 </div>
@@ -122,33 +123,93 @@
                                 <div class="form-group">
                                     <label for="number_of_participants">Number of Participants</label>
                                     <input type="number" class="form-control" id="number_of_participants" 
-                                           name="number_of_participants" min="0" placeholder="0">
+                                           name="number_of_participants" min="0" placeholder="0" required>
+                                </div>
+
+                                <!-- Margin -->
+                                <div class="form-group">
+                                    <label for="margin">Margin (%)</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="margin" name="margin" 
+                                               placeholder="0" min="0" step="0.01" required>
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">%</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Cashback -->
+                                <div class="form-group">
+                                    <label for="cashback">Cashback</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control currency-input" id="cashback" name="cashback" 
+                                               placeholder="0" required>
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">Rp</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
                             <div class="col-md-6">
-                                <!-- Selling Price (Auto calculated from margin) -->
+
+                                <!-- Fee Mediator -->
                                 <div class="form-group">
-                                    <label for="selling_price">Selling Price</label>
+                                    <label for="fee_mediator">Fee Mediator</label>
                                     <div class="input-group">
-                                        <div class="input-group-prepend">
+                                        <input type="text" class="form-control currency-input" id="fee_mediator" name="fee_mediator" 
+                                               placeholder="0" required>
+                                        <div class="input-group-append">
                                             <span class="input-group-text">Rp</span>
                                         </div>
-                                        <input type="text" class="form-control" id="selling_price" 
-                                               name="selling_price" readonly>
                                     </div>
-                                    <small class="form-text text-muted">Auto-calculated based on margin</small>
+                                </div>
+
+                                <!-- Rounding Configuration -->
+                                <div class="form-group">
+                                    <label for="rounding">Price Per Person Rounding (Rp)</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control currency-input" id="rounding" name="rounding" 
+                                               placeholder="0" required>
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">Rp</span>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <!-- Grand Total (Read-only) -->
                                 <div class="form-group">
                                     <label for="grand_total">Grand Total</label>
                                     <div class="input-group">
-                                        <div class="input-group-prepend">
+                                        <input type="text" class="form-control" id="grand_total" 
+                                               name="grand_total" readonly placeholder="Rp">
+                                            <div class="input-group-append">
                                             <span class="input-group-text">Rp</span>
                                         </div>
-                                        <input type="text" class="form-control" id="grand_total" 
-                                               name="grand_total" readonly>
+                                    </div>
+                                </div>
+
+                                <!-- Received By EO (Auto calculated from margin) -->
+                                <div class="form-group">
+                                    <label for="received_by_eo">Received By EO</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="received_by_eo"
+                                               name="received_by_eo" readonly placeholder="Rp">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">Rp</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Adjust Price (Auto calculated from margin) -->
+                                <div class="form-group" id="adjustment_container">
+                                    <label for="adjustment">Adjust Price</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control currency-input" id="adjustment"
+                                               name="adjustment" placeholder="0">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">Rp</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -161,7 +222,7 @@
                         <hr>
 
                         <div class="mb-3">
-                            <button type="button" class="btn btn-success btn-sm" id="btn-add-category">
+                            <button type="button" class="btn btn-sm btn-primary" id="btn-add-category">
                                 <i class="fas fa-plus"></i> Add Category
                             </button>
                         </div>
@@ -174,23 +235,47 @@
                         <!-- ========== CALCULATION SECTION ========== -->
                         <div class="calculation-section">
                             <div class="calculation-row">
-                                <span>Grand Total (All Items)</span>
+                                <span>Total Production Expenses (All Items)</span>
                                 <span id="display-grand-total">Rp 0</span>
                             </div>
                             <div class="calculation-row">
-                                <span>Margin</span>
-                                <span id="display-margin">0%</span>
+                                <span>Margin (<span id="display-margin-percent"></span>)</span>
+                                <span id="display-margin-value">0%</span>
+                            </div>
+                            <div class="calculation-row">
+                                <span>Diterima Oleh EO</span>
+                                <span id="display-received-by-eo">Rp 0</span>
+                            </div>
+                            <div class="calculation-row">
+                                <span>Fee Mediator</span>
+                                <span id="display-fee-mediator">Rp 0</span>
+                            </div>
+                            <div class="calculation-row">
+                                <span>Cashback</span>
+                                <span id="display-cashback">Rp 0</span>
+                            </div>
+                            <div class="calculation-row " id="adjustment_row">
+                                <span>Perubahan harga</span>
+                                <span id="display-adjustment">Rp 0</span>
+                            </div>
+                            <div class="calculation-row">
+                                <span>Total Final</span>
+                                <span id="display-total-final">Rp 0</span>
+                            </div>
+                            <div class="calculation-row">
+                                <span>Harga Perorangan</span>
+                                <span id="display-price-per-person">Rp 0</span>
                             </div>
                             <div class="calculation-row total-row">
-                                <span>Selling Price</span>
+                                <span>Harga Jual</span>
                                 <span id="display-selling-price">Rp 0</span>
                             </div>
                         </div>
 
                         <!-- ========== SUBMIT BUTTON ========== -->
                         <div class="mt-4">
-                            <button type="submit" class="btn btn-primary" id="btn-submit">
-                                <i class="fas fa-save"></i> Save Cost Structure
+                            <button type="submit" class="btn btn-primary" id="btn-submit" style="font-size: 14px;">
+                                Save
                             </button>
                             <!-- <button type="reset" class="btn btn-secondary">
                                 <i class="fas fa-redo"></i> Reset
@@ -213,14 +298,15 @@ $(document).ready(function() {
 
     // ========== INITIALIZE DATEPICKER & LOCALE ==========
     initializeDatepickers();
-    initializeCurrencyInputs();
 
     // ========== LOAD DATA FOR EDIT ==========
     if (IS_EDIT) {
         loadDataForEdit();
+        $('#adjustment').show();
     } else {
         // Add default category for new form
         addCategoryRow();
+        $('#adjustment_container').hide();
     }
 
     // ========== EVENT LISTENERS ==========
@@ -233,24 +319,45 @@ $(document).ready(function() {
     $(document).on('click', '.btn-remove-item', removeItemRow);
     $(document).on('input', '.item-qty, .item-price', calculateSubtotal);
     $(document).on('input', '#margin', calculateSellingPrice);
+    $(document).on('input', '#fee_mediator', calculateSellingPrice);
+    $(document).on('input', '#cashback', calculateSellingPrice);
+    $(document).on('input', '#rounding', calculateSellingPrice);
+    $(document).on('input', '#adjustment', calculateSellingPrice);
+    $(document).on('input', '#number_of_participants', calculateSellingPrice);
+    $(document).on('input', '#rounding', calculateSellingPrice);
 
     // ========== HELPER FUNCTIONS ==========
     function initializeDatepickers() {
         // Tambahkan jika ada date fields
     }
 
+    $('#margin').on('input', function() {
+        if ($(this).val() > 100) {
+            $(this).val(100);
+        } else if ($(this).val() < 0) {
+            $(this).val(0);
+        }
+    });
+
+    // $('#fee_mediator').on('input', function() {
+    //     if ($(this).val() > 100) {
+    //         $(this).val(100);
+    //     } else if ($(this).val() < 0) {
+    //         $(this).val(0);
+    //     }
+    // });
+
     /**
      * Initialize currency inputs
      */
-    function initializeCurrencyInputs() {
-        $('.currency-input').on('input', function() {
-            let value = $(this).val();
-            let cleanValue = value.replace(/[^0-9.]/g, '');
-            let formattedValue = formatCurrency(cleanValue);
-            $(this).val(formattedValue);
-        });
-    }
+    $(document).on('input', '.currency-input', function() {
+        let value = $(this).val();
+        let cleanValue = value.replace(/[^0-9]/g, '');
+        let formattedValue = formatCurrency(cleanValue);
 
+        $(this).val(formattedValue);
+    });
+    
     /**
      * Format angka menjadi currency dengan separator ribuan
      */
@@ -264,33 +371,67 @@ $(document).ready(function() {
      * Parse currency string ke number
      */
     function parseCurrency(value) {
-        return parseFloat(value.replace(/[^0-9.-]/g, '')) || 0;
+        return parseFloat(value.replace(/\./g, '').replace(/[^0-9-]/g, '')) || 0;
     }
 
-    /**
-     * Add category row
-     */
-    function addCategoryRow() {
+    // Add category row
+    function addCategoryRow(addDefaultItem = true) {
+
+        const defaultCategories = [
+            "Acara & Man Pow",
+            "Transportasi",
+            "Akomodasi",
+            "Konsumsi",
+            "Perlengkapan",
+            "Fee Tour Guide"
+        ];
+
         const categoryIndex = $('#categories-container .category-card').length;
+
+        // ambil default value berdasarkan urutan row
+        const defaultValue = defaultCategories[categoryIndex] || '';
+
         const categoryHTML = `
             <div class="card category-card" data-category-index="${categoryIndex}">
                 <div class="category-header">
-                    <input type="text" class="form-control form-control-sm category-name" 
-                           name="categories[${categoryIndex}][name]" placeholder="Category Name" 
-                           style="background-color: white; color: black; flex-grow: 1;" required>
+                    <span style="margin-right: 10px;">${categoryIndex + 1}.</span> 
+                    
+                    <input 
+                        type="text" 
+                        class="form-control form-control-sm category-name" 
+                        name="categories[${categoryIndex}][name]"
+                        placeholder="Category Name"
+                        list="category-suggestions-${categoryIndex}"
+                        value="${defaultValue}"
+                        style="background-color: white; color: black; flex-grow: 1;" 
+                        required
+                    >
+
+                    <datalist id="category-suggestions-${categoryIndex}">
+                        <option value="Acara & Man Pow">
+                        <option value="Transportasi">
+                        <option value="Akomodasi">
+                        <option value="Konsumsi">
+                        <option value="Perlengkapan">
+                        <option value="Fee Tour Guide">
+                    </datalist>
+
                     <button type="button" class="btn btn-danger btn-sm btn-remove-category" style="margin-left: 10px;">
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
+
                 <div class="category-body">
                     <div class="mb-3">
-                        <button type="button" class="btn btn-primary btn-sm btn-add-item">
+                        <button type="button" class="btn btn-sm btn-add-item" style="background-color: #198754; color: white;">
                             <i class="fas fa-plus"></i> Add Item
                         </button>
                     </div>
+
                     <div class="items-container" data-category-index="${categoryIndex}">
                         <!-- Items akan di-append di sini -->
                     </div>
+
                     <div class="subtotal-section">
                         Category Subtotal: <span class="category-subtotal">Rp 0</span>
                     </div>
@@ -301,20 +442,68 @@ $(document).ready(function() {
         $('#categories-container').append(categoryHTML);
 
         // Add default item untuk category baru
-        addItemRow.call($(`[data-category-index="${categoryIndex}"] .btn-add-item`)[0]);
+        if (addDefaultItem) {
+            addItemRow.call($(`[data-category-index="${categoryIndex}"] .btn-add-item`)[0]);
+        }
+
+        toggleCategoryDeleteButton();
     }
 
-    /**
-     * Remove category row
-     */
+    // Remove category row
     function removeCategoryRow() {
         $(this).closest('.category-card').remove();
+        reorderCategories();
         recalculateAll();
+        toggleCategoryDeleteButton();
     }
 
-    /**
-     * Add item row ke category
-     */
+    function toggleCategoryDeleteButton() {
+        const totalCategory = $('#categories-container .category-card').length;
+
+        $('.btn-remove-category').prop('disabled', totalCategory <= 1).css('cursor', totalCategory <= 1 ? 'not-allowed' : 'pointer');
+    }
+
+    // Reorder categories setelah ada perubahan (hapus)
+    function reorderCategories() {
+        $('#categories-container .category-card').each(function(categoryIndex) {
+
+            // Update data-category-index
+            $(this).attr('data-category-index', categoryIndex);
+
+            // Update nomor urut category
+            $(this).find('.category-header span:first').text((categoryIndex + 1) + '.');
+
+            // Update category input name
+            $(this).find('.category-name')
+                .attr('name', `categories[${categoryIndex}][name]`);
+
+            // Update items-container index
+            $(this).find('.items-container')
+                .attr('data-category-index', categoryIndex);
+
+            // Reorder items dalam category ini
+            $(this).find('.item-row').each(function(itemIndex) {
+
+                $(this).attr('data-item-index', itemIndex);
+
+                $(this).find('span:first').text((itemIndex + 1) + '.');
+
+                $(this).find('.item-name')
+                    .attr('name', `categories[${categoryIndex}][items][${itemIndex}][name]`);
+
+                $(this).find('.item-qty')
+                    .attr('name', `categories[${categoryIndex}][items][${itemIndex}][qty]`);
+
+                $(this).find('.item-price')
+                    .attr('name', `categories[${categoryIndex}][items][${itemIndex}][price]`);
+
+                $(this).find('.item-subtotal')
+                    .attr('name', `categories[${categoryIndex}][items][${itemIndex}][subtotal]`);
+            });
+        });
+    }
+
+    // add item row
     function addItemRow() {
         const $categoryCard = $(this).closest('.category-card');
         const categoryIndex = $categoryCard.data('category-index');
@@ -323,32 +512,33 @@ $(document).ready(function() {
 
         const itemHTML = `
             <div class="item-row" data-item-index="${itemIndex}">
+                <span style="font-size: 12px; color: #6c757d; position: relative; bottom: 5px;" class="item-no">${itemIndex + 1}.</span>
                 <div style="flex: 1;">
                     <input type="text" class="form-control form-control-sm item-name" 
                            name="categories[${categoryIndex}][items][${itemIndex}][name]" 
                            placeholder="Item Name" required>
                 </div>
                 <div style="width: 80px;">
-                    <input type="number" class="form-control form-control-sm item-qty" 
+                    <input type="number" class="form-control form-control-sm item-qty"
                            name="categories[${categoryIndex}][items][${itemIndex}][qty]" 
                            placeholder="Qty" min="1" value="1">
                 </div>
-                <div style="width: 120px;">
+                <div style="width: 140px;">
                     <div class="input-group input-group-sm">
                         <div class="input-group-prepend">
-                            <span class="input-group-text" style="font-size: 12px;">Rp</span>
+                            <span class="input-group-text item-number" style="font-size: 12px;">Rp</span>
                         </div>
                         <input type="text" class="form-control form-control-sm item-price currency-input" 
                                name="categories[${categoryIndex}][items][${itemIndex}][price]" 
                                placeholder="0" data-field="item-price">
                     </div>
-                </div>
-                <div style="width: 120px;">
+                </div>  
+                <div style="width: 140px;">
                     <div class="input-group input-group-sm">
                         <div class="input-group-prepend">
-                            <span class="input-group-text" style="font-size: 12px;">Rp</span>
+                            <span class="input-group-text item-number" style="font-size: 12px;">Rp</span>
                         </div>
-                        <input type="text" class="form-control form-control-sm item-subtotal" 
+                        <input type="text" class="form-control form-control-sm item-subtotal currency-input" 
                                name="categories[${categoryIndex}][items][${itemIndex}][subtotal]" 
                                placeholder="0" readonly>
                     </div>
@@ -360,19 +550,29 @@ $(document).ready(function() {
         `;
 
         $itemsContainer.append(itemHTML);
+        toggleItemDeleteButton($categoryCard);
     }
 
-    /**
-     * Remove item row
-     */
+    // Remove item row
     function removeItemRow() {
+        const $categoryCard = $(this).closest('.category-card');
+
         $(this).closest('.item-row').remove();
+
+        reorderItems($categoryCard);
+
         recalculateAll();
+        toggleItemDeleteButton($categoryCard);
     }
 
-    /**
-     * Calculate subtotal untuk item
-     */
+    function toggleItemDeleteButton($categoryCard) {
+        const totalItems = $categoryCard.find('.item-row').length;
+
+        $categoryCard.find('.btn-remove-item')
+            .prop('disabled', totalItems <= 1).css('cursor', totalItems <= 1 ? 'not-allowed' : 'pointer');
+    }
+    
+    // Calculate subtotal untuk item
     function calculateSubtotal() {
         const $itemRow = $(this).closest('.item-row');
         const qty = parseInt($itemRow.find('.item-qty').val()) || 0;
@@ -380,7 +580,7 @@ $(document).ready(function() {
         const subtotal = qty * price;
 
         // Store numeric value in data attribute for form submission
-        $itemRow.find('.item-subtotal').data('value', subtotal).val(subtotal.toLocaleString('id-ID'));
+        $itemRow.find('.item-subtotal').data('value', subtotal).val(formatCurrency(subtotal.toString()));
 
         // Recalculate totals
         recalculateAll();
@@ -396,36 +596,101 @@ $(document).ready(function() {
         $('#categories-container .category-card').each(function() {
             let categorySubtotal = 0;
 
+            // Sum all items in this category
             $(this).find('.items-container .item-row').each(function() {
                 const subtotal = parseCurrency($(this).find('.item-subtotal').val());
                 categorySubtotal += subtotal;
-                grandTotal += subtotal;
             });
 
             // Update category subtotal display
             $(this).find('.category-subtotal').text('Rp ' + categorySubtotal.toLocaleString('id-ID'));
+            
+            // Add category subtotal to grand total
+            grandTotal += categorySubtotal;
         });
 
-        // Update grand total
-        $('#grand_total').val(grandTotal);
+        // Update grand total in hidden field
+        $('#grand_total').val(formatCurrency(grandTotal.toString()));
         $('#display-grand-total').text('Rp ' + grandTotal.toLocaleString('id-ID'));
 
-        // Recalculate selling price
+        // Recalculate selling price based on grand total
         calculateSellingPrice();
+    }
+
+    // Reorder items setelah ada perubahan (hapus)
+    function reorderItems($categoryCard) {
+        $categoryCard.find('.item-row').each(function(index) {
+
+            // Update data index untuk item
+            $(this).attr('data-item-index', index);
+
+            // Update nomor urut item
+            $(this).find('.item-no').text((index + 1) + '.');
+
+            // Update nomor urut
+            $(this).find('.item-number').text('Rp');
+
+            // Update semua input name
+            $(this).find('.item-name')
+                .attr('name', `categories[${$categoryCard.data('category-index')}][items][${index}][name]`);
+
+            $(this).find('.item-qty')
+                .attr('name', `categories[${$categoryCard.data('category-index')}][items][${index}][qty]`);
+
+            $(this).find('.item-price')
+                .attr('name', `categories[${$categoryCard.data('category-index')}][items][${index}][price]`);
+
+            $(this).find('.item-subtotal')
+                .attr('name', `categories[${$categoryCard.data('category-index')}][items][${index}][subtotal]`);
+        });
     }
 
     /**
      * Calculate selling price berdasarkan margin
      */
     function calculateSellingPrice() {
-        const grandTotal = parseCurrency($('#grand_total').val());
-        const margin = parseCurrency($('#margin').val()) || 0;
+        const grandTotal = parseCurrency($('#grand_total').val()) || 0;
+        const margin = parseFloat($('#margin').val()) || 0;
+        const numberOfParticipants = parseInt($('#number_of_participants').val()) || 0;
+        const roundingValue = parseCurrency($('#rounding').val()) || 50000;
+        const feeMediator = parseCurrency($('#fee_mediator').val()) || 0;
+        const cashback = parseCurrency($('#cashback').val()) || 0;
+        const rounding = parseCurrency($('#rounding').val()) || 0;
+        const adjustment = parseCurrency($('#adjustment').val()) || 0;
 
-        const sellingPrice = grandTotal + (grandTotal * margin / 100);
+        // Update number of participants display
+        $('#display-participants').text(numberOfParticipants);
 
-        $('#selling_price').val(sellingPrice);
-        $('#display-selling-price').text('Rp ' + Math.round(sellingPrice).toLocaleString('id-ID'));
-        $('#display-margin').text(margin + '%');
+        // Calculate total selling price (received by EO) = grand total + margin
+        const totalSellingPrice = grandTotal + (grandTotal * margin / 100);
+        $('#received_by_eo').val(formatCurrency(totalSellingPrice.toString()));
+        $('#display-received-by-eo').text('Rp ' + parseCurrency($('#received_by_eo').val()).toLocaleString('id-ID'));
+
+        // Calculate price per person (before rounding) = received_by_eo / numberOfParticipants
+        const pricePerPerson = numberOfParticipants > 0 ? (totalSellingPrice + feeMediator + cashback - adjustment) / numberOfParticipants : 0;
+        $('#display-price-per-person').text('Rp ' + pricePerPerson.toLocaleString('id-ID', { maximumFractionDigits: 0 }));
+
+        $('#display-margin-percent').text(margin + '%');
+        $('#display-margin-value').text('Rp ' + (grandTotal * margin / 100).toLocaleString('id-ID'));
+
+        $('#display-fee-mediator').text('Rp ' + feeMediator.toLocaleString('id-ID'));
+        $('#display-cashback').text('Rp ' + cashback.toLocaleString('id-ID'));
+
+        if (adjustment == 0) {
+            $('#adjustment_row').hide();
+        } else {
+            $('#adjustment_row').show();
+        }
+
+        $('#display-adjustment').text('Rp -' + adjustment.toLocaleString('id-ID'));
+
+        const totalFinal = parseCurrency($('#received_by_eo').val()) + feeMediator + cashback - adjustment;
+        $('#display-total-final').text('Rp ' + totalFinal.toLocaleString('id-ID'));
+
+
+        // Calculate selling price per person after rounding
+        let sellingPrice = Math.round(pricePerPerson + rounding);
+        $('#display-selling-price').text('Rp ' + sellingPrice.toLocaleString('id-ID'));
     }
 
     /**
@@ -440,12 +705,20 @@ $(document).ready(function() {
                 if (response.status) {
                     populateFormData(response);
                 } else {
-                    alert('Failed to load data');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Failed',
+                        text: 'Failed to load data'
+                    });
                 }
             },
             error: function(error) {
                 console.error("Error loading data:", error);
-                alert('Error loading data');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Failed',
+                    text: 'Failed to load data'
+                });
             }
         });
     }
@@ -457,7 +730,11 @@ $(document).ready(function() {
         $('#company_name').val(data.company_name);
         $('#event_type').val(data.event_type);
         $('#number_of_participants').val(data.number_of_participants);
-        $('#margin').val(formatCurrency(data.margin.toString()));
+        $('#margin').val(data.margin);
+        $('#fee_mediator').val(formatCurrency(data.fee_mediator.toString()));
+        $('#cashback').val(formatCurrency(data.cashback.toString()));
+        $('#rounding').val(formatCurrency(data.rounding.toString()));
+        $('#adjustment').val(formatCurrency(data.adjustment.toString()));
         $('#grand_total').val(data.grand_total);
 
         // Clear categories container
@@ -466,10 +743,12 @@ $(document).ready(function() {
         // Populate categories
         if (data.categories && data.categories.length > 0) {
             data.categories.forEach(function(category, catIndex) {
-                addCategoryRow();
+                addCategoryRow(false);
                 
                 const $categoryCard = $(`[data-category-index="${catIndex}"]`);
-                $categoryCard.find('.category-name').val(category.name);
+                const categoryName = category.name.replace(/^\d+\.\s*/, '');
+
+                $categoryCard.find('.category-name').val(categoryName);
 
                 // Populate items
                 if (category.items && category.items.length > 0) {
@@ -487,7 +766,7 @@ $(document).ready(function() {
             });
         }
 
-        // Recalculate totals
+        // Recalculate totals and selling price
         recalculateAll();
     }
 
@@ -499,12 +778,20 @@ $(document).ready(function() {
 
         // Validate
         if (!$('#company_name').val() || !$('#event_type').val()) {
-            alert('Please fill in all required fields');
+            Swal.fire({
+                icon: 'error',
+                title: 'Failed',
+                text: 'Please fill in all required fields'
+            });
             return;
         }
 
         if ($('#categories-container .category-card').length === 0) {
-            alert('Please add at least one category');
+            Swal.fire({
+                icon: 'error',
+                title: 'Failed',
+                text: 'Please add at least one category'
+            });
             return;
         }
 
@@ -515,8 +802,15 @@ $(document).ready(function() {
             $this.val(numericValue);
         });
 
-        // Also convert margin if it's formatted
-        const marginValue = parseCurrency($('#margin').val());
+        // Convert selling price and grand total to numeric
+        $('#received_by_eo').val(parseCurrency($('#received_by_eo').val()));
+        $('#grand_total').val(parseCurrency($('#grand_total').val()));
+
+        // Convert rounding to numeric
+        $('#rounding').val(parseCurrency($('#rounding').val()));
+
+        // Margin is already numeric from input[type="number"]
+        const marginValue = parseFloat($('#margin').val()) || 0;
         $('#margin').val(marginValue);
 
         // Disable submit button
@@ -538,22 +832,34 @@ $(document).ready(function() {
             dataType: "JSON",
             success: function(response) {
                 if (response.status) {
-                    alert(response.message);
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: response.message
+                    });
                     // Redirect ke list
                     setTimeout(function() {
                         window.location.href = "<?php echo base_url('sw_costructure') ?>";
-                    }, 1000);
+                    }, 1500);
                 } else {
-                    alert('Error: ' + response.message);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Failed',
+                        text: response.message
+                    });
                 }
             },
             error: function(error) {
                 console.error("Error submitting form:", error);
-                alert('An error occurred while saving data');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Failed',
+                    text: 'An error occurred while saving data'
+                });
             },
             complete: function() {
                 // Re-enable submit button
-                $('#btn-submit').prop('disabled', false).html('<i class="fas fa-save"></i> Save Cost Structure');
+                $('#btn-submit').prop('disabled', false).html('Save');
             }
         });
     }

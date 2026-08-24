@@ -268,6 +268,12 @@ class Sam_prepayment extends CI_Controller
             $no_rek = $this->input->post('rekening');
         }
 
+        // VALIDASI NO_REK TIDAK BOLEH KOSONG
+        if (empty($no_rek)) {
+            echo json_encode(array("status" => FALSE, "error" => "Nomor Rekening tidak boleh kosong"));
+            exit();
+        }
+
         $data = array(
             'kode_prepayment' => $kode_prepayment,
             'id_user' => $id,
@@ -338,6 +344,12 @@ class Sam_prepayment extends CI_Controller
             $no_rek = $this->input->post('nama_rek') . "-" . $this->input->post('nama_bank') . "-" . $this->input->post('nomor_rekening');
         } else {
             $no_rek = $this->input->post('rekening');
+        }
+
+        // VALIDASI NO_REK TIDAK BOLEH KOSONG
+        if (empty($no_rek)) {
+            echo json_encode(array("status" => FALSE, "error" => "Nomor Rekening tidak boleh kosong"));
+            exit();
         }
 
         $data = array(
@@ -520,7 +532,7 @@ class Sam_prepayment extends CI_Controller
         $pdf->AddPage('P', 'Letter');
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/sam.png', 12, 7, 33, 30);
+        $pdf->Image(base_url('') . '/assets/backend/img/hayfa.png', 12, 7, 33, 30);
 
         $pdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php');
         $pdf->AddFont('Poppins-Bold', '', 'Poppins-Bold.php');

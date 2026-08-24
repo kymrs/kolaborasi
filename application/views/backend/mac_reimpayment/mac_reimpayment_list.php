@@ -7,11 +7,6 @@
         <div class="col-lg-12">
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                    <!-- <?php if ($add == 'Y') { ?>
-                        <a class="btn btn-primary btn-sm" href="<?= base_url('mac_reimbust/add_form') ?>">
-                            <i class="fa fa-plus"></i>&nbsp;Add Data
-                        </a>
-                    <?php } ?> -->
                     <div class="d-flex align-items-center">
                         <label for="appFilter" class="mr-2 mb-0">Filter:</label>
                         <select id="appFilter" name="appFilter" class="form-control form-control-sm" style="cursor: pointer;">
@@ -226,7 +221,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('mac_reimpayment/get_list') ?>",
+                "url": "<?php echo site_url('mac_reimbust/get_list') ?>",
                 "type": "POST",
                 "data": function(d) {
                     d.status = $('#appFilter').val();
@@ -248,7 +243,7 @@
             "serverSide": true,
             "order": [],
             "ajax": {
-                "url": "<?php echo site_url('mac_reimpayment/get_list3') ?>",
+                "url": "<?php echo site_url('mac_prepayment/get_list') ?>",
                 "type": "POST",
                 "data": function(d) {
                     d.status = $('#appFilter').val();
@@ -402,54 +397,4 @@
             }
         });
     });
-
-    function delete_data(id) {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: "<?php echo site_url('mac_reimpayment/delete/') ?>" + id,
-                    type: "POST",
-                    dataType: "JSON",
-                    success: function(data) {
-                        if (data.status) {
-                            Swal.fire({
-                                position: 'center',
-                                icon: 'success',
-                                title: 'Your data has been deleted',
-                                showConfirmButton: false,
-                                timer: 1500
-                            }).then(() => {
-                                location.href = "<?= base_url('mac_reimpayment') ?>";
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: data.error // Menampilkan pesan kesalahan dari server
-                            });
-                        }
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        Swal.fire({
-                            position: 'center',
-                            icon: 'success',
-                            title: 'Your data has been deleted',
-                            showConfirmButton: false,
-                            timer: 1500
-                        }).then(() => {
-                            location.href = "<?= base_url('mac_reimpayment') ?>";
-                        });
-                    }
-                });
-            }
-        });
-    }
 </script>

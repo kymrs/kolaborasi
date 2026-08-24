@@ -1,4 +1,36 @@
 <!-- Cost Structure PDF Template using mPDF -->
+
+<?php
+function numberToRoman($number) {
+    $map = [
+        'M'  => 1000,
+        'CM' => 900,
+        'D'  => 500,
+        'CD' => 400,
+        'C'  => 100,
+        'XC' => 90,
+        'L'  => 50,
+        'XL' => 40,
+        'X'  => 10,
+        'IX' => 9,
+        'V'  => 5,
+        'IV' => 4,
+        'I'  => 1
+    ];
+
+    $result = '';
+
+    foreach ($map as $roman => $value) {
+        while ($number >= $value) {
+            $result .= $roman;
+            $number -= $value;
+        }
+    }
+
+    return $result;
+}
+?>
+
 <style>
     * {
         font-family: 'helvetica';
@@ -39,9 +71,9 @@
         font-size: 16px;
         font-weight: bold;
         color: #242d4a;
-        margin: 20px 0;
+        margin-bottom: 5px;
         padding: 10px;
-        background-color: #f0f0f0;
+        padding-top: 0;
         border-radius: 4px;
     }
 
@@ -49,21 +81,20 @@
         margin-bottom: 15px;
     }
 
-    .info-row {
-        display: flex;
-        margin-bottom: 8px;
+    .info-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 5px;
+    }
+
+    .info-table td {
+        padding: 4px 0;
         font-size: 10px;
     }
 
     .info-label {
-        width: 200px;
-        font-weight: bold;
+        width: 180px;
         color: #242d4a;
-    }
-
-    .info-value {
-        flex: 1;
-        color: #333;
     }
 
     .section-header {
@@ -73,122 +104,81 @@
         margin: 15px 0 10px 0;
         font-weight: bold;
         font-size: 12px;
-        border-radius: 3px;
     }
 
     table {
         width: 100%;
         border-collapse: collapse;
-        margin-bottom: 15px;
     }
 
     .items-table {
         font-size: 10px;
+        margin-bottom: 20px;
     }
 
-    .items-table thead {
-        background-color: #242d4a;
-        color: white;
-    }
-
-    .items-table th {
-        padding: 8px;
-        text-align: left;
+    /* .items-table th {
+        background-color: #ffe600;
+        color: black;
+        border: 1px solid #000;
+        padding: 6px;
+        text-align: center;
         font-weight: bold;
-        border: 1px solid #ddd;
     }
 
     .items-table td {
-        padding: 8px;
-        border: 1px solid #ddd;
+        border: 1px solid #000;
+        padding: 5px;
     }
 
-    .items-table tbody tr:nth-child(odd) {
-        background-color: #f9f9f9;
+    .category-row td {
+        background-color: #00ff00;
+        font-weight: bold;
+        text-align: center;
+    } */
+
+    .items-table th {
+        background-color: #f0cf33;
+        color: black;
+        border: 1px solid #000;
+        padding: 6px;
+        text-align: center;
+        font-weight: bold;
     }
 
-    .category-name {
-        background-color: #28a745;
+    .items-table td {
+        border: 1px solid #000;
+        padding: 5px;
+    }
+
+    .category-row td {
+        background-color: #5a4193;
         color: white;
         font-weight: bold;
         text-align: center;
     }
 
-    .item-row {
-        background-color: white;
-    }
-
-    .amount-right {
-        text-align: right;
-        font-weight: bold;
-    }
-
-    .subtotal-row {
-        background-color: #fff3cd;
-        font-weight: bold;
-        text-align: right;
-    }
-
-    .subtotal-label {
-        text-align: right;
-        font-weight: bold;
-    }
-
-    .calculation-section {
-        margin-top: 20px;
-        padding: 15px;
-        background-color: #f0f7ff;
-        border-left: 4px solid #0d6efd;
-        border-radius: 3px;
-    }
-
-    .calc-row {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 8px;
-        font-size: 10px;
-    }
-
-    .calc-label {
-        font-weight: bold;
-        color: #242d4a;
-    }
-
-    .calc-value {
-        text-align: right;
-        color: #333;
-    }
-
-    .selling-price-row {
-        background-color: #ff6b35;
-        color: white;
-        padding: 10px;
-        border-radius: 3px;
-        font-size: 12px;
-        font-weight: bold;
-        display: flex;
-        justify-content: space-between;
-        margin-top: 10px;
-    }
-
-    .signature-section {
-        margin-top: 30px;
-        display: flex;
-        justify-content: space-around;
-    }
-
-    .signature-box {
-        width: 150px;
+    .text-center {
         text-align: center;
-        font-size: 9px;
     }
 
-    .signature-line {
-        border-top: 1px solid #333;
-        margin-top: 40px;
-        padding-top: 5px;
+    .text-right {
+        text-align: right;
+    }
+
+    .subtotal-row td {
+        background-color: #f4c99b;
         font-weight: bold;
-        color: #242d4a;
+    }
+
+    .grand-total-row td {
+        font-weight: bold;
+        font-size: 11px;
+    }
+
+    .selling-price-row td {
+        background-color: #c9272b;
+        color: white;
+        font-weight: bold;
     }
 
     .footer-text {
@@ -201,119 +191,287 @@
     }
 </style>
 
-<div class="header">
-    <div class="company-info">
-        <h1>PT SOBAT WISATA DUNIA</h1>
-        <p>Kp. Tunggilis RT 001 RW 007, Situsari, Bogor</p>
-        <p>Phone: 0812-8222-9700 | Website: www.sebelaswarna.com</p>
-    </div>
-</div>
-
 <div class="title">
-    <strong>COST STRUCTURE / EVENT QUOTATION</strong>
+    COST STRUCTURE
 </div>
 
-<!-- Basic Information -->
-<div class="info-section">
-    <div class="info-row">
-        <div class="info-label">Company Name</div>
-        <div class="info-value">: <?= $data->company_name ?? '-' ?></div>
-    </div>
-    <div class="info-row">
-        <div class="info-label">Event Type</div>
-        <div class="info-value">: <?= $data->event_type ?? '-' ?></div>
-    </div>
-    <div class="info-row">
-        <div class="info-label">Number of Participants</div>
-        <div class="info-value">: <?= $data->number_of_participants ?? '0' ?> Pax</div>
-    </div>
-    <div class="info-row">
-        <div class="info-label">Generated Date</div>
-        <div class="info-value">: <?= date('d-m-Y H:i:s') ?></div>
-    </div>
-</div>
+<!-- MASTER DATA -->
+<table class="info-table">
+    <tr>
+        <td class="info-label"><b>Company Name :</b> <?= $data->company_name ?? '-' ?></td>
+        <td class="info-label" align="right"><b>Event Type :</b> <?= $data->event_type ?? '-' ?></td>
+    </tr>
+</table>
 
-<!-- Categories and Items -->
-<?php if (!empty($data->categories)): ?>
-    <div class="section-header">COST BREAKDOWN</div>
-    
+<!-- TABLE -->
+<?php if (!empty($data->categories)) : ?>
+
     <table class="items-table">
+
         <thead>
             <tr>
-                <th width="30%">Description</th>
-                <th width="15%">Qty</th>
-                <th width="20%">Unit Price</th>
-                <th width="20%">Subtotal</th>
+                <th width="35%">KEBUTUHAN</th>
+                <th width="10%">JUMLAH</th>
+                <th width="20%">Harga Satuan</th>
+                <th width="20%">Jumlah</th>
+                <th width="20%">Total</th>
             </tr>
         </thead>
+
         <tbody>
-            <?php foreach ($data->categories as $category): ?>
-                <!-- Category Header -->
-                <tr>
-                    <td colspan="4" class="category-name"><?= $category->name ?></td>
-                </tr>
+
+            <?php foreach ($data->categories as $category) : ?>
+
+            <?php
+                preg_match('/^(\d+)\.\s*(.*)$/', $category->name, $matches);
+
+                $number = $matches[1] ?? 0;
+                $name = $matches[2] ?? $category->name;
+
+                $roman = numberToRoman((int)$number);
                 
-                <!-- Items -->
-                <?php if (!empty($category->items)): ?>
-                    <?php foreach ($category->items as $item): ?>
-                        <tr class="item-row">
-                            <td><?= $item->name ?></td>
-                            <td style="text-align: center;"><?= $item->qty ?></td>
-                            <td class="amount-right">Rp <?= number_format($item->price, 0, ',', '.') ?></td>
-                            <td class="amount-right">Rp <?= number_format($item->subtotal, 0, ',', '.') ?></td>
+                // Initialize category subtotal
+                $category_subtotal = 0;
+            ?>
+
+            <tr class="category-row">
+                <td colspan="5">
+                    <?= $roman . '. ' . strtoupper($name) ?>
+                </td>
+            </tr>
+
+                <?php if (!empty($category->items)) : ?>
+
+                    <?php foreach ($category->items as $item) : ?>
+
+                        <?php
+                            // Sum up the subtotal per category
+                            $category_subtotal += ($item->subtotal ?? 0);
+                        ?>
+
+                        <tr>
+                            <td><?= $item->name ?? '-' ?></td>
+
+                            <td class="text-center">
+                                <?= $item->qty ?? 0 ?>
+                            </td>
+
+                            <td class="text-right">
+                                Rp <?= number_format($item->price ?? 0, 0, ',', '.') ?>
+                            </td>
+
+                            <td class="text-right">
+                                Rp <?= number_format($item->subtotal ?? 0, 0, ',', '.') ?>
+                            </td>
+
+                            <td></td>
                         </tr>
+
                     <?php endforeach; ?>
+
                 <?php endif; ?>
-                
-                <!-- Category Subtotal -->
-                <tr>
-                    <td colspan="3" class="subtotal-label"><?= $category->name ?> Subtotal</td>
-                    <td class="amount-right" style="background-color: #fff3cd; font-weight: bold;">
-                        Rp <?= number_format($category->subtotal, 0, ',', '.') ?>
+
+                <!-- CATEGORY SUBTOTAL -->
+                <tr class="subtotal-row">
+
+                    <td colspan="4" class="text-right">
+                        Total <?= preg_replace('/^\d+\.\s*/', '', $category->name ?? '-') ?>
                     </td>
+
+                    <td class="text-right">
+                        Rp <?= number_format($category_subtotal, 0, ',', '.') ?>
+                    </td>
+
                 </tr>
+
             <?php endforeach; ?>
+
+            <!-- GRAND TOTAL -->
+            <tr class="grand-total-row">
+
+                <?php
+                    $romanCategories = [];
+
+                    if (!empty($data->categories)) {
+                        foreach ($data->categories as $index => $category) {
+                            $romanCategories[] = numberToRoman($index + 1);
+                        }
+                    }
+
+                    $romanText = implode(', ', $romanCategories);
+                ?>
+
+                <td colspan="4" class="text-right">
+                    Total Production Expenses (<?= $romanText ?>)
+                </td>
+
+                <td class="text-right">
+                    Rp <?= number_format($data->grand_total ?? 0, 0, ',', '.') ?>
+                </td>
+
+            </tr>
+
+            <!-- MARGIN -->
+            <tr class="grand-total-row">
+            <?php
+                $margin_percent = 0;
+
+                if (($data->grand_total ?? 0) > 0) {
+                    $margin_percent = ($data->margin / $data->grand_total) * 100;
+                }
+            ?>
+
+                <td colspan="4" class="text-right">
+                    Margin (<?= round($data->margin, 0) ?>%)
+                </td>
+
+                <td class="text-right">
+                    Rp <?= number_format(
+                        (($data->grand_total ?? 0) * ($data->margin ?? 0)) / 100,
+                        0,
+                        ',',
+                        '.'
+                    ) ?>
+                </td>
+
+            </tr>
+
+            <!-- TOTAL RECEIVED -->
+            <tr class="grand-total-row">
+
+                <td colspan="4" class="text-right">
+                    DITERIMA OLEH EO
+                </td>
+
+                <td class="text-right">
+                    Rp <?= number_format($data->received_by_eo ?? 0, 0, ',', '.') ?>
+                </td>
+
+            </tr>
+
+            <?php
+                $margin_amount = (($data->grand_total ?? 0) * ($data->margin ?? 0)) / 100;
+
+                $fee_mediator_percent = $data->fee_mediator_percent ?? 10;
+
+                $fee_mediator = ($margin_amount * $fee_mediator_percent) / 100;
+            ?>
+
+            <!-- FEE MEDIATOR -->
+            <tr class="grand-total-row">
+
+                <td colspan="4" class="text-right">
+                    FEE MEDIATOR
+                </td>
+
+                <td class="text-right">
+                    Rp <?= number_format($data->fee_mediator, 0, ',', '.') ?>
+                </td>
+
+            </tr>
+
+            <!-- FEE MEDIATOR -->
+            <tr class="grand-total-row">
+
+                <td colspan="4" class="text-right">
+                    CASHBACK
+                </td>
+
+                <td class="text-right">
+                    Rp <?= number_format($data->cashback, 0, ',', '.') ?>
+                </td>
+
+            </tr>
+
+            <?php if (($data->adjustment ?? 0) != 0) : ?>
+                <!-- ADJUSTMENT -->
+                <tr class="grand-total-row">
+
+                    <td colspan="4" class="text-right">
+                        ADJUSTMENT
+                    </td>
+
+                    <td class="text-right">
+                        Rp -<?= number_format($data->adjustment, 0, ',', '.') ?>
+                    </td>
+
+                </tr>
+            <?php endif; ?>
+
+            <?php
+                $total_final = ($data->received_by_eo ?? 0) + ($data->cashback ?? 0) + ($data->fee_mediator ?? 0) - ($data->adjustment ?? 0);
+            ?>
+
+            <!-- TOTAL FINAL -->
+            <tr class="grand-total-row">
+
+                <td colspan="4" class="text-right">
+                    TOTAL FINAL
+                </td>
+
+                <td class="text-right">
+                    Rp <?= number_format($total_final, 0, ',', '.') ?>
+                </td>
+
+            </tr>
+
+            <?php
+                $margin_amount = (($data->grand_total ?? 0) * ($data->margin ?? 0)) / 100;
+
+                // $fee_mediator = $data->fee_mediator ?? 0;
+
+                $net_profit_eo = $margin_amount - $fee_mediator;
+            ?>
+
+            <!-- NET PROFIT EO -->
+            <!-- <tr class="grand-total-row">
+
+                <td colspan="4" class="text-right">
+                    NET PROFIT EO
+                </td>
+
+                <td class="text-right">
+                    Rp <?= number_format($net_profit_eo, 0, ',', '.') ?>
+                </td>
+
+            </tr> -->
+
+            <!-- PRICE PER PERSON -->
+            <tr class="grand-total-row">
+
+                <?php 
+                    $harga_per_orang = ($data->received_by_eo + $data->cashback + $data->fee_mediator - $data->adjustment) / $data->number_of_participants;
+                ?>
+
+                <td colspan="4" class="text-right">
+                    HARGA PERORANG
+                </td>
+
+                <td class="text-right">
+                    Rp <?= number_format(
+                        $harga_per_orang,
+                        0,
+                        ',',
+                        '.'
+                    ) ?>
+                </td>
+
+            </tr>
+
+            <!-- SELLING PRICE -->
+            <tr class="selling-price-row">
+
+                <td colspan="4" class="text-right">
+                    HARGA JUAL
+                </td>
+
+                <td class="text-right">
+                    Rp <?= number_format($harga_per_orang + $data->rounding, 0, ',', '.') ?>
+                </td>
+            </tr>
+
         </tbody>
+
     </table>
+
 <?php endif; ?>
-
-<!-- Calculation Section -->
-<div class="calculation-section">
-    <div class="calc-row">
-        <div class="calc-label">Grand Total (All Items)</div>
-        <div class="calc-value">Rp <?= number_format($data->grand_total ?? 0, 0, ',', '.') ?></div>
-    </div>
-    
-    <div class="calc-row">
-        <div class="calc-label">Margin</div>
-        <div class="calc-value"><?= $data->margin ?? 0 ?>%</div>
-    </div>
-    
-    <div class="selling-price-row">
-        <div>SELLING PRICE</div>
-        <div>Rp <?= number_format($data->selling_price ?? 0, 0, ',', '.') ?></div>
-    </div>
-</div>
-
-<!-- Signature Section -->
-<div class="signature-section">
-    <div class="signature-box">
-        <div class="signature-line">
-            _______________<br>
-            Finance Manager
-        </div>
-    </div>
-    
-    <div class="signature-box">
-        <div class="signature-line">
-            _______________<br>
-            Director
-        </div>
-    </div>
-</div>
-
-<!-- Footer -->
-<div class="footer-text">
-    <p>Document Generated by Sebelaswarna EO System - Confidential</p>
-    <p>For inquiries, please contact: info@sebelaswarna.com</p>
-</div>

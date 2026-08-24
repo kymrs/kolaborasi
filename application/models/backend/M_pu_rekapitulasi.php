@@ -87,7 +87,8 @@ class M_pu_rekapitulasi extends CI_Model
                  pu_prepayment.kode_prepayment,
                  pu_prepayment.total_nominal,
                  SUM(pu_reimbust_detail.jumlah) AS total_jumlah_detail,
-                 COALESCE(SUM(pu_reimbust_detail.jumlah), pu_prepayment.total_nominal) AS total_pengeluaran'
+                 COALESCE(SUM(pu_reimbust_detail.jumlah), pu_prepayment.total_nominal) AS total_pengeluaran,
+                 pu_reimbust.sifat_pelaporan'
             );
             $this->db->from('pu_prepayment');
             $this->db->join('pu_reimbust', 'pu_reimbust.kode_prepayment = pu_prepayment.kode_prepayment', 'left');
@@ -138,6 +139,7 @@ class M_pu_rekapitulasi extends CI_Model
              pu_reimbust.tujuan,
              pu_reimbust.kode_reimbust,
              pu_reimbust.kode_prepayment,
+             pu_reimbust.sifat_pelaporan,
              SUM(pu_reimbust_detail.jumlah) AS total_jumlah_detail,
              COALESCE(SUM(pu_reimbust_detail.jumlah), 0) AS total_pengeluaran'
         );
@@ -339,7 +341,7 @@ class M_pu_rekapitulasi extends CI_Model
 
     function get_data_prepayment($tgl_awal, $tgl_akhir)
     {
-        $this->db->select('a.id, a.kode_prepayment, a.tgl_prepayment, a.prepayment, a.total_nominal');
+        $this->db->select('a.id, a.kode_prepayment, a.tgl_prepayment, a.prepayment, a.tujuan, a.total_nominal');
         $this->db->from('pu_prepayment AS a');
         $this->db->join('pu_reimbust AS b', 'a.kode_prepayment = b.kode_prepayment', 'left');
         $this->db->where('a.payment_status', 'paid');
@@ -369,7 +371,7 @@ class M_pu_rekapitulasi extends CI_Model
 
     function get_data_reimbust($tgl_awal, $tgl_akhir)
     {
-        $this->db->select('a.id, a.kode_reimbust, a.tgl_pengajuan, a.sifat_pelaporan, SUM(b.jumlah) AS total_nominal');
+        $this->db->select('a.id, a.kode_reimbust, a.tgl_pengajuan, a.sifat_pelaporan, SUM(b.jumlah) AS total_nominal, a.tujuan, c.tgl_prepayment');
         $this->db->from('pu_reimbust AS a');
         $this->db->join('pu_reimbust_detail AS b', 'a.id = b.reimbust_id', 'inner');
         $this->db->join('pu_prepayment AS c', 'a.kode_prepayment = c.kode_prepayment', 'left');

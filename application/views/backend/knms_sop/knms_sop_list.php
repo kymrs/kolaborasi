@@ -68,22 +68,29 @@
                         <i class="fa fa-plus"></i>&nbsp;Add Data
                     </a>
                 </div>
-                
+
                 <!-- Filter Buttons -->
                 <div class="card-body pb-2 pt-3">
-                    <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-sm btn-outline-primary filter-btn active" data-filter="">
-                            <i class="fa fa-list"></i> All
-                        </button>
-                        <button type="button" class="btn btn-sm btn-outline-primary filter-btn" data-filter="SOP">
-                            <i class="fa fa-file"></i> SOP
-                        </button>
-                        <button type="button" class="btn btn-sm btn-outline-primary filter-btn" data-filter="Juklak">
-                            <i class="fa fa-folder"></i> Juklak
-                        </button>
-                        <button type="button" class="btn btn-sm btn-outline-primary filter-btn" data-filter="Juknis">
-                            <i class="fa fa-folder-open"></i> Juknis
-                        </button>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-sm btn-outline-primary filter-btn active" data-filter="">
+                                    <i class="fa fa-list"></i> All
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-primary filter-btn" data-filter="SOP">
+                                    <i class="fa fa-file"></i> SOP
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-primary filter-btn" data-filter="Juklak">
+                                    <i class="fa fa-folder"></i> Juklak
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-primary filter-btn" data-filter="Juknis">
+                                    <i class="fa fa-folder-open"></i> Juknis
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-primary filter-btn" data-filter="SK Penunjang" id="btn-sk">
+                                    <i class="fa fa-file-alt"></i> SK Penunjang
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
@@ -149,6 +156,7 @@
                                     <option value="SOP">SOP</option>
                                     <option value="Juklak">Juklak</option>
                                     <option value="Juknis">Juknis</option>
+                                    <option value="SK Penunjang">SK Penunjang</option>
                                 </select>
                             </div>
                         </div>
@@ -343,12 +351,21 @@
                 // SOP tidak punya parent
                 $('#parent_group').hide();
                 $('#parent_no').val('');
+                $('#no_container').hide();
             } else if (jenis == 'Juklak' || jenis == 'Juknis') {
                 // Tampilkan parent field dan load options
                 $('#parent_group').show();
+                $('#no_container').show();
                 loadParentOptions(jenis);
+            } else if (jenis == 'SK Penunjang') {
+                // SK Penunjang tidak punya parent dan tidak punya order
+                $('#parent_group').hide();
+                $('#parent_no').val('');
+                $('#no_container').hide();
+                $('#no').val('');
             } else {
                 $('#parent_group').hide();
+                $('#no_container').hide();
             }
         });
     });
@@ -538,13 +555,20 @@
     $(document).on('click', '.filter-btn', function() {
         // Remove active class dari semua button
         $('.filter-btn').removeClass('active btn-secondary').addClass('btn-outline-secondary');
-        
+
         // Add active class ke button yang di-klik
         $(this).removeClass('btn-outline-secondary').addClass('btn-secondary active');
-        
+
         // Simpan filter yang dipilih
         filterJenis = $(this).data('filter');
-        
+
+        // Jika filter SK Penunjang dipilih, sembunyikan kolom Order (index 2)
+        if (filterJenis === 'SK Penunjang') {
+            table.column(2).visible(false);
+        } else {
+            table.column(2).visible(true);
+        }
+
         // Reload table dengan filter baru
         reload_table();
     });
@@ -575,7 +599,7 @@
         var jenis = $('#jenis').val();
         var parent_no = $('#parent_no').val();
 
-        if (jenis != 'SOP' && !parent_no) {
+        if ((jenis == 'Juklak' || jenis == 'Juknis') && !parent_no) {
             showAlert('error', 'Parent harus dipilih untuk ' + jenis);
             return false;
         }
@@ -640,7 +664,7 @@
 
     function previewFile(filename) {
         var baseUrl = "<?php echo base_url(); ?>";
-        var fileUrl = baseUrl + "assets/backend/document/sop/knms_sop/" + filename;
+        var fileUrl = baseUrl + "assets/backend/document/knms_sop/" + filename;
         var ext = filename.split('.').pop().toLowerCase();
         if (ext === 'pdf') {
             window.open(fileUrl, '_blank');
@@ -699,13 +723,16 @@
                 $('[name="no"]').val(data.no || '');
                 
                 // Show/hide parent field based on jenis
-                if (data.jenis != 'SOP') {
+                if (data.jenis === 'Juklak' || data.jenis === 'Juknis') {
                     $('#parent_group').show();
+                    $('#no_container').show();
                     // Pass parent_no sebagai selectedValue agar ter-select setelah options di-load
-                    loadParentOptions(data.jenis, data.parent_no || '');
+                    loadParentOptions(data.jenis, data.parent_no || '');s
                 } else {
                     $('#parent_group').hide();
-                    $('[name="parent_no"]').val('');
+                    $('#parent_no').val('');
+                    $('#no_container').hide();
+                    $('#no').val('');
                 }
 
                 if (data.file) {

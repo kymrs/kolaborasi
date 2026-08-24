@@ -91,17 +91,30 @@ class Sw_invoice extends CI_Controller
         $mpdf->SetCreator('System Sebelaswarna');
 
         // HEADER LOGO
-        $mpdf->SetHTMLHeader('
-            <div style="text-align: left;">
-                <img src="assets/backend/img/sebelaswarna.png" width="175">
-            </div>
-        ');
+        // $mpdf->SetHTMLHeader('
+        //     <div style="text-align: left;">
+        //         <img src="assets/backend/img/sebelaswarna.png" width="160">
+        //     </div>
+        // ');
+
+        $path = FCPATH . 'assets/backend/img/kop_surat_sw.png';
+
+        // Watermark image
+        $mpdf->SetWatermarkImage(
+            $path,
+            1,
+            [210, 297],
+            [0, 0]
+        );
+
+        $mpdf->showWatermarkImage = true;
+        $mpdf->watermarkImgBehind = true;
 
         $mpdf->SetHTMLFooter('
             <div style="text-align: center; font-size: 12px;">
                 PT SOBAT WISATA DUNIA<br>
-                Kp. Tunggilis RT 001 RW 007,<br>
-                Kelurahan Situsari, Kec. Cileungsi, Kota Bogor.<br>
+                Kp. Empu No.1, RT.001/RW.007,<br>
+                Kelurahan Setu Sari, Kec. Cileungsi, Kab. Bogor.<br>
                 0812-8222-9700 | <a href="http://www.sebelaswarna.com" target="_blank">www.sebelaswarna.com</a>
             </div>
         ');

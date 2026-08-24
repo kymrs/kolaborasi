@@ -333,7 +333,7 @@ class Sam_reimbust extends CI_Controller
         $pdf->SetAutoPageBreak(true, 5); // Margin bawah 15mm
 
         // Logo
-        $pdf->Image(base_url('') . '/assets/backend/img/sam.png', 10, 12, 49, 16);
+        $pdf->Image(base_url('') . '/assets/backend/img/hayfa.png', 10, 2, 41, 36);
 
         // Set font
         $pdf->AddFont('Poppins-Regular', '', 'Poppins-Regular.php');
