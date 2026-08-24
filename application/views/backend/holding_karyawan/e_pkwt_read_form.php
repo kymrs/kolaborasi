@@ -35,7 +35,9 @@ function formatTanggalIndo($tanggal)
 <body>
     <div class="mb-3" style="margin-left: 12%;">
         <a style="float: right; margin-right: 10%; margin-bottom: 30px; padding: 7.5px 10px" class="btn btn-primary btn-sm btn-back" onclick="history.back()"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
-        <button class="btn btn-primary btn-approval" style="float: right; margin-right: 7px; font-size: 16px" type="button">Approval</button>
+        <?php if($this->session->userdata('id_user') == $master->id_user || $this->session->userdata('id_level') == 4 || $this->session->userdata('id_level') == 21) : ?>
+            <button class="btn btn-primary btn-approval" style="float: right; margin-right: 7px; font-size: 16px" type="button">Approval</button>
+        <?php endif ?>
     </div>
     <div style="clear: both;"></div>
     <div class="page">

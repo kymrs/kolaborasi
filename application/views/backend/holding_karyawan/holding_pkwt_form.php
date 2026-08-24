@@ -1153,7 +1153,7 @@
         } else {
             $('.aksi').text('Update');
             $("select option[value='group']").hide();
-            $('#npk').attr('disabled', true);
+            // $('#npk').css('pointer-events', 'none');
             $('#jk_awal').attr('readonly', true).css('pointer-events', 'none');
             $('#jk_akhir').attr('readonly', true).css('pointer-events', 'none');
             $.ajax({
@@ -1174,7 +1174,6 @@
                         $('#npk').val(npkVal).trigger('change');
                     }
                     // jika ingin men-disable select tetap tampil selection-nya
-                    $('#npk').prop('disabled', true).trigger('change.select2');
                     $('#no_perjanjian').val(data['transaksi'].no_perjanjian);
                     $('#jk_awal').val(data['transaksi'].jk_awal);
                     $('#jk_akhir').val(data['transaksi'].jk_akhir);

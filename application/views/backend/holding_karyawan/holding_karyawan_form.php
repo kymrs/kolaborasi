@@ -301,7 +301,7 @@
                                         <div id="foto_preview_container" style="margin-bottom:8px; display:none;">
                                             <img id="foto_preview" src="" alt="Foto Karyawan" style="max-width:120px;max-height:120px;border-radius:8px;border:1px solid #ddd;">
                                         </div>
-                                        <input class="form-control" type="file" name="foto" id="foto">
+                                        <input class="form-control" type="file" name="foto" id="foto" required>
                                         <span class="kwitansi-label">Max Size : 3MB</span>
                                     </div>
                                 </div>
@@ -311,7 +311,7 @@
                                         <div id="kk_preview_container" style="margin-bottom:8px; display:none;">
                                             <img id="kk_preview" src="" alt="KK Karyawan" style="max-width:120px;max-height:120px;border-radius:8px;border:1px solid #ddd;">
                                         </div>
-                                        <input class="form-control" type="file" name="kk" id="kk">
+                                        <input class="form-control" type="file" name="kk" id="kk" required>
                                         <span class="kwitansi-label">Max Size : 3MB</span>
                                     </div>
                                 </div>
@@ -321,7 +321,7 @@
                                         <div id="ktp_preview_container" style="margin-bottom:8px; display:none;">
                                             <img id="ktp_preview" src="" alt="KTP Karyawan" style="max-width:120px;max-height:120px;border-radius:8px;border:1px solid #ddd;">
                                         </div>
-                                        <input class="form-control" type="file" name="ktp" id="ktp">
+                                        <input class="form-control" type="file" name="ktp" id="ktp" required>
                                         <span class="kwitansi-label">Max Size : 3MB</span>
                                     </div>
                                 </div>
@@ -345,7 +345,7 @@
                                         <div id="ijazah_preview_container" style="margin-bottom:8px; display:none;">
                                             <img id="ijazah_preview" src="" alt="Ijazah Karyawan" style="max-width:120px;max-height:120px;border-radius:8px;border:1px solid #ddd;">
                                         </div>
-                                        <input class="form-control" type="file" name="ijazah" id="ijazah">
+                                        <input class="form-control" type="file" name="ijazah" id="ijazah" required>
                                         <span class="kwitansi-label">Max Size : 3MB</span>
                                     </div>
                                 </div>
@@ -466,6 +466,7 @@
                                     <div class="col-sm-7">
                                         <select id="grade" name="grade" class="form-control">
                                             <option value="" hidden>Pilih Grade</option>
+                                            <option value="INT">INT</option>
                                             <!-- Level 1 -->
                                             <option value="1A">1A</option>
                                             <option value="1B">1B</option>
@@ -516,6 +517,7 @@
                                     <div class="col-sm-7">
                                         <select class="form-control" name="status_karyawan" id="status_karyawan">
                                             <option value="" selected hidden>Pilih Status Karyawan</option>
+                                            <option value="Magang">Magang</option>
                                             <option value="Kontrak">Kontrak</option>
                                             <option value="Permanen">Permanen</option>
                                         </select>
@@ -1342,6 +1344,7 @@
                     if (data['master'].foto) {
                         $('#foto_preview').attr('src', '<?= base_url("assets/backend/document/data_karyawan/foto/") ?>' + data['master'].foto);
                         $('#foto_preview_container').show();
+                        $('#foto').prop('required', false);
                     } else {
                         $('#foto_preview_container').hide();
                     }
@@ -1350,6 +1353,7 @@
                     if (data['master'].kk) {
                         $('#kk_preview').attr('src', '<?= base_url("assets/backend/document/data_karyawan/kk/") ?>' + data['master'].kk);
                         $('#kk_preview_container').show();
+                        $('#kk').prop('required', false);
                     } else {
                         $('#kk_preview_container').hide();
                     }
@@ -1358,6 +1362,7 @@
                     if (data['master'].ktp) {
                         $('#ktp_preview').attr('src', '<?= base_url("assets/backend/document/data_karyawan/ktp/") ?>' + data['master'].ktp);
                         $('#ktp_preview_container').show();
+                        $('#ktp').prop('required', false);
                     } else {
                         $('#ktp_preview_container').hide();
                     }
@@ -1374,6 +1379,7 @@
                     if (data['master'].ijazah) {
                         $('#ijazah_preview').attr('src', '<?= base_url("assets/backend/document/data_karyawan/ijazah/") ?>' + data['master'].ijazah);
                         $('#ijazah_preview_container').show();
+                        $('#ijazah').prop('required', false);
                     } else {
                         $('#ijazah_preview_container').hide();
                     }
@@ -1535,9 +1541,9 @@
 
         $(document).ready(function() {
             // Tambahkan satu baris keluarga saat load
-            $('#keluargaContainer').append(getKeluargaTemplate(1));
-            $('#keluargaContainer .removeKeluargaBtn').hide();
-            initKeluargaDatepicker();
+            // $('#keluargaContainer').append(getKeluargaTemplate(1));
+            // $('#keluargaContainer .removeKeluargaBtn').hide();
+            // initKeluargaDatepicker();
 
             // Add keluarga
             $('#addKeluargaBtn').on('click', function() {

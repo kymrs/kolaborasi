@@ -338,21 +338,37 @@ class Holding_karyawan extends CI_Controller
     // hitung total bulan inklusif antara dua tanggal start end 
     private function months_inclusive($startDate, $endDate)
     {
-        if (empty($startDate) || empty($endDate)) return 0;
+        if (empty($startDate) || empty($endDate)) {
+            return 0;
+        }
+
         $s = new DateTime($startDate);
         $e = new DateTime($endDate);
 
-        // if end < start -> 0
-        if ($e < $s) return 0;
+        if ($e < $s) {
+            return 0;
+        }
 
-        // difference in year & months
         $years = (int)$e->format('Y') - (int)$s->format('Y');
         $months = (int)$e->format('n') - (int)$s->format('n');
 
-        $total = $years * 12 + $months + 1; // +1 untuk inklusif (contoh: 1 Jan -> 31 Jan = 1 bulan)
+        $total = ($years * 12) + $months;
 
-        // handle edge-case: when start day > end day and same month difference needs adjustment?
-        // contoh: 15 Jan - 14 Feb masih dianggap 1 bulan (inklusif) -> formula di atas OK
+        // Jika kontrak berakhir sebelum tanggal anniversary,
+        // tetap dianggap sebagai periode bulan tersebut.
+        if ((int)$e->format('d') >= (int)$s->format('d')) {
+            $total++;
+        }
+
+        // Kasus 01 Jan → 31 Des dianggap 12 bulan
+        if (
+            (int)$s->format('d') === 1 &&
+            (int)$e->format('d') === 31 &&
+            $total === 11
+        ) {
+            $total++;
+        }
+
         return $total;
     }
 
@@ -841,11 +857,14 @@ class Holding_karyawan extends CI_Controller
     // contoh: validasi server-side di update_kontrak_karyawan sebelum update
     public function update_kontrak_karyawan($id)
     {
-        $npk = $this->input->post('npk');
+        $raw_npk = $this->input->post('npk');
+        $digits = preg_replace('/\D/', '', (string) $raw_npk); // ambil hanya digit
+        $npk = substr($digits, 0, 6); // digit 1..6
+        $id_user = (strlen($digits) > 6) ? (int) substr($digits, 6) : null; // digit 7..akhir (atau null)
         $jk_awal = $this->input->post('jk_awal');
 
         // sama seperti add: pastikan jeda 1 bulan jika total sudah >=60
-        if (!empty($npk) && !empty($jk_awal)) {
+        if (!empty($jk_awal)) {
             $rows = $this->db
                 ->select('jk_awal, jk_akhir')
                 ->from('holding_kontrak_pkwt')
@@ -881,7 +900,7 @@ class Holding_karyawan extends CI_Controller
 
         $data = [
             'no_perjanjian' => $this->input->post('no_perjanjian'),
-            'id_user' => $this->input->post('id_user'),
+            'id_user' => $id_user,
             'npk' => $npk,  
             'jk_awal' => date('Y-m-d', strtotime($this->input->post('jk_awal'))),
             'jk_akhir' => date('Y-m-d', strtotime($this->input->post('jk_akhir'))),

@@ -23,10 +23,10 @@ class M_holding_karyawan extends CI_Model
 
     private function _get_datatables_query()
     {
-        if ($this->session->userdata('id_level') == 4 || $this->session->userdata('id_level') == 1) {
+        if ($this->session->userdata('id_level') == 4 || $this->session->userdata('id_level') == 1 || $this->session->userdata('id_level') == 21) {
             $this->db->select('*');
             $this->db->from($this->table);
-        } else if ($this->session->userdata('id_level') != 4 && $this->session->userdata('id_level') != 1) {
+        } else if ($this->session->userdata('id_level') != 4 && $this->session->userdata('id_level') != 1 && $this->session->userdata('id_level') != 21) {
             $this->db->select('*');
             $this->db->from($this->table);
             $this->db->where('id_user', $this->session->userdata('id_user'));
@@ -79,7 +79,7 @@ class M_holding_karyawan extends CI_Model
     private function _get_datatables_query2()
     {
 
-        if ($this->session->userdata('id_level') == 4 || $this->session->userdata('id_level') == 1) {
+        if ($this->session->userdata('id_level') == 4 || $this->session->userdata('id_level') == 1 || $this->session->userdata('id_level') == 21) {
             $this->db->select('a.*, b.*, a.id as id_pkwt, a.created_at as created_at_pkwt');
             $this->db->from($this->table2 . ' a');
             $this->db->join($this->table . ' b', 'a.npk = b.npk', 'left');
@@ -185,7 +185,7 @@ class M_holding_karyawan extends CI_Model
         $this->db->from($this->table2 . ' a');
         $this->db->join($this->table . ' b', 'a.npk = b.npk', 'left');
 
-        if ($this->session->userdata('id_level') != 4 && $this->session->userdata('id_level') != 1) {
+        if ($this->session->userdata('id_level') != 4 && $this->session->userdata('id_level') != 1 && $this->session->userdata('id_level') != 21) {
             $this->db->where('b.id_user', $this->session->userdata('id_user'));
         }
 
