@@ -218,7 +218,13 @@ class Holding_karyawan extends CI_Controller
         $data['id_master'] = $id;
         $data['aksi'] = 'read';
         $data['transaksi'] = $this->M_holding_karyawan->get_by_id2($id);
-        $data['master'] = $this->db->get_where('holding_karyawan', array('npk' => $data['transaksi']->npk))->row();
+        $data['master'] = $this->db
+        ->select('holding_karyawan.*, holding_kontrak_pkwt.*') // Atau tentukan kolom spesifik
+        ->from('holding_karyawan')
+        ->join('holding_kontrak_pkwt', 'holding_kontrak_pkwt.npk = holding_karyawan.npk', 'left')
+        ->where('holding_karyawan.npk', $data['transaksi']->npk)
+        ->get()
+        ->row();
         $data['pt'] = $this->db->get_where('holding_sub_bisnis', array('sub_bisnis' => $data['master']->unit_bisnis))->row();
         $data['title_view'] = "Data E-PKWT Karyawan";
         $data['title'] = 'backend/holding_karyawan/e_pkwt_read_form';

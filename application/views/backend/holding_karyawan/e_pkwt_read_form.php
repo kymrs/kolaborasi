@@ -35,9 +35,28 @@ function formatTanggalIndo($tanggal)
 <body>
     <div class="mb-3" style="margin-left: 12%;">
         <a style="float: right; margin-right: 10%; margin-bottom: 30px; padding: 7.5px 10px" class="btn btn-primary btn-sm btn-back" onclick="history.back()"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
-        <?php if($this->session->userdata('id_user') == $master->id_user || $this->session->userdata('id_level') == 4 || $this->session->userdata('id_level') == 21) : ?>
+
+        <?php 
+        $session_level = $this->session->userdata('id_level');
+        $session_user  = $this->session->userdata('id_user');
+        $app_status    = strtolower($master->app_status ?? '');
+
+        // Cek apakah App 1 SUDAH disetujui
+        $is_app1_approved = ($app_status == 'approved' || $app_status == '1');
+
+        // 1. Hak Akses App 1 (Berdasarkan LEVEL): 
+        // Ganti angka 4 di bawah dengan id_level untuk App 1 jika berbeda
+        $can_app1 = ($session_level == 4 && !$is_app1_approved);
+
+        // 2. Hak Akses App 2 (Berdasarkan ID USER): 
+        // Baru bisa approve JIKA App 1 SUDAH approved
+        $can_app2 = ($session_user == $master->id_user && $is_app1_approved);
+
+        // Tampilkan tombol jika salah satu kondisi terpenuhi
+        if ($can_app1 || $can_app2) : 
+        ?>
             <button class="btn btn-primary btn-approval" style="float: right; margin-right: 7px; font-size: 16px" type="button">Approval</button>
-        <?php endif ?>
+        <?php endif; ?>
     </div>
     <div style="clear: both;"></div>
     <div class="page">
