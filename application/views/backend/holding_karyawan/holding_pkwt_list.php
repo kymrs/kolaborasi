@@ -136,7 +136,7 @@
                             <?php endforeach; ?> -->
                         </select>
                     </div>
-                    <?php if (in_array($this->session->userdata('id_level'), [1, 4])) : ?>
+                    <?php if (in_array($this->session->userdata('id_level'), [1, 4, 21])) : ?>
                         <div style="float:right; margin-right: 16px;">
                             <div class="dropdown">
                                 <button id="pkwtNotifBtn" class="btn dropdown-toggle" type="button" data-toggle="dropdown">

@@ -47,6 +47,22 @@
                                     </div>
                                 </div>
 
+                                <!-- PIC Name -->
+                                <div class="row align-items-center mb-3">
+                                    <label class="col-lg-4" for="pic">PIC Name</label>
+                                    <div class="col-lg-8">
+                                        <input type="text" class="form-control" id="pic" name="pic" placeholder="PIC Name">
+                                    </div>
+                                </div>
+
+                                <!-- PIC Name -->
+                                <div class="row align-items-center mb-3">
+                                    <label class="col-lg-4" for="no_telp">No Telefon</label>
+                                    <div class="col-lg-8">
+                                        <input type="text" class="form-control" id="no_telp" name="no_telp" placeholder="No Telefon">
+                                    </div>
+                                </div>
+
                                 <!-- Event Type -->
                                 <div class="row align-items-center mb-3">
                                     <label class="col-lg-4" for="event_type">Event Type</label>
