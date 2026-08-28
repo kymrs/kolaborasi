@@ -213,23 +213,41 @@ class Holding_karyawan extends CI_Controller
         $this->load->view('backend/home', $data);
     }
 
-    function read_form_pkwt($id)
-    {
-        $data['id_master'] = $id;
-        $data['aksi'] = 'read';
-        $data['transaksi'] = $this->M_holding_karyawan->get_by_id2($id);
-        $data['master'] = $this->db
-        ->select('holding_karyawan.*, holding_kontrak_pkwt.*') // Atau tentukan kolom spesifik
+function read_form_pkwt($id)
+{
+    $data['id_master'] = $id;
+    $data['aksi'] = 'read';
+    $data['transaksi'] = $this->M_holding_karyawan->get_by_id2($id);
+
+    // Ambil data master karyawan, kontrak PKWT, dan holding_sub_bisnis dalam 1 query
+    $data['master'] = $this->db
+        ->select('holding_karyawan.*, holding_kontrak_pkwt.*, c.user_id_ttd')
         ->from('holding_karyawan')
         ->join('holding_kontrak_pkwt', 'holding_kontrak_pkwt.npk = holding_karyawan.npk', 'left')
+        ->join(
+            'holding_sub_bisnis c',
+            "c.kode = SUBSTRING_INDEX(
+                SUBSTRING_INDEX(
+                    SUBSTRING_INDEX(holding_kontrak_pkwt.no_perjanjian, '/', 2),
+                    '-',
+                    -1
+                ),
+                '/',
+                1
+            )",
+            'left',
+            FALSE
+        )
         ->where('holding_karyawan.npk', $data['transaksi']->npk)
         ->get()
         ->row();
-        $data['pt'] = $this->db->get_where('holding_sub_bisnis', array('sub_bisnis' => $data['master']->unit_bisnis))->row();
-        $data['title_view'] = "Data E-PKWT Karyawan";
-        $data['title'] = 'backend/holding_karyawan/e_pkwt_read_form';
-        $this->load->view('backend/home', $data);
-    }
+
+    $data['pt'] = $this->db->get_where('holding_sub_bisnis', array('sub_bisnis' => $data['master']->unit_bisnis))->row();
+    $data['title_view'] = "Data E-PKWT Karyawan";
+    $data['title'] = 'backend/holding_karyawan/e_pkwt_read_form';
+
+    $this->load->view('backend/home', $data);
+}
 
     function add_form()
     {

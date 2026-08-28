@@ -109,7 +109,7 @@
                             <i class="fa fa-plus"></i>&nbsp;&nbsp;Add Data
                         </a>
                     <?php } ?>
-                    <a style="background-color: rgb(36, 44, 73); float: right; padding: 6.2px 12px" class="btn btn-secondary btn-sm" href="<?= base_url('holding_karyawan') ?>">
+                    <a style="background-color: rgb(36, 44, 73); float: right; padding: 6.2px 12px; margin-left: 10px" class="btn btn-secondary btn-sm" href="<?= base_url('holding_karyawan') ?>">
                         <i class="fas fa-chevron-left"></i>&nbsp;Back
                     </a>
                     <div style="float:right; display:flex; gap:10px; align-items:center;">
@@ -120,21 +120,23 @@
                             <option value="reject">Reject</option>
                             <option value="on-process">On-Process</option>
                         </select>
-                        <label style="margin:0; color:#666; font-weight:600;">Nama PT:</label>
-                        <select id="filter_unit_bisnis" class="form-control btn-primary" style="width:auto; display:inline-block; font-size: 14px; padding: 6px 7px; border-radius: 4px; margin-right: 12px">
-                            <option value="">Semua PT</option>
-                            <option value="PT. Sobat Wisata Dunia">PT. Sobat Wisata Dunia</option>
-                            <option value="PT. Kolaborasi Para Sahabat">PT. Kolaborasi Para Sahabat</option>
-                            <option value="PT. Navigeta Bintang Cemerlang">PT. Navigeta Bintang Cemerlang</option>
-                            <option value="PT. Navigeta Bintang Cemerlang">Koperasi Nusantara Madani Sejahtera</option>
-                            <option value="PT. Quick Project Indonesia">PT. Quick Project Indonesia</option>
-                            <option value="PT. Sahabat Multi Logistik">PT. Sahabat Multi Logistik</option>
-                            <option value="PT. Otoservis Lintas Indonesia">PT. Otoservis Lintas Indonesia</option>
-                            <option value="PT. Safar Amanah Madani">PT. Safar Amanah Madani</option>
-                            <!-- <?php foreach ($nama_pt as $data) : ?>
-                                <option value="<?= htmlspecialchars($data['nama_pt']) ?>"><?= htmlspecialchars($data['nama_pt']) ?></option>
-                            <?php endforeach; ?> -->
-                        </select>
+                        <?php if (in_array($this->session->userdata('id_level'), [1, 4, 21])) : ?>
+                            <label style="margin:0; color:#666; font-weight:600;">Nama PT:</label>
+                            <select id="filter_unit_bisnis" class="form-control btn-primary" style="width:auto; display:inline-block; font-size: 14px; padding: 6px 7px; border-radius: 4px; margin-right: 12px">
+                                <option value="">Semua PT</option>
+                                <option value="PT. Sobat Wisata Dunia">PT. Sobat Wisata Dunia</option>
+                                <option value="PT. Kolaborasi Para Sahabat">PT. Kolaborasi Para Sahabat</option>
+                                <option value="PT. Navigeta Bintang Cemerlang">PT. Navigeta Bintang Cemerlang</option>
+                                <option value="PT. Navigeta Bintang Cemerlang">Koperasi Nusantara Madani Sejahtera</option>
+                                <option value="PT. Quick Project Indonesia">PT. Quick Project Indonesia</option>
+                                <option value="PT. Sahabat Multi Logistik">PT. Sahabat Multi Logistik</option>
+                                <option value="PT. Otoservis Lintas Indonesia">PT. Otoservis Lintas Indonesia</option>
+                                <option value="PT. Safar Amanah Madani">PT. Safar Amanah Madani</option>
+                                <!-- <?php foreach ($nama_pt as $data) : ?>
+                                    <option value="<?= htmlspecialchars($data['nama_pt']) ?>"><?= htmlspecialchars($data['nama_pt']) ?></option>
+                                <?php endforeach; ?> -->
+                            </select>
+                        <?php endif ?>
                     </div>
                     <?php if (in_array($this->session->userdata('id_level'), [1, 4, 21])) : ?>
                         <div style="float:right; margin-right: 16px;">

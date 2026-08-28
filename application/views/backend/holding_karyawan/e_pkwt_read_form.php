@@ -33,31 +33,26 @@ function formatTanggalIndo($tanggal)
 ?>
 
 <body>
-    <div class="mb-3" style="margin-left: 12%;">
-        <a style="float: right; margin-right: 10%; margin-bottom: 30px; padding: 7.5px 10px" class="btn btn-primary btn-sm btn-back" onclick="history.back()"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
+<div class="mb-3" style="margin-left: 12%;">
+    <a style="float: right; margin-right: 10%; margin-bottom: 30px; padding: 7.5px 10px" class="btn btn-primary btn-sm btn-back" onclick="history.back()"><i class="fas fa-chevron-left"></i>&nbsp;Back</a>
 
-        <?php 
-        $session_level = $this->session->userdata('id_level');
-        $session_user  = $this->session->userdata('id_user');
-        $app_status    = strtolower($master->app_status ?? '');
+    <?php 
+    $session_user = $this->session->userdata('id_user');
+    $user_ttd     = $master->user_id_ttd ?? null;
+    $id_karyawan  = $master->id_user ?? $transaksi->id_user ?? null;
 
-        // Cek apakah App 1 SUDAH disetujui
-        $is_app1_approved = ($app_status == 'approved' || $app_status == '1');
+    // 1. Cek jika user login adalah Atasan Penandatangan (App 1 / Perusahaan)
+    $is_ttd_user = (!empty($user_ttd) && $session_user == $user_ttd);
 
-        // 1. Hak Akses App 1 (Berdasarkan LEVEL): 
-        // Ganti angka 4 di bawah dengan id_level untuk App 1 jika berbeda
-        $can_app1 = ($session_level == 4 && !$is_app1_approved);
+    // 2. Cek jika user login adalah Karyawan bersangkutan (App 2 / Karyawan)
+    $is_karyawan_user = (!empty($id_karyawan) && $session_user == $id_karyawan);
 
-        // 2. Hak Akses App 2 (Berdasarkan ID USER): 
-        // Baru bisa approve JIKA App 1 SUDAH approved
-        $can_app2 = ($session_user == $master->id_user && $is_app1_approved);
-
-        // Tampilkan tombol jika salah satu kondisi terpenuhi
-        if ($can_app1 || $can_app2) : 
-        ?>
-            <button class="btn btn-primary btn-approval" style="float: right; margin-right: 7px; font-size: 16px" type="button">Approval</button>
-        <?php endif; ?>
-    </div>
+    // Tampilkan tombol jika user login adalah Atasan ATAU Karyawan bersangkutan
+    if ($is_ttd_user || $is_karyawan_user) : 
+    ?>
+        <button class="btn btn-primary btn-approval" style="float: right; margin-right: 7px; font-size: 16px" type="button">Approval</button>
+    <?php endif; ?>
+</div>
     <div style="clear: both;"></div>
     <div class="page">
         <div class="header">
@@ -634,25 +629,35 @@ function formatTanggalIndo($tanggal)
                     </button>
                 </div>
                 <div class="modal-body" id="modalApproveBody">
-                    <?php if (in_array($this->session->userdata('id_level'), [1, 4])) : ?>
+                    <?php 
+                    $session_user = $this->session->userdata('id_user');
+                    $user_ttd     = $master->user_id_ttd ?? null;
+                    $id_karyawan  = $master->id_user ?? $transaksi->id_user ?? null;
+
+                    // Jika user login adalah Atasan Penandatangan (Approval Perusahaan)
+                    if (!empty($user_ttd) && $session_user == $user_ttd) : 
+                    ?>
                         <div class="form-group">
                             <label style="padding-bottom: 6px;">Approval Perusahaan</label>
                             <select id="approval_select" class="form-control">
-                                <option value="waiting" <?= $transaksi->app_status == 'waiting' ? 'selected' : '' ?>>Waiting</option>
-                                <option value="approved" <?= $transaksi->app_status == 'approved' ? 'selected' : '' ?>>Approved</option>
-                                <option value="reject" <?= $transaksi->app_status == 'reject' ? 'selected' : '' ?>>Reject</option>
+                                <option value="waiting" <?= ($transaksi->app_status ?? '') == 'waiting' ? 'selected' : '' ?>>Waiting</option>
+                                <option value="approved" <?= ($transaksi->app_status ?? '') == 'approved' ? 'selected' : '' ?>>Approved</option>
+                                <option value="reject" <?= ($transaksi->app_status ?? '') == 'reject' ? 'selected' : '' ?>>Reject</option>
                             </select>
                         </div>
-                    <?php else : ?>
+                    <?php 
+                    // Jika user login adalah Karyawan yang bersangkutan (Approval Karyawan)
+                    else : 
+                    ?>
                         <div class="form-group">
                             <label style="padding-bottom: 6px;">Approval Karyawan</label>
                             <select id="approval_select_karyawan" class="form-control">
-                                <option value="waiting" <?= $transaksi->app2_status == 'waiting' ? 'selected' : '' ?>>Waiting</option>
-                                <option value="approved" <?= $transaksi->app2_status == 'approved' ? 'selected' : '' ?>>Approved</option>
-                                <option value="reject" <?= $transaksi->app2_status == 'reject' ? 'selected' : '' ?>>Reject</option>
+                                <option value="waiting" <?= ($transaksi->app2_status ?? '') == 'waiting' ? 'selected' : '' ?>>Waiting</option>
+                                <option value="approved" <?= ($transaksi->app2_status ?? '') == 'approved' ? 'selected' : '' ?>>Approved</option>
+                                <option value="reject" <?= ($transaksi->app2_status ?? '') == 'reject' ? 'selected' : '' ?>>Reject</option>
                             </select>
                         </div>
-                    <?php endif ?>
+                    <?php endif; ?>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
