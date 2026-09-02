@@ -434,12 +434,12 @@ function formatTanggalIndo($tanggal)
                     <tr>
                         <td><span class="detail-2">1.</span>Kesehatan</td>
                         <td>:</td>
-                        <td>0</td>
+                        <td>Rp <?= number_format($transaksi->tj_kesehatan, 0, ',', '.') ?>,00 per bulan</td>
                     </tr>
                     <tr>
                         <td><span class="detail-2">2.</span>Jamsostek</td>
                         <td>:</td>
-                        <td>0</td>
+                        <td>Rp <?= number_format($transaksi->tj_jamsostek, 0, ',', '.') ?>,00 per bulan</td>
                     </tr>
                 </table>
                 <p class="before-signature">KARYAWAN memberikan kuasa kepada PERUSAHAAN untuk memotong dari kompensasi bulanan KARYAWAN untuk pembayaran iuran Jamsostek dari Upah dan Pemotongan Kewajiban Pajak sesuai ketentuan perundangan-undangan yang berlaku.</p>

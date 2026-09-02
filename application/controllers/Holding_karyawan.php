@@ -729,6 +729,8 @@ function read_form_pkwt($id)
             'tj_ops' => preg_replace('/\D/', '', $this->input->post('tj_ops')),
             'thr' => preg_replace('/\D/', '', $this->input->post('thr')),
             'tj_kehadiran' => preg_replace('/\D/', '', $this->input->post('tj_kehadiran')),
+            'tj_kesehatan' => preg_replace('/\D/', '', $this->input->post('tj_kesehatan')),
+            'tj_jamsostek' => preg_replace('/\D/', '', $this->input->post('tj_jamsostek')),
             'insentif' => $this->input->post('insentif'),
             'created_at' => date('Y-m-d H:i:s')
         ];
@@ -938,6 +940,8 @@ function read_form_pkwt($id)
             'tj_ops' => preg_replace('/\D/', '', $this->input->post('tj_ops')),
             'thr' => $this->input->post('thr'),
             'tj_kehadiran' => preg_replace('/\D/', '', $this->input->post('tj_kehadiran')),
+            'tj_kesehatan' => preg_replace('/\D/', '', $this->input->post('tj_kesehatan')),
+            'tj_jamsostek' => preg_replace('/\D/', '', $this->input->post('tj_jamsostek')),
             'insentif' => $this->input->post('insentif'),
             'updated_at' => date('Y-m-d H:i:s')
         ];

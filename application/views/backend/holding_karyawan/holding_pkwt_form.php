@@ -258,6 +258,12 @@
                                         <input type="text" class="form-control rupiah" name="gaji" id="gaji" placeholder="Gaji" autocomplete="off">
                                     </div>
                                 </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="tj_pulsa">Tunjangan Pulsa</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control rupiah" name="tj_pulsa" id="tj_pulsa" placeholder="Tunjangan Pulsa" autocomplete="off">
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="col-md-6">
@@ -365,12 +371,6 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-sm-5" for="tj_pulsa">Tunjangan Pulsa</label>
-                                    <div class="col-sm-7">
-                                        <input type="text" class="form-control rupiah" name="tj_pulsa" id="tj_pulsa" placeholder="Tunjangan Pulsa" autocomplete="off">
-                                    </div>
-                                </div>
-                                <div class="form-group row">
                                     <label class="col-sm-5" for="tj_ops">Tunjangan Operasional</label>
                                     <div class="col-sm-7">
                                         <input type="text" class="form-control rupiah" name="tj_ops" id="tj_ops" placeholder="Tunjangan Operasional" autocomplete="off">
@@ -400,6 +400,18 @@
                                             <option value="Ada">Ada</option>
                                             <option value="Tidak Ada">Tidak Ada</option>
                                         </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="tj_kesehatan">Tunjangan Kesehatan</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control rupiah" name="tj_kesehatan" id="tj_kesehatan" placeholder="Tunjangan Kesehatan" autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-5" for="tj_jamsostek">Tunjangan Jamsostek</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control rupiah" name="tj_jamsostek" id="tj_jamsostek" placeholder="Tunjangan Jamsostek" autocomplete="off">
                                     </div>
                                 </div>
                             </div>
@@ -1186,6 +1198,8 @@
                     $('#tj_pulsa').val(data['transaksi']['tj_pulsa'].replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
                     $('#tj_ops').val(data['transaksi']['tj_ops'].replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
                     $('#thr').val(data['transaksi']['thr'].replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
+                    $('#tj_kesehatan').val(data['transaksi']['tj_kesehatan'].replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
+                    $('#tj_jamsostek').val(data['transaksi']['tj_jamsostek'].replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
                     $('#tj_kehadiran').val(data['transaksi']['tj_kehadiran'].replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
                     $('#insentif').val(data['transaksi'].insentif);
                 },
