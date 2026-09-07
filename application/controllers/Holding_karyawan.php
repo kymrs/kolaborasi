@@ -153,10 +153,13 @@ class Holding_karyawan extends CI_Controller
             $action_read = ($read == 'Y') ? '<a href="read_form_pkwt/' . $field->id_pkwt . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-eye"></i></a>&nbsp;' : '';
             $action_edit = ($edit == 'Y') ? '<a href="edit_form_pkwt/' . $field->id_pkwt . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id_pkwt . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
-            $action_print = ($print == 'Y') ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="e_pkwt_pdf/' . $field->id_pkwt . '"><i class="fas fa-file-pdf"></i></a>' : '';
+
+            $action_print = ($print == 'Y') 
+                ? '<a class="btn btn-success btn-circle btn-sm" target="_blank" href="e_pkwt_pdf/' . $field->id_pkwt . '"><i class="fas fa-file-pdf"></i></a>' 
+                : '';
 
             // $action = $action_read . $action_edit . $action_delete . $action_print;
-            $action = $action_read . $action_edit . $action_delete;
+            $action = $action_read . $action_edit . $action_delete . $action_print;
 
             $unit_bisnis = $this->db->select('unit_bisnis, nama_pt')
             ->from('holding_karyawan')
@@ -213,41 +216,41 @@ class Holding_karyawan extends CI_Controller
         $this->load->view('backend/home', $data);
     }
 
-function read_form_pkwt($id)
-{
-    $data['id_master'] = $id;
-    $data['aksi'] = 'read';
-    $data['transaksi'] = $this->M_holding_karyawan->get_by_id2($id);
+    function read_form_pkwt($id)
+    {
+        $data['id_master'] = $id;
+        $data['aksi'] = 'read';
+        $data['transaksi'] = $this->M_holding_karyawan->get_by_id2($id);
 
-    // Ambil data master karyawan, kontrak PKWT, dan holding_sub_bisnis dalam 1 query
-    $data['master'] = $this->db
-        ->select('holding_karyawan.*, holding_kontrak_pkwt.*, c.user_id_ttd')
-        ->from('holding_karyawan')
-        ->join('holding_kontrak_pkwt', 'holding_kontrak_pkwt.npk = holding_karyawan.npk', 'left')
-        ->join(
-            'holding_sub_bisnis c',
-            "c.kode = SUBSTRING_INDEX(
-                SUBSTRING_INDEX(
-                    SUBSTRING_INDEX(holding_kontrak_pkwt.no_perjanjian, '/', 2),
-                    '-',
-                    -1
-                ),
-                '/',
-                1
-            )",
-            'left',
-            FALSE
-        )
-        ->where('holding_karyawan.npk', $data['transaksi']->npk)
-        ->get()
-        ->row();
+        // Ambil data master karyawan, kontrak PKWT, dan holding_sub_bisnis dalam 1 query
+        $data['master'] = $this->db
+            ->select('holding_karyawan.*, holding_kontrak_pkwt.*, c.user_id_ttd')
+            ->from('holding_karyawan')
+            ->join('holding_kontrak_pkwt', 'holding_kontrak_pkwt.npk = holding_karyawan.npk', 'left')
+            ->join(
+                'holding_sub_bisnis c',
+                "c.kode = SUBSTRING_INDEX(
+                    SUBSTRING_INDEX(
+                        SUBSTRING_INDEX(holding_kontrak_pkwt.no_perjanjian, '/', 2),
+                        '-',
+                        -1
+                    ),
+                    '/',
+                    1
+                )",
+                'left',
+                FALSE
+            )
+            ->where('holding_karyawan.npk', $data['transaksi']->npk)
+            ->get()
+            ->row();
 
-    $data['pt'] = $this->db->get_where('holding_sub_bisnis', array('sub_bisnis' => $data['master']->unit_bisnis))->row();
-    $data['title_view'] = "Data E-PKWT Karyawan";
-    $data['title'] = 'backend/holding_karyawan/e_pkwt_read_form';
+        $data['pt'] = $this->db->get_where('holding_sub_bisnis', array('sub_bisnis' => $data['master']->unit_bisnis))->row();
+        $data['title_view'] = "Data E-PKWT Karyawan";
+        $data['title'] = 'backend/holding_karyawan/e_pkwt_read_form';
 
-    $this->load->view('backend/home', $data);
-}
+        $this->load->view('backend/home', $data);
+    }
 
     function add_form()
     {
@@ -1051,6 +1054,7 @@ function read_form_pkwt($id)
         $data['master'] = $this->db->get_where('holding_karyawan', [
             'npk' => $data['transaksi']->npk
         ])->row();
+        $data['pt'] = $this->db->get_where('holding_sub_bisnis', array('sub_bisnis' => $data['master']->unit_bisnis))->row();
 
         // Render view jadi HTML string
         $html = $this->load->view('backend/holding_karyawan/e_pkwt_pdf', $data, true);

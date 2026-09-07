@@ -54,8 +54,22 @@
 
 <table class="no-border">
     <tr>
-        <td>Company: <b><?= $company_name ?></b></td>
-        <td class="text-right">Type event: <?= $event_type ?></td>
+        <td style="width: 10.5%;">Company</td>
+        <td class="text-right" style="width: 1%;">:</td>
+        <td class="text-left" style="width: 50%;"><b><?= $company_name ?></b></td>
+        <td class="text-right">Type event: <b><?= $event_type ?></b></td>
+    </tr>
+    <tr>
+        <td style="width: 10.5%;">PIC</td>
+        <td class="text-right">:</td>
+        <td class="text-right"><b><?= $pic ?></b></td>
+        <td class="text-right"></td>
+    </tr>
+    <tr>
+        <td style="width: 10.5%;">No Telepon</td>
+        <td class="text-right">:</td>
+        <td class="text-right"><b><?= $no_telp ?></b></td>
+        <td class="text-right"></td>
     </tr>
 </table>
 

@@ -45,7 +45,7 @@ class M_holding_karyawan extends CI_Model
             FALSE
         );
 
-        // Filter Hak Akses / User Level (Diperbarui agar mencakup user_id_ttd)
+        // Filter Hak Akses / User Level
         $allowed_levels = [4, 1, 21];
         if (!in_array($this->session->userdata('id_level'), $allowed_levels)) {
             $this->db->group_start();
@@ -59,7 +59,7 @@ class M_holding_karyawan extends CI_Model
             $this->db->where('LOWER(a.nama_pt)', strtolower($_POST['filter_unit_bisnis']));
         }
 
-        // Datatables Global Search (Disamakan strukturnya dengan query2)
+        // Datatables Global Search
         if (!empty($_POST['search']['value'])) {
             $i = 0;
             foreach ($this->column_search as $item) {
@@ -77,6 +77,9 @@ class M_holding_karyawan extends CI_Model
             }
         }
 
+        // SOLUSI: Grouping berdasarkan Primary Key tabel a agar data tidak ganda
+        $this->db->group_by('a.id'); // Ganti 'id' dengan nama kolom Primary Key tabel a jika berbeda (misal: 'id_karyawan')
+
         // Datatables Ordering
         if (isset($_POST['order'])) {
             $this->db->order_by($this->column_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
@@ -93,8 +96,6 @@ class M_holding_karyawan extends CI_Model
         $this->db->join($this->table . ' b', 'a.npk = b.npk', 'left');
 
         // Join ke holding_sub_bisnis berdasarkan kode yang di-parse dari nomor PKWT (a.no_perjanjian)
-        // Mengambil string antara '-' dan '/' secara dinamis
-        // Sesuaikan 'a.no_perjanjian' dengan nama kolom nomor PKWT di tabel holding_kontrak_pkwt
         $this->db->join(
             'holding_sub_bisnis c',
             "c.kode = SUBSTRING_INDEX(
@@ -159,6 +160,9 @@ class M_holding_karyawan extends CI_Model
                 $i++;
             }
         }
+
+        // PERBAIKAN: Kunci grouping ke ID unik dari tabel kontrak (table2)
+        $this->db->group_by('a.id');
 
         // Datatables Ordering
         if (isset($_POST['order'])) {

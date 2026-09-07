@@ -181,7 +181,6 @@
 
     .content-header table {
         margin: 15px 35px 10px 35px;
-        width: 94%;
     }
 
     .content-header table tr td {
@@ -790,6 +789,19 @@
                 <p style="font-weight: bold;">PERUSAHAAN memberi kompensasi dan benefit dari pekerjaan yang diberikan kepada KARYAWAN dengan perincian sebagai berikut,</p>
             </div>
             <div class="main-content">
+            <?php
+                // 1. Hitung Total Upah (Gaji + Tunjangan Tetap)
+                $gaji         = $transaksi->gaji ?? 0;
+                $tj_pulsa     = $transaksi->tj_pulsa ?? 0;
+                $tj_ops       = $transaksi->tj_ops ?? 0;
+
+                $upah = $gaji + $tj_pulsa + $tj_ops;
+
+                // 2. Hitung Potongan/Iuran (1% untuk Kesehatan, 2% untuk Jamsostek)
+                $kesehatan = $upah * 0.01;
+                $jhp = $upah * 0.01;
+                $jht = $upah * 0.02;
+            ?>
                 <table>
                     <tr>
                         <td><span>1.</span>Jabatan</td>
@@ -799,7 +811,7 @@
                     <tr>
                         <td><span>2.</span>Unit Kerja</td>
                         <td>:</td>
-                        <td>PT. KOLABORASI PARA SAHABAT</td>
+                        <td><?= $pt->nama_pt ?></td>
                     </tr>
                     <tr>
                         <td><span>3.</span>Lokasi Kerja</td>
@@ -819,7 +831,7 @@
                     <tr>
                         <td><span class="detail">a.</span>Gaji</td>
                         <td>:</td>
-                        <td>Rp.<?= number_format($transaksi->gaji, 0, ',', '.') ?> per bulan</td>
+                        <td>Rp <?= number_format($gaji, 0, ',', '.') ?> per bulan</td>
                     </tr>
                     <tr>
                         <td><span class="detail">b.</span>Tunjangan Tetap</td>
@@ -829,12 +841,12 @@
                     <tr>
                         <td><span class="detail-2">1.</span>Tunjangan Pulsa</td>
                         <td>:</td>
-                        <td>Rp <?= number_format($transaksi->tj_pulsa, 0, ',', '.') ?>,00 per bulan</td>
+                        <td>Rp <?= number_format($tj_pulsa, 0, ',', '.') ?> per bulan</td>
                     </tr>
                     <tr>
                         <td><span class="detail-2">2.</span>Tunjangan Operasional Tenaga Lapangan</td>
                         <td>:</td>
-                        <td>Rp <?= number_format($transaksi->tj_ops, 0, ',', '.') ?>,00 per bulan</td>
+                        <td>Rp <?= number_format($tj_ops, 0, ',', '.') ?> per bulan</td>
                     </tr>
                     <tr>
                         <td><span class="detail-2">3.</span>Tunjangan Hari Raya</td>
@@ -842,34 +854,39 @@
                         <td><?= $transaksi->thr ?></td>
                     </tr>
                     <tr>
-                        <td><span class="detail">b.</span>Tunjangan Tidak Tetap</td>
+                        <td><span class="detail">c.</span>Tunjangan Tidak Tetap</td>
                         <td></td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td><span class="detail-2">4.</span>Tunjangan Kehadiran</td>
+                        <td><span class="detail-2">1.</span>Tunjangan Kehadiran</td>
                         <td>:</td>
-                        <td>Rp <?= number_format($transaksi->tj_kehadiran, 0, ',', '.') ?>,00 per kehadiran</td>
+                        <td>Rp <?= number_format($transaksi->tj_kehadiran, 0, ',', '.') ?> per kehadiran</td>
                     </tr>
                     <tr>
-                        <td><span class="detail-2">5.</span>Insentif</td>
+                        <td><span class="detail-2">2.</span>Insentif</td>
                         <td>:</td>
                         <td><?= $transaksi->insentif ?></td>
                     </tr>
                     <tr>
-                        <td><span>6.</span>Benefit</td>
+                        <td><span>6.</span>Kewajiban</td>
                         <td></td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td><span class="detail-2">1.</span>Kesehatan</td>
+                        <td><span class="detail-2">1.</span>BPJS Kesehatan</td>
                         <td>:</td>
-                        <td>0</td>
+                        <td>Rp <?= number_format($kesehatan, 0, ',', '.') ?> per bulan (1% dari upah)</td>
                     </tr>
                     <tr>
-                        <td><span class="detail-2">2.</span>Jamsostek</td>
+                        <td><span class="detail-2">2.</span>BPJS Ketenagakerjaan</td>
                         <td>:</td>
-                        <td>0</td>
+                        <td>Rp <?= number_format($jhp, 0, ',', '.') ?> per bulan (JHP 1% dari upah)</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td>Rp <?= number_format($jht, 0, ',', '.') ?> per bulan (JHT 2% dari upah)</td>
                     </tr>
                 </table>
                 <p class="before-signature">KARYAWAN memberikan kuasa kepada PERUSAHAAN untuk memotong dari kompensasi bulanan KARYAWAN untuk pembayaran iuran Jamsostek dari Upah dan Pemotongan Kewajiban Pajak sesuai ketentuan perundangan-undangan yang berlaku.</p>
