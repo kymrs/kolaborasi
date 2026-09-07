@@ -69,15 +69,6 @@ class Sw_invoice extends CI_Controller
         echo json_encode($output);
     }
 
-    // function read_form($id)
-    // {
-    //     $mpdf = new \Mpdf\Mpdf(['format' => 'A4']);
-    //     $data = $this->M_sw_invoice->get_by_id($id);
-    //     $data2 = $this->load->view('backend/sw_invoice/sw_invoice_pdf', $data, TRUE);
-    //     $mpdf->WriteHTML($data2);
-    //     $mpdf->Output();
-    // }
-
     function read_form($id)
     {
         $mpdf = new \Mpdf\Mpdf([
@@ -89,13 +80,6 @@ class Sw_invoice extends CI_Controller
         $mpdf->SetAuthor('Sebelaswarna EO');
         $mpdf->SetSubject('Event Confirmation');
         $mpdf->SetCreator('System Sebelaswarna');
-
-        // HEADER LOGO
-        // $mpdf->SetHTMLHeader('
-        //     <div style="text-align: left;">
-        //         <img src="assets/backend/img/sebelaswarna.png" width="160">
-        //     </div>
-        // ');
 
         $path = FCPATH . 'assets/backend/img/kop_surat_sw.png';
 

@@ -1008,12 +1008,20 @@ class Holding_karyawan extends CI_Controller
 
     public function e_pkwt_pdf($id)
     {
+        // Load Composer Autoload agar class Dompdf\Options terdeteksi di server hosting
+        if (file_exists(FCPATH . 'vendor/autoload.php')) {
+            require_once FCPATH . 'vendor/autoload.php';
+        } elseif (file_exists(APPPATH . 'vendor/autoload.php')) {
+            require_once APPPATH . 'vendor/autoload.php';
+        } elseif (file_exists(FCPATH . '../vendor/autoload.php')) {
+            require_once FCPATH . '../vendor/autoload.php';
+        }
+
         // Gunakan Dompdf via Composer jika tersedia, else coba library CI
         $vendorAutoload = FCPATH . 'vendor/autoload.php';
         $dompdfInstance = null;
 
         if (file_exists($vendorAutoload)) {
-            require_once $vendorAutoload;
             $options = new \Dompdf\Options();
             // optional: atur chroot agar asset lokal bisa di-load
             $options->setChroot(FCPATH);
