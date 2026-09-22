@@ -46,9 +46,26 @@
                                         <input type="text" class="form-control" id="company_name" name="company_name" placeholder="Company Name">
                                     </div>
                                 </div>
-                            </div>
 
+                                <!-- PIC Name -->
+                                <div class="row align-items-center mb-3">
+                                    <label class="col-lg-4" for="pic">PIC Name</label>
+                                    <div class="col-lg-8">
+                                        <input type="text" class="form-control" id="pic" name="pic" placeholder="PIC Name">
+                                    </div>
+                                </div>
+
+                                <!-- Phone Number -->
+                                <div class="row align-items-center mb-3">
+                                    <label class="col-lg-4" for="no_telp">Phone Number</label>
+                                    <div class="col-lg-8">
+                                        <input type="text" class="form-control" id="no_telp" name="no_telp" placeholder="Phone Number">
+                                    </div>
+                                </div>
+                            </div>
+                            
                             <div class="col-md-6">
+
                                 <!-- Event Type -->
                                 <div class="row align-items-center mb-3">
                                     <label class="col-lg-4" for="event_type">Event Type</label>
@@ -62,6 +79,14 @@
                                     <label class="col-lg-4" for="final_date">Final Date</label>
                                     <div class="col-lg-8">
                                         <input type="text" class="form-control" id="final_date" name="final_date" placeholder="dd-mm-yyyy" autocomplete="off" style="cursor: pointer;">
+                                    </div>
+                                </div>
+
+                                <!-- Pph 23 -->
+                                <div class="row align-items-center mb-3">
+                                    <label class="col-lg-4" for="pph23">Pph 23 (%)</label>
+                                    <div class="col-lg-8">
+                                        <input type="text" class="form-control" id="pph23" name="pph23" placeholder="Pph 23" autocomplete="off">
                                     </div>
                                 </div>
 
@@ -152,6 +177,58 @@
                 }
             });
         }
+        
+        $('#no_telp').on('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
+        $('#pph23').on('focus', function() {
+            // Hilangkan % saat input difokuskan
+            $(this).val($(this).val().replace('%', ''));
+        });
+
+        $('#pph23').on('input', function() {
+            let value = $(this).val();
+
+            // Hanya angka dan titik
+            value = value.replace(/[^0-9.]/g, '');
+
+            // Hanya satu titik
+            let parts = value.split('.');
+            if (parts.length > 2) {
+                value = parts[0] + '.' + parts.slice(1).join('');
+            }
+
+            // Maksimal 100
+            let numericValue = parseFloat(value);
+
+            if (!isNaN(numericValue) && numericValue > 100) {
+                value = '100';
+            }
+
+            $(this).val(value);
+        });
+
+        $('#pph23').on('blur', function() {
+            let value = $(this).val().replace('%', '');
+
+            if (value === '') {
+                value = '0';
+            }
+
+            let numericValue = parseFloat(value);
+
+            if (isNaN(numericValue)) {
+                numericValue = 0;
+            }
+
+            // Maksimal 100
+            if (numericValue > 100) {
+                numericValue = 100;
+            }
+
+            $(this).val(numericValue + '%');
+        });
 
         // ========== DATEPICKER INITIALIZATION ==========
         var datePickerOptions = {
@@ -215,6 +292,9 @@
                     $('#letter_date').val(moment(data.letter_date).format('DD-MM-YYYY'));
                     $('#company_name').val(data.company_name);
                     $('#event_type').val(data.event_type);
+                    $('#pic').val(data.pic);
+                    $('#no_telp').val(data.no_telp);
+                    $('#pph23').val(data.pph23 ? (parseFloat(data.pph23) * 100) + '%' : '0%');
                     $('#total_amount').val(formatCurrency(data.total_amount)).trigger('input');
                     $('#final_date').val(moment(data.final_date).format('DD-MM-YYYY'));
 

@@ -41,6 +41,12 @@
     .footer {
         margin-top: 40px;
     }
+    .logo-paid {
+        position: absolute;
+        top: 340px;
+        right: 20px;
+        width: 180px;
+    }
 </style>
 
 <table width="100%" style="border: none; border-collapse: collapse;">
@@ -56,24 +62,28 @@
     <tr>
         <td style="width: 10.5%;">Company</td>
         <td class="text-right" style="width: 1%;">:</td>
-        <td class="text-left" style="width: 50%;"><b><?= $company_name ?></b></td>
-        <td class="text-right">Type event: <b><?= $event_type ?></b></td>
+        <td class="text-left" style="width: 55%;"><b><?= $company_name ?? '-' ?></b></td>
+        <td class="text-right" style="vertical-align: top;">Type event</td>
+        <td class="text-right" style="vertical-align: top; width: 2%;">:</td>
+        <td class="text-left"><b><?= $event_type ?? '-' ?></b></td>
     </tr>
     <tr>
         <td style="width: 10.5%;">PIC</td>
         <td class="text-right">:</td>
-        <td class="text-right"><b><?= $pic ?></b></td>
-        <td class="text-right"></td>
-    </tr>
-    <tr>
-        <td style="width: 10.5%;">No Telepon</td>
+        <td class="text-left"><b><?= $pic ?? '-' ?></b></td>
+        <td class="text-right">No Telepon</td>
         <td class="text-right">:</td>
-        <td class="text-right"><b><?= $no_telp ?></b></td>
-        <td class="text-right"></td>
+        <td class="text-left"><b><?= $no_telp ?? '-' ?></b></td>
     </tr>
 </table>
 
 <br>
+
+<?php if (strtolower($payment_status) == 'paid') : ?>
+    <div class="logo-paid">
+        <img src="assets/backend/img/logo-paid-sw.png" alt="line" width="100%">
+    </div>
+<?php endif; ?>
 
 <table>
     <thead>
@@ -92,20 +102,22 @@
                 <td><?= $item->remarks ?></td>
                 <td class="text-right">Rp <?= number_format($item->unit_price, 0, ',', '.') ?></td>
                 <td class="text-center"><?= $item->qty ?></td>
-                <td class="text-right">Rp<?= number_format($item->total_price, 0, ',', '.') ?></td>
+                <td class="text-right">Rp <?= number_format($item->total_price, 0, ',', '.') ?></td>
             </tr>
         <?php endforeach; ?>
         <tr>
             <td colspan="4" class="text-right bold">Total</td>
             <td class="text-right">Rp <?= number_format($total_amount, 0, ',', '.') ?></td>
         </tr>
-        <tr>
-            <td colspan="4" class="text-right bold">Pph 23 (2%)</td>
-            <td class="text-right">Rp <?= number_format($total_amount * 0.02, 0, ',', '.') ?></td>
-        </tr>
+        <?php if ($pph23 > 0): ?>
+            <tr>
+                <td colspan="4" class="text-right bold">Pph 23 (<?= number_format($pph23 * 100, 0, ',', '.') ?>%)</td>
+                <td class="text-right">Rp <?= number_format($total_amount * $pph23, 0, ',', '.') ?></td>
+            </tr>
+        <?php endif; ?>
         <tr>
             <td colspan="4" class="text-right bold">Grand Total</td>
-            <td class="text-right bold">Rp <?= number_format($total_amount - ($total_amount * 0.02), 0, ',', '.') ?></td>
+            <td class="text-right bold">Rp <?= number_format($total_amount - ($total_amount * ($pph23 ?? 0)), 0, ',', '.') ?></td>
         </tr>
     </tbody>
 </table>
@@ -116,7 +128,7 @@
     Payment is to be paid on : 
     <?= ($final_date == "0000-00-00 00:00:00" || empty($final_date)) 
             ? '-' 
-            : date('l, d F Y', strtotime($final_date)) . ' Rp. ' . number_format($total_amount - ($total_amount * 0.02), 0, ',', '.') . ',-' ?>
+            : date('l, d F Y', strtotime($final_date)) . ' Rp. ' . number_format($total_amount - ($total_amount * ($pph23 ?? 0)), 0, ',', '.') . ',-' ?>
 </div>
 
 <br>

@@ -52,8 +52,24 @@ class Sw_invoice extends CI_Controller
             $row = array();
             $row[] = $no;
             $row[] = $action;
+            // Mencegah jika payment_status kosong, default ke 'unpaid'
+            if ((!empty($field->payment_status))) {
+                $payment_status = $field->payment_status;
+            } else {
+                $payment_status = 'unpaid';
+            }
+
+            if ($payment_status == 'paid') {
+                $row[] = '<div class="text-center" style="cursor:pointer;" data-toggle="modal" data-target="#paymentDetailModal" data-id="' . $field->id . '" title="Detail Pembayaran"><span class="badge badge-success btn-paid" style="font-size:14px; padding:8px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); border-radius: 100px;"><i class="fa fa-check-circle"></i></span></div>';
+            } elseif ($payment_status == 'partial') {
+                $row[] = '<div class="text-center" style="cursor:pointer;" data-toggle="modal" data-target="#paymentDetailModal" data-id="' . $field->id . '" title="Detail Pembayaran"><span class="badge badge-warning" style="font-size:14px; padding:8px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); border-radius: 100px;"><i class="fa fa-adjust"></i></span></div>';
+            } else {
+                $row[] = '<div class="text-center"><button style="background-color: #e74a3b; border-color: #e74a3b; font-size:14px; padding:8px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); border-radius: 100px;" class="btn-circle btn-sm" data-toggle="modal" data-target="#paymentDetailModal" data-id="' . $field->id . '" title="Detail Pembayaran"><i class="fas fa-times" style="color: white;"></i></button></div>';
+            }
             $row[] = $field->letter_number;
             $row[] = $field->company_name;
+            $row[] = $field->pic ?? '-';
+            $row[] = $field->no_telp ?? '-';
             $row[] = $field->event_type;
             $row[] = date('d-m-Y H:i:s', strtotime($field->created_at));
             $data[] = $row;
@@ -188,7 +204,10 @@ class Sw_invoice extends CI_Controller
             'letter_number' => $master->letter_number,
             'letter_date' => $master->letter_date,
             'company_name' => $master->company_name,
+            'pic' => $master->pic,
+            'no_telp' => $master->no_telp,
             'event_type' => $master->event_type,
+            'pph23' => $master->pph23,
             'total_amount' => $master->total_amount,
             'final_date' => $master->final_date,
             'items' => $items
@@ -208,6 +227,26 @@ class Sw_invoice extends CI_Controller
         $letter_date = $this->convert_date_format($this->input->post('letter_date'));
         $final_date = $this->convert_date_format($this->input->post('final_date'));
 
+        $pph23 = $this->input->post('pph23', true);
+
+        // Hapus %
+        $pph23 = str_replace('%', '', $pph23);
+
+        // Convert ke float
+        $pph23 = (float) $pph23;
+
+        // Validasi 0 - 100
+        if ($pph23 < 0) {
+            $pph23 = 0;
+        }
+
+        if ($pph23 > 100) {
+            $pph23 = 100;
+        }
+
+        // Convert persen ke decimal
+        $pph23 = $pph23 / 100;
+
         // Clean currency values - remove dots for database storage
         $total_amount = str_replace('.', '', $this->input->post('total_amount')) ?: 0;
 
@@ -216,6 +255,9 @@ class Sw_invoice extends CI_Controller
             'letter_date' => $letter_date,
             'company_name' => $this->input->post('company_name'),
             'event_type' => $this->input->post('event_type'),
+            'pic' => $this->input->post('pic') ?? null,
+            'no_telp' => $this->input->post('no_telp') ?? null,
+            'pph23' => $pph23,
             'total_amount' => $total_amount,
             'final_date' => $final_date,
             'created_at' => date('Y-m-d H:i:s'),
@@ -270,6 +312,26 @@ class Sw_invoice extends CI_Controller
         $letter_date = $this->convert_date_format($this->input->post('letter_date'));
         $final_date = $this->convert_date_format($this->input->post('final_date'));
 
+        $pph23 = $this->input->post('pph23', true);
+
+        // Hapus %
+        $pph23 = str_replace('%', '', $pph23);
+
+        // Convert ke float
+        $pph23 = (float) $pph23;
+
+        // Validasi 0 - 100
+        if ($pph23 < 0) {
+            $pph23 = 0;
+        }
+
+        if ($pph23 > 100) {
+            $pph23 = 100;
+        }
+
+        // Convert persen ke decimal
+        $pph23 = $pph23 / 100;
+
         // Clean currency values - remove dots for database storage
         $total_amount = str_replace('.', '', $this->input->post('total_amount')) ?: 0;
 
@@ -277,7 +339,10 @@ class Sw_invoice extends CI_Controller
             'letter_number' => $this->input->post('letter_number'),
             'letter_date' => $letter_date,
             'company_name' => $this->input->post('company_name'),
+            'pic' => $this->input->post('pic') ?? null,
+            'no_telp' => $this->input->post('no_telp') ?? null,
             'event_type' => $this->input->post('event_type'),
+            'pph23' => $pph23,
             'total_amount' => $total_amount,
             'final_date' => $final_date,
             'updated_at' => date('Y-m-d H:i:s')
@@ -321,6 +386,155 @@ class Sw_invoice extends CI_Controller
         } catch (Exception $e) {
             echo json_encode(array("status" => FALSE, "error" => "An error occurred: " . $e->getMessage()));
         }
+    }
+
+        // HAPUS update_payment() yang lama, GANTI dengan:
+    public function add_payment()
+    {
+        $invoice_id = intval($this->input->post('invoice_id'));
+        $tgl_bayar  = $this->input->post('tgl_bayar');
+        $nominal    = intval(str_replace('.', '', $this->input->post('nominal')));
+        // $metode     = $this->input->post('metode');
+        $keterangan = $this->input->post('keterangan');
+
+        if (!$invoice_id) {
+            echo json_encode(['status' => FALSE, 'error' => 'ID tidak valid']); return;
+        }
+        if (empty($tgl_bayar)) {
+            echo json_encode(['status' => FALSE, 'error' => 'Tanggal bayar wajib diisi']); return;
+        }
+        if ($nominal <= 0) {
+            echo json_encode(['status' => FALSE, 'error' => 'Nominal harus lebih dari 0']); return;
+        }
+
+        // Konversi tanggal DD-MM-YYYY ke YYYY-MM-DD
+        $tgl_db = implode('-', array_reverse(explode('-', $tgl_bayar)));
+
+        $data = [
+            'invoice_id' => $invoice_id,
+            'tgl_bayar'  => $tgl_db,
+            'nominal'    => $nominal,
+            'metode'     => 'Transfer',
+            'keterangan' => $keterangan ?: null,
+            'created_by' => $this->session->userdata('id_user'),
+            'created_at' => date('Y-m-d H:i:s'),
+        ];
+
+        // Handle upload bukti
+        if (!empty($_FILES['bukti_cicilan']['name'])) {
+            $allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
+            $max_size      = 5 * 1024 * 1024;
+
+            if (!in_array($_FILES['bukti_cicilan']['type'], $allowed_types)) {
+                echo json_encode(['status' => FALSE, 'error' => 'Format file tidak diizinkan. Hanya JPG, PNG, JPEG, PDF.']);
+                return;
+            }
+            if ($_FILES['bukti_cicilan']['size'] > $max_size) {
+                echo json_encode(['status' => FALSE, 'error' => 'Ukuran file melebihi 5 MB.']);
+                return;
+            }
+
+            $this->load->library('upload', [
+                'upload_path'   => 'assets/backend/document/sw_invoice_payment/',
+                'allowed_types' => 'jpg|jpeg|png|pdf',
+                'max_size'      => 5120,
+                'encrypt_name'  => TRUE,
+            ]);
+
+            if ($this->upload->do_upload('bukti_cicilan')) {
+                $data['bukti'] = $this->upload->data('file_name');
+            } else {
+                echo json_encode(['status' => FALSE, 'error' => strip_tags($this->upload->display_errors())]);
+                return;
+            }
+        }
+
+        $this->db->insert('sw_invoice_payment', $data);
+
+        // Update payment_status di header invoice
+        $this->_update_payment_status($invoice_id);
+
+        echo json_encode(['status' => TRUE, 'message' => 'Pembayaran berhasil dicatat']);
+    }
+
+    public function delete_payment($payment_id)
+    {
+        $payment = $this->db->where('id', $payment_id)->get('sw_invoice_payment')->row();
+        if (!$payment) {
+            echo json_encode(['status' => FALSE, 'error' => 'Data tidak ditemukan']); return;
+        }
+
+        // Hapus file bukti jika ada
+        if (!empty($payment->bukti)) {
+            $path = FCPATH . 'assets/backend/document/sw_invoice_payment/' . $payment->bukti;
+            if (file_exists($path)) @unlink($path);
+        }
+
+        $this->db->where('id', $payment_id)->delete('sw_invoice_payment');
+
+        // Update payment_status di header invoice
+        $this->_update_payment_status($payment->invoice_id);
+
+        echo json_encode(['status' => TRUE]);
+    }
+
+    // PRIVATE: update payment_status header invoice berdasarkan total cicilan
+    private function _update_payment_status($invoice_id)
+    {
+        $invoice = $this->db->select('total_amount')
+            ->where('id', $invoice_id)->get('sw_invoice')->row();
+        if (!$invoice) return;
+
+        $total_bayar = $this->db->select_sum('nominal')
+            ->where('invoice_id', $invoice_id)
+            ->get('sw_invoice_payment')->row('nominal');
+
+        $total_bayar = floatval($total_bayar);
+        $total_amount   = floatval($invoice->total_amount);
+
+        if ($total_bayar <= 0) {
+            $status = 'unpaid';
+        } elseif ($total_bayar >= $total_amount) {
+            $status = 'paid';
+        } else {
+            $status = 'partial'; // cicilan sebagian
+        }
+
+        $this->db->where('id', $invoice_id)->update('sw_invoice', [
+            'payment_status' => $status,
+            'updated_at'     => date('Y-m-d H:i:s'),
+        ]);
+    }
+
+    // GANTI get_payment_detail() yang lama:
+    public function get_payment_detail()
+    {
+        $id  = intval($this->input->post('id'));
+        $row = $this->db->select('id, letter_number, company_name, total_amount, payment_status')
+            ->where('id', $id)->get('sw_invoice')->row();
+
+        if (!$row) { echo json_encode(['status' => FALSE]); return; }
+
+        // Ambil semua cicilan
+        $cicilan = $this->db->where('invoice_id', $id)
+            ->order_by('tgl_bayar', 'ASC')
+            ->order_by('created_at', 'ASC')
+            ->get('sw_invoice_payment')->result_array();
+
+        $total_bayar = array_sum(array_column($cicilan, 'nominal'));
+        $sisa        = floatval($row->total_amount) - $total_bayar;
+
+        echo json_encode([
+            'status'         => TRUE,
+            'id'             => $row->id,
+            'invoice_number' => $row->letter_number,
+            'customer_name'  => $row->company_name,
+            'sub_total'      => $row->total_amount,
+            'payment_status' => $row->payment_status,
+            'cicilan'        => $cicilan,
+            'total_bayar'    => $total_bayar,
+            'sisa'           => $sisa,
+        ]);
     }
 
     // ========== HELPER FUNCTION - CONVERT DATE FORMAT ==========

@@ -7,8 +7,8 @@ class M_sw_invoice extends CI_Model
 {
     var $id = 'id';
     var $table = 'sw_invoice'; //nama tabel dari database
-    var $column_order = array(null, null, 'letter_number', 'company_name', 'event_type', 'venue', 'created_at');
-    var $column_search = array('letter_number', 'company_name', 'event_type', 'venue', 'created_at'); //field yang diizin untuk pencarian 
+    var $column_order = array(null, null, 'payment_status', 'letter_number', 'company_name', 'pic', 'no_telp', 'event_type', 'venue', 'created_at');
+    var $column_search = array('payment_status', 'letter_number', 'company_name', 'pic', 'no_telp', 'event_type', 'venue', 'created_at'); //field yang diizin untuk pencarian 
     var $order = array('id' => 'desc'); // default order 
 
     public function __construct()
