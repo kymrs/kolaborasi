@@ -57,7 +57,7 @@
         </tr>
         <tr> 
             <td><b>Start</b></td>
-            <td><b>: <?= date('d F Y', strtotime($end_time)); ?></b></td>
+            <td><b>: <?= date('d F Y', strtotime($start_date)); ?></b></td>
             <td><b>Start</b></td>
             <td>: <b><?= $start_time ?></b></td>
         </tr>
@@ -119,7 +119,7 @@
                 ? '-'
                 : date('l, d F Y', strtotime($dp_date)) .
                     ' Rp. ' .
-                    number_format(($total_amount * $dp_percent) / 100, 0, ',', '.') .
+                    number_format(($dp)) .
                     ',-'
             ?>
         </b>
@@ -133,7 +133,7 @@
                 ? '-'
                 : date('l, d F Y', strtotime($final_date)) .
                     ' Rp. ' .
-                    number_format(($total_amount * $final_percent) / 100, 0, ',', '.') .
+                    number_format(($final)) .
                     ',-'
             ?>
         </b>

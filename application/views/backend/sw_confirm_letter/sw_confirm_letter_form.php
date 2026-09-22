@@ -90,28 +90,28 @@
                                 </div>
 
                                 <div class="row align-items-center mb-3">
-                                    <label class="col-lg-4" for="dp_percent">DP%</label>
+                                    <label class="col-lg-4" for="dp">DP</label>
                                     <div class="col-lg-8">
                                         <div class="input-group">
-                                            <input type="number" class="form-control" id="dp_percent" name="dp_percent" 
-                                                placeholder="0" min="0" step="0.01" required>
+                                            <input type="text" class="form-control" id="dp" name="dp" 
+                                                placeholder="0" required disabled>
                                             <div class="input-group-append">
-                                                <span class="input-group-text">%</span>
+                                                <span class="input-group-text">Rp</span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-
+                            </div>
+                            
+                            <!-- Row 1: Event Schedule (Right Column) -->
+                            <div class="col-md-6">
                                 <div class="row align-items-center mb-3">
                                     <label class="col-lg-4" for="dp_date">DP Date</label>
                                     <div class="col-lg-8">
                                         <input type="text" class="form-control" id="dp_date" name="dp_date" placeholder="dd-mm-yyyy" autocomplete="off" style="cursor: pointer;">
                                     </div>
                                 </div>
-                            </div>
 
-                            <!-- Row 1: Event Schedule (Right Column) -->
-                            <div class="col-md-6">
                                 <!-- Setup -->
                                 <div class="row align-items-start mb-3">
                                     <label class="col-lg-4" for="setup">Setup</label>
@@ -153,13 +153,13 @@
                                 </div>
 
                                 <div class="row align-items-center mb-3">
-                                    <label class="col-lg-4" for="final_percent">Final%</label>
+                                    <label class="col-lg-4" for="final">Final</label>
                                     <div class="col-lg-8">
                                         <div class="input-group">
-                                            <input type="number" class="form-control" id="final_percent" name="final_percent" 
-                                                placeholder="0" min="0" step="0.01" required>
+                                            <input type="text" class="form-control" id="final" name="final" 
+                                                placeholder="0" required>
                                             <div class="input-group-append">
-                                                <span class="input-group-text">%</span>
+                                                <span class="input-group-text">Rp</span>
                                             </div>
                                         </div>
                                     </div>
@@ -171,7 +171,7 @@
                                         <input type="text" class="form-control" id="final_date" name="final_date" placeholder="dd-mm-yyyy" autocomplete="off" style="cursor: pointer;">
                                     </div>
                                 </div>
-
+<!-- 
                                 <div class="row align-items-center mb-3">
                                     <label class="col-lg-4" for="quotation">Upload Quotation</label>
                                     <div class="col-lg-8">
@@ -179,7 +179,6 @@
                                             accept=".pdf,.jpg,.jpeg,.png" autocomplete="off">
                                         <span style="font-size: 12px">Max Size : 10MB | PDF, JPG, PNG</span>
 
-                                        <!-- Preview untuk edit (jika sudah ada file) -->
                                         <div id="quotation-preview" style="display:none; margin-top: 8px;">
                                             <span style="font-size: 12px; color: #555;">
                                                 <a href="#" id="quotation-current-link" target="_blank" style="color: #4e73df;">
@@ -190,7 +189,7 @@
 
                                         <input type="hidden" id="quotation_existing" name="quotation_existing" value="">
                                     </div>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
 
@@ -286,36 +285,35 @@
 
         // ========== CURRENCY FORMAT FUNCTION ==========
         function formatCurrency(value) {
-            // Remove non-numeric characters except for comma and dot
-            let cleanValue = value.replace(/[^,\d]/g, '');
-            let integerPart = cleanValue.replace(/\D/g, '');
+            if (value === null || value === undefined || value === '') return '';
 
-            // Format with thousand separator
-            if (integerPart) {
-                integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-            }
+            // 1. Ambil HANYA digit angkanya saja
+            let clean = value.toString().replace(/\D/g, '');
+            if (!clean) return '';
 
-            return integerPart;
+            // 2. Ubah ke BigInt agar TIDAK TERBATAS jumlah digitnya dan TIDAK KOMA
+            let number = BigInt(clean);
+
+            // 3. Format menggunakan locale Indonesia (memakai titik sebagai pemisah ribuan)
+            return new Intl.NumberFormat('id-ID').format(number);
         }
 
         // ========== CURRENCY INPUT HANDLERS ==========
-        ['total_amount'].forEach(function(fieldId) {
-            $('#' + fieldId).on('input', function() {
+        ['total_amount', 'dp'].forEach(function(fieldId) {
+            $(document).on('input', '#' + fieldId, function() {
+                // Format otomatis dengan titik ribuan
                 let formatted = formatCurrency($(this).val());
                 $(this).val(formatted);
 
-                // Store clean value in hidden field
+                // Simpan nilai bersih tanpa titik ke hidden input
                 let cleanValue = $(this).val().replace(/\./g, '');
                 $('#' + fieldId + '_hidden').val(cleanValue);
-            });
 
-            // Set initial format if there's a value
-            let currentVal = $('#' + fieldId).val();
-            if (currentVal) {
-                let formatted = formatCurrency(currentVal);
-                $('#' + fieldId).val(formatted);
-                $('#' + fieldId + '_hidden').val(formatted.replace(/\./g, ''));
-            }
+                // Jika yang diketik adalah DP, jalankan perhitungan final secara langsung
+                if (fieldId === 'dp') {
+                    calculateFinalTotal();
+                }
+            });
         });
 
         // ========== LOAD DATA FOR EDIT ==========
@@ -340,8 +338,8 @@
                     $('#end_date').val(moment(data.end_date).format('DD-MM-YYYY'));
                     $('#start_time').val(data.start_time);
                     $('#end_time').val(data.end_time);
-                    $('#dp_percent').val(data.dp_percent);
-                    $('#final_percent').val(data.final_percent);
+                    $('#dp').val(data.dp);
+                    $('#final').val(data.final);
 
                     // Set currency fields
                     $('#total_amount').val(formatCurrency(data.total_amount)).trigger('input');
@@ -572,20 +570,26 @@
         function calculateTotalAmount() {
             let totalAmount = 0;
             
-            // Sum all total_price values from items
+            // Sum all total_price values
             $('#items-container .total-price').each(function() {
                 const cleanValue = $(this).attr('id').replace('total_price_', '');
                 const hiddenField = $('#hidden_total_price_' + cleanValue);
-                const itemTotal = parseFloat(hiddenField.val()) || 0;
+                
+                let valRaw = hiddenField.val() || '0';
+                let valClean = valRaw.toString().replace(/\D/g, '');
+                const itemTotal = parseFloat(valClean) || 0;
+                
                 totalAmount += itemTotal;
             });
             
-            // Format and display total amount
-            const totalAmountFormatted = formatCurrency(totalAmount.toString());
-            $('#total_amount').val(totalAmountFormatted);
+            // Tampilkan total berformat titik
+            $('#total_amount').val(formatCurrency(totalAmount.toString()));
             
-            // Store clean value in hidden field
-            $('#total_amount_hidden').val(totalAmount.toFixed(0));
+            // Simpan nilai bersih murni tanpa desimal ke hidden
+            $('#total_amount_hidden').val(Math.floor(totalAmount).toString());
+
+            // Otomatis hitung DP & Final
+            calculateFinalTotal();
         }
 
         // Remove Item
@@ -666,45 +670,48 @@
         }
 
         // readonly final percent
-        $('#final_percent').prop('readonly', true);
+        $('#final').prop('readonly', true);
 
-        // default value
-        $('#dp_percent').val(50);
-        $('#final_percent').val(50);
+        function calculateFinalTotal() {
+            // 1. Ambil nilai total_amount_hidden & bersihkan dari karakter non-angka
+            let totalRaw = $('#total_amount_hidden').val() || '0';
+            let totalClean = totalRaw.toString().replace(/\D/g, '');
+            let total = parseFloat(totalClean) || 0;
 
-        function calculateFinalPercent() {
-
-            let dp = $('#dp_percent').val();
-
-            // jika kosong
-            if (dp === '') {
-                $('#final_percent').val(100);
+            // 2. Cek apakah total ada
+            if (total <= 0) {
+                $('#dp').prop('disabled', true).prop('readonly', true).val('');
+                $('#final').val('');
                 return;
+            } else {
+                $('#dp').prop('disabled', false).prop('readonly', false);
             }
 
-            dp = parseFloat(dp);
+            // 3. Ambil nilai DP & bersihkan dari karakter non-angka
+            let dpRaw = $('#dp').val() || '';
+            let dpClean = dpRaw.toString().replace(/\D/g, '');
+            let dp = parseFloat(dpClean) || 0;
 
-            // tidak boleh lebih dari 100
-            if (dp > 100) {
-                dp = 100;
-                $('#dp_percent').val(100);
+            // 4. Batasi jika DP melebihi Total
+            if (dp > total) {
+                dp = total;
             }
 
-            // tidak boleh kurang dari 0
-            if (dp < 0) {
-                dp = 0;
-                $('#dp_percent').val(0);
+            // 5. Hitung sisa (Final)
+            let final = total - dp;
+
+            // 6. Tampilkan ke UI dengan format titik ribuan murni
+            if (dpRaw !== '') {
+                $('#dp').val(formatCurrency(dp.toString()));
             }
-
-            // hitung final
-            let final = 100 - dp;
-
-            $('#final_percent').val(final);
+            
+            $('#final').val(formatCurrency(final.toString()));
         }
 
-        // trigger saat input
-        $('#dp_percent').on('input', function () {
-            calculateFinalPercent();
+        // Listener saat pengguna mengetik di input DP
+        $(document).on('input', '#dp', function() {
+            // Jalankan kalkulasi final secara langsung
+            calculateFinalTotal();
         });
 
         // ========== FORM SUBMIT ==========

@@ -44,11 +44,12 @@ class Sw_confirm_letter extends CI_Controller
             $action_read = ($read == 'Y') ? '<a href="sw_confirm_letter/read_form/' . $field->id . '" class="btn btn-info btn-circle btn-sm" title="Read"><i class="fa fa-file-pdf"></i></a>&nbsp;' : '';
             $action_edit = ($edit == 'Y') ? '<a href="sw_confirm_letter/edit_form/' . $field->id . '" class="btn btn-warning btn-circle btn-sm" title="Edit"><i class="fa fa-edit"></i></a>&nbsp;' : '';
             $action_delete = ($delete == 'Y') ? '<a onclick="delete_data(' . "'" . $field->id . "'" . ')" class="btn btn-danger btn-circle btn-sm" title="Delete"><i class="fa fa-trash"></i></a>&nbsp;' : '';
-            $action_print = ($print == 'Y' && !empty($field->quotation)) 
-                ? '<a class="btn btn-success btn-circle btn-sm" title="Quotation View" href="' . base_url('assets/backend/document/sw_quotation/' . $field->quotation) . '" target="_blank"><i class="fa fa-file"></i></a>&nbsp;' 
-                : '';
+            // $action_print = ($print == 'Y' && !empty($field->quotation)) 
+            //     ? '<a class="btn btn-success btn-circle btn-sm" title="Quotation View" href="' . base_url('assets/backend/document/sw_quotation/' . $field->quotation) . '" target="_blank"><i class="fa fa-file"></i></a>&nbsp;' 
+            //     : '';
 
-            $action = $action_read . $action_edit . $action_delete . $action_print;
+            // $action = $action_read . $action_edit . $action_delete . $action_print;
+            $action = $action_read . $action_edit . $action_delete;
 
             $no++;
             $row = array();
@@ -208,9 +209,9 @@ class Sw_confirm_letter extends CI_Controller
             'start_time' => $master->start_time,
             'end_time' => $master->end_time,
             'total_amount' => $master->total_amount,
-            'dp_percent' => $master->dp_percent,
+            'dp' => $master->dp,
             'dp_date' => $master->dp_date,
-            'final_percent' => $master->final_percent,
+            'final' => $master->final,
             'final_date' => $master->final_date,
             'quotation' => $master->quotation,
             'items' => $items
@@ -325,9 +326,9 @@ class Sw_confirm_letter extends CI_Controller
             'start_time' => $this->input->post('start_time'),
             'end_time' => $this->input->post('end_time'),
             'total_amount' => $total_amount,
-            'dp_percent' => $this->input->post('dp_percent'),
+            'dp' => (int) str_replace('.', '', $this->input->post('dp')),
             'dp_date' => $dp_date,
-            'final_percent' => $this->input->post('final_percent'),
+            'final' => (int) str_replace('.', '', $this->input->post('final')),
             'final_date' => $final_date,
             'quotation' => $quotation_filename,
             'created_at' => date('Y-m-d H:i:s'),
@@ -421,8 +422,8 @@ class Sw_confirm_letter extends CI_Controller
             'end_time' => $this->input->post('end_time'),
             'total_amount' => $total_amount,
             'dp_date' => $dp_date,
-            'dp_percent' => $this->input->post('dp_percent'),
-            'final_percent' => $this->input->post('final_percent'),
+            'dp' => (int) str_replace('.', '', $this->input->post('dp')),
+            'final' => (int) str_replace('.', '', $this->input->post('final')),
             'final_date' => $final_date,
             'quotation' => $quotation_filename,         // <-- tambahan kolom quotation
             'updated_at' => date('Y-m-d H:i:s')
